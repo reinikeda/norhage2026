@@ -1,0 +1,47 @@
+body.dark-mode {
+  background-color: #040D12;
+  color: #93B1A6;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+  color: #5C8374;
+}
+
+body.dark-mode .button {
+    background-color: #183D3D;
+    color: #93B1A6;
+}
+
+body.dark-mode .secondary-title {
+    color: #B0BEC5;
+}
+
+body.dark-mode .ast-woo-product-category {
+  color: #9E9E9E !important;
+}
+
+/* Dark mode styles for min/max price input fields */
+body.dark-mode .wc-block-product-filter-price-slider__left input,
+body.dark-mode .wc-block-product-filter-price-slider__right input {
+  background-color: #152b2b; /* Slightly darker than #183D3D */
+  color: #E0E0E0;
+  border: 1px solid #5C8374;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Checkbox visibility fix for dark mode */
+body.dark-mode input.wc-block-product-filter-checkbox-list__input[type="checkbox"] {
+  accent-color: #93B1A6;
+  background-color: #183D3D;
+  border: 1px solid #5C8374;
+}
+
+/* Checkbox label text color */
+body.dark-mode .wc-block-product-filter-checkbox-list__text {
+  color: #E0E0E0;
+}
+

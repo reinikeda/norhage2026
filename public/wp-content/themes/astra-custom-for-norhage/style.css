@@ -9,3 +9,27 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: astra-custom-for-norhage
 Template: astra
 */
+
+/* Dark mode button */
+#darkModeToggle {
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+/* Optional hover effect */
+#darkModeToggle:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Light hover for light mode */
+}
+
+/* Optional dark mode hover effect */
+.ast-theme-dark #darkModeToggle:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle light hover on dark */
+}
