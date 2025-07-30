@@ -1,9 +1,60 @@
-# Ignore everything
-*
+# Created by https://www.toptal.com/developers/gitignore/api/wordpress
+# Edit at https://www.toptal.com/developers/gitignore?templates=wordpress
 
-# But not these!
-!.gitignore
-!public/
-!public/wp-content/
-!public/wp-content/themes/
-!public/wp-content/themes/astra-custom-for-norhage/**
+### WordPress ###
+# Core
+#
+# Note: if you want to stage/commit WP core files
+# you can delete this whole section/until Configuration.
+
+# Ignore everything inside wp-content except our theme
+/public/wp-content/*
+!/public/wp-content/themes/
+/public/wp-content/themes/*
+!/public/wp-content/themes/astra-custom-for-norhage/
+!/public/wp-content/themes/astra-custom-for-norhage/**
+
+# WordPress Core
+/public/wp-admin/
+/public/wp-includes/
+/public/index.php
+/public/license.txt
+/public/readme.html
+/public/wp-*.php
+/public/xmlrpc.php
+
+# Configuration
+/public/wp-config.php
+
+# Example themes
+/public/wp-content/themes/twenty*
+
+# Example plugin
+/public/wp-content/plugins/
+/public/wp-content/plugins/hello.php
+
+# Uploads
+/public/wp-content/uploads/
+
+# Log files
+*.log
+
+# htaccess
+.htaccess
+
+# Ignore debug and backup files
+*.bk
+local-xdebuginfo.php
+
+# All plugins
+# Note: If you wish to whitelist plugins,
+# uncomment the next line
+#/wp-content/plugins
+
+# All themes
+# Note: If you wish to whitelist themes,
+# uncomment the next line
+#/wp-content/themes
+
+
+# End of https://www.toptal.com/developers/gitignore/api/wordpress
