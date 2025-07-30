@@ -33,3 +33,83 @@ Template: astra
 .ast-theme-dark #darkModeToggle:hover {
     background-color: rgba(255, 255, 255, 0.1); /* Subtle light hover on dark */
 }
+
+.sidebar-upsell-products {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    font-family: inherit;
+}
+
+.sidebar-upsell-products h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.bundle-product {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.bundle-product:last-child {
+    border-bottom: none;
+}
+
+.bundle-product h4 {
+    font-size: 16px;
+    margin: 10px 0 5px;
+}
+
+.bundle-product .price {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.bundle-product select,
+.bundle-product input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.bundle-product .product-subtotal {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+#bundle-total {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    color: #222;
+}
+
+#add-bundle-to-cart {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 20px;
+    background-color: #007c5b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#add-bundle-to-cart:hover {
+    background-color: #005f44;
+}
+
+#bundle-result {
+    font-size: 14px;
+    margin-top: 15px;
+}
