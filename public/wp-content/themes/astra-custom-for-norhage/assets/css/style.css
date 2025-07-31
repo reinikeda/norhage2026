@@ -2,8 +2,194 @@ body {
   background-color: #f4f4f4;
 }
 
+/* Short description as second title */
 .secondary-title {
   font-size: 13px;
   color: #666;
   margin-top: 4px;
+}
+
+/* Product customisation part */
+
+/* Container spacing */
+.nrh-variation-swatches.nrh-swatches-pa_colour {
+  display: flex;
+  gap: 0.5em;
+  margin: 0.5em 0 1em;
+  align-items: center;
+}
+
+/* Base swatch style */
+.nrh-swatches-pa_colour .nrh-swatch-color {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  padding: 0;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hover state */
+.nrh-swatches-pa_colour .nrh-swatch-color:hover {
+  border-color: #007c5a;
+}
+
+/* Selected state */
+.nrh-swatches-pa_colour .nrh-swatch-color.selected {
+  border-color: #007c5a !important;
+  box-shadow: 0 0 0 3px rgba(0,124,90,0.4);
+}
+
+/* For accessibility: focus styles */
+.nrh-swatches-pa_colour .nrh-swatch-color:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,124,90,0.6);
+}
+
+/* Make each colour swatch position: relative so its ::after can position itself */
+.nrh-swatches-pa_colour .nrh-swatch-color {
+  position: relative;
+}
+
+/* The tooltip text, hidden by default */
+.nrh-swatches-pa_colour .nrh-swatch-color::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 100%;                 /* place it just above the bubble */
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.4em);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  white-space: nowrap;
+  font-size: 0.75em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* On hover, fade it in */
+.nrh-swatches-pa_colour .nrh-swatch-color:hover::after {
+  opacity: 1;
+}
+
+/* Container around width/length swatches */
+.nrh-swatches-pa_width,
+.nrh-swatches-pa_length {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0.5em 0 1em;
+}
+
+/* Base text-swatch button style */
+.nrh-swatch-text {
+  background: #f0faf6;              /* very light mint/green tint */
+  border: 1px solid #cde8e1;        /* pale border in your palette */
+  color: #007c5a;                   /* primary theme green */
+  padding: 0.4em 0.8em;
+  border-radius: 0.25em;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* Hover state */
+.nrh-swatch-text:hover {
+  background: #e0f4ed;              /* a touch darker on hover */
+  border-color: #99d6c1;
+}
+
+/* Selected state */
+.nrh-swatch-text.selected {
+  background: #007c5a;              /* solid theme green */
+  color: #fff;                      /* white text when selected */
+  border-color: #00593f;            /* darker green border */
+  box-shadow: 0 2px 6px rgba(0, 124, 90, 0.3);
+}
+
+/* Focus (keyboard) state for accessibility */
+.nrh-swatch-text:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,124,90,0.4);
+}
+
+/* Hide all native variation dropdowns, but keep them in the DOM for accessibility */
+.variations_form .variations .value select {
+  position: absolute !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  pointer-events: none;
+}
+
+/* Container */
+#nc-complete-set {
+  margin-top: 2em;
+  border: 1px solid #ddd;
+  padding: 1em;
+  background: #fafafa;
+}
+
+/* Heading */
+#nc-complete-set h3 {
+  margin-bottom: 1em;
+  font-size: 1.4em;
+}
+
+/* Grid rows */
+.bundle-row {
+  display: grid;
+  grid-template-columns: 80px 2fr 2fr 80px 80px;
+  gap: 1em;
+  align-items: center;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Header row style */
+.bundle-header {
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 0.5em;
+}
+
+/* Image column */
+.col-image img {
+  max-width: 80px;
+  height: auto;
+}
+
+/* Inputs */
+.col-options select,
+.col-qty input {
+  width: 100%;
+}
+
+/* Footer */
+.bundle-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1em;
+}
+
+/* Total text */
+#bundle-total {
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+/* Button */
+#add-bundle-to-cart {
+  background: #007c5a;
+  color: #fff;
+  border: none;
+  padding: 0.7em 1.5em;
+  cursor: pointer;
 }

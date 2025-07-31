@@ -1,98 +1,115 @@
-jQuery(document).ready(function ($) {
-    function getPriceFromText(html) {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        const text = tmp.textContent || tmp.innerText || "";
-        const match = text.replace(',', '.').match(/[\d\.]+/);
-        return match ? parseFloat(match[0]) : 0;
+jQuery(function($){
+  // localized via wp_localize_script
+  const ajaxUrl       = bundle_ajax.ajax_url;
+  const cartUrl       = bundle_ajax.cart_url;
+  const $totalEl      = $('#bundle-total-amount');
+  const $addAllBtn    = $('#add-bundle-to-cart');
+  const $variationForm= $('form.variations_form');
+  const $mainQty      = $('form.cart .quantity input.qty');
+
+  // — Helpers
+  function parsePrice(str) {
+    if (!str) return 0;
+    let s = str
+      .replace(/[^\d\.,]/g, '')                // strip letters & currency
+      .replace(/\.(?=\d{3}(?:\D|$))/g, '')     // remove thousand-sep dots
+      .replace(/,/g, '.');                     // comma to decimal point
+    return parseFloat(s) || 0;
+  }
+  function formatPrice(n) {
+    return '€' + n.toFixed(2);
+  }
+
+  // — 1) Main line total (use exactly what Woo prints)
+  function getMainLineTotal() {
+    let $amt = $variationForm
+      .find('.single_variation_wrap .woocommerce-variation-price .amount')
+      .first();
+    if (!$amt.length) {
+      $amt = $('.summary .price .amount').first();
     }
+    return parsePrice($amt.text());
+  }
 
-    function updateBundlePrices() {
-        let total = 0;
+  // — 2) Upsell line total
+  function updateUpsellLine($row) {
+    const base = parseFloat( $row.find('.bundle-price').data('base-price') ) || 0;
+    const qty  = parseInt( $row.find('.bundle-qty').val(), 10 ) || 0;
+    $row.find('.bundle-price').text( formatPrice(base * qty) );
+  }
 
-        $('.bundle-product').each(function () {
-            const $product = $(this);
-            const qty = parseInt($product.find('.bundle-qty').val(), 10) || 0;
-            let price = 0;
+  // — 3) Grand total
+  function updateGrandTotal() {
+    let total = getMainLineTotal();
+    $('.bundle-row[data-product-id]').each(function(){
+      updateUpsellLine($(this));
+      total += parsePrice( $(this).find('.bundle-price').text() );
+    });
+    $totalEl.text( formatPrice(total) );
+  }
 
-            const basePriceHtml = $product.find('.price').html();
-            if (basePriceHtml) price = getPriceFromText(basePriceHtml);
-
-            const subtotal = qty * price;
-            total += subtotal;
-
-            $product.find('.product-subtotal').remove();
-            if (qty > 0 && price > 0) {
-                $product.append('<div class="product-subtotal">Subtotal: ' + subtotal.toFixed(2) + ' €</div>');
-            }
-        });
-
-        $('#bundle-total').remove();
-        if (total > 0) {
-            $('#bundle-products').after('<div id="bundle-total"><strong>Total:</strong> ' + total.toFixed(2) + ' €</div>');
-        }
+  // — 4) Fetch upsell variation price
+  function fetchVariationPrice($row) {
+    const pid   = $row.data('product-id');
+    const attrs = {};
+    $row.find('.bundle-variation').each(function(){
+      const m = this.name.match(/\[([^]]+)\]/);
+      if (m && this.value) {
+        attrs['attribute_' + m[1]] = this.value;
+      }
+    });
+    if ($.isEmptyObject(attrs)) {
+      return $.Deferred().resolve().promise();
     }
-
-    $('#bundle-products').on('change', '.bundle-qty, select', function () {
-        updateBundlePrices();
+    return $.post( ajaxUrl, {
+      action:       'get_variation_id_from_attributes',
+      product_id:   pid,
+      attributes:   JSON.stringify(attrs)
+    }).done(function(json){
+      if (json.success && json.data.price != null) {
+        $row.find('.bundle-price').data('base-price', json.data.price);
+      }
     });
+  }
 
-    $('#add-bundle-to-cart').click(function () {
-        const products = [];
+  // — 5) Bind events
+  $variationForm.on('found_variation show_variation', function(){
+    setTimeout(updateGrandTotal, 10);
+  });
+  $mainQty.on('input change', updateGrandTotal);
+  $(document).on('change', '.bundle-variation', function(){
+    const $r = $(this).closest('.bundle-row');
+    fetchVariationPrice($r).done(updateGrandTotal);
+  });
+  $(document).on('input change', '.bundle-qty', updateGrandTotal);
 
-        $('.bundle-product').each(function () {
-            const $product = $(this);
-            const quantity = parseInt($product.find('.bundle-qty').val(), 10) || 0;
-            if (quantity <= 0) return;
+  // initial
+  updateGrandTotal();
 
-            const productId = parseInt($product.data('product-id'));
-            const productType = $product.data('product-type');
-            const attributes = {};
-
-            $product.find('select').each(function () {
-                const name = $(this).attr('name');
-                const value = $(this).val();
-                if (value) attributes[name.replace('attribute_', '')] = value;
-            });
-
-            products.push({
-                product_id: productId,
-                quantity: quantity,
-                attributes: attributes,
-            });
-        });
-
-        if (products.length === 0) {
-            $('#bundle-result').html('<div style="color:red;">Please select at least one product.</div>');
-            return;
-        }
-
-        $('#bundle-result').html('Adding...');
-
-        let completed = 0;
-        let errors = [];
-
-        products.forEach(product => {
-            fetch(bundle_ajax.ajax_url + '?action=bundle_add_to_cart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(product),
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) errors.push(data.data);
-                completed++;
-                if (completed === products.length) {
-                    if (errors.length) {
-                        $('#bundle-result').html('<div style="color:red;">' + errors.join('<br>') + '</div>');
-                    } else {
-                        $('#bundle-result').html('<div style="color:green;">All products added to cart!</div>');
-                    }
-                }
-            });
-        });
-    });
-
-    // Initial load
-    updateBundlePrices();
+  // — 6) Add all to cart
+  $addAllBtn.on('click', function(){
+    // main product
+    const mainData = $('form.cart').serialize();
+    $.post( ajaxUrl + '?wc-ajax=add_to_cart', mainData )
+     .always(function(){
+       // upsells in sequence
+       let seq = $.Deferred().resolve().promise();
+       $('.bundle-row[data-product-id]').each(function(){
+         const $r  = $(this);
+         const qty = parseInt($r.find('.bundle-qty').val(),10) || 0;
+         if (!qty) return;
+         const vid = $r.find('.selected-variation-id').val();
+         const data = {
+           product_id: vid || $r.data('product-id'),
+           quantity:   qty
+         };
+         seq = seq.then(function(){
+           return $.post( ajaxUrl + '?wc-ajax=add_to_cart', data );
+         });
+       });
+       seq.then(function(){
+         window.location = cartUrl;
+       });
+     });
+  });
 });
