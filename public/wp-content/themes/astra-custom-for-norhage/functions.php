@@ -152,3 +152,36 @@ require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 
 // Front-end product customizations (swatches, bundles, etc)
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
+
+// Show blog category links (including "All") with active highlighting
+function norhage_blog_category_nav() {
+    if (is_home() || is_category()) {
+        $current_cat_id = get_queried_object_id();
+
+        echo '<div class="blog-category-nav">';
+        echo '<ul>';
+
+        // "All" link
+        $all_class = is_home() ? 'active' : '';
+        echo '<li><a class="' . $all_class . '" href="' . esc_url(get_permalink(get_option('page_for_posts'))) . '">All</a></li>';
+
+        // Get all categories (including subcategories)
+        $categories = get_categories(array(
+            'orderby' => 'name',
+            'hide_empty' => true,
+        ));
+
+        foreach ($categories as $category) {
+            $active = ($current_cat_id === $category->term_id) ? 'active' : '';
+            echo '<li><a class="' . $active . '" href="' . esc_url(get_category_link($category->term_id)) . '">' . esc_html($category->name) . '</a></li>';
+        }
+
+        echo '</ul>';
+        echo '</div>';
+    }
+}
+add_action('astra_primary_content_top', 'norhage_blog_category_nav');
+
+// Remove the default archive title markup from Astra
+add_filter('astra_the_title_enabled', '__return_false');
+
