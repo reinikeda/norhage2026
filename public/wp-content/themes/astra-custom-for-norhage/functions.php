@@ -55,6 +55,90 @@ function child_enqueue_dark_mode_assets() {
 }
 add_action('wp_enqueue_scripts', 'child_enqueue_dark_mode_assets');
 
+// Remove all default Astra header actions
+add_action('init', function () {
+    remove_all_actions('astra_header');
+});
+
+// Register your custom header AFTER Astra is cleared
+add_action('wp', function () {
+    add_action('astra_header', 'custom_norhage_header');
+});
+
+function custom_norhage_header() {
+    ?>
+    <div class="custom-header-wrapper">
+        <!-- Top Header -->
+        <div class="custom-header-top">
+            <div class="custom-logo">
+                <a href="<?php echo esc_url(home_url('/')); ?>">
+                    <?php bloginfo('name'); ?>
+                </a>
+            </div>
+            <div class="custom-header-right">
+                <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">
+                    <?php esc_html_e('Sign in / My Account', 'your-textdomain'); ?>
+                </a>
+                <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-icon">
+                    🛒 <span class="cart-count">
+                        <?php echo WC()->cart ? WC()->cart->get_cart_contents_count() : '0'; ?>
+                    </span>
+                </a>
+                <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            </div>
+        </div>
+
+		<!-- Bottom Header -->
+        <div class="custom-header-bottom">
+            <div class="menu-search">
+                <div class="nrh-live-search">
+                    <form method="get" class="header-search" action="<?php echo esc_url(home_url('/')); ?>">
+                        <input type="search" id="nrh-search-input" name="s" placeholder="Search products…" autocomplete="off" />
+                        <input type="hidden" name="post_type" value="product" />
+                        <button type="submit" class="search-button">🔍</button>
+                    </form>
+                    <ul id="nrh-search-results" class="nrh-live-search-results"></ul>
+                </div>
+                <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+            </div>
+            <ul class="custom-menu">
+              <?php
+              wp_nav_menu(array(
+                  'theme_location' => 'primary',
+                  'container'      => false,
+                  'items_wrap'     => '%3$s',
+                  'fallback_cb'    => false
+              ));
+              ?>
+            </ul>
+        </div>
+    </div>
+	
+    <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      const themeToggle = document.getElementById("theme-toggle");
+      const menuToggle  = document.querySelector(".menu-toggle");
+      const menu        = document.querySelector(".custom-menu");
+
+      // Dark mode
+      themeToggle?.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+      });
+
+      // Hamburger toggle
+      menuToggle?.addEventListener("click", () => {
+        const isOpen = menu.classList.toggle("active");
+        menuToggle.setAttribute("aria-expanded", isOpen);
+      });
+    });
+    </script>
+    <?php
+}
+
+// Search bar
+require_once get_stylesheet_directory() . '/inc/search.php';
+
 //Short description display next to product name in catalog
 add_action('woocommerce_shop_loop_item_title', 'add_secondary_product_line', 11);
 
@@ -63,8 +147,8 @@ function add_secondary_product_line() {
     echo '<div class="secondary-title">' . $product->get_short_description() . '</div>';
 }
 
-// 1) Admin-only metaboxes (Downloads & Video)
+// Metaboxes (Downloads & Video)
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 
-// 2) Front-end product customizations (swatches, bundles, etc)
+// Front-end product customizations (swatches, bundles, etc)
 require_once get_stylesheet_directory() . '/inc/product-customize.php';

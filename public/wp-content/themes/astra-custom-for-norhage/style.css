@@ -34,6 +34,294 @@ Template: astra
     background-color: rgba(255, 255, 255, 0.1); /* Subtle light hover on dark */
 }
 
+
+/* === Global Wrapper === */
+.custom-header-wrapper {
+    width: 100%;
+    font-family: inherit;
+}
+
+/* === Top Header === */
+.custom-header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #d2f5d2;
+    position: relative;
+}
+
+/* === Logo Centered === */
+.custom-logo {
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.custom-logo a {
+    text-decoration: none;
+    color: #000;
+}
+
+/* === Right Section (Account, Cart, Theme Toggle) === */
+.custom-header-right {
+    position: absolute;
+    right: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.custom-header-right a {
+    color: #000;
+    text-decoration: none;
+}
+
+.cart-icon {
+    position: relative;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.cart-count {
+    background: #7dc383; /* green tone */
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 2px 7px;
+    font-size: 12px;
+    position: absolute;
+    top: -10px;
+    right: -14px;
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 6px;
+    color: #000;
+    line-height: 1;
+}
+
+/* === Top Header === */
+.custom-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 30px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.custom-logo a {
+  font-weight: 700;
+  font-size: 24px;
+  color: #000;
+  text-decoration: none;
+}
+.custom-header-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* === Bottom Header Container === */
+.custom-header-bottom {
+  background-color: #0c0c0c;
+  display: flex;
+  justify-content: center;   /* center the menu UL */
+  align-items: center;       /* vertical centering */
+  position: relative;
+  min-height: 60px;          /* ensure enough room for search */
+  padding: 0 30px;
+}
+
+/* === Desktop Menu (centered) === */
+.custom-menu {
+  display: flex;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.custom-menu li a {
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+/* === Search + Toggle Container === */
+.menu-search {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;       /* vertical center */
+  gap: 10px;
+}
+
+/* === Search Form === */
+.header-search {
+  display: flex;
+  align-items: stretch;      /* let button fill full height */
+  border: 1px solid #d2f5d2;
+  border-radius: 3px;
+  background: #fff;
+  height: 40px;              /* fixed input/button height */
+  overflow: visible;
+}
+.header-search input[type="search"] {
+  flex: 1;
+  border: none;
+  padding: 0 10px;
+  font-size: 14px;
+  background: transparent;
+  border-radius: 3px 0 0 3px;
+}
+.search-button {
+  flex-shrink: 0;
+  width: 40px;               /* square button */
+  background: #1B9C85;
+  color: #000;
+  border: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ─── Force the icon inside .search-button to show ─── */
+.search-button img.emoji {
+  display: inline-block !important;
+  width: 1em !important;    /* same as font-size:18px */
+  height: 1em !important;
+  max-width: none !important;
+}
+
+/* === Live Search Results === */
+.nrh-live-search {
+  position: relative;
+  width: 240px;              /* match input width */
+  max-width: 100%;
+}
+.nrh-live-search-results {
+  position: absolute;
+  top: calc(100% + 4px);     /* a little gap below the input */
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d2f5d2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 2000;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 0 0 4px 4px;
+}
+.nrh-live-search-results li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+.nrh-live-search-results li:last-child {
+  border-bottom: none;
+}
+
+/* === Hamburger (desktop hidden) === */
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* also strip it on focus/active states */
+.menu-toggle:focus,
+.menu-toggle:active {
+  background: transparent !important;
+  outline: none;                       /* remove default focus outline */
+}
+
+/* === Mobile Styles (≤768px) === */
+@media (max-width: 768px) {
+  .custom-header-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 20px;
+    min-height: auto;
+  }
+
+  /* Row with search + hamburger */
+  .menu-search {
+    position: relative;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 0 10px;
+  }
+  .nrh-live-search {
+    margin-left: 20px;
+  }
+  .header-search {
+    flex: 1;
+    height: 40px;
+  }
+  .search-button {
+    height: 100%;
+  }
+  .menu-toggle {
+    display: block;
+  }
+
+  /* Hide menu, show on .active */
+  .custom-menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    background: #0c0c0c;
+  }
+  .custom-menu.active {
+    display: flex;
+  }
+}
+
+
+
+
+/* === Optional Dark Mode Styling === */
+body.dark-mode {
+    background: #111;
+    color: #fff;
+}
+
+body.dark-mode a {
+    color: #7dc383;
+}
+
+body.dark-mode .custom-header-bottom {
+    background-color: #1c1c1c;
+}
+
+
+
+
+/* === Upsell === */
+
 .sidebar-upsell-products {
     padding: 20px;
     background: #fff;
@@ -97,7 +385,7 @@ Template: astra
     padding: 12px;
     font-size: 16px;
     margin-top: 20px;
-    background-color: #007c5b;
+    background-color: #1B9C85;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -113,3 +401,4 @@ Template: astra
     font-size: 14px;
     margin-top: 15px;
 }
+
