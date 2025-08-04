@@ -45,3 +45,11 @@ body.dark-mode .wc-block-product-filter-checkbox-list__text {
   color: #E0E0E0;
 }
 
+/* Image box-shadow */
+body.dark-mode .woocommerce-product-gallery__image img,
+body.dark-mode .woocommerce ul.products li.product img {
+  background-color: #1a1a1a;
+  padding: 4px;
+  border: 1px solid #5C8374;
+  border-radius: 4px;
+}

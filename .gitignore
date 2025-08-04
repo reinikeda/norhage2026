@@ -32,12 +32,16 @@
 # Example plugin
 /public/wp-content/plugins/
 /public/wp-content/plugins/hello.php
+!/public/wp-content/plugins/running-ticker-line/*
 
 # Uploads
 /public/wp-content/uploads/
 
 # Log files
 *.log
+
+# database
+sql/*
 
 # htaccess
 .htaccess

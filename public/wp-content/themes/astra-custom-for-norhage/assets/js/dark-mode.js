@@ -1,34 +1,41 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const toggleButton = document.createElement("button");
-  toggleButton.id = "darkModeToggle";
-  toggleButton.ariaLabel = "Toggle dark mode";
-  toggleButton.style.background = "none";
-  toggleButton.style.border = "none";
-  toggleButton.style.fontSize = "1.5rem";
-  toggleButton.style.cursor = "pointer";
-  toggleButton.style.marginLeft = "1rem";
-  toggleButton.textContent = "🌙";
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("theme-toggle");
+  if (!container || typeof lottie === "undefined") return;
 
-  const nav = document.querySelector(".main-navigation");
-  if (nav) nav.appendChild(toggleButton);
+  // 1. Decide on JSON path
+  const path = (
+    window.NorhageToggleConfig?.lottiePath ||
+    container.dataset.lottiePath
+  );
+  if (!path) return; // nothing to load
 
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const body = document.body;
+  const key  = "norhage-dark-mode";
 
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.body.classList.add("dark-mode");
-    document.body.classList.remove("light-mode");
-    toggleButton.textContent = "☀️";
-  } else {
-    document.body.classList.add("light-mode");
-    document.body.classList.remove("dark-mode");
-    toggleButton.textContent = "🌙";
-  }
+  // 2. Load animation
+  const anim = lottie.loadAnimation({
+    container,
+    renderer:  "svg",
+    loop:      false,
+    autoplay:  false,
+    path
+  });
 
-  toggleButton.addEventListener("click", function () {
-    const isDark = document.body.classList.toggle("dark-mode");
-    document.body.classList.toggle("light-mode", !isDark);
-    toggleButton.textContent = isDark ? "☀️" : "🌙";
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+  // 3. Define segments
+  const toDark  = [0, 30];
+  const toLight = [30, 60];
+
+  // 4. On load: restore theme + frame
+  const isDark = localStorage.getItem(key) === "enabled";
+  body.classList.toggle("dark-mode", isDark);
+  anim.goToAndStop(isDark ? toLight[1] : toDark[0], true);
+
+  // 5. On click: toggle + play + persist
+  container.addEventListener("click", () => {
+    const nowDark = body.classList.toggle("dark-mode");
+    localStorage.setItem(key, nowDark ? "enabled" : "disabled");
+
+    if (nowDark)      anim.playSegments(toDark,  true);
+    else              anim.playSegments(toLight, true);
   });
 });

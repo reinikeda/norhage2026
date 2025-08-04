@@ -8,52 +8,101 @@
 
 define( 'CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION', '1.0.0' );
 
-function child_enqueue_styles() {
-	// Inherit Astra parent styles
-	wp_enqueue_style(
-		'astra-custom-for-norhage-theme-css',
-		get_stylesheet_directory_uri() . '/style.css',
-		array( 'astra-theme-css' ),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
-	);
-
-	// Your custom CSS
-	wp_enqueue_style(
-		'norhage-custom-style',
-		get_stylesheet_directory_uri() . '/assets/css/style.css',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
-	);
-
-	// Your custom JS
-	wp_enqueue_script(
-		'norhage-custom-js',
-		get_stylesheet_directory_uri() . '/assets/js/script.js',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
-		true
-	);
+/**
+ * Register Primary & Secondary Menu Locations
+ */
+function norhage_register_menus() {
+    register_nav_menus( array(
+        'primary'   => __( 'Primary Menu',   'your-textdomain' ),
+        'secondary' => __( 'Secondary Menu', 'your-textdomain' ),
+    ) );
 }
-add_action( 'wp_enqueue_scripts', 'child_enqueue_styles', 15 );
+add_action( 'after_setup_theme', 'norhage_register_menus' );
 
-//Enqueues custom dark mode CSS and JS files
-function child_enqueue_dark_mode_assets() {
-    wp_enqueue_style(
-        'dark-mode-css',
-        get_stylesheet_directory_uri() . '/assets/css/dark-mode.css',
-        array(),
-        null
+// Created services post type
+function register_services_post_type() {
+    $labels = array(
+        'name'               => 'Services',
+        'singular_name'      => 'Service',
+        'menu_name'          => 'Services',
+        'name_admin_bar'     => 'Service',
+        'add_new'            => 'Add New',
+        'add_new_item'       => 'Add New Service',
+        'new_item'           => 'New Service',
+        'edit_item'          => 'Edit Service',
+        'view_item'          => 'View Service',
+        'all_items'          => 'All Services',
+        'search_items'       => 'Search Services',
+        'not_found'          => 'No services found.',
+        'not_found_in_trash' => 'No services found in Trash.',
     );
 
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'services'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'excerpt'),
+        'show_in_rest'       => true, // Enables Gutenberg
+        'menu_position'      => 5,
+        'menu_icon'          => 'dashicons-admin-tools',
+    );
+
+    register_post_type('service', $args);
+}
+add_action('init', 'register_services_post_type');
+
+function norhage_enqueue_assets() {
+    // Parent + custom styles
+    wp_enqueue_style(
+        'astra-custom-for-norhage-theme-css',
+        get_stylesheet_directory_uri() . '/style.css',
+        array('astra-theme-css'),
+        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+    );
+    wp_enqueue_style(
+        'norhage-custom-style',
+        get_stylesheet_directory_uri() . '/assets/css/style.css',
+        array(),
+        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+    );
+
+    // Dark-mode stylesheet
+    wp_enqueue_style(
+        'norhage-dark-mode-css',
+        get_stylesheet_directory_uri() . '/assets/css/dark-mode.css',
+        array(),
+        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+    );
+
+    // Custom JS (your site-wide script)
     wp_enqueue_script(
-        'dark-mode-toggle-js',
-        get_stylesheet_directory_uri() . '/assets/js/dark-mode.js',
+        'norhage-custom-js',
+        get_stylesheet_directory_uri() . '/assets/js/script.js',
+        array(),
+        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+        true
+    );
+
+    // Lottie runtime (needed by the toggle)
+    wp_enqueue_script(
+        'lottie-web',
+        'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js',
         array(),
         null,
         true
     );
+
+    // Dark-mode toggle logic (depends on Lottie)
+    wp_enqueue_script(
+        'norhage-dark-mode-js',
+        get_stylesheet_directory_uri() . '/assets/js/dark-mode.js',
+        array('lottie-web'),
+        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+        true
+    );
 }
-add_action('wp_enqueue_scripts', 'child_enqueue_dark_mode_assets');
+add_action('wp_enqueue_scripts', 'norhage_enqueue_assets', 15);
 
 // Remove all default Astra header actions
 add_action('init', function () {
@@ -68,11 +117,34 @@ add_action('wp', function () {
 function custom_norhage_header() {
     ?>
     <div class="custom-header-wrapper">
+        <!-- Secondary Header -->
+        <div class="custom-header-secondary">
+            <nav class="secondary-menu">
+                <?php
+                wp_nav_menu( array(
+                    'theme_location' => 'secondary',
+                    'container'      => false,
+                    'menu_class'     => 'secondary-menu-list',
+                    'fallback_cb'    => false,
+                    'menu'           => 'Info Menu',
+                ) );
+                ?>
+            </nav>
+            <div class="secondary-contact">
+                <a href="tel:+4917665106609">📞 +49 176 65 10 6609</a>
+                <a href="<?php echo esc_url(home_url('frequently-asked-questions-faq/')); ?>">FAQ</a>
+            </div>
+        </div>
+
         <!-- Top Header -->
         <div class="custom-header-top">
             <div class="custom-logo">
                 <a href="<?php echo esc_url(home_url('/')); ?>">
-                    <?php bloginfo('name'); ?>
+                    <img 
+                    src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/logo.png' ); ?>" 
+                    alt="<?php echo esc_attr( get_bloginfo('name') ); ?>" 
+                    class="site-logo"
+                    />
                 </a>
             </div>
             <div class="custom-header-right">
@@ -84,7 +156,10 @@ function custom_norhage_header() {
                         <?php echo WC()->cart ? WC()->cart->get_cart_contents_count() : '0'; ?>
                     </span>
                 </a>
-                <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+                <div id="theme-toggle"
+                    class="theme-toggle"
+                    data-lottie-path="<?php echo esc_attr( get_stylesheet_directory_uri() . '/assets/lottie/dark-mode-toggle.json' ); ?>">
+                </div>
             </div>
         </div>
 
@@ -112,19 +187,19 @@ function custom_norhage_header() {
               ?>
             </ul>
         </div>
+
+        <!-- Ticker Line Output -->
+        <?php
+        if (function_exists('rtl_display_ticker')) {
+            rtl_display_ticker();
+        }
+        ?>
     </div>
 	
     <script>
     document.addEventListener("DOMContentLoaded", function(){
-      const themeToggle = document.getElementById("theme-toggle");
       const menuToggle  = document.querySelector(".menu-toggle");
       const menu        = document.querySelector(".custom-menu");
-
-      // Dark mode
-      themeToggle?.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-        themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
-      });
 
       // Hamburger toggle
       menuToggle?.addEventListener("click", () => {
