@@ -430,3 +430,45 @@ body {
 .subcategory-item a:hover img {
   transform: scale(1.05);
 }
+
+/* Sidebar category listing */
+
+/* Remove default WooCommerce triangle */
+.wc-block-product-categories-list-item::before {
+    display: none !important;
+}
+
+/* Green triangle icon */
+.category-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+/* Triangle animation */
+.toggle-triangle {
+    transition: transform 0.2s ease;
+}
+
+.toggle-triangle.rotated {
+    transform: rotate(90deg);
+}
+
+/* Subcategory list styling */
+.wc-block-product-categories-list .wc-block-product-categories-list {
+    margin-top: 6px;
+    padding-left: 16px;
+    border-left: 1px solid #ddd;
+}
+
+/* "All {Category}" link styling */
+.wc-block-product-categories-list .wc-block-product-categories-list-item:first-child a {
+    font-weight: bold;
+}
+
+/* Current category highlight */
+.wc-block-product-categories-list-item.current-category > a > .wc-block-product-categories-list-item__name {
+    font-weight: bold;
+    color: #2EC9AD;
+}

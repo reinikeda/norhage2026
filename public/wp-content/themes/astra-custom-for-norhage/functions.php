@@ -228,7 +228,7 @@ function show_subcategories_grid() {
 
     if (!empty($subcategories)) {
         echo '<div class="subcategory-grid">';
-        echo '<h2 class="subcategory-title">Shop by subcategory</h2>';
+        echo '<h2 class="subcategory-title">Shop by Category</h2>';
         echo '<div class="subcategory-items">';
 
         foreach ($subcategories as $subcategory) {
@@ -402,3 +402,22 @@ add_action('astra_primary_content_top', 'norhage_blog_category_nav');
 // Remove the default archive title markup from Astra
 add_filter('astra_the_title_enabled', '__return_false');
 
+// enqueue category toggle
+function astra_child_enqueue_scripts() {
+    wp_enqueue_script(
+        'category-toggle',
+        get_stylesheet_directory_uri() . '/assets/js/category-toggle.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'astra_child_enqueue_scripts');
+
+// remove uncategorized from category list
+add_filter('woocommerce_product_categories_widget_args', 'hide_uncategorized_category');
+function hide_uncategorized_category($args) {
+    $uncategorized_id = get_option('default_product_cat');
+    $args['exclude'] = array($uncategorized_id);
+    return $args;
+}
