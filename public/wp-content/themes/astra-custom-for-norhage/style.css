@@ -383,3 +383,50 @@ body {
     background-color: #005f44;
     color: #fff;
 }
+
+/* Sale slider */
+.sale-slider-container {
+  margin-bottom: 30px; /* adjust spacing as needed */
+}
+
+/* Subcategory listing */
+.subcategory-grid {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.subcategory-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.subcategory-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.subcategory-item {
+  width: 120px;
+  text-align: center;
+}
+
+.subcategory-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  transition: transform 0.3s;
+}
+
+.subcategory-item span {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.subcategory-item a:hover img {
+  transform: scale(1.05);
+}

@@ -105,6 +105,147 @@ function norhage_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'norhage_enqueue_assets', 15);
 
+// register sale slider
+add_action('admin_menu', 'sale_slider_menu');
+function sale_slider_menu() {
+    add_menu_page(
+        'Sale Slider',
+        'Sale Slider',
+        'manage_options',
+        'sale-slider',
+        'sale_slider_settings_page',
+        'dashicons-images-alt2',
+        20
+    );
+}
+
+function sale_slider_settings_page() {
+    if (isset($_POST['save_sale_slider'])) {
+        update_option('sale_slider_data', $_POST['sale_slider_data']);
+        echo '<div class="updated"><p>Slider saved!</p></div>';
+    }
+
+    $slides = get_option('sale_slider_data', []);
+    ?>
+    <div class="wrap">
+        <h1>Sale Slider</h1>
+        <form method="post">
+            <table class="form-table">
+                <tbody>
+                <?php for ($i = 0; $i < 5; $i++):
+                    $slide = $slides[$i] ?? ['image' => '', 'url' => '', 'start' => '', 'end' => ''];
+                ?>
+                    <tr>
+                        <th colspan="2"><h2>Slide <?php echo $i + 1; ?></h2></th>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%;">
+                            <label>Image URL</label><br>
+                            <input type="text" name="sale_slider_data[<?php echo $i; ?>][image]" value="<?php echo esc_attr($slide['image']); ?>" style="width:100%;">
+                            <br><small><a href="<?php echo admin_url('media-new.php'); ?>" target="_blank">Upload image</a></small>
+                        </td>
+                        <td>
+                            <label>Link URL</label><br>
+                            <input type="url" name="sale_slider_data[<?php echo $i; ?>][url]" value="<?php echo esc_attr($slide['url']); ?>" style="width:100%;"><br>
+                            <label>Start Date</label><br>
+                            <input type="date" name="sale_slider_data[<?php echo $i; ?>][start]" value="<?php echo esc_attr($slide['start']); ?>"><br>
+                            <label>End Date</label><br>
+                            <input type="date" name="sale_slider_data[<?php echo $i; ?>][end]" value="<?php echo esc_attr($slide['end']); ?>">
+                        </td>
+                    </tr>
+                <?php endfor; ?>
+                </tbody>
+            </table>
+            <p><input type="submit" name="save_sale_slider" class="button button-primary" value="Save Slider"></p>
+        </form>
+    </div>
+    <?php
+}
+
+// display slider on category page
+add_action('woocommerce_before_shop_loop', 'show_global_sale_slider', 5);
+function show_global_sale_slider() {
+    if (!is_product_category()) return;
+
+    $slides = get_option('sale_slider_data', []);
+    $today = date('Y-m-d');
+
+    // Filter slides by active date
+    $active_slides = array_filter($slides, function($slide) use ($today) {
+        return !empty($slide['image']) &&
+               $today >= $slide['start'] &&
+               $today <= $slide['end'];
+    });
+
+    if (empty($active_slides)) return;
+
+    echo '<div class="sale-slider-container swiper"><div class="swiper-wrapper">';
+    foreach ($active_slides as $slide) {
+        echo '<div class="swiper-slide">';
+        echo '<a href="' . esc_url($slide['url']) . '">';
+        echo '<img src="' . esc_url($slide['image']) . '" alt="" />';
+        echo '</a></div>';
+    }
+    echo '</div><div class="swiper-pagination"></div></div>';
+}
+
+
+// enqueue swiper
+add_action('wp_enqueue_scripts', 'enqueue_sale_slider_assets');
+function enqueue_sale_slider_assets() {
+    if (!is_product_category()) return;
+
+    wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css');
+    wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], null, true);
+    wp_add_inline_script('swiper-js', '
+        document.addEventListener("DOMContentLoaded", function(){
+            new Swiper(".sale-slider-container", {
+                loop: true,
+                autoplay: { delay: 4000 },
+                slidesPerView: 1,
+                pagination: { el: ".swiper-pagination", clickable: true },
+                spaceBetween: 20
+            });
+        });
+    ');
+}
+
+// categories listing
+add_action('woocommerce_before_shop_loop', 'show_subcategories_grid', 10);
+function show_subcategories_grid() {
+    if (!is_product_category()) return;
+
+    $category = get_queried_object();
+
+    $args = array(
+        'taxonomy'     => 'product_cat',
+        'child_of'     => $category->term_id,
+        'hide_empty'   => false,
+        'parent'       => $category->term_id,
+    );
+
+    $subcategories = get_terms($args);
+
+    if (!empty($subcategories)) {
+        echo '<div class="subcategory-grid">';
+        echo '<h2 class="subcategory-title">Shop by subcategory</h2>';
+        echo '<div class="subcategory-items">';
+
+        foreach ($subcategories as $subcategory) {
+            $thumbnail_id = get_term_meta($subcategory->term_id, 'thumbnail_id', true);
+            $image_url = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : wc_placeholder_img_src();
+
+            echo '<div class="subcategory-item">';
+            echo '<a href="' . get_term_link($subcategory) . '">';
+            echo '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($subcategory->name) . '" />';
+            echo '<span>' . esc_html($subcategory->name) . '</span>';
+            echo '</a></div>';
+        }
+
+        echo '</div></div>';
+    }
+}
+
 // Remove all default Astra header actions
 add_action('init', function () {
     remove_all_actions('astra_header');
