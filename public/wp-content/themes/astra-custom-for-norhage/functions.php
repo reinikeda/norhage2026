@@ -60,9 +60,10 @@ function norhage_enqueue_assets() {
         array('astra-theme-css'),
         CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
     );
+    // Load product page styles
     wp_enqueue_style(
         'norhage-custom-style',
-        get_stylesheet_directory_uri() . '/assets/css/style.css',
+        get_stylesheet_directory_uri() . '/assets/css/product-page.css',
         array(),
         CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
     );

@@ -1,55 +1,157 @@
+/* === Base Dark Backgrounds === */
 body.dark-mode {
-  background-color: #040D12;
-  color: #93B1A6;
+  background-color: #0d321e;
+  color: #edecea;
 }
 
+/* === Headings === */
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
 body.dark-mode h4 {
-  color: #5C8374;
+  color: #49705b;
 }
 
-body.dark-mode .button {
-    background-color: #183D3D;
-    color: #93B1A6;
+body.dark-mode .secondary-title,
+body.dark-mode .woocommerce-product-details__short-description h2,
+body.dark-mode .related.products h2 {
+  color: #49705b;
 }
 
-body.dark-mode .secondary-title {
-    color: #B0BEC5;
+/* === Ticker Wrapper === */
+body.dark-mode #rtl-ticker-wrapper {
+  background-color: #094939;
+  border-top: 1px solid #26693e;
+  border-bottom: 1px solid #26693e;
 }
 
-body.dark-mode .ast-woo-product-category {
-  color: #9E9E9E !important;
+/* === Buttons === */
+body.dark-mode .button,
+body.dark-mode button,
+body.dark-mode input[type="submit"] {
+  background-color: #093b2f;
+  color: #edecea;
+  border: 1px solid #094939;
 }
 
-/* Dark mode styles for min/max price input fields */
-body.dark-mode .wc-block-product-filter-price-slider__left input,
-body.dark-mode .wc-block-product-filter-price-slider__right input {
-  background-color: #152b2b; /* Slightly darker than #183D3D */
-  color: #E0E0E0;
-  border: 1px solid #5C8374;
-  padding: 4px 8px;
+body.dark-mode .button:hover,
+body.dark-mode button:hover,
+body.dark-mode input[type="submit"]:hover {
+  background-color: #034434;
+}
+
+/* === Price Section & Text Highlights === */
+body.dark-mode .price,
+body.dark-mode .woocommerce-Price-amount,
+body.dark-mode .amount,
+body.dark-mode .woocommerce-product-rating {
+  color: #26693e;
+}
+
+/* === Attributes (width/length/colour selection) === */
+body.dark-mode .variations_form .label label,
+body.dark-mode .single_variation_wrap {
+  color: #618f6b;
+}
+
+/* === Quantity box & form elements === */
+body.dark-mode input.qty,
+body.dark-mode input[type="number"],
+body.dark-mode select {
+  background-color: #10251e;
+  color: #edecea;
+  border: 1px solid #094939;
   border-radius: 4px;
 }
 
-/* Checkbox visibility fix for dark mode */
-body.dark-mode input.wc-block-product-filter-checkbox-list__input[type="checkbox"] {
-  accent-color: #93B1A6;
-  background-color: #183D3D;
-  border: 1px solid #5C8374;
+/* === Buy a Complete Set Section === */
+body.dark-mode #nc-complete-set {
+  background-color: #10251e;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #094939;
+  color: #edecea;
 }
 
-/* Checkbox label text color */
+/* === Tabs (Description / Additional Info etc.) === */
+body.dark-mode .woocommerce-Tabs-panel,
+body.dark-mode .woocommerce-tabs ul.tabs li a {
+  /* background-color: #1b201c; */
+  color: #edecea;
+  border-color: #094939;
+}
+
+/* === Table (Buy a complete set) === */
+body.dark-mode table.woocommerce-cart-form,
+body.dark-mode .woocommerce table.shop_table {
+  background-color: #10251e;
+  color: #edecea;
+  border-color: #094939;
+}
+
+body.dark-mode table.shop_table th {
+  background-color: #26503c;
+  color: #edecea;
+}
+
+body.dark-mode table.shop_table td {
+  background-color: #1b201c;
+}
+
+/* === Checkbox & Filters === */
+body.dark-mode input[type="checkbox"] {
+  accent-color: #26693e;
+  background-color: #1b201c;
+  border: 1px solid #094939;
+}
+
 body.dark-mode .wc-block-product-filter-checkbox-list__text {
-  color: #E0E0E0;
+  color: #618f6b;
 }
 
-/* Image box-shadow */
+/* === Links === */
+body.dark-mode a {
+  color: #26693e;
+}
+
+body.dark-mode a:hover {
+  color: #bdcdc0;
+}
+
+/* === Product Thumbnails & Gallery === */
 body.dark-mode .woocommerce-product-gallery__image img,
 body.dark-mode .woocommerce ul.products li.product img {
-  background-color: #1a1a1a;
+  background-color: #1b201c;
   padding: 4px;
-  border: 1px solid #5C8374;
+  border: 1px solid #094939;
   border-radius: 4px;
+}
+
+/* === Footer === */
+body.dark-mode footer,
+body.dark-mode .site-footer {
+  background-color: #0f241b;
+  color: #edecea;
+}
+
+body.dark-mode .site-footer a {
+  color: #49705b;
+}
+
+body.dark-mode .site-footer a:hover {
+  color: #bdcdc0;
+}
+
+/* === Breadcrumbs === */
+body.dark-mode .woocommerce-breadcrumb {
+  color: #618f6b;
+}
+
+/* === Misc minor enhancements === */
+body.dark-mode .woocommerce-message,
+body.dark-mode .woocommerce-info,
+body.dark-mode .woocommerce-error {
+  background-color: #26503c;
+  color: #edecea;
+  border-left: 4px solid #26693e;
 }
