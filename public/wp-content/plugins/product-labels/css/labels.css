@@ -1,0 +1,146 @@
+/* === PRODUCT BADGES === */
+
+/* Base positioning */
+.woocommerce ul.products li.product,
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap,
+.woocommerce div.product .woocommerce-product-gallery {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+/* Make the single gallery the positioning context */
+.single-product .woocommerce-product-gallery { position: relative; }
+
+/* Ensure our single container sits on top of the image */
+.single-product .nhg-labels--single { position: absolute; inset: 0; pointer-events: none; }
+
+
+
+
+/* === NEW badge (minimal premium) === */
+.nhg-label--new {
+    position: absolute !important;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(125, 195, 131, 0.3); /* subtle tinted background */
+    color: #3a6e46; /* deep green for readability */
+    border: 1px solid #7dc383; /* thin border for definition */
+    padding: 0 8px; /* horizontal padding for pill shape */
+    height: 26px;
+    border-radius: 20px; /* pill shape */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 600 11px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    box-shadow: none; /* removed heavy shadow for cleaner look */
+    opacity: 0.9; /* slightly softer appearance */
+    z-index: 15;
+}
+.nhg-label--new::before { display: none; }
+
+/* new label for product page */
+.nhg-new-inline {
+    margin: .25rem 0 .5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #3a6e46;
+    letter-spacing: .4px;
+}
+
+/* mobile adjustments */
+@media (max-width: 480px) {
+    .nhg-label--new {
+        font-size: 10px;
+        height: 24px;
+        padding: 0 6px;
+    }
+}
+
+
+
+
+
+/* SALE ribbon for both category & product pages */
+.woocommerce .nhg-labels,
+.single-product .nhg-labels {
+  position: relative;
+  overflow: visible !important; /* allows triangle to stick out */
+}
+
+.woocommerce .nhg-labels .nhg-label--sale,
+.single-product .nhg-labels .nhg-label--sale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.woocommerce .nhg-labels .nhg-label--sale::before,
+.single-product .nhg-labels .nhg-label--sale::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top: 70px solid rgba(255, 0, 0, 0.5);
+  border-right: 70px solid transparent;
+  z-index: -1; /* keep text above */
+}
+
+.woocommerce .nhg-labels .nhg-label--sale::after,
+.single-product .nhg-labels .nhg-label--sale::after {
+  content: attr(data-line1) "\A" attr(data-line2);
+  white-space: pre;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  padding: 20px; /* Moves text */
+  text-align: center;
+}
+
+
+/* Mobile size adjustment */
+@media (max-width:480px){
+  .woocommerce .nhg-labels .nhg-label--sale::before,
+  .single-product .nhg-labels .nhg-label--sale::before {
+    border-top-width: 60px;
+    border-right-width: 60px;
+  }
+  .woocommerce .nhg-labels .nhg-label--sale::after,
+  .single-product .nhg-labels .nhg-label--sale::after {
+    top: 12px;
+    left: 6px;
+    font-size: 10px;
+  }
+}
+
+
+
+
+/* LOW STOCK on category page */
+
+/* Make the thumbnail an anchor */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
+  position: relative;
+  overflow: visible;
+}
+
+/* Labels wrapper overlays the image */
+.woocommerce .nhg-labels.nhg-labels--loop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
