@@ -217,7 +217,7 @@ class NHG_Product_Labels {
 
 		// Simple inline flag; style via .nhg-new-inline in your CSS if desired
 		echo '<div class="nhg-new-inline" aria-label="New product">'
-		   . esc_html__( 'New Product', 'nhg' )
+		   . esc_html__( '《 New Product 》', 'nhg' )
 		   . '</div>';
 	}
 }

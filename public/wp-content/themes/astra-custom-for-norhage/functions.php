@@ -356,12 +356,52 @@ function custom_norhage_header() {
 // Search bar
 require_once get_stylesheet_directory() . '/inc/search.php';
 
-//Short description display next to product name in catalog
-add_action('woocommerce_shop_loop_item_title', 'add_secondary_product_line', 11);
+// Secondary Product Title – admin field below the main title
+add_action('edit_form_after_title', function($post){
+    if ($post->post_type !== 'product') return;
 
-function add_secondary_product_line() {
+    $value = get_post_meta($post->ID, '_secondary_product_title', true);
+    wp_nonce_field('secondary_product_title_nonce', 'secondary_product_title_nonce');
+
+    echo '<div style="margin:12px 0;padding:10px 12px;border:1px solid #dcdcde;background:#fff;border-radius:4px;">';
+    echo '<label for="secondary_product_title" style="font-weight:600;display:block;margin-bottom:6px;">Secondary product title</label>';
+    echo '<input type="text" id="secondary_product_title" name="secondary_product_title" value="' . esc_attr($value) . '" class="widefat" />';
+    echo '</div>';
+});
+
+add_action('save_post_product', function($post_id){
+    if (!isset($_POST['secondary_product_title_nonce']) || !wp_verify_nonce($_POST['secondary_product_title_nonce'], 'secondary_product_title_nonce')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $val = isset($_POST['secondary_product_title']) ? sanitize_text_field($_POST['secondary_product_title']) : '';
+    update_post_meta($post_id, '_secondary_product_title', $val);
+});
+
+// Catalog: print subtitle directly under the product title (Astra hook)
+add_action('astra_woo_shop_title_after', function () {
+    $secondary = get_post_meta(get_the_ID(), '_secondary_product_title', true);
+    if ($secondary) {
+        echo '<h2 class="product-secondary-title">' . esc_html($secondary) . '</h2>';
+    }
+}, 10);
+
+// Single product: print subtitle right after H1 (Astra hook)
+add_action('astra_woo_single_title_after', function () {
+    $secondary = get_post_meta(get_the_ID(), '_secondary_product_title', true);
+    if ($secondary) {
+        echo '<h2 class="product-secondary-title">' . esc_html($secondary) . '</h2>';
+    }
+}, 10);
+
+function nhg_output_secondary_title_single() {
     global $product;
-    echo '<div class="secondary-title">' . $product->get_short_description() . '</div>';
+    if (!$product) return;
+
+    $secondary = get_post_meta($product->get_id(), '_secondary_product_title', true);
+    if ($secondary) {
+        echo '<h2 class="product-secondary-title">' . esc_html($secondary) . '</h2>';
+    }
 }
 
 // Metaboxes (Downloads & Video)

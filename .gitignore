@@ -33,6 +33,8 @@
 /public/wp-content/plugins/*
 !/public/wp-content/plugins/running-ticker-line/
 !/public/wp-content/plugins/running-ticker-line/**
+!/public/wp-content/plugins/product-labels/
+!/public/wp-content/plugins/product-labels/**
 
 
 # Uploads

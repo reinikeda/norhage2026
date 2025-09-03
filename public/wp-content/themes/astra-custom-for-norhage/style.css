@@ -472,3 +472,131 @@ body {
     font-weight: bold;
     color: #2EC9AD;
 }
+
+/* Kill Astra's on-image SALE badge in catalog */
+span.ast-on-card-button.ast-onsale-card { 
+  display: none !important;
+}
+
+/* Kill the corner "Add to basket / Read more" overlay icon */
+a.ast-on-card-button.ast-select-options-trigger,
+.ast-on-card-button { 
+  display: none !important;
+}
+
+/* Rewrite out of stock label position */
+.ast-shop-product-out-of-stock {
+  margin-bottom: 10px;
+}
+
+
+
+/* ==============================
+   Woo Pagination — Minimal Green
+   Matches: ‹ Prev 1 2 3 [4] 5 … 25 Next ›
+   ============================== */
+
+/* Container */
+nav.woocommerce-pagination{
+  text-align:center;
+  margin:20px 0;
+}
+
+/* --- HARD RESET just for Woo pager --- */
+nav.woocommerce-pagination ul.page-numbers{
+  all: unset;
+  display:inline-flex !important;
+  align-items:center;
+  gap:10px;                 /* small gaps like the example */
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+nav.woocommerce-pagination ul.page-numbers > li{
+  all: unset;
+  display:inline-flex;
+  margin:0;
+  padding:0;
+}
+
+/* === Woo Pagination — Minimal Green (fix colors + Prev/Next labels) === */
+
+:root{
+  --pg-text:#333;        /* default number color */
+  --pg-muted:#9aa3af;       /* dots/disabled */
+  --pg-green:#3a6e46;       /* brand green */
+  --pg-green-100:#7dc383;   /* light green hover bg */
+}
+
+/* Container + list */
+nav.woocommerce-pagination{ text-align:center; margin:20px 0; }
+nav.woocommerce-pagination ul.page-numbers{
+  display:inline-flex !important; align-items:center;
+  gap:10px; list-style:none; padding:0; margin:0;
+}
+
+/* Woo Pagination — Match Button Height */
+nav.woocommerce-pagination .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;                 /* match add-to-cart/select button height */
+  min-width: 44px;               /* square look if numbers are short */
+  padding: 0 14px;               /* same horizontal padding as buttons */
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  text-decoration: none;
+  line-height: 1;                /* ensure no extra spacing */
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+/* Active (current) page */
+nav.woocommerce-pagination .page-numbers.current {
+  background: #1aa193;           /* your green */
+  border-color: #1aa193;
+  color: #fff;
+}
+
+/* Hover */
+nav.woocommerce-pagination a.page-numbers:hover {
+  background: #e6f4f2;           /* light green hover */
+  color: #1aa193;
+  border-color: #1aa193;
+}
+
+/* Dots */
+nav.woocommerce-pagination .page-numbers.dots {
+  border: none;
+  background: transparent;
+  min-width: auto;
+  padding: 0 6px;
+  color: #9aa3af;
+}
+
+/* Prev/Next */
+nav.woocommerce-pagination .prev,
+nav.woocommerce-pagination .next {
+  color: #1aa193;
+}
+
+/* Align Prev/Next with text */
+nav.woocommerce-pagination .prev::after {
+  content: " Prev";
+  margin-left: 4px;
+}
+nav.woocommerce-pagination .next::before {
+  content: "Next ";
+  margin-right: 4px;
+}
+
+/* Secondary H2 product title */
+.product-secondary-title{
+  font-weight: 500;
+  font-size: 0.8em;
+  margin:.25rem 0 .5rem;
+  line-height:1.3;
+}
