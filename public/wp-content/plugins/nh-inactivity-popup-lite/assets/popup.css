@@ -1,0 +1,71 @@
+/* Overlay + container */
+#nh-iplite-overlay { 
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 9998;
+  /* make sure it actually receives clicks when visible */
+  pointer-events: auto;
+}
+.nh-hidden { 
+  opacity: 0; 
+  pointer-events: none;  /* overlay not clickable when hidden */
+  visibility: hidden; 
+}
+
+#nh-iplite {
+  position: fixed; inset: 0; display: grid; place-items: center; z-index: 9999;
+}
+
+/* Card */
+#nh-iplite .nh-card {
+  width: min(92vw, 680px);
+  background: #fff; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  padding: 16px; position: relative;
+}
+
+/* Close */
+#nh-iplite .nh-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #666;
+}
+
+#nh-iplite .nh-close:hover {
+  color: #000;
+}
+
+/* Layout */
+#nh-iplite .nh-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: 1fr 1.2fr;
+}
+#nh-iplite .nh-media img {
+  width: 100%; height: auto; display: block; border-radius: 12px;
+}
+#nh-iplite .nh-content h2 {
+  margin: 0 0 8px; font-size: 22px; line-height: 1.2;
+}
+#nh-iplite .nh-content p {
+  margin: 0 0 16px; color: #333;
+}
+#nh-iplite .nh-btn {
+  display: inline-block; padding: 10px 14px; border-radius: 10px;
+  background: #111; color: #fff; text-decoration: none; font-weight: 600;
+}
+
+.nh-lock { overflow: hidden !important; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  #nh-iplite .nh-card { padding: 14px; }
+  #nh-iplite .nh-grid { grid-template-columns: 1fr; }
+  #nh-iplite .nh-content h2 { font-size: 20px; }
+}
