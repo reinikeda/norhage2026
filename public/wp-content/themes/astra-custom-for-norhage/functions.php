@@ -105,6 +105,9 @@ function norhage_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'norhage_enqueue_assets', 15);
 
+// Always show the native page/post title (H1) in Astra.
+add_filter( 'astra_the_title_enabled', '__return_true', 999 );
+
 // register sale slider
 add_action('admin_menu', 'sale_slider_menu');
 function sale_slider_menu() {
@@ -461,3 +464,4 @@ function hide_uncategorized_category($args) {
     $args['exclude'] = array($uncategorized_id);
     return $args;
 }
+

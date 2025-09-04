@@ -35,7 +35,10 @@
 !/public/wp-content/plugins/running-ticker-line/**
 !/public/wp-content/plugins/product-labels/
 !/public/wp-content/plugins/product-labels/**
-
+!/public/wp-content/plugins/nh-faq/
+!/public/wp-content/plugins/nh-faq/**
+!/public/wp-content/plugins/nh-inactivity-popup-lite/
+!/public/wp-content/plugins/nh-inactivity-popup-lite/**
 
 # Uploads
 /public/wp-content/uploads/

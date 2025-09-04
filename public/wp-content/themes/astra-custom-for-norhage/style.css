@@ -19,6 +19,12 @@ body {
     font-family: inherit;
 }
 
+@media (max-width: 1200px) {
+  body h1 {
+    margin-top: 20px;
+  }
+}
+
 /* === Secondary Header Bar === */
 .custom-header-secondary {
   background: #f7f7f7;
