@@ -1,0 +1,109 @@
+/* ============================================
+   Cutting Type Toggle — Standard vs Custom Size
+   Author: Daiva Reinike
+   ============================================ */
+
+.nh-cut-toggle {
+  margin: 0 0 .75rem;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Toggle buttons (Light Mode) */
+.nh-cut-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border: 1px solid var(--ui-border, #C3E8C6);
+  border-radius: 4px;
+  background: var(--ui-bg-content, #fff);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--nh-green, #00704A);
+  transition:
+    background .15s ease,
+    border .15s ease,
+    color .15s ease,
+    transform .02s ease;
+}
+
+/* Hover (soft cream tone) */
+.nh-cut-btn:hover {
+  background: var(--nh-cream, #F1E6D6);
+  border-color: var(--nh-green, #00704A);
+  color: var(--nh-forest, #1E3932);
+  transform: translateY(-1px);
+}
+
+/* Active */
+.nh-cut-btn.is-active {
+  background: var(--nh-green, #00704A);
+  color: #fff;
+  border-color: var(--nh-green, #00704A);
+  cursor: default;
+  transform: none;
+}
+
+/* Active + hover → darker forest (pressed feel, like attribute buttons) */
+.nh-cut-btn.is-active:hover {
+  background: var(--nh-forest, #1E3932) !important;
+  border-color: var(--nh-forest, #1E3932) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Group wrapper + label to match attribute headings */
+.nh-cutting-group { margin: 0 0 .75rem; }
+
+.nh-cutting-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--nh-forest, #111827);
+  margin: 0 0 .35rem;
+}
+
+/* smooth scroll + header offset for the anchor */
+html { scroll-behavior: smooth; }
+#cutting-type { scroll-margin-top: 96px; } /* adjust to your sticky header height */
+
+/* ============================================
+   Dark Mode Palette
+   ============================================ */
+
+body.dark-mode .nh-cut-btn {
+  background: var(--dm-surface, #2E2E2A);
+  border-color: var(--dm-border, #446B58);
+  color: var(--dm-primary, #36B47A);
+  transition:
+    background .15s ease,
+    border .15s ease,
+    color .15s ease,
+    transform .02s ease;
+}
+
+/* Hover — soft blend between surface and forest */
+body.dark-mode .nh-cut-btn:hover {
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
+  border-color: var(--dm-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Active — solid primary */
+body.dark-mode .nh-cut-btn.is-active {
+  background: var(--dm-primary);
+  border-color: var(--dm-primary);
+  color: #0f2019; /* soft ink on bright green */
+}
+
+/* Active + hover — darker forest (pressed look like attr buttons) */
+body.dark-mode .nh-cut-btn.is-active:hover {
+  background: var(--dm-forest);
+  border-color: var(--dm-forest);
+  color: #fff;
+  transform: translateY(-1px);
+}
