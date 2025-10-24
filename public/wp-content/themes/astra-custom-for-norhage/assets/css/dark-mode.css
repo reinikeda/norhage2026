@@ -1,157 +1,346 @@
-/* === Base Dark Backgrounds === */
-body.dark-mode {
-  background-color: #0d321e;
-  color: #edecea;
+/* =========================
+   Starbucks Dark Mode Palette
+   ========================= */
+body.dark-mode{
+  /* tokens */
+  --dm-bg:        #1A1A18; /* site background */
+  --dm-surface:   #2E2E2A; /* section/card surface */
+  --dm-forest:    #102923; /* deep base / headers / pressed */
+  --dm-text:      #EAE9E5; /* primary text */
+  --dm-primary:   #36B47A; /* accent/CTA green */
+  --dm-border:    #446B58; /* soft border / hover outline */
+  --dm-brown:     #C6A58A; /* warm accent (optional) */
+  --dm-gold:      #E3C58F; /* premium accent (optional) */
+}
+
+/* === Base Backgrounds & Text === */
+body.dark-mode{
+  background-color: var(--dm-bg);
+  color: var(--dm-text);
 }
 
 /* === Headings === */
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
-body.dark-mode h4 {
-  color: #49705b;
+body.dark-mode h4{
+  color: var(--dm-primary);
 }
 
+/* subheads / muted headings */
 body.dark-mode .secondary-title,
 body.dark-mode .woocommerce-product-details__short-description h2,
-body.dark-mode .related.products h2 {
-  color: #49705b;
+body.dark-mode .related.products h2{
+  color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
 }
 
 /* === Ticker Wrapper === */
-body.dark-mode #rtl-ticker-wrapper {
-  background-color: #094939;
-  border-top: 1px solid #26693e;
-  border-bottom: 1px solid #26693e;
+body.dark-mode #rtl-ticker-wrapper{
+  background-color: var(--dm-forest);
+  border-top: 1px solid var(--dm-border);
+  border-bottom: 1px solid var(--dm-border);
+  color: var(--dm-text);
 }
 
-/* === Buttons === */
+/* === Buttons (global) === */
 body.dark-mode .button,
 body.dark-mode button,
-body.dark-mode input[type="submit"] {
-  background-color: #093b2f;
-  color: #edecea;
-  border: 1px solid #094939;
+body.dark-mode input[type="submit"]{
+  background-color: var(--dm-forest);
+  color: var(--dm-text);
+  border: 1px solid var(--dm-border);
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
-
 body.dark-mode .button:hover,
 body.dark-mode button:hover,
-body.dark-mode input[type="submit"]:hover {
-  background-color: #034434;
+body.dark-mode input[type="submit"]:hover{
+  /* slightly brighter, still grounded */
+  background-color: color-mix(in srgb, var(--dm-primary) 65%, var(--dm-forest) 35%);
+  border-color: var(--dm-primary);
+  color: #fff;
 }
 
-/* === Price Section & Text Highlights === */
+/* === Price & Ratings === */
 body.dark-mode .price,
 body.dark-mode .woocommerce-Price-amount,
 body.dark-mode .amount,
-body.dark-mode .woocommerce-product-rating {
-  color: #26693e;
+body.dark-mode .woocommerce-product-rating{
+  color: var(--dm-primary);
 }
 
-/* === Attributes (width/length/colour selection) === */
+/* === Attributes (labels and wrap text) === */
 body.dark-mode .variations_form .label label,
-body.dark-mode .single_variation_wrap {
-  color: #618f6b;
+body.dark-mode .single_variation_wrap{
+  color: color-mix(in srgb, var(--dm-text) 75%, var(--dm-primary) 25%);
 }
 
-/* === Quantity box & form elements === */
+/* === Quantity box & form fields === */
 body.dark-mode input.qty,
 body.dark-mode input[type="number"],
-body.dark-mode select {
-  background-color: #10251e;
-  color: #edecea;
-  border: 1px solid #094939;
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="tel"]{
+  background-color: var(--dm-surface);
+  color: var(--dm-text);
+  border: 1px solid var(--dm-border);
   border-radius: 4px;
 }
 
-/* === Buy a Complete Set Section === */
-body.dark-mode #nc-complete-set {
-  background-color: #10251e;
+/* === “Buy a Complete Set” / bundle panels === */
+body.dark-mode #nc-complete-set{
+  background-color: var(--dm-surface);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid #094939;
-  color: #edecea;
+  border: 1px solid var(--dm-border);
+  color: var(--dm-text);
 }
 
 /* === Tabs (Description / Additional Info etc.) === */
 body.dark-mode .woocommerce-Tabs-panel,
-body.dark-mode .woocommerce-tabs ul.tabs li a {
-  /* background-color: #1b201c; */
-  color: #edecea;
-  border-color: #094939;
+body.dark-mode .woocommerce-tabs ul.tabs li a{
+  color: var(--dm-text);
+  border-color: var(--dm-border);
 }
 
-/* === Table (Buy a complete set) === */
+/* === Tables (cart, checkout, bundle lists) === */
 body.dark-mode table.woocommerce-cart-form,
-body.dark-mode .woocommerce table.shop_table {
-  background-color: #10251e;
-  color: #edecea;
-  border-color: #094939;
+body.dark-mode .woocommerce table.shop_table{
+  background-color: var(--dm-surface);
+  color: var(--dm-text);
+  border-color: var(--dm-border);
 }
-
-body.dark-mode table.shop_table th {
-  background-color: #26503c;
-  color: #edecea;
+body.dark-mode table.shop_table th{
+  background-color: var(--dm-forest);
+  color: var(--dm-text);
 }
-
-body.dark-mode table.shop_table td {
-  background-color: #1b201c;
+body.dark-mode table.shop_table td{
+  background-color: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-forest) 15%);
 }
 
 /* === Checkbox & Filters === */
-body.dark-mode input[type="checkbox"] {
-  accent-color: #26693e;
-  background-color: #1b201c;
-  border: 1px solid #094939;
+body.dark-mode input[type="checkbox"]{
+  accent-color: var(--dm-primary);
+  background-color: var(--dm-surface);
+  border: 1px solid var(--dm-border);
 }
-
-body.dark-mode .wc-block-product-filter-checkbox-list__text {
-  color: #618f6b;
+body.dark-mode .wc-block-product-filter-checkbox-list__text{
+  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
 }
 
 /* === Links === */
-body.dark-mode a {
-  color: #26693e;
-}
-
-body.dark-mode a:hover {
-  color: #bdcdc0;
+body.dark-mode a{ color: var(--dm-primary); }
+body.dark-mode a:hover{
+  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
 }
 
 /* === Product Thumbnails & Gallery === */
 body.dark-mode .woocommerce-product-gallery__image img,
-body.dark-mode .woocommerce ul.products li.product img {
-  background-color: #1b201c;
+body.dark-mode .woocommerce ul.products li.product img{
+  background-color: color-mix(in srgb, var(--dm-surface) 90%, var(--dm-forest) 10%);
   padding: 4px;
-  border: 1px solid #094939;
+  border: 1px solid var(--dm-border);
   border-radius: 4px;
 }
 
 /* === Footer === */
 body.dark-mode footer,
-body.dark-mode .site-footer {
-  background-color: #0f241b;
-  color: #edecea;
+body.dark-mode .site-footer{
+  background-color: color-mix(in srgb, var(--dm-forest) 75%, var(--dm-bg) 25%);
+  color: var(--dm-text);
 }
-
-body.dark-mode .site-footer a {
-  color: #49705b;
-}
-
-body.dark-mode .site-footer a:hover {
-  color: #bdcdc0;
+body.dark-mode .site-footer a{ color: var(--dm-primary); }
+body.dark-mode .site-footer a:hover{
+  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
 }
 
 /* === Breadcrumbs === */
-body.dark-mode .woocommerce-breadcrumb {
-  color: #618f6b;
+body.dark-mode .woocommerce-breadcrumb{
+  color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
 }
 
-/* === Misc minor enhancements === */
+/* === Notices (success/info/error) — calm, readable === */
 body.dark-mode .woocommerce-message,
 body.dark-mode .woocommerce-info,
-body.dark-mode .woocommerce-error {
-  background-color: #26503c;
-  color: #edecea;
-  border-left: 4px solid #26693e;
+body.dark-mode .woocommerce-error{
+  background-color: color-mix(in srgb, var(--dm-forest) 60%, var(--dm-surface) 40%);
+  color: var(--dm-text);
+  border-left: 4px solid var(--dm-primary);
+}
+
+/* =========================================
+   1) Paginator — dark mode
+   ========================================= */
+body.dark-mode nav.woocommerce-pagination .page-numbers{
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--dm-text);
+  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .02s ease;
+}
+body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover{
+  background: color-mix(in srgb, var(--dm-surface) 65%, var(--dm-forest) 35%);
+  border-color: var(--dm-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.current{
+  background: var(--dm-primary);
+  border-color: var(--dm-primary);
+  color: #0f2019; /* subtle ink on bright green */
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover{
+  background: var(--dm-forest);
+  border-color: var(--dm-forest);
+  color: #fff;
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.dots{ color: color-mix(in srgb, var(--dm-text) 60%, black 40%); }
+body.dark-mode nav.woocommerce-pagination .prev,
+body.dark-mode nav.woocommerce-pagination .next{ color: var(--dm-primary); }
+
+/* =========================================
+   2) Custom fields — W/L (mm) controls
+   ========================================= */
+body.dark-mode .nh-size-ui .nh-mm-qty{
+  background: var(--dm-surface);
+  border: 1px solid var(--dm-border);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .minus,
+body.dark-mode .nh-size-ui .nh-mm-qty .plus{
+  background: var(--dm-surface);
+  color: var(--dm-primary);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .minus{ border-right: 1px solid var(--dm-border); }
+body.dark-mode .nh-size-ui .nh-mm-qty .plus{  border-left: 1px solid var(--dm-border); }
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input{
+  background: var(--dm-surface);
+  color: var(--dm-text);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder{
+  color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
+}
+
+/* =========================================
+   3) Selection boxes — attribute buttons
+   ========================================= */
+body.dark-mode .variations_form .nh-attr-btn{
+  background: var(--dm-surface);
+  border-color: var(--dm-border) !important;
+  color: var(--dm-primary);
+}
+body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):hover{
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%) !important;
+  border-color: var(--dm-primary) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+/* selected & pressed */
+body.dark-mode .variations_form .nh-attr-btn.is-selected{
+  background: var(--dm-primary) !important;
+  border-color: var(--dm-primary) !important;
+  color: #0f2019 !important;
+}
+body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
+  background: var(--dm-forest) !important;
+  border-color: var(--dm-forest) !important;
+  color: #fff !important;
+}
+
+/* Cutting Type toggle to match */
+body.dark-mode .nh-cut-btn{
+  background: var(--dm-surface);
+  border-color: var(--dm-border);
+  color: var(--dm-primary);
+}
+body.dark-mode .nh-cut-btn:hover{
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
+  border-color: var(--dm-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+body.dark-mode .nh-cut-btn.is-active{
+  background: var(--dm-primary);
+  border-color: var(--dm-primary);
+  color: #0f2019;
+}
+body.dark-mode .nh-cut-btn.is-active:hover{
+  background: var(--dm-forest);
+  border-color: var(--dm-forest);
+  color: #fff;
+}
+
+/* =========================================
+   4) Price summary card
+   ========================================= */
+body.dark-mode .nh-price-summary{
+  background: var(--dm-surface);
+  border: 1px solid var(--dm-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+body.dark-mode .nh-ps-title{
+  background: var(--dm-surface);
+  color: var(--dm-text);
+}
+body.dark-mode .nh-ps-row,
+body.dark-mode .nh-ps-total{ color: var(--dm-text); }
+body.dark-mode .nh-ps-sep{ border-top: 1px solid var(--dm-border); }
+body.dark-mode #nh-price-summary .nh-ps-val del,
+body.dark-mode #nh-price-summary .nh-ps-total-val del{
+  color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
+}
+body.dark-mode #nh-price-summary .nh-ps-val ins,
+body.dark-mode #nh-price-summary .nh-ps-total-val ins{
+  color: var(--dm-text);
+}
+
+/* =========================================
+   5) Bundle box (Complete set)
+   ========================================= */
+body.dark-mode #nc-complete-set.nc-bundle{
+  --nc-border: 1px solid var(--dm-border);
+  --nc-bg:     var(--dm-surface);
+  --nc-head:   var(--dm-text);
+  --nc-row-hover: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-forest) 15%);
+  background: var(--nc-bg);
+  border: var(--nc-border);
+  color: var(--dm-text);
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+body.dark-mode .nc-bundle-head{ background: var(--dm-surface); color: var(--dm-text); }
+body.dark-mode .nc-bundle-row{ border-top: var(--nc-border); }
+body.dark-mode .nc-bundle-row:not(.nc-bundle-header):hover{ background: var(--nc-row-hover); }
+body.dark-mode .nc-bundle-header{
+  color: color-mix(in srgb, var(--dm-text) 75%, var(--dm-primary) 25%);
+  border-bottom: var(--nc-border);
+}
+body.dark-mode .nc-col-image img{
+  background: color-mix(in srgb, var(--dm-surface) 90%, var(--dm-forest) 10%);
+  border: 1px solid var(--dm-border);
+}
+body.dark-mode .nc-title{ color: var(--dm-text); }
+body.dark-mode .nc-price-desktop del,
+body.dark-mode .nc-price-mobile  del{ color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%); }
+body.dark-mode .nc-price-desktop ins,
+body.dark-mode .nc-price-mobile  ins{ color: var(--dm-text); }
+
+/* Stock pills */
+body.dark-mode .nc-pill{ background: color-mix(in srgb, var(--dm-surface) 80%, var(--dm-forest) 20%); color: var(--dm-text); }
+body.dark-mode .nc-pill--instock{ background: color-mix(in srgb, var(--dm-primary) 18%, transparent); color: #dff5eb; }
+body.dark-mode .nc-pill--oos{ background: color-mix(in srgb, #7A3E2B 22%, transparent); color: #F6D6CE; }
+
+/* Footer bar with total + CTA */
+body.dark-mode .nc-bundle-footer{
+  background: var(--dm-surface);
+  border-top: 1px solid var(--dm-border);
+}
+body.dark-mode .nc-total{ color: var(--dm-text); }
+body.dark-mode .nc-bundle-footer .button{
+  background: var(--dm-primary);
+  border: 1px solid var(--dm-primary);
+  color: #0f2019;
+}
+body.dark-mode .nc-bundle-footer .button:hover{
+  background: var(--dm-forest);
+  border-color: var(--dm-forest);
+  color: #fff;
 }

@@ -3,7 +3,7 @@
  * Plugin Name: Product Labels
  * Description: Sale %, New (30 days), Low stock (<3). Shows on loop thumbnail and single-product first image.
  * Author: Daiva Reinike
- * Version: 0.6
+ * Version: 0.7
  * License: GPL-2.0+
  */
 
@@ -18,9 +18,10 @@ class NHG_Product_Labels {
 		add_action( 'woocommerce_before_shop_loop_item_title', [ $this, 'output_loop' ], 9 );
 
 		// Single product:
-		// - Put image badges (SALE, etc.) inside the gallery wrapper
-		add_action( 'woocommerce_product_thumbnails', [ $this, 'output_single_inside_gallery' ], 99 );
-		// - Print a plain "New" text flag above title (below breadcrumbs)
+		// Insert badges into the first gallery image HTML (works with 1 image or many)
+		add_filter( 'woocommerce_single_product_image_thumbnail_html', [ $this, 'inject_single_badges_into_image_html' ], 10, 2 );
+
+		// Plain "New" text flag above title (below breadcrumbs)
 		add_action( 'woocommerce_single_product_summary', [ $this, 'output_single_new_inline' ], 4 );
 
 		// Styles
@@ -32,7 +33,7 @@ class NHG_Product_Labels {
 			'nhg-product-labels',
 			plugins_url( 'css/labels.css', __FILE__ ),
 			[],
-			'0.6'
+			'0.7'
 		);
 	}
 
@@ -61,7 +62,7 @@ class NHG_Product_Labels {
 					$range = ( $min && $min !== $max ) ? "{$min}–{$max}%" : "{$max}%";
 					$labels[] = [
 						'key'   => 'sale',
-						'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ), // fallback single-line
+						'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ),
 						'line1' => __( 'Sale', 'nhg' ),
 						'line2' => $range,
 					];
@@ -75,7 +76,7 @@ class NHG_Product_Labels {
 						$range = "{$pct}%";
 						$labels[] = [
 							'key'   => 'sale',
-							'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ), // fallback single-line
+							'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ),
 							'line1' => __( 'Sale', 'nhg' ),
 							'line2' => $range,
 						];
@@ -93,37 +94,25 @@ class NHG_Product_Labels {
 			}
 		}
 
-		// LOW STOCK (<3, managed, no backorders)
-        // Show on simple products OR if ANY variation qualifies.
-        $low_any = false;
+		// LOW STOCK (<3, managed, no backorders) — loop only
+		$low_any = false;
+		if ( $product->is_type( 'variable' ) ) {
+			foreach ( $product->get_children() as $vid ) {
+				$child = wc_get_product( $vid );
+				if ( ! $child ) continue;
+				if ( $child->managing_stock() && ! $child->backorders_allowed() ) {
+					$qty = $child->get_stock_quantity();
+					if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) { $low_any = true; break; }
+				}
+			}
+		} else {
+			if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
+				$qty = $product->get_stock_quantity();
+				if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) $low_any = true;
+			}
+		}
+		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg' ) ];
 
-        if ( $product->is_type( 'variable' ) ) {
-            foreach ( $product->get_children() as $vid ) {
-                $child = wc_get_product( $vid );
-                if ( ! $child ) continue;
-
-                if ( $child->managing_stock() && ! $child->backorders_allowed() ) {
-                    $qty = $child->get_stock_quantity();
-                    if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) {
-                        $low_any = true;
-                        break; // one is enough
-                    }
-                }
-            }
-        } else {
-            if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
-                $qty = $product->get_stock_quantity();
-                if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) {
-                    $low_any = true;
-                }
-            }
-        }
-
-        if ( $low_any ) {
-            $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg' ) ];
-        }
-
-		// Priority order
 		usort( $labels, function( $a, $b ) {
 			$order = [ 'sale' => 1, 'new' => 2, 'low' => 3 ];
 			return ( $order[ $a['key'] ] ?? 99 ) <=> ( $order[ $b['key'] ] ?? 99 );
@@ -133,9 +122,7 @@ class NHG_Product_Labels {
 	}
 
 	private function has_label( array $labels, string $key ) : bool {
-		foreach ( $labels as $l ) {
-			if ( ($l['key'] ?? '') === $key ) return true;
-		}
+		foreach ( $labels as $l ) if ( ($l['key'] ?? '') === $key ) return true;
 		return false;
 	}
 
@@ -148,7 +135,6 @@ class NHG_Product_Labels {
 			// Skip NEW on single gallery; we show it as inline text above title instead.
 			if ( 'single' === $context && 'new' === $key ) continue;
 
-			// A) SALE — blank element; CSS ::after prints the two-line text
 			if ( 'sale' === $key ) {
 				$line1 = $l['line1'] ?? 'Sale';
 				$line2 = $l['line2'] ?? '';
@@ -161,17 +147,13 @@ class NHG_Product_Labels {
 				continue;
 			}
 
-			// LOW — only on catalog (shop/category/tag) pages
-            if ( 'low' === $key ) {
-                if ( 'loop' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-                    echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">'
-                    . esc_html__( 'Low stock', 'nhg' )
-                    . '</span>';
-                }
-                continue;
-            }
+			if ( 'low' === $key ) {
+				if ( 'loop' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
+					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg' ) . '</span>';
+				}
+				continue;
+			}
 
-			// C) NEW — normal badge in loop
 			printf(
 				'<span class="nhg-label nhg-label--%s">%s</span>',
 				esc_attr( $key ),
@@ -193,17 +175,26 @@ class NHG_Product_Labels {
 		echo '</div>';
 	}
 
-	// Single product: print badges INSIDE the gallery (SALE etc., but NOT "New")
-	public function output_single_inside_gallery() {
+	// Inject SALE/etc. badges into the first gallery image HTML.
+	public function inject_single_badges_into_image_html( $html, $post_id ) {
+		if ( ! is_product() ) return $html;
 		global $product;
-		if ( empty( $product ) || ! $product instanceof WC_Product ) return;
+		if ( empty( $product ) || ! $product instanceof WC_Product ) return $html;
+
+		static $done = false;
+		if ( $done ) return $html; // only once, before the first image
 
 		$labels = $this->get_labels( $product );
-		if ( empty( $labels ) ) return;
+		if ( empty( $labels ) ) return $html;
 
+		ob_start();
 		echo '<div class="nhg-labels nhg-labels--single">';
 		$this->render_labels( $labels, 'single' );
 		echo '</div>';
+		$badges = ob_get_clean();
+
+		$done = true;
+		return $html . $badges;
 	}
 
 	// Single product: plain "New" text above the title (below breadcrumbs)
@@ -215,7 +206,6 @@ class NHG_Product_Labels {
 		$labels = $this->get_labels( $product );
 		if ( ! $this->has_label( $labels, 'new' ) ) return;
 
-		// Simple inline flag; style via .nhg-new-inline in your CSS if desired
 		echo '<div class="nhg-new-inline" aria-label="New product">'
 		   . esc_html__( '《 New Product 》', 'nhg' )
 		   . '</div>';

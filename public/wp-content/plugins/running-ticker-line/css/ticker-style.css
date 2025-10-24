@@ -1,7 +1,7 @@
 #rtl-ticker-wrapper {
     width: 100%;
-    background: #183D3D; /* Dark green background */
-    color: #eaffea;       /* Light greenish-white text */
+    background: var(--nh-forest, #1E3932);   /* deep forest green background */
+    color: var(--nh-cream, #F1E6D6);         /* warm cream text */
     overflow: hidden;
     height: 34px;
     font-size: 16px;
@@ -27,18 +27,32 @@
 .rtl-ticker-item {
     display: inline-block;
     padding: 0 60px;
+    color: var(--nh-cream, #F1E6D6);
 }
 
+/* Links inside the ticker */
 .rtl-ticker-item a {
-    color: #aaffaa; /* Slightly brighter green for links */
+    color: var(--nh-mint, #C3E8C6);          /* soft mint link accent */
     text-decoration: underline;
+    transition: color .2s ease;
 }
 
+.rtl-ticker-item a:hover {
+    color: var(--nh-green, #00704A);         /* main Starbucks green on hover */
+}
+
+/* Smooth marquee animation */
 @keyframes rtl-scroll {
-    0% { transform: translateX(0); }
+    0%   { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
 
-body.dark-mode .rtl-ticker-item {
-    color: #7dc383;
+/* Dark mode version – slightly brighter and cooler for visibility */
+body.dark-mode #rtl-ticker-wrapper {
+    background: var(--nh-green, #00704A);
+    color: var(--nh-offwhite, #FAF7F2);
+}
+
+body.dark-mode .rtl-ticker-item a {
+    color: var(--nh-cream, #F1E6D6);
 }

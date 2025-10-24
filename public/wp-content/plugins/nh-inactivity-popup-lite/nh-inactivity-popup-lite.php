@@ -21,7 +21,7 @@ class NH_Inactivity_Popup_Lite {
         'btn_url'    => '',
         'image_url' => '',
         // Delay in milliseconds of continuous inactivity
-        'delay_ms'   => 10000,
+        'delay_ms'   => 20000,
         // Disable on cart/checkout by default (you can change this below)
         'disable_on_cart_checkout' => true,
     ];

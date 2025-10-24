@@ -1,195 +1,433 @@
 /**
-Author: Daiva Reinike
-*/
+ * Product page styles (for Custom Cut + Bundle)
+ * Author: Daiva Reinike
+ * Palette: uses global :root tokens
+ */
 
-/* Short description as second title */
+/* ==========================================================================
+   1) General
+   ========================================================================== */
 .secondary-title {
   font-size: 13px;
-  color: #666;
+  color: var(--ui-muted);
   margin-top: 4px;
 }
 
-/* Product customisation part */
+/* ==========================================================================
+   2) Attribute UI (selects or buttons)
+   ========================================================================== */
 
-/* Container spacing */
-.nrh-variation-swatches.nrh-swatches-pa_colour {
-  display: flex;
-  gap: 0.5em;
-  margin: 0.5em 0 1em;
-  align-items: center;
-}
-
-/* Base swatch style */
-.nrh-swatches-pa_colour .nrh-swatch-color {
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 2px solid #ccc;
-  border-radius: 50%;
-  padding: 0;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* Hover state */
-.nrh-swatches-pa_colour .nrh-swatch-color:hover {
-  border-color: #007c5a;
-}
-
-/* Selected state */
-.nrh-swatches-pa_colour .nrh-swatch-color.selected {
-  border-color: #007c5a !important;
-  box-shadow: 0 0 0 3px rgba(0,124,90,0.4);
-}
-
-/* For accessibility: focus styles */
-.nrh-swatches-pa_colour .nrh-swatch-color:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0,124,90,0.6);
-}
-
-/* Make each colour swatch position: relative so its ::after can position itself */
-.nrh-swatches-pa_colour .nrh-swatch-color {
-  position: relative;
-}
-
-/* The tooltip text, hidden by default */
-.nrh-swatches-pa_colour .nrh-swatch-color::after {
-  content: attr(aria-label);
-  position: absolute;
-  bottom: 100%;                 /* place it just above the bubble */
-  left: 50%;
-  transform: translateX(-50%) translateY(-0.4em);
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  padding: 0.2em 0.4em;
-  border-radius: 0.25em;
-  white-space: nowrap;
-  font-size: 0.75em;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-/* On hover, fade it in */
-.nrh-swatches-pa_colour .nrh-swatch-color:hover::after {
-  opacity: 1;
-}
-
-/* Container around width/length swatches */
-.nrh-swatches-pa_width,
-.nrh-swatches-pa_length {
+/* Groups */
+.variations_form .nh-attr-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5em;
-  margin: 0.5em 0 1em;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-/* Base text-swatch button style */
-.nrh-swatch-text {
-  background: #f0faf6;              /* very light mint/green tint */
-  border: 1px solid #cde8e1;        /* pale border in your palette */
-  color: #007c5a;                   /* primary theme green */
-  padding: 0.4em 0.8em;
-  border-radius: 0.25em;
-  font-size: 0.95em;
+/* Base button style */
+.variations_form .nh-attr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--ui-border) !important;
+  border-radius: 4px;
+  background: var(--ui-bg-content, #fff);
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--nh-green);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.02s ease;
 }
 
-/* Hover state */
-.nrh-swatch-text:hover {
-  background: #e0f4ed;              /* a touch darker on hover */
-  border-color: #99d6c1;
+/* Hover (unselected) — soft cream tone */
+.single-product .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):hover,
+.single-product .variations_form label.nh-attr-btn:not(.is-selected):hover,
+.single-product .variations_form a.nh-attr-btn:not(.is-selected):hover,
+.single-product .variations_form button.nh-attr-btn:not(.is-selected):hover {
+  background: var(--nh-cream) !important;
+  border-color: var(--nh-green) !important;
+  color: var(--nh-forest) !important;
+  transform: translateY(-1px);
 }
 
-/* Selected state */
-.nrh-swatch-text.selected {
-  background: #007c5a;              /* solid theme green */
-  color: #fff;                      /* white text when selected */
-  border-color: #00593f;            /* darker green border */
-  box-shadow: 0 2px 6px rgba(0, 124, 90, 0.3);
+/* Selected (active) */
+.variations_form .nh-attr-btn.is-selected {
+  background: var(--nh-green);
+  color: #fff;
+  border-color: var(--nh-green) !important;
+  transform: none;
 }
 
-/* Focus (keyboard) state for accessibility */
-.nrh-swatch-text:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0,124,90,0.4);
+/* Selected + hover = darker “pressed” forest green */
+.variations_form .nh-attr-btn.is-selected:hover {
+  background: var(--nh-forest) !important;
+  border-color: var(--nh-forest) !important;
+  color: #fff !important;
+  transform: none;
 }
 
-/* Hide all native variation dropdowns, but keep them in the DOM for accessibility */
-.variations_form .variations .value select {
-  position: absolute !important;
-  left: -9999px !important;
-  opacity: 0 !important;
-  width: 1px !important;
-  height: 1px !important;
-  pointer-events: none;
+/* Disabled state */
+.variations_form .nh-attr-btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  text-decoration: line-through;
 }
 
-/* Container */
-#nc-complete-set {
-  margin-top: 2em;
-  border: 1px solid #ddd;
-  padding: 1em;
-  background: #fafafa;
+/* Focus ring */
+.variations_form .nh-attr-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
-/* Heading */
-#nc-complete-set h3 {
-  margin-bottom: 1em;
-  font-size: 1.4em;
+/* Baseline border for unselected */
+.variations_form .nh-attr-btn:not(.is-selected) {
+  border-color: var(--ui-border) !important;
 }
 
-/* Grid rows */
-.bundle-row {
-  display: grid;
-  grid-template-columns: 80px 2fr 2fr 80px 80px;
-  gap: 1em;
-  align-items: center;
-  padding: 0.5em 0;
-  border-bottom: 1px solid #eee;
+/* Hide the “Custom” term option */
+[data-attribute_name="attribute_pa_width"]  .nh-attr-btn[data-term="custom"],
+[data-attribute_name="attribute_width"]     .nh-attr-btn[data-term="custom"],
+[data-attribute_name="attribute_pa_length"] .nh-attr-btn[data-term="custom"],
+[data-attribute_name="attribute_length"]    .nh-attr-btn[data-term="custom"] {
+  display: none !important;
 }
 
-/* Header row style */
-.bundle-header {
-  font-weight: bold;
-  border-bottom: 2px solid #ccc;
-  margin-bottom: 0.5em;
+/* ==========================================================================
+   3) Custom cutting UI (mm inputs)
+   ========================================================================== */
+
+/* show custom W/L fields on custom-cutting products */
+#nh-custom-size-wrap{
+  display:block !important;
+  margin:12px 0;
 }
 
-/* Image column */
-.col-image img {
-  max-width: 80px;
-  height: auto;
-}
-
-/* Inputs */
-.col-options select,
-.col-qty input {
-  width: 100%;
-}
-
-/* Footer */
-.bundle-footer {
+/* --- custom width/length control (Woo-like qty UI) --- */
+.nh-size-ui .nh-mm-qty {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-top: 1em;
+  justify-content: space-between;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg-content, #fff);
+  height: 40px;
+  box-sizing: border-box;
+  max-width: 320px;
 }
 
-/* Total text */
-#bundle-total {
-  font-size: 1.2em;
+.nh-size-ui .nh-mm-qty .minus,
+.nh-size-ui .nh-mm-qty .plus {
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-weight: 600;
+  color: var(--nh-green);
+  background: var(--ui-bg-content, #fff);
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.nh-size-ui .nh-mm-qty .minus { border-right: 1px solid var(--ui-border); }
+.nh-size-ui .nh-mm-qty .plus  { border-left: 1px solid var(--ui-border); }
+
+.nh-size-ui .nh-mm-qty .nh-mm-input {
+  flex: 1 1 0;
+  min-width: 220px;
+  height: 100%;
+  border: none !important;
+  outline: none;
+  background: var(--ui-bg-content, #fff);
+  box-sizing: border-box;
+  padding: 0 16px !important;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ui-text);
+  text-align: center !important;
+  text-indent: 0 !important;
+}
+
+/* placeholder fully visible & centered */
+.nh-size-ui .nh-mm-qty .nh-mm-input::placeholder {
+  color: var(--ui-muted);
+  opacity: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* remove native number spinners */
+.nh-size-ui .nh-mm-qty .nh-mm-input[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.nh-size-ui .nh-mm-qty .nh-mm-input[type=number]::-webkit-outer-spin-button,
+.nh-size-ui .nh-mm-qty .nh-mm-input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove the theme's bottom border/line under custom-cut size table */
+.nh-has-custom-cut .entry-summary form.cart table.variations {
+  border: 0 !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* If your theme adds a separator element after variations, hide it too */
+.nh-has-custom-cut .entry-summary form.cart .reset_variations { display: none !important; }
+
+/* Cutting step note */
+.nh-cc-hint-single {
+  margin: .25rem 0 0;
+  font-size: .875em;
+  color: #666;
+}
+
+/* Mobile: let control expand */
+@media (max-width: 600px) {
+  .nh-size-ui .variations .value { display: block; }
+  .nh-size-ui .nh-mm-qty { max-width: 100%; width: 100%; }
+}
+
+/* ==========================================================================
+   4) Price summary
+   ========================================================================== */
+
+.nh-price-summary {
+  border: 1px solid var(--ui-border);
+  border-radius: 0.25rem;
+  background: var(--ui-bg-content, #fff);
+  padding: 26px 16px 16px; /* extra top space for floated title */
+  margin: 32px 0 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  position: relative;          /* for absolute title */
+}
+.nh-ps-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ui-text);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%); /* sit on the border */
+  padding: 0 12px;
+  margin: 0;
+  background: var(--ui-bg-content, #fff); /* mask the border under text */
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.nh-ps-list { list-style: none; margin: 0; padding: 0; }
+.nh-ps-row { display: flex; justify-content: space-between; gap: 1rem; font-size: .95rem; color: var(--ui-text); padding: .15rem 0; }
+.nh-ps-val { font-variant-numeric: tabular-nums; }
+.nh-ps-sep { border-top: 1px solid var(--ui-border); margin: .4rem 0; }
+.nh-ps-total { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--ui-text); }
+.nh-ps-total-val { font-size: 1.05rem; }
+
+/* Hide Woo’s built-in variation price; we render our own summary */
+.single-product .single_variation .woocommerce-variation-price,
+.single-product .single_variation .price {
+  display: none !important;
+}
+
+/* Sale-pair styling for ALL rows (perm2, unit, total) */
+#nh-price-summary .nh-ps-val del,
+#nh-price-summary .nh-ps-total-val del {
+  color: var(--ui-muted);
+  opacity: 1;
+  font-weight: 400;      /* override the bold on the Total row */
+  margin-right: .35em;
+}
+
+#nh-price-summary .nh-ps-val ins,
+#nh-price-summary .nh-ps-total-val ins {
+  color: var(--ui-text);
+  font-weight: 700;
+  text-decoration: none; /* no underline */
+}
+
+/* Hide Price per m² / Cutting fee by default */
+.nh-price-summary .nh-ps-perm2,
+.nh-price-summary .nh-ps-cutfee {
+  display: none;
+}
+
+/* Show them only on SIMPLE custom-cut product pages */
+.nh-has-custom-cut .nh-price-summary .nh-ps-perm2,
+.nh-has-custom-cut .nh-price-summary .nh-ps-cutfee {
+  display: flex;
+}
+
+/* ==========================================================================
+   5) Bundle block
+   ========================================================================== */
+
+#nc-complete-set.nc-bundle {
+  --nc-gap: 14px;
+  --nc-radius: 0.25rem;
+  --nc-border: 1px solid var(--ui-border);
+  --nc-bg: var(--ui-bg-content, #fff);
+  --nc-muted: var(--ui-muted);
+  --nc-head: var(--ui-text);
+  --nc-row-hover: var(--nh-cream);
+
+  border: var(--nc-border);
+  border-radius: var(--nc-radius);
+  background: var(--nc-bg);
+  padding: 30px 16px 16px;     /* extra top space for floated title */
+  margin-top: 28px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+  position: relative;          /* for absolute title */
+}
+
+/* Title “floating” on the border */
+.nc-bundle-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 12px;
+  margin: 0;                   /* no extra gap */
+  background: var(--nc-bg, #fff);
+  display: block;              /* ensure predictable sizing */
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+#nc-bundle-title {
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--nc-head);
   font-weight: 600;
 }
 
-/* Button */
-#add-bundle-to-cart {
-  background: #007c5a;
-  color: #fff;
-  border: none;
-  padding: 0.7em 1.5em;
-  cursor: pointer;
+.nc-bundle-form { width: 100%; }
+
+.nc-bundle-row {
+  display: grid;
+  grid-template-columns: 84px 1fr 110px 140px;
+  gap: var(--nc-gap);
+  align-items: center;
+  padding: 12px 4px;
+  border-top: var(--nc-border);
+}
+.nc-bundle-row:first-of-type { border-top: 0; }
+.nc-bundle-row:not(.nc-bundle-header):hover { background: var(--nc-row-hover); }
+
+.nc-bundle-header {
+  font-weight: 600;
+  color: #374151;
+  padding: 10px 4px 12px;
+  border-bottom: var(--nc-border);
+  border-top: 0;
+}
+.nc-bundle-header .nc-col { font-size: .9rem; }
+
+.nc-col-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg-content, #fff);
+}
+
+.nc-title {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.nc-title:hover { text-decoration: underline; }
+
+.nc-pill {
+  display: inline-block;
+  font-size: .75rem;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 999px;
+  margin-top: 6px;
+  background: var(--nh-cream);
+  color: var(--ui-text);
+}
+.nc-pill--instock { background: var(--nh-mint); color: var(--nh-forest); }
+/* Starbucks-style alert (soft red-brown instead of harsh red) */
+.nc-pill--oos { background: #F4E7E3; color: #7A3E2B; }
+
+.nc-meta-small { font-size: .85em; color: var(--ui-muted); margin-top: .25rem; }
+
+.nc-price-desktop { font-weight: 600; white-space: nowrap; }
+.nc-price-mobile { display: none; font-weight: 600; margin-top: 6px; }
+
+.nc-bundle-footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: var(--nc-border);
+  background: var(--ui-bg-content, #fff);
+  backdrop-filter: blur(4px);
+}
+.nc-total { font-size: 1.05rem; color: var(--ui-text); }
+
+/* Bundle price <del>/<ins> match summary */
+.nc-price-desktop del,
+.nc-price-mobile del {
+  color: var(--ui-muted);
+  font-weight: 400;
+  opacity: 1;
+  margin-right: .4rem;
+}
+.nc-price-desktop ins,
+.nc-price-mobile ins {
+  color: var(--ui-text);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .nc-bundle-header { display: none; }
+  .nc-bundle-row {
+    grid-template-columns: 64px 1fr auto;
+    grid-template-areas:
+      "img title qty"
+      ".   price qty";
+    padding: 12px 0;
+  }
+  .nc-col-image { grid-area: img; }
+  .nc-col-title { grid-area: title; }
+  .nc-col-qty { grid-area: qty; justify-self: end; }
+  .nc-col-price { display: none; }
+  .nc-price-mobile { display: block; color: var(--ui-text); }
+  .nc-bundle-footer { padding-bottom: 6px; }
+}
+
+/* If titles ever wrap on very small screens, keep the legend illusion */
+@media (max-width: 420px){
+  .nh-ps-title,
+  .nc-bundle-head { white-space: normal; text-align: center; }
+}
+
+/* ==========================================================================
+   6) Theme tweak
+   ========================================================================== */
+
+.single-product div.product .product_meta {
+  border-top: 0 !important;
 }

@@ -1,94 +1,92 @@
 /* === PRODUCT BADGES === */
 
-/* Base positioning */
+/* Base positioning (unchanged) */
 .woocommerce ul.products li.product,
 .woocommerce ul.products li.product .astra-shop-thumbnail-wrap,
 .woocommerce div.product .woocommerce-product-gallery {
-    position: relative;
-    overflow: hidden;
-    z-index: 0;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
 }
-
-/* Make the single gallery the positioning context */
 .single-product .woocommerce-product-gallery { position: relative; }
-
-/* Ensure our single container sits on top of the image */
 .single-product .nhg-labels--single { position: absolute; inset: 0; pointer-events: none; }
 
-
-
-
-/* === NEW badge (minimal premium) === */
+/* =========================
+   NEW badge (minimal/premium)
+   ========================= */
 .nhg-label--new {
-    position: absolute !important;
-    top: 5px;
-    right: 5px;
-    background-color: rgba(125, 195, 131, 0.3); /* subtle tinted background */
-    color: #3a6e46; /* deep green for readability */
-    border: 1px solid #7dc383; /* thin border for definition */
-    padding: 0 8px; /* horizontal padding for pill shape */
-    height: 26px;
-    border-radius: 20px; /* pill shape */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font: 600 11px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    letter-spacing: .4px;
-    text-transform: uppercase;
-    box-shadow: none; /* removed heavy shadow for cleaner look */
-    opacity: 0.9; /* slightly softer appearance */
-    z-index: 15;
+  position: absolute !important;
+  top: 5px;
+  right: 5px;
+
+  /* soft mint tint background (fallback + modern) */
+  background-color: rgba(0, 112, 74, 0.20);
+  background-color: color-mix(in srgb, var(--nh-mint), transparent 70%);
+
+  color: var(--nh-forest);                                     /* deep readable text */
+  border: 1px solid var(--nh-mint);                            /* soft green border */
+
+  padding: 0 8px;
+  height: 26px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 11px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  box-shadow: none;
+  opacity: .95;
+  z-index: 15;
 }
 .nhg-label--new::before { display: none; }
 
-/* new label for product page */
+/* Inline "new" text on product page */
 .nhg-new-inline {
-    margin: .25rem 0 .5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #3a6e46;
-    letter-spacing: .4px;
+  margin: .25rem 0 .5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--nh-forest);
+  letter-spacing: .4px;
 }
 
-/* mobile adjustments */
+/* Mobile tweaks */
 @media (max-width: 480px) {
-    .nhg-label--new {
-        font-size: 10px;
-        height: 24px;
-        padding: 0 6px;
-    }
+  .nhg-label--new { font-size: 10px; height: 24px; padding: 0 6px; }
 }
 
-
-
-
-
-/* SALE ribbon for both category & product pages */
+/* =========================
+   SALE ribbon (corner)
+   =========================
+   Uses Starbucks green instead of harsh red.
+   Adjust opacity in border color if you want it softer.
+*/
 .woocommerce .nhg-labels,
-.single-product .nhg-labels {
-  position: relative;
-  overflow: visible !important; /* allows triangle to stick out */
-}
+.single-product .nhg-labels { position: relative; overflow: visible !important; }
 
 .woocommerce .nhg-labels .nhg-label--sale,
 .single-product .nhg-labels .nhg-label--sale {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   z-index: 10;
 }
 
+/* Triangle */
 .woocommerce .nhg-labels .nhg-label--sale::before,
 .single-product .nhg-labels .nhg-label--sale::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  border-top: 70px solid rgba(255, 0, 0, 0.5);
+  top: 0; left: 0;
+
+  /* Fallback + modern mix for a rich green triangle */
+  border-top: 70px solid rgba(0, 112, 74, 0.90);               /* #00704A @90% */
+  border-top: 70px solid color-mix(in srgb, var(--nh-green) 90%, transparent);
   border-right: 70px solid transparent;
-  z-index: -1; /* keep text above */
+
+  z-index: -1;
 }
 
+/* Ribbon text */
 .woocommerce .nhg-labels .nhg-label--sale::after,
 .single-product .nhg-labels .nhg-label--sale::after {
   content: attr(data-line1) "\A" attr(data-line2);
@@ -101,15 +99,14 @@
   align-items: center;
   transform: rotate(-45deg);
   transform-origin: center;
-  color: white;
-  font-weight: bold;
+  color: #fff;
+  font-weight: 700;
   font-size: 11px;
   line-height: 1.05;
   text-transform: uppercase;
-  padding: 20px; /* Moves text */
+  padding: 20px;            /* positions text inside triangle */
   text-align: center;
 }
-
 
 /* Mobile size adjustment */
 @media (max-width:480px){
@@ -126,21 +123,36 @@
   }
 }
 
+/* =========================
+   LOW STOCK (loop overlay)
+   ========================= */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap { position: relative; overflow: visible; }
+.woocommerce .nhg-labels.nhg-labels--loop { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
 
+/* Example pill style for low stock, matching palette */
+.nhg-label--lowstock {
+  position: absolute;
+  bottom: 6px; left: 6px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  font: 600 11px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .3px;
 
-
-/* LOW STOCK on category page */
-
-/* Make the thumbnail an anchor */
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
-  position: relative;
-  overflow: visible;
+  background-color: rgba(200, 159, 99, 0.18);                  /* #C89F63 @18% */
+  background-color: color-mix(in srgb, var(--nh-gold), transparent 82%);
+  color: var(--nh-brown);                                      /* espresso-ish text */
+  border: 1px solid color-mix(in srgb, var(--nh-gold), #fff 65%);
 }
 
-/* Labels wrapper overlays the image */
-.woocommerce .nhg-labels.nhg-labels--loop {
+/* Make the gallery a positioning context */
+.woocommerce div.product div.images .woocommerce-product-gallery {
+  position: relative;
+}
+
+/* Our single-image badges should not affect layout */
+.nhg-labels.nhg-labels--single {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 20;
+  z-index: 5;
+  pointer-events: none; /* clicks pass through to image/zoom */
 }

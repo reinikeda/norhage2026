@@ -39,6 +39,12 @@
 !/public/wp-content/plugins/nh-faq/**
 !/public/wp-content/plugins/nh-inactivity-popup-lite/
 !/public/wp-content/plugins/nh-inactivity-popup-lite/**
+!/public/wp-content/plugins/nh-cutting-toggle/
+!/public/wp-content/plugins/nh-cutting-toggle/**
+!/public/wp-content/plugins/nh-sale-slider/
+!/public/wp-content/plugins/nh-sale-slider/**
+!/public/wp-content/plugins/nh-shipping-calculator/
+!/public/wp-content/plugins/nh-shipping-calculator/**
 
 # Uploads
 /public/wp-content/uploads/
