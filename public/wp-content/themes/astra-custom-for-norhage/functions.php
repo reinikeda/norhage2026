@@ -68,6 +68,15 @@ function norhage_enqueue_assets() {
         CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
     );
 
+    // Dark-mode toggle logic
+    wp_enqueue_script(
+        'theme-toggle',
+        get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
+        [],
+        null,
+        true // load in footer
+    );
+
     // Dark-mode stylesheet
     wp_enqueue_style(
         'norhage-dark-mode-css',
@@ -81,24 +90,6 @@ function norhage_enqueue_assets() {
         'norhage-custom-js',
         get_stylesheet_directory_uri() . '/assets/js/script.js',
         array(),
-        CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
-        true
-    );
-
-    // Lottie runtime (needed by the toggle)
-    wp_enqueue_script(
-        'lottie-web',
-        'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js',
-        array(),
-        null,
-        true
-    );
-
-    // Dark-mode toggle logic (depends on Lottie)
-    wp_enqueue_script(
-        'norhage-dark-mode-js',
-        get_stylesheet_directory_uri() . '/assets/js/dark-mode.js',
-        array('lottie-web'),
         CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
         true
     );
@@ -185,26 +176,49 @@ function custom_norhage_header() {
         <div class="custom-header-top">
             <div class="custom-logo">
                 <a href="<?php echo esc_url(home_url('/')); ?>">
-                    <img 
-                    src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/logo.png' ); ?>" 
-                    alt="<?php echo esc_attr( get_bloginfo('name') ); ?>" 
-                    class="site-logo"
-                    />
+                    <img
+                        src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1920.jpg' ); ?>"
+                        srcset="
+                        <?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-768.jpg' ); ?> 768w,
+                        <?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1280.jpg' ); ?> 1280w,
+                        <?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1920.jpg' ); ?> 1920w,
+                        <?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-2560.jpg' ); ?> 2560w
+                        "
+                        sizes="100vw"
+                        width="1920" height="1080"
+                        alt="<?php echo esc_attr( get_bloginfo('name') ); ?>"
+                        class="site-logo"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async" />
                 </a>
             </div>
+
             <div class="custom-header-right">
                 <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">
                     <?php esc_html_e('Sign in / My Account', 'your-textdomain'); ?>
                 </a>
+
                 <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="cart-icon">
-                    🛒 <span class="cart-count">
+                    <img
+                        src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/shopping-cart.png' ); ?>"
+                        alt="Cart"
+                        class="cart-image" />
+                    <span class="cart-count">
                         <?php echo WC()->cart ? WC()->cart->get_cart_contents_count() : '0'; ?>
                     </span>
                 </a>
-                <div id="theme-toggle"
-                    class="theme-toggle"
-                    data-lottie-path="<?php echo esc_attr( get_stylesheet_directory_uri() . '/assets/lottie/dark-mode-toggle.json' ); ?>">
-                </div>
+
+                <button
+                id="theme-toggle"
+                class="theme-toggle"
+                type="button"
+                aria-label="Switch to dark mode"
+                data-dark-css="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/css/dark-mode.css' ); ?>"
+                data-sun-icon="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/sun.png' ); ?>"
+                data-moon-icon="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/moon.png' ); ?>">
+                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/moon.png' ); ?>" alt="Toggle theme" />
+                </button>
             </div>
         </div>
 
