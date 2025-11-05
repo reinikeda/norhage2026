@@ -12,8 +12,8 @@ class NHG_Sale_Category_Sync {
 
 	public function __construct() {
 		// When products are saved/updated
-		add_action( 'save_post_product',        [ $this, 'sync_single' ], 20 );
-		add_action( 'woocommerce_update_product',[ $this, 'sync_single' ], 20 );
+		add_action( 'save_post_product',         [ $this, 'sync_single' ], 20 );
+		add_action( 'woocommerce_update_product', [ $this, 'sync_single' ], 20 );
 
 		// Hourly sweep for scheduled start/end
 		add_action( self::CRON_HOOK, [ $this, 'sync_all' ] );
@@ -44,7 +44,8 @@ class NHG_Sale_Category_Sync {
 		$term = get_term_by( 'slug', self::CAT_SLUG, 'product_cat' );
 		if ( $term && ! is_wp_error( $term ) ) return $term;
 
-		$created = wp_insert_term( __( 'Sale', 'nhg' ), 'product_cat', [ 'slug' => self::CAT_SLUG ] );
+		// translators: product category name for items currently on sale
+		$created = wp_insert_term( __( 'Sale', 'nh-theme' ), 'product_cat', [ 'slug' => self::CAT_SLUG ] );
 		if ( is_wp_error( $created ) ) return null;
 
 		return get_term( (int) $created['term_id'], 'product_cat' );
@@ -103,7 +104,7 @@ class NHG_Sale_Category_Sync {
 
 		if ( ! get_option( 'nhg_sale_sync_bootstrapped' ) ) {
 			$this->sync_all();
-			update_option( 'nhg_sale_sync_bootstrapped', 1 );
+			update_option( 'nhg_sale_sync_bootstrapped', 1, false );
 		}
 	}
 }

@@ -444,6 +444,12 @@ span.ast-on-card-button.ast-onsale-card { display: none !important; }
 a.ast-on-card-button.ast-select-options-trigger,
 .ast-on-card-button { display: none !important; }
 
+/* Hide header title for homepage */
+.home .entry-title,
+.home h1.entry-title {
+  display: none !important;
+}
+
 /* ==============================
    PRODUCT PAGE TWEAKS
    ============================== */
