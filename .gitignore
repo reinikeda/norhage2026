@@ -47,6 +47,8 @@
 !/public/wp-content/plugins/nh-shipping-calculator/**
 !/public/wp-content/plugins/nh-home-builder/
 !/public/wp-content/plugins/nh-home-builder/**
+!/public/wp-content/plugins/nh-filters/
+!/public/wp-content/plugins/nh-filters/**
 
 # Uploads
 /public/wp-content/uploads/
