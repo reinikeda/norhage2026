@@ -6,6 +6,8 @@
  * @since 1.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 define( 'CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION', '1.0.0' );
 
 /**
@@ -28,24 +30,16 @@ add_action( 'after_setup_theme', 'norhage_register_menus' );
 
 /**
  * Localized slug for the "Services" CPT.
- * - Uses Site Language (locale) to pick a clean, ASCII slug.
- * - Can be overridden per site via:
- *     define('NH_SERVICES_SLUG', 'my-custom-slug');
- *   or a filter:
- *     add_filter('nh/services_slug', fn() => 'my-custom-slug');
  */
 function nh_get_services_slug(): string {
-	// Per-site hard override (optional)
 	if ( defined('NH_SERVICES_SLUG') && NH_SERVICES_SLUG ) {
 		return sanitize_title( NH_SERVICES_SLUG );
 	}
-
 	$locale = function_exists('determine_locale') ? determine_locale() : get_locale();
-
 	switch ( $locale ) {
 		case 'lt_LT': return 'paslaugos';
 		case 'nb_NO': return 'tjenester';
-		case 'sv_SE': return 'tjanster';   // "tjänster" → ASCII slug
+		case 'sv_SE': return 'tjanster';
 		case 'de_DE': return 'leistungen';
 		case 'fi_FI': return 'palvelut';
 		default:      return 'services';
@@ -57,22 +51,19 @@ function nh_get_services_slug(): string {
  */
 function register_services_post_type() {
 	$labels = array(
-		/* translators: Post type general name */
-		'name'                  => _x( 'Services', 'Post Type General Name', 'nh-theme' ),
-		/* translators: Post type singular name */
-		'singular_name'         => _x( 'Service', 'Post Type Singular Name', 'nh-theme' ),
-		'menu_name'             => __( 'Services', 'nh-theme' ),
-		'name_admin_bar'        => __( 'Service', 'nh-theme' ),
-		'add_new'               => __( 'Add New', 'nh-theme' ),
-		/* translators: %s: singular post type name */
-		'add_new_item'          => __( 'Add New Service', 'nh-theme' ),
-		'new_item'              => __( 'New Service', 'nh-theme' ),
-		'edit_item'             => __( 'Edit Service', 'nh-theme' ),
-		'view_item'             => __( 'View Service', 'nh-theme' ),
-		'all_items'             => __( 'All Services', 'nh-theme' ),
-		'search_items'          => __( 'Search Services', 'nh-theme' ),
-		'not_found'             => __( 'No services found.', 'nh-theme' ),
-		'not_found_in_trash'    => __( 'No services found in Trash.', 'nh-theme' ),
+		'name'               => _x( 'Services', 'Post Type General Name', 'nh-theme' ),
+		'singular_name'      => _x( 'Service', 'Post Type Singular Name', 'nh-theme' ),
+		'menu_name'          => __( 'Services', 'nh-theme' ),
+		'name_admin_bar'     => __( 'Service', 'nh-theme' ),
+		'add_new'            => __( 'Add New', 'nh-theme' ),
+		'add_new_item'       => __( 'Add New Service', 'nh-theme' ),
+		'new_item'           => __( 'New Service', 'nh-theme' ),
+		'edit_item'          => __( 'Edit Service', 'nh-theme' ),
+		'view_item'          => __( 'View Service', 'nh-theme' ),
+		'all_items'          => __( 'All Services', 'nh-theme' ),
+		'search_items'       => __( 'Search Services', 'nh-theme' ),
+		'not_found'          => __( 'No services found.', 'nh-theme' ),
+		'not_found_in_trash' => __( 'No services found in Trash.', 'nh-theme' ),
 	);
 
 	$slug = apply_filters( 'nh/services_slug', nh_get_services_slug() );
@@ -80,14 +71,12 @@ function register_services_post_type() {
 	$args = array(
 		'labels'        => $labels,
 		'public'        => true,
-		'show_in_rest'  => true, // Gutenberg/REST
+		'show_in_rest'  => true,
 		'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
 		'menu_position' => 5,
 		'menu_icon'     => 'dashicons-admin-tools',
-
-		// Localized permalinks
 		'rewrite'       => array( 'slug' => $slug, 'with_front' => false ),
-		'has_archive'   => $slug, // archive at /{slug}/
+		'has_archive'   => $slug,
 	);
 
 	register_post_type( 'service', $args );
@@ -95,15 +84,16 @@ function register_services_post_type() {
 add_action( 'init', 'register_services_post_type' );
 
 /**
- * Flush rewrites when the theme is (re)activated so the new slug takes effect.
- * (Also visit Settings → Permalinks → Save after changing the Site Language.)
+ * Flush rewrites on theme (re)activation.
  */
 add_action( 'after_switch_theme', function () {
 	flush_rewrite_rules();
 } );
 
+/**
+ * Enqueue assets
+ */
 function norhage_enqueue_assets() {
-	// Parent + custom styles
 	wp_enqueue_style(
 		'astra-custom-for-norhage-theme-css',
 		get_stylesheet_directory_uri() . '/style.css',
@@ -111,7 +101,6 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
-	// Load product page styles
 	wp_enqueue_style(
 		'norhage-custom-style',
 		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
@@ -119,16 +108,14 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
-	// Dark-mode toggle logic
 	wp_enqueue_script(
 		'theme-toggle',
 		get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
 		array(),
 		null,
-		true // load in footer
+		true
 	);
 
-	// Dark-mode stylesheet
 	wp_enqueue_style(
 		'norhage-dark-mode-css',
 		get_stylesheet_directory_uri() . '/assets/css/dark-mode.css',
@@ -136,7 +123,6 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
-	// Custom JS (your site-wide script)
 	wp_enqueue_script(
 		'norhage-custom-js',
 		get_stylesheet_directory_uri() . '/assets/js/script.js',
@@ -147,13 +133,139 @@ function norhage_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 
-// Always show the native page/post title (H1)
-add_filter( 'astra_the_title_enabled', '__return_true', 999 );
+/* --------------------------------------------------------------------------
+ * UTILITY BAR (topmost): Secondary menu (left) + Phone & FAQ (right)
+ * ----------------------------------------------------------------------- */
+add_action( 'astra_masthead_top', function () {
 
-// -----------------------------------------------------------------------------
-// Subcategory grid (kept, still useful on category pages)
-// -----------------------------------------------------------------------------
+	$menu_args = [
+		'container'   => false,
+		'menu_class'  => 'nh-utility-menu',
+		'fallback_cb' => '__return_empty_string',
+	];
 
+	$locations = get_nav_menu_locations();
+	if ( ! empty( $locations['secondary'] ) ) {
+		$menu_args['menu'] = (int) $locations['secondary'];
+	} else {
+		$maybe = wp_get_nav_menu_object( 'Info Menu' );
+		if ( $maybe ) {
+			$menu_args['menu'] = (int) $maybe->term_id;
+		}
+	}
+
+	ob_start();
+	wp_nav_menu( $menu_args );
+	$left_menu_html = trim( ob_get_clean() );
+
+	if ( $left_menu_html === '' ) {
+		$left_menu_html  = '<ul class="nh-utility-menu">';
+		$left_menu_html .= '<li><a href="' . esc_url( home_url( '/services/' ) ) . '">' . esc_html__( 'Services', 'nh-theme' ) . '</a></li>';
+		$left_menu_html .= '<li><a href="' . esc_url( get_permalink( get_option( 'page_for_posts' ) ) ) . '">' . esc_html__( 'Blog', 'nh-theme' ) . '</a></li>';
+		$left_menu_html .= '<li><a href="' . esc_url( home_url( '/contact-us/' ) ) . '">' . esc_html__( 'Contact Us', 'nh-theme' ) . '</a></li>';
+		$left_menu_html .= '</ul>';
+	}
+
+	?>
+	<div class="nh-utility" role="navigation" aria-label="<?php echo esc_attr__( 'Utility bar', 'nh-theme' ); ?>">
+		<div class="nh-utility__left"><?php echo $left_menu_html; // phpcs:ignore ?></div>
+		<div class="nh-utility__right">
+			<a class="nh-utility__tel" href="tel:+4917665106609">📞 +49 176 65 10 6609</a>
+			<span class="nh-utility__sep" aria-hidden="true">·</span>
+			<a class="nh-utility__faq" href="<?php echo esc_url( home_url( 'frequently-asked-questions-faq/' ) ); ?>">
+				<?php echo esc_html__( 'FAQ', 'nh-theme' ); ?>
+			</a>
+		</div>
+	</div>
+	<?php
+}, 10 );
+
+/* --------------------------------------------------------------------------
+ * COMPACT MAIN HEADER: logo + primary menu + tools (template part)
+ * ----------------------------------------------------------------------- */
+add_action( 'astra_masthead_bottom', function () {
+	// Render our unified header bar just below the utility bar.
+	locate_template( 'template-parts/headers/header-main.php', true, false );
+}, 12 );
+
+/* --------------------------------------------------------------------------
+ * Woo cart fragments for the cart count inside header-main.php
+ * ----------------------------------------------------------------------- */
+add_filter( 'woocommerce_add_to_cart_fragments', function( $fragments ) {
+	ob_start();
+	$count = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
+	?>
+	<span class="nh-cart-count"><?php echo (int) $count; ?></span>
+	<?php
+	$fragments['span.nh-cart-count'] = ob_get_clean();
+	return $fragments;
+} );
+
+/* --------------------------------------------------------------------------
+ * NEWS TICKER (plugin output) — shows between header and hero
+ * ----------------------------------------------------------------------- */
+add_action( 'astra_header_after', function () {
+	if ( function_exists( 'rtl_display_ticker' ) ) {
+		echo '<div class="nh-ticker-wrap">';
+		rtl_display_ticker();
+		echo '</div>';
+	}
+}, 15 ); // hero prints at 20
+
+/* --------------------------------------------------------------------------
+ * HERO / PAGE-HEADER SYSTEM (inject hero beneath header)
+ * ----------------------------------------------------------------------- */
+function nhhb_get_hero_image_url() {
+	if ( is_singular() ) {
+		$id  = get_queried_object_id();
+		$url = get_the_post_thumbnail_url( $id, 'full' );
+		if ( $url ) return $url;
+	}
+	return '';
+}
+
+function nhhb_get_hero_title() {
+	if ( is_front_page() ) {
+		return get_the_title( get_queried_object_id() );
+	}
+	if ( is_home() ) {
+		$page_for_posts = (int) get_option( 'page_for_posts' );
+		return $page_for_posts ? get_the_title( $page_for_posts ) : __( 'Blog', 'nh-theme' );
+	}
+	if ( is_singular() ) {
+		return get_the_title();
+	}
+	if ( is_search() ) {
+		return sprintf( __( 'Search results for “%s”', 'nh-theme' ), get_search_query() );
+	}
+	if ( is_archive() ) {
+		return get_the_archive_title();
+	}
+	return get_bloginfo( 'name' );
+}
+
+add_action( 'astra_header_after', function () {
+	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_category() || is_product_tag() || is_product() ) ) {
+		return; // no hero on shop/product surfaces
+	}
+
+	$data = array(
+		'bg'    => nhhb_get_hero_image_url(),
+		'title' => nhhb_get_hero_title(),
+	);
+
+	set_query_var( 'nhhb_hero', $data );
+
+	if ( is_front_page() ) {
+		locate_template( 'template-parts/headers/hero-home.php', true, false );
+	} else {
+		locate_template( 'template-parts/headers/hero-page.php', true, false );
+	}
+}, 20 );
+
+/* --------------------------------------------------------------------------
+ * Subcategory grid (kept)
+ * ----------------------------------------------------------------------- */
 add_action( 'woocommerce_before_shop_loop', 'show_subcategories_grid', 10 );
 function show_subcategories_grid() {
 	if ( ! is_product_category() ) {
@@ -161,14 +273,12 @@ function show_subcategories_grid() {
 	}
 
 	$category = get_queried_object();
-
 	$args = array(
 		'taxonomy'   => 'product_cat',
 		'child_of'   => $category->term_id,
 		'hide_empty' => false,
 		'parent'     => $category->term_id,
 	);
-
 	$subcategories = get_terms( $args );
 
 	if ( ! empty( $subcategories ) ) {
@@ -191,152 +301,9 @@ function show_subcategories_grid() {
 	}
 }
 
-// -----------------------------------------------------------------------------
-// Custom Astra header override
-// -----------------------------------------------------------------------------
-
-add_action( 'init', function () {
-	remove_all_actions( 'astra_header' );
-} );
-
-add_action( 'wp', function () {
-	add_action( 'astra_header', 'custom_norhage_header' );
-} );
-
-function custom_norhage_header() {
-	?>
-	<div class="custom-header-wrapper">
-		<!-- Secondary Header -->
-		<div class="custom-header-secondary">
-			<nav class="secondary-menu">
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'secondary',
-						'container'      => false,
-						'menu_class'     => 'secondary-menu-list',
-						'fallback_cb'    => false,
-						// "menu" is an admin-side menu name; if you rely on a label, localize it:
-						'menu'           => __( 'Info Menu', 'nh-theme' ),
-					)
-				);
-				?>
-			</nav>
-			<div class="secondary-contact">
-				<a href="tel:+4917665106609">📞 +49 176 65 10 6609</a>
-				<a href="<?php echo esc_url( home_url( 'frequently-asked-questions-faq/' ) ); ?>">
-					<?php echo esc_html__( 'FAQ', 'nh-theme' ); ?>
-				</a>
-			</div>
-		</div>
-
-		<!-- Top Header -->
-		<div class="custom-header-top">
-			<div class="custom-logo">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-					<img
-						src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1920.jpg' ); ?>"
-						srcset="
-						<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-768.jpg' ); ?> 768w,
-						<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1280.jpg' ); ?> 1280w,
-						<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-1920.jpg' ); ?> 1920w,
-						<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/header-2560.jpg' ); ?> 2560w
-						"
-						sizes="100vw"
-						width="1920" height="1080"
-						alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
-						class="site-logo"
-						loading="eager"
-						fetchpriority="high"
-						decoding="async" />
-				</a>
-			</div>
-
-			<div class="custom-header-right">
-				<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>">
-					<?php echo esc_html__( 'Sign in / My Account', 'nh-theme' ); ?>
-				</a>
-
-				<a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="cart-icon">
-					<img
-						src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/shopping-cart.png' ); ?>"
-						alt="<?php echo esc_attr__( 'Cart', 'nh-theme' ); ?>"
-						class="cart-image" />
-					<span class="cart-count">
-						<?php echo WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0; ?>
-					</span>
-				</a>
-
-				<button
-					id="theme-toggle"
-					class="theme-toggle"
-					type="button"
-					aria-label="<?php echo esc_attr__( 'Switch to dark mode', 'nh-theme' ); ?>"
-					data-dark-css="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/css/dark-mode.css' ); ?>"
-					data-sun-icon="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/sun.png' ); ?>"
-					data-moon-icon="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/moon.png' ); ?>">
-					<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/moon.png' ); ?>" alt="<?php echo esc_attr__( 'Toggle theme', 'nh-theme' ); ?>" />
-				</button>
-			</div>
-		</div>
-
-		<!-- Bottom Header -->
-		<div class="custom-header-bottom">
-			<div class="menu-search">
-				<div class="nrh-live-search">
-					<form method="get" class="header-search" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-						<input
-							type="search"
-							id="nrh-search-input"
-							name="s"
-							placeholder="<?php echo esc_attr__( 'Search products…', 'nh-theme' ); ?>"
-							autocomplete="off" />
-						<input type="hidden" name="post_type" value="product" />
-						<button type="submit" class="search-button" aria-label="<?php echo esc_attr__( 'Search', 'nh-theme' ); ?>">🔍</button>
-					</form>
-					<ul id="nrh-search-results" class="nrh-live-search-results"></ul>
-				</div>
-				<button class="menu-toggle" aria-label="<?php echo esc_attr__( 'Toggle menu', 'nh-theme' ); ?>" aria-expanded="false">☰</button>
-			</div>
-			<ul class="custom-menu">
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'primary',
-						'container'      => false,
-						'items_wrap'     => '%3$s',
-						'fallback_cb'    => false,
-					)
-				);
-				?>
-			</ul>
-		</div>
-
-		<!-- Ticker Line Output -->
-		<?php
-		if ( function_exists( 'rtl_display_ticker' ) ) {
-			rtl_display_ticker();
-		}
-		?>
-	</div>
-
-	<script>
-	document.addEventListener("DOMContentLoaded", function(){
-		const menuToggle  = document.querySelector(".menu-toggle");
-		const menu        = document.querySelector(".custom-menu");
-		menuToggle?.addEventListener("click", () => {
-			const isOpen = menu.classList.toggle("active");
-			menuToggle.setAttribute("aria-expanded", isOpen);
-		});
-	});
-	</script>
-	<?php
-}
-
-// -----------------------------------------------------------------------------
-// Include custom feature files
-// -----------------------------------------------------------------------------
-
+/* --------------------------------------------------------------------------
+ * Include custom feature files
+ * ----------------------------------------------------------------------- */
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
@@ -344,14 +311,11 @@ require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 
-// -----------------------------------------------------------------------------
-// Secondary product title
-// -----------------------------------------------------------------------------
-
+/* --------------------------------------------------------------------------
+ * Secondary product title
+ * ----------------------------------------------------------------------- */
 add_action( 'edit_form_after_title', function( $post ) {
-	if ( $post->post_type !== 'product' ) {
-		return;
-	}
+	if ( $post->post_type !== 'product' ) return;
 
 	$value = get_post_meta( $post->ID, '_secondary_product_title', true );
 	wp_nonce_field( 'secondary_product_title_nonce', 'secondary_product_title_nonce' );
@@ -363,21 +327,14 @@ add_action( 'edit_form_after_title', function( $post ) {
 } );
 
 add_action( 'save_post_product', function( $post_id ) {
-	if ( ! isset( $_POST['secondary_product_title_nonce'] ) || ! wp_verify_nonce( $_POST['secondary_product_title_nonce'], 'secondary_product_title_nonce' ) ) {
-		return;
-	}
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return;
-	}
-	if ( ! current_user_can( 'edit_post', $post_id ) ) {
-		return;
-	}
+	if ( ! isset( $_POST['secondary_product_title_nonce'] ) || ! wp_verify_nonce( $_POST['secondary_product_title_nonce'], 'secondary_product_title_nonce' ) ) return;
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
 	$val = isset( $_POST['secondary_product_title'] ) ? sanitize_text_field( $_POST['secondary_product_title'] ) : '';
 	update_post_meta( $post_id, '_secondary_product_title', $val );
 } );
 
-// Catalog: print subtitle directly under the product title (Astra hook)
 add_action( 'astra_woo_shop_title_after', function () {
 	$secondary = get_post_meta( get_the_ID(), '_secondary_product_title', true );
 	if ( $secondary ) {
@@ -385,7 +342,6 @@ add_action( 'astra_woo_shop_title_after', function () {
 	}
 }, 10 );
 
-// Single product: print subtitle right after H1 (Astra hook)
 add_action( 'astra_woo_single_title_after', function () {
 	$secondary = get_post_meta( get_the_ID(), '_secondary_product_title', true );
 	if ( $secondary ) {
@@ -395,61 +351,43 @@ add_action( 'astra_woo_single_title_after', function () {
 
 function nhg_output_secondary_title_single() {
 	global $product;
-	if ( ! $product ) {
-		return;
-	}
-
+	if ( ! $product ) return;
 	$secondary = get_post_meta( $product->get_id(), '_secondary_product_title', true );
 	if ( $secondary ) {
 		echo '<h2 class="product-secondary-title">' . esc_html( $secondary ) . '</h2>';
 	}
 }
 
-// -----------------------------------------------------------------------------
-// Blog category navigation
-// -----------------------------------------------------------------------------
-
+/* --------------------------------------------------------------------------
+ * Blog category navigation
+ * ----------------------------------------------------------------------- */
 function norhage_blog_category_nav() {
 	if ( is_home() || is_category() ) {
 		$current_cat_id = get_queried_object_id();
 
-		echo '<div class="blog-category-nav">';
-		echo '<ul>';
+		echo '<div class="blog-category-nav"><ul>';
 
-		// "All" link
 		$all_class = is_home() ? 'active' : '';
 		echo '<li><a class="' . esc_attr( $all_class ) . '" href="' . esc_url( get_permalink( get_option( 'page_for_posts' ) ) ) . '">' . esc_html__( 'All', 'nh-theme' ) . '</a></li>';
 
-		// Get all categories (including subcategories)
-		$categories = get_categories(
-			array(
-				'orderby'    => 'name',
-				'hide_empty' => true,
-			)
-		);
+		$categories = get_categories( array(
+			'orderby'    => 'name',
+			'hide_empty' => true,
+		) );
 
 		foreach ( $categories as $category ) {
 			$active = ( $current_cat_id === $category->term_id ) ? 'active' : '';
 			echo '<li><a class="' . esc_attr( $active ) . '" href="' . esc_url( get_category_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a></li>';
 		}
 
-		echo '</ul>';
-		echo '</div>';
+		echo '</ul></div>';
 	}
 }
 add_action( 'astra_primary_content_top', 'norhage_blog_category_nav' );
 
-// -----------------------------------------------------------------------------
-// Misc
-// -----------------------------------------------------------------------------
-
-// NOTE: You also add `__return_true` above with priority 999.
-// This filter here disables it at default priority (10).
-// If you intended to remove Astra archive title markup only,
-// consider using the dedicated Astra hooks or adjust priorities.
-add_filter( 'astra_the_title_enabled', '__return_false' );
-
-// enqueue category toggle
+/* --------------------------------------------------------------------------
+ * Misc / scripts
+ * ----------------------------------------------------------------------- */
 function astra_child_enqueue_scripts() {
 	wp_enqueue_script(
 		'category-toggle',
@@ -461,10 +399,40 @@ function astra_child_enqueue_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'astra_child_enqueue_scripts' );
 
-// remove uncategorized from category list
 add_filter( 'woocommerce_product_categories_widget_args', 'hide_uncategorized_category' );
 function hide_uncategorized_category( $args ) {
 	$uncategorized_id = get_option( 'default_product_cat' );
 	$args['exclude']  = array( $uncategorized_id );
 	return $args;
 }
+
+/**
+ * Disable Astra Header Builder output — we use our custom header instead.
+ */
+add_action( 'wp', function() {
+	// Remove Header Builder markup (desktop + mobile)
+	remove_action( 'astra_header', 'astra_header_builder_markup' );
+	remove_action( 'astra_header', 'astra_mobile_header_markup' );
+
+	// Optional: also remove old header template if active anywhere
+	remove_action( 'astra_masthead', 'astra_masthead_primary_template' );
+});
+
+/**
+ * Hide page title + featured image on Pages (Astra), so the hero can own them.
+ * Keeps the featured image available for your hero background.
+ */
+add_action( 'wp', function () {
+	if ( ! is_page() ) return;
+
+	// 1) Remove Astra's page title output
+	if ( function_exists( 'astra_entry_title' ) ) {
+		remove_action( 'astra_entry_content_before', 'astra_entry_title', 10 );
+	}
+
+	// 2) Remove Astra's featured image output for pages (covers common hooks)
+	if ( function_exists( 'astra_post_thumbnail' ) ) {
+		remove_action( 'astra_entry_content_before', 'astra_post_thumbnail', 8 );
+		remove_action( 'astra_entry_top',            'astra_post_thumbnail', 8 );
+	}
+});

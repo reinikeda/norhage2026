@@ -13,11 +13,11 @@ add_shortcode( 'live_product_search', 'nrh_live_search_form' );
 function nrh_live_search_form() {
 	$placeholder = esc_attr__( 'Search products…', 'nh-theme' );
 	return '
-    <div class="nrh-live-search">
-      <input type="search" id="nrh-search-input" placeholder="' . $placeholder . '" autocomplete="off" aria-label="' . $placeholder . '"/>
-      <ul id="nrh-search-results" class="nrh-live-search-results" role="listbox" aria-live="polite"></ul>
-    </div>
-  ';
+	<div class="nh-live-search">
+		<input type="search" id="nrh-search-input" placeholder="' . $placeholder . '" autocomplete="off" aria-label="' . $placeholder . '"/>
+		<ul id="nrh-search-results" class="nh-live-results" role="listbox" aria-live="polite"></ul>
+	</div>
+	';
 }
 
 // 2) AJAX handler (public + logged-in)
