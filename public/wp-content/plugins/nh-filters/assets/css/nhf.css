@@ -1,0 +1,336 @@
+/* =========================================================
+   Norhage Filters – Final Refined Category Sidebar Styles
+   ========================================================= */
+
+#nhf-sidebar {
+  padding: 0.75rem 0 1rem;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--nh-charcoal, #2C2A29);
+  border-top: 1px solid rgba(0,0,0,.08);
+  border-bottom: 1px solid rgba(0,0,0,.05);
+}
+
+.nhf-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--nh-forest, #1E3932);
+}
+
+/* =========================================================
+   Category List Structure
+   ========================================================= */
+
+.nhf-cat-list,
+.nhf-cat-sub {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nhf-cat-item {
+  border-radius: 6px;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+/* =========================================================
+   Toggle Buttons (Top Level Categories)
+   ========================================================= */
+
+.nhf-cat-toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: .35rem .4rem;
+  font-weight: 500;
+  border-radius: 6px;
+  color: inherit;
+  position: relative;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+/* Hover */
+.nhf-cat-toggle:hover,
+.nhf-cat-toggle:focus-visible {
+  background-color: rgba(0,112,74,0.06);
+  color: var(--nh-green, #00704A);
+}
+
+/* Open (expanded) state */
+.nhf-cat-item.is-open > .nhf-cat-toggle {
+  color: var(--nh-green, #00704A);
+  font-weight: 600;
+  background-color: rgba(0,112,74,0.05);
+}
+
+/* Hover on open state */
+.nhf-cat-item.is-open > .nhf-cat-toggle:hover {
+  background-color: rgba(0,112,74,0.08);
+}
+
+/* Chevron */
+.nhf-icon::before {
+  content: "›";
+  display: inline-block;
+  font-size: 0.9em;
+  opacity: 0.7;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.nhf-cat-item.is-open > .nhf-cat-toggle .nhf-icon::before {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+/* =========================================================
+   Subcategories
+   ========================================================= */
+
+.nhf-cat-sub {
+  margin: 0.25rem 0 0.5rem 0.75rem;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(0,0,0,.05);
+  transition: all .25s ease-in-out;
+}
+
+.nhf-cat-item.is-open > .nhf-cat-sub {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.nhf-cat-sub li {
+  margin: 0.25rem 0;
+}
+
+.nhf-cat-sub a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  padding: 0.2rem 0.15rem;
+  border-radius: 4px;
+  transition: color .2s ease, background-color .2s ease;
+}
+
+.nhf-cat-sub a:hover {
+  color: var(--nh-green, #00704A);
+  background-color: rgba(0,112,74,0.06);
+}
+
+/* Active subcategory */
+.nhf-cat-sub .is-active > a {
+  color: var(--nh-green, #00704A);
+  font-weight: 600;
+  background-color: rgba(0,112,74,0.08);
+  position: relative;
+}
+
+/* "All" link style */
+.nhf-all a {
+  font-style: italic;
+  color: rgba(0,0,0,.7);
+}
+.nhf-all a:hover {
+  color: var(--nh-green, #00704A);
+}
+
+/* =========================================================
+   Accent Lines (Open & Active States)
+   ========================================================= */
+
+/* Top-level accent line */
+.nhf-cat-item.is-open > .nhf-cat-toggle::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--nh-green, #00704A);
+  border-radius: 2px;
+  opacity: 0;
+  transform: scaleY(0.6);
+  transform-origin: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.nhf-cat-item.is-open > .nhf-cat-toggle::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* Active subcategory accent */
+.nhf-cat-sub .is-active > a::before {
+  content: "";
+  position: absolute;
+  left: -0.75rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--nh-green, #00704A);
+  border-radius: 2px;
+  opacity: 0;
+  transform: scaleY(0.6);
+  transform-origin: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.nhf-cat-sub .is-active > a::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* Hover intensifies accent */
+.nhf-cat-item.is-open > .nhf-cat-toggle:hover::before,
+.nhf-cat-sub .is-active > a:hover::before {
+  background-color: var(--nh-forest, #1E3932);
+}
+
+/* =========================================================
+   Norhage Filters — Filter Block (clean, conflict-safe)
+   ========================================================= */
+
+.nhf-filters{
+  margin-top:1.25rem;
+  padding-top:1rem;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+
+/* Sections */
+.nhf-filter{ margin-bottom:.75rem; }
+
+/* Header button */
+.nhf-filter-toggle{
+  all:unset;
+  cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center;
+  width:100%;
+  padding:.35rem .4rem;
+  border-radius:6px;
+  font-weight:500;
+  color:inherit;
+  transition:background-color .25s ease, color .25s ease;
+}
+
+/* Hover (subtle) */
+.nhf-filter-toggle:hover,
+.nhf-filter-toggle:focus-visible{
+  color:var(--nh-green,#00704A);
+  background-color:rgba(0,112,74,.06);
+}
+
+/* OPEN STATE — keep it light (override any theme rules) */
+.nhf-filters .nhf-filter.is-open > .nhf-filter-toggle{
+  color:var(--nh-green,#00704A);
+  background-color:rgba(0,112,74,.05); /* soft tint */
+  font-weight:600;
+  box-shadow:none; border:none;
+}
+
+/* Chevron */
+.nhf-filter-toggle .nhf-icon::before{
+  content:"›";
+  font-size:.9em; opacity:.6;
+  transition:transform .25s ease, opacity .25s ease;
+}
+.nhf-filter.is-open .nhf-filter-toggle .nhf-icon::before{
+  transform:rotate(90deg); opacity:1;
+}
+
+/* Body */
+.nhf-filter-body{
+  display:none;
+  margin:.3rem 0 0 .75rem;
+}
+.nhf-filter.is-open .nhf-filter-body{
+  display:block; animation:nhfFadeIn .25s ease;
+}
+@keyframes nhfFadeIn{
+  from{opacity:0; transform:translateY(-2px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+/* Checkbox rows */
+.nhf-filter-body label{
+  display:block;
+  margin:.25rem 0;
+  cursor:pointer; user-select:none;
+}
+.nhf-filter-body input[type="checkbox"]{
+  accent-color:var(--nh-green,#00704A);
+  width:16px; height:16px; margin-right:6px; vertical-align:-2px;
+}
+
+/* Toggles (In stock / On sale) – separate lines, same look */
+.nhf-filter--toggles label{
+  display:block; margin:.35rem 0;
+}
+.nhf-filter--toggles input[type="checkbox"]{
+  accent-color:var(--nh-green,#00704A);
+  width:16px; height:16px; margin-right:8px; vertical-align:-2px;
+}
+
+/* Price slider placeholder (visual only for now) */
+.nhf-price-slider{
+  position:relative;
+  height:4px; border-radius:2px; margin:.5rem 0;
+  background:linear-gradient(to right, var(--nh-green,#00704A) 0%, var(--nh-mint,#C3E8C6) 100%);
+}
+.nhf-price-slider::after{
+  content:"●"; position:absolute; right:20%; top:-6px;
+  color:var(--nh-green,#00704A); font-size:12px;
+}
+.nhf-price-values{ font-size:.9em; color:rgba(0,0,0,.7); }
+
+/* Reset */
+.nhf-reset{
+  display:block; margin-top:1rem; text-align:right;
+  font-size:.9em; color:rgba(0,0,0,.6); text-decoration:none;
+}
+.nhf-reset:hover{ color:var(--nh-green,#00704A); text-decoration:underline; }
+
+/* Apply bar */
+.nhf-applybar{
+  display:flex; align-items:center; gap:.75rem; justify-content:flex-end;
+  margin-top:.75rem; border-top:1px solid rgba(0,0,0,.06); padding-top:.75rem;
+}
+.nhf-applybtn{
+  appearance:none; border:0; border-radius:8px; padding:.45rem .7rem;
+  background:var(--nh-green,#00704A); color:#fff; font-weight:600; cursor:pointer;
+}
+.nhf-applybtn:hover{ background:var(--nh-forest,#1E3932); }
+
+/* Price inputs row */
+.nhf-price-row{ display:flex; align-items:center; gap:.5rem; }
+.nhf-price-field{
+  display:flex; align-items:center; gap:.3rem;
+  border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:.25rem .4rem;
+}
+.nhf-price-field input{ border:0; outline:0; width:90px; background:transparent; }
+.nhf-price-sep{ opacity:.7; }
+
+/* Active group header (has selected values) */
+.nhf-filter.is-active-group > .nhf-filter-toggle {
+  color: var(--nh-green, #00704A);
+}
+
+/* Optional tiny dot to hint "has selections" even when collapsed */
+.nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon {
+  position: relative;
+}
+.nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon::after {
+  content: "";
+  position: absolute;
+  right: -6px; top: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--nh-green, #00704A);
+  transform: translateY(-50%);
+  opacity: .6;
+}

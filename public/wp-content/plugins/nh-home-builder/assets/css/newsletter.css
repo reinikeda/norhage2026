@@ -1,0 +1,100 @@
+/* ===== NH Home Builder – Newsletter / Subscribe (fixed contrast + perfect alignment) ===== */
+
+:root {
+  --nl-bg:        var(--nh-forest, #1E3932);
+  --nl-bg-soft:   color-mix(in srgb, var(--nl-bg) 85%, #ffffff);
+  --nl-text:      #ffffff;
+  --nl-muted:     color-mix(in srgb, #ffffff 78%, #000);
+  --nl-accent:    var(--nh-green, #00704A);
+  --nl-pill-bg:   #fff;
+  --nl-shadow:    0 10px 26px rgba(0,0,0,.10);
+  --nl-radius:    4px;
+}
+
+.nhhb-newsletter { margin: 28px 0; }
+
+.nhhb-newsletter .nhhb-nl-inner{
+  display:grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items:center;                 /* vertical alignment */
+  gap: 20px;
+  padding: 34px clamp(18px, 3vw, 42px);
+  border-radius: var(--nl-radius);
+  color: var(--nl-text);
+  background: linear-gradient(90deg, var(--nl-bg) 0%, var(--nl-bg-soft) 100%);
+  box-shadow: var(--nl-shadow);
+}
+
+/* Title & copy — force readable white, override theme h2 rules */
+.nhhb-newsletter .nhhb-nl-title{
+  margin: 0 0 8px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+  font-size: clamp(22px, 3vw, 30px);
+  color: #fff !important;             /* <-- stops theme override */
+  text-shadow: 0 1px 2px rgba(0,0,0,.25);
+}
+.nhhb-newsletter .nhhb-nl-text{
+  margin:0;
+  font-size: clamp(14px, 1.7vw, 16px);
+  color: rgba(255,255,255,.92);
+}
+
+/* Form — pixel-perfect alignment */
+.nhhb-newsletter .nhhb-nl-form{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  width:100%;
+}
+
+:root { --nl-field-h: 48px; }         /* single source of truth */
+
+.nhhb-newsletter .nhhb-nl-field{
+  flex:1;
+  display:flex;
+  align-items:center;
+  height: var(--nl-field-h);
+  background: var(--nl-pill-bg);
+  border-radius: 999px;
+  padding: 0 16px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+}
+.nhhb-newsletter .nhhb-nl-field input{
+  width:100%;
+  height: 100%;
+  line-height: var(--nl-field-h);
+  border:0; outline:0; background:transparent;
+  font-size:15px; color:#1f2937;
+}
+.nhhb-newsletter .nhhb-nl-field input::placeholder{ color:#9aa3af; }
+
+/* Button exactly same height as field */
+.nhhb-newsletter .nhhb-nl-btn{
+  display:flex; align-items:center; justify-content:center;
+  height: var(--nl-field-h);
+  padding: 0 24px;
+  border:0; border-radius:999px; cursor:pointer;
+  font-weight:700; font-size:15px;
+  background: var(--nl-accent); color:#fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,.15);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.nhhb-newsletter .nhhb-nl-btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.18); }
+.nhhb-newsletter .nhhb-nl-btn:active{ transform: translateY(0); opacity:.92; }
+
+.nhhb-newsletter .nhhb-nl-consent{
+  grid-column:1 / -1;
+  margin:4px 12px 0;
+  font-size:12px;
+  color: var(--nl-muted);
+}
+
+/* Mobile */
+@media (max-width:900px){
+  .nhhb-newsletter .nhhb-nl-inner{ grid-template-columns:1fr; text-align:center; gap:18px; }
+  .nhhb-newsletter .nhhb-nl-form{ flex-direction:column; align-items:stretch; }
+  .nhhb-newsletter .nhhb-nl-btn{ width:100%; }
+}

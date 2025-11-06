@@ -1,0 +1,168 @@
+/* ===== NHHB – Browse by Category (Refined + Unified Button Style) ===== */
+
+.nhhb-browse-cats {
+  margin: 28px 0 8px;
+}
+
+/* ---------- Header ---------- */
+.nhhb-cats-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.nhhb-cats-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--nh-charcoal);
+  font-weight: 800;
+}
+
+/* ---------- Arrows (perfect circles, pixel-correct) ---------- */
+.nhhb-cats-arrows {
+  display: flex;
+  gap: 10px;
+}
+
+.nhhb-cat-prev,
+.nhhb-cat-next {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px;
+  min-height: 42px;
+  aspect-ratio: 1 / 1;            /* ensures square ratio */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;             /* perfect circle */
+  background: transparent;
+  border: 1px solid #d9ddd9;
+  color: var(--nh-charcoal);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 0;                 /* remove text height influence */
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.nhhb-cat-prev:hover,
+.nhhb-cat-next:hover {
+  background: var(--nh-green);
+  color: #fff;
+  border-color: var(--nh-green);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 112, 74, 0.15);
+}
+
+.nhhb-cat-prev:active,
+.nhhb-cat-next:active {
+  transform: translateY(0);
+}
+
+/* ---------- Category track ---------- */
+.nhhb-cats-track {
+  display: flex;
+  gap: 36px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  padding: 2px 4px 6px 4px;
+}
+
+/* Hide scrollbars */
+.nhhb-cats-track::-webkit-scrollbar { display: none; }
+.nhhb-cats-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---------- Category item ---------- */
+.nhhb-cat {
+  flex: 0 0 auto;
+  width: 180px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--nh-charcoal);
+  scroll-snap-align: start;
+  transition: transform 0.25s ease;
+}
+
+.nhhb-cat-figure {
+  width: 128px;
+  height: 128px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nh-offwhite) 70%, white);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.015);
+  transition: all 0.3s ease;
+}
+
+.nhhb-cat-figure img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.nhhb-cat:hover .nhhb-cat-figure {
+  background: var(--nh-cream);
+  transform: translateY(-3px);
+}
+
+.nhhb-cat:hover .nhhb-cat-figure img {
+  transform: scale(1.05);
+}
+
+/* ---------- Category name ---------- */
+.nhhb-cat-name {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.25;
+  position: relative;
+  color: var(--nh-charcoal);
+  transition: color 0.2s ease;
+}
+
+.nhhb-cat-name::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: var(--nh-green);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: 50% 50%;
+  transition: transform 0.22s ease;
+  border-radius: 1px;
+}
+
+.nhhb-cat:hover .nhhb-cat-name {
+  color: var(--nh-green);
+}
+.nhhb-cat:hover .nhhb-cat-name::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ---------- Empty state ---------- */
+.nhhb-cats-empty {
+  color: #8a94a6;
+  font-style: italic;
+  padding: 10px 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .nhhb-cats-title { font-size: 24px; }
+  .nhhb-cat { width: 160px; }
+  .nhhb-cat-figure { width: 114px; height: 114px; }
+  .nhhb-cat-figure img { width: 64px; height: 64px; }
+}

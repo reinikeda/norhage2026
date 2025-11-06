@@ -1,0 +1,31 @@
+/* =========================================================
+ * NH Home Builder – Core Tokens
+ * Shared color palette, typography, radii, shadows, spacing
+ * ========================================================= */
+
+:root {
+  /* ---- Brand Palette ---- */
+  --nh-green:      #00704A; /* Primary / CTAs / links */
+  --nh-forest:     #1E3932; /* Deep headers / footer / active */
+  --nh-brown:      #4B2C20; /* Accent deep */
+  --nh-cream:      #F1E6D6; /* Section bg */
+  --nh-offwhite:   #FAF7F2; /* Site bg */
+  --nh-charcoal:   #2C2A29; /* Text */
+  --nh-mint:       #C3E8C6; /* Soft border/hover */
+  --nh-gold:       #C89F63; /* Premium accent */
+
+  /* ---- Neutrals & Utility ---- */
+  --nh-white:      #ffffff;
+  --nh-black:      #000000;
+  --nh-bg-tint:    #FDFBF8; /* Lighter warm tint (Option 1) */
+  --nh-shadow:     0 8px 24px rgba(0,0,0,.08);
+  --nh-radius-lg:  22px;
+  --nh-radius-md:  14px;
+  --nh-radius-sm:  8px;
+
+  /* ---- Typography scale ---- */
+  --nh-font-main:  "Inter", "Helvetica Neue", Arial, sans-serif;
+  --nh-h1-size:    46px;
+  --nh-h2-size:    34px;
+  --nh-body-size:  16px;
+}

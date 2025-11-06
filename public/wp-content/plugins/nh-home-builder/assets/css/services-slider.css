@@ -1,0 +1,160 @@
+/* NH Home Builder – Services Slider styles */
+/* Path: css/services-slider.css */
+
+.nhhb-services{position:relative;margin:36px 0}
+
+/* container */
+.nhhb-services .nhhb-services-swiper{
+  width:100%;
+  height:clamp(320px,42vw,560px);
+  border-radius:4px;                 /* ← 4px radius */
+  overflow:hidden;                   /* contain everything */
+  position:relative;
+  background:#0b0b0b;
+  box-shadow:0 10px 30px rgba(0,0,0,.10);
+}
+
+/* slides */
+.nhhb-services .swiper-slide{
+  position:relative;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;                   /* ← prevents neighbor bleed */
+}
+
+/* background image */
+.nhhb-svc-bg{
+  position:absolute; inset:0;
+  background-size:cover;
+  background-position:center;
+  /* removed scaling to avoid bleed */
+}
+
+/* readability overlay */
+.nhhb-services .swiper-slide::before{
+  content:"";
+  position:absolute; inset:0; z-index:1;
+  background:
+    radial-gradient(60% 60% at 50% 55%, rgba(0,0,0,.40) 0%, rgba(0,0,0,.60) 100%),
+    linear-gradient(to top, rgba(0,0,0,.35), rgba(0,0,0,.10));
+}
+
+/* content */
+.nhhb-svc-inner{
+  position:relative; z-index:2;
+  text-align:center;
+  max-width:min(900px,92%);
+  padding-inline:20px;
+  text-wrap:balance;
+}
+
+.nhhb-svc-icon{
+  width:70px; height:70px; border-radius:999px;
+  background:rgba(255,255,255,.08);
+  display:inline-flex; align-items:center; justify-content:center;
+  margin:0 auto 12px;
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(4px);
+}
+.nhhb-svc-icon img{max-width:42px; max-height:42px; display:block}
+
+.nhhb-svc-eyebrow{
+  letter-spacing:.14em; font-size:.78rem; opacity:.92;
+  margin-bottom:2px; text-transform:uppercase;
+  color:#fff;
+}
+
+.nhhb-svc-title{
+  color:#fff;                         /* ← brighter title */
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+  font-size:clamp(22px,3.2vw,40px);
+  line-height:1.18; font-weight:700;
+  margin:.1em 0 .35em;
+}
+
+.nhhb-svc-desc{
+  font-size:clamp(14px,1.1vw,18px);
+  opacity:.96; margin:0 auto 18px;
+  max-width:70ch;
+  color:#fff;
+}
+
+/* CTA */
+.nhhb-svc-cta{
+  display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center;
+}
+.nhhb-svc-btn{
+  -webkit-appearance:none; appearance:none;
+  border:0; border-radius:999px;
+  padding:10px 18px;
+  font-weight:600;                   /* ← lighter text */
+  cursor:pointer;
+  background:var(--nh-green, #00704A); color:#fff; text-decoration:none;
+  box-shadow:0 6px 16px rgba(0,112,74,.22);
+  transition:transform .12s ease, background .2s ease, box-shadow .2s ease;
+}
+.nhhb-svc-btn:hover{ background:var(--nh-forest, #1E3932); box-shadow:0 8px 18px rgba(30,57,50,.30); }
+.nhhb-svc-btn:active{ transform:translateY(1px); }
+.nhhb-svc-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+
+/* arrows */
+.nhhb-svc-nav{
+  --size:40px;
+  position:absolute; top:50%; transform:translateY(-50%);
+  z-index:5;
+  width:var(--size); height:var(--size);
+  border-radius:999px; border:1px solid rgba(255,255,255,.2);
+  background:rgba(10,10,10,.35);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  backdrop-filter: blur(4px);
+  transition:background .2s ease, border-color .2s ease, transform .08s ease;
+}
+.nhhb-svc-prev{ left:16px; }
+.nhhb-svc-next{ right:16px; }
+.nhhb-svc-nav:hover{ background:rgba(10,10,10,.5); border-color:rgba(255,255,255,.35); }
+.nhhb-svc-nav:active{ transform:translateY(-50%) scale(.98); }
+.nhhb-svc-nav svg{ width:20px; height:20px; fill:#fff; opacity:.95; }
+
+/* dots */
+.nhhb-svc-pagination{
+  position:absolute; left:0; right:0; bottom:14px; z-index:6;
+  display:flex; justify-content:center; gap:8px;
+}
+.nhhb-svc-pagination .swiper-pagination-bullet{
+  width:8px; height:8px; border-radius:999px;
+  background:#fff; opacity:.55; transition:opacity .2s ease, transform .2s ease;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.nhhb-svc-pagination .swiper-pagination-bullet-active{
+  opacity:1; transform:scale(1.1);
+}
+
+/* section title */
+.nhhb-svc-section-title{
+  margin:0 0 14px 0;
+  font-weight:800;
+  color:var(--nh-forest, #1E3932);
+}
+
+/* empty state */
+.nhhb-services-empty{
+  margin:0; padding:16px;
+  border:1px dashed #d4d4d4; border-radius:10px;
+  background:#fafafa; color:#666; text-align:center;
+}
+
+/* mobile tweaks */
+@media (max-width: 768px){
+  .nhhb-svc-nav{ --size:36px; }
+  .nhhb-svc-title{ font-size:clamp(20px,6vw,32px); }
+  .nhhb-svc-desc{ font-size:15px; max-width:85%; }
+  .nhhb-svc-btn{ padding:9px 16px; }
+}
+
+/* very small screens */
+@media (max-width: 420px){
+  .nhhb-services .nhhb-services-swiper{ height:clamp(280px,50vw,420px); }
+}
