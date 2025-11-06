@@ -105,7 +105,6 @@ function nhf_expand_with_variations( array $parent_ids ): array {
 	return array_values( array_unique( array_map( 'absint', $all ) ) );
 }
 
-
 /* ------------------------------------------------------------
  *  Category Tree (unchanged)
  * ------------------------------------------------------------ */
@@ -168,7 +167,6 @@ function nhf_render_categories() {
 
 	echo '</ul>';
 }
-
 
 /* ------------------------------------------------------------
  *  Shortcode: [nh_filters_sidebar]
@@ -274,7 +272,6 @@ add_shortcode( 'nh_filters_sidebar', function() {
 
 	return ob_get_clean();
 });
-
 
 /* ------------------------------------------------------------
  *  Apply GET filters to WooCommerce archive queries (no price)

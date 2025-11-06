@@ -1,25 +1,34 @@
+/* =========================================================
+   Dark Mode – consolidated (no duplicates)
+   ========================================================= */
+
 /* =========================
-   Dark Mode Palette
+   0) Palette / Tokens
    ========================= */
 body.dark-mode{
-  /* tokens */
-  --dm-bg:        #1A1A18; /* site background */
-  --dm-surface:   #2E2E2A; /* section/card surface */
-  --dm-forest:    #102923; /* deep base / headers / pressed */
-  --dm-text:      #EAE9E5; /* primary text */
+  /* lifted ~8% for better contrast with transparent media */
+  --dm-bg:        #20211F; /* site background (was #1A1A18) */
+  --dm-surface:   #343530; /* section/card surface (was #2E2E2A) */
+  --dm-forest:    #14332B; /* deep headers/pressed (was #102923) */
+  --dm-text:      #ECEAE6; /* primary text */
   --dm-primary:   #36B47A; /* accent/CTA green */
-  --dm-border:    #446B58; /* soft border / hover outline */
-  --dm-brown:     #C6A58A; /* warm accent (optional) */
-  --dm-gold:      #E3C58F; /* premium accent (optional) */
+  --dm-border:    #3E5F50; /* soft border/hover outline */
+  --dm-brown:     #C6A58A; /* optional accent */
+  --dm-gold:      #E3C58F; /* optional accent */
+
+  /* NEW: neutral plate behind transparent AVIF/PNG */
+  --dm-media:     #262724;
 }
 
-/* === Base Backgrounds & Text === */
+/* =========================
+   1) Core surfaces & type
+   ========================= */
 body.dark-mode{
   background-color: var(--dm-bg);
   color: var(--dm-text);
 }
 
-/* === Headings === */
+/* Headings */
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
@@ -27,14 +36,14 @@ body.dark-mode h4{
   color: var(--dm-primary);
 }
 
-/* subheads / muted headings */
+/* Subheads / muted headings */
 body.dark-mode .secondary-title,
 body.dark-mode .woocommerce-product-details__short-description h2,
 body.dark-mode .related.products h2{
   color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
 }
 
-/* === Ticker Wrapper === */
+/* Ticker wrapper */
 body.dark-mode #rtl-ticker-wrapper{
   background-color: var(--dm-forest);
   border-top: 1px solid var(--dm-border);
@@ -42,7 +51,9 @@ body.dark-mode #rtl-ticker-wrapper{
   color: var(--dm-text);
 }
 
-/* === Buttons (global) === */
+/* =========================
+   2) Buttons & Links
+   ========================= */
 body.dark-mode .button,
 body.dark-mode button,
 body.dark-mode input[type="submit"]{
@@ -54,13 +65,20 @@ body.dark-mode input[type="submit"]{
 body.dark-mode .button:hover,
 body.dark-mode button:hover,
 body.dark-mode input[type="submit"]:hover{
-  /* slightly brighter, still grounded */
   background-color: color-mix(in srgb, var(--dm-primary) 65%, var(--dm-forest) 35%);
   border-color: var(--dm-primary);
   color: #fff;
 }
 
-/* === Price & Ratings === */
+/* Links */
+body.dark-mode a{ color: var(--dm-primary); }
+body.dark-mode a:hover{
+  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
+}
+
+/* =========================
+   3) Commerce highlights
+   ========================= */
 body.dark-mode .price,
 body.dark-mode .woocommerce-Price-amount,
 body.dark-mode .amount,
@@ -68,13 +86,15 @@ body.dark-mode .woocommerce-product-rating{
   color: var(--dm-primary);
 }
 
-/* === Attributes (labels and wrap text) === */
+/* Attribute labels & wrap text */
 body.dark-mode .variations_form .label label,
 body.dark-mode .single_variation_wrap{
   color: color-mix(in srgb, var(--dm-text) 75%, var(--dm-primary) 25%);
 }
 
-/* === Quantity box & form fields === */
+/* =========================
+   4) Forms / Inputs
+   ========================= */
 body.dark-mode input.qty,
 body.dark-mode input[type="number"],
 body.dark-mode select,
@@ -88,7 +108,9 @@ body.dark-mode input[type="tel"]{
   border-radius: 4px;
 }
 
-/* === “Buy a Complete Set” / bundle panels === */
+/* =========================
+   5) Panels / Tabs / Tables
+   ========================= */
 body.dark-mode #nc-complete-set{
   background-color: var(--dm-surface);
   padding: 24px;
@@ -97,14 +119,14 @@ body.dark-mode #nc-complete-set{
   color: var(--dm-text);
 }
 
-/* === Tabs (Description / Additional Info etc.) === */
+/* Tabs */
 body.dark-mode .woocommerce-Tabs-panel,
 body.dark-mode .woocommerce-tabs ul.tabs li a{
   color: var(--dm-text);
   border-color: var(--dm-border);
 }
 
-/* === Tables (cart, checkout, bundle lists) === */
+/* Tables (cart/checkout/lists) */
 body.dark-mode table.woocommerce-cart-form,
 body.dark-mode .woocommerce table.shop_table{
   background-color: var(--dm-surface);
@@ -119,7 +141,9 @@ body.dark-mode table.shop_table td{
   background-color: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-forest) 15%);
 }
 
-/* === Checkbox & Filters === */
+/* =========================
+   6) Filters / Checkboxes
+   ========================= */
 body.dark-mode input[type="checkbox"]{
   accent-color: var(--dm-primary);
   background-color: var(--dm-surface);
@@ -129,22 +153,38 @@ body.dark-mode .wc-block-product-filter-checkbox-list__text{
   color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
 }
 
-/* === Links === */
-body.dark-mode a{ color: var(--dm-primary); }
-body.dark-mode a:hover{
-  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
-}
-
-/* === Product Thumbnails & Gallery === */
+/* =========================
+   7) Product & Category media
+   ========================= */
+/* Neutral plate under transparent AVIF/PNG */
+body.dark-mode .woocommerce ul.products li.product img,
 body.dark-mode .woocommerce-product-gallery__image img,
-body.dark-mode .woocommerce ul.products li.product img{
-  background-color: color-mix(in srgb, var(--dm-surface) 90%, var(--dm-forest) 10%);
-  padding: 4px;
-  border: 1px solid var(--dm-border);
-  border-radius: 4px;
+body.dark-mode .product-category img{
+  background-color: var(--dm-media);
+  border: 1px solid color-mix(in srgb, var(--dm-border) 85%, white 15%);
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(255,255,255,.04);
 }
 
-/* === Footer === */
+/* Subtle lift on hover */
+body.dark-mode .woocommerce ul.products li.product:hover img,
+body.dark-mode .product-category a:hover img{
+  background-color: color-mix(in srgb, var(--dm-media) 80%, var(--dm-surface) 20%);
+  border-color: var(--dm-primary);
+}
+
+/* Titles / captions readability */
+body.dark-mode .woocommerce-loop-product__title,
+body.dark-mode .product-category .woocommerce-loop-category__title{
+  color: color-mix(in srgb, var(--dm-text) 88%, black 12%);
+}
+
+/* =========================
+   8) Footer & Breadcrumbs
+   ========================= */
 body.dark-mode footer,
 body.dark-mode .site-footer{
   background-color: color-mix(in srgb, var(--dm-forest) 75%, var(--dm-bg) 25%);
@@ -155,12 +195,13 @@ body.dark-mode .site-footer a:hover{
   color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
 }
 
-/* === Breadcrumbs === */
 body.dark-mode .woocommerce-breadcrumb{
   color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
 }
 
-/* === Notices (success/info/error) — calm, readable === */
+/* =========================
+   9) Notices
+   ========================= */
 body.dark-mode .woocommerce-message,
 body.dark-mode .woocommerce-info,
 body.dark-mode .woocommerce-error{
@@ -169,9 +210,9 @@ body.dark-mode .woocommerce-error{
   border-left: 4px solid var(--dm-primary);
 }
 
-/* =========================================
-   1) Paginator — dark mode
-   ========================================= */
+/* =========================
+   10) Pagination
+   ========================= */
 body.dark-mode nav.woocommerce-pagination .page-numbers{
   background: transparent;
   border: 1px solid transparent;
@@ -187,20 +228,24 @@ body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover{
 body.dark-mode nav.woocommerce-pagination .page-numbers.current{
   background: var(--dm-primary);
   border-color: var(--dm-primary);
-  color: #0f2019; /* subtle ink on bright green */
+  color: #0f2019;
 }
 body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover{
   background: var(--dm-forest);
   border-color: var(--dm-forest);
   color: #fff;
 }
-body.dark-mode nav.woocommerce-pagination .page-numbers.dots{ color: color-mix(in srgb, var(--dm-text) 60%, black 40%); }
+body.dark-mode nav.woocommerce-pagination .page-numbers.dots{
+  color: color-mix(in srgb, var(--dm-text) 60%, black 40%);
+}
 body.dark-mode nav.woocommerce-pagination .prev,
-body.dark-mode nav.woocommerce-pagination .next{ color: var(--dm-primary); }
+body.dark-mode nav.woocommerce-pagination .next{
+  color: var(--dm-primary);
+}
 
-/* =========================================
-   2) Custom fields — W/L (mm) controls
-   ========================================= */
+/* =========================
+   11) Custom size controls
+   ========================= */
 body.dark-mode .nh-size-ui .nh-mm-qty{
   background: var(--dm-surface);
   border: 1px solid var(--dm-border);
@@ -220,9 +265,10 @@ body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder{
   color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
 }
 
-/* =========================================
-   3) Selection boxes — attribute buttons
-   ========================================= */
+/* =========================
+   12) Attribute & Cut toggles
+   ========================= */
+/* Attribute buttons */
 body.dark-mode .variations_form .nh-attr-btn{
   background: var(--dm-surface);
   border-color: var(--dm-border) !important;
@@ -234,7 +280,6 @@ body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):hover{
   color: #fff !important;
   transform: translateY(-1px);
 }
-/* selected & pressed */
 body.dark-mode .variations_form .nh-attr-btn.is-selected{
   background: var(--dm-primary) !important;
   border-color: var(--dm-primary) !important;
@@ -246,7 +291,7 @@ body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
   color: #fff !important;
 }
 
-/* Cutting Type toggle to match */
+/* Cutting Type toggle */
 body.dark-mode .nh-cut-btn{
   background: var(--dm-surface);
   border-color: var(--dm-border);
@@ -269,9 +314,9 @@ body.dark-mode .nh-cut-btn.is-active:hover{
   color: #fff;
 }
 
-/* =========================================
-   4) Price summary card
-   ========================================= */
+/* =========================
+   13) Price summary card
+   ========================= */
 body.dark-mode .nh-price-summary{
   background: var(--dm-surface);
   border: 1px solid var(--dm-border);
@@ -293,9 +338,9 @@ body.dark-mode #nh-price-summary .nh-ps-total-val ins{
   color: var(--dm-text);
 }
 
-/* =========================================
-   5) Bundle box (Complete set)
-   ========================================= */
+/* =========================
+   14) Bundle box (Complete set)
+   ========================= */
 body.dark-mode #nc-complete-set.nc-bundle{
   --nc-border: 1px solid var(--dm-border);
   --nc-bg:     var(--dm-surface);
@@ -314,8 +359,8 @@ body.dark-mode .nc-bundle-header{
   border-bottom: var(--nc-border);
 }
 body.dark-mode .nc-col-image img{
-  background: color-mix(in srgb, var(--dm-surface) 90%, var(--dm-forest) 10%);
-  border: 1px solid var(--dm-border);
+  background: var(--dm-media);
+  border: 1px solid color-mix(in srgb, var(--dm-border) 85%, white 15%);
 }
 body.dark-mode .nc-title{ color: var(--dm-text); }
 body.dark-mode .nc-price-desktop del,
@@ -323,10 +368,19 @@ body.dark-mode .nc-price-mobile  del{ color: color-mix(in srgb, var(--dm-text) 5
 body.dark-mode .nc-price-desktop ins,
 body.dark-mode .nc-price-mobile  ins{ color: var(--dm-text); }
 
-/* Stock pills */
-body.dark-mode .nc-pill{ background: color-mix(in srgb, var(--dm-surface) 80%, var(--dm-forest) 20%); color: var(--dm-text); }
-body.dark-mode .nc-pill--instock{ background: color-mix(in srgb, var(--dm-primary) 18%, transparent); color: #dff5eb; }
-body.dark-mode .nc-pill--oos{ background: color-mix(in srgb, #7A3E2B 22%, transparent); color: #F6D6CE; }
+/* Stock pills (clear good vs. out-of-stock) */
+body.dark-mode .nc-pill{
+  background: color-mix(in srgb, var(--dm-surface) 80%, var(--dm-forest) 20%);
+  color: var(--dm-text);
+}
+body.dark-mode .nc-pill--instock{
+  background: color-mix(in srgb, var(--dm-primary) 20%, transparent);
+  color: #dff5eb;
+}
+body.dark-mode .nc-pill--oos{
+  background: color-mix(in srgb, #C7563A 30%, transparent);
+  color: #FFE6DF;
+}
 
 /* Footer bar with total + CTA */
 body.dark-mode .nc-bundle-footer{

@@ -334,3 +334,139 @@
   transform: translateY(-50%);
   opacity: .6;
 }
+
+/* =========================================================
+   MOBILE FILTER UX (<= 992px): bottom bar + drawers
+   ========================================================= */
+
+/* Hide the desktop sidebar block on mobile */
+@media (max-width: 992px) {
+  #nhf-sidebar { display: none; }
+}
+
+/* Sticky bottom bar */
+.nhf-mobilebar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 60px;
+  padding: 0 max(env(safe-area-inset-right, 0),16px) max(env(safe-area-inset-bottom, 0),0) max(env(safe-area-inset-left, 0),16px);
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 -4px 12px rgba(0,0,0,.06);
+  display: none;
+  z-index: 1000;
+}
+
+@media (max-width: 992px) {
+  .nhf-mobilebar { display: flex; gap: 12px; align-items: center; justify-content: space-around; }
+}
+
+.nhf-mb-btn {
+  appearance: none; border: 0; background: transparent;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 12px;
+  font-weight: 600; color: var(--nh-charcoal,#2C2A29);
+}
+
+.nhf-mb-btn:focus-visible { outline: 2px solid var(--nh-mint,#C3E8C6); outline-offset: 2px; }
+.nhf-mb-btn:hover { background: rgba(0,0,0,.04); }
+
+.nhf-mb-icon { font-size: 18px; line-height: 1; }
+.nhf-mb-label { font-size: 14px; }
+
+.nhf-badge {
+  min-width: 20px; height: 20px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--nh-green,#00704A); color:#fff; font-size: 12px; font-weight: 700;
+  padding: 0 6px; margin-left: 6px;
+}
+
+/* Body scroll lock when drawers open */
+html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
+
+/* Drawer backdrop + panel */
+.nhf-drawer {
+  position: fixed; inset: 0; display: none;
+  z-index: 1001;
+}
+
+.nhf-drawer.is-open { display: block; }
+
+.nhf-drawer__backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,.45);
+  opacity: 0; transition: opacity .25s ease;
+}
+
+.nhf-drawer.is-open .nhf-drawer__backdrop { opacity: 1; }
+
+.nhf-drawer__panel {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: #fff; border-radius: 16px 16px 0 0;
+  max-height: 85vh; height: 85vh;
+  transform: translateY(100%); transition: transform .28s ease;
+  display: flex; flex-direction: column;
+}
+
+.nhf-drawer.is-open .nhf-drawer__panel { transform: translateY(0); }
+
+/* Drawer header */
+.nhf-drawer__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.nhf-drawer__title { font-weight: 700; font-size: 16px; color: var(--nh-forest,#1E3932); }
+
+.nhf-drawer__close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--nh-charcoal, #2C2A29); /* always visible dark tone */
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.nhf-drawer__close:hover,
+.nhf-drawer__close:focus-visible {
+  background: rgba(0,0,0,.06);
+  color: var(--nh-green, #00704A);
+}
+
+/* Drawer content: reuse existing styles, just scrollable */
+.nhf-drawer__body {
+  padding: 12px 16px 88px; /* bottom space for footer */
+  overflow: auto; -webkit-overflow-scrolling: touch;
+}
+
+/* Drawer footer */
+.nhf-drawer__footer {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom,0));
+  border-top: 1px solid rgba(0,0,0,.08); background: #fff; border-radius: 16px 16px 0 0;
+}
+
+.nhf-drawer__apply {
+  appearance:none; border:0; border-radius: 10px; padding: 10px 14px;
+  background: var(--nh-green,#00704A); color:#fff; font-weight: 700;
+}
+.nhf-drawer__apply:hover { background: var(--nh-forest,#1E3932); }
+
+.nhf-drawer__reset {
+  appearance:none; border:0; background: transparent; color: rgba(0,0,0,.7);
+  text-decoration: underline; font-weight: 600;
+}
+
+/* Make checkboxes/tap targets roomier on mobile inside drawer */
+@media (max-width: 992px) {
+  .nhf-drawer__body .nhf-filter-body label { padding: 6px 0; }
+  .nhf-drawer__body .nhf-filter-toggle { padding: 10px 8px; }
+}
+
+@media (max-width: 992px) {
+  .nhf-drawer__body .nhf-applybar { display: none !important; }
+}

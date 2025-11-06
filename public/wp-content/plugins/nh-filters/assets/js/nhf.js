@@ -128,3 +128,213 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/**
+ * =========================================================
+ *  MOBILE FILTER UX: bottom bar + full-screen drawers
+ * =========================================================
+ */
+(function(){
+  const mq = window.matchMedia('(max-width: 992px)');
+  let initialized = false;
+  let filtersDrawer, catsDrawer, badgeEl, filtersFormClone, catsClone;
+  let openedByBtn = null;
+
+  function qs(sel, ctx=document){ return ctx.querySelector(sel); }
+  function qsa(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+
+  function lockBody(lock) {
+    document.documentElement.classList.toggle('nhf-lock', lock);
+    document.body.classList.toggle('nhf-lock', lock);
+  }
+
+  function createDrawer(id, title, footerHTML='') {
+    const wrap = document.createElement('div');
+    wrap.className = 'nhf-drawer';
+    wrap.id = id;
+    wrap.setAttribute('role','dialog');
+    wrap.setAttribute('aria-modal','true');
+    wrap.innerHTML = `
+      <div class="nhf-drawer__backdrop" data-close="1"></div>
+      <div class="nhf-drawer__panel" tabindex="-1">
+        <div class="nhf-drawer__header">
+          <div class="nhf-drawer__title">${title}</div>
+          <button class="nhf-drawer__close" aria-label="Close" data-close="1">✕</button>
+        </div>
+        <div class="nhf-drawer__body"></div>
+        <div class="nhf-drawer__footer">
+          ${footerHTML}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+    // basic focus trap
+    wrap.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer(wrap, true);
+      if (e.key !== 'Tab') return;
+      const focusables = qsa('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', wrap)
+        .filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length-1];
+      if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+    });
+    // close handlers
+    wrap.addEventListener('click', (e) => {
+      if (e.target.dataset.close) closeDrawer(wrap, true);
+    });
+    // swipe-down to close
+    let startY = null;
+    const panel = qs('.nhf-drawer__panel', wrap);
+    panel.addEventListener('touchstart', (e)=>{ startY = e.touches[0].clientY; }, {passive:true});
+    panel.addEventListener('touchmove', (e)=>{
+      if (startY === null) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 70) { closeDrawer(wrap, true); startY = null; }
+    }, {passive:true});
+    return wrap;
+  }
+
+  function openDrawer(el, openerBtn) {
+    openedByBtn = openerBtn || null;
+    el.classList.add('is-open');
+    lockBody(true);
+    // focus panel
+    setTimeout(()=> { qs('.nhf-drawer__panel', el)?.focus(); }, 10);
+    // update badge on open
+    updateBadge();
+  }
+
+  function closeDrawer(el, restoreFocus) {
+    el.classList.remove('is-open');
+    lockBody(false);
+    if (restoreFocus && openedByBtn) { openedByBtn.focus(); }
+  }
+
+  function activeCountInForm(ctx) {
+    const cbs = qsa('input[type="checkbox"]:checked', ctx);
+    // if you re-enable price later, include number fields that have values
+    return cbs.length;
+  }
+
+  function updateBadge() {
+    if (!badgeEl || !filtersFormClone) return;
+    const n = activeCountInForm(filtersFormClone);
+    badgeEl.textContent = n;
+    badgeEl.style.display = n > 0 ? 'inline-flex' : 'none';
+  }
+
+  function preventDesktopAutoSubmitOnMobile() {
+    // If your desktop code auto-submits on checkbox change, disable it on mobile by stopping propagation here.
+    qsa('.nhf-form input[type="checkbox"]', filtersFormClone).forEach(cb=>{
+      cb.addEventListener('change', (e)=>{ /* no auto-submit on mobile */ updateBadge(); });
+    });
+  }
+
+  function buildMobileUI() {
+    // Bottom bar
+    const bar = document.createElement('div');
+    bar.className = 'nhf-mobilebar';
+    bar.innerHTML = `
+      <button class="nhf-mb-btn" id="nhf-mb-cats" aria-controls="nhf-drawer-cats">
+        <span class="nhf-mb-icon">📂</span><span class="nhf-mb-label">Categories</span>
+      </button>
+      <button class="nhf-mb-btn" id="nhf-mb-filters" aria-controls="nhf-drawer-filters" aria-live="polite">
+        <span class="nhf-mb-icon">⚙️</span><span class="nhf-mb-label">Filters</span>
+        <span class="nhf-badge" id="nhf-badge" style="display:none">0</span>
+      </button>
+    `;
+    document.body.appendChild(bar);
+    badgeEl = qs('#nhf-badge', bar);
+
+    // Drawers
+    filtersDrawer = createDrawer(
+      'nhf-drawer-filters',
+      'Filter Products',
+      `<button type="button" class="nhf-drawer__reset" data-action="reset">Reset</button>
+       <button type="button" class="nhf-drawer__apply" data-action="apply">Apply</button>`
+    );
+    catsDrawer = createDrawer('nhf-drawer-cats', 'Categories', ``); // no footer
+
+    // Clone content
+    const sidebar = qs('#nhf-sidebar');
+    const filters = qs('.nhf-filters', sidebar);
+    const cats = qs('.nhf-cat-list', sidebar);
+
+    // Clone the FILTER FORM (so it keeps names/GET params)
+    filtersFormClone = filters ? filters.querySelector('form').cloneNode(true) : null;
+    // keep groups with selections open (your existing JS will also handle this, but we ensure it now)
+    if (filtersFormClone) {
+      qsa('.nhf-filter', filtersFormClone).forEach(sec => {
+        const hasChecked = !!sec.querySelector('input[type="checkbox"]:checked');
+        if (hasChecked) sec.classList.add('is-open','is-active-group');
+        const body = qs('.nhf-filter-body', sec);
+        const toggle = qs('.nhf-filter-toggle', sec);
+        if (hasChecked) {
+          body && body.setAttribute('aria-hidden','false');
+          toggle && toggle.setAttribute('aria-expanded','true');
+        }
+      });
+      qs('.nhf-drawer__body', filtersDrawer).appendChild(filtersFormClone);
+
+      // Remove duplicate desktop reset/apply buttons from cloned form
+      qsa('.nhf-applybar, .nhf-reset, .nhf-apply, .nhf-applybtn', filtersFormClone).forEach(el => el.remove());
+    }
+
+    // Clone CATEGORIES block (list only; header is drawer title)
+    catsClone = cats ? cats.cloneNode(true) : null;
+    if (catsClone) {
+      qs('.nhf-drawer__body', catsDrawer).appendChild(catsClone);
+    }
+
+    // Wire bottom bar buttons
+    const catsBtn = qs('#nhf-mb-cats', bar);
+    const filtersBtn = qs('#nhf-mb-filters', bar);
+    catsBtn.addEventListener('click', ()=> openDrawer(catsDrawer, catsBtn));
+    filtersBtn.addEventListener('click', ()=> openDrawer(filtersDrawer, filtersBtn));
+
+    // Drawer footer actions
+    filtersDrawer.addEventListener('click', (e)=>{
+      const act = e.target?.dataset?.action;
+      if (!act) return;
+      if (act === 'reset') {
+        // go to base archive URL (no params)
+        const base = (qs('.nhf-form', filtersFormClone)?.getAttribute('action')) || window.location.pathname;
+        window.location.href = base;
+      }
+      if (act === 'apply') {
+        // submit cloned form
+        qs('.nhf-form', filtersDrawer)?.submit();
+      }
+    });
+
+    // Since this is MOBILE, disable auto-submit-on-change; user taps Apply
+    preventDesktopAutoSubmitOnMobile();
+
+    // Update badge initially & on changes
+    updateBadge();
+    filtersDrawer.addEventListener('change', (e)=>{
+      if (e.target.matches('input[type="checkbox"]')) updateBadge();
+    });
+  }
+
+  function destroyMobileUI() {
+    qsa('.nhf-mobilebar, .nhf-drawer').forEach(el => el.remove());
+    document.documentElement.classList.remove('nhf-lock');
+    document.body.classList.remove('nhf-lock');
+    initialized = false;
+    filtersDrawer = catsDrawer = badgeEl = filtersFormClone = catsClone = null;
+  }
+
+  function onChange(e) {
+    if (e.matches) {
+      if (!initialized) { buildMobileUI(); initialized = true; }
+    } else {
+      if (initialized) destroyMobileUI();
+    }
+  }
+
+  // Init now and on viewport changes
+  onChange(mq);
+  mq.addEventListener('change', onChange);
+})();
