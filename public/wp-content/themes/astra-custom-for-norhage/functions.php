@@ -386,6 +386,29 @@ function norhage_blog_category_nav() {
 add_action( 'astra_primary_content_top', 'norhage_blog_category_nav' );
 
 /* --------------------------------------------------------------------------
+ * Footer
+ * ----------------------------------------------------------------------- */
+
+// === Footer menu locations ===
+add_action('after_setup_theme', function () {
+  register_nav_menus([
+    'footer_shop'     => __('Footer — Shop Categories', 'nh-theme'),
+    'footer_secondary'=> __('Footer — Secondary (Services, Blog, Contact)', 'nh-theme'),
+    'footer_legal'    => __('Footer — Legal/Policies', 'nh-theme'),
+  ]);
+});
+
+// Disable Astra footer pieces via code (also do this in Customizer to be safe)
+add_filter('astra_enable_footer_widget', '__return_false');
+add_filter('astra_footer_copyright', '__return_false');
+
+// Inject our custom footer markup
+add_action('astra_footer', function () {
+  get_template_part('template-parts/footer/footer');
+}, 5);
+
+
+/* --------------------------------------------------------------------------
  * Misc / scripts
  * ----------------------------------------------------------------------- */
 function astra_child_enqueue_scripts() {
