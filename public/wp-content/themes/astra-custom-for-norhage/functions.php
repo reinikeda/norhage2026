@@ -130,6 +130,14 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
 		true
 	);
+
+	wp_enqueue_script(
+		'nh-mobile-header',
+	    get_stylesheet_directory_uri() . '/assets/js/header-mobile.js',
+    	[],  // no deps
+    	'1.0.0',
+    	true // in footer
+  	);
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 
@@ -200,17 +208,6 @@ add_filter( 'woocommerce_add_to_cart_fragments', function( $fragments ) {
 	$fragments['span.nh-cart-count'] = ob_get_clean();
 	return $fragments;
 } );
-
-/* --------------------------------------------------------------------------
- * NEWS TICKER (plugin output) — shows between header and hero
- * ----------------------------------------------------------------------- */
-add_action( 'astra_header_after', function () {
-	if ( function_exists( 'rtl_display_ticker' ) ) {
-		echo '<div class="nh-ticker-wrap">';
-		rtl_display_ticker();
-		echo '</div>';
-	}
-}, 15 ); // hero prints at 20
 
 /* --------------------------------------------------------------------------
  * HERO / PAGE-HEADER SYSTEM (inject hero beneath header)
@@ -310,6 +307,70 @@ require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
+
+/* --------------------------------------------------------------------------
+ * Shop archive: show "Customize" (instead of Add to basket) for custom-cut SIMPLE products
+ * Uses your existing flag: _nh_cc_enabled = truthy
+ * ----------------------------------------------------------------------- */
+
+/** Helper: does this product use your Custom Cutting flow? */
+function nh_is_custom_cut_simple( $product ): bool {
+	if ( ! $product instanceof WC_Product ) return false;
+	if ( ! $product->is_type( 'simple' ) ) return false;
+	return (bool) get_post_meta( $product->get_id(), '_nh_cc_enabled', true );
+}
+
+/**
+ * Replace the archive loop button markup with a permalink button.
+ * Works even if the theme/template renders custom link HTML.
+ */
+add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $args ){
+    if ( nh_is_custom_cut_simple( $product ) ) {
+        $url     = $product->get_permalink();
+        $text    = __( 'Customize', 'nh-theme' );
+        $label   = sprintf( __( 'Customize “%s”', 'nh-theme' ), $product->get_name() );
+
+        // Keep theme/Woo classes that control width, then add ours
+        $base    = isset( $args['class'] ) ? $args['class'] : 'button';
+        $classes = trim( $base . ' nh-btn-customize' );
+
+        return sprintf(
+            '<a href="%s" class="%s" aria-label="%s" rel="nofollow">%s</a>',
+            esc_url( $url ),
+            esc_attr( $classes ),
+            esc_attr( $label ),
+            esc_html( $text )
+        );
+    }
+    return $html;
+}, 10, 3 );
+
+/**
+ * Also change the generic button text filters so any theme helper that
+ * calls these gets "Customize" too (extra safety).
+ */
+add_filter( 'woocommerce_product_add_to_cart_text', function( $text, $product ){
+	if ( nh_is_custom_cut_simple( $product ) ) {
+		return __( 'Customize', 'nh-theme' );
+	}
+	return $text;
+}, 10, 2 );
+
+add_filter( 'woocommerce_product_single_add_to_cart_text', function( $text ){
+	// On single product we keep the normal "Add to basket" (your CC UI is on the page).
+	return $text;
+}, 10 );
+
+/**
+ * Make sure Woo doesn’t try to POST directly to add-to-cart from archives:
+ * force the URL to the product page for custom-cut simple products.
+ */
+add_filter( 'woocommerce_product_add_to_cart_url', function( $url, $product ){
+	if ( nh_is_custom_cut_simple( $product ) ) {
+		return $product->get_permalink();
+	}
+	return $url;
+}, 10, 2 );
 
 /* --------------------------------------------------------------------------
  * Secondary product title

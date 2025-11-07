@@ -2,6 +2,9 @@
    Norhage Filters – Final Refined Category Sidebar Styles
    ========================================================= */
 
+/* NEW: shared variable for the mobile bar height */
+:root { --nhf-mb-h: 60px; }
+
 #nhf-sidebar {
   padding: 0.75rem 0 1rem;
   margin: 0;
@@ -145,7 +148,6 @@
    Accent Lines (Open & Active States)
    ========================================================= */
 
-/* Top-level accent line */
 .nhf-cat-item.is-open > .nhf-cat-toggle::before {
   content: "";
   position: absolute;
@@ -160,13 +162,11 @@
   transform-origin: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-
 .nhf-cat-item.is-open > .nhf-cat-toggle::before {
   opacity: 1;
   transform: scaleY(1);
 }
 
-/* Active subcategory accent */
 .nhf-cat-sub .is-active > a::before {
   content: "";
   position: absolute;
@@ -181,7 +181,6 @@
   transform-origin: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-
 .nhf-cat-sub .is-active > a::before {
   opacity: 1;
   transform: scaleY(1);
@@ -203,10 +202,8 @@
   border-top:1px solid rgba(0,0,0,.08);
 }
 
-/* Sections */
 .nhf-filter{ margin-bottom:.75rem; }
 
-/* Header button */
 .nhf-filter-toggle{
   all:unset;
   cursor:pointer;
@@ -219,17 +216,15 @@
   transition:background-color .25s ease, color .25s ease;
 }
 
-/* Hover (subtle) */
 .nhf-filter-toggle:hover,
 .nhf-filter-toggle:focus-visible{
   color:var(--nh-green,#00704A);
   background-color:rgba(0,112,74,.06);
 }
 
-/* OPEN STATE — keep it light (override any theme rules) */
 .nhf-filters .nhf-filter.is-open > .nhf-filter-toggle{
   color:var(--nh-green,#00704A);
-  background-color:rgba(0,112,74,.05); /* soft tint */
+  background-color:rgba(0,112,74,.05);
   font-weight:600;
   box-shadow:none; border:none;
 }
@@ -268,16 +263,14 @@
   width:16px; height:16px; margin-right:6px; vertical-align:-2px;
 }
 
-/* Toggles (In stock / On sale) – separate lines, same look */
-.nhf-filter--toggles label{
-  display:block; margin:.35rem 0;
-}
+/* Toggles (In stock / On sale) */
+.nhf-filter--toggles label{ display:block; margin:.35rem 0; }
 .nhf-filter--toggles input[type="checkbox"]{
   accent-color:var(--nh-green,#00704A);
   width:16px; height:16px; margin-right:8px; vertical-align:-2px;
 }
 
-/* Price slider placeholder (visual only for now) */
+/* Price slider placeholder */
 .nhf-price-slider{
   position:relative;
   height:4px; border-radius:2px; margin:.5rem 0;
@@ -296,7 +289,6 @@
 }
 .nhf-reset:hover{ color:var(--nh-green,#00704A); text-decoration:underline; }
 
-/* Apply bar */
 .nhf-applybar{
   display:flex; align-items:center; gap:.75rem; justify-content:flex-end;
   margin-top:.75rem; border-top:1px solid rgba(0,0,0,.06); padding-top:.75rem;
@@ -307,7 +299,6 @@
 }
 .nhf-applybtn:hover{ background:var(--nh-forest,#1E3932); }
 
-/* Price inputs row */
 .nhf-price-row{ display:flex; align-items:center; gap:.5rem; }
 .nhf-price-field{
   display:flex; align-items:center; gap:.3rem;
@@ -316,12 +307,7 @@
 .nhf-price-field input{ border:0; outline:0; width:90px; background:transparent; }
 .nhf-price-sep{ opacity:.7; }
 
-/* Active group header (has selected values) */
-.nhf-filter.is-active-group > .nhf-filter-toggle {
-  color: var(--nh-green, #00704A);
-}
-
-/* Optional tiny dot to hint "has selections" even when collapsed */
+.nhf-filter.is-active-group > .nhf-filter-toggle { color: var(--nh-green, #00704A); }
 .nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon {
   position: relative;
 }
@@ -348,8 +334,10 @@
 .nhf-mobilebar {
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  height: 60px;
-  padding: 0 max(env(safe-area-inset-right, 0),16px) max(env(safe-area-inset-bottom, 0),0) max(env(safe-area-inset-left, 0),16px);
+  height: var(--nhf-mb-h); /* NEW */
+  padding: 0 max(env(safe-area-inset-right, 0),16px)
+            max(env(safe-area-inset-bottom, 0),0)
+            max(env(safe-area-inset-left, 0),16px);
   background: #fff;
   border-top: 1px solid rgba(0,0,0,.08);
   box-shadow: 0 -4px 12px rgba(0,0,0,.06);
@@ -359,6 +347,17 @@
 
 @media (max-width: 992px) {
   .nhf-mobilebar { display: flex; gap: 12px; align-items: center; justify-content: space-around; }
+}
+
+/* NEW: when the bar is present, reserve space for it */
+@media (max-width: 992px) {
+  body.nhf-has-mobilebar { /* add/remove this class in plugin JS when bar mounts */
+    padding-bottom: calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px));
+  }
+  /* Optional: give the site footer extra breathing room while bar is present */
+  body.nhf-has-mobilebar .site-footer {
+    padding-bottom: max(24px, calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px)));
+  }
 }
 
 .nhf-mb-btn {
@@ -387,7 +386,7 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
 /* Drawer backdrop + panel */
 .nhf-drawer {
   position: fixed; inset: 0; display: none;
-  z-index: 1001;
+  z-index: 1001; /* above the bar */
 }
 
 .nhf-drawer.is-open { display: block; }
@@ -426,7 +425,7 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
   padding: 6px;
   border-radius: 8px;
   cursor: pointer;
-  color: var(--nh-charcoal, #2C2A29); /* always visible dark tone */
+  color: var(--nh-charcoal, #2C2A29);
   transition: background-color .2s ease, color .2s ease;
 }
 
@@ -436,9 +435,10 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
   color: var(--nh-green, #00704A);
 }
 
-/* Drawer content: reuse existing styles, just scrollable */
+/* Drawer content */
 .nhf-drawer__body {
-  padding: 12px 16px 88px; /* bottom space for footer */
+  /* NEW: derive bottom padding from the bar height so buttons are not hidden */
+  padding: 12px 16px calc(16px + var(--nhf-mb-h));
   overflow: auto; -webkit-overflow-scrolling: touch;
 }
 
@@ -465,8 +465,28 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
 @media (max-width: 992px) {
   .nhf-drawer__body .nhf-filter-body label { padding: 6px 0; }
   .nhf-drawer__body .nhf-filter-toggle { padding: 10px 8px; }
-}
-
-@media (max-width: 992px) {
   .nhf-drawer__body .nhf-applybar { display: none !important; }
 }
+
+/* Sticky, scrollable Woo sidebar (desktop) */
+@media (min-width: 992px) {
+  #secondary {
+    position: sticky;
+    top: calc(72px + var(--wp-admin-bar-height, 0px));
+    max-height: calc(100vh - (84px + var(--wp-admin-bar-height, 0px)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-bottom: 28px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 92%, rgba(0,0,0,0));
+            mask-image: linear-gradient(to bottom, #000 92%, rgba(0,0,0,0));
+  }
+  #secondary::-webkit-scrollbar { width: 6px; }
+  #secondary::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,.22);
+    border-radius: 3px;
+  }
+}
+
+/* If the admin bar is present, expose its height as a CSS var */
+body.admin-bar { --wp-admin-bar-height: 32px; } /* WP default on desktop */

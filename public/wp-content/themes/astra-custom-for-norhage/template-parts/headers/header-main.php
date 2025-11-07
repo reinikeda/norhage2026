@@ -1,8 +1,9 @@
 <?php
 /**
- * Main Header – two rows:
+ * Main Header – two rows + ticker
  *  - Row 1: Logo + Primary Menu
  *  - Row 2: Tools (Account, Cart, Dark mode, Live Search)
+ *  - Row 3: News ticker (optional, plugin)
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -16,13 +17,12 @@ $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_html__( 'My Account', 'nh-theme' ) : esc_html__( 'Sign in', 'nh-theme' );
 $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
 ?>
-<header class="nhhb-header-main">
+<div class="nhhb-header-main">
   <!-- Row 1: Logo + Primary Menu -->
   <div class="nhhb-row nhhb-row--top">
     <div class="nhhb-logo">
       <?php
       if ( has_custom_logo() ) {
-        // the_custom_logo() already outputs a linked <img> – do NOT wrap another <a>
         the_custom_logo();
       } else {
         echo '<a class="site-title" href="' . esc_url( home_url('/') ) . '">' . esc_html( get_bloginfo('name') ) . '</a>';
@@ -46,7 +46,7 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
   <div class="nhhb-row nhhb-row--bottom">
     <div class="nhhb-tools">
 
-      <!-- Account (text on desktop, icon on mobile) -->
+      <!-- Account -->
       <a class="nh-account" href="<?php echo esc_url( $account_href ); ?>" title="<?php echo esc_attr( $account_label ); ?>">
         <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="4" stroke-width="2" fill="none"></circle>
@@ -55,11 +55,11 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
         <span class="nh-account__text"><?php echo $account_label; ?></span>
       </a>
 
-      <!-- Cart with floating badge -->
+      <!-- Cart -->
       <a class="nh-cart" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php echo esc_attr__( 'Cart', 'nh-theme' ); ?>">
         <span class="nh-cart-icon">
           <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="9"  cy="21" r="1" stroke-width="2" fill="none"></circle>
+            <circle cx="9" cy="21" r="1" stroke-width="2" fill="none"></circle>
             <circle cx="19" cy="21" r="1" stroke-width="2" fill="none"></circle>
             <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
@@ -70,7 +70,7 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
         <span class="screen-reader-text"><?php esc_html_e( 'View cart', 'nh-theme' ); ?></span>
       </a>
 
-      <!-- Theme toggle (moon by default; your JS/CSS can swap to sun if needed) -->
+      <!-- Theme toggle -->
       <button
         id="theme-toggle"
         class="theme-toggle"
@@ -97,17 +97,22 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
           />
           <input type="hidden" name="post_type" value="product" />
           <button type="submit" aria-label="<?php echo esc_attr__( 'Search', 'nh-theme' ); ?>">
-            <!-- inline SVG so .nh-icon styles apply -->
             <svg class="nh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="11" cy="11" r="7" stroke-width="2" fill="none"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
             </svg>
           </button>
         </form>
-
         <ul id="nrh-search-results" class="nh-live-results" role="listbox" aria-label="<?php esc_attr_e('Search suggestions','nh-theme'); ?>"></ul>
       </div>
 
     </div>
   </div>
-</header>
+
+  <!-- Row 3: News Ticker -->
+  <?php if ( function_exists( 'rtl_display_ticker' ) ) : ?>
+    <div class="nh-ticker-wrap">
+      <?php rtl_display_ticker(); ?>
+    </div>
+  <?php endif; ?>
+</div>

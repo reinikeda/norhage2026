@@ -187,27 +187,40 @@ body{ background:var(--ui-bg-site); color:var(--ui-text); }
 }
 
 /* =========================================================
-   3) LIVE SEARCH (incl. dark header variant)
+   LIVE PRODUCT SEARCH (input + results + footer)
+   Supports both .nh-* and legacy .nrh-* classnames
    ========================================================= */
 
-/* Container (support legacy .nrh- alias) */
+/* Container */
 :is(.nh-live-search, .nrh-live-search){
-  position:relative; width: clamp(240px, 26vw, 420px); z-index:3000;
+  position: relative;
+  width: clamp(240px, 26vw, 420px);
+  z-index: 3000;
 }
 
-/* Base input + button */
+/* Input shell */
 .nh-header-search{
-  display:flex; align-items:center; height:42px; margin:0; overflow:hidden;
-  background:#fff;
-  border:1px solid color-mix(in srgb, var(--ui-border), #000 10%);
-  border-radius:8px;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  margin: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--ui-border), #000 10%);
+  border-radius: 8px;
 }
 .nh-header-search input[type="search"]{
-  flex:1 1 auto; min-width:0; border:0; padding:0 12px;
-  font-size:14px; background:transparent; color:var(--ui-text); outline:none;
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  padding: 0 12px;
+  font-size: 14px;
+  background: transparent;
+  color: var(--ui-text);
+  outline: none;
 }
 
-/* Dark variant for header */
+/* Dark variant (for header) */
 .nh-header-search--dark{
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.14);
@@ -216,8 +229,6 @@ body{ background:var(--ui-bg-site); color:var(--ui-text); }
 }
 .nh-header-search--dark input[type="search"]{ color:#fff; }
 .nh-header-search--dark input[type="search"]::placeholder{ color: rgba(255,255,255,.78); }
-
-/* Submit button (center icon) */
 .nh-header-search--dark button{
   display:flex; align-items:center; justify-content:center;
   width:44px; height:100%; padding:0; border:0;
@@ -230,34 +241,109 @@ body{ background:var(--ui-bg-site); color:var(--ui-text); }
 }
 .nh-header-search--dark button:hover .nh-icon{ stroke: var(--nh-mint); opacity:1; }
 
-/* Results list (support both class names) */
+/* Results popover */
 :is(.nh-live-results, .nrh-live-search-results){
-  position:absolute; top:calc(100% + 8px); left:0; right:0;
-  display:none; list-style:none; margin:0; padding:0;
-  background:#fff;
-  border:1px solid color-mix(in srgb, var(--ui-border), #000 10%);
-  border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.18);
-  max-height:360px; overflow:auto;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  display: none;
+  list-style: none;
+  margin: 0; padding: 0;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--ui-border), #000 10%);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  max-height: 360px;
+  overflow: auto;
 }
 :is(.nh-live-search, .nrh-live-search).is-open :is(.nh-live-results, .nrh-live-search-results){ display:block; }
+
+/* Result items */
 :is(.nh-live-results, .nrh-live-search-results) li{
-  display:grid; grid-template-columns:48px 1fr; gap:12px; align-items:center;
-  padding:10px 12px; border-bottom:1px solid #f1f2f3;
+  padding: 0;
+  border-bottom: 1px solid #f1f2f3;
 }
-:is(.nh-live-results, .nrh-live-search-results) li:last-child{ border-bottom:0; }
-:is(.nh-live-results, .nrh-live-search-results) img{ width:48px; height:48px; object-fit:cover; border-radius:6px; }
-:is(.nh-live-results, .nrh-live-search-results) a{ color:var(--ui-text); text-decoration:none; display:block; }
-:is(.nh-live-results, .nrh-live-search-results) a:hover{ color:var(--nh-green); }
+:is(.nh-live-results, .nrh-live-search-results) li:last-child{ border-bottom: 0; }
 
-/* Desktop width control (don’t let it grow too wide) */
-@media (min-width:981px){
-  .nhhb-row--bottom .nh-live-search{ flex:0 0 auto; }
-  .nh-header-search--dark{ width:100%; }
+/* Make the LINK the grid container */
+:is(.nh-live-results, .nrh-live-search-results) .nh-live-link{
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  color: var(--ui-text);
+  text-decoration: none;
+  transition: background .15s ease;
+}
+:is(.nh-live-results, .nrh-live-search-results) .nh-live-link:hover{
+  background: #f8f9f9;
+  color: var(--nh-green);
 }
 
-/* Mobile width */
-@media (max-width:768px){
-  :is(.nh-live-search, .nrh-live-search){ width:min(100%, 420px); }
+/* Thumb + text */
+:is(.nh-live-results, .nrh-live-search-results) .nh-thumb{
+  width: 48px; height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+:is(.nh-live-results, .nrh-live-search-results) .info{
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* enables ellipsis */
+}
+:is(.nh-live-results, .nrh-live-search-results) .title{
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Price (avoid conflicts with global .price rules) */
+#nrh-search-results .nh-price,
+#nrh-search-results .nh-price .price{
+  display: block;
+  font-weight: 600;
+  margin-top: 2px;
+  color: var(--nh-forest, #1E3932);
+}
+
+/* Empty state */
+:is(.nh-live-results, .nrh-live-search-results) .no-results{
+  padding: 12px;
+  color: #777;
+  text-align: center;
+}
+
+/* Footer CTA */
+:is(.nh-live-results, .nrh-live-search-results) .nh-live-footer{
+  border-top: 1px solid #eef0f2;
+  padding: 8px;
+}
+:is(.nh-live-results, .nrh-live-search-results) .nh-live-more{
+  display: block;
+  text-align: center;
+  padding: 8px 10px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  background: #f6f8f9;
+  color: var(--ui-text);
+  transition: background .2s ease, color .2s ease;
+}
+:is(.nh-live-results, .nrh-live-search-results) .nh-live-more:hover{
+  background: #eef1f3;
+  color: var(--nh-green);
+}
+
+/* Layout constraints */
+@media (min-width: 981px){
+  .nhhb-row--bottom .nh-live-search{ flex: 0 0 auto; }
+  .nh-header-search--dark{ width: 100%; }
+}
+@media (max-width: 768px){
+  :is(.nh-live-search, .nrh-live-search){ width: min(100%, 420px); }
 }
 
 /* =========================================================
@@ -310,25 +396,80 @@ body{ background:var(--ui-bg-site); color:var(--ui-text); }
 }
 .blog-category-nav ul li a.active{ background:var(--nh-green); color:#fff; }
 
-/* =========================================================
-   7) CATALOG & WIDGETS
-   ========================================================= */
-.subcategory-grid{ text-align:center; margin:40px 0; }
-.subcategory-title{ font-size:24px; margin-bottom:20px; }
-.subcategory-items{ display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
-.subcategory-item{ width:120px; text-align:center; }
-.subcategory-item img{ width:100%; height:auto; border-radius:6px; border:1px solid #eee; transition:transform .3s; }
-.subcategory-item span{ display:block; margin-top:10px; font-size:14px; color:var(--ui-text); }
-.subcategory-item a:hover img{ transform:scale(1.05); }
+/* =========================================
+   Subcategory section (mobile → desktop)
+   ========================================= */
+.subcategory-grid {
+  text-align: center;
+  margin: 40px 0;
+}
 
-/* Sidebar category list tidy */
-.wc-block-product-categories-list-item::before{ display:none !important; }
-.category-toggle-icon{ display:inline-flex; align-items:center; margin-right:6px; cursor:pointer; }
-.toggle-triangle{ transition:transform .2s ease; }
-.toggle-triangle.rotated{ transform:rotate(90deg); }
-.wc-block-product-categories-list .wc-block-product-categories-list{ margin-top:6px; padding-left:16px; border-left:1px solid var(--ui-border); }
-.wc-block-product-categories-list .wc-block-product-categories-list-item:first-child a{ font-weight:bold; }
-.wc-block-product-categories-list-item.current-category > a > .wc-block-product-categories-list-item__name{ font-weight:bold; color:var(--nh-green); }
+.subcategory-title {
+  font-size: clamp(18px, 4vw, 24px);
+  margin: 0 0 20px;
+  color: var(--nh-forest, #1E3932);
+}
+
+/* Shared card styles */
+.subcategory-items a { display:block; text-decoration:none; color:inherit; }
+.subcategory-item span{ display:block; margin-top:10px; font-size:14px; color:var(--ui-text,#2C2A29); }
+.subcategory-item img{
+  width:100%;
+  display:block;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid #eee;
+  transition:transform .25s ease;
+  background:#f4f4f2;
+}
+.subcategory-item a:hover img{ transform:translateY(-2px); }
+
+/* ---------- Mobile: single-row horizontal scroll ---------- */
+.subcategory-items{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  padding:0 16px 8px;      /* edge-to-edge feel */
+  margin:0 -16px;
+  scrollbar-width:none;
+}
+.subcategory-items::-webkit-scrollbar{ display:none; }
+
+.subcategory-item{
+  flex:0 0 auto;
+  width:150px;             /* card width on phones */
+  max-width:45vw;
+  scroll-snap-align:start;
+  text-align:center;
+}
+
+/* ---------- Tablet & Desktop: exactly 4 columns ---------- */
+@media (min-width:768px){
+  .subcategory-items{
+    display:grid;
+    /* 4 fixed columns with sensible bounds; centered in the content area */
+    grid-template-columns: repeat(4, minmax(160px, 220px));
+    gap:24px;
+    justify-content:center;   /* centers the 4-col grid */
+    overflow:visible;
+    padding:0;
+    margin:0;
+  }
+  .subcategory-item{
+    width:auto;
+    max-width:220px;
+    scroll-snap-align:unset;
+  }
+  .subcategory-item img{ border-radius:10px; }
+}
+
+/* =========================================================
+   7) CATALOG
+   ========================================================= */
 
 /* Catalog cleanups */
 span.ast-on-card-button.ast-onsale-card,
@@ -337,6 +478,14 @@ a.ast-on-card-button.ast-select-options-trigger,
 
 /* Hide title on homepage */
 .home .entry-title, .home h1.entry-title{ display:none !important; }
+
+/* Make "Customize" look exactly like other archive buttons */
+.woocommerce ul.products li.product a.nh-btn-customize{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  text-align:center;
+}
 
 /* =========================================================
    8) PRODUCT PAGE TWEAKS
@@ -352,33 +501,124 @@ a.ast-on-card-button.ast-select-options-trigger,
 /* =========================================================
    9) WOO PAGINATION
    ========================================================= */
-nav.woocommerce-pagination{ text-align:center; margin:20px 0; }
-nav.woocommerce-pagination ul.page-numbers{
-  display:inline-flex !important; align-items:center; gap:10px; list-style:none; margin:0; padding:0;
+
+nav.woocommerce-pagination {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  overflow: visible; /* allow hover shadow */
 }
-nav.woocommerce-pagination ul.page-numbers > li{ all:unset; display:inline-flex; margin:0; padding:0; }
-nav.woocommerce-pagination .page-numbers{
-  display:inline-flex; align-items:center; justify-content:center;
-  height:44px; min-width:44px; padding:0 14px;
-  font-size:14px; font-weight:500; border-radius:4px;
-  background:transparent; border:1px solid transparent; text-decoration:none; line-height:1;
-  color:var(--pg-text);
-  transition:background .15s, border-color .15s, color .15s, transform .02s;
+
+nav.woocommerce-pagination ul.page-numbers {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
 }
-nav.woocommerce-pagination .page-numbers.current{ background:var(--pg-green); border-color:var(--pg-green); color:#fff; }
-nav.woocommerce-pagination .page-numbers.current:hover{ background:var(--pg-forest); border-color:var(--pg-forest); color:#fff; }
-nav.woocommerce-pagination a.page-numbers:not(.current):hover{
-  background:var(--pg-cream); color:var(--pg-forest); border-color:var(--pg-green); transform:translateY(-1px);
+
+/* LI cleanup (avoid theme borders) */
+nav.woocommerce-pagination ul.page-numbers > li {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
 }
-nav.woocommerce-pagination .page-numbers.dots{ border:none; background:transparent; min-width:auto; padding:0 6px; color:var(--pg-muted); }
+
+/* Base button */
+nav.woocommerce-pagination .page-numbers {
+  --pg-forest: var(--nh-forest, #1E3932);
+  --pg-cream:  var(--nh-cream, #F6F4EF);
+  --pg-text:   var(--ui-text, #2C2A29);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 4px;
+
+  border: 1px solid transparent; /* prevent double border */
+  background: #fff;
+  background-clip: padding-box;
+  box-shadow: none;
+  outline: 0;
+  text-decoration: none;
+  color: var(--pg-text);
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Hover (non-current) */
+nav.woocommerce-pagination a.page-numbers:not(.current):hover {
+  background: var(--pg-cream);
+  border-color: var(--pg-forest);
+  color: var(--pg-forest);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: none; /* no clipping */
+}
+
+/* Active/current */
+nav.woocommerce-pagination .page-numbers.current {
+  background: var(--pg-forest);
+  border-color: var(--pg-forest);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Prev/Next */
 nav.woocommerce-pagination a.page-numbers.prev,
-nav.woocommerce-pagination a.page-numbers.next{ color:var(--pg-green); }
-nav.woocommerce-pagination a.page-numbers.prev:hover,
-nav.woocommerce-pagination a.page-numbers.next:hover{
-  background:var(--pg-cream); color:var(--pg-forest); border-color:var(--pg-green); transform:translateY(-1px);
+nav.woocommerce-pagination a.page-numbers.next {
+  color: var(--pg-forest);
+  font-weight: 600;
 }
-nav.woocommerce-pagination .page-numbers.prev:not(a),
-nav.woocommerce-pagination .page-numbers.next:not(a){ color:var(--pg-muted); }
+nav.woocommerce-pagination a.page-numbers.prev:hover,
+nav.woocommerce-pagination a.page-numbers.next:hover {
+  background: var(--pg-cream);
+  border-color: var(--pg-forest);
+  color: var(--pg-forest);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Dots */
+nav.woocommerce-pagination .page-numbers.dots {
+  background: transparent;
+  border: none;
+  min-width: auto;
+  padding: 0 6px;
+  color: #8b8b86;
+}
+
+/* Focus ring (keyboard) */
+nav.woocommerce-pagination a.page-numbers:focus-visible {
+  outline: 2px solid var(--pg-forest);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Disabled state (if output) */
+nav.woocommerce-pagination .page-numbers[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Mobile: keep tap target but tighter text */
+@media (max-width: 480px) {
+  nav.woocommerce-pagination .page-numbers {
+    min-width: 40px;
+    height: 40px;
+  }
+}
 
 /* =========================================================
    10) BASKET – Local pickup details
@@ -532,3 +772,218 @@ input.shipping_method:checked ~ .nh-pickup-details{ display:block; }
 .page .entry-title,
 .page .post-thumb,
 .page .wp-post-image{ display: none !important; }
+
+/* =========================
+   Fixed Desktop Header (no JS)
+   ========================= */
+
+@media (min-width:1024px){
+  :root{
+    /* measure your current masthead once and set this */
+    --masthead-h-desktop: 168px; /* ← adjust if your header height changes */
+  }
+
+  #masthead{
+    position: fixed;
+    left: 0; right: 0;
+    top: var(--admin-offset,0px);
+    z-index: 1000;
+  }
+
+  /* Push page content below the fixed masthead */
+  body{
+    padding-top: calc(var(--masthead-h-desktop) + var(--admin-offset,0px));
+  }
+
+  /* WP admin bar */
+  .admin-bar{ --admin-offset: 32px; }
+}
+
+/* Make sure header rows are opaque while fixed */
+.nh-utility{ background: var(--nh-cream,#EDE2CE); }
+
+/* If you kept Astra rows hidden, these may be unnecessary;
+   harmless to keep, but you can delete them if unused. */
+.ast-above-header-bar,
+.ast-primary-header{ background: var(--nh-forest,#1E3932); }
+
+/* Also ensure there’s no stray line between header and hero */
+.nhhb-header-main{ border-bottom: 0; }
+.nhhb-row--top{ border-bottom: 1px solid rgba(255,255,255,.06); }
+.nh-ticker-wrap{ margin:0; }
+
+/* =========================
+   Mobile Smart Header – Compact layout (≤1023px)
+   ========================= */
+@media (max-width:1023px){
+
+  /* Prevent accidental sideways scrolling */
+  html, body { overflow-x: hidden; }
+
+  /* --- Compact header: general container --- */
+  #masthead.mh-compact {
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    background: var(--nh-forest, #1E3932);
+  }
+
+  /* Hide secondary/top bar completely */
+  #masthead.mh-compact .nh-utility,
+  #masthead.mh-compact .nh-ticker-wrap {
+    display: none !important;
+  }
+
+  /* Header main becomes a two-row grid */
+  #masthead.mh-compact .nhhb-header-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    row-gap: 4px;
+    padding: 8px 12px;
+    background: inherit;
+  }
+
+  /* === Row 1: Logo + tools === */
+  #masthead.mh-compact .nhhb-row--top {
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: auto 1fr auto;  /* logo | spacer | tools */
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  #masthead.mh-compact .nhhb-logo img {
+    height: 32px;
+    max-height: 32px;
+  }
+
+  #masthead.mh-compact .nhhb-tools {
+    display: inline-flex;
+    align-items: center;
+    justify-self: end;
+    gap: 12px;
+  }
+
+  /* === Row 2: Primary menu (horizontal scroll only) === */
+  #masthead.mh-compact .nhhb-main-nav {
+    grid-row: 2;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    margin: 0;
+    padding-top: 2px;
+    background: transparent;
+  }
+
+  #masthead.mh-compact .nhhb-main-nav .primary-menu {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    white-space: nowrap;
+    margin: 0;
+    padding: 2px 0;
+  }
+
+  #masthead.mh-compact .nhhb-main-nav .primary-menu > li {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  #masthead.mh-compact .nhhb-main-nav .primary-menu > li > a {
+    display: inline-block;
+    padding: 8px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--nh-offwhite, #FAF7F2);
+    transition: background .2s ease, color .2s ease;
+  }
+
+  #masthead.mh-compact .nhhb-main-nav .primary-menu > li > a:hover {
+    background: rgba(255,255,255,.08);
+  }
+
+  /* Prevent dropdowns from widening screen */
+  #masthead.mh-compact .primary-menu .sub-menu {
+    position: static;
+    left: auto; right: auto;
+    max-width: 100%;
+    width: auto;
+  }
+
+  /* --- Fixed compact mode (instant reappear) --- */
+  #masthead.mh-fixed {
+    position: fixed;
+    top: var(--admin-offset,0);
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: translateY(0);
+    z-index: 1000;
+  }
+
+  body.mh-fixed-on {
+    padding-top: var(--mh-fixed-offset, 0px); /* adjusted via JS */
+  }
+}
+
+
+@media (max-width:1023px){
+
+  /* Row 1: logo | NAV | tools  */
+  #masthead.mh-compact .nhhb-row--top{
+    display:grid;
+    grid-template-columns: auto minmax(0,1fr) auto; /* <-- key: allow nav to shrink */
+    align-items:center;
+    gap:10px;
+    padding:0;
+    border:0;
+  }
+
+  /* Make NAV the horizontal scroll container */
+  #masthead.mh-compact .nhhb-row--top .nhhb-main-nav{
+    min-width:0;                 /* <-- key: grid child may shrink */
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    white-space:nowrap;          /* belt & suspenders */
+  }
+
+  /* One-line, content-sized items */
+  #masthead.mh-compact .nhhb-row--top .nhhb-main-nav .primary-menu{
+    display:inline-flex !important;  /* override any desktop flex/center */
+    flex-wrap:nowrap;
+    gap:12px;
+    margin:0;
+    padding:2px 8px;
+  }
+  #masthead.mh-compact .nhhb-row--top .nhhb-main-nav .primary-menu > li{
+    flex:0 0 auto;
+    scroll-snap-align:start;
+  }
+  #masthead.mh-compact .nhhb-row--top .nhhb-main-nav .primary-menu > li > a{
+    display:inline-block;
+    padding:8px 10px;
+    border-radius:6px;
+    text-decoration:none;
+  }
+
+  /* Prevent dropdowns from widening the viewport */
+  #masthead.mh-compact .nhhb-row--top .primary-menu .sub-menu{
+    position:static;
+    left:auto; right:auto;
+    max-width:100%;
+    width:auto;
+  }
+
+  /* Safety: the page itself never scrolls horizontally */
+  html, body { overflow-x:hidden; }
+}

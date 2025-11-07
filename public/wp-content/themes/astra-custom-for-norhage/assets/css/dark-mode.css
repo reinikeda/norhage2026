@@ -213,35 +213,60 @@ body.dark-mode .woocommerce-error{
 /* =========================
    10) Pagination
    ========================= */
-body.dark-mode nav.woocommerce-pagination .page-numbers{
+body.dark-mode nav.woocommerce-pagination .page-numbers {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--dm-text);
-  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .02s ease;
+  color: var(--dm-text, #EAE9E5);
+  border-radius: 4px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
-body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover{
-  background: color-mix(in srgb, var(--dm-surface) 65%, var(--dm-forest) 35%);
-  border-color: var(--dm-primary);
+
+/* Hover (non-current) */
+body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover {
+  background: color-mix(in srgb, var(--dm-surface, #2E2E2A) 70%, var(--dm-forest, #102923) 30%);
+  border-color: var(--dm-primary, #36B47A);
   color: #fff;
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm-primary, #36B47A) 25%, transparent);
 }
-body.dark-mode nav.woocommerce-pagination .page-numbers.current{
-  background: var(--dm-primary);
-  border-color: var(--dm-primary);
-  color: #0f2019;
+
+/* Active / current page */
+body.dark-mode nav.woocommerce-pagination .page-numbers.current {
+  background: var(--dm-primary, #36B47A);
+  border-color: var(--dm-primary, #36B47A);
+  color: #0F2019;
 }
-body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover{
-  background: var(--dm-forest);
-  border-color: var(--dm-forest);
+
+/* Hover on current (slightly darker tone) */
+body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover {
+  background: var(--dm-forest, #102923);
+  border-color: var(--dm-forest, #102923);
   color: #fff;
 }
-body.dark-mode nav.woocommerce-pagination .page-numbers.dots{
-  color: color-mix(in srgb, var(--dm-text) 60%, black 40%);
+
+/* Dots */
+body.dark-mode nav.woocommerce-pagination .page-numbers.dots {
+  color: color-mix(in srgb, var(--dm-text, #EAE9E5) 60%, black 40%);
 }
+
+/* Prev / Next arrows */
 body.dark-mode nav.woocommerce-pagination .prev,
-body.dark-mode nav.woocommerce-pagination .next{
-  color: var(--dm-primary);
+body.dark-mode nav.woocommerce-pagination .next {
+  color: var(--dm-primary, #36B47A);
 }
+body.dark-mode nav.woocommerce-pagination .prev:hover,
+body.dark-mode nav.woocommerce-pagination .next:hover {
+  background: color-mix(in srgb, var(--dm-surface, #2E2E2A) 70%, var(--dm-forest, #102923) 30%);
+  border-color: var(--dm-primary, #36B47A);
+  color: #fff;
+}
+
+/* Focus visible */
+body.dark-mode nav.woocommerce-pagination a.page-numbers:focus-visible {
+  outline: 2px solid var(--dm-primary, #36B47A);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
 
 /* =========================
    11) Custom size controls

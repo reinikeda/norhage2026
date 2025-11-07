@@ -30,7 +30,7 @@ function nrh_live_search_callback() {
 	// Basic input guard
 	$term = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 	if ( mb_strlen( $term ) < 2 ) {
-		wp_send_json( [] );
+		wp_send_json( [ 'items' => [], 'more' => false, 'total' => 0, 'url' => '' ] );
 	}
 
 	// Optional: mild HTTP caching guard for AJAX endpoints
@@ -138,7 +138,7 @@ function nrh_live_search_callback() {
 	 * D) Merge, sort by relevance (then by date), slice
 	 * --------------------------------------*/
 	if ( empty( $found ) ) {
-		wp_send_json( [] );
+		wp_send_json( [ 'items' => [], 'more' => false, 'total' => 0, 'url' => '' ] );
 	}
 
 	$ids = array_keys( $found );
@@ -151,17 +151,20 @@ function nrh_live_search_callback() {
 		return get_post_time( 'U', true, $b ) <=> get_post_time( 'U', true, $a );
 	} );
 
+	$total    = count( $ids );
+	$has_more = $total > $final_limit;
+
 	$ids = array_slice( $ids, 0, $final_limit );
 
 	/* ----------------------------------------
 	 * E) Build JSON response
 	 * --------------------------------------*/
-	$results = [];
+	$items = [];
 	foreach ( $ids as $id ) {
 		$prod = wc_get_product( $id );
 		if ( ! $prod ) continue;
 
-		$results[] = [
+		$items[] = [
 			'title' => get_the_title( $id ), // let filters/localization handle title
 			'link'  => get_permalink( $id ),
 			'img'   => get_the_post_thumbnail_url( $id, 'thumbnail' ) ?: wc_placeholder_img_src(),
@@ -170,7 +173,18 @@ function nrh_live_search_callback() {
 		];
 	}
 
-	wp_send_json( $results );
+	// Build a full search URL (products only)
+	$search_url = add_query_arg(
+		[ 's' => $term, 'post_type' => 'product' ],
+		home_url( '/' )
+	);
+
+	wp_send_json( [
+		'items' => $items,
+		'more'  => $has_more,
+		'total' => $total,
+		'url'   => esc_url_raw( $search_url ),
+	] );
 }
 
 // 3) Enqueue JS & localize
@@ -180,7 +194,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		'nrh-live-search',
 		get_stylesheet_directory_uri() . '/assets/js/live-search.js',
 		[ 'jquery' ],
-		'1.1',
+		'1.2',
 		true
 	);
 

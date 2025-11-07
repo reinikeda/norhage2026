@@ -129,6 +129,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// padding only applies when the bar exists
+document.addEventListener('DOMContentLoaded', () => {
+  const bar = document.querySelector('.nhf-mobilebar');
+  if (!bar) return;
+  // keep the variable accurate if the bar’s height changes
+  const setH = () => document.documentElement.style.setProperty('--nhf-mb-h', `${bar.offsetHeight || 60}px`);
+  setH();
+  new ResizeObserver(setH).observe(bar);
+  document.body.classList.add('nhf-has-mobilebar'); // triggers the reserved space
+});
+
+
 /**
  * =========================================================
  *  MOBILE FILTER UX: bottom bar + full-screen drawers

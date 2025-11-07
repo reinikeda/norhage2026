@@ -288,10 +288,25 @@ add_action( 'pre_get_posts', function( $q ) {
 	if ( empty($tax_query)  || ! isset($tax_query['relation']) )  $tax_query['relation']  = 'AND';
 	if ( empty($meta_query) || ! isset($meta_query['relation']) ) $meta_query['relation'] = 'AND';
 
-	// On sale
+	// On sale — robust: use Woo's resolver and intersect with any existing post__in
 	if ( isset($_GET['onsale']) && (int) $_GET['onsale'] === 1 ) {
-		$ids = wc_get_product_ids_on_sale();
-		$q->set( 'post__in', ! empty( $ids ) ? array_map( 'absint', $ids ) : [0] );
+		$on_sale_ids = array_map( 'absint', wc_get_product_ids_on_sale() ); // returns parents for variable products too
+
+		// If Woo says nothing is on sale, force empty result set
+		if ( empty( $on_sale_ids ) ) {
+			$q->set( 'post__in', [0] );
+		} else {
+			$existing_in = (array) $q->get( 'post__in', [] );
+
+			if ( ! empty( $existing_in ) ) {
+				// Intersect with anything already constrained (attributes, category, etc.)
+				$intersect = array_values( array_intersect( $existing_in, $on_sale_ids ) );
+				$q->set( 'post__in', $intersect ? $intersect : [0] );
+			} else {
+				// No prior constraint: just apply the on-sale set
+				$q->set( 'post__in', $on_sale_ids );
+			}
+		}
 	}
 
 	// In stock
@@ -330,3 +345,32 @@ add_action( 'pre_get_posts', function( $q ) {
 	$q->set( 'tax_query',  $tax_query );
 	$q->set( 'meta_query', $meta_query );
 });
+
+// Robust "On sale" constraint (runs late enough to stick)
+add_action('woocommerce_product_query', function( $q ) {
+	// limit to front-end product archives only
+	if ( is_admin() ) return;
+	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return;
+
+	// Only if checkbox is set (value "1")
+	if ( ! isset($_GET['onsale']) || (string)$_GET['onsale'] !== '1' ) return;
+
+	// Ask Woo for the definitive set (includes variable parents with any sale variation)
+	$on_sale_ids = array_map( 'absint', wc_get_product_ids_on_sale() );
+
+	// If none on sale at all, force empty
+	if ( empty( $on_sale_ids ) ) {
+		$q->set( 'post__in', [0] );
+		return;
+	}
+
+	// Intersect with any existing post__in (from other filters, search, etc.)
+	$existing_in = (array) $q->get( 'post__in', [] );
+
+	if ( ! empty( $existing_in ) ) {
+		$intersect = array_values( array_intersect( $existing_in, $on_sale_ids ) );
+		$q->set( 'post__in', $intersect ? $intersect : [0] );
+	} else {
+		$q->set( 'post__in', $on_sale_ids );
+	}
+}, 20);
