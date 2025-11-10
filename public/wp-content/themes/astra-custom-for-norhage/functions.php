@@ -24,6 +24,8 @@ function norhage_register_menus() {
 	register_nav_menus( array(
 		'primary'   => __( 'Primary Menu', 'nh-theme' ),
 		'secondary' => __( 'Secondary Menu', 'nh-theme' ),
+		'footer_explore' => __('Footer — Explore', 'nh-theme'),
+		'footer_bottom' => __('Footer — Bottom Bar', 'nh-theme'),
 	) );
 }
 add_action( 'after_setup_theme', 'norhage_register_menus' );
@@ -176,9 +178,14 @@ add_action( 'astra_masthead_top', function () {
 
 	?>
 	<div class="nh-utility" role="navigation" aria-label="<?php echo esc_attr__( 'Utility bar', 'nh-theme' ); ?>">
-		<div class="nh-utility__left"><?php echo $left_menu_html; // phpcs:ignore ?></div>
+		<div class="nh-utility__left">
+			<?php echo $left_menu_html; // phpcs:ignore ?>
+		</div>
 		<div class="nh-utility__right">
-			<a class="nh-utility__tel" href="tel:+4917665106609">📞 +49 176 65 10 6609</a>
+			<a class="nh-utility__tel" href="tel:+4917665106609">
+				<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>" alt="Phone icon" class="nh-icon nh-icon--phone" width="18" height="18" />
+				+49 176 65 10 6609
+			</a>
 			<span class="nh-utility__sep" aria-hidden="true">·</span>
 			<a class="nh-utility__faq" href="<?php echo esc_url( home_url( 'frequently-asked-questions-faq/' ) ); ?>">
 				<?php echo esc_html__( 'FAQ', 'nh-theme' ); ?>

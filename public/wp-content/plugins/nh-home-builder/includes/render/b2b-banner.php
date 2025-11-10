@@ -9,17 +9,30 @@ $defaults = [
   'h3'       => __('Exclusive pricing and services for B2B partners.', 'nhhb'),
   'btn_text' => __('Learn more', 'nhhb'),
   'btn_url'  => '',
-  'logo'     => 0,
+  'logo_d'   => 0, // desktop logo (white)
+  'logo_m'   => 0, // mobile logo (blue)
+  'logo'     => 0, // legacy fallback
 ];
 $data = is_array($data ?? null) ? array_merge($defaults, $data) : $defaults;
 
-$logo_url = $data['logo'] ? wp_get_attachment_image_url((int)$data['logo'], 'medium') : '';
+// Fallback to legacy single logo
+if (empty($data['logo_d']) && !empty($data['logo'])) {
+  $data['logo_d'] = absint($data['logo']);
+}
+
+$logo_d = $data['logo_d'] ? wp_get_attachment_image_url((int)$data['logo_d'], 'medium') : '';
+$logo_m = $data['logo_m'] ? wp_get_attachment_image_url((int)$data['logo_m'], 'medium') : '';
 ?>
 <section class="nhhb-b2b-wrap">
   <div class="nhhb-b2b">
-    <?php if ($logo_url): ?>
+    <?php if ($logo_d || $logo_m): ?>
       <span class="nhhb-b2b-logo">
-        <img src="<?php echo esc_url($logo_url); ?>" alt="" loading="lazy">
+        <?php if ($logo_d): ?>
+          <img class="nhhb-b2b-logo--desktop" src="<?php echo esc_url($logo_d); ?>" alt="" loading="lazy">
+        <?php endif; ?>
+        <?php if ($logo_m): ?>
+          <img class="nhhb-b2b-logo--mobile" src="<?php echo esc_url($logo_m); ?>" alt="" loading="lazy">
+        <?php endif; ?>
       </span>
     <?php endif; ?>
 

@@ -137,14 +137,44 @@
   text-align:center;
 }
 
-/* ===== Responsive ===== */
-@media (max-width:1100px){
-  .nhhb-na-grid{ grid-template-columns:repeat(3,1fr); }
+/* ====== Mobile (compact 2-col) ====== */
+@media (max-width: 780px){
+  .nhhb-na-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .nhhb-na-card{ padding: 10px; }
+  .nhhb-na-media{ height: 160px; }        /* was 200px */
+  .nhhb-new-arrivals .nhhb-na-card h3.nhhb-na-name{ font-size: 12.5px; }
+  .nhhb-na-price{ font-size: 13px; }
 }
-@media (max-width:780px){
-  .nhhb-na-title{ font-size:16px; }
-  .nhhb-na-grid{ grid-template-columns:repeat(2,1fr); }
+
+/* keep 2 columns even on small phones; drop to 1 only on very narrow */
+@media (max-width: 350px){
+  .nhhb-na-grid{ grid-template-columns: 1fr; }
+  .nhhb-na-media{ height: 150px; }
 }
-@media (max-width:520px){
-  .nhhb-na-grid{ grid-template-columns:1fr; }
+
+/* Optional: auto-fit version (comment out the two blocks above if you prefer)
+.nhhb-na-grid{
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+*/
+
+/* ====== Dark mode polish ====== */
+body.dark-mode .nhhb-na-card{
+  background: var(--dm-surface);
+  border-color: rgba(255,255,255,.10);
+}
+body.dark-mode .nhhb-na-name a{ color: var(--dm-text); }
+body.dark-mode .nhhb-na-name a:hover{ color: var(--dm-primary); }
+body.dark-mode .nhhb-na-price{ color: var(--dm-text); }
+body.dark-mode .nhhb-na-viewall{
+  border-color: rgba(255,255,255,.18);
+  color: var(--dm-text);
+}
+body.dark-mode .nhhb-na-viewall:hover{
+  background: var(--dm-primary);
+  border-color: var(--dm-primary);
+  color: #0f2019;
 }

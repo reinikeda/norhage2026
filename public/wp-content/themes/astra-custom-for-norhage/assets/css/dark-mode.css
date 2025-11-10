@@ -1,100 +1,281 @@
 /* =========================================================
-   Dark Mode – consolidated (no duplicates)
+   Norhage — Dark Mode (final consolidated)
+   Scope: core theme (custom plugins keep their own dark CSS)
+   Toggle via: <body class="dark-mode">
    ========================================================= */
 
 /* =========================
    0) Palette / Tokens
    ========================= */
 body.dark-mode{
-  /* lifted ~8% for better contrast with transparent media */
-  --dm-bg:        #20211F; /* site background (was #1A1A18) */
-  --dm-surface:   #343530; /* section/card surface (was #2E2E2A) */
-  --dm-forest:    #14332B; /* deep headers/pressed (was #102923) */
+  /* Your palette (kept from current file) */
+  --dm-bg:        #20211F; /* site background */
+  --dm-surface:   #343530; /* section/card surface */
+  --dm-forest:    #14332B; /* deep headers/pressed */
   --dm-text:      #ECEAE6; /* primary text */
   --dm-primary:   #36B47A; /* accent/CTA green */
   --dm-border:    #3E5F50; /* soft border/hover outline */
   --dm-brown:     #C6A58A; /* optional accent */
   --dm-gold:      #E3C58F; /* optional accent */
+  --dm-media:     #262724; /* neutral plate behind transparent PNG/AVIF */
 
-  /* NEW: neutral plate behind transparent AVIF/PNG */
-  --dm-media:     #262724;
+  /* Map light UI tokens → dark equivalents (so token-based CSS auto-themes) */
+  --ui-text:       var(--dm-text);
+  --ui-muted:      color-mix(in srgb, var(--dm-text) 60%, black 40%);
+  --ui-border:     var(--dm-border);
+  --ui-bg-dark:    var(--dm-forest);
+  --ui-bg-primary: var(--dm-primary);
+  --ui-bg-soft:    color-mix(in srgb, var(--dm-surface) 65%, var(--dm-forest) 35%);
+  --ui-bg-site:    var(--dm-bg);
+  --ui-bg-content: var(--dm-surface);
+
+  /* Pagination tokens in dark */
+  --pg-text:   var(--dm-text);
+  --pg-muted:  var(--ui-muted);
+  --pg-green:  var(--dm-primary);
+  --pg-cream:  color-mix(in srgb, var(--dm-surface) 75%, #fff 0%);
+  --pg-forest: var(--dm-primary);
 }
 
 /* =========================
-   1) Core surfaces & type
+   1) Core base
    ========================= */
 body.dark-mode{
-  background-color: var(--dm-bg);
-  color: var(--dm-text);
+  background: var(--ui-bg-site);
+  color: var(--ui-text);
 }
+body.dark-mode a{ color: var(--dm-primary); }
+body.dark-mode a:hover{ color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%); }
 
 /* Headings */
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
-body.dark-mode h4{
+body.dark-mode h4{ color: var(--dm-primary); }
+
+/* Secondary titles used in product page CSS */
+body.dark-mode .secondary-title{ color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%); }
+
+/* Dividers */
+body.dark-mode hr,
+body.dark-mode .divider{ border-color: var(--ui-border); }
+
+/* =========================
+   2) Utility bar + News ticker (dark mode)
+   ========================= */
+body.dark-mode .nh-utility{
+  background: var(--dm-elev-1, #1b201e);      /* deeper neutral */
+  border-bottom: 1px solid var(--dm-border);
+  color: var(--dm-text);
+}
+
+/* Links inherit text by default */
+body.dark-mode .nh-utility a{
+  color: var(--dm-text);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+body.dark-mode .nh-utility a:hover{
   color: var(--dm-primary);
 }
 
-/* Subheads / muted headings */
-body.dark-mode .secondary-title,
-body.dark-mode .woocommerce-product-details__short-description h2,
-body.dark-mode .related.products h2{
-  color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
+/* Phone link — make sure the icon lightens */
+body.dark-mode .nh-utility__tel{
+  color: var(--dm-text);
+}
+body.dark-mode .nh-utility__tel:hover{
+  color: var(--dm-primary);
+}
+/* Lighten external SVG icon in dark mode */
+body.dark-mode .nh-utility__tel img.nh-icon--phone{
+  filter: brightness(3) invert(1);
+  opacity: 0.9;
+  transition: filter .25s ease, opacity .25s ease;
+}
+body.dark-mode .nh-utility__tel:hover img.nh-icon--phone{
+  filter: brightness(3.5) invert(1);
+  opacity: 1;
 }
 
-/* Ticker wrapper */
-body.dark-mode #rtl-ticker-wrapper{
-  background-color: var(--dm-forest);
-  border-top: 1px solid var(--dm-border);
+/* Separator dot slightly brighter for contrast */
+body.dark-mode .nh-utility__sep{
+  opacity: .6;
+}
+
+/* FAQ link stands out with accent */
+body.dark-mode .nh-utility__faq{
+  color: var(--dm-primary);
+}
+body.dark-mode .nh-utility__faq:hover{
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Dark ticker */
+body.dark-mode .nh-ticker-wrap{
+  background: var(--dm-elev-1, #1b201e);
   border-bottom: 1px solid var(--dm-border);
   color: var(--dm-text);
 }
 
 /* =========================
-   2) Buttons & Links
+   3) Header (grid) + nav + tools
    ========================= */
-body.dark-mode .button,
-body.dark-mode button,
-body.dark-mode input[type="submit"]{
-  background-color: var(--dm-forest);
-  color: var(--dm-text);
-  border: 1px solid var(--dm-border);
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+body.dark-mode .nhhb-header-main{
+  background: var(--ui-bg-dark);
+  color:#fff;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,.35);
 }
-body.dark-mode .button:hover,
-body.dark-mode button:hover,
-body.dark-mode input[type="submit"]:hover{
-  background-color: color-mix(in srgb, var(--dm-primary) 65%, var(--dm-forest) 35%);
-  border-color: var(--dm-primary);
-  color: #fff;
+body.dark-mode .nhhb-row--top{ border-bottom: 1px solid rgba(255,255,255,.08); }
+body.dark-mode .nhhb-main-nav .primary-menu > li > a:hover{ background: rgba(255,255,255,.10); }
+body.dark-mode .nhhb-main-nav .primary-menu > li.current-menu-item > a,
+body.dark-mode .nhhb-main-nav .primary-menu > li.current_page_parent > a,
+body.dark-mode .nhhb-main-nav .primary-menu > li.current-product_cat-ancestor > a{
+  background: rgba(255,255,255,.16);
 }
+body.dark-mode .nh-cart-badge{ box-shadow: 0 0 0 2px var(--ui-bg-dark); }
 
-/* Links */
-body.dark-mode a{ color: var(--dm-primary); }
-body.dark-mode a:hover{
-  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
+/* Mobile compact header */
+@media (max-width:1023px){
+  body.dark-mode #masthead.mh-compact{
+    background: var(--dm-forest);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-main-nav .primary-menu > li > a:hover{
+    background: rgba(255,255,255,.10);
+  }
 }
 
 /* =========================
-   3) Commerce highlights
+   4) Live product search (input + results + footer)
+   ========================= */
+/* Base shell (light variant overridden in dark) */
+body.dark-mode .nh-header-search{
+  background: var(--ui-bg-content);
+  border: 1px solid var(--ui-border);
+}
+body.dark-mode .nh-header-search input[type="search"]{
+  color: var(--dm-text);
+}
+body.dark-mode .nh-header-search input[type="search"]::placeholder{ color: var(--ui-muted); }
+
+/* Explicit dark helper variant you use in header */
+body.dark-mode .nh-header-search--dark{
+  background: color-mix(in srgb, #ffffff 6%, var(--dm-surface));
+  border: 1px solid color-mix(in srgb, #ffffff 16%, var(--dm-surface));
+}
+body.dark-mode .nh-header-search--dark button{
+  border-left: 1px solid rgba(255,255,255,.12);
+}
+body.dark-mode .nh-header-search--dark button:hover{ background: rgba(255,255,255,.08); }
+
+/* Results popover */
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results){
+  background: var(--ui-bg-content);
+  border: 1px solid var(--ui-border);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) li{
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border), #000 8%);
+}
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .nh-live-link{ color: var(--dm-text); }
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .nh-live-link:hover{
+  background: color-mix(in srgb, var(--dm-surface) 75%, transparent);
+  color: var(--dm-primary);
+}
+body.dark-mode #nrh-search-results .nh-price,
+body.dark-mode #nrh-search-results .nh-price .price{ color: var(--dm-primary); }
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .no-results{ color: var(--ui-muted); }
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .nh-live-footer{ border-top: 1px solid var(--ui-border); }
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .nh-live-more{
+  background: var(--dm-forest);
+  color: var(--dm-text);
+}
+body.dark-mode :is(.nh-live-results, .nrh-live-search-results) .nh-live-more:hover{
+  background: var(--dm-surface);
+  color: var(--dm-primary);
+}
+
+/* =========================
+   5) Hero
+   ========================= */
+body.dark-mode .nhhb-hero{
+  /* keep the background image defined in light mode */
+  background-color: var(--ui-bg-dark);
+  background-image: var(--nhhb-hero-bg, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* lighten the overlay for better image visibility */
+body.dark-mode .nhhb-hero::after{
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.22),
+    rgba(0,0,0,.30)
+  );
+}
+
+body.dark-mode .nhhb-hero__subtitle{ color:#e9efe9; }
+
+body.dark-mode .nhhb-hero__btn{
+  background: var(--dm-primary);
+  color:#0f2019;
+}
+
+body.dark-mode .nhhb-hero__btn:hover{
+  background: color-mix(in srgb, var(--dm-primary) 80%, #000 20%);
+}
+
+/* optional: slightly stronger overlay just for the home hero */
+body.dark-mode .nhhb-hero--home::after{
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.25),
+    rgba(0,0,0,.35)
+  );
+}
+
+/* =========================
+   6) Blog nav
+   ========================= */
+body.dark-mode .blog-category-nav ul li a{ color: var(--dm-text); }
+body.dark-mode .blog-category-nav ul li a.active{ background: var(--dm-primary); color:#0f2019; }
+
+/* =========================
+   7) Subcategory grid
+   ========================= */
+body.dark-mode .subcategory-title{ color: var(--dm-text); }
+body.dark-mode .subcategory-item span{ color: var(--dm-text); }
+body.dark-mode .subcategory-item img{
+  border-color: var(--ui-border);
+  background: var(--ui-bg-content);
+}
+
+/* =========================
+   8) Catalog / archive
+   ========================= */
+body.dark-mode .woocommerce ul.products li.product a.nh-btn-customize{
+  display:block; width:100%; text-align:center;
+  color:#0f2019; background: var(--dm-primary);
+  border:1px solid var(--dm-primary); border-radius:4px; padding:8px 12px;
+}
+body.dark-mode .woocommerce ul.products li.product a.nh-btn-customize:hover{
+  background: color-mix(in srgb, var(--dm-primary) 80%, #000 20%);
+  border-color: color-mix(in srgb, var(--dm-primary) 80%, #000 20%);
+}
+
+/* =========================
+   9) Commerce highlights & forms
    ========================= */
 body.dark-mode .price,
 body.dark-mode .woocommerce-Price-amount,
 body.dark-mode .amount,
-body.dark-mode .woocommerce-product-rating{
-  color: var(--dm-primary);
-}
+body.dark-mode .woocommerce-product-rating{ color: var(--dm-primary); }
 
-/* Attribute labels & wrap text */
-body.dark-mode .variations_form .label label,
-body.dark-mode .single_variation_wrap{
-  color: color-mix(in srgb, var(--dm-text) 75%, var(--dm-primary) 25%);
-}
-
-/* =========================
-   4) Forms / Inputs
-   ========================= */
 body.dark-mode input.qty,
 body.dark-mode input[type="number"],
 body.dark-mode select,
@@ -102,201 +283,28 @@ body.dark-mode textarea,
 body.dark-mode input[type="text"],
 body.dark-mode input[type="email"],
 body.dark-mode input[type="tel"]{
-  background-color: var(--dm-surface);
+  background: var(--ui-bg-content);
   color: var(--dm-text);
-  border: 1px solid var(--dm-border);
+  border: 1px solid var(--ui-border);
   border-radius: 4px;
 }
 
-/* =========================
-   5) Panels / Tabs / Tables
-   ========================= */
-body.dark-mode #nc-complete-set{
-  background-color: var(--dm-surface);
-  padding: 24px;
-  border-radius: 8px;
-  border: 1px solid var(--dm-border);
-  color: var(--dm-text);
-}
-
-/* Tabs */
-body.dark-mode .woocommerce-Tabs-panel,
-body.dark-mode .woocommerce-tabs ul.tabs li a{
-  color: var(--dm-text);
-  border-color: var(--dm-border);
-}
-
-/* Tables (cart/checkout/lists) */
-body.dark-mode table.woocommerce-cart-form,
-body.dark-mode .woocommerce table.shop_table{
-  background-color: var(--dm-surface);
-  color: var(--dm-text);
-  border-color: var(--dm-border);
-}
-body.dark-mode table.shop_table th{
-  background-color: var(--dm-forest);
-  color: var(--dm-text);
-}
-body.dark-mode table.shop_table td{
-  background-color: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-forest) 15%);
-}
-
-/* =========================
-   6) Filters / Checkboxes
-   ========================= */
-body.dark-mode input[type="checkbox"]{
-  accent-color: var(--dm-primary);
-  background-color: var(--dm-surface);
-  border: 1px solid var(--dm-border);
-}
-body.dark-mode .wc-block-product-filter-checkbox-list__text{
-  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
-}
-
-/* =========================
-   7) Product & Category media
-   ========================= */
-/* Neutral plate under transparent AVIF/PNG */
-body.dark-mode .woocommerce ul.products li.product img,
-body.dark-mode .woocommerce-product-gallery__image img,
-body.dark-mode .product-category img{
-  background-color: var(--dm-media);
-  border: 1px solid color-mix(in srgb, var(--dm-border) 85%, white 15%);
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow:
-    0 2px 6px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,255,255,.04);
-}
-
-/* Subtle lift on hover */
-body.dark-mode .woocommerce ul.products li.product:hover img,
-body.dark-mode .product-category a:hover img{
-  background-color: color-mix(in srgb, var(--dm-media) 80%, var(--dm-surface) 20%);
-  border-color: var(--dm-primary);
-}
-
-/* Titles / captions readability */
-body.dark-mode .woocommerce-loop-product__title,
-body.dark-mode .product-category .woocommerce-loop-category__title{
-  color: color-mix(in srgb, var(--dm-text) 88%, black 12%);
-}
-
-/* =========================
-   8) Footer & Breadcrumbs
-   ========================= */
-body.dark-mode footer,
-body.dark-mode .site-footer{
-  background-color: color-mix(in srgb, var(--dm-forest) 75%, var(--dm-bg) 25%);
-  color: var(--dm-text);
-}
-body.dark-mode .site-footer a{ color: var(--dm-primary); }
-body.dark-mode .site-footer a:hover{
-  color: color-mix(in srgb, var(--dm-text) 80%, var(--dm-primary) 20%);
-}
-
-body.dark-mode .woocommerce-breadcrumb{
-  color: color-mix(in srgb, var(--dm-text) 70%, var(--dm-primary) 30%);
-}
-
-/* =========================
-   9) Notices
-   ========================= */
+/* Notices */
 body.dark-mode .woocommerce-message,
 body.dark-mode .woocommerce-info,
 body.dark-mode .woocommerce-error{
-  background-color: color-mix(in srgb, var(--dm-forest) 60%, var(--dm-surface) 40%);
+  background: color-mix(in srgb, var(--dm-forest) 60%, var(--dm-surface) 40%);
   color: var(--dm-text);
   border-left: 4px solid var(--dm-primary);
 }
 
 /* =========================
-   10) Pagination
-   ========================= */
-body.dark-mode nav.woocommerce-pagination .page-numbers {
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--dm-text, #EAE9E5);
-  border-radius: 4px;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* Hover (non-current) */
-body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover {
-  background: color-mix(in srgb, var(--dm-surface, #2E2E2A) 70%, var(--dm-forest, #102923) 30%);
-  border-color: var(--dm-primary, #36B47A);
-  color: #fff;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm-primary, #36B47A) 25%, transparent);
-}
-
-/* Active / current page */
-body.dark-mode nav.woocommerce-pagination .page-numbers.current {
-  background: var(--dm-primary, #36B47A);
-  border-color: var(--dm-primary, #36B47A);
-  color: #0F2019;
-}
-
-/* Hover on current (slightly darker tone) */
-body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover {
-  background: var(--dm-forest, #102923);
-  border-color: var(--dm-forest, #102923);
-  color: #fff;
-}
-
-/* Dots */
-body.dark-mode nav.woocommerce-pagination .page-numbers.dots {
-  color: color-mix(in srgb, var(--dm-text, #EAE9E5) 60%, black 40%);
-}
-
-/* Prev / Next arrows */
-body.dark-mode nav.woocommerce-pagination .prev,
-body.dark-mode nav.woocommerce-pagination .next {
-  color: var(--dm-primary, #36B47A);
-}
-body.dark-mode nav.woocommerce-pagination .prev:hover,
-body.dark-mode nav.woocommerce-pagination .next:hover {
-  background: color-mix(in srgb, var(--dm-surface, #2E2E2A) 70%, var(--dm-forest, #102923) 30%);
-  border-color: var(--dm-primary, #36B47A);
-  color: #fff;
-}
-
-/* Focus visible */
-body.dark-mode nav.woocommerce-pagination a.page-numbers:focus-visible {
-  outline: 2px solid var(--dm-primary, #36B47A);
-  outline-offset: 2px;
-  box-shadow: none;
-}
-
-
-/* =========================
-   11) Custom size controls
-   ========================= */
-body.dark-mode .nh-size-ui .nh-mm-qty{
-  background: var(--dm-surface);
-  border: 1px solid var(--dm-border);
-}
-body.dark-mode .nh-size-ui .nh-mm-qty .minus,
-body.dark-mode .nh-size-ui .nh-mm-qty .plus{
-  background: var(--dm-surface);
-  color: var(--dm-primary);
-}
-body.dark-mode .nh-size-ui .nh-mm-qty .minus{ border-right: 1px solid var(--dm-border); }
-body.dark-mode .nh-size-ui .nh-mm-qty .plus{  border-left: 1px solid var(--dm-border); }
-body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input{
-  background: var(--dm-surface);
-  color: var(--dm-text);
-}
-body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder{
-  color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
-}
-
-/* =========================
-   12) Attribute & Cut toggles
+   10) Product page — Attribute & Custom cut
    ========================= */
 /* Attribute buttons */
 body.dark-mode .variations_form .nh-attr-btn{
-  background: var(--dm-surface);
-  border-color: var(--dm-border) !important;
+  background: var(--ui-bg-content);
+  border-color: var(--ui-border) !important;
   color: var(--dm-primary);
 }
 body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):hover{
@@ -316,110 +324,302 @@ body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
   color: #fff !important;
 }
 
-/* Cutting Type toggle */
-body.dark-mode .nh-cut-btn{
-  background: var(--dm-surface);
-  border-color: var(--dm-border);
+/* Cutting size control */
+body.dark-mode .nh-size-ui .nh-mm-qty{
+  background: var(--ui-bg-content);
+  border: 1px solid var(--ui-border);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .minus,
+body.dark-mode .nh-size-ui .nh-mm-qty .plus{
+  background: var(--ui-bg-content);
   color: var(--dm-primary);
 }
-body.dark-mode .nh-cut-btn:hover{
-  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
-  border-color: var(--dm-primary);
-  color: #fff;
-  transform: translateY(-1px);
+body.dark-mode .nh-size-ui .nh-mm-qty .minus{ border-right: 1px solid var(--ui-border); }
+body.dark-mode .nh-size-ui .nh-mm-qty .plus{  border-left: 1px solid var(--ui-border); }
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input{
+  background: var(--ui-bg-content);
+  color: var(--dm-text);
 }
-body.dark-mode .nh-cut-btn.is-active{
-  background: var(--dm-primary);
-  border-color: var(--dm-primary);
-  color: #0f2019;
-}
-body.dark-mode .nh-cut-btn.is-active:hover{
-  background: var(--dm-forest);
-  border-color: var(--dm-forest);
-  color: #fff;
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder{
+  color: color-mix(in srgb, var(--dm-text) 55%, var(--ui-border) 45%);
 }
 
 /* =========================
-   13) Price summary card
+   11) Product page — Price summary (flat with page background)
    ========================= */
 body.dark-mode .nh-price-summary{
-  background: var(--dm-surface);
+  background: var(--dm-bg);                /* same as website background */
   border: 1px solid var(--dm-border);
-  box-shadow: 0 1px 2px rgba(0,0,0,.35);
-}
-body.dark-mode .nh-ps-title{
-  background: var(--dm-surface);
+  box-shadow: none;
   color: var(--dm-text);
 }
+
+body.dark-mode .nh-ps-title{
+  background: var(--dm-bg);
+  color: var(--dm-text);
+}
+
 body.dark-mode .nh-ps-row,
-body.dark-mode .nh-ps-total{ color: var(--dm-text); }
-body.dark-mode .nh-ps-sep{ border-top: 1px solid var(--dm-border); }
+body.dark-mode .nh-ps-total{
+  color: var(--dm-text);
+}
+
+body.dark-mode .nh-ps-sep{
+  border-top: 1px solid var(--dm-border);
+}
+
+/* Prices */
 body.dark-mode #nh-price-summary .nh-ps-val del,
 body.dark-mode #nh-price-summary .nh-ps-total-val del{
   color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
 }
+
 body.dark-mode #nh-price-summary .nh-ps-val ins,
 body.dark-mode #nh-price-summary .nh-ps-total-val ins{
   color: var(--dm-text);
 }
 
 /* =========================
-   14) Bundle box (Complete set)
+   12) Bundle box (Complete set — dark mode, flat style)
    ========================= */
 body.dark-mode #nc-complete-set.nc-bundle{
   --nc-border: 1px solid var(--dm-border);
-  --nc-bg:     var(--dm-surface);
+  --nc-bg:     var(--dm-bg); /* same as website background */
   --nc-head:   var(--dm-text);
-  --nc-row-hover: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-forest) 15%);
+  --nc-row-hover: color-mix(in srgb, var(--dm-bg) 85%, var(--dm-forest) 15%);
+
   background: var(--nc-bg);
   border: var(--nc-border);
   color: var(--dm-text);
-  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  box-shadow: none;
 }
-body.dark-mode .nc-bundle-head{ background: var(--dm-surface); color: var(--dm-text); }
-body.dark-mode .nc-bundle-row{ border-top: var(--nc-border); }
-body.dark-mode .nc-bundle-row:not(.nc-bundle-header):hover{ background: var(--nc-row-hover); }
+
+body.dark-mode .nc-bundle-head{
+  background: var(--dm-bg);
+  color: var(--dm-text);
+}
+
+body.dark-mode .nc-bundle-row{
+  border-top: var(--nc-border);
+}
+
+body.dark-mode .nc-bundle-row:not(.nc-bundle-header):hover{
+  background: var(--nc-row-hover);
+}
+
 body.dark-mode .nc-bundle-header{
   color: color-mix(in srgb, var(--dm-text) 75%, var(--dm-primary) 25%);
   border-bottom: var(--nc-border);
 }
+
+/* Images */
 body.dark-mode .nc-col-image img{
   background: var(--dm-media);
   border: 1px solid color-mix(in srgb, var(--dm-border) 85%, white 15%);
 }
-body.dark-mode .nc-title{ color: var(--dm-text); }
-body.dark-mode .nc-price-desktop del,
-body.dark-mode .nc-price-mobile  del{ color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%); }
-body.dark-mode .nc-price-desktop ins,
-body.dark-mode .nc-price-mobile  ins{ color: var(--dm-text); }
 
-/* Stock pills (clear good vs. out-of-stock) */
-body.dark-mode .nc-pill{
-  background: color-mix(in srgb, var(--dm-surface) 80%, var(--dm-forest) 20%);
+/* Product titles & prices */
+body.dark-mode .nc-title{ color: var(--dm-text); }
+
+body.dark-mode .nc-price-desktop del,
+body.dark-mode .nc-price-mobile del{
+  color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
+}
+
+body.dark-mode .nc-price-desktop ins,
+body.dark-mode .nc-price-mobile ins{
   color: var(--dm-text);
 }
+
+/* Stock pills */
+body.dark-mode .nc-pill{
+  background: color-mix(in srgb, var(--dm-bg) 80%, var(--dm-forest) 20%);
+  color: var(--dm-text);
+}
+
 body.dark-mode .nc-pill--instock{
   background: color-mix(in srgb, var(--dm-primary) 20%, transparent);
   color: #dff5eb;
 }
+
 body.dark-mode .nc-pill--oos{
   background: color-mix(in srgb, #C7563A 30%, transparent);
   color: #FFE6DF;
 }
 
-/* Footer bar with total + CTA */
+/* Footer bar */
 body.dark-mode .nc-bundle-footer{
-  background: var(--dm-surface);
+  background: var(--dm-bg);
   border-top: 1px solid var(--dm-border);
 }
+
 body.dark-mode .nc-total{ color: var(--dm-text); }
+
 body.dark-mode .nc-bundle-footer .button{
   background: var(--dm-primary);
   border: 1px solid var(--dm-primary);
   color: #0f2019;
 }
+
 body.dark-mode .nc-bundle-footer .button:hover{
   background: var(--dm-forest);
   border-color: var(--dm-forest);
   color: #fff;
 }
+
+/* =========================
+   13) Tables / Tabs / Lists
+   ========================= */
+
+/* Attribute titles (left column) */
+body.dark-mode .woocommerce-product-attributes th {
+  color: color-mix(in srgb, var(--dm-text) 98%, white 20%) !important;
+}
+
+/* Tab titles (Description, Additional info, Reviews) */
+body.dark-mode .woocommerce-tabs ul.tabs li a {
+  color: color-mix(in srgb, var(--dm-text) 90%, white 10%);
+}
+
+body.dark-mode .woocommerce-tabs ul.tabs li.active a,
+body.dark-mode .woocommerce-tabs ul.tabs li a[aria-selected="true"] {
+  color: color-mix(in srgb, var(--dm-text) 100%, white 25%);
+}
+
+/* =========================
+   14) Media (product & category images)
+   ========================= */
+body.dark-mode .woocommerce ul.products li.product img,
+body.dark-mode .woocommerce-product-gallery__image img,
+body.dark-mode .product-category img{
+  background: var(--dm-media);
+  border: 1px solid color-mix(in srgb, var(--ui-border) 85%, white 15%);
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(255,255,255,.04);
+}
+body.dark-mode .woocommerce ul.products li.product:hover img,
+body.dark-mode .product-category a:hover img{
+  background: color-mix(in srgb, var(--dm-media) 80%, var(--dm-surface) 20%);
+  border-color: var(--dm-primary);
+}
+body.dark-mode .woocommerce-loop-product__title,
+body.dark-mode .product-category .woocommerce-loop-category__title{
+  color: color-mix(in srgb, var(--dm-text) 88%, black 12%);
+}
+
+/* =========================
+   15) Pagination (Woo)
+   ========================= */
+body.dark-mode nav.woocommerce-pagination .page-numbers{
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--pg-text);
+  border-radius: 4px;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover{
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
+  border-color: var(--pg-forest);
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pg-forest) 25%, transparent);
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.current{
+  background: var(--pg-forest);
+  border-color: var(--pg-forest);
+  color: #0F2019;
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover{
+  background: var(--dm-forest); border-color: var(--dm-forest); color:#fff;
+}
+body.dark-mode nav.woocommerce-pagination .page-numbers.dots{
+  color: color-mix(in srgb, var(--pg-text) 60%, black 40%);
+}
+body.dark-mode nav.woocommerce-pagination .prev,
+body.dark-mode nav.woocommerce-pagination .next{ color: var(--pg-forest); }
+body.dark-mode nav.woocommerce-pagination .prev:hover,
+body.dark-mode nav.woocommerce-pagination .next:hover{
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
+  border-color: var(--pg-forest);
+  color: #fff;
+}
+body.dark-mode nav.woocommerce-pagination a.page-numbers:focus-visible{
+  outline: 2px solid var(--pg-forest);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* =========================
+   16) Footer (dark mode — simple smooth)
+   ========================= */
+body.dark-mode .nh-footer{
+  background: var(--dm-forest);
+  color: #cfd3ce; /* soft light gray instead of pure white */
+}
+
+body.dark-mode .nh-footer__top{
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+/* Headings */
+body.dark-mode .nh-footer__heading{
+  color: #9ad3b4; /* muted mint accent */
+}
+
+/* Links */
+body.dark-mode .nh-footer a{
+  color: var(--dm-primary);
+  text-decoration: none;
+}
+body.dark-mode .nh-footer a:hover{
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Newsletter */
+body.dark-mode .nh-nl__input{
+  border: 1px solid rgba(255,255,255,.25);
+  background: #121512;
+  color: #d9d9d9;
+}
+body.dark-mode .nh-nl__input::placeholder{
+  color: #888;
+}
+body.dark-mode .nh-nl__btn{
+  background: var(--dm-primary);
+  color: #0f2019;
+}
+body.dark-mode .nh-nl__btn:hover{
+  background: color-mix(in srgb, var(--dm-primary) 85%, #000 15%);
+}
+
+/* B2B button + bottom bar */
+body.dark-mode .nh-footer__b2b{
+  background: rgba(255,255,255,.1);
+  color: #cfd3ce;
+}
+body.dark-mode .nh-footer__b2b:hover{
+  background: rgba(255,255,255,.15);
+}
+
+body.dark-mode .nh-footer__bottom{
+  border-top: 1px solid rgba(255,255,255,.1);
+  color: #9ea39f;
+}
+body.dark-mode .nh-footer__bottom a{
+  color: var(--dm-primary);
+}
+body.dark-mode .nh-footer__bottom a:hover{
+  color: #fff;
+}
+
+/* =========================
+   17) Nice-to-haves
+   ========================= */
+body.dark-mode svg:not([fill]){ fill: currentColor; }
+body.dark-mode svg:not([stroke]){ stroke: currentColor; }
+body.dark-mode ::-webkit-scrollbar-thumb{ background: color-mix(in srgb, var(--dm-text) 20%, transparent); }
+body.dark-mode ::-webkit-scrollbar-track{ background: transparent; }

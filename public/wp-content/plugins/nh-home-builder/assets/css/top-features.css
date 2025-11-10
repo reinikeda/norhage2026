@@ -86,20 +86,88 @@
   background: color-mix(in srgb, var(--nh-mint) 25%, white);
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .nhhb-top-features .nhhb-features-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px 20px;
-  }
-  .nhhb-top-features h3.nhhb-feature-title { font-size: 12.5px; }
-}
-
 @media (max-width: 640px) {
   .nhhb-top-features .nhhb-features-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 14px;
+    padding-left: 14px;   /* soft left margin for alignment */
+    padding-right: 14px;
   }
-  .nhhb-top-features h3.nhhb-feature-title { font-size: 12px; }
-  .nhhb-top-features .nhhb-feature-sub { font-size: 11.5px; }
+
+  .nhhb-top-features .nhhb-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(0,0,0,.06);
+    text-align: left;
+  }
+
+  .nhhb-top-features .nhhb-feature:first-child {
+    border-top: 0;
+  }
+
+  .nhhb-top-features .nhhb-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nhhb-top-features .nhhb-copy {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nhhb-top-features h3.nhhb-feature-title {
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .nhhb-top-features .nhhb-feature-sub {
+    font-size: 12px;
+    margin: 0;
+    color: var(--nhhb-ink-sub);
+  }
 }
+
+/* ===== Top Features – Dark mode fixes ===== */
+
+/* Text colors */
+body.dark-mode .nhhb-top-features h3.nhhb-feature-title{
+  color: var(--dm-text);          /* strong */
+}
+body.dark-mode .nhhb-top-features .nhhb-feature-sub{
+  color: rgba(234,233,229,.75);   /* softer but readable */
+}
+
+/* Separators */
+body.dark-mode .nhhb-top-features .nhhb-feature{
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+body.dark-mode .nhhb-top-features .nhhb-feature:first-child{
+  border-top: 0;
+}
+
+/* Icon visibility: soft chip behind the icon for contrast */
+body.dark-mode .nhhb-top-features .nhhb-icon{
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* If your icons are monochrome dark SVGs, flip them to light.
+   (Optional — enable if needed) */
+/*
+body.dark-mode .nhhb-top-features .nhhb-icon img[src$=".svg"]{
+  filter: invert(1) brightness(1.1);
+}
+*/

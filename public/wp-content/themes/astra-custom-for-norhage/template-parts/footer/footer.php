@@ -86,7 +86,7 @@ function nh_footer_menu_block($title, $locations){
     <?php nh_footer_menu_block(__('Shop Categories', 'nh-theme'), ['footer_shop','primary']); ?>
 
     <!-- 3. Explore Menu -->
-    <?php nh_footer_menu_block(__('Explore & Support', 'nh-theme'), ['footer_secondary','secondary']); ?>
+    <?php nh_footer_menu_block(__('Explore & Support', 'nh-theme'), ['footer_explore','footer']); ?>
 
     <!-- 4. Legal Menu -->
     <?php nh_footer_menu_block(__('Legal & Information', 'nh-theme'), ['footer_legal','footer']); ?>
@@ -112,18 +112,23 @@ function nh_footer_menu_block($title, $locations){
   <!-- Bottom bar -->
   <div class="nh-footer__bottom">
     <div class="nh-footer__legal-left">© <?php echo esc_html($year.' '.$site_name); ?></div>
-    <?php if (has_nav_menu('footer_legal')): ?>
-      <nav class="nh-footer__legal" aria-label="<?php esc_attr_e('Legal shortcuts', 'nh-theme'); ?>">
-        <?php
-          wp_nav_menu([
-            'theme_location' => 'footer_legal',
-            'container'      => false,
-            'menu_class'     => 'nh-footer__legal-menu',
-            'depth'          => 1,
-            'fallback_cb'    => '__return_empty_string',
-          ]);
-        ?>
-      </nav>
-    <?php endif; ?>
+
+    <div class="nh-footer__legal-right">
+      <a class="nh-footer__b2b" href="https://norhageindustri.lt/"><?php esc_html_e('B2B Portal', 'nh-theme'); ?></a>
+      <?php if (has_nav_menu('footer_bottom')): ?>
+        <nav class="nh-footer__legal" aria-label="<?php esc_attr_e('Legal bottom', 'nh-theme'); ?>">
+          <?php
+            wp_nav_menu([
+              'theme_location' => 'footer_bottom',
+              'container'      => false,
+              'menu_class'     => 'nh-footer__bottom-menu',
+              'depth'          => 1,
+              'fallback_cb'    => '__return_empty_string',
+            ]);
+          ?>
+        </nav>
+      <?php endif; ?>
+    </div>
   </div>
+
 </footer>

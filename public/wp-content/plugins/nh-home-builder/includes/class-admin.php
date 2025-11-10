@@ -356,47 +356,74 @@ class NHHB_Admin {
         <div id="nhhb_fields_b2b_banner" class="<?php echo $type==='b2b-banner' ? '' : 'nhhb-hidden'; ?>">
             <h3>B2B Banner</h3>
             <?php
-                $bb = [
-                    'h2'       => $data['h2']       ?? 'For Business Customers',
-                    'h3'       => $data['h3']       ?? 'Exclusive pricing and services for B2B partners.',
-                    'btn_text' => $data['btn_text'] ?? 'Learn more',
-                    'btn_url'  => $data['btn_url']  ?? '',
-                    'logo'     => isset($data['logo']) ? absint($data['logo']) : 0,
-                ];
-                $logo_src = $bb['logo'] ? wp_get_attachment_image_url($bb['logo'], 'medium') : '';
+            // ...
+            $bb = [
+            'h2'       => $data['h2']       ?? 'For Business Customers',
+            'h3'       => $data['h3']       ?? 'Exclusive pricing and services for B2B partners.',
+            'btn_text' => $data['btn_text'] ?? 'Learn more',
+            'btn_url'  => $data['btn_url']  ?? '',
+            // NEW: separate logos (fallback to legacy 'logo' if present)
+            'logo_d'   => isset($data['logo_d']) ? absint($data['logo_d']) : ( isset($data['logo']) ? absint($data['logo']) : 0 ),
+            'logo_m'   => isset($data['logo_m']) ? absint($data['logo_m']) : 0,
+            ];
+            $logo_src_d = $bb['logo_d'] ? wp_get_attachment_image_url($bb['logo_d'], 'medium') : '';
+            $logo_src_m = $bb['logo_m'] ? wp_get_attachment_image_url($bb['logo_m'], 'medium') : '';
             ?>
             <div class="nhhb-grid nhhb-3">
-                <p><label>H2 (title)<br>
-                    <input type="text" class="widefat" name="data[h2]" value="<?php echo esc_attr($bb['h2']); ?>">
-                </label></p>
-                <p><label>H3 (subtitle)<br>
-                    <input type="text" class="widefat" name="data[h3]" value="<?php echo esc_attr($bb['h3']); ?>">
-                </label></p>
-                <p><label>Button text<br>
-                    <input type="text" class="widefat" name="data[btn_text]" value="<?php echo esc_attr($bb['btn_text']); ?>">
-                </label></p>
+            <p><label>H2 (title)<br>
+                <input type="text" class="widefat" name="data[h2]" value="<?php echo esc_attr($bb['h2']); ?>">
+            </label></p>
+            <p><label>H3 (subtitle)<br>
+                <input type="text" class="widefat" name="data[h3]" value="<?php echo esc_attr($bb['h3']); ?>">
+            </label></p>
+            <p><label>Button text<br>
+                <input type="text" class="widefat" name="data[btn_text]" value="<?php echo esc_attr($bb['btn_text']); ?>">
+            </label></p>
             </div>
 
             <div class="nhhb-grid nhhb-2" style="align-items:end">
-                <p><label>Button URL (opens in new tab)<br>
-                    <input type="url" class="widefat" name="data[btn_url]" value="<?php echo esc_attr($bb['btn_url']); ?>" placeholder="https://">
-                </label></p>
+            <p><label>Button URL (opens in new tab)<br>
+                <input type="url" class="widefat" name="data[btn_url]" value="<?php echo esc_attr($bb['btn_url']); ?>" placeholder="https://">
+            </label></p>
 
-                <div class="nhhb-card" style="max-width:420px">
-                    <h4>Logo</h4>
+            <div class="nhhb-card" style="max-width:880px">
+                <h4>Logos</h4>
+                <div class="nhhb-grid nhhb-2">
+                <div>
                     <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="b2b_logo_thumb">
-                                <?php echo $logo_src ? '<img src="'.esc_url($logo_src).'" alt=""/>' : 'No logo'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="b2b_logo">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[logo]" id="b2b_logo" value="<?php echo esc_attr($bb['logo']); ?>">
+                    <div>
+                        <div class="nhhb-thumb" id="b2b_logo_thumb_d">
+                        <?php echo $logo_src_d ? '<img src="'.esc_url($logo_src_d).'" alt=""/>' : 'No desktop logo'; ?>
                         </div>
-                        <p class="description" style="margin:0 0 0 10px;">Recommended square PNG/SVG.</p>
+                        <div class="nhhb-actions">
+                        <button type="button" class="button nhhb-upload" data-target="b2b_logo_d">Browse</button>
+                        <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_d">Remove</button>
+                        </div>
+                        <input type="hidden" name="data[logo_d]" id="b2b_logo_d" value="<?php echo esc_attr($bb['logo_d']); ?>">
                     </div>
+                    <p class="description" style="margin:0 0 0 10px;">
+                        <strong>Desktop logo</strong> — transparent background, <em>white mark</em> (shown on dark blue banner).
+                    </p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="nhhb-row">
+                    <div>
+                        <div class="nhhb-thumb" id="b2b_logo_thumb_m">
+                        <?php echo $logo_src_m ? '<img src="'.esc_url($logo_src_m).'" alt=""/>' : 'No mobile logo'; ?>
+                        </div>
+                        <div class="nhhb-actions">
+                        <button type="button" class="button nhhb-upload" data-target="b2b_logo_m">Browse</button>
+                        <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_m">Remove</button>
+                        </div>
+                        <input type="hidden" name="data[logo_m]" id="b2b_logo_m" value="<?php echo esc_attr($bb['logo_m']); ?>">
+                    </div>
+                    <p class="description" style="margin:0 0 0 10px;">
+                        <strong>Mobile logo</strong> — transparent background, <em>dark blue mark</em> (shown on white banner).
+                    </p>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -520,7 +547,8 @@ class NHHB_Admin {
                     else if (target.indexOf('ptr_')===0)   tSel = '#ptr_thumb_'   + target.split('_')[1];
                     else if (target.indexOf('svc_bg_')===0)   tSel = '#svc_bg_thumb_'   + target.split('_')[2];
                     else if (target.indexOf('svc_icon_')===0) tSel = '#svc_icon_thumb_' + target.split('_')[2];
-                    else if (target === 'b2b_logo') tSel = '#b2b_logo_thumb';
+                    else if (target === 'b2b_logo_d') tSel = '#b2b_logo_thumb_d';
+                    else if (target === 'b2b_logo_m') tSel = '#b2b_logo_thumb_m';
 
                     if (tSel) $(tSel).html('<img src="'+thumb+'" alt="">');
                 });
@@ -677,13 +705,13 @@ class NHHB_Admin {
             ];
 
         } elseif ($type === 'b2b-banner') {
-            // NEW: Save the transparent banner fields
             $clean = [
                 'h2'       => sanitize_text_field($data['h2'] ?? ''),
                 'h3'       => sanitize_text_field($data['h3'] ?? ''),
                 'btn_text' => sanitize_text_field($data['btn_text'] ?? ''),
                 'btn_url'  => esc_url_raw($data['btn_url'] ?? ''),
-                'logo'     => isset($data['logo']) ? absint($data['logo']) : 0,
+                'logo_d'   => isset($data['logo_d']) ? absint($data['logo_d']) : 0,
+                'logo_m'   => isset($data['logo_m']) ? absint($data['logo_m']) : 0,
             ];
         }
 
