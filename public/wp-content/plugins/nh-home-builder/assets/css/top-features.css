@@ -1,31 +1,31 @@
-/* ===== Home Builder – Top Features (final update) ===== */
-:root {
-  --nhhb-ink:       var(--nh-charcoal);
-  --nhhb-ink-sub:   color-mix(in srgb, var(--nh-charcoal) 60%, white);
-  --nhhb-accent:    var(--nh-forest);
-  --nhhb-radius:    4px;
+/* ===== Home Builder – Top Features (SVG-ready) ===== */
+:root{
+  --nhhb-ink:        var(--nh-charcoal, #222);
+  --nhhb-ink-sub:    color-mix(in srgb, var(--nh-charcoal, #222) 60%, white);
+  --nhhb-accent:     var(--nh-forest, #1E3932);  /* icon + accent */
+  --nhhb-radius:     4px;
 }
 
 /* Section container */
-.nhhb-top-features {
+.nhhb-top-features{
   margin: 26px 0;
   font-family: var(--nh-font-main, inherit);
   background: transparent;
 }
 
-/* Grid layout */
-.nhhb-top-features .nhhb-features-grid {
+/* Grid */
+.nhhb-top-features .nhhb-features-grid{
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0,1fr));
   gap: 36px;
   align-items: center;
   justify-content: center;
 }
 
-/* Individual feature */
-.nhhb-top-features .nhhb-feature {
+/* Item */
+.nhhb-top-features .nhhb-feature{
   display: flex;
-  align-items: center; /* centered vertically */
+  align-items: center;
   gap: 10px;
   padding: 0;
   background: none;
@@ -34,8 +34,18 @@
   text-align: left;
 }
 
-/* Icon */
-.nhhb-top-features .nhhb-icon {
+/* make SVG <img> fill the container */
+.nhhb-top-features .nhhb-icon img[src$=".svg"]{
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
+  max-height: none;
+  display: block;
+  object-fit: contain;
+}
+
+/* ----- ICON (inline SVG support) ----- */
+.nhhb-top-features .nhhb-icon{
   width: 26px;
   height: 26px;
   flex: 0 0 auto;
@@ -43,131 +53,137 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  top: 0; /* reset previous offset */
+  top: 0;
+  color: var(--nhhb-accent);             /* icon color (currentColor) */
 }
 
-.nhhb-top-features .nhhb-icon img {
+/* When PHP wraps inline SVG as <span class="nhhb-svg">... */
+.nhhb-top-features .nhhb-icon .nhhb-svg,
+.nhhb-top-features .nhhb-icon svg{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Make inline SVG follow currentColor (unless explicitly 'none') */
+.nhhb-top-features .nhhb-icon svg [fill]:not([fill="none"]){ fill: currentColor; }
+.nhhb-top-features .nhhb-icon svg [stroke]:not([stroke="none"]){ stroke: currentColor; }
+
+/* If any icons still come via <img>.svg, keep them visible */
+.nhhb-top-features .nhhb-icon img{
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
+  filter: none; /* ensure no leftover inversion in light mode */
 }
 
 /* Text */
-.nhhb-top-features .nhhb-copy {
+.nhhb-top-features .nhhb-copy{
   display: flex;
   flex-direction: column;
   gap: 2px;
   line-height: 1.25;
 }
 
-/* Smaller, balanced title */
-.nhhb-top-features h3.nhhb-feature-title {
+.nhhb-top-features h3.nhhb-feature-title{
   margin: 0;
   font-size: 13px;
-  font-weight: 500; /* lighter weight for cleaner look */
+  font-weight: 500;
   color: var(--nhhb-ink);
   line-height: 1.3;
-  letter-spacing: 0.01em;
+  letter-spacing: .01em;
 }
 
-/* Subtext */
-.nhhb-top-features .nhhb-feature-sub {
+.nhhb-top-features .nhhb-feature-sub{
   margin: 0;
   font-size: 12px;
   color: var(--nhhb-ink-sub);
 }
 
-/* Placeholder for empty icon */
-.nhhb-top-features .nhhb-ph-img {
+/* Placeholder when no icon */
+.nhhb-top-features .nhhb-ph-img{
   width: 26px;
   height: 26px;
   border-radius: var(--nhhb-radius);
-  background: color-mix(in srgb, var(--nh-mint) 25%, white);
+  background: color-mix(in srgb, var(--nh-mint, #2EA26F) 25%, white);
 }
 
-@media (max-width: 640px) {
-  .nhhb-top-features .nhhb-features-grid {
+/* ===== Responsive ===== */
+@media (max-width: 640px){
+  .nhhb-top-features .nhhb-features-grid{
     grid-template-columns: 1fr;
     gap: 14px;
-    padding-left: 14px;   /* soft left margin for alignment */
+    padding-left: 14px;
     padding-right: 14px;
   }
-
-  .nhhb-top-features .nhhb-feature {
-    display: flex;
+  .nhhb-top-features .nhhb-feature{
     align-items: center;
     gap: 12px;
     padding: 10px 0;
     border-top: 1px solid rgba(0,0,0,.06);
     text-align: left;
   }
-
-  .nhhb-top-features .nhhb-feature:first-child {
-    border-top: 0;
-  }
-
-  .nhhb-top-features .nhhb-icon {
+  .nhhb-top-features .nhhb-feature:first-child{ border-top: 0; }
+  .nhhb-top-features .nhhb-icon{
     width: 30px;
     height: 30px;
     flex: 0 0 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
-
-  .nhhb-top-features .nhhb-copy {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .nhhb-top-features h3.nhhb-feature-title {
-    font-size: 13px;
-    margin: 0;
-  }
-
-  .nhhb-top-features .nhhb-feature-sub {
-    font-size: 12px;
-    margin: 0;
-    color: var(--nhhb-ink-sub);
-  }
+  .nhhb-top-features h3.nhhb-feature-title{ font-size: 13px; }
+  .nhhb-top-features .nhhb-feature-sub{ font-size: 12px; }
 }
 
-/* ===== Top Features – Dark mode fixes ===== */
+/* ===== Dark mode – final clean version ===== */
+body.dark-mode .nhhb-top-features{
+  --dm-ink-strong:  #EDEBE7;      /* titles + icons */
+  --dm-ink-sub:     rgba(237,235,231,.78);
+  --dm-sep:         rgba(255,255,255,.10);
+}
 
-/* Text colors */
+/* Titles & subtext contrast */
 body.dark-mode .nhhb-top-features h3.nhhb-feature-title{
-  color: var(--dm-text);          /* strong */
+  color: var(--dm-ink-strong);
 }
 body.dark-mode .nhhb-top-features .nhhb-feature-sub{
-  color: rgba(234,233,229,.75);   /* softer but readable */
+  color: var(--dm-ink-sub);
 }
 
-/* Separators */
-body.dark-mode .nhhb-top-features .nhhb-feature{
-  border-top: 1px solid rgba(255,255,255,.12);
-}
-body.dark-mode .nhhb-top-features .nhhb-feature:first-child{
-  border-top: 0;
+/* Separators (mobile / narrow) */
+@media (max-width: 800px){
+  body.dark-mode .nhhb-top-features .nhhb-feature{
+    border-top: 1px solid var(--dm-sep);
+  }
+  body.dark-mode .nhhb-top-features .nhhb-feature:first-child{
+    border-top: 0;
+  }
 }
 
-/* Icon visibility: soft chip behind the icon for contrast */
+/* ----- ICONS (flat white, no chip) ----- */
 body.dark-mode .nhhb-top-features .nhhb-icon{
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  display: flex; align-items: center; justify-content: center;
+  color: var(--dm-ink-strong);
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
-/* If your icons are monochrome dark SVGs, flip them to light.
-   (Optional — enable if needed) */
-/*
+/* If using <img>.svg icons, flip them to white */
 body.dark-mode .nhhb-top-features .nhhb-icon img[src$=".svg"]{
-  filter: invert(1) brightness(1.1);
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
 }
-*/
+
+/* Desktop spacing polish */
+@media (min-width: 801px){
+  .nhhb-top-features .nhhb-feature{
+    padding: 2px 0; /* subtle breathing room */
+  }
+}
+
+/* Smooth color transitions (optional) */
+.nhhb-top-features .nhhb-icon,
+.nhhb-top-features h3.nhhb-feature-title,
+.nhhb-top-features .nhhb-feature-sub{
+  transition: color .25s ease, filter .25s ease, background-color .25s ease, border-color .25s ease;
+}

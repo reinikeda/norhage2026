@@ -123,6 +123,82 @@
 .nhhb-pt-small .nhhb-pt-media{ order:2 }
 .nhhb-pt-small .nhhb-pt-copy { order:1 }
 
+/* =========================================================
+   Promo Trio — Dark Mode (same background & depth as Top Offers)
+   ========================================================= */
+
+body.dark-mode .nhhb-promo-trio{
+  /* shared dark palette */
+  --dm-bg:        #20211F;
+  --dm-surface:   #343530;
+  --dm-forest:    #14332B;
+  --dm-text:      #ECEAE6;
+  --dm-primary:   #36B47A;
+  --dm-border:    #3E5F50;
+  --dm-media:     #262724;
+
+  /* mapped variables */
+  --nh-ink:       var(--dm-text);
+  --nh-ink-sub:   rgba(236,234,230,.82);
+  --nh-green:     var(--dm-primary);
+  --nh-border:    rgba(255,255,255,.10);
+
+  /* same tonal system as Top Offers */
+  --nh-off:   color-mix(in srgb, var(--dm-surface) 85%, var(--dm-bg));
+  --nh-cream: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-bg));
+}
+
+/* HERO — dark surface tone (like left slider) */
+body.dark-mode .nhhb-pt-hero{
+  background: color-mix(in srgb, var(--dm-surface) 85%, var(--dm-bg));
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 28px rgba(0,0,0,.35);
+}
+
+/* SMALL CARDS — lighter tone like side promos */
+body.dark-mode .nhhb-pt-small{
+  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-bg));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+/* Shared card effects */
+body.dark-mode .nhhb-pt-card{
+  color: var(--dm-text);
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+body.dark-mode .nhhb-pt-card:hover{
+  transform: translateY(-1px);
+  border-color: var(--dm-border);
+  box-shadow: 0 10px 22px rgba(0,0,0,.42);
+}
+
+/* Images — fully transparent, slightly lifted for contrast */
+body.dark-mode .nhhb-pt-media{ background: transparent; }
+body.dark-mode .nhhb-pt-img{
+  background: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
+}
+
+/* Text hierarchy (same as Top Offers) */
+body.dark-mode .nhhb-pt-kicker{ color: var(--nh-ink-sub); }
+body.dark-mode .nhhb-pt-h2,
+body.dark-mode .nhhb-pt-h3{ color: var(--nh-ink); }
+body.dark-mode .nhhb-pt-p{ color: var(--nh-ink-sub); }
+
+/* CTA button */
+body.dark-mode .nhhb-pt-btn{
+  background: var(--dm-primary);
+  color:#111;
+  text-shadow:none;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--dm-primary) 45%, transparent);
+}
+body.dark-mode .nhhb-pt-btn:hover{
+  background: var(--dm-forest);
+  color:#fff;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--dm-forest) 48%, transparent);
+}
+
 /* Responsive */
 @media (max-width: 1024px){
   .nhhb-pt-h2{ font-size: 30px }

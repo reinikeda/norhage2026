@@ -490,3 +490,185 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
 
 /* If the admin bar is present, expose its height as a CSS var */
 body.admin-bar { --wp-admin-bar-height: 32px; } /* WP default on desktop */
+
+/* =========================================================
+   Norhage Filters — Dark mode overrides (flat + cohesive)
+   ========================================================= */
+
+body.dark-mode #nhf-sidebar{
+  color: var(--dm-text);
+  border-top: 1px solid var(--dm-border);
+  border-bottom: 1px solid var(--dm-border);
+}
+
+/* Section headings */
+body.dark-mode .nhf-heading{
+  color: color-mix(in srgb, var(--dm-text) 85%, var(--dm-primary) 15%);
+}
+
+/* ===== Category list ===== */
+body.dark-mode .nhf-cat-item{ background: transparent; }
+body.dark-mode .nhf-cat-toggle{
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-cat-toggle:hover,
+body.dark-mode .nhf-cat-toggle:focus-visible{
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-bg) 85%, var(--dm-forest) 15%);
+}
+body.dark-mode .nhf-cat-item.is-open > .nhf-cat-toggle{
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%);
+}
+body.dark-mode .nhf-cat-item.is-open > .nhf-cat-toggle:hover{
+  background: color-mix(in srgb, var(--dm-bg) 80%, var(--dm-forest) 20%);
+}
+
+/* chevron */
+body.dark-mode .nhf-icon::before{ opacity:.9; }
+
+/* subcats */
+body.dark-mode .nhf-cat-sub{
+  border-left: 1px solid var(--dm-border);
+}
+body.dark-mode .nhf-cat-sub a{
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-cat-sub a:hover{
+  color: #fff;
+  background: color-mix(in srgb, var(--dm-bg) 85%, var(--dm-forest) 15%);
+}
+body.dark-mode .nhf-cat-sub .is-active > a{
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%);
+}
+
+/* accent lines */
+body.dark-mode .nhf-cat-item.is-open > .nhf-cat-toggle::before,
+body.dark-mode .nhf-cat-sub .is-active > a::before{
+  background: var(--dm-primary);
+}
+body.dark-mode .nhf-cat-item.is-open > .nhf-cat-toggle:hover::before,
+body.dark-mode .nhf-cat-sub .is-active > a:hover::before{
+  background: var(--dm-forest);
+}
+
+/* "All" link */
+body.dark-mode .nhf-all a{ color: color-mix(in srgb, var(--dm-text) 70%, #000 30%); }
+body.dark-mode .nhf-all a:hover{ color: var(--dm-primary); }
+
+/* ===== Filters block ===== */
+body.dark-mode .nhf-filters{
+  border-top: 1px solid var(--dm-border);
+}
+body.dark-mode .nhf-filter-toggle{
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-filter-toggle:hover,
+body.dark-mode .nhf-filter-toggle:focus-visible{
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-bg) 85%, var(--dm-forest) 15%);
+}
+body.dark-mode .nhf-filters .nhf-filter.is-open > .nhf-filter-toggle{
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%);
+}
+
+/* filter body + labels */
+body.dark-mode .nhf-filter-body label{
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-filter-body input[type="checkbox"],
+body.dark-mode .nhf-filter--toggles input[type="checkbox"]{
+  accent-color: var(--dm-primary);
+}
+
+/* price slider + value text */
+body.dark-mode .nhf-price-slider{
+  background: linear-gradient(
+    to right,
+    var(--dm-primary) 0%,
+    color-mix(in srgb, var(--dm-primary) 35%, var(--dm-bg) 65%) 100%
+  );
+}
+body.dark-mode .nhf-price-slider::after{ color: var(--dm-primary); }
+body.dark-mode .nhf-price-values{ color: color-mix(in srgb, var(--dm-text) 75%, #000 25%); }
+
+/* reset link */
+body.dark-mode .nhf-reset{
+  color: color-mix(in srgb, var(--dm-text) 70%, #000 30%);
+}
+body.dark-mode .nhf-reset:hover{
+  color: var(--dm-primary);
+}
+
+/* apply bar + button */
+body.dark-mode .nhf-applybar{
+  border-top: 1px solid var(--dm-border);
+}
+body.dark-mode .nhf-applybtn{
+  background: var(--dm-primary);
+  color: #0f2019;
+}
+body.dark-mode .nhf-applybtn:hover{
+  background: var(--dm-forest);
+  color: #fff;
+}
+
+/* price fields */
+body.dark-mode .nhf-price-field{
+  border: 1px solid var(--dm-border);
+  background: color-mix(in srgb, var(--dm-bg) 90%, var(--dm-forest) 10%);
+}
+body.dark-mode .nhf-price-field input{
+  color: var(--dm-text);
+}
+
+/* active group dot */
+body.dark-mode .nhf-filter.is-active-group > .nhf-filter-toggle{ color: var(--dm-primary); }
+body.dark-mode .nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon::after{
+  background: var(--dm-primary);
+}
+
+/* ===== Mobile bar & drawer ===== */
+body.dark-mode .nhf-mobilebar{
+  background: var(--dm-bg);
+  border-top: 1px solid var(--dm-border);
+  box-shadow: 0 -6px 18px rgba(0,0,0,.25);
+}
+body.dark-mode .nhf-mb-btn{ color: var(--dm-text); }
+body.dark-mode .nhf-mb-btn:hover{ background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%); }
+body.dark-mode .nhf-badge{ background: var(--dm-primary); color:#0f2019; }
+
+body.dark-mode .nhf-drawer__backdrop{ background: rgba(0,0,0,.55); }
+body.dark-mode .nhf-drawer__panel{
+  background: var(--dm-bg);
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-drawer__header{
+  border-bottom: 1px solid var(--dm-border);
+}
+body.dark-mode .nhf-drawer__title{ color: var(--dm-text); }
+body.dark-mode .nhf-drawer__close{
+  color: var(--dm-text);
+}
+body.dark-mode .nhf-drawer__close:hover,
+body.dark-mode .nhf-drawer__close:focus-visible{
+  background: color-mix(in srgb, var(--dm-bg) 85%, var(--dm-forest) 15%);
+  color: var(--dm-primary);
+}
+body.dark-mode .nhf-drawer__footer{
+  border-top: 1px solid var(--dm-border);
+  background: var(--dm-bg);
+}
+body.dark-mode .nhf-drawer__apply{
+  background: var(--dm-primary);
+  color:#0f2019;
+}
+body.dark-mode .nhf-drawer__apply:hover{
+  background: var(--dm-forest);
+  color:#fff;
+}
+body.dark-mode .nhf-drawer__reset{
+  color: color-mix(in srgb, var(--dm-text) 70%, #000 30%);
+}

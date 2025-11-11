@@ -21,21 +21,39 @@ $orderby    = isset($data['orderby'])    ? sanitize_text_field($data['orderby'])
 $order      = isset($data['order'])      ? sanitize_text_field($data['order'])   : 'ASC';
 $hide_empty = !empty($data['hide_empty']);
 
+// Woo's default product cat (Uncategorized) ID
+$uncat_id = (int) get_option('default_product_cat', 0);
+
 // Fetch terms
 $args = [
     'taxonomy'   => 'product_cat',
     'hide_empty' => $hide_empty,
-    'number'     => $limit,
     'orderby'    => $orderby,
     'order'      => $order,
     'parent'     => $parent_id,
 ];
+// Exclude uncategorized by ID when known
+if ($uncat_id) {
+    $args['exclude'] = [$uncat_id];
+}
+
 $terms = get_terms($args);
+
+// Extra safety: remove by slug/ID, then reapply limit
+if (!is_wp_error($terms) && $terms) {
+    $terms = array_filter($terms, function($t) use ($uncat_id) {
+        if ((int)$t->term_id === $uncat_id) return false;
+        $slug = isset($t->slug) ? $t->slug : '';
+        return !in_array($slug, ['uncategorized','uncategorised'], true);
+    });
+    // Reapply limit after filtering
+    $terms = array_slice(array_values($terms), 0, $limit);
+}
 ?>
 <section class="nhhb-browse-cats" data-nhhb-cats>
   <div class="nhhb-cats-head">
     <h2 class="nhhb-cats-title"><?php echo esc_html($title); ?></h2>
-    <div class="nhhb-cats-arrows" aria-hidden="true">
+    <div class="nhhb-cats-arrows">
       <button class="nhhb-cat-prev" type="button" aria-label="<?php esc_attr_e('Scroll left','nhhb'); ?>">‹</button>
       <button class="nhhb-cat-next" type="button" aria-label="<?php esc_attr_e('Scroll right','nhhb'); ?>">›</button>
     </div>

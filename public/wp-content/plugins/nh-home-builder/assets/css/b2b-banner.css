@@ -1,152 +1,131 @@
 /* =========================
-   NH Home Builder — B2B Banner (final polished blue version)
+   NH Home Builder — B2B Banner (single-logo, auto-white on blue)
    ========================= */
 
 :root{
-  --b2b-blue:   #0E3C58;                           /* Norhage Industri blue */
-  --b2b-blue-2: #124C70;                           /* hover tint */
-  --b2b-radius: var(--nl-radius, 4px);
-  --b2b-shadow: var(--nl-shadow, 0 10px 26px rgba(0,0,0,.10));
+  --b2b-blue:        #0E3C58;            /* Norhage blue (light-mode desktop) */
+  --b2b-blue-2:      #124C70;            /* hover tint */
+  --b2b-blue-dm:     #0B3147;            /* dark-mode base blue */
+  --b2b-blue-dm-2:   #114360;            /* dark-mode blend */
+  --b2b-radius:      var(--nl-radius, 4px);
+  --b2b-shadow:      var(--nl-shadow, 0 10px 26px rgba(0,0,0,.10));
 }
 
-.nhhb-b2b-wrap{ margin: 28px 0; }
+.nhhb-b2b-wrap{ margin:28px 0; }
 
-/* Card — same width + padding as newsletter */
+/* ---------- Card (desktop, light mode) ---------- */
 .nhhb-b2b{
-  width: 100%;
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  align-items: center;
-  gap: 32px;
+  width:100%;
+  margin-inline:auto;
+  display:grid;
+  grid-template-columns:140px 1fr;
+  align-items:center;
+  gap:32px;
 
-  padding: 34px clamp(18px, 3vw, 42px);
-  background: var(--b2b-blue);
-  color: #fff;
+  padding:34px clamp(18px, 3vw, 42px);
+  background:var(--b2b-blue);   /* BLUE background on desktop light */
+  color:#fff;
 
-  border: 0;
-  border-radius: var(--b2b-radius);
-  box-shadow: var(--b2b-shadow);
+  border:0;
+  border-radius:var(--b2b-radius);
+  box-shadow:var(--b2b-shadow);
 }
 
-/* Logo area — transparent, no frame */
-.nhhb-b2b-logo{
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-.nhhb-b2b-logo img{
-  width: 100%;
-  height: auto;
-  object-fit: contain;
+/* Logo (single asset). It becomes white on blue backgrounds. */
+.nhhb-b2b-logo{ padding:0; background:transparent; box-shadow:none; }
+.nhhb-b2b-logo img.nhhb-b2b-logo-img{
+  width:100%; height:auto; object-fit:contain;
+  /* Blue bg => make mark white */
+  filter: brightness(0) invert(1) contrast(1.05);
 }
 
-/* Content + typography */
-.nhhb-b2b-content{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
+/* Content */
+.nhhb-b2b-content{ display:flex; flex-direction:column; gap:8px; }
 .nhhb-b2b-title{
   color:#fff;
-  font-weight:700;
-  line-height:1.2;
+  font-weight:700; line-height:1.2;
   font-size:clamp(24px, 2vw, 30px);
+  text-shadow:0 1px 2px rgba(0,0,0,.20);
 }
-
 .nhhb-b2b-text{
-  color:rgba(255,255,255,.85);
-  font-size:16px;
-  line-height:1.5;
-  max-width:54ch;
+  color:rgba(255,255,255,.88);
+  font-size:16px; line-height:1.5; max-width:54ch;
 }
 
 /* CTA */
 .nhhb-b2b-cta{
-  align-self:flex-start;
-  display:inline-block;
-  margin-top:12px;
-  padding:10px 22px;
-  border-radius:4px;
-
-  background:#fff;
-  color:var(--b2b-blue);
-  font-weight:600;
-  text-decoration:none;
-
+  align-self:flex-start; display:inline-block; margin-top:12px;
+  padding:10px 22px; border-radius:4px;
+  background:#fff; color:var(--b2b-blue); font-weight:600; text-decoration:none;
   box-shadow:0 6px 16px rgba(0,0,0,.12);
   transition:transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
 }
 .nhhb-b2b-cta:hover{
-  background:var(--b2b-blue-2);
-  color:#fff;
-  transform:translateY(-1px);
-  box-shadow:0 10px 22px rgba(0,0,0,.18);
+  background:var(--b2b-blue-2); color:#fff;
+  transform:translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.18);
 }
+.nhhb-b2b-cta:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
 
-/* ---- Dark mode ---- */
-body.dark-mode .nhhb-b2b{ box-shadow:0 12px 30px rgba(0,0,0,.25); }
-body.dark-mode .nhhb-b2b-text{ color:rgba(234,233,229,.85); }
+/* ---------- Dark mode (desktop) ---------- */
+body.dark-mode .nhhb-b2b{
+  background:linear-gradient(90deg, var(--b2b-blue-dm) 0%, var(--b2b-blue-dm-2) 100%);
+  color:var(--dm-text, #ECEAE6);
+  box-shadow:0 12px 30px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.06);
+}
+body.dark-mode .nhhb-b2b-title{ color:var(--dm-text, #ECEAE6); text-shadow:0 1px 2px rgba(0,0,0,.35); }
+body.dark-mode .nhhb-b2b-text{ color:rgba(234,233,229,.88); }
+
+/* Keep CTA blue in dark mode */
 body.dark-mode .nhhb-b2b-cta{
-  background:var(--dm-primary, #36B47A);
-  color:#0f2019;
-  box-shadow:0 6px 16px rgba(54,180,122,.20);
+  background:var(--b2b-blue-2); color:#fff;
+  box-shadow:0 8px 18px rgba(0,0,0,.30);
 }
 body.dark-mode .nhhb-b2b-cta:hover{
-  background:var(--dm-forest, #102923);
-  color:#fff;
+  background:color-mix(in srgb, var(--b2b-blue-2) 88%, #fff 12%);
+}
+body.dark-mode .nhhb-b2b-cta:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--b2b-blue-2) 90%, #fff 10%);
+  outline-offset:2px;
 }
 
-/* ---- Responsive ---- */
+/* The logo must be white in dark mode (blue bg), so keep the filter on. */
+body.dark-mode .nhhb-b2b-logo img.nhhb-b2b-logo-img{
+  filter: brightness(0) invert(1) contrast(1.05);
+}
+
+/* ---------- Responsive ---------- */
 @media (max-width:900px){
   .nhhb-b2b{ grid-template-columns:110px 1fr; gap:24px; }
 }
 
 @media (max-width:720px){
+  /* Light-mode mobile uses a LIGHT background → keep the original blue mark */
   .nhhb-b2b{
     grid-template-columns:1fr;
     text-align:center;
     padding:28px 20px;
-    background:#fff;
-    color:var(--b2b-blue); /* keep Norhage blue tone */
-  }
-  .nhhb-b2b-logo{
-    padding:0;
-    background:transparent;
-    box-shadow:none;
-  }
-  .nhhb-b2b-content{ align-items:center; }
-  .nhhb-b2b-title{
+    background:#fff;                 /* LIGHT background on mobile light */
     color:var(--b2b-blue);
   }
-  .nhhb-b2b-text{
-    color:color-mix(in srgb, var(--b2b-blue) 80%, #fff 20%);
-  }
-  .nhhb-b2b-cta{
-    align-self:center;
-    background:var(--b2b-blue);
-    color:#fff;
-  }
-  .nhhb-b2b-cta:hover{
-    background:var(--b2b-blue-2);
-  }
+  .nhhb-b2b-content{ align-items:center; }
+  .nhhb-b2b-title{ color:var(--b2b-blue); }
+  .nhhb-b2b-text{ color:color-mix(in srgb, var(--b2b-blue) 82%, #fff 18%); }
+  .nhhb-b2b-cta{ align-self:center; background:var(--b2b-blue); color:#fff; }
+  .nhhb-b2b-cta:hover{ background:var(--b2b-blue-2); }
 
-  /* dark mode mobile */
+  /* On light mobile (white bg), show original blue logo (no filter). */
+  .nhhb-b2b-logo img.nhhb-b2b-logo-img{ filter:none; }
+
+  /* Mobile dark-mode uses blue background again → flip logo to white */
   body.dark-mode .nhhb-b2b{
-    background:var(--dm-surface, #2E2E2A);
-    color:var(--dm-text, #EAE9E5);
+    background:linear-gradient(180deg, var(--b2b-blue-dm) 0%, var(--b2b-blue-dm-2) 100%);
+    color:var(--dm-text, #ECEAE6);
+    border:1px solid rgba(255,255,255,.06);
   }
-  body.dark-mode .nhhb-b2b-title{ color:var(--dm-text, #EAE9E5); }
-  body.dark-mode .nhhb-b2b-text{ color:rgba(234,233,229,.85); }
-}
-
-/* -------- Dual-logo switch (specificity-safe) -------- */
-.nhhb-b2b-logo img.nhhb-b2b-logo--desktop{ display:block; }
-.nhhb-b2b-logo img.nhhb-b2b-logo--mobile{ display:none; }
-
-@media (max-width:720px){
-  .nhhb-b2b-logo img.nhhb-b2b-logo--desktop{ display:none; }
-  .nhhb-b2b-logo img.nhhb-b2b-logo--mobile{ display:block; }
+  body.dark-mode .nhhb-b2b-title{ color:var(--dm-text, #ECEAE6); }
+  body.dark-mode .nhhb-b2b-text{ color:rgba(234,233,229,.86); }
+  body.dark-mode .nhhb-b2b-logo img.nhhb-b2b-logo-img{
+    filter: brightness(0) invert(1) contrast(1.05);
+  }
 }

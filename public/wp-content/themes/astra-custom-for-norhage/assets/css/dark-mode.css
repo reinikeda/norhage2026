@@ -324,24 +324,167 @@ body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
   color: #fff !important;
 }
 
-/* Cutting size control */
-body.dark-mode .nh-size-ui .nh-mm-qty{
-  background: var(--ui-bg-content);
-  border: 1px solid var(--ui-border);
+/* =========================================
+   Custom cut size control — Dark Mode v2
+   (4px radius, balanced contrast)
+   ========================================= */
+
+body.dark-mode .nh-size-ui .nh-mm-qty {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  border-radius: 4px; /* unified radius */
+  background: color-mix(in srgb, var(--dm-bg) 92%, var(--dm-forest) 8%);
+  border: 1px solid var(--dm-border);
+  overflow: hidden;
 }
+
+/* – / + buttons */
 body.dark-mode .nh-size-ui .nh-mm-qty .minus,
-body.dark-mode .nh-size-ui .nh-mm-qty .plus{
-  background: var(--ui-bg-content);
+body.dark-mode .nh-size-ui .nh-mm-qty .plus {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-surface) 75%, var(--dm-forest) 25%);
+  border: 0;
+  margin: 0;
+  font-weight: 500;
+  transition: background .15s ease, color .15s ease;
 }
-body.dark-mode .nh-size-ui .nh-mm-qty .minus{ border-right: 1px solid var(--ui-border); }
-body.dark-mode .nh-size-ui .nh-mm-qty .plus{  border-left: 1px solid var(--ui-border); }
-body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input{
-  background: var(--ui-bg-content);
+body.dark-mode .nh-size-ui .nh-mm-qty .minus {
+  border-right: 1px solid var(--dm-border);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .plus {
+  border-left: 1px solid var(--dm-border);
+}
+body.dark-mode .nh-size-ui .nh-mm-qty .minus:hover,
+body.dark-mode .nh-size-ui .nh-mm-qty .plus:hover {
+  background: var(--dm-primary);
+  color: #0f2019;
+}
+
+/* Input field */
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input {
+  width: 160px; /* fits 250–3050 mm */
+  text-align: center;
+  background: transparent;
   color: var(--dm-text);
+  border: 0;
+  outline: none;
+  font-weight: 600;
 }
-body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder{
-  color: color-mix(in srgb, var(--dm-text) 55%, var(--ui-border) 45%);
+body.dark-mode .nh-size-ui .nh-mm-qty .nh-mm-input::placeholder {
+  color: color-mix(in srgb, var(--dm-text) 55%, var(--dm-border) 45%);
+}
+
+/* Focus ring on container */
+body.dark-mode .nh-size-ui .nh-mm-qty:focus-within {
+  border-color: var(--dm-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm-primary) 35%, transparent);
+}
+
+/* Label color fix */
+body.dark-mode .nh-size-ui label,
+body.dark-mode .nh-size-ui .nh-mm-label {
+  color: color-mix(in srgb, var(--dm-text) 90%, white 10%);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0.95;
+}
+
+/* Disabled buttons */
+body.dark-mode .nh-size-ui .nh-mm-qty .minus:disabled,
+body.dark-mode .nh-size-ui .nh-mm-qty .plus:disabled {
+  opacity: .4;
+  pointer-events: none;
+}
+
+/* =========================================
+   Quantity (+ / –) — Dark Mode (match size UI)
+   ========================================= */
+
+/* Wrap both product and bundle qty widgets in one rule */
+body.dark-mode .quantity.buttons_added,
+body.dark-mode .nh-bundle-qty-wrap {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--dm-bg) 92%, var(--dm-forest) 8%);
+  border: 1px solid var(--dm-border);
+  overflow: hidden;
+}
+
+/* – / + buttons */
+body.dark-mode .quantity.buttons_added .minus,
+body.dark-mode .quantity.buttons_added .plus,
+body.dark-mode .nh-bundle-qty-wrap .minus,
+body.dark-mode .nh-bundle-qty-wrap .plus {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dm-primary);
+  background: color-mix(in srgb, var(--dm-surface) 75%, var(--dm-forest) 25%);
+  border: 0;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease;
+}
+body.dark-mode .quantity.buttons_added .minus,
+body.dark-mode .nh-bundle-qty-wrap .minus { border-right: 1px solid var(--dm-border); }
+body.dark-mode .quantity.buttons_added .plus,
+body.dark-mode .nh-bundle-qty-wrap .plus  { border-left: 1px solid var(--dm-border); }
+
+body.dark-mode .quantity.buttons_added .minus:hover,
+body.dark-mode .quantity.buttons_added .plus:hover,
+body.dark-mode .nh-bundle-qty-wrap .minus:hover,
+body.dark-mode .nh-bundle-qty-wrap .plus:hover {
+  background: var(--dm-primary);
+  color: #0f2019;
+}
+
+/* Input */
+body.dark-mode .quantity.buttons_added .qty,
+body.dark-mode .nh-bundle-qty-wrap .qty {
+  width: 56px;              /* enough for 3 digits */
+  height: 38px;
+  text-align: center;
+  background: transparent;  /* same plate as wrapper */
+  color: var(--dm-text);
+  border: 0;
+  margin: 0;
+  font-weight: 700;
+  outline: none;
+}
+
+/* Remove native spinners */
+body.dark-mode .quantity.buttons_added .qty::-webkit-outer-spin-button,
+body.dark-mode .quantity.buttons_added .qty::-webkit-inner-spin-button,
+body.dark-mode .nh-bundle-qty-wrap .qty::-webkit-outer-spin-button,
+body.dark-mode .nh-bundle-qty-wrap .qty::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+
+/* Focus ring on the whole control */
+body.dark-mode .quantity.buttons_added:focus-within,
+body.dark-mode .nh-bundle-qty-wrap:focus-within {
+  border-color: var(--dm-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm-primary) 35%, transparent);
+}
+
+/* Disabled state for +/- */
+body.dark-mode .quantity.buttons_added .minus:disabled,
+body.dark-mode .quantity.buttons_added .plus:disabled,
+body.dark-mode .nh-bundle-qty-wrap .minus:disabled,
+body.dark-mode .nh-bundle-qty-wrap .plus:disabled {
+  opacity: .4; pointer-events: none;
 }
 
 /* =========================
@@ -511,44 +654,91 @@ body.dark-mode .product-category .woocommerce-loop-category__title{
 }
 
 /* =========================
-   15) Pagination (Woo)
+   15) Pagination (Woo) — DARK
    ========================= */
+/* Vars + base */
 body.dark-mode nav.woocommerce-pagination .page-numbers{
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--pg-text);
-  border-radius: 4px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  /* fallbacks in case your DM tokens are missing */
+  --dm-surface: var(--dm-surface, #1b1d1b);
+  --dm-elev:    color-mix(in srgb, var(--dm-surface) 82%, white 18%);
+  --dm-border:  color-mix(in srgb, var(--dm-surface) 65%, white 35%);
+  --dm-text:    color-mix(in srgb, white 88%, var(--dm-surface) 12%);
+  --dm-text-dim:color-mix(in srgb, white 60%, var(--dm-surface) 40%);
+  --dm-ring:    color-mix(in srgb, var(--pg-forest) 55%, white 45%);
+
+  background: var(--dm-elev);
+  border: 1px solid var(--dm-border);
+  color: var(--dm-text);
+  border-radius: 6px;
+  box-shadow: none;
+  transition:
+    background .15s ease,
+    border-color .15s ease,
+    color .15s ease,
+    box-shadow .15s ease,
+    transform .15s ease;
 }
+
+/* Hover (non-current) */
 body.dark-mode nav.woocommerce-pagination a.page-numbers:not(.current):hover{
-  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
-  border-color: var(--pg-forest);
+  background: color-mix(in srgb, var(--dm-elev) 75%, white 25%);
+  border-color: color-mix(in srgb, var(--dm-border) 60%, var(--pg-forest) 40%);
   color: #fff;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pg-forest) 25%, transparent);
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
 }
+
+/* Active/current — high contrast accent */
 body.dark-mode nav.woocommerce-pagination .page-numbers.current{
   background: var(--pg-forest);
-  border-color: var(--pg-forest);
-  color: #0F2019;
+  border-color: color-mix(in srgb, var(--pg-forest) 85%, white 15%);
+  color: #fff; /* fix: was too dark */
+  box-shadow: 0 2px 10px rgba(0,0,0,.28);
 }
 body.dark-mode nav.woocommerce-pagination .page-numbers.current:hover{
-  background: var(--dm-forest); border-color: var(--dm-forest); color:#fff;
+  background: color-mix(in srgb, var(--pg-forest) 86%, black 14%);
+  border-color: color-mix(in srgb, var(--pg-forest) 92%, white 8%);
+  color:#fff;
 }
-body.dark-mode nav.woocommerce-pagination .page-numbers.dots{
-  color: color-mix(in srgb, var(--pg-text) 60%, black 40%);
+
+/* Prev/Next links (arrows) */
+body.dark-mode nav.woocommerce-pagination a.page-numbers.prev,
+body.dark-mode nav.woocommerce-pagination a.page-numbers.next{
+  color: color-mix(in srgb, var(--pg-forest) 85%, white 15%);
+  font-weight: 600;
 }
-body.dark-mode nav.woocommerce-pagination .prev,
-body.dark-mode nav.woocommerce-pagination .next{ color: var(--pg-forest); }
-body.dark-mode nav.woocommerce-pagination .prev:hover,
-body.dark-mode nav.woocommerce-pagination .next:hover{
-  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
-  border-color: var(--pg-forest);
+body.dark-mode nav.woocommerce-pagination a.page-numbers.prev:hover,
+body.dark-mode nav.woocommerce-pagination a.page-numbers.next:hover{
+  background: color-mix(in srgb, var(--dm-elev) 70%, white 30%);
+  border-color: color-mix(in srgb, var(--pg-forest) 70%, white 30%);
   color: #fff;
 }
+
+/* Dots */
+body.dark-mode nav.woocommerce-pagination .page-numbers.dots{
+  background: transparent;
+  border: none;
+  color: var(--dm-text-dim);
+}
+
+/* Focus ring (keyboard) */
 body.dark-mode nav.woocommerce-pagination a.page-numbers:focus-visible{
-  outline: 2px solid var(--pg-forest);
-  outline-offset: 2px;
-  box-shadow: none;
+  outline: 2px solid var(--dm-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dm-ring) 30%, transparent);
+}
+
+/* Disabled */
+body.dark-mode nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
+  opacity: .45;
+  pointer-events: none;
+}
+
+/* Mobile sizing remains consistent with light mode */
+@media (max-width: 480px){
+  body.dark-mode nav.woocommerce-pagination .page-numbers{
+    min-width: 40px;
+    height: 40px;
+  }
 }
 
 /* =========================
@@ -615,6 +805,43 @@ body.dark-mode .nh-footer__bottom a{
 body.dark-mode .nh-footer__bottom a:hover{
   color: #fff;
 }
+
+/* ==== Attribute buttons — force unified dark style ==== */
+/* Base (unselected) */
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected){
+  background: color-mix(in srgb, var(--dm-bg) 82%, var(--dm-primary) 18%) !important;
+  border-color: color-mix(in srgb, var(--dm-border) 60%, var(--dm-primary) 40%) !important;
+  color: var(--dm-text) !important;
+}
+
+/* Hover (unselected) */
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):hover{
+  background: color-mix(in srgb, var(--dm-bg) 70%, var(--dm-primary) 30%) !important;
+  border-color: var(--dm-primary) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Active / selected */
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected{
+  background: var(--dm-primary) !important;
+  border-color: var(--dm-primary) !important;
+  color: #0f2019 !important;
+}
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:hover{
+  background: var(--dm-forest) !important;
+  border-color: var(--dm-forest) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Label color (same as “Cutting type”) */
+body.dark-mode .variations_form th.label label,
+body.dark-mode .variations_form .label label{
+  color: color-mix(in srgb, var(--dm-text) 85%, var(--dm-primary) 15%);
+  font-weight: 700;
+}
+
 
 /* =========================
    17) Nice-to-haves

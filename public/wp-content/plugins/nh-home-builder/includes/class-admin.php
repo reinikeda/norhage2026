@@ -356,161 +356,110 @@ class NHHB_Admin {
         <div id="nhhb_fields_b2b_banner" class="<?php echo $type==='b2b-banner' ? '' : 'nhhb-hidden'; ?>">
             <h3>B2B Banner</h3>
             <?php
-            // ...
+            // Resolve stored data with graceful fallbacks
             $bb = [
-            'h2'       => $data['h2']       ?? 'For Business Customers',
-            'h3'       => $data['h3']       ?? 'Exclusive pricing and services for B2B partners.',
-            'btn_text' => $data['btn_text'] ?? 'Learn more',
-            'btn_url'  => $data['btn_url']  ?? '',
-            // NEW: separate logos (fallback to legacy 'logo' if present)
-            'logo_d'   => isset($data['logo_d']) ? absint($data['logo_d']) : ( isset($data['logo']) ? absint($data['logo']) : 0 ),
-            'logo_m'   => isset($data['logo_m']) ? absint($data['logo_m']) : 0,
+                'h2'       => $data['h2']       ?? 'For Business Customers',
+                'h3'       => $data['h3']       ?? 'Exclusive pricing and services for B2B partners.',
+                'btn_text' => $data['btn_text'] ?? 'Learn more',
+                'btn_url'  => $data['btn_url']  ?? '',
+                // Single-logo approach: prefer new 'logo', otherwise fallback to old fields
+                'logo'     => isset($data['logo'])   ? absint($data['logo'])
+                            : (isset($data['logo_d']) ? absint($data['logo_d'])
+                            : (isset($data['logo_m']) ? absint($data['logo_m'])
+                            : (isset($data['logo'])   ? absint($data['logo']) : 0))),
             ];
-            $logo_src_d = $bb['logo_d'] ? wp_get_attachment_image_url($bb['logo_d'], 'medium') : '';
-            $logo_src_m = $bb['logo_m'] ? wp_get_attachment_image_url($bb['logo_m'], 'medium') : '';
+            $logo_src = $bb['logo'] ? wp_get_attachment_image_url($bb['logo'], 'medium') : '';
             ?>
             <div class="nhhb-grid nhhb-3">
-            <p><label>H2 (title)<br>
-                <input type="text" class="widefat" name="data[h2]" value="<?php echo esc_attr($bb['h2']); ?>">
-            </label></p>
-            <p><label>H3 (subtitle)<br>
-                <input type="text" class="widefat" name="data[h3]" value="<?php echo esc_attr($bb['h3']); ?>">
-            </label></p>
-            <p><label>Button text<br>
-                <input type="text" class="widefat" name="data[btn_text]" value="<?php echo esc_attr($bb['btn_text']); ?>">
-            </label></p>
+                <p>
+                <label>H2 (title)<br>
+                    <input type="text" class="widefat" name="data[h2]" value="<?php echo esc_attr($bb['h2']); ?>">
+                </label>
+                </p>
+                <p>
+                <label>H3 (subtitle)<br>
+                    <input type="text" class="widefat" name="data[h3]" value="<?php echo esc_attr($bb['h3']); ?>">
+                </label>
+                </p>
+                <p>
+                <label>Button text<br>
+                    <input type="text" class="widefat" name="data[btn_text]" value="<?php echo esc_attr($bb['btn_text']); ?>">
+                </label>
+                </p>
             </div>
 
             <div class="nhhb-grid nhhb-2" style="align-items:end">
-            <p><label>Button URL (opens in new tab)<br>
-                <input type="url" class="widefat" name="data[btn_url]" value="<?php echo esc_attr($bb['btn_url']); ?>" placeholder="https://">
-            </label></p>
+                <p>
+                <label>Button URL (opens in new tab)<br>
+                    <input type="url" class="widefat" name="data[btn_url]" value="<?php echo esc_attr($bb['btn_url']); ?>" placeholder="https://">
+                </label>
+                </p>
 
-            <div class="nhhb-card" style="max-width:880px">
-                <h4>Logos</h4>
-                <div class="nhhb-grid nhhb-2">
-                <div>
-                    <div class="nhhb-row">
+                <div class="nhhb-card" style="max-width:880px">
+                <h4>Logo (single file)</h4>
+                <div class="nhhb-row">
                     <div>
-                        <div class="nhhb-thumb" id="b2b_logo_thumb_d">
-                        <?php echo $logo_src_d ? '<img src="'.esc_url($logo_src_d).'" alt=""/>' : 'No desktop logo'; ?>
-                        </div>
-                        <div class="nhhb-actions">
-                        <button type="button" class="button nhhb-upload" data-target="b2b_logo_d">Browse</button>
-                        <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_d">Remove</button>
-                        </div>
-                        <input type="hidden" name="data[logo_d]" id="b2b_logo_d" value="<?php echo esc_attr($bb['logo_d']); ?>">
+                    <div class="nhhb-thumb" id="b2b_logo_thumb_single">
+                        <?php echo $logo_src ? '<img src="'.esc_url($logo_src).'" alt=""/>' : 'No logo selected'; ?>
+                    </div>
+                    <div class="nhhb-actions">
+                        <button type="button" class="button nhhb-upload" data-target="b2b_logo_single">Browse</button>
+                        <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_single">Remove</button>
+                    </div>
+                    <input type="hidden" name="data[logo]" id="b2b_logo_single" value="<?php echo esc_attr($bb['logo']); ?>">
                     </div>
                     <p class="description" style="margin:0 0 0 10px;">
-                        <strong>Desktop logo</strong> — transparent background, <em>white mark</em> (shown on dark blue banner).
+                    Upload a <strong>single transparent PNG/SVG</strong> in your <em>dark blue</em> brand color.  
+                    It will be shown as-is on light backgrounds and auto-converted to white in dark mode via CSS.
                     </p>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="nhhb-row">
-                    <div>
-                        <div class="nhhb-thumb" id="b2b_logo_thumb_m">
-                        <?php echo $logo_src_m ? '<img src="'.esc_url($logo_src_m).'" alt=""/>' : 'No mobile logo'; ?>
-                        </div>
-                        <div class="nhhb-actions">
-                        <button type="button" class="button nhhb-upload" data-target="b2b_logo_m">Browse</button>
-                        <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_m">Remove</button>
-                        </div>
-                        <input type="hidden" name="data[logo_m]" id="b2b_logo_m" value="<?php echo esc_attr($bb['logo_m']); ?>">
-                    </div>
-                    <p class="description" style="margin:0 0 0 10px;">
-                        <strong>Mobile logo</strong> — transparent background, <em>dark blue mark</em> (shown on white banner).
-                    </p>
-                    </div>
                 </div>
                 </div>
             </div>
         </div>
 
-        <!-- SERVICES SLIDER (CPT-based, with per-service overrides) -->
-        <div id="nhhb_fields_services_slider" class="<?php echo $type==='services-slider' ? '' : 'nhhb-hidden'; ?>">
+        <!-- SERVICES SLIDER (CPT-based, fully automatic) -->
+        <?php
+            // Saved values with sensible defaults
+            $sv = is_array($sv ?? null) ? $sv : [];
+            $title         = isset($sv['title'])         ? (string) $sv['title'] : '';
+            $words_desktop = isset($sv['words_desktop']) ? (int) $sv['words_desktop'] : 36; // ~2–3 lines
+            $words_mobile  = isset($sv['words_mobile'])  ? (int) $sv['words_mobile']  : 16; // ~1–2 lines
+            ?>
+            <div id="nhhb_fields_services_slider" class="<?php echo $type==='services-slider' ? '' : 'nhhb-hidden'; ?>">
             <h3>Services Slider</h3>
+
             <div class="nhhb-grid nhhb-3">
                 <p>
-                  <label>Section Title<br>
-                    <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($sv['title']); ?>">
-                  </label>
+                <label>Section Title<br>
+                    <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($title); ?>" placeholder="<?php esc_attr_e('Our Services','nhhb'); ?>">
+                </label>
                 </p>
+
                 <p>
-                  <label>&nbsp;<br>
-                    <span class="description">Pulls all <strong>Service</strong> posts (CPT <code>service</code>). Leave fields empty to use defaults: Title = post title, Description = excerpt, Button = “Read More” → service page, Background = Featured Image.</span>
-                  </label>
+                <label>Desktop text length (words)<br>
+                    <input type="number" min="8" max="80" step="1" class="small-text"
+                        name="data[words_desktop]" value="<?php echo esc_attr($words_desktop); ?>">
+                </label>
+                <br><span class="description">Shown on larger screens (defaults to 36 words).</span>
+                </p>
+
+                <p>
+                <label>Mobile text length (words)<br>
+                    <input type="number" min="6" max="40" step="1" class="small-text"
+                        name="data[words_mobile]" value="<?php echo esc_attr($words_mobile); ?>">
+                </label>
+                <br><span class="description">Shown on phones (defaults to 16 words).</span>
                 </p>
             </div>
 
-            <?php
-            $svc_query = new WP_Query([
-                'post_type'      => 'service',
-                'posts_per_page' => -1,
-                'post_status'    => 'publish',
-                'orderby'        => 'menu_order title',
-                'order'          => 'ASC',
-            ]);
-            if ($svc_query->have_posts()): ?>
-              <div class="nhhb-svc-grid">
-                <?php while ($svc_query->have_posts()): $svc_query->the_post();
-                    $sid   = get_the_ID();
-                    $o     = $sv['services'][$sid] ?? [];
-                    $inc   = isset($o['include']) ? (int)$o['include'] : 1;
-                    $t     = $o['title'] ?? '';
-                    $d     = $o['desc']  ?? '';
-                    $icon  = isset($o['icon']) ? absint($o['icon']) : 0;
-                    $bg    = isset($o['bg'])   ? absint($o['bg'])   : 0;
-                    $btn_t = $o['btn_text'] ?? '';
-                    $btn_u = $o['btn_url']  ?? '';
-                    $feat  = get_the_post_thumbnail_url($sid, 'medium');
-                    $icon_src = $icon ? wp_get_attachment_image_url($icon, 'thumbnail') : '';
-                    $bg_src   = $bg   ? wp_get_attachment_image_url($bg, 'medium') : $feat;
-                    $default_btn_text = 'Read More';
-                    $default_btn_url  = get_permalink($sid);
-                ?>
-                <div class="nhhb-card">
-                  <h4 style="margin-top:0"><?php the_title(); ?> <span class="nhhb-svc-small">(#<?php echo (int)$sid; ?>)</span></h4>
-                  <div class="nhhb-svc-row">
-                    <div>
-                      <div class="nhhb-thumb" id="svc_bg_thumb_<?php echo $sid; ?>">
-                        <?php echo $bg_src ? '<img src="'.esc_url($bg_src).'" alt=""/>' : 'No image'; ?>
-                      </div>
-                      <div class="nhhb-actions">
-                        <button type="button" class="button nhhb-upload" data-target="svc_bg_<?php echo $sid; ?>">Background</button>
-                        <button type="button" class="button-link-delete nhhb-remove" data-target="svc_bg_<?php echo $sid; ?>">Remove</button>
-                      </div>
-                      <input type="hidden" name="data[services][<?php echo $sid; ?>][bg]" id="svc_bg_<?php echo $sid; ?>" value="<?php echo esc_attr($bg); ?>">
-                    </div>
-                    <div>
-                      <p><label><input type="checkbox" name="data[services][<?php echo $sid; ?>][include]" value="1" <?php checked($inc,1); ?>> Include in slider</label></p>
-                      <p><label>Override Title<br><input type="text" class="widefat" name="data[services][<?php echo $sid; ?>][title]" value="<?php echo esc_attr($t); ?>" placeholder="<?php echo esc_attr(get_the_title($sid)); ?>"></label></p>
-                      <p><label>Short description<br><textarea class="widefat" rows="3" name="data[services][<?php echo $sid; ?>][desc]" placeholder="<?php echo esc_attr(wp_strip_all_tags(get_the_excerpt($sid))); ?>"><?php echo esc_textarea($d); ?></textarea></label></p>
-                      <div class="nhhb-grid nhhb-2">
-                        <p><label>Button text<br><input type="text" class="widefat" name="data[services][<?php echo $sid; ?>][btn_text]" value="<?php echo esc_attr($btn_t); ?>" placeholder="<?php echo esc_attr($default_btn_text); ?>"></label></p>
-                        <p><label>Button URL<br><input type="url" class="widefat" name="data[services][<?php echo $sid; ?>][btn_url]" value="<?php echo esc_attr($btn_u); ?>" placeholder="<?php echo esc_attr($default_btn_url); ?>"></label></p>
-                      </div>
-                      <div class="nhhb-row" style="margin-top:8px">
-                        <div>
-                          <div class="nhhb-thumb" id="svc_icon_thumb_<?php echo $sid; ?>">
-                            <?php echo $icon_src ? '<img src="'.esc_url($icon_src).'" alt=""/>' : 'No icon'; ?>
-                          </div>
-                          <div class="nhhb-actions">
-                            <button type="button" class="button nhhb-upload" data-target="svc_icon_<?php echo $sid; ?>">Icon</button>
-                            <button type="button" class="button-link-delete nhhb-remove" data-target="svc_icon_<?php echo $sid; ?>">Remove</button>
-                          </div>
-                          <input type="hidden" name="data[services][<?php echo $sid; ?>][icon]" id="svc_icon_<?php echo $sid; ?>" value="<?php echo esc_attr($icon); ?>">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <?php endwhile; wp_reset_postdata(); ?>
-              </div>
-            <?php else: ?>
-              <p class="description">No Service posts found. Create some under <em>Services</em>.</p>
-            <?php endif; ?>
+            <p class="description" style="margin-top:8px;">
+                This slider is automatic. It pulls every published <strong>Service</strong>:
+                Title → post title, Description → excerpt (or trimmed content), Image → featured image,
+                Button → “Read More” linking to the service page. Ordering follows menu order / title.
+            </p>
+
+            <!-- Optional flag so the front-end knows we're in auto mode (not required, but tidy) -->
+            <input type="hidden" name="data[services_mode]" value="auto">
         </div>
 
         <script>
@@ -681,27 +630,19 @@ class NHHB_Admin {
                 'consent_text' => sanitize_text_field($data['consent_text'] ?? ''),
             ];
 
+        // Services Slider — automatic (pulls directly from Service posts)
         } elseif ($type === 'services-slider') {
-            // Per-service overrides only (no limit field)
-            $services_clean = [];
-            if (!empty($data['services']) && is_array($data['services'])) {
-                foreach ($data['services'] as $sid => $o) {
-                    $sid = absint($sid);
-                    if (!$sid) continue;
-                    $services_clean[$sid] = [
-                        'include'  => !empty($o['include']) ? 1 : 0,
-                        'title'    => sanitize_text_field($o['title'] ?? ''),
-                        'desc'     => sanitize_textarea_field($o['desc'] ?? ''),
-                        'icon'     => isset($o['icon']) ? absint($o['icon']) : 0,
-                        'bg'       => isset($o['bg'])   ? absint($o['bg'])   : 0,
-                        'btn_text' => sanitize_text_field($o['btn_text'] ?? ''), // empty => default "Read More"
-                        'btn_url'  => esc_url_raw($o['btn_url'] ?? ''),          // empty => default permalink
-                    ];
-                }
-            }
+
+            // Optional length knobs; safe defaults
+            $words_desktop = isset($data['words_desktop']) ? max(8, (int) $data['words_desktop']) : 36;
+            $words_mobile  = isset($data['words_mobile'])  ? max(6, (int) $data['words_mobile'])  : 16;
+
+            // Write only the lightweight settings. DO NOT persist per-service overrides.
             $clean = [
-                'title'    => sanitize_text_field($data['title'] ?? 'Our Services'),
-                'services' => $services_clean,
+                'title'          => sanitize_text_field($data['title'] ?? __('Our Services', 'nhhb')),
+                'words_desktop'  => $words_desktop,
+                'words_mobile'   => $words_mobile,
+                // 'services' intentionally omitted to purge legacy overrides
             ];
 
         } elseif ($type === 'b2b-banner') {
@@ -710,8 +651,7 @@ class NHHB_Admin {
                 'h3'       => sanitize_text_field($data['h3'] ?? ''),
                 'btn_text' => sanitize_text_field($data['btn_text'] ?? ''),
                 'btn_url'  => esc_url_raw($data['btn_url'] ?? ''),
-                'logo_d'   => isset($data['logo_d']) ? absint($data['logo_d']) : 0,
-                'logo_m'   => isset($data['logo_m']) ? absint($data['logo_m']) : 0,
+                'logo'     => isset($data['logo']) ? absint($data['logo']) : 0,
             ];
         }
 

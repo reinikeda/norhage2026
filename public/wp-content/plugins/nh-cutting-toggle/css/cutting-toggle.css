@@ -71,39 +71,63 @@ html { scroll-behavior: smooth; }
 #cutting-type { scroll-margin-top: 96px; } /* adjust to your sticky header height */
 
 /* ============================================
-   Dark Mode Palette
+   Dark Mode — improved UX (tinted inactive)
    ============================================ */
 
-body.dark-mode .nh-cut-btn {
-  background: var(--dm-surface, #2E2E2A);
-  border-color: var(--dm-border, #446B58);
-  color: var(--dm-primary, #36B47A);
+body.dark-mode .nh-cutting-label {
+  color: color-mix(in srgb, var(--dm-text) 85%, var(--dm-primary) 15%);
+  font-weight: 700;
+  opacity: 0.95; /* ensure it doesn’t look washed out */
+  letter-spacing: 0.02em;
+}
+
+/* Inactive (clickable): soft tint so it doesn't look disabled */
+body.dark-mode .nh-cut-btn{
+  background: color-mix(in srgb, var(--dm-bg) 86%, var(--dm-primary) 14%);
+  border-color: color-mix(in srgb, var(--dm-border) 65%, var(--dm-primary) 35%);
+  color: var(--dm-text);
   transition:
     background .15s ease,
-    border .15s ease,
+    border-color .15s ease,
     color .15s ease,
     transform .02s ease;
 }
 
-/* Hover — soft blend between surface and forest */
-body.dark-mode .nh-cut-btn:hover {
-  background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%);
+/* Hover: slightly stronger tint + white text for clarity */
+body.dark-mode .nh-cut-btn:hover{
+  background: color-mix(in srgb, var(--dm-bg) 78%, var(--dm-primary) 22%);
   border-color: var(--dm-primary);
   color: #fff;
   transform: translateY(-1px);
 }
 
-/* Active — solid primary */
-body.dark-mode .nh-cut-btn.is-active {
-  background: var(--dm-primary);
-  border-color: var(--dm-primary);
-  color: #0f2019; /* soft ink on bright green */
+/* Keyboard focus: accessible outline (keeps tint) */
+body.dark-mode .nh-cut-btn:focus-visible{
+  outline: 2px solid var(--dm-primary);
+  outline-offset: 2px;
 }
 
-/* Active + hover — darker forest (pressed look like attr buttons) */
-body.dark-mode .nh-cut-btn.is-active:hover {
+/* Active/selected: solid primary (high contrast) */
+body.dark-mode .nh-cut-btn.is-active{
+  background: var(--dm-primary);
+  border-color: var(--dm-primary);
+  color: #0f2019; /* ink on green */
+  transform: none;
+}
+
+/* Pressed on active: forest tone for feedback */
+body.dark-mode .nh-cut-btn.is-active:hover{
   background: var(--dm-forest);
   border-color: var(--dm-forest);
   color: #fff;
   transform: translateY(-1px);
+}
+
+/* Optional: disabled (if ever used) */
+body.dark-mode .nh-cut-btn[aria-disabled="true"],
+body.dark-mode .nh-cut-btn.is-disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  filter: grayscale(.2);
+  transform: none !important;
 }

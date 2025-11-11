@@ -1,59 +1,46 @@
-// NH Home Builder – Services Slider JS
-// Path: js/services-slider.js
+// NH Home Builder – Services Slider JS (refined)
 (function () {
   var SWIPER_CSS = 'https://unpkg.com/swiper@11/swiper-bundle.min.css';
   var SWIPER_JS  = 'https://unpkg.com/swiper@11/swiper-bundle.min.js';
 
-  function ensureSwiper(callback) {
-    if (window.Swiper) { callback(); return; }
+  function ensureSwiper(cb) {
+    if (window.Swiper) { cb(); return; }
 
-    // Inject Swiper CSS once
-    var cssId = 'nhhb-swiper-css';
-    if (!document.getElementById(cssId)) {
+    if (!document.getElementById('nhhb-swiper-css')) {
       var link = document.createElement('link');
-      link.id = cssId;
+      link.id = 'nhhb-swiper-css';
       link.rel = 'stylesheet';
       link.href = SWIPER_CSS;
       document.head.appendChild(link);
     }
 
-    // If JS already loading, just wait
-    var jsId = 'nhhb-swiper-js';
-    if (document.getElementById(jsId)) {
-      waitForSwiper(callback);
-      return;
-    }
+    if (document.getElementById('nhhb-swiper-js')) return waitForSwiper(cb);
 
     var script = document.createElement('script');
-    script.id = jsId;
+    script.id = 'nhhb-swiper-js';
     script.src = SWIPER_JS;
     script.async = true;
-    script.onload = function () { callback(); };
+    script.onload = cb;
     document.head.appendChild(script);
   }
 
-  function waitForSwiper(callback) {
+  function waitForSwiper(cb) {
     var start = Date.now();
     var t = setInterval(function () {
-      if (window.Swiper) { clearInterval(t); callback(); }
-      if (Date.now() - start > 7000) { clearInterval(t); } // give up after 7s
+      if (window.Swiper) { clearInterval(t); cb(); }
+      if (Date.now() - start > 7000) clearInterval(t);
     }, 50);
   }
 
-  function prefersReducedMotion() {
-    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function initOneSection(section) {
+  function makeConfig(section) {
     var el   = section.querySelector('.nhhb-services-swiper');
-    if (!el || el.__nhhbInit) return;
+    var slides = el ? el.querySelectorAll('.swiper-slide') : [];
+    var next = section.querySelector('.nhhb-svc-next');
+    var prev = section.querySelector('.nhhb-svc-prev');
+    var pag  = section.querySelector('.nhhb-svc-pagination');
 
-    var slides = el.querySelectorAll('.swiper-slide');
-    var next   = section.querySelector('.nhhb-svc-next');
-    var prev   = section.querySelector('.nhhb-svc-prev');
-    var pag    = section.querySelector('.nhhb-svc-pagination');
-
-    // Hide nav/pagination when only 1 slide
     var single = slides.length <= 1;
     if (single) {
       if (next) next.style.display = 'none';
@@ -61,25 +48,15 @@
       if (pag)  pag.style.display  = 'none';
     }
 
-    el.__nhhbInit = true;
+    var useAutoplay = !reduceMotion;
+    var autoplayCfg = useAutoplay ? { delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true } : false;
 
-    // Respect user motion settings
-    var useAutoplay = true; // set to true to enable auto-rotate by default
-    var autoplayCfg = useAutoplay && !prefersReducedMotion()
-      ? { delay: 4500, disableOnInteraction: false }
-      : false;
-
-    // RTL support
-    var isRtl = document.dir === 'rtl' || document.documentElement.dir === 'rtl';
-
-    // Build config
-    var config = {
+    return {
       slidesPerView: 1,
-      loop: !single,              // don't loop a single slide
-      speed: prefersReducedMotion() ? 0 : 550,
+      loop: !single,
+      speed: reduceMotion ? 0 : 550,
       spaceBetween: 0,
-      direction: 'horizontal',
-      rtl: isRtl,
+      // Swiper reads RTL from CSS automatically, no 'rtl' key needed
       navigation: single ? undefined : (next && prev ? { nextEl: next, prevEl: prev } : undefined),
       pagination: single ? undefined : (pag ? { el: pag, clickable: true } : undefined),
       autoplay: autoplayCfg,
@@ -94,21 +71,53 @@
         prevSlideMessage: 'Previous slide'
       }
     };
+  }
 
-    // Init Swiper
-    var instance = new Swiper(el, config);
-    el.__nhhbSwiper = instance;
+  function initOne(section) {
+    var el = section.querySelector('.nhhb-services-swiper');
+    if (!el || el.__nhhbInit) return;
+
+    var cfg = makeConfig(section);
+    el.__nhhbInit = true;
+    el.__nhhbSwiper = new Swiper(el, cfg);
+
+    // Pause/resume autoplay when offscreen
+    if ('IntersectionObserver' in window && el.__nhhbSwiper && el.__nhhbSwiper.params.autoplay) {
+      var io = new IntersectionObserver(function (ents) {
+        ents.forEach(function (e) {
+          var sw = el.__nhhbSwiper;
+          if (!sw || !sw.autoplay) return;
+          if (e.isIntersecting) { try { sw.autoplay.start(); } catch(_){} }
+          else { try { sw.autoplay.stop(); } catch(_){} }
+        });
+      }, { root: null, threshold: 0.2 });
+      io.observe(el);
+      el.__nhhbIO = io;
+    }
+  }
+
+  function maybeInitOnView(section) {
+    if (!('IntersectionObserver' in window)) return initOne(section);
+    var seen = false;
+    var io = new IntersectionObserver(function (ents, obs) {
+      ents.forEach(function (e) {
+        if (e.isIntersecting && !seen) {
+          seen = true;
+          obs.disconnect();
+          initOne(section);
+        }
+      });
+    }, { root: null, threshold: 0.15 });
+    io.observe(section);
   }
 
   function initAll() {
-    document.querySelectorAll('[data-nhhb-services-slider]').forEach(initOneSection);
+    document.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
   }
 
   function boot() {
     ensureSwiper(function () {
       initAll();
-
-      // Watch for dynamic insertions (e.g., blocks/AJAX)
       if ('MutationObserver' in window) {
         var mo = new MutationObserver(function (muts) {
           for (var i = 0; i < muts.length; i++) {
@@ -117,11 +126,9 @@
               var n = nodes[j];
               if (!(n instanceof HTMLElement)) continue;
               if (n.matches && n.matches('[data-nhhb-services-slider]')) {
-                initOneSection(n);
-              } else {
-                // search descendants
-                var found = n.querySelectorAll && n.querySelectorAll('[data-nhhb-services-slider]');
-                if (found && found.length) found.forEach(initOneSection);
+                maybeInitOnView(n);
+              } else if (n.querySelectorAll) {
+                n.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
               }
             }
           }
@@ -132,7 +139,7 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
+    document.addEventListener('DOMContentLoaded', boot, { passive: true });
   } else {
     boot();
   }
