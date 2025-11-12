@@ -42,6 +42,26 @@ html{ scroll-behavior:smooth; }
 body{ background:var(--ui-bg-site); color:var(--ui-text); }
 @media (max-width:1200px){ body h1{ margin-top:20px; } }
 
+/* =========================================
+   Green Separator
+   ========================================= */
+hr.wp-block-separator,
+hr.nh-sep{
+  border: 0 !important;
+  height: 0 !important;                  /* draw with border-top */
+  border-top: 3px solid var(--nh-forest, #1E3932) !important; /* deep green */
+  width: 220px !important;               /* wider presence */
+  margin: 42px auto 34px !important;     /* generous spacing */
+  border-radius: 3px;
+  opacity: .9;                           /* strong but not harsh */
+  background: none !important;
+}
+
+/* Optional variants you can add as extra classes */
+hr.nh-sep--wide   { width: 280px !important; }
+hr.nh-sep--compact{ width: 140px !important; margin: 28px auto !important; }
+hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border-top-width: 4px !important; }
+
 /* =========================================================
    1) UTILITY BAR (light mode only, clean version)
    ========================================================= */
@@ -486,15 +506,172 @@ body{ background:var(--ui-bg-site); color:var(--ui-text); }
 }
 
 /* =========================================================
-   6) BLOG NAV
+   BLOG + SERVICES — archives & single
    ========================================================= */
-.blog-category-nav{ margin-bottom:30px; padding:0; }
-.blog-category-nav ul{ display:flex; gap:20px; list-style:none; margin:0; padding:0; }
-.blog-category-nav ul li a{
-  text-decoration:none; color:var(--ui-text);
-  padding:6px 12px; border-radius:4px; transition:background .2s, color .2s;
+
+/* ---------- Archive card shell ---------- */
+.ast-article-post .ast-article-inner{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:4px;
+  box-shadow:0 10px 26px rgba(0,0,0,.06);
+  overflow:hidden;
 }
-.blog-category-nav ul li a.active{ background:var(--nh-green); color:#fff; }
+
+/* Thumbnails (square, fully covered) */
+.ast-article-post .post-thumb,
+.ast-article-post .post-thumb-img-content{
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+}
+.ast-article-post .post-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Content column spacing */
+.ast-article-post .post-content{ padding:18px 18px 16px; }
+
+/* Titles */
+.ast-article-post .entry-title a{
+  color:var(--nh-forest,#1E3932);
+  text-decoration:none;
+}
+.ast-article-post .entry-title a:hover{ opacity:.85; }
+
+/* Blog taxonomy chip */
+.ast-taxonomy-container a{
+  display:inline-block;
+  margin-bottom:6px;
+  padding:4px 8px;
+  border-radius:4px;
+  font-size:.85rem;
+  background:#F4F3F1;
+  border:1px solid rgba(0,0,0,.08);
+  color:var(--nh-forest,#1E3932);
+  text-decoration:none;
+}
+
+/* Excerpt spacing */
+.ast-excerpt-container p{ margin:8px 0 0; }
+
+/* ---------- Meta visibility safety (CSS fallback) ---------- */
+.post-type-archive-service .ast-article-post .entry-meta,
+.single-service .entry-meta{ display:none !important; }          /* services: hide all */
+.single-post .entry-meta .posted-by{ display:none !important; }   /* blog single: hide author */
+
+/* ---------- Read more link (no extra arrow) ---------- */
+.ast-read-more-container a{
+  --rm: var(--nh-green,#00704A);
+  display:inline-flex; gap:8px; align-items:center;
+  padding:0; background:none; border:none;
+  color:var(--rm); font-weight:600; text-decoration:none;
+}
+.ast-read-more-container a:hover{ opacity:.85; }
+.ast-read-more-container a::after{ content:none; } /* remove CSS arrow; Astra prints » */
+
+/* ---------- Blog category pills ---------- */
+.blog-category-nav{ margin:18px 0 26px; }
+.blog-category-nav ul{
+  display:flex; flex-wrap:wrap; gap:10px;
+  list-style:none; margin:0; padding:0;
+}
+.blog-category-nav a{
+  --pill-bg:#F4F3F1; --pill-text:var(--nh-forest,#1E3932); --pill-bd:rgba(0,0,0,.08);
+  display:inline-block; padding:6px 12px; border-radius:4px;
+  color:var(--pill-text); background:var(--pill-bg); border:1px solid var(--pill-bd);
+  text-decoration:none; transition:background .2s,border-color .2s,color .2s,box-shadow .2s;
+}
+.blog-category-nav a:hover{ background:#EEEDEB; border-color:rgba(0,0,0,.12); }
+.blog-category-nav a:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(54,180,122,.25); }
+.blog-category-nav a.active{
+  background:var(--nh-green,#00704A); color:#fff; border-color:var(--nh-green,#00704A);
+}
+
+/* Hide Astra's duplicate archive header area */
+.blog .ast-archive-description,
+.category .ast-archive-description,
+.tag .ast-archive-description,
+.author .ast-archive-description,
+.date .ast-archive-description,
+.post-type-archive-service .ast-archive-description{ display:none; }
+
+/* ---------- Back bar + breadcrumbs ---------- */
+.nh-backbar{ margin:8px 0 6px; }
+.nh-backbar__link{
+  font-weight:600; color:var(--nh-forest,#1E3932);
+  text-decoration:none; border-bottom:1px solid currentColor;
+}
+.nh-backbar__link:hover{ opacity:.85; }
+.nh-breadcrumbs{ margin:4px 0 16px; color:rgba(0,0,0,.65); font-size:.94rem; }
+
+/* ---------- Single content shell (one frame only) ---------- */
+.single-post .ast-article-single,
+.single-service .ast-article-single{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:4px;
+  box-shadow:0 10px 26px rgba(0,0,0,.06);
+}
+
+/* neutralize Astra's inner wrapper to prevent double frame */
+.ast-article-single .single-layout-1{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+}
+.ast-article-single .entry-header{ padding:18px 18px 0; background:transparent; border:0; box-shadow:none; }
+.ast-article-single .entry-content{ padding:12px 18px 20px; background:transparent; border:0; box-shadow:none; }
+
+/* ---------- Prev/Next nav ---------- */
+.post-navigation .nav-links{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:24px; margin:22px 0; padding:10px 0;
+  border-top:1px solid rgba(0,0,0,.08);
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+.post-navigation a{ color:var(--nh-forest,#1E3932); text-decoration:none; display:block; }
+.post-navigation a:hover{ opacity:.85; }
+.post-navigation p{ margin:6px 0 0; font-weight:600; }
+
+/* ---------- Related grid ---------- */
+.nh-related{ margin-top:40px; }
+.nh-related__grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+.nh-related__thumb img{
+  width:100%; height:180px; object-fit:cover; display:block; border-radius:4px;
+}
+.nh-related__title{ font-size:1rem; margin-top:8px; }
+
+/* =========================================================
+   BLOG + SERVICES — Mobile layout spacing fix
+   ========================================================= */
+@media (max-width: 768px) {
+
+  /* Ensure the post inner wrapper has breathing room */
+  .ast-article-post .ast-article-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Add padding specifically when content stacks below image */
+  .ast-article-post .post-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Optional: slightly tighter text spacing */
+  .ast-article-post .entry-title { margin-top: 8px; }
+  .ast-excerpt-container p { margin-top: 6px; }
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width:480px){
+  .blog-category-nav a{ padding:5px 10px; }
+  .ast-article-post .post-thumb,
+  .ast-article-post .post-thumb-img-content{ min-height:180px; }
+}
 
 /* =========================================
    Subcategory section (mobile → desktop)

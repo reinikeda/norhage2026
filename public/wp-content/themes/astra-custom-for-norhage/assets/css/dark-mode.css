@@ -60,6 +60,17 @@ body.dark-mode .secondary-title{ color: color-mix(in srgb, var(--dm-text) 70%, v
 body.dark-mode hr,
 body.dark-mode .divider{ border-color: var(--ui-border); }
 
+/* =========================================
+   Separator
+   ========================================= */
+
+/* Dark mode */
+body.dark-mode hr.wp-block-separator,
+body.dark-mode hr.nh-sep{
+  border-top-color: var(--dm-border, #3E5F50) !important;
+  opacity: .8;
+}
+
 /* =========================
    2) Utility bar + News ticker (dark mode)
    ========================= */
@@ -239,11 +250,155 @@ body.dark-mode .nhhb-hero--home::after{
   );
 }
 
-/* =========================
-   6) Blog nav
-   ========================= */
-body.dark-mode .blog-category-nav ul li a{ color: var(--dm-text); }
-body.dark-mode .blog-category-nav ul li a.active{ background: var(--dm-primary); color:#0f2019; }
+/* =========================================================
+   BLOG + SERVICES — Dark Mode
+   ========================================================= */
+body.dark-mode{
+
+  /* ----- Archive cards ----- */
+  .ast-article-post .ast-article-inner{
+    background: var(--dm-surface);
+    border-color: var(--dm-border);
+    box-shadow: 0 16px 42px rgba(0,0,0,.35);
+  }
+
+  /* Titles / text */
+  .ast-article-post .entry-title a{ color: var(--dm-text); }
+  .ast-article-post .entry-title a:hover{ opacity:.9; }
+
+  /* Category chip (above blog titles) */
+  .ast-taxonomy-container a{
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.12);
+    color: var(--dm-text);
+  }
+
+  /* Excerpts inherit; just ensure good contrast */
+  .ast-excerpt-container p{ color: var(--dm-text); opacity:.92; }
+
+  /* Read more */
+  .ast-read-more-container a{
+    color: var(--dm-primary);
+  }
+  .ast-read-more-container a::after{ content:none; } /* keep the extra arrow off */
+
+  /* ----- Blog category pills row ----- */
+  .blog-category-nav a{
+    --pill-bg: rgba(255,255,255,.06);
+    --pill-text: var(--dm-text);
+    --pill-bd: rgba(255,255,255,.12);
+    background: var(--pill-bg);
+    color: var(--pill-text);
+    border-color: var(--pill-bd);
+  }
+  .blog-category-nav a:hover{
+    background: rgba(255,255,255,.10);
+    border-color: rgba(255,255,255,.18);
+  }
+  .blog-category-nav a:focus-visible{
+    box-shadow: 0 0 0 3px rgba(54,180,122,.35);
+  }
+  .blog-category-nav a.active{
+    background: var(--dm-primary);
+    border-color: var(--dm-primary);
+    color:#0e2018; /* readable on green; adjust to taste */
+  }
+
+  /* Hide Astra’s archive description (same behavior) */
+  .blog .ast-archive-description,
+  .category .ast-archive-description,
+  .tag .ast-archive-description,
+  .author .ast-archive-description,
+  .date .ast-archive-description,
+  .post-type-archive-service .ast-archive-description{ display:none; }
+
+  /* Back link + breadcrumbs */
+  .nh-backbar__link{ color: var(--dm-text); border-bottom-color: currentColor; }
+  .nh-breadcrumbs{ color: rgba(236,234,230,.75); }
+
+  /* ----- Single content shell (prevent double frame too) ----- */
+  .single-post .ast-article-single,
+  .single-service .ast-article-single{
+    background: var(--dm-surface);
+    border: 1px solid var(--dm-border);
+    box-shadow: 0 16px 42px rgba(0,0,0,.35);
+  }
+  .ast-article-single .single-layout-1{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .ast-article-single .entry-header,
+  .ast-article-single .entry-content{
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: var(--dm-text);
+  }
+
+  /* Prev/Next navigation */
+  .post-navigation .nav-links{
+    border-top: 1px solid var(--dm-border);
+    border-bottom: 1px solid var(--dm-border);
+  }
+  .post-navigation a{ color: var(--dm-text); }
+
+  /* Related grid */
+  .nh-related__title{ color: var(--dm-text); }
+  .nh-related__thumb img{ /* images unchanged, keep contrast via card bg */ }
+}
+
+/* Extra safety: hide services/blog meta in dark mode too */
+body.dark-mode .post-type-archive-service .ast-article-post .entry-meta,
+body.dark-mode .single-service .entry-meta{ display:none !important; }
+body.dark-mode .single-post .entry-meta .posted-by{ display:none !important; }
+
+/* =========================================================
+   SINGLE (Blog + Services) — force same card as archives
+   ========================================================= */
+body.dark-mode {
+
+  /* Make the *outer* article the dark card */
+  .single-post   .ast-article-single,
+  .single-service .ast-article-single{
+    background: var(--dm-surface) !important;
+    border: 1px solid var(--dm-border) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 16px 42px rgba(0,0,0,.35) !important;
+  }
+
+  /* Kill Astra's inner light wrapper (the white panel) */
+  .single-post   .ast-article-single .ast-post-format-.single-layout-1,
+  .single-service .ast-article-single .ast-post-format-.single-layout-1{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Text & links inside the article */
+  .ast-article-single .entry-header,
+  .ast-article-single .entry-content{
+    color: var(--dm-text) !important;
+    background: transparent !important;
+  }
+  .ast-article-single .entry-content a{
+    color: var(--dm-primary) !important;
+  }
+
+  /* Back link + prev/next strip */
+  .nh-backbar__link{ color: var(--dm-text) !important; border-bottom-color: currentColor; }
+  .post-navigation .nav-links{
+    border-top: 1px solid var(--dm-border) !important;
+    border-bottom: 1px solid var(--dm-border) !important;
+  }
+  .post-navigation a{ color: var(--dm-text) !important; }
+
+  /* Services: hide meta; Blog: hide author only */
+  .single-service .entry-meta{ display:none !important; }
+  .single-post .entry-meta .posted-by{ display:none !important; }
+}
+
 
 /* =========================
    7) Subcategory grid
