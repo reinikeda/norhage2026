@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Inactivity Popup (Lite)
  * Description: Shows a simple popup after 10s of user inactivity (no click/scroll). Once per session. No cookies, no consent data.
- * Version: 1.0.0
+ * Version: 1.2.0
  * Author: Daiva Reinike
  * License: GPL-2.0-or-later
  */
@@ -15,11 +15,14 @@ class NH_Inactivity_Popup_Lite {
 
     // ---- Default popup content (edit these or override via filters) ----
     private $defaults = [
-        'title'      => 'Need a hand?',
-        'text'       => 'Get tips, offers, and help choosing the right product.',
+        'title'      => 'Need some help?',
+        'text'       => 'Not sure which product fits your project? We’ll guide you — no pressure.',
         'btn_text'   => 'Contact us',
         'btn_url'    => '',
-        'image_url' => '',
+        'image_url'  => '',            // optional override; otherwise plugin assets are used
+        // FAQ link support
+        'faq_text'   => 'Browse FAQs',
+        'faq_url'    => '',            // leave empty; we’ll set a sensible default
         // Delay in milliseconds of continuous inactivity
         'delay_ms'   => 20000,
         // Disable on cart/checkout by default (you can change this below)
@@ -59,10 +62,19 @@ class NH_Inactivity_Popup_Lite {
     public function render_markup() {
         $cfg = $this->get_config();
 
+        // Contact URL fallback
         if (empty($cfg['btn_url'])) {
-            $page = get_page_by_path( 'contact-us' );
-            if ( $page ) {
-                $cfg['btn_url'] = get_permalink( $page->ID );
+            $page = get_page_by_path('contact-us');
+            if (!$page) $page = get_page_by_path('contact');
+            if ($page) $cfg['btn_url'] = get_permalink($page->ID);
+        }
+
+        // FAQ URL fallback (tries common slugs, incl. LT "duk")
+        if (empty($cfg['faq_url'])) {
+            $faq_slugs = ['faq','faqs','frequently-asked-questions','duk','duk-faq','frequently-asked-questions-faq'];
+            foreach ($faq_slugs as $slug) {
+                $p = get_page_by_path($slug);
+                if ($p) { $cfg['faq_url'] = get_permalink($p->ID); break; }
             }
         }
 
@@ -72,11 +84,22 @@ class NH_Inactivity_Popup_Lite {
             if (function_exists('is_checkout') && is_checkout()) return;
         }
 
-        $title    = esc_html($cfg['title']);
-        $text     = esc_html($cfg['text']);
-        $btn_text = esc_html($cfg['btn_text']);
-        $btn_url  = esc_url($cfg['btn_url']);
-        $image    = esc_url($cfg['image_url']);
+        $title     = esc_html($cfg['title']);
+        $text      = esc_html($cfg['text']);
+        $btn_text  = esc_html($cfg['btn_text']);
+        $btn_url   = esc_url($cfg['btn_url']);
+        $image     = esc_url($cfg['image_url']); // fallback for <img src>
+        $faq_text  = esc_html($cfg['faq_text']);
+        $faq_url   = esc_url($cfg['faq_url']);
+
+        // Build optional <source> list from plugin assets (help.avif/webp/jpg)
+        $asset_dir = plugin_dir_path(__FILE__) . 'assets/';
+        $asset_url = plugins_url('assets/', __FILE__);
+        $sources   = [];
+
+        if (file_exists($asset_dir . 'help.avif')) $sources[] = ['url' => $asset_url . 'help.avif', 'type' => 'image/avif'];
+        if (file_exists($asset_dir . 'help.webp')) $sources[] = ['url' => $asset_url . 'help.webp', 'type' => 'image/webp'];
+        if (file_exists($asset_dir . 'help.jpg'))  $sources[] = ['url' => $asset_url . 'help.jpg',  'type' => 'image/jpeg'];
 
         ?>
         <div id="nh-iplite-overlay" class="nh-hidden" aria-hidden="true"></div>
@@ -86,15 +109,35 @@ class NH_Inactivity_Popup_Lite {
 
             <div class="nh-grid">
               <div class="nh-media">
-                <img src="<?php echo $image; ?>" alt="" loading="lazy" decoding="async" />
+                <picture>
+                  <?php foreach ($sources as $s): ?>
+                    <source srcset="<?php echo esc_url($s['url']); ?>" type="<?php echo esc_attr($s['type']); ?>">
+                  <?php endforeach; ?>
+                  <img
+                    src="<?php echo $image; ?>"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="600" height="450"
+                  />
+                </picture>
               </div>
 
               <div class="nh-content">
                 <h2 id="nh-iplite-title"><?php echo $title; ?></h2>
                 <p id="nh-iplite-desc"><?php echo $text; ?></p>
-                <a class="nh-btn" href="<?php echo $btn_url; ?>">
-                  <?php echo $btn_text; ?>
-                </a>
+
+                <div class="nh-actions">
+                  <a class="nh-btn" href="<?php echo $btn_url; ?>">
+                    <?php echo $btn_text; ?>
+                  </a>
+
+                  <?php if (!empty($faq_url)) : ?>
+                    <a class="nh-link" href="<?php echo $faq_url; ?>" aria-label="<?php echo esc_attr__('Browse frequently asked questions', 'nh-iplite'); ?>">
+                      <?php echo $faq_text; ?>
+                    </a>
+                  <?php endif; ?>
+                </div>
               </div>
             </div>
           </div>
@@ -105,15 +148,25 @@ class NH_Inactivity_Popup_Lite {
     private function get_config() {
         $cfg = apply_filters('nh_iplite_config', $this->defaults);
 
-        // Safety: ensure keys exist
-        $keys = ['title','text','btn_text','btn_url','image_url','delay_ms','disable_on_cart_checkout'];
+        // Ensure keys exist
+        $keys = ['title','text','btn_text','btn_url','image_url','faq_text','faq_url','delay_ms','disable_on_cart_checkout'];
         foreach ($keys as $k) {
             if (!array_key_exists($k, $cfg)) $cfg[$k] = $this->defaults[$k];
         }
 
-        // ✅ Compute image URL at runtime if empty
+        // Image default (prefer AVIF if present, else JPEG)
         if (empty($cfg['image_url'])) {
-            $cfg['image_url'] = plugins_url('assets/help.jpg', __FILE__);
+            $avif = plugin_dir_path(__FILE__) . 'assets/help.avif';
+            if (file_exists($avif)) {
+                $cfg['image_url'] = plugins_url('assets/help.avif', __FILE__);
+            } else {
+                $cfg['image_url'] = plugins_url('assets/help.jpg', __FILE__); // fallback
+            }
+        }
+
+        // Preferred FAQ path if not provided
+        if (empty($cfg['faq_url'])) {
+            $cfg['faq_url'] = site_url('/frequently-asked-questions-faq/');
         }
 
         return $cfg;

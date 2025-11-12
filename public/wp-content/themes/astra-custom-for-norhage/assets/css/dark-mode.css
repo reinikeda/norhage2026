@@ -842,7 +842,6 @@ body.dark-mode .variations_form .label label{
   font-weight: 700;
 }
 
-
 /* =========================
    17) Nice-to-haves
    ========================= */
@@ -850,3 +849,106 @@ body.dark-mode svg:not([fill]){ fill: currentColor; }
 body.dark-mode svg:not([stroke]){ stroke: currentColor; }
 body.dark-mode ::-webkit-scrollbar-thumb{ background: color-mix(in srgb, var(--dm-text) 20%, transparent); }
 body.dark-mode ::-webkit-scrollbar-track{ background: transparent; }
+
+/* =========================================
+   COMPACT HEADER + HAMBURGER — DARK MODE
+   (≤1023px only)
+   ========================================= */
+@media (max-width:1023px){
+  /* Header container */
+  body.dark-mode #masthead.mh-compact{
+    background: var(--dm-forest);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  }
+
+  /* Row dividers (subtle) */
+  body.dark-mode #masthead.mh-compact .nhhb-row--top{ border-bottom: 1px solid rgba(255,255,255,.08); }
+
+  /* Row-1 icons (account / cart / theme) */
+  body.dark-mode #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact{
+    color: var(--dm-text);
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact .nh-icon{
+    opacity: .95;
+  }
+  /* Cart badge edge against dark bg */
+  body.dark-mode #masthead.mh-compact .nh-cart-badge{
+    box-shadow: 0 0 0 2px var(--dm-forest);
+  }
+
+  /* Burger (SVG image) */
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-burger{
+    background: transparent !important;
+    border: 0 !important;
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-burger__icon{
+    /* force light glyph from dark asset */
+    filter: invert(1) brightness(1.35) contrast(1.05);
+    opacity: .95;
+  }
+
+  /* Search in Row-2 — use your dark helper variant */
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-header-search{
+    background: color-mix(in srgb, #ffffff 6%, var(--dm-surface)) !important;
+    border: 1px solid color-mix(in srgb, #ffffff 16%, var(--dm-surface)) !important;
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-header-search input[type="search"]{
+    color: var(--dm-text);
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-header-search input::placeholder{
+    color: var(--ui-muted);
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-header-search button{
+    border-left: 1px solid rgba(255,255,255,.12);
+  }
+  body.dark-mode #masthead.mh-compact .nhhb-row--bottom .nh-header-search button:hover{
+    background: rgba(255,255,255,.08);
+  }
+
+  /* ===== Drawer (drop-panel) ===== */
+
+  /* Scrim a bit stronger in dark */
+  body.dark-mode .nh-drawer__scrim{ background: rgba(0,0,0,.35); }
+
+  /* Panel surface + typography */
+  body.dark-mode .nh-drawer__panel{
+    background: color-mix(in srgb, var(--dm-surface) 88%, black 12%);
+    color: var(--dm-text);
+    /* keep sizing/position from light mode rules */
+    box-shadow: 0 18px 40px rgba(0,0,0,.45);
+  }
+
+  /* Drawer header + title divider */
+  body.dark-mode .nh-drawer__header{
+    border-bottom: 1px solid color-mix(in srgb, var(--dm-border), #000 10%);
+    background: inherit; color: inherit;
+  }
+
+  /* Close button: centered, light pill in dark */
+  body.dark-mode .nh-drawer__close{
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.12) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    color: #fff !important; font-size: 20px; line-height: 1;
+  }
+  body.dark-mode .nh-drawer__close:hover{
+    background: rgba(255,255,255,.18) !important;
+    border-color: rgba(255,255,255,.24) !important;
+  }
+
+  /* Nav links */
+  body.dark-mode .nh-drawer__nav{ padding: 8px 10px 12px; }
+  body.dark-mode .nh-drawer__nav .drawer-menu > li > a{
+    color: var(--dm-text);
+    border-radius: 6px;
+  }
+  body.dark-mode .nh-drawer__nav .drawer-menu > li > a:hover{
+    background: color-mix(in srgb, var(--dm-surface) 75%, var(--dm-forest) 25%);
+    color: var(--dm-primary);
+  }
+  body.dark-mode .nh-drawer__nav .drawer-menu li ul{
+    border-left: 2px solid color-mix(in srgb, var(--dm-border), #000 10%);
+  }
+}

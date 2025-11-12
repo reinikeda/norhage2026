@@ -1,9 +1,10 @@
 <?php
 /**
- * Main Header – two rows + ticker
- *  - Row 1: Logo + Primary Menu
- *  - Row 2: Tools (Account, Cart, Dark mode, Live Search)
- *  - Row 3: News ticker (optional, plugin)
+ * Main Header — two rows + ticker
+ *  - Row 1: Logo + Primary Menu (desktop) / Logo + Icons (compact)
+ *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)  → in compact this reads as Burger + Search
+ *  - Drawer: Off-canvas with ONLY the Primary Menu
+ *  - Row 3: News ticker (optional)
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -12,13 +13,13 @@ $account_url = function_exists('wc_get_page_permalink') ? wc_get_page_permalink(
 $cart_url    = function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/');
 $cart_count  = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
 
-/** Account label + target */
 $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_html__( 'My Account', 'nh-theme' ) : esc_html__( 'Sign in', 'nh-theme' );
 $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
 ?>
 <div class="nhhb-header-main">
-  <!-- Row 1: Logo + Primary Menu -->
+
+  <!-- Row 1: Logo + Primary Menu (desktop) -->
   <div class="nhhb-row nhhb-row--top">
     <div class="nhhb-logo">
       <?php
@@ -40,10 +41,30 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
       ] );
       ?>
     </nav>
+
+    <!-- Slot used in COMPACT mode to host the tools (icons) -->
+    <div class="nhhb-tools-slot" aria-hidden="true"></div>
   </div>
 
-  <!-- Row 2: Tools -->
+  <!-- Row 2: Burger + Tools (icons + search) -->
   <div class="nhhb-row nhhb-row--bottom">
+
+    <!-- Burger first (opens drawer with only primary menu) -->
+    <div class="nhhb-compact-burger-wrap">
+      <button
+        class="nh-burger"
+        type="button"
+        aria-label="<?php esc_attr_e('Open menu','nh-theme'); ?>"
+        aria-controls="nh-mobile-drawer"
+        aria-expanded="false">
+        <img
+          class="nh-burger__icon"
+          src="<?php echo esc_url( $theme_uri . '/assets/icons/hamburger-menu.svg' ); ?>"
+          alt=""
+          aria-hidden="true" />
+      </button>
+    </div>
+
     <div class="nhhb-tools">
 
       <!-- Account -->
@@ -61,7 +82,7 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
           <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
             <circle cx="9" cy="21" r="1" stroke-width="2" fill="none"></circle>
             <circle cx="19" cy="21" r="1" stroke-width="2" fill="none"></circle>
-            <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2  2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
           <span class="nh-cart-badge" aria-hidden="true" data-count="<?php echo (int) $cart_count; ?>">
             <?php echo (int) $cart_count; ?>
@@ -93,8 +114,7 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
             placeholder="<?php echo esc_attr__( 'Search products…', 'nh-theme' ); ?>"
             aria-controls="nrh-search-results"
             aria-expanded="false"
-            autocomplete="off"
-          />
+            autocomplete="off" />
           <input type="hidden" name="post_type" value="product" />
           <button type="submit" aria-label="<?php echo esc_attr__( 'Search', 'nh-theme' ); ?>">
             <svg class="nh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -107,6 +127,34 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
       </div>
 
     </div>
+  </div>
+
+  <!-- Off-canvas drawer (ONLY Primary Menu) -->
+  <div id="nh-mobile-drawer" class="nh-drawer" hidden aria-hidden="true">
+    <button class="nh-drawer__scrim" tabindex="-1" aria-hidden="true"></button>
+
+    <aside class="nh-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="nh-drawer-title">
+      <header class="nh-drawer__header">
+        <span id="nh-drawer-title" class="nh-drawer__title">
+          <?php echo esc_html__('Menu', 'nh-theme'); ?>
+        </span>
+        <button class="nh-drawer__close" type="button" aria-label="<?php esc_attr_e('Close menu','nh-theme'); ?>">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+
+      <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e('Primary menu','nh-theme'); ?>">
+        <?php
+        wp_nav_menu( [
+          'theme_location' => 'primary',
+          'container'      => false,
+          'menu_class'     => 'drawer-menu',
+          'fallback_cb'    => false,
+        ] );
+        ?>
+      </nav>
+
+    </aside>
   </div>
 
   <!-- Row 3: News Ticker -->
