@@ -24,6 +24,6 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: public/wp-content/
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}
           dangerous-clean-slate: false
           log-level: verbose
