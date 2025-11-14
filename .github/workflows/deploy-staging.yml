@@ -1,0 +1,146 @@
+name: Deploy to staging.norhage.lt
+
+on:
+  push:
+    branches:
+      - staging   # runs every time you push to the staging branch
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # THEME: astra-custom-for-norhage
+      - name: Deploy theme (astra-custom-for-norhage)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/themes/astra-custom-for-norhage
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/themes/astra-custom-for-norhage
+          dangerous-clean-slate: false
+
+      # PLUGIN: running-ticker-line
+      - name: Deploy plugin (running-ticker-line)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/running-ticker-line
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/running-ticker-line
+          dangerous-clean-slate: false
+
+      # PLUGIN: product-labels
+      - name: Deploy plugin (product-labels)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/product-labels
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/product-labels
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-faq
+      - name: Deploy plugin (nh-faq)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-faq
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-faq
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-inactivity-popup-lite
+      - name: Deploy plugin (nh-inactivity-popup-lite)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-inactivity-popup-lite
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-inactivity-popup-lite
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-cutting-toggle
+      - name: Deploy plugin (nh-cutting-toggle)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-cutting-toggle
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-cutting-toggle
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-sale-slider
+      - name: Deploy plugin (nh-sale-slider)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-sale-slider
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-sale-slider
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-shipping-calculator
+      - name: Deploy plugin (nh-shipping-calculator)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-shipping-calculator
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-shipping-calculator
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-home-builder
+      - name: Deploy plugin (nh-home-builder)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-home-builder
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-home-builder
+          dangerous-clean-slate: false
+
+      # PLUGIN: nh-filters
+      - name: Deploy plugin (nh-filters)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          port: 21
+          local-dir: public/wp-content/plugins/nh-filters
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-filters
+          dangerous-clean-slate: false
