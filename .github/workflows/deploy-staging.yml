@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/themes/astra-custom-for-norhage/
+          local-dir: public/wp-content/themes/astra-custom-for-norhage/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/themes/astra-custom-for-norhage/
           dangerous-clean-slate: false
 
@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/running-ticker-line/
+          local-dir: public/wp-content/plugins/running-ticker-line/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/running-ticker-line/
           dangerous-clean-slate: false
 
@@ -50,7 +50,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/product-labels/
+          local-dir: public/wp-content/plugins/product-labels/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/product-labels/
           dangerous-clean-slate: false
 
@@ -63,7 +63,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-faq/
+          local-dir: public/wp-content/plugins/nh-faq/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-faq/
           dangerous-clean-slate: false
 
@@ -76,7 +76,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-inactivity-popup-lite/
+          local-dir: public/wp-content/plugins/nh-inactivity-popup-lite/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-inactivity-popup-lite/
           dangerous-clean-slate: false
 
@@ -89,7 +89,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-cutting-toggle/
+          local-dir: public/wp-content/plugins/nh-cutting-toggle/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-cutting-toggle/
           dangerous-clean-slate: false
 
@@ -102,7 +102,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-sale-slider/
+          local-dir: public/wp-content/plugins/nh-sale-slider/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-sale-slider/
           dangerous-clean-slate: false
 
@@ -115,7 +115,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-shipping-calculator/
+          local-dir: public/wp-content/plugins/nh-shipping-calculator/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-shipping-calculator/
           dangerous-clean-slate: false
 
@@ -128,7 +128,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-home-builder/
+          local-dir: public/wp-content/plugins/nh-home-builder/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-home-builder/
           dangerous-clean-slate: false
 
@@ -141,6 +141,6 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: app/public/wp-content/plugins/nh-filters/
+          local-dir: public/wp-content/plugins/nh-filters/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-filters/
           dangerous-clean-slate: false
