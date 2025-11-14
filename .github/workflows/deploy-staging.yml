@@ -15,13 +15,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy wp-content to staging via FTPS
+      - name: Deploy wp-content to staging via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.3
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          protocol: ftps
+          protocol: ftp
           port: 21
           local-dir: public/wp-content/
           server-dir: ${{ secrets.FTP_STAGING_ROOT }}
