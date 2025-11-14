@@ -3,7 +3,7 @@ name: Deploy to staging.norhage.lt
 on:
   push:
     branches:
-      - staging   # runs every time you push to the staging branch
+      - staging
 
 jobs:
   deploy-staging:
@@ -24,8 +24,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/themes/astra-custom-for-norhage
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/themes/astra-custom-for-norhage
+          local-dir: app/public/wp-content/themes/astra-custom-for-norhage/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/themes/astra-custom-for-norhage/
           dangerous-clean-slate: false
 
       # PLUGIN: running-ticker-line
@@ -37,8 +37,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/running-ticker-line
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/running-ticker-line
+          local-dir: app/public/wp-content/plugins/running-ticker-line/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/running-ticker-line/
           dangerous-clean-slate: false
 
       # PLUGIN: product-labels
@@ -50,8 +50,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/product-labels
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/product-labels
+          local-dir: app/public/wp-content/plugins/product-labels/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/product-labels/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-faq
@@ -63,8 +63,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-faq
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-faq
+          local-dir: app/public/wp-content/plugins/nh-faq/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-faq/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-inactivity-popup-lite
@@ -76,8 +76,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-inactivity-popup-lite
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-inactivity-popup-lite
+          local-dir: app/public/wp-content/plugins/nh-inactivity-popup-lite/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-inactivity-popup-lite/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-cutting-toggle
@@ -89,8 +89,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-cutting-toggle
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-cutting-toggle
+          local-dir: app/public/wp-content/plugins/nh-cutting-toggle/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-cutting-toggle/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-sale-slider
@@ -102,8 +102,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-sale-slider
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-sale-slider
+          local-dir: app/public/wp-content/plugins/nh-sale-slider/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-sale-slider/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-shipping-calculator
@@ -115,8 +115,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-shipping-calculator
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-shipping-calculator
+          local-dir: app/public/wp-content/plugins/nh-shipping-calculator/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-shipping-calculator/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-home-builder
@@ -128,8 +128,8 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-home-builder
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-home-builder
+          local-dir: app/public/wp-content/plugins/nh-home-builder/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-home-builder/
           dangerous-clean-slate: false
 
       # PLUGIN: nh-filters
@@ -141,6 +141,6 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
           port: 21
-          local-dir: public/wp-content/plugins/nh-filters
-          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-filters
+          local-dir: app/public/wp-content/plugins/nh-filters/
+          server-dir: ${{ secrets.FTP_STAGING_ROOT }}/plugins/nh-filters/
           dangerous-clean-slate: false
