@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - staging
-    paths:
-      - 'public/wp-content/themes/astra-custom-for-norhage/**'
 
 jobs:
   deploy:
@@ -22,6 +20,6 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           protocol: ftp
-          local-dir: 'public/wp-content/themes/astra-custom-for-norhage'
-          server-dir: '${{ secrets.FTP_STAGING_ROOT }}/wp-content/themes/astra-custom-for-norhage'
+          local-dir: 'public/wp-content/themes/astra-custom-for-norhage/'
+          server-dir: '/staging/wp-content/themes/astra-custom-for-norhage/'
           dangerous-clean-slate: false
