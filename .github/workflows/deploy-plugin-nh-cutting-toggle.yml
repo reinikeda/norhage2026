@@ -15,13 +15,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy nh-cutting-toggle plugin via FTP
+      - name: Deploy nh-cutting-toggle plugin via FTP (FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
+          protocol: ftps
+          port: 21
           local-dir: 'public/wp-content/plugins/nh-cutting-toggle/'
           server-dir: '/staging/wp-content/plugins/nh-cutting-toggle/'
           dangerous-clean-slate: false

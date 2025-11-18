@@ -13,13 +13,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy theme via FTP
+      - name: Deploy theme via FTP (FTPS explicit on port 21)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          protocol: ftp
+          protocol: ftps
+          port: 21
           local-dir: 'public/wp-content/themes/astra-custom-for-norhage/'
           server-dir: '/staging/wp-content/themes/astra-custom-for-norhage/'
           dangerous-clean-slate: false
