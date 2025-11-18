@@ -1,4 +1,4 @@
-name: Deploy Astra Theme to Staging (FTP)
+name: Deploy Astra Theme to Staging (SFTP)
 
 on:
   push:
@@ -13,14 +13,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy theme via FTP (FTPS explicit on port 21)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy theme via SFTP
+        uses: appleboy/scp-action@v0.1.4
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftps
-          port: 21
-          local-dir: 'public/wp-content/themes/astra-custom-for-norhage/'
-          server-dir: '/staging/wp-content/themes/astra-custom-for-norhage/'
-          dangerous-clean-slate: false
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          port: 22
+          source: "public/wp-content/themes/astra-custom-for-norhage/*"
+          target: "/staging/wp-content/themes/astra-custom-for-norhage"
+          overwrite: true
