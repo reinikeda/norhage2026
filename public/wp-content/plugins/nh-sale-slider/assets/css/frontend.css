@@ -1,0 +1,35 @@
+/* --- NH Sale Slider — responsive hero (3:1 desktop / 4:3 mobile) --- */
+.sale-slider-container{
+  width:100%;
+  margin:16px 0 28px;
+  border-radius:4px;
+  overflow:hidden; /* clip rounded corners */
+}
+.sale-slider-container .swiper-wrapper{ align-items:stretch; }
+
+/* Desktop default: 1200×400 (3:1) */
+.sale-slider-container .swiper-slide{ aspect-ratio: 3 / 1; }
+
+/* Tablet (optional): 16:9 smooth transition */
+@media (max-width: 1024px){
+  .sale-slider-container .swiper-slide{ aspect-ratio: 16 / 9; }
+}
+
+/* Mobile: 800×600 (4:3) */
+@media (max-width: 640px){
+  .sale-slider-container .swiper-slide{ aspect-ratio: 4 / 3; }
+}
+
+.sale-slider-container picture,
+.sale-slider-container img{
+  display:block;
+  width:100%;
+  height:100%;
+}
+.sale-slider-container img{
+  object-fit:cover; /* crop edges for full-bleed */
+}
+
+.sale-slider-container .swiper-pagination{
+  bottom:8px !important;
+}

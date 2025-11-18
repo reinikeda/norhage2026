@@ -11,6 +11,8 @@
 /public/wp-content/*
 !/public/wp-content/themes/
 /public/wp-content/themes/*
+!/public/wp-content/plugins/
+!/public/wp-content/plugins/**
 !/public/wp-content/themes/astra-custom-for-norhage/
 !/public/wp-content/themes/astra-custom-for-norhage/**
 

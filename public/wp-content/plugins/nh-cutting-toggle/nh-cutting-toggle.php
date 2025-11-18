@@ -4,9 +4,22 @@
  * Description: Adds the "Standard / Cut to custom size" toggle between linked products.
  * Version: 1.3
  * Author: Daiva Reinike
+ * Text Domain: nh-cutting-toggle
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) exit;
+
+/**
+ * Load plugin textdomain
+ */
+add_action('plugins_loaded', function () {
+    load_plugin_textdomain(
+        'nh-cutting-toggle',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
+});
 
 /** ------------------------------------------------------------------------
  *  Find linked counterpart via upsell or reverse lookup.
@@ -104,7 +117,8 @@ function nhctt_render_toggle() : void {
     $std_url  = get_permalink($roles['standard_id']) . '#' . $anchor;
     $cus_url  = get_permalink($roles['custom_id'])   . '#' . $anchor;
 
-    $label_text = apply_filters('nhctt_label_text', __('Cutting type', 'nh'));
+    // IMPORTANT: updated text domain here
+    $label_text = apply_filters('nhctt_label_text', __('Cutting type', 'nh-cutting-toggle'));
     $label_id   = 'nh-cutting-label-' . $current_id;
     ?>
     <div id="<?php echo esc_attr($anchor); ?>" class="nh-cutting-group" role="group" aria-labelledby="<?php echo esc_attr($label_id); ?>">
@@ -114,15 +128,15 @@ function nhctt_render_toggle() : void {
 
         <div class="nh-cut-toggle">
             <?php if ($is_current_std): ?>
-                <span class="nh-cut-btn is-active"><?php esc_html_e('Standard sizes','nh'); ?></span>
+                <span class="nh-cut-btn is-active"><?php esc_html_e('Standard sizes','nh-cutting-toggle'); ?></span>
             <?php else: ?>
-                <a class="nh-cut-btn" href="<?php echo esc_url($std_url); ?>"><?php esc_html_e('Standard sizes','nh'); ?></a>
+                <a class="nh-cut-btn" href="<?php echo esc_url($std_url); ?>"><?php esc_html_e('Standard sizes','nh-cutting-toggle'); ?></a>
             <?php endif; ?>
 
             <?php if ($is_current_custom): ?>
-                <span class="nh-cut-btn is-active"><?php esc_html_e('Cut to custom size','nh'); ?></span>
+                <span class="nh-cut-btn is-active"><?php esc_html_e('Cut to custom size','nh-cutting-toggle'); ?></span>
             <?php else: ?>
-                <a class="nh-cut-btn" href="<?php echo esc_url($cus_url); ?>"><?php esc_html_e('Cut to custom size','nh'); ?></a>
+                <a class="nh-cut-btn" href="<?php echo esc_url($cus_url); ?>"><?php esc_html_e('Cut to custom size','nh-cutting-toggle'); ?></a>
             <?php endif; ?>
         </div>
     </div>
