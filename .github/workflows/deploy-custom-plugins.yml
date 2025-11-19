@@ -13,7 +13,6 @@ on:
       - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
       - 'public/wp-content/plugins/nh-sale-slider/**'
       - 'public/wp-content/plugins/nh-shipping-calculator/**'
-      - 'public/wp-content/plugins/nh-tax-switcher/**'
       - 'public/wp-content/plugins/running-ticker-line/**'
 
 jobs:
