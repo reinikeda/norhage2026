@@ -216,6 +216,7 @@ require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
+require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 
 /* New split modules */
 require_once get_stylesheet_directory() . '/inc/hero.php';      // hero helpers (title + image)
