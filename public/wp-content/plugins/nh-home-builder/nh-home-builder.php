@@ -15,13 +15,14 @@ define('NHHB_VER', '0.1.0');
 /**
  * Load plugin textdomain.
  */
-add_action( 'init', function() {
-	load_plugin_textdomain(
-		'nhhb',
-		false,
-		basename( dirname( __FILE__ ) ) . '/languages'
-	);
-} );
+function nhhb_load_textdomain() {
+    load_plugin_textdomain(
+        'nhhb',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+    );
+}
+add_action( 'plugins_loaded', 'nhhb_load_textdomain' );
 
 require_once NHHB_PATH . 'includes/class-admin.php';
 
