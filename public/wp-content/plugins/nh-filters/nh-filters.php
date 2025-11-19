@@ -13,13 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Load plugin textdomain
  */
-add_action( 'init', function() {
+function nhf_load_textdomain() {
 	load_plugin_textdomain(
 		'nhf',
 		false,
-		basename( dirname( __FILE__ ) ) . '/languages'
+		dirname( plugin_basename( __FILE__ ) ) . '/languages/'
 	);
-});
+}
+add_action( 'plugins_loaded', 'nhf_load_textdomain' );
+
 
 /* ------------------------------------------------------------
  *  Enqueue (only on product archives)
