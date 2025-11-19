@@ -1,12 +1,25 @@
-name: Deploy Astra Theme to Staging (SFTP)
+name: Deploy Theme and Custom Plugins to Staging (SFTP)
 
 on:
   push:
     branches:
       - staging
+    paths:
+      # Theme
+      - 'public/wp-content/themes/astra-custom-for-norhage/**'
+      # Custom plugins
+      - 'public/wp-content/plugins/nh-cutting-toggle/**'
+      - 'public/wp-content/plugins/nh-faq/**'
+      - 'public/wp-content/plugins/nh-feature-box/**'
+      - 'public/wp-content/plugins/nh-filters/**'
+      - 'public/wp-content/plugins/nh-home-builder/**'
+      - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
+      - 'public/wp-content/plugins/nh-sale-slider/**'
+      - 'public/wp-content/plugins/nh-shipping-calculator/**'
+      - 'public/wp-content/plugins/running-ticker-line/**'
 
 jobs:
-  deploy:
+  deploy-theme:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +36,34 @@ jobs:
           sftp_only: true
           local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
           remote_path: "/staging/wp-content/themes/astra-custom-for-norhage"
+
+  deploy-plugins:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        plugin:
+          - nh-cutting-toggle
+          - nh-faq
+          - nh-feature-box
+          - nh-filters
+          - nh-home-builder
+          - nh-inactivity-popup-lite
+          - nh-sale-slider
+          - nh-shipping-calculator
+          - running-ticker-line
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy ${{ matrix.plugin }} plugin via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          port: 22
+          sftp_only: true
+          local_path: "public/wp-content/plugins/${{ matrix.plugin }}/*"
+          remote_path: "/staging/wp-content/plugins/${{ matrix.plugin }}"
