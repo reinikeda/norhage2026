@@ -1,4 +1,4 @@
-name: Deploy Plugin nh-cutting-toggle to Staging (FTP)
+name: Deploy Plugin nh-cutting-toggle to Staging (SFTP)
 
 on:
   push:
@@ -15,14 +15,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy nh-cutting-toggle plugin via FTP (FTPS)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy nh-cutting-toggle plugin via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          protocol: ftps
-          port: 21
-          local-dir: 'public/wp-content/plugins/nh-cutting-toggle/'
-          server-dir: '/staging/wp-content/plugins/nh-cutting-toggle/'
-          dangerous-clean-slate: false
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          port: 22
+          sftp_only: true
+          local_path: "public/wp-content/plugins/nh-cutting-toggle/*"
+          remote_path: "/staging/wp-content/plugins/nh-cutting-toggle"

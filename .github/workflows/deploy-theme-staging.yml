@@ -14,12 +14,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy theme via SFTP
-        uses: appleboy/scp-action@v0.1.4
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
+          server: ${{ secrets.SFTP_HOST }}
           port: 22
-          source: "public/wp-content/themes/astra-custom-for-norhage/*"
-          target: "/staging/wp-content/themes/astra-custom-for-norhage"
-          overwrite: true
+          password: ${{ secrets.SFTP_PASS }}
+          sftp_only: true
+          local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
+          remote_path: "/staging/wp-content/themes/astra-custom-for-norhage"
