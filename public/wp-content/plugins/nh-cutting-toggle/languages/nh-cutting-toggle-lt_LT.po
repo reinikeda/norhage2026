@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-cutting-toggle\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-18 00:00+0000\n"
-"PO-Revision-Date: 2025-11-18 11:12+0200\n"
+"PO-Revision-Date: 2025-11-19 08:41+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -19,7 +19,7 @@ msgstr "Pjovimo tipas"
 
 #: nh-cutting-toggle.php:97 nh-cutting-toggle.php:99
 msgid "Standard sizes"
-msgstr "Standartiniai dydžiai"
+msgstr "Standartinis dydis"
 
 #: nh-cutting-toggle.php:103 nh-cutting-toggle.php:105
 msgid "Cut to custom size"
