@@ -385,3 +385,7 @@ add_action('woocommerce_product_query', function( $q ) {
 		$q->set( 'post__in', $on_sale_ids );
 	}
 }, 20);
+
+add_action( 'wp_footer', function() {
+    echo '<pre>nhf test: ' . esc_html__( 'Apply filters', 'nhf' ) . '</pre>';
+});
