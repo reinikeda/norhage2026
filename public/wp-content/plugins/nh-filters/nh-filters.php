@@ -10,6 +10,17 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/**
+ * Load plugin textdomain
+ */
+add_action( 'init', function() {
+	load_plugin_textdomain(
+		'nhf',
+		false,
+		basename( dirname( __FILE__ ) ) . '/languages'
+	);
+});
+
 /* ------------------------------------------------------------
  *  Enqueue (only on product archives)
  * ------------------------------------------------------------ */
