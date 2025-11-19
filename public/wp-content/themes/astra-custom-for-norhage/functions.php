@@ -351,3 +351,51 @@ add_action( 'wp', function () {
 		remove_action( 'astra_entry_top',            'astra_post_thumbnail', 8 );
 	}
 } );
+
+/* --------------------------------------------------------------------------
+ * Custom sequential order numbers per WooCommerce base country
+ * ----------------------------------------------------------------------- */
+
+add_filter( 'woocommerce_order_number', 'nh_custom_order_number_by_country', 10, 2 );
+function nh_custom_order_number_by_country( $order_number, $order ) {
+
+    if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
+        return $order_number;
+    }
+
+    // Get WooCommerce base country (set in WooCommerce → Settings → General)
+    if ( function_exists( 'wc_get_base_location' ) ) {
+        $base_location = wc_get_base_location(); // e.g. [ 'country' => 'LT', 'state' => '' ]
+        $country       = isset( $base_location['country'] ) ? strtoupper( $base_location['country'] ) : '';
+    } else {
+        $country = '';
+    }
+
+    // Configure per-shop prefix + starting number
+    $settings = [
+        'LT' => [ 'prefix' => 'LT-', 'start' => 1 ],     // Lithuania: LT-0001, LT-0002...
+        'NO' => [ 'prefix' => 'NO-', 'start' => 2000 ],  // Norway:   NO-2000, NO-2001...
+        'SE' => [ 'prefix' => 'SE-', 'start' => 2000 ],  // Sweden:   SE-2000...
+        'DE' => [ 'prefix' => 'DE-', 'start' => 500 ],   // Germany:  DE-0500...
+        'FI' => [ 'prefix' => 'FI-', 'start' => 100 ],   // Finland:  FI-0100...
+    ];
+
+    // If this shop's country is not configured, keep default Woo number
+    if ( ! isset( $settings[ $country ] ) ) {
+        return $order_number;
+    }
+
+    $prefix = $settings[ $country ]['prefix'];
+    $start  = (int) $settings[ $country ]['start'];
+
+    // WooCommerce internal order ID
+    $order_id = (int) $order->get_id();
+
+    // Create sequential number with offset
+    $custom_number = $start + ( $order_id - 1 );
+
+    // Always 4 digits: 0001, 0200, 2000, etc.
+    $formatted = str_pad( $custom_number, 4, '0', STR_PAD_LEFT );
+
+    return $prefix . $formatted;
+}
