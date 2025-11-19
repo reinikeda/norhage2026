@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-filters\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2025-11-19 10:46+0200\n"
+"PO-Revision-Date: 2025-11-19 11:40+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -32,7 +32,7 @@ msgstr "Filtruoti prekes"
 
 #: nh-filters.php:XX
 msgid "In stock only"
-msgstr "Tik turimos sandėlyje"
+msgstr "Yra sandėlyje"
 
 #: nh-filters.php:XX
 msgid "On sale"

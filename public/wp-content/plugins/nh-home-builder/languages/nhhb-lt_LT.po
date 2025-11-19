@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-home-builder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2025-11-19 11:23+0200\n"
+"PO-Revision-Date: 2025-11-19 11:40+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -41,7 +41,7 @@ msgstr "Naujausios prekės"
 
 #: includes/render/new-arrivals.php:XX
 msgid "View All"
-msgstr "Peržiūrėti visas"
+msgstr "Peržiūrėti viską"
 
 #: includes/render/new-arrivals.php:XX
 msgid "Explore"
