@@ -1,173 +1,152 @@
 # Copyright (C) 2025 Daiva Reinike
-# This file is distributed under the GNU General Public License v2 or later.
+# This file is distributed under the same license as the Astra Custom for Norhage package.
 msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2025-11-19 14:19:06+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-05T08:19:28+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: nh-theme\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 
-#. Theme Name of the theme
-#: style.css
-msgid "Astra Custom for Norhage"
-msgstr ""
-
-#. Description of the theme
-#: style.css
-msgid "Child theme for Norhage site customizations"
-msgstr ""
-
-#. Author of the theme
-#: style.css
-msgid "Daiva Reinike"
-msgstr ""
-
-#: functions.php:23
+#: functions.php:25
 msgid "Primary Menu"
 msgstr ""
 
-#: functions.php:24
+#: functions.php:26
 msgid "Secondary Menu"
 msgstr ""
 
-#. translators: Post type general name
-#: functions.php:35
-msgctxt "Post Type General Name"
+#: functions.php:27
+msgid "Footer — Explore"
+msgstr ""
+
+#: functions.php:28
+msgid "Footer — Bottom Bar"
+msgstr ""
+
+#: functions.php:111 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr ""
 
-#. translators: Post type singular name
-#: functions.php:37
-msgctxt "Post Type Singular Name"
-msgid "Service"
+#: functions.php:112 inc/blog.php:25 inc/hero.php:12
+msgid "Blog"
 msgstr ""
 
-#: functions.php:38
-msgid "Services"
+#: functions.php:113
+msgid "Contact Us"
 msgstr ""
 
-#: functions.php:39
-msgid "Service"
+#: functions.php:118
+msgid "Utility bar"
 msgstr ""
 
-#: functions.php:40
-msgid "Add New"
-msgstr ""
-
-#. translators: %s: singular post type name
-#: functions.php:42
-msgid "Add New Service"
-msgstr ""
-
-#: functions.php:43
-msgid "New Service"
-msgstr ""
-
-#: functions.php:44
-msgid "Edit Service"
-msgstr ""
-
-#: functions.php:45
-msgid "View Service"
-msgstr ""
-
-#: functions.php:46
-msgid "All Services"
-msgstr ""
-
-#: functions.php:47
-msgid "Search Services"
-msgstr ""
-
-#: functions.php:48
-msgid "No services found."
-msgstr ""
-
-#: functions.php:49
-msgid "No services found in Trash."
-msgstr ""
-
-#: functions.php:139
-msgid "Shop by Category"
-msgstr ""
-
-#: functions.php:183
-msgid "Info Menu"
-msgstr ""
-
-#: functions.php:191
+#: functions.php:129
 msgid "FAQ"
 msgstr ""
 
-#: functions.php:220
-msgid "Sign in / My Account"
+#: functions.php:192
+msgid "Shop by Category"
 msgstr ""
 
-#: functions.php:226
-msgid "Cart"
+#: functions.php:239 functions.php:255
+msgid "Customize"
 msgstr ""
 
-#: functions.php:237
-msgid "Switch to dark mode"
+#: functions.php:240
+msgid "Customize “%s”"
 msgstr ""
 
-#: functions.php:241
-msgid "Toggle theme"
-msgstr ""
-
-#: functions.php:255
-#: inc/search.php:14
-msgid "Search products…"
-msgstr ""
-
-#: functions.php:258
-msgid "Search"
-msgstr ""
-
-#: functions.php:262
-msgid "Toggle menu"
-msgstr ""
-
-#: functions.php:323
+#: functions.php:274
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:384
-msgid "All"
+#: functions.php:303
+msgid "Footer — Shop Categories"
 msgstr ""
 
-#: inc/basket-customize.php:226
+#: functions.php:304
+msgid "Footer — Secondary (Services, Blog, Contact)"
+msgstr ""
+
+#: functions.php:305
+msgid "Footer — Legal/Policies"
+msgstr ""
+
+#: inc/basket-customize.php:174
 msgid "Pickup hours: Mon–Fri 8:30–16:30"
 msgstr ""
 
-#: inc/basket-customize.php:227
+#: inc/basket-customize.php:175
 msgid "You’ll receive an SMS/email."
 msgstr ""
 
-#: inc/basket-customize.php:334
-#, php-format
+#. translators: 1: postcode, 2: country name
+
+#: inc/basket-customize.php:282
 msgid "%1$s, %2$s"
 msgstr ""
 
-#: inc/basket-customize.php:362
+#: inc/basket-customize.php:310
 msgid "Shipping to"
 msgstr ""
 
-#: inc/basket-customize.php:412
-#: inc/basket-customize.php:413
+#: inc/basket-customize.php:360 inc/basket-customize.php:361
 msgid "Total weight"
 msgstr ""
 
+#: inc/blog.php:12
+msgid "All"
+msgstr ""
+
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
+#: inc/blog.php:30 inc/blog.php:31
+msgid "Blog: %s"
+msgstr ""
+
+#: inc/blog.php:62 inc/blog.php:70 inc/services.php:81 inc/services.php:89
+msgid "Read More »"
+msgstr ""
+
+#: inc/blog.php:81
+msgid "Back to Blog"
+msgstr ""
+
+#: inc/blog.php:87
+msgid "Back to %s"
+msgstr ""
+
+#: inc/blog.php:107
+msgid "Related posts"
+msgstr ""
+
+#. translators: 1: quantity, 2: product name
+
 #: inc/bundle-box.php:70
-#, php-format
 msgid "%1$d × “%2$s”"
+msgstr ""
+
+#. translators: %d: number of items
+
+#: inc/bundle-box.php:81
+msgid "%d item has been added to your basket"
+msgid_plural "%d items have been added to your basket"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of distinct products
+
+#: inc/bundle-box.php:86
+msgid "(%d product):"
+msgid_plural "(%d products):"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/bundle-box.php:94
+msgid "View basket"
 msgstr ""
 
 #: inc/bundle-box.php:127
@@ -203,8 +182,8 @@ msgid "Out of stock"
 msgstr ""
 
 #. translators: %d: maximum quantity per bundle item
+
 #: inc/bundle-box.php:183
-#, php-format
 msgid "Max per bundle: %d"
 msgstr ""
 
@@ -221,6 +200,7 @@ msgid "Plus Quantity"
 msgstr ""
 
 #. translators: label before the computed bundle total price
+
 #: inc/bundle-box.php:205
 msgid "Total:"
 msgstr ""
@@ -229,13 +209,15 @@ msgstr ""
 msgid "Add all to basket"
 msgstr ""
 
-#: inc/meta-boxes.php:9
-#: inc/meta-boxes.php:274
+#: inc/hero.php:18
+msgid "Search results for “%s”"
+msgstr ""
+
+#: inc/meta-boxes.php:9 inc/meta-boxes.php:274
 msgid "Downloads"
 msgstr ""
 
-#: inc/meta-boxes.php:17
-#: inc/meta-boxes.php:296
+#: inc/meta-boxes.php:17 inc/meta-boxes.php:296
 msgid "Video"
 msgstr ""
 
@@ -251,8 +233,7 @@ msgstr ""
 msgid "PDF URL"
 msgstr ""
 
-#: inc/meta-boxes.php:57
-#: inc/meta-boxes.php:72
+#: inc/meta-boxes.php:57 inc/meta-boxes.php:72
 msgid "Remove download row"
 msgstr ""
 
@@ -268,10 +249,8 @@ msgstr ""
 msgid "Enable custom cutting"
 msgstr ""
 
-#: inc/meta-boxes.php:141
-#: inc/product-customize.php:132
-#: inc/product-customize.php:449
-#: inc/product-customize.php:461
+#: inc/meta-boxes.php:141 inc/product-customize.php:116
+#: inc/product-customize.php:353 inc/product-customize.php:365
 msgid "Cutting fee per sheet"
 msgstr ""
 
@@ -343,114 +322,322 @@ msgstr ""
 msgid "Remove row"
 msgstr ""
 
-#: inc/product-customize.php:61
-#: inc/product-customize.php:66
-#, php-format
+#: inc/product-customize.php:51 inc/product-customize.php:56
 msgid "%1$d–%2$d mm"
 msgstr ""
 
-#: inc/product-customize.php:62
-#: inc/product-customize.php:67
-#, php-format
+#: inc/product-customize.php:52 inc/product-customize.php:57
 msgid "≥ %d mm"
 msgstr ""
 
-#: inc/product-customize.php:63
-#: inc/product-customize.php:68
-#, php-format
+#: inc/product-customize.php:53 inc/product-customize.php:58
 msgid "≤ %d mm"
 msgstr ""
 
-#: inc/product-customize.php:81
+#: inc/product-customize.php:70
 msgid "Width (mm)"
 msgstr ""
 
-#: inc/product-customize.php:83
+#: inc/product-customize.php:72
 msgid "Decrease width"
 msgstr ""
 
-#: inc/product-customize.php:91
+#: inc/product-customize.php:79
 msgid "Increase width"
 msgstr ""
 
-#: inc/product-customize.php:95
+#: inc/product-customize.php:83
 msgid "Length (mm)"
 msgstr ""
 
-#: inc/product-customize.php:97
+#: inc/product-customize.php:85
 msgid "Decrease length"
 msgstr ""
 
-#: inc/product-customize.php:105
+#: inc/product-customize.php:92
 msgid "Increase length"
 msgstr ""
 
-#: inc/product-customize.php:112
-#, php-format
+#: inc/product-customize.php:98
 msgid "Step: %d mm"
 msgstr ""
 
-#: inc/product-customize.php:125
+#: inc/product-customize.php:109
 msgid "Your selection"
 msgstr ""
 
-#: inc/product-customize.php:128
+#: inc/product-customize.php:112
 msgid "Price per m²"
 msgstr ""
 
-#: inc/product-customize.php:136
+#: inc/product-customize.php:120
 msgid "Unit price"
 msgstr ""
 
-#: inc/product-customize.php:142
+#: inc/product-customize.php:126
 msgid "Total"
 msgstr ""
 
-#: inc/product-customize.php:347
+#: inc/product-customize.php:282
 msgid "Please enter width and length (mm)."
 msgstr ""
 
-#: inc/product-customize.php:356
-#, php-format
+#: inc/product-customize.php:289
 msgid "Minimum width is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:357
-#, php-format
+#: inc/product-customize.php:290
 msgid "Maximum width is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:358
-#, php-format
+#: inc/product-customize.php:291
 msgid "Minimum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:359
-#, php-format
+#: inc/product-customize.php:292
 msgid "Maximum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:373
-#, php-format
+#: inc/product-customize.php:302
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
-#: inc/product-customize.php:381
-#, php-format
+#: inc/product-customize.php:305
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
-#: inc/product-customize.php:445
-#: inc/product-customize.php:459
+#: inc/product-customize.php:349 inc/product-customize.php:363
 msgid "Width"
 msgstr ""
 
-#: inc/product-customize.php:446
-#: inc/product-customize.php:460
+#: inc/product-customize.php:350 inc/product-customize.php:364
 msgid "Length"
 msgstr ""
 
 #. translators: product category name for items currently on sale
+
 #: inc/sale-category-sync.php:48
 msgid "Sale"
+msgstr ""
+
+#: inc/search.php:14 template-parts/headers/header-main.php:114
+msgid "Search products…"
+msgstr ""
+
+#: inc/services.php:24
+msgctxt "Post Type General Name"
+msgid "Services"
+msgstr ""
+
+#: inc/services.php:25
+msgctxt "Post Type Singular Name"
+msgid "Service"
+msgstr ""
+
+#: inc/services.php:27
+msgid "Add New Service"
+msgstr ""
+
+#: inc/services.php:28
+msgid "Edit Service"
+msgstr ""
+
+#: inc/services.php:29
+msgid "View Service"
+msgstr ""
+
+#: inc/services.php:30
+msgid "All Services"
+msgstr ""
+
+#: inc/services.php:98
+msgid "Back to Services"
+msgstr ""
+
+#: inc/services.php:111
+msgid "Other services"
+msgstr ""
+
+#: template-parts/footer/footer.php:11
+msgid "Tehi UG"
+msgstr ""
+
+#: template-parts/footer/footer.php:12
+msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
+msgstr ""
+
+#: template-parts/footer/footer.php:13
+msgid "+49 176 65 10 6609"
+msgstr ""
+
+#: template-parts/footer/footer.php:14
+msgid "info@norhage.de"
+msgstr ""
+
+#: template-parts/footer/footer.php:18
+msgid "https://www.facebook.com/yourpage"
+msgstr ""
+
+#: template-parts/footer/footer.php:19
+msgid "https://www.instagram.com/yourpage"
+msgstr ""
+
+#: template-parts/footer/footer.php:20
+msgid "https://www.youtube.com/@yourchannel"
+msgstr ""
+
+#: template-parts/footer/footer.php:21
+msgid "https://www.linkedin.com/company/yourcompany"
+msgstr ""
+
+#: template-parts/footer/footer.php:25
+msgid "https://norhageindustri.lt/"
+msgstr ""
+
+#: template-parts/footer/footer.php:29
+msgid "Facebook"
+msgstr ""
+
+#: template-parts/footer/footer.php:30
+msgid "Instagram"
+msgstr ""
+
+#: template-parts/footer/footer.php:31
+msgid "YouTube"
+msgstr ""
+
+#: template-parts/footer/footer.php:32
+msgid "LinkedIn"
+msgstr ""
+
+#: template-parts/footer/footer.php:70
+msgid "Company Info"
+msgstr ""
+
+#: template-parts/footer/footer.php:72
+msgid "Company:"
+msgstr ""
+
+#: template-parts/footer/footer.php:73
+msgid "Address:"
+msgstr ""
+
+#: template-parts/footer/footer.php:74
+msgid "Phone:"
+msgstr ""
+
+#: template-parts/footer/footer.php:77
+msgid "Email:"
+msgstr ""
+
+#: template-parts/footer/footer.php:84
+msgid "Follow us"
+msgstr ""
+
+#: template-parts/footer/footer.php:85
+msgid "Social media"
+msgstr ""
+
+#: template-parts/footer/footer.php:113
+msgid "Shop Categories"
+msgstr ""
+
+#: template-parts/footer/footer.php:116
+msgid "Explore & Support"
+msgstr ""
+
+#: template-parts/footer/footer.php:119
+msgid "Legal & Information"
+msgstr ""
+
+#: template-parts/footer/footer.php:123
+msgid "Stay in the Loop"
+msgstr ""
+
+#: template-parts/footer/footer.php:124
+msgid "Get trends, offers and how-tos straight to your inbox."
+msgstr ""
+
+#: template-parts/footer/footer.php:127
+msgid "Email address"
+msgstr ""
+
+#: template-parts/footer/footer.php:133
+msgid "Your email address"
+msgstr ""
+
+#: template-parts/footer/footer.php:136
+msgid "Subscribe"
+msgstr ""
+
+#: template-parts/footer/footer.php:138
+msgid "By subscribing you agree to our"
+msgstr ""
+
+#: template-parts/footer/footer.php:139
+msgid "Privacy Policy"
+msgstr ""
+
+#: template-parts/footer/footer.php:151
+msgid "B2B Portal"
+msgstr ""
+
+#: template-parts/footer/footer.php:154
+msgid "Legal bottom"
+msgstr ""
+
+#: template-parts/headers/header-main.php:17
+msgid "My Account"
+msgstr ""
+
+#: template-parts/headers/header-main.php:17
+msgid "Sign in"
+msgstr ""
+
+#: template-parts/headers/header-main.php:34
+#: template-parts/headers/header-main.php:146
+msgid "Primary menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:57
+msgid "Open menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:80
+msgid "Cart"
+msgstr ""
+
+#: template-parts/headers/header-main.php:91
+msgid "View cart"
+msgstr ""
+
+#: template-parts/headers/header-main.php:99
+msgid "Switch theme"
+msgstr ""
+
+#: template-parts/headers/header-main.php:119
+msgid "Search"
+msgstr ""
+
+#: template-parts/headers/header-main.php:126
+msgid "Search suggestions"
+msgstr ""
+
+#: template-parts/headers/header-main.php:139
+msgid "Menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:141
+msgid "Close menu"
+msgstr ""
+#. Theme Name of the plugin/theme
+msgid "Astra Custom for Norhage"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Child theme for Norhage site customizations"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Daiva Reinike"
 msgstr ""

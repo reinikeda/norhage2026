@@ -1,190 +1,172 @@
 # Copyright (C) 2025 Daiva Reinike
-# This file is distributed under the GNU General Public License v2 or later.
+# This file is distributed under the same license as the Astra Custom for Norhage package.
 msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2025-11-05T08:19:28+00:00\n"
-"PO-Revision-Date: 2025-11-05 10:32+0200\n"
+"POT-Creation-Date: 2025-11-19 14:19:06+00:00\n"
+"PO-Revision-Date: 2025-11-19 16:33+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && (n%100<11 || n%100>19) ? 0 : "
+"n%10>=2 && n%10<=9 && (n%100<11 || n%100>19) ? 1 : 2);\n"
 "X-Generator: Poedit 3.8\n"
-"X-Domain: nh-theme\n"
 
-#. Theme Name of the theme
-#: style.css
-msgid "Astra Custom for Norhage"
-msgstr ""
-
-#. Description of the theme
-#: style.css
-msgid "Child theme for Norhage site customizations"
-msgstr ""
-
-#. Author of the theme
-#: style.css
-msgid "Daiva Reinike"
-msgstr ""
-
-#: functions.php:23
+#: functions.php:25
 msgid "Primary Menu"
-msgstr ""
+msgstr "Pagrindinis meniu"
 
-#: functions.php:24
+#: functions.php:26
 msgid "Secondary Menu"
-msgstr ""
+msgstr "Antrinis meniu"
 
-#. translators: Post type general name
-#: functions.php:35
-msgctxt "Post Type General Name"
+#: functions.php:27
+msgid "Footer — Explore"
+msgstr "Poraštė — naršymas"
+
+#: functions.php:28
+msgid "Footer — Bottom Bar"
+msgstr "Poraštė — apatinė juosta"
+
+#: functions.php:111 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr "Paslaugos"
 
-#. translators: Post type singular name
-#: functions.php:37
-msgctxt "Post Type Singular Name"
-msgid "Service"
-msgstr "Paslauga"
+#: functions.php:112 inc/blog.php:25 inc/hero.php:12
+msgid "Blog"
+msgstr "Tinklaraštis"
 
-#: functions.php:38
-msgid "Services"
-msgstr "Paslaugos"
+#: functions.php:113
+msgid "Contact Us"
+msgstr "Susisiekite su mumis"
 
-#: functions.php:39
-msgid "Service"
-msgstr "Paslauga"
+#: functions.php:118
+msgid "Utility bar"
+msgstr "Pagalbinė juosta"
 
-#: functions.php:40
-msgid "Add New"
-msgstr ""
-
-#. translators: %s: singular post type name
-#: functions.php:42
-msgid "Add New Service"
-msgstr ""
-
-#: functions.php:43
-msgid "New Service"
-msgstr ""
-
-#: functions.php:44
-msgid "Edit Service"
-msgstr ""
-
-#: functions.php:45
-msgid "View Service"
-msgstr ""
-
-#: functions.php:46
-msgid "All Services"
-msgstr ""
-
-#: functions.php:47
-msgid "Search Services"
-msgstr ""
-
-#: functions.php:48
-msgid "No services found."
-msgstr ""
-
-#: functions.php:49
-msgid "No services found in Trash."
-msgstr ""
-
-#: functions.php:139
-msgid "Shop by Category"
-msgstr "Apsipirkti pagal kategoriją"
-
-#: functions.php:183
-msgid "Info Menu"
-msgstr ""
-
-#: functions.php:191
+#: functions.php:129
 msgid "FAQ"
 msgstr "DUK"
 
-#: functions.php:220
-msgid "Sign in / My Account"
-msgstr "Prisijungti / Mano paskyra"
+#: functions.php:192
+msgid "Shop by Category"
+msgstr "Pirkti pagal kategoriją"
 
-#: functions.php:226
-msgid "Cart"
-msgstr "Krepšelis"
+#: functions.php:239 functions.php:255
+msgid "Customize"
+msgstr "Tinkinti"
 
-#: functions.php:237
-msgid "Switch to dark mode"
-msgstr ""
+#: functions.php:240
+msgid "Customize “%s”"
+msgstr "Tinkinti „%s“"
 
-#: functions.php:241
-msgid "Toggle theme"
-msgstr ""
-
-#: functions.php:255 inc/search.php:14
-msgid "Search products…"
-msgstr "Ieškoti produktų…"
-
-#: functions.php:258
-msgid "Search"
-msgstr "Paieška"
-
-#: functions.php:262
-msgid "Toggle menu"
-msgstr ""
-
-#: functions.php:323
+#: functions.php:274
 msgid "Secondary product title"
-msgstr ""
+msgstr "Antrinis prekės pavadinimas"
 
-#: functions.php:384
-msgid "All"
-msgstr "Visi"
+#: functions.php:303
+msgid "Footer — Shop Categories"
+msgstr "Poraštė — parduotuvės kategorijos"
 
-#: inc/basket-customize.php:226
+#: functions.php:304
+msgid "Footer — Secondary (Services, Blog, Contact)"
+msgstr "Poraštė — antrinė (paslaugos, tinklaraštis, kontaktai)"
+
+#: functions.php:305
+msgid "Footer — Legal/Policies"
+msgstr "Poraštė — teisinė informacija / taisyklės"
+
+#: inc/basket-customize.php:174
 msgid "Pickup hours: Mon–Fri 8:30–16:30"
-msgstr "Atsiėmimo laikas: pirmadieniais–penktadieniais 8:30–16:30"
+msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
 
-#: inc/basket-customize.php:227
+#: inc/basket-customize.php:175
 msgid "You’ll receive an SMS/email."
-msgstr "Gausite SMS žinutę / el. laišką."
+msgstr "Gausite SMS žinutę ir (arba) el. laišką."
 
-#: inc/basket-customize.php:334
-#, php-format
+#. translators: 1: postcode, 2: country name
+#: inc/basket-customize.php:282
 msgid "%1$s, %2$s"
-msgstr ""
+msgstr "%1$s, %2$s"
 
-#: inc/basket-customize.php:362
+#: inc/basket-customize.php:310
 msgid "Shipping to"
 msgstr "Pristatymas į"
 
-#: inc/basket-customize.php:412 inc/basket-customize.php:413
+#: inc/basket-customize.php:360 inc/basket-customize.php:361
 msgid "Total weight"
 msgstr "Bendras svoris"
 
+#: inc/blog.php:12
+msgid "All"
+msgstr "Visi"
+
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
+#: inc/blog.php:30 inc/blog.php:31
+msgid "Blog: %s"
+msgstr "Tinklaraštis: %s"
+
+#: inc/blog.php:62 inc/blog.php:70 inc/services.php:81 inc/services.php:89
+msgid "Read More »"
+msgstr "Skaityti daugiau »"
+
+#: inc/blog.php:81
+msgid "Back to Blog"
+msgstr "Atgal į tinklaraštį"
+
+#: inc/blog.php:87
+msgid "Back to %s"
+msgstr "Atgal į %s"
+
+#: inc/blog.php:107
+msgid "Related posts"
+msgstr "Susiję įrašai"
+
+#. translators: 1: quantity, 2: product name
 #: inc/bundle-box.php:70
-#, php-format
 msgid "%1$d × “%2$s”"
-msgstr ""
+msgstr "%1$d × „%2$s“"
+
+#. translators: %d: number of items
+#: inc/bundle-box.php:81
+msgid "%d item has been added to your basket"
+msgid_plural "%d items have been added to your basket"
+msgstr[0] "Į krepšelį pridėta %d prekė"
+msgstr[1] "Į krepšelį pridėtos %d prekės"
+msgstr[2] "Į krepšelį pridėta %d prekių"
+
+#. translators: %d: number of distinct products
+#: inc/bundle-box.php:86
+msgid "(%d product):"
+msgid_plural "(%d products):"
+msgstr[0] "(%d prekė):"
+msgstr[1] "(%d prekės):"
+msgstr[2] "(%d prekių):"
+
+#: inc/bundle-box.php:94
+msgid "View basket"
+msgstr "Peržiūrėti krepšelį"
 
 #: inc/bundle-box.php:127
 msgid "Buy a complete set"
-msgstr "Pirkite komplektą"
+msgstr "Pirkti pilną komplektą"
 
 #: inc/bundle-box.php:129
 msgid "Complete set add-ons"
-msgstr ""
+msgstr "Papildomos prekės komplektui"
 
 #: inc/bundle-box.php:137
 msgid "Image"
-msgstr "Vaizdas"
+msgstr "Paveikslėlis"
 
 #: inc/bundle-box.php:138
 msgid "Product"
-msgstr "Produktas"
+msgstr "Prekė"
 
 #: inc/bundle-box.php:139
 msgid "Qty"
@@ -196,29 +178,28 @@ msgstr "Kaina"
 
 #: inc/bundle-box.php:178
 msgid "In stock"
-msgstr "Sandėlyje"
+msgstr "Turime sandėlyje"
 
 #: inc/bundle-box.php:179
 msgid "Out of stock"
-msgstr "Nėra sandėlyje"
+msgstr "Šiuo metu neturime"
 
 #. translators: %d: maximum quantity per bundle item
 #: inc/bundle-box.php:183
-#, php-format
 msgid "Max per bundle: %d"
-msgstr "Maks. viename pakete: %d"
+msgstr "Maks. viename rinkinyje: %d"
 
 #: inc/bundle-box.php:188
 msgid "Minus Quantity"
-msgstr ""
+msgstr "Mažinti kiekį"
 
 #: inc/bundle-box.php:190
 msgid "Quantity"
-msgstr ""
+msgstr "Kiekis"
 
 #: inc/bundle-box.php:195
 msgid "Plus Quantity"
-msgstr ""
+msgstr "Didinti kiekį"
 
 #. translators: label before the computed bundle total price
 #: inc/bundle-box.php:205
@@ -227,7 +208,11 @@ msgstr "Iš viso:"
 
 #: inc/bundle-box.php:206
 msgid "Add all to basket"
-msgstr "Įdėti viską į krepšelį"
+msgstr "Visas prekes į krepšelį"
+
+#: inc/hero.php:18
+msgid "Search results for “%s”"
+msgstr "Paieškos rezultatai: „%s“"
 
 #: inc/meta-boxes.php:9 inc/meta-boxes.php:274
 msgid "Downloads"
@@ -239,52 +224,52 @@ msgstr "Vaizdo įrašas"
 
 #: inc/meta-boxes.php:27
 msgid "Custom Cutting"
-msgstr "Individualus pjovimas"
+msgstr "Pjovimas pagal išmatavimus"
 
 #: inc/meta-boxes.php:43
 msgid "Label"
-msgstr ""
+msgstr "Pavadinimas"
 
 #: inc/meta-boxes.php:44
 msgid "PDF URL"
-msgstr ""
+msgstr "PDF nuoroda"
 
 #: inc/meta-boxes.php:57 inc/meta-boxes.php:72
 msgid "Remove download row"
-msgstr ""
+msgstr "Pašalinti atsisiuntimo eilutę"
 
 #: inc/meta-boxes.php:62
 msgid "Add Download"
-msgstr ""
+msgstr "Pridėti atsisiuntimą"
 
 #: inc/meta-boxes.php:104
 msgid "YouTube / Vimeo URL"
-msgstr ""
+msgstr "„YouTube“ / „Vimeo“ nuoroda"
 
 #: inc/meta-boxes.php:136
 msgid "Enable custom cutting"
-msgstr ""
+msgstr "Įjungti pjovimą pagal išmatavimus"
 
-#: inc/meta-boxes.php:141 inc/product-customize.php:132
-#: inc/product-customize.php:449 inc/product-customize.php:461
+#: inc/meta-boxes.php:141 inc/product-customize.php:116
+#: inc/product-customize.php:353 inc/product-customize.php:365
 msgid "Cutting fee per sheet"
-msgstr "Pjovimo mokestis už lapą"
+msgstr "Pjovimo mokestis už lakštą"
 
 #: inc/meta-boxes.php:146
 msgid "Min width (mm)"
-msgstr "Minimalus plotis (mm)"
+msgstr "Min. plotis (mm)"
 
 #: inc/meta-boxes.php:150
 msgid "Max width (mm)"
-msgstr "Maksimalus plotis (mm)"
+msgstr "Maks. plotis (mm)"
 
 #: inc/meta-boxes.php:155
 msgid "Min length (mm)"
-msgstr "Minimalus ilgis (mm)"
+msgstr "Min. ilgis (mm)"
 
 #: inc/meta-boxes.php:159
 msgid "Max length (mm)"
-msgstr "Maksimalus ilgis (mm)"
+msgstr "Maks. ilgis (mm)"
 
 #: inc/meta-boxes.php:164
 msgid "Cutting step (mm)"
@@ -292,159 +277,377 @@ msgstr "Pjovimo žingsnis (mm)"
 
 #: inc/meta-boxes.php:169
 msgid "Weight per m² (kg)"
-msgstr "Svoris vienam m² (kg)"
+msgstr "Svoris m² (kg)"
 
 #: inc/meta-boxes.php:174
 msgid ""
 "Use this to enable custom cutting on a Simple product. Standard-size "
 "variants are best kept on a separate Variable product."
 msgstr ""
+"Naudokite tai, jei norite įjungti pjovimą pagal išmatavimus paprastai "
+"prekei. Standartinių matmenų variantus geriausia laikyti atskiroje "
+"kintamoje prekėje."
 
 #: inc/meta-boxes.php:354
 msgid "Watch video"
-msgstr ""
+msgstr "Žiūrėti vaizdo įrašą"
 
 #: inc/meta-boxes.php:369
 msgid "Product extras"
-msgstr ""
+msgstr "Papildomos prekės"
 
 #: inc/meta-boxes.php:383
 msgid "Product extra's"
-msgstr ""
+msgstr "Papildomos prekės"
 
 #: inc/meta-boxes.php:384
 msgid ""
 "Select one or more products that can be added to this product as add-ons. "
 "Only simple products or product-variants are allowed."
 msgstr ""
+"Pasirinkite vieną ar daugiau prekių, kurias galima pridėti prie šios prekės "
+"kaip priedus. Leidžiamos tik paprastos prekės ir jų variacijos."
 
 #: inc/meta-boxes.php:388
 msgid "Product *"
-msgstr ""
+msgstr "Prekė *"
 
 #: inc/meta-boxes.php:389
 msgid "Maximum quantity"
-msgstr ""
+msgstr "Didžiausias kiekis"
 
 #: inc/meta-boxes.php:405
 msgid "Add product as add-on"
-msgstr ""
+msgstr "Pridėti prekę kaip priedą"
 
 #: inc/meta-boxes.php:457
 msgid "Drag to reorder"
-msgstr ""
+msgstr "Vilkite, kad pakeistumėte eiliškumą"
 
 #: inc/meta-boxes.php:461
 msgid "Search products & variations…"
-msgstr ""
+msgstr "Ieškoti prekių ir variacijų…"
 
 #: inc/meta-boxes.php:476
 msgid "Remove row"
-msgstr ""
+msgstr "Pašalinti eilutę"
 
-#: inc/product-customize.php:61 inc/product-customize.php:66
-#, php-format
+#: inc/product-customize.php:51 inc/product-customize.php:56
 msgid "%1$d–%2$d mm"
-msgstr ""
+msgstr "%1$d–%2$d mm"
 
-#: inc/product-customize.php:62 inc/product-customize.php:67
-#, php-format
+#: inc/product-customize.php:52 inc/product-customize.php:57
 msgid "≥ %d mm"
-msgstr ""
+msgstr "≥ %d mm"
 
-#: inc/product-customize.php:63 inc/product-customize.php:68
-#, php-format
+#: inc/product-customize.php:53 inc/product-customize.php:58
 msgid "≤ %d mm"
-msgstr ""
+msgstr "≤ %d mm"
 
-#: inc/product-customize.php:81
+#: inc/product-customize.php:70
 msgid "Width (mm)"
 msgstr "Plotis (mm)"
 
-#: inc/product-customize.php:83
+#: inc/product-customize.php:72
 msgid "Decrease width"
-msgstr ""
+msgstr "Mažinti plotį"
 
-#: inc/product-customize.php:91
+#: inc/product-customize.php:79
 msgid "Increase width"
-msgstr ""
+msgstr "Didinti plotį"
 
-#: inc/product-customize.php:95
+#: inc/product-customize.php:83
 msgid "Length (mm)"
 msgstr "Ilgis (mm)"
 
-#: inc/product-customize.php:97
+#: inc/product-customize.php:85
 msgid "Decrease length"
-msgstr ""
+msgstr "Mažinti ilgį"
 
-#: inc/product-customize.php:105
+#: inc/product-customize.php:92
 msgid "Increase length"
-msgstr ""
+msgstr "Didinti ilgį"
 
-#: inc/product-customize.php:112
-#, php-format
+#: inc/product-customize.php:98
 msgid "Step: %d mm"
 msgstr "Žingsnis: %d mm"
 
-#: inc/product-customize.php:125
+#: inc/product-customize.php:109
 msgid "Your selection"
 msgstr "Jūsų pasirinkimas"
 
-#: inc/product-customize.php:128
+#: inc/product-customize.php:112
 msgid "Price per m²"
 msgstr "Kaina už m²"
 
-#: inc/product-customize.php:136
+#: inc/product-customize.php:120
 msgid "Unit price"
 msgstr "Vieneto kaina"
 
-#: inc/product-customize.php:142
+#: inc/product-customize.php:126
 msgid "Total"
 msgstr "Iš viso"
 
-#: inc/product-customize.php:347
+#: inc/product-customize.php:282
 msgid "Please enter width and length (mm)."
-msgstr ""
+msgstr "Įveskite plotį ir ilgį (mm)."
 
-#: inc/product-customize.php:356
-#, php-format
+#: inc/product-customize.php:289
 msgid "Minimum width is %d mm."
-msgstr ""
+msgstr "Mažiausias plotis – %d mm."
 
-#: inc/product-customize.php:357
-#, php-format
+#: inc/product-customize.php:290
 msgid "Maximum width is %d mm."
-msgstr ""
+msgstr "Didžiausias plotis – %d mm."
 
-#: inc/product-customize.php:358
-#, php-format
+#: inc/product-customize.php:291
 msgid "Minimum length is %d mm."
-msgstr ""
+msgstr "Mažiausias ilgis – %d mm."
 
-#: inc/product-customize.php:359
-#, php-format
+#: inc/product-customize.php:292
 msgid "Maximum length is %d mm."
-msgstr ""
+msgstr "Didžiausias ilgis – %d mm."
 
-#: inc/product-customize.php:373
-#, php-format
+#: inc/product-customize.php:302
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
-msgstr ""
+msgstr "Plotis turi atitikti %1$d mm žingsnį, pradedant nuo %2$d mm."
 
-#: inc/product-customize.php:381
-#, php-format
+#: inc/product-customize.php:305
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
-msgstr ""
+msgstr "Ilgis turi atitikti %1$d mm žingsnį, pradedant nuo %2$d mm."
 
-#: inc/product-customize.php:445 inc/product-customize.php:459
+#: inc/product-customize.php:349 inc/product-customize.php:363
 msgid "Width"
-msgstr ""
+msgstr "Plotis"
 
-#: inc/product-customize.php:446 inc/product-customize.php:460
+#: inc/product-customize.php:350 inc/product-customize.php:364
 msgid "Length"
-msgstr ""
+msgstr "Ilgis"
 
 #. translators: product category name for items currently on sale
 #: inc/sale-category-sync.php:48
 msgid "Sale"
-msgstr ""
+msgstr "Išpardavimas"
+
+#: inc/search.php:14 template-parts/headers/header-main.php:114
+msgid "Search products…"
+msgstr "Ieškoti prekių…"
+
+#: inc/services.php:24
+msgctxt "Post Type General Name"
+msgid "Services"
+msgstr "Paslaugos"
+
+#: inc/services.php:25
+msgctxt "Post Type Singular Name"
+msgid "Service"
+msgstr "Paslauga"
+
+#: inc/services.php:27
+msgid "Add New Service"
+msgstr "Pridėti naują paslaugą"
+
+#: inc/services.php:28
+msgid "Edit Service"
+msgstr "Redaguoti paslaugą"
+
+#: inc/services.php:29
+msgid "View Service"
+msgstr "Peržiūrėti paslaugą"
+
+#: inc/services.php:30
+msgid "All Services"
+msgstr "Visos paslaugos"
+
+#: inc/services.php:98
+msgid "Back to Services"
+msgstr "Atgal į paslaugas"
+
+#: inc/services.php:111
+msgid "Other services"
+msgstr "Kitos paslaugos"
+
+#: template-parts/footer/footer.php:11
+msgid "Tehi UG"
+msgstr "UAB Tehis"
+
+#: template-parts/footer/footer.php:12
+msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
+msgstr "Tiekėjų g. 19E, 97123 Kretinga, Lietuva"
+
+#: template-parts/footer/footer.php:13
+msgid "+49 176 65 10 6609"
+msgstr "+370 671 20 024"
+
+#: template-parts/footer/footer.php:14
+msgid "info@norhage.de"
+msgstr "info@norhage.lt"
+
+#: template-parts/footer/footer.php:18
+msgid "https://www.facebook.com/yourpage"
+msgstr "https://www.facebook.com/yourpage"
+
+#: template-parts/footer/footer.php:19
+msgid "https://www.instagram.com/yourpage"
+msgstr "https://www.instagram.com/yourpage"
+
+#: template-parts/footer/footer.php:20
+msgid "https://www.youtube.com/@yourchannel"
+msgstr "https://www.youtube.com/@yourchannel"
+
+#: template-parts/footer/footer.php:21
+msgid "https://www.linkedin.com/company/yourcompany"
+msgstr "https://www.linkedin.com/company/yourcompany"
+
+#: template-parts/footer/footer.php:25
+msgid "https://norhageindustri.lt/"
+msgstr "https://norhageindustri.lt/"
+
+#: template-parts/footer/footer.php:29
+msgid "Facebook"
+msgstr "Facebook"
+
+#: template-parts/footer/footer.php:30
+msgid "Instagram"
+msgstr "Instagram"
+
+#: template-parts/footer/footer.php:31
+msgid "YouTube"
+msgstr "YouTube"
+
+#: template-parts/footer/footer.php:32
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: template-parts/footer/footer.php:70
+msgid "Company Info"
+msgstr "Įmonės informacija"
+
+#: template-parts/footer/footer.php:72
+msgid "Company:"
+msgstr "Įmonė:"
+
+#: template-parts/footer/footer.php:73
+msgid "Address:"
+msgstr "Adresas:"
+
+#: template-parts/footer/footer.php:74
+msgid "Phone:"
+msgstr "Telefonas:"
+
+#: template-parts/footer/footer.php:77
+msgid "Email:"
+msgstr "El. paštas:"
+
+#: template-parts/footer/footer.php:84
+msgid "Follow us"
+msgstr "Sekite mus"
+
+#: template-parts/footer/footer.php:85
+msgid "Social media"
+msgstr "Socialiniai tinklai"
+
+#: template-parts/footer/footer.php:113
+msgid "Shop Categories"
+msgstr "Parduotuvės kategorijos"
+
+#: template-parts/footer/footer.php:116
+msgid "Explore & Support"
+msgstr "Naršymas ir pagalba"
+
+#: template-parts/footer/footer.php:119
+msgid "Legal & Information"
+msgstr "Teisinė informacija"
+
+#: template-parts/footer/footer.php:123
+msgid "Stay in the Loop"
+msgstr "Prenumeruokite naujienas"
+
+#: template-parts/footer/footer.php:124
+msgid "Get trends, offers and how-tos straight to your inbox."
+msgstr "Gaukite naujienas, pasiūlymus ir patarimus tiesiai į el. paštą."
+
+#: template-parts/footer/footer.php:127
+msgid "Email address"
+msgstr "El. pašto adresas"
+
+#: template-parts/footer/footer.php:133
+msgid "Your email address"
+msgstr "Jūsų el. pašto adresas"
+
+#: template-parts/footer/footer.php:136
+msgid "Subscribe"
+msgstr "Prenumeruoti"
+
+#: template-parts/footer/footer.php:138
+msgid "By subscribing you agree to our"
+msgstr "Prenumeruodami sutinkate su mūsų"
+
+#: template-parts/footer/footer.php:139
+msgid "Privacy Policy"
+msgstr "Privatumo politika"
+
+#: template-parts/footer/footer.php:151
+msgid "B2B Portal"
+msgstr "B2B portalas"
+
+#: template-parts/footer/footer.php:154
+msgid "Legal bottom"
+msgstr "Apatinė teisinė juosta"
+
+#: template-parts/headers/header-main.php:17
+msgid "My Account"
+msgstr "Mano paskyra"
+
+#: template-parts/headers/header-main.php:17
+msgid "Sign in"
+msgstr "Prisijungti"
+
+#: template-parts/headers/header-main.php:34
+#: template-parts/headers/header-main.php:146
+msgid "Primary menu"
+msgstr "Pagrindinis meniu"
+
+#: template-parts/headers/header-main.php:57
+msgid "Open menu"
+msgstr "Atidaryti meniu"
+
+#: template-parts/headers/header-main.php:80
+msgid "Cart"
+msgstr "Krepšelis"
+
+#: template-parts/headers/header-main.php:91
+msgid "View cart"
+msgstr "Peržiūrėti krepšelį"
+
+#: template-parts/headers/header-main.php:99
+msgid "Switch theme"
+msgstr "Pakeisti temą"
+
+#: template-parts/headers/header-main.php:119
+msgid "Search"
+msgstr "Paieška"
+
+#: template-parts/headers/header-main.php:126
+msgid "Search suggestions"
+msgstr "Paieškos pasiūlymai"
+
+#: template-parts/headers/header-main.php:139
+msgid "Menu"
+msgstr "Meniu"
+
+#: template-parts/headers/header-main.php:141
+msgid "Close menu"
+msgstr "Užverti meniu"
+
+#. Theme Name of the plugin/theme
+msgid "Astra Custom for Norhage"
+msgstr "Astra Custom for Norhage"
+
+#. Description of the plugin/theme
+msgid "Child theme for Norhage site customizations"
+msgstr "Dukterinė tema Norhage svetainės pritaikymams"
+
+#. Author of the plugin/theme
+msgid "Daiva Reinike"
+msgstr "Daiva Reinike"
