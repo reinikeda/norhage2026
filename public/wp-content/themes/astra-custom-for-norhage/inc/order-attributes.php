@@ -1,86 +1,139 @@
 <?php
 /**
- * Order / email attribute display
- *
- * Shows the same attribute list you see in the cart
- * under each line item on:
- * - Order received ("thank you") page
- * - My Account → View order
- * - All HTML WooCommerce emails
- * - Admin single order screen
- *
- * Uses nh_render_dl_variation() and nh_is_custom_cut_item()
- * defined in basket-customize.php.
+ * Order / email attributes display
+ * - Show product attributes under the product name (same idea as cart).
+ * - Works for simple + variable products.
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
- * Build label => value pairs for an order item.
- *
- * 1) First tries attributes actually saved on the order item
- *    (variation items: attribute_pa_xxx etc.).
- * 2) If nothing is found, falls back to the product's own attributes
- *    (simple products with attributes).
+ * Build attribute label => value pairs for an order line item.
  */
-function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ) : array {
+function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	$pairs   = [];
 	$product = $item->get_product();
 
-	if ( ! $product instanceof WC_Product ) {
+	if ( ! $product ) {
 		return $pairs;
 	}
 
-	// --- 1) Attributes saved on the order item (variations etc.) ---
-	foreach ( $item->get_meta_data() as $m ) {
-		$key = $m->key ?? '';
-		if ( strpos( $key, 'attribute_' ) === 0 ) {
-			$attr_slug = substr( $key, strlen( 'attribute_' ) );
-			$label     = wc_attribute_label( $attr_slug, $product );
-			$val       = wc_clean( $m->value );
+	/* ---------------------------------------------------------
+	 * CASE A: variation product → show ONLY attributes that are
+	 *         flagged "Used for variations" on the parent.
+	 * -------------------------------------------------------*/
+	if ( $product->is_type( 'variation' ) ) {
+
+		// Chosen attribute values for this variation: [ 'pa_length' => '6-m', ... ]
+		$var_attrs = $product->get_attributes();
+
+		if ( empty( $var_attrs ) ) {
+			return $pairs;
+		}
+
+		$parent         = wc_get_product( $product->get_parent_id() );
+		$parent_attrs   = $parent ? $parent->get_attributes() : [];
+		$product_for_lb = $parent ?: $product;
+
+		foreach ( $var_attrs as $attr_slug => $val ) {
+			if ( $val === '' ) {
+				continue;
+			}
+
+			// Is this attribute actually used for variations on the parent?
+			$is_variation_attr = true;
+			if ( isset( $parent_attrs[ $attr_slug ] ) && $parent_attrs[ $attr_slug ] instanceof WC_Product_Attribute ) {
+				$is_variation_attr = (bool) $parent_attrs[ $attr_slug ]->get_variation();
+			}
+
+			if ( ! $is_variation_attr ) {
+				// e.g. Colour/Material/Thickness that should not appear.
+				continue;
+			}
+
+			$label = wc_attribute_label( $attr_slug, $product_for_lb );
+			if ( $label === '' ) {
+				continue;
+			}
+
+			$val = wc_clean( $val );
 
 			if ( taxonomy_exists( $attr_slug ) ) {
 				$term = get_term_by( 'slug', $val, $attr_slug );
 				if ( $term && ! is_wp_error( $term ) ) {
 					$val = $term->name;
+				} else {
+					$val = wc_clean( str_replace( '-', ' ', $val ) );
 				}
 			}
 
-			if ( $label && $val !== '' ) {
+			if ( $val !== '' ) {
 				$pairs[ $label ] = $val;
 			}
 		}
+
+		return $pairs;
 	}
 
-	// --- 2) Fallback: live attributes from the product (simple products etc.) ---
-	if ( empty( $pairs ) ) {
-		$attributes = $product->get_attributes();
+	/* ---------------------------------------------------------
+	 * CASE B: simple product → show all product attributes
+	 *         (works for greenhouses etc.)
+	 * -------------------------------------------------------*/
+	$attributes = $product->get_attributes();
 
-		foreach ( $attributes as $attr ) {
-			if ( ! $attr ) {
-				continue;
-			}
+	if ( empty( $attributes ) ) {
+		return $pairs;
+	}
 
-			$name   = $attr->get_name(); // pa_length or custom name
-			$label  = wc_attribute_label( $name, $product );
-			$values = $attr->get_options();
+	foreach ( $attributes as $attr_key => $attr ) {
+		$attr_name = '';
+		$options   = [];
+		$is_tax    = false;
 
-			if ( $attr->is_taxonomy() ) {
-				$names = [];
-				foreach ( $values as $term_id ) {
-					$term = get_term( $term_id );
-					if ( $term && ! is_wp_error( $term ) ) {
-						$names[] = $term->name;
-					}
-				}
-				$value = implode( ', ', $names );
+		// New-style: WC_Product_Attribute object.
+		if ( $attr instanceof WC_Product_Attribute ) {
+			$attr_name = $attr->get_name();
+			$options   = $attr->get_options();
+			$is_tax    = $attr->is_taxonomy();
+		} else {
+			// Old-style / edge cases: array or string.
+			$attr_name = is_string( $attr_key ) ? $attr_key : '';
+			if ( is_array( $attr ) && isset( $attr['options'] ) ) {
+				$options = (array) $attr['options'];
 			} else {
-				$value = implode( ', ', $values );
+				$options = is_array( $attr ) ? $attr : (array) $attr;
 			}
+			$is_tax = $attr_name && taxonomy_exists( $attr_name );
+		}
 
-			if ( $label && $value !== '' ) {
-				$pairs[ $label ] = $value;
+		if ( ! $attr_name ) {
+			continue;
+		}
+
+		$label = wc_attribute_label( $attr_name, $product );
+
+		if ( $is_tax ) {
+			$names = [];
+			foreach ( $options as $term_id ) {
+				// Can be term ID or slug depending on how Woo saved it.
+				if ( is_numeric( $term_id ) ) {
+					$term = get_term( (int) $term_id );
+				} else {
+					$term = get_term_by( 'slug', $term_id, $attr_name );
+				}
+				if ( $term && ! is_wp_error( $term ) ) {
+					$names[] = $term->name;
+				}
 			}
+			$value = implode( ', ', $names );
+		} else {
+			$value = implode( ', ', array_map( 'wc_clean', $options ) );
+		}
+
+		if ( $label && $value !== '' ) {
+			$pairs[ $label ] = $value;
 		}
 	}
 
@@ -88,54 +141,75 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ) : array {
 }
 
 /**
- * Remove Woo's own attribute meta rows so we don't get duplicates.
+ * Render pairs as <dl class="variation">…</dl>.
+ */
+function nh_order_render_dl_variation( array $pairs ): string {
+	if ( empty( $pairs ) ) {
+		return '';
+	}
+
+	$html = '<dl class="variation">';
+
+	foreach ( $pairs as $label => $val ) {
+		$cls   = 'variation-' . preg_replace( '/\s+/', '', ucwords( wp_strip_all_tags( $label ) ) );
+		$html .= '<dt class="' . esc_attr( $cls ) . '">' . esc_html( $label ) . ':</dt>';
+		$html .= '<dd class="' . esc_attr( $cls ) . '"><p>' . esc_html( $val ) . '</p></dd>';
+	}
+
+	$html .= '</dl>';
+
+	return $html;
+}
+
+/**
+ * For variations: hide Woo's default attribute meta (we print our own block).
  */
 add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
-
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	// Custom-cut items handle their own meta elsewhere.
-	if ( function_exists( 'nh_is_custom_cut_item' ) && nh_is_custom_cut_item( $item ) ) {
-		return $formatted_meta;
-	}
-
 	$product = $item->get_product();
-	if ( ! $product instanceof WC_Product ) {
-		return $formatted_meta;
-	}
 
-	// Collect attribute labels for this product.
-	$attr_labels = [];
-	foreach ( $product->get_attributes() as $attr_key => $attr_obj ) {
-		$attr_name   = is_string( $attr_key ) ? $attr_key : $attr_obj->get_name();
-		$attr_labels[] = wc_attribute_label( $attr_name, $product );
-	}
+	if ( $product && $product->is_type( 'variation' ) ) {
+		$parent = wc_get_product( $product->get_parent_id() );
+		if ( $parent ) {
+			$attr_labels = [];
 
-	if ( empty( $attr_labels ) ) {
-		return $formatted_meta;
-	}
+			foreach ( $parent->get_attributes() as $key => $attr ) {
+				if ( $attr instanceof WC_Product_Attribute ) {
+					$name = $attr->get_name();
+				} else {
+					$name = is_string( $key ) ? $key : '';
+				}
+				if ( ! $name ) {
+					continue;
+				}
+				$attr_labels[] = wc_attribute_label( $name, $parent );
+			}
 
-	$filtered = [];
-	foreach ( $formatted_meta as $fm ) {
-		// Skip meta rows that are just Woo's own attribute output.
-		if ( in_array( $fm->display_key, $attr_labels, true ) ) {
-			continue;
+			$filtered = [];
+			foreach ( $formatted_meta as $fm ) {
+				if ( ! in_array( $fm->display_key, $attr_labels, true ) ) {
+					$filtered[] = $fm;
+				}
+			}
+
+			return $filtered;
 		}
-		$filtered[] = $fm;
 	}
 
-	return $filtered;
-
+	return $formatted_meta;
 }, 10, 2 );
 
 /**
- * Print `<dl class="variation">` with attributes under the line item name.
+ * FRONTEND + EMAILS:
+ * Print attribute list under product name in:
+ * - thank-you page
+ * - My Account → View order
+ * - emails
  */
 add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $order, $plain_text ) {
-
-	// Only HTML (frontend + HTML emails)
 	if ( $plain_text ) {
 		return;
 	}
@@ -144,26 +218,30 @@ add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $or
 		return;
 	}
 
-	// Custom-cut line items already output their own block.
-	if ( function_exists( 'nh_is_custom_cut_item' ) && nh_is_custom_cut_item( $item ) ) {
+	$pairs = nh_order_item_attribute_pairs( $item );
+
+	if ( ! empty( $pairs ) ) {
+		echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+}, 10, 4 );
+
+/**
+ * ADMIN ORDER SCREEN:
+ * Print same attribute list under product name in the order items table.
+ */
+add_action( 'woocommerce_before_order_itemmeta', function( $item_id, $item, $_product ) {
+
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return;
 	}
 
 	$pairs = nh_order_item_attribute_pairs( $item );
-	if ( empty( $pairs ) ) {
-		return;
-	}
 
-	// Use the same renderer as cart/checkout if available.
-	if ( function_exists( 'nh_render_dl_variation' ) ) {
-		echo nh_render_dl_variation( $pairs );
-	} else {
-		// Safety fallback – still output something if the helper is missing.
-		echo '<dl class="variation">';
-		foreach ( $pairs as $label => $val ) {
-			echo '<dt>' . esc_html( $label ) . ':</dt><dd><p>' . esc_html( $val ) . '</p></dd>';
-		}
-		echo '</dl>';
+	if ( ! empty( $pairs ) ) {
+		echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
-
-}, 10, 4 );
+}, 10, 3 );
