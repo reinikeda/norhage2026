@@ -1,0 +1,121 @@
+/* ============================================
+   Feature Box — Light Mode
+   ============================================ */
+
+/* Feature box as a card (same visual family as bundle) */
+.nhf-box.nhf--summary-card {
+  margin-top: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #cde8e1;
+  border-radius: 0.25rem;
+  background: #fff;
+  padding: 14px 16px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+}
+
+/* Optional header */
+.nhf-box .nhf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.nhf-box .nhf-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+/* Items grid */
+.nhf-box .nhf-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nhf-box .nhf-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.nhf-box .nhf-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.03);
+}
+
+.nhf-box .nhf-icon svg,
+.nhf-box .nhf-icon img {
+  max-width: 20px;
+  max-height: 20px;
+  display: block;
+}
+
+.nhf-box .nhf-label {
+  font-size: 14px;
+  line-height: 1.3;
+  color: #222;
+}
+
+/* Mobile */
+@media (max-width: 575px) {
+  .nhf-box .nhf-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   Feature Box — Dark Mode (flat, like selections/bundle)
+   ============================================ */
+
+body.dark-mode .nhf-box.nhf--summary-card{
+  background: var(--dm-bg);                  /* same as site background */
+  border: 1px solid var(--dm-border);
+  border-radius: 0.25rem;
+  box-shadow: none;                          /* no depth */
+  color: var(--dm-text);
+}
+
+/* Heading */
+body.dark-mode .nhf-box .nhf-title{
+  color: var(--dm-text);
+}
+
+/* Text */
+body.dark-mode .nhf-box .nhf-label{
+  color: var(--dm-text);
+}
+
+/* Icon chip */
+body.dark-mode .nhf-box .nhf-icon{
+  background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%);
+  color: var(--dm-primary);
+}
+
+/* Optional: if icons are transparent PNG/SVG and need a plate */
+body.dark-mode .nhf-box .nhf-icon img,
+body.dark-mode .nhf-box .nhf-icon svg{
+  background: var(--dm-media);
+  border: none;
+  display: block;
+}
+
+/* Hover accent (only if interactive) */
+body.dark-mode .nhf-box .nhf-icon:hover{
+  background: color-mix(in srgb, var(--dm-bg) 80%, var(--dm-forest) 20%);
+  color: #fff;
+  transition: background .15s ease, color .15s ease;
+}
+
+/* Links inside the box */
+body.dark-mode .nhf-box a{ color: var(--dm-primary); }
+body.dark-mode .nhf-box a:hover{ color: #fff; }
