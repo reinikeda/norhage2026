@@ -400,23 +400,3 @@ function nh_custom_order_number_by_country( $order_number, $order ) {
 
     return $prefix . $formatted;
 }
-
-/**
- * Show product images in WooCommerce emails.
- */
-add_filter( 'woocommerce_email_order_items_args', function( $args, $email ) {
-
-	// Limit to specific emails (optional).
-	$allowed_email_ids = array(
-		'new_order',                   // Admin: new order
-		'customer_processing_order',   // Customer: order received / processing
-		'customer_completed_order',    // Customer: completed
-	);
-
-	if ( isset( $email->id ) && in_array( $email->id, $allowed_email_ids, true ) ) {
-		$args['show_image'] = true;          // show product thumbnail
-		$args['image_size'] = array( 64, 64 ); // thumbnail size in px
-	}
-
-	return $args;
-}, 10, 2 );

@@ -49,7 +49,6 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 			}
 
 			if ( ! $is_variation_attr ) {
-				// e.g. Colour/Material/Thickness that should not appear.
 				continue;
 			}
 
@@ -79,7 +78,6 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 
 	/* ---------------------------------------------------------
 	 * CASE B: simple product → show all product attributes
-	 *         (works for greenhouses etc.)
 	 * -------------------------------------------------------*/
 	$attributes = $product->get_attributes();
 
@@ -117,7 +115,6 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		if ( $is_tax ) {
 			$names = [];
 			foreach ( $options as $term_id ) {
-				// Can be term ID or slug depending on how Woo saved it.
 				if ( is_numeric( $term_id ) ) {
 					$term = get_term( (int) $term_id );
 				} else {
@@ -162,10 +159,29 @@ function nh_order_render_dl_variation( array $pairs ): string {
 }
 
 /**
- * For variations: hide Woo's default attribute meta (we print our own block).
+ * Small helper so we can reuse rendering.
+ */
+function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
+	$pairs = nh_order_item_attribute_pairs( $item );
+	if ( empty( $pairs ) ) {
+		return;
+	}
+
+	echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+/**
+ * For variations: hide Woo's default attribute meta where we output our own
+ * block (frontend + emails). **Do not** change admin order screen.
  */
 add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
+		return $formatted_meta;
+	}
+
+	// Important: keep admin order items untouched so attributes show
+	// in the compact "order items" table.
+	if ( is_admin() ) {
 		return $formatted_meta;
 	}
 
@@ -218,9 +234,5 @@ add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $or
 		return;
 	}
 
-	$pairs = nh_order_item_attribute_pairs( $item );
-
-	if ( ! empty( $pairs ) ) {
-		echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
+	nh_order_print_item_attributes_block( $item );
 }, 10, 4 );
