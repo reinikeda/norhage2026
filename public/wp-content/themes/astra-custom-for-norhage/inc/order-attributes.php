@@ -224,24 +224,3 @@ add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $or
 		echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }, 10, 4 );
-
-/**
- * ADMIN ORDER SCREEN:
- * Print same attribute list under product name in the order items table.
- */
-add_action( 'woocommerce_before_order_itemmeta', function( $item_id, $item, $_product ) {
-
-	if ( ! is_admin() ) {
-		return;
-	}
-
-	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
-		return;
-	}
-
-	$pairs = nh_order_item_attribute_pairs( $item );
-
-	if ( ! empty( $pairs ) ) {
-		echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-}, 10, 3 );
