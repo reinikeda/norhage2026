@@ -178,10 +178,41 @@ function nh_render_bundle_box() {
 						? '<span class="nc-pill nc-pill--instock">' . esc_html__( 'In stock', 'nh-theme' ) . '</span>'
 						: '<span class="nc-pill nc-pill--oos">' . esc_html__( 'Out of stock', 'nh-theme' ) . '</span>' );
 		echo '      <div class="nc-price-mobile" aria-hidden="true">' . $price_html . '</div>';
-		if ( $has_meta_max ) {
-			/* translators: %d: maximum quantity per bundle item */
-			echo '  <div class="nc-meta-small">' . sprintf( esc_html__( 'Max per bundle: %d', 'nh-theme' ), (int) $meta_max ) . '</div>';
+
+		/* -------------------------------------------
+		* LIMIT NOTICE (stock vs bundle max)
+		* ----------------------------------------- */
+		echo '<div class="nc-meta-small">';
+
+		if ( $p->managing_stock() && $p->get_stock_quantity() > 0 && $has_meta_max ) {
+			$stock_qty = (int) $p->get_stock_quantity();
+			$bundle_max = (int) $meta_max;
+
+			if ( $stock_qty < $bundle_max ) {
+				// Two-line notice when stock < bundle max
+				printf(
+					'<div>%s</div><div>%s</div>',
+					sprintf( esc_html__( 'Only %d left in stock', 'nh-theme' ), $stock_qty ),
+					sprintf( esc_html__( 'Max per bundle: %d', 'nh-theme' ), $bundle_max )
+				);
+			} else {
+				// Normal bundle max
+				printf(
+					'<div>%s</div>',
+					sprintf( esc_html__( 'Max per bundle: %d', 'nh-theme' ), $bundle_max )
+				);
+			}
+
+		} elseif ( $has_meta_max ) {
+			// No stock management → show only bundle max
+			printf(
+				'<div>%s</div>',
+				sprintf( esc_html__( 'Max per bundle: %d', 'nh-theme' ), (int) $meta_max )
+			);
 		}
+
+		echo '</div>';
+
 		echo '  </div>';
 		echo '  <div class="nc-col nc-col-qty" role="cell">';
 		echo '    <div class="quantity buttons_added nh-bundle-qty-wrap' . ( $effective_max <= 0 ? ' is-disabled' : '' ) . '">';

@@ -17,7 +17,7 @@ on:
       - 'public/wp-content/plugins/nh-sale-slider/**'
       - 'public/wp-content/plugins/nh-shipping-calculator/**'
       - 'public/wp-content/plugins/running-ticker-line/**'
-      - 'public/wp-content/plugins/product-labels/**' 
+      - 'public/wp-content/plugins/product-labels/**'
 
 jobs:
   deploy-theme:
