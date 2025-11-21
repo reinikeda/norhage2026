@@ -22,7 +22,6 @@ function nhf_load_textdomain() {
 }
 add_action( 'plugins_loaded', 'nhf_load_textdomain' );
 
-
 /* ------------------------------------------------------------
  *  Enqueue (only on product archives)
  * ------------------------------------------------------------ */
@@ -30,13 +29,38 @@ add_action( 'wp_enqueue_scripts', function() {
 	if ( ! function_exists( 'is_shop' ) ) return;
 	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return;
 
-	wp_register_style( 'nhf-styles', plugins_url( 'assets/css/nhf.css', __FILE__ ), [], '1.6.0' );
+	wp_register_style(
+		'nhf-styles',
+		plugins_url( 'assets/css/nhf.css', __FILE__ ),
+		[],
+		'1.6.0'
+	);
 	wp_enqueue_style( 'nhf-styles' );
 
-	wp_register_script( 'nhf-script', plugins_url( 'assets/js/nhf.js', __FILE__ ), [], '1.6.0', true );
+	wp_register_script(
+		'nhf-script',
+		plugins_url( 'assets/js/nhf.js', __FILE__ ),
+		[],
+		'1.6.0',
+		true
+	);
+
+	// 🔹 Make mobile UI texts translatable in JS
+	wp_localize_script(
+		'nhf-script',
+		'nhfL10n',
+		[
+			'categories'     => __( 'Categories', 'nhf' ),
+			'filters'        => __( 'Filters', 'nhf' ),
+			'filterProducts' => __( 'Filter Products', 'nhf' ),
+			'reset'          => __( 'Reset', 'nhf' ),
+			'apply'          => __( 'Apply', 'nhf' ),
+			'close'          => __( 'Close', 'nhf' ),
+		]
+	);
+
 	wp_enqueue_script( 'nhf-script' );
 });
-
 
 /* ------------------------------------------------------------
  *  Helpers

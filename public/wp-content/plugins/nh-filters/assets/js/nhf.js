@@ -1,4 +1,10 @@
 /**
+ * Helper: translation lookup
+ */
+const nhfT = (key, fallback) =>
+  (window.nhfL10n && window.nhfL10n[key]) || fallback;
+
+/**
  * Category accordion logic
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const item = toggle.closest('.nhf-cat-item');
       const wasOpen = item.classList.contains('is-open');
 
-      // Close all
       document.querySelectorAll('.nhf-cat-item.is-open').forEach(openItem => {
         openItem.classList.remove('is-open');
         openItem.querySelector('.nhf-cat-toggle').setAttribute('aria-expanded', 'false');
@@ -19,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sub) sub.setAttribute('aria-hidden', 'true');
       });
 
-      // Reopen clicked if it was closed
       if (!wasOpen) {
         item.classList.add('is-open');
         toggle.setAttribute('aria-expanded', 'true');
@@ -40,16 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const section = toggle.closest('.nhf-filter');
       const body = section.querySelector('.nhf-filter-body');
 
-      // toggle only this section (do NOT close others)
       section.classList.toggle('is-open');
 
-      // ARIA for accessibility
       const isOpen = section.classList.contains('is-open');
       toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       if (body) body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
     });
 
-    // initialize ARIA on load based on markup class
     const section = toggle.closest('.nhf-filter');
     const body = section.querySelector('.nhf-filter-body');
     const isOpen = section.classList.contains('is-open');
@@ -65,12 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.nhf-form');
   if (!form) return;
 
-  // autosubmit for checkboxes
   form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => form.submit());
   });
 
-  // optional: submit when pressing Enter inside price fields
   form.querySelectorAll('input[type="number"]').forEach(inp => {
     inp.addEventListener('keydown', e => {
       if (e.key === 'Enter') form.submit();
@@ -79,8 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Keep filter groups open if they contain a selection
- * and add a subtle "active" highlight on the header.
+ * Keep filter groups open if active
  */
 document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('.nhf-filter');
@@ -89,27 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const body   = section.querySelector('.nhf-filter-body');
     const toggle = section.querySelector('.nhf-filter-toggle');
 
-    // Detect if this group has any active selection
     const hasChecked = !!section.querySelector('input[type="checkbox"]:checked');
-    const hasPrice   = !!section.querySelector('input[type="number"][name="price_min"], input[type="number"][name="price_max"]'); // for future price
+    const hasPrice   = !!section.querySelector('input[type="number"][name="price_min"], input[type="number"][name="price_max"]');
+
     const hasPriceVal = hasPrice && (
-      (section.querySelector('input[name="price_min"]') && section.querySelector('input[name="price_min"]').value !== '') ||
-      (section.querySelector('input[name="price_max"]') && section.querySelector('input[name="price_max"]').value !== '')
+      (section.querySelector('input[name="price_min"]')?.value !== '') ||
+      (section.querySelector('input[name="price_max"]')?.value !== '')
     );
 
     const isActive = hasChecked || hasPriceVal;
 
     if (isActive) {
-      // Ensure it's open on load
       section.classList.add('is-open', 'is-active-group');
-      if (toggle) toggle.setAttribute('aria-expanded', 'true');
-      if (body)   body.setAttribute('aria-hidden', 'false');
+      toggle?.setAttribute('aria-expanded', 'true');
+      body?.setAttribute('aria-hidden', 'false');
     } else {
       section.classList.toggle('is-active-group', false);
-      // do not force-close here; respect whatever open/closed state markup had
     }
 
-    // Keep the "active" highlight in sync when user checks/unchecks
     section.querySelectorAll('input[type="checkbox"]').forEach(cb => {
       cb.addEventListener('change', () => {
         const nowActive = !!section.querySelector('input[type="checkbox"]:checked');
@@ -117,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // (Optional future) If you re-enable price inputs, keep highlight in sync
     section.querySelectorAll('input[type="number"]').forEach(inp => {
       inp.addEventListener('input', () => {
         const minVal = section.querySelector('input[name="price_min"]')?.value || '';
@@ -129,22 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// padding only applies when the bar exists
+/**
+ * Mobile bar padding
+ */
 document.addEventListener('DOMContentLoaded', () => {
   const bar = document.querySelector('.nhf-mobilebar');
   if (!bar) return;
-  // keep the variable accurate if the bar’s height changes
-  const setH = () => document.documentElement.style.setProperty('--nhf-mb-h', `${bar.offsetHeight || 60}px`);
+
+  const setH = () =>
+    document.documentElement.style.setProperty('--nhf-mb-h', `${bar.offsetHeight || 60}px`);
+
   setH();
   new ResizeObserver(setH).observe(bar);
-  document.body.classList.add('nhf-has-mobilebar'); // triggers the reserved space
+  document.body.classList.add('nhf-has-mobilebar');
 });
 
-
 /**
- * =========================================================
- *  MOBILE FILTER UX: bottom bar + full-screen drawers
- * =========================================================
+ * MOBILE FILTER UX
  */
 (function(){
   const mq = window.matchMedia('(max-width: 992px)');
@@ -171,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="nhf-drawer__panel" tabindex="-1">
         <div class="nhf-drawer__header">
           <div class="nhf-drawer__title">${title}</div>
-          <button class="nhf-drawer__close" aria-label="Close" data-close="1">✕</button>
+          <button class="nhf-drawer__close" aria-label="${nhfT('close','Close')}" data-close="1">✕</button>
         </div>
         <div class="nhf-drawer__body"></div>
         <div class="nhf-drawer__footer">
@@ -180,24 +175,32 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
     document.body.appendChild(wrap);
-    // basic focus trap
+
     wrap.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDrawer(wrap, true);
       if (e.key !== 'Tab') return;
+
       const focusables = qsa('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', wrap)
-        .filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+        .filter(el => !el.disabled && el.offsetParent !== null);
+
       if (!focusables.length) return;
+
       const first = focusables[0], last = focusables[focusables.length-1];
-      if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-      else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+
+      if (e.shiftKey && document.activeElement === first) {
+        last.focus(); e.preventDefault();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        first.focus(); e.preventDefault();
+      }
     });
-    // close handlers
+
     wrap.addEventListener('click', (e) => {
       if (e.target.dataset.close) closeDrawer(wrap, true);
     });
-    // swipe-down to close
+
     let startY = null;
     const panel = qs('.nhf-drawer__panel', wrap);
+
     panel.addEventListener('touchstart', (e)=>{ startY = e.touches[0].clientY; }, {passive:true});
     panel.addEventListener('touchmove', (e)=>{
       if (startY === null) return;
@@ -211,22 +214,20 @@ document.addEventListener('DOMContentLoaded', () => {
     openedByBtn = openerBtn || null;
     el.classList.add('is-open');
     lockBody(true);
-    // focus panel
+
     setTimeout(()=> { qs('.nhf-drawer__panel', el)?.focus(); }, 10);
-    // update badge on open
+
     updateBadge();
   }
 
   function closeDrawer(el, restoreFocus) {
     el.classList.remove('is-open');
     lockBody(false);
-    if (restoreFocus && openedByBtn) { openedByBtn.focus(); }
+    if (restoreFocus && openedByBtn) openedByBtn.focus();
   }
 
   function activeCountInForm(ctx) {
-    const cbs = qsa('input[type="checkbox"]:checked', ctx);
-    // if you re-enable price later, include number fields that have values
-    return cbs.length;
+    return qsa('input[type="checkbox"]:checked', ctx).length;
   }
 
   function updateBadge() {
@@ -237,94 +238,99 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function preventDesktopAutoSubmitOnMobile() {
-    // If your desktop code auto-submits on checkbox change, disable it on mobile by stopping propagation here.
     qsa('.nhf-form input[type="checkbox"]', filtersFormClone).forEach(cb=>{
-      cb.addEventListener('change', (e)=>{ /* no auto-submit on mobile */ updateBadge(); });
+      cb.addEventListener('change', () => updateBadge());
     });
   }
 
   function buildMobileUI() {
-    // Bottom bar
     const bar = document.createElement('div');
     bar.className = 'nhf-mobilebar';
     bar.innerHTML = `
       <button class="nhf-mb-btn" id="nhf-mb-cats" aria-controls="nhf-drawer-cats">
-        <span class="nhf-mb-icon">📂</span><span class="nhf-mb-label">Categories</span>
+        <span class="nhf-mb-icon">📂</span>
+        <span class="nhf-mb-label">${nhfT('categories','Categories')}</span>
       </button>
+
       <button class="nhf-mb-btn" id="nhf-mb-filters" aria-controls="nhf-drawer-filters" aria-live="polite">
-        <span class="nhf-mb-icon">⚙️</span><span class="nhf-mb-label">Filters</span>
+        <span class="nhf-mb-icon">⚙️</span>
+        <span class="nhf-mb-label">${nhfT('filters','Filters')}</span>
         <span class="nhf-badge" id="nhf-badge" style="display:none">0</span>
       </button>
     `;
     document.body.appendChild(bar);
+
     badgeEl = qs('#nhf-badge', bar);
 
-    // Drawers
     filtersDrawer = createDrawer(
       'nhf-drawer-filters',
-      'Filter Products',
-      `<button type="button" class="nhf-drawer__reset" data-action="reset">Reset</button>
-       <button type="button" class="nhf-drawer__apply" data-action="apply">Apply</button>`
+      nhfT('filterProducts','Filter Products'),
+      `
+        <button type="button" class="nhf-drawer__reset" data-action="reset">
+          ${nhfT('reset','Reset')}
+        </button>
+        <button type="button" class="nhf-drawer__apply" data-action="apply">
+          ${nhfT('apply','Apply')}
+        </button>
+      `
     );
-    catsDrawer = createDrawer('nhf-drawer-cats', 'Categories', ``); // no footer
 
-    // Clone content
+    catsDrawer = createDrawer(
+      'nhf-drawer-cats',
+      nhfT('categories','Categories'),
+      ``
+    );
+
     const sidebar = qs('#nhf-sidebar');
     const filters = qs('.nhf-filters', sidebar);
     const cats = qs('.nhf-cat-list', sidebar);
 
-    // Clone the FILTER FORM (so it keeps names/GET params)
     filtersFormClone = filters ? filters.querySelector('form').cloneNode(true) : null;
-    // keep groups with selections open (your existing JS will also handle this, but we ensure it now)
+
     if (filtersFormClone) {
       qsa('.nhf-filter', filtersFormClone).forEach(sec => {
         const hasChecked = !!sec.querySelector('input[type="checkbox"]:checked');
-        if (hasChecked) sec.classList.add('is-open','is-active-group');
-        const body = qs('.nhf-filter-body', sec);
-        const toggle = qs('.nhf-filter-toggle', sec);
         if (hasChecked) {
-          body && body.setAttribute('aria-hidden','false');
-          toggle && toggle.setAttribute('aria-expanded','true');
+          sec.classList.add('is-open', 'is-active-group');
+          sec.querySelector('.nhf-filter-body')?.setAttribute('aria-hidden','false');
+          sec.querySelector('.nhf-filter-toggle')?.setAttribute('aria-expanded','true');
         }
       });
+
       qs('.nhf-drawer__body', filtersDrawer).appendChild(filtersFormClone);
 
-      // Remove duplicate desktop reset/apply buttons from cloned form
-      qsa('.nhf-applybar, .nhf-reset, .nhf-apply, .nhf-applybtn', filtersFormClone).forEach(el => el.remove());
+      qsa('.nhf-applybar, .nhf-reset, .nhf-apply, .nhf-applybtn', filtersFormClone)
+        .forEach(el => el.remove());
     }
 
-    // Clone CATEGORIES block (list only; header is drawer title)
     catsClone = cats ? cats.cloneNode(true) : null;
     if (catsClone) {
       qs('.nhf-drawer__body', catsDrawer).appendChild(catsClone);
     }
 
-    // Wire bottom bar buttons
     const catsBtn = qs('#nhf-mb-cats', bar);
     const filtersBtn = qs('#nhf-mb-filters', bar);
+
     catsBtn.addEventListener('click', ()=> openDrawer(catsDrawer, catsBtn));
     filtersBtn.addEventListener('click', ()=> openDrawer(filtersDrawer, filtersBtn));
 
-    // Drawer footer actions
     filtersDrawer.addEventListener('click', (e)=>{
       const act = e.target?.dataset?.action;
       if (!act) return;
+
       if (act === 'reset') {
-        // go to base archive URL (no params)
         const base = (qs('.nhf-form', filtersFormClone)?.getAttribute('action')) || window.location.pathname;
         window.location.href = base;
       }
+
       if (act === 'apply') {
-        // submit cloned form
         qs('.nhf-form', filtersDrawer)?.submit();
       }
     });
 
-    // Since this is MOBILE, disable auto-submit-on-change; user taps Apply
     preventDesktopAutoSubmitOnMobile();
-
-    // Update badge initially & on changes
     updateBadge();
+
     filtersDrawer.addEventListener('change', (e)=>{
       if (e.target.matches('input[type="checkbox"]')) updateBadge();
     });
@@ -335,18 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.classList.remove('nhf-lock');
     document.body.classList.remove('nhf-lock');
     initialized = false;
+
     filtersDrawer = catsDrawer = badgeEl = filtersFormClone = catsClone = null;
   }
 
   function onChange(e) {
     if (e.matches) {
-      if (!initialized) { buildMobileUI(); initialized = true; }
+      if (!initialized) {
+        buildMobileUI();
+        initialized = true;
+      }
     } else {
       if (initialized) destroyMobileUI();
     }
   }
 
-  // Init now and on viewport changes
   onChange(mq);
   mq.addEventListener('change', onChange);
 })();

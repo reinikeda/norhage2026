@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-filters\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2025-11-19 11:40+0200\n"
+"PO-Revision-Date: 2025-11-21 15:23+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -46,7 +46,29 @@ msgstr "Taikyti filtrus"
 msgid "Reset filters"
 msgstr "Išvalyti filtrus"
 
-# Optional: plugin header strings, for WP admin (these are picked up by makepot usually)
+#: assets/js/nhf.js
+msgid "Categories"
+msgstr "Kategorijos"
+
+#: assets/js/nhf.js
+msgid "Filters"
+msgstr "Filtrai"
+
+#: assets/js/nhf.js
+msgid "Close"
+msgstr "Uždaryti"
+
+#: assets/js/nhf.js
+msgid "Reset"
+msgstr "Išvalyti"
+
+#: assets/js/nhf.js
+msgid "Apply"
+msgstr "Taikyti"
+
+# ------------------------------------------------------------
+# Optional: Plugin header metadata (appears in WP admin)
+# ------------------------------------------------------------
 #. Plugin Name
 msgid "Custom Filters"
 msgstr "Tinkinti filtrai"
