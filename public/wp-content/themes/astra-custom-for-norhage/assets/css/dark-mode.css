@@ -346,7 +346,6 @@ body.dark-mode{
 
   /* Related grid */
   .nh-related__title{ color: var(--dm-text); }
-  .nh-related__thumb img{ /* images unchanged, keep contrast via card bg */ }
 }
 
 /* Extra safety: hide services/blog meta in dark mode too */
@@ -787,26 +786,32 @@ body.dark-mode .woocommerce-tabs ul.tabs li a[aria-selected="true"] {
 /* =========================
    14) Media (product & category images)
    ========================= */
-body.dark-mode .woocommerce ul.products li.product img,
-body.dark-mode .woocommerce-product-gallery__image img,
-body.dark-mode .product-category img{
-  background: var(--dm-media);
-  border: 1px solid color-mix(in srgb, var(--ui-border) 85%, white 15%);
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow:
-    0 2px 6px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+
+/* Base background for all product-related images */
+body.dark-mode 
+  .woocommerce ul.products li.product img,
+body.dark-mode 
+  .woocommerce-product-gallery__image img,
+body.dark-mode 
+  .product-category img,
+body-dark-mode 
+  .flex-control-thumbs img,
+body.dark-mode 
+  .nc-col-image img {
+    background: #262724 !important; /* your chosen plate */
 }
-body.dark-mode .woocommerce ul.products li.product:hover img,
-body.dark-mode .product-category a:hover img{
-  background: color-mix(in srgb, var(--dm-media) 80%, var(--dm-surface) 20%);
-  border-color: var(--dm-primary);
+
+/* Hover — only on single product + thumbnails + bundle rows */
+body.dark-mode 
+  .woocommerce-product-gallery__image:hover img,
+body.dark-mode 
+  .flex-control-thumbs li:hover img,
+body.dark-mode 
+  .nc-col-image:hover img {
+    background: #343530 !important; /* your chosen hover plate */
 }
-body.dark-mode .woocommerce-loop-product__title,
-body.dark-mode .product-category .woocommerce-loop-category__title{
-  color: color-mix(in srgb, var(--dm-text) 88%, black 12%);
-}
+
+body.dark-mode .astra-shop-thumbnail-wrap img.attachment-woocommerce_thumbnail { background: #262724 !important; }
 
 /* =========================
    15) Pagination (Woo) — DARK
