@@ -77,8 +77,41 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	}
 
 	/* ---------------------------------------------------------
-	 * CASE B: simple product → show all product attributes
+	 * CASE B: simple product
 	 * -------------------------------------------------------*/
+
+	// Detect "sheet by measures" items by presence of cutting-fee meta.
+	$meta_data = $item->get_meta_data();
+	$meta_keys = wp_list_pluck( $meta_data, 'key' );
+
+	$is_measured_sheet = in_array( 'Cutting fee per sheet', $meta_keys, true )
+		|| in_array( 'cutting_fee_per_sheet', $meta_keys, true );
+
+	if ( $is_measured_sheet ) {
+		// For measured sheets: show ONLY dynamic meta (Width, Length, Cutting fee).
+		foreach ( $meta_data as $meta ) {
+			$key = (string) ( $meta->key ?? '' );
+			$val = $meta->value ?? '';
+
+			if ( $key === 'Width' || $key === 'Length' ) {
+				if ( $val !== '' ) {
+					$pairs[ $key ] = (string) $val;
+				}
+			} elseif ( $key === 'Cutting fee per sheet' || $key === 'cutting_fee_per_sheet' ) {
+				if ( $val === '' ) {
+					continue;
+				}
+				// Format as Woo price but keep plain text.
+				$amount          = is_numeric( $val ) ? (float) $val : (float) wc_clean( $val );
+				$price_plaintext = wp_strip_all_tags( wc_price( $amount ) );
+				$pairs[ 'Cutting fee per sheet' ] = $price_plaintext;
+			}
+		}
+
+		return $pairs;
+	}
+
+	// Normal simple products → all product attributes.
 	$attributes = $product->get_attributes();
 
 	if ( empty( $attributes ) ) {
@@ -115,6 +148,7 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		if ( $is_tax ) {
 			$names = [];
 			foreach ( $options as $term_id ) {
+				// Can be term ID or slug depending on how Woo saved it.
 				if ( is_numeric( $term_id ) ) {
 					$term = get_term( (int) $term_id );
 				} else {
@@ -171,27 +205,31 @@ function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
 }
 
 /**
- * For variations: hide Woo's default attribute meta where we output our own
- * block (frontend + emails). **Do not** change admin order screen.
+ * Hide Woo's default formatted meta for:
+ * - variation attributes (we show our own)
+ * - our measured-sheet meta (Width, Length, Cutting fee per sheet)
+ * Only on frontend + emails; keep admin intact.
  */
 add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	// Important: keep admin order items untouched so attributes show
-	// in the compact "order items" table.
+	// Keep admin order items untouched so meta shows in the
+	// compact "order items" table.
 	if ( is_admin() ) {
 		return $formatted_meta;
 	}
+
+	$hide_keys   = [ 'Width', 'Length', 'Cutting fee per sheet' ];
+	$attr_labels = [];
 
 	$product = $item->get_product();
 
 	if ( $product && $product->is_type( 'variation' ) ) {
 		$parent = wc_get_product( $product->get_parent_id() );
-		if ( $parent ) {
-			$attr_labels = [];
 
+		if ( $parent ) {
 			foreach ( $parent->get_attributes() as $key => $attr ) {
 				if ( $attr instanceof WC_Product_Attribute ) {
 					$name = $attr->get_name();
@@ -203,19 +241,28 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 				}
 				$attr_labels[] = wc_attribute_label( $name, $parent );
 			}
-
-			$filtered = [];
-			foreach ( $formatted_meta as $fm ) {
-				if ( ! in_array( $fm->display_key, $attr_labels, true ) ) {
-					$filtered[] = $fm;
-				}
-			}
-
-			return $filtered;
 		}
 	}
 
-	return $formatted_meta;
+	$filtered = [];
+
+	foreach ( $formatted_meta as $fm ) {
+		$dk = $fm->display_key;
+
+		if ( in_array( $dk, $hide_keys, true ) ) {
+			// Our measured-sheet meta: hide.
+			continue;
+		}
+
+		if ( ! empty( $attr_labels ) && in_array( $dk, $attr_labels, true ) ) {
+			// Variation attributes: hide.
+			continue;
+		}
+
+		$filtered[] = $fm;
+	}
+
+	return $filtered;
 }, 10, 2 );
 
 /**
