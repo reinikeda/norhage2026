@@ -401,28 +401,22 @@ function nh_custom_order_number_by_country( $order_number, $order ) {
     return $prefix . $formatted;
 }
 
+/**
+ * Show product images in WooCommerce emails.
+ */
+add_filter( 'woocommerce_email_order_items_args', function( $args, $email ) {
 
-// DEBUG to browser console
-add_action( 'woocommerce_single_product_summary', function() {
-    if ( ! is_product() ) return;
+	// Limit to specific emails (optional).
+	$allowed_email_ids = array(
+		'new_order',                   // Admin: new order
+		'customer_processing_order',   // Customer: order received / processing
+		'customer_completed_order',    // Customer: completed
+	);
 
-    $product_id = get_the_ID();
+	if ( isset( $email->id ) && in_array( $email->id, $allowed_email_ids, true ) ) {
+		$args['show_image'] = true;          // show product thumbnail
+		$args['image_size'] = array( 64, 64 ); // thumbnail size in px
+	}
 
-    // Only debug these products
-    if ( ! in_array( $product_id, [715, 712], true ) ) {
-        return;
-    }
-
-    $show = get_post_meta( $product_id, '_nhf_show_box', true );
-    $ids  = get_post_meta( $product_id, '_nhf_feature_ids', true );
-
-    // Convert IDs array into JSON for JS console
-    $show_js = json_encode( $show );
-    $ids_js  = json_encode( $ids );
-
-    echo "<script>
-        console.log('%cNHF DEBUG – Product {$product_id}','color: #0A0; font-weight: bold;');
-        console.log('Show box meta:', {$show_js});
-        console.log('Feature IDs meta:', {$ids_js});
-    </script>";
-}, 5 );
+	return $args;
+}, 10, 2 );
