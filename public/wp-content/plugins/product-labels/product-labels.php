@@ -5,9 +5,23 @@
  * Author: Daiva Reinike
  * Version: 0.9
  * License: GPL-2.0+
+ * Text Domain: nhg-labels
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
+ * Load plugin textdomain.
+ */
+function nhg_labels_load_textdomain() {
+	load_plugin_textdomain(
+		'nhg-labels',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages'
+	);
+}
+add_action( 'plugins_loaded', 'nhg_labels_load_textdomain' );
 
 class NHG_Product_Labels {
 	const NEW_DAYS      = 30;
@@ -196,7 +210,7 @@ class NHG_Product_Labels {
 			// LOW STOCK — small pill (loop only)
 			if ( 'low' === $key ) {
 				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg' ) . '</span>';
+					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg-labels' ) . '</span>';
 				}
 				continue;
 			}
@@ -277,10 +291,10 @@ class NHG_Product_Labels {
 
 		$icon_url = get_stylesheet_directory_uri() . '/assets/icons/megaphone.svg';
 
-		echo '<div class="nhg-new-inline" aria-label="New product">'
-		   . '<img src="' . esc_url( $icon_url ) . '" alt="New" class="nhg-new-icon" loading="lazy" decoding="async" />'
-		   . '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg-labels' ) . '</span>'
-		   . '</div>';
+		echo '<div class="nhg-new-inline" aria-label="' . esc_attr__( 'New product', 'nhg-labels' ) . '">'
+		. '<img src="' . esc_url( $icon_url ) . '" alt="' . esc_attr__( 'New', 'nhg-labels' ) . '" class="nhg-new-icon" loading="lazy" decoding="async" />'
+		. '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg-labels' ) . '</span>'
+		. '</div>';
 	}
 }
 
