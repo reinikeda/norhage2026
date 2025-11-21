@@ -251,8 +251,19 @@ add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $arg
 	return $html;
 }, 10, 3 );
 
-add_filter( 'woocommerce_product_add_to_cart_text', function( $text, $product ){
-	return nh_is_custom_cut_simple( $product ) ? __( 'Customize', 'nh-theme' ) : $text;
+add_filter( 'woocommerce_product_add_to_cart_text', function( $text, $product ) {
+
+    // 1) Your custom simple products → "Customize" (already translatable in nh-theme)
+    if ( nh_is_custom_cut_simple( $product ) ) {
+        return __( 'Customize', 'nh-theme' );
+    }
+
+    // 2) Variable products → our own translatable string in the theme
+    if ( $product instanceof WC_Product && $product->is_type( 'variable' ) ) {
+        return __( 'Select options', 'nh-theme' );
+    }
+    return $text;
+
 }, 10, 2 );
 
 add_filter( 'woocommerce_product_single_add_to_cart_text', function( $text ){ return $text; }, 10 );

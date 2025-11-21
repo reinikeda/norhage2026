@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2025-11-21 12:54:15+00:00\n"
-"PO-Revision-Date: 2025-11-21 14:55+0200\n"
+"POT-Creation-Date: 2025-11-21 14:47:18+00:00\n"
+"PO-Revision-Date: 2025-11-21 16:49+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -57,27 +57,31 @@ msgstr "DUK"
 msgid "Shop by Category"
 msgstr "Pirkti pagal kategoriją"
 
-#: functions.php:239 functions.php:255
+#: functions.php:239 functions.php:258
 msgid "Customize"
-msgstr "Tinkinti"
+msgstr "Pritaikyti"
 
 #: functions.php:240
 msgid "Customize “%s”"
-msgstr "Tinkinti „%s“"
+msgstr "Pritaikyti „%s“"
 
-#: functions.php:274
+#: functions.php:263
+msgid "Select options"
+msgstr "Pasirinkti"
+
+#: functions.php:285
 msgid "Secondary product title"
 msgstr "Antrinis prekės pavadinimas"
 
-#: functions.php:303
+#: functions.php:314
 msgid "Footer — Shop Categories"
 msgstr "Poraštė — parduotuvės kategorijos"
 
-#: functions.php:304
+#: functions.php:315
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr "Poraštė — antrinė (paslaugos, tinklaraštis, kontaktai)"
 
-#: functions.php:305
+#: functions.php:316
 msgid "Footer — Legal/Policies"
 msgstr "Poraštė — teisinė informacija / taisyklės"
 
@@ -254,7 +258,7 @@ msgid "Enable custom cutting"
 msgstr "Įjungti pjovimą pagal išmatavimus"
 
 #: inc/meta-boxes.php:141 inc/product-customize.php:116
-#: inc/product-customize.php:353 inc/product-customize.php:365
+#: inc/product-customize.php:363 inc/product-customize.php:375
 msgid "Cutting fee per sheet"
 msgstr "Pjovimo mokestis už lakštą"
 
@@ -391,39 +395,39 @@ msgstr "Vieneto kaina"
 msgid "Total"
 msgstr "Iš viso"
 
-#: inc/product-customize.php:282
+#: inc/product-customize.php:292
 msgid "Please enter width and length (mm)."
 msgstr "Įveskite plotį ir ilgį (mm)."
 
-#: inc/product-customize.php:289
+#: inc/product-customize.php:299
 msgid "Minimum width is %d mm."
 msgstr "Mažiausias plotis – %d mm."
 
-#: inc/product-customize.php:290
+#: inc/product-customize.php:300
 msgid "Maximum width is %d mm."
 msgstr "Didžiausias plotis – %d mm."
 
-#: inc/product-customize.php:291
+#: inc/product-customize.php:301
 msgid "Minimum length is %d mm."
 msgstr "Mažiausias ilgis – %d mm."
 
-#: inc/product-customize.php:292
+#: inc/product-customize.php:302
 msgid "Maximum length is %d mm."
 msgstr "Didžiausias ilgis – %d mm."
 
-#: inc/product-customize.php:302
+#: inc/product-customize.php:312
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
 msgstr "Plotis turi atitikti %1$d mm žingsnį, pradedant nuo %2$d mm."
 
-#: inc/product-customize.php:305
+#: inc/product-customize.php:315
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
 msgstr "Ilgis turi atitikti %1$d mm žingsnį, pradedant nuo %2$d mm."
 
-#: inc/product-customize.php:349 inc/product-customize.php:363
+#: inc/product-customize.php:359 inc/product-customize.php:373
 msgid "Width"
 msgstr "Plotis"
 
-#: inc/product-customize.php:350 inc/product-customize.php:364
+#: inc/product-customize.php:360 inc/product-customize.php:374
 msgid "Length"
 msgstr "Ilgis"
 

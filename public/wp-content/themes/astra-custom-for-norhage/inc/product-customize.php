@@ -182,19 +182,29 @@ add_action( 'wp_enqueue_scripts', function () {
 	);
 
 	if ( $is_custom_simple ) {
-		// --- Custom-cut SIMPLE: enqueue custom-cutting + summary init
 
-		$pid      = $product_obj->get_id();
-		$reg_raw  = $product_obj->get_regular_price();
-		$sale_raw = $product_obj->get_sale_price();
-		$base_raw = $product_obj->get_price(); // value/m²
+        // --- Custom-cut SIMPLE: enqueue custom-cutting + summary init
 
-		$reg_d  = ( $reg_raw  !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $reg_raw ] ) : 0 );
-		$sale_d = ( $sale_raw !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $sale_raw ] ) : 0 );
-		if ( $reg_d <= 0 && $sale_d <= 0 ) $reg_d = wc_get_price_to_display( $product_obj, [ 'price' => (float) $base_raw ] );
-		if ( $reg_d <= 0 && $sale_d > 0 )  $reg_d = $sale_d;
+        $pid      = $product_obj->get_id();
+        $reg_raw  = $product_obj->get_regular_price();
+        $sale_raw = $product_obj->get_sale_price();
+        $base_raw = $product_obj->get_price(); // value/m² (net)
 
-		$fee = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
+        // Display prices (follow Woo "shop" tax setting, usually incl. VAT)
+        $reg_d  = ( $reg_raw  !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $reg_raw ] ) : 0 );
+        $sale_d = ( $sale_raw !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $sale_raw ] ) : 0 );
+        if ( $reg_d <= 0 && $sale_d <= 0 ) {
+            $reg_d = wc_get_price_to_display( $product_obj, [ 'price' => (float) $base_raw ] );
+        }
+        if ( $reg_d <= 0 && $sale_d > 0 ) {
+            $reg_d = $sale_d;
+        }
+
+        // Cutting fee: get raw value from meta, then convert to display price (incl. VAT)
+        $fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
+        $fee_disp = $fee_raw > 0
+            ? wc_get_price_to_display( $product_obj, [ 'price' => $fee_raw ] )
+            : 0;
 
 		// custom-cutting.js config
 		$kg_per_m2 = (float) get_post_meta( $pid, '_nh_cc_weight_per_m2', true );
@@ -208,7 +218,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_localize_script( 'custom-cutting', 'NH_CC', [
 			'enabled'         => true,
 			'price_per_m2'    => (float) $base_raw,
-			'cut_fee'         => (float) $fee,
+			'cut_fee'         => (float) $fee_disp,
 			'min_w'           => ( $v = get_post_meta( $pid, '_nh_cc_min_w', true ) ) === '' ? '' : (int) $v,
 			'max_w'           => ( $v = get_post_meta( $pid, '_nh_cc_max_w', true ) ) === '' ? '' : (int) $v,
 			'min_l'           => ( $v = get_post_meta( $pid, '_nh_cc_min_l', true ) ) === '' ? '' : (int) $v,
@@ -231,7 +241,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_localize_script( 'nh-summary-customcut-init', 'NH_PS_INIT', [
 			'perm2_reg'  => (float) $reg_d,
 			'perm2_sale' => (float) $sale_d,
-			'cut_fee'    => (float) $fee,
+			'cut_fee'    => (float) $fee_disp,
 		] );
 
 	} else {

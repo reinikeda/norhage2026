@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-11-21 13:18:15+00:00\n"
+"POT-Creation-Date: 2025-11-21 14:47:18+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Shop by Category"
 msgstr ""
 
-#: functions.php:239 functions.php:255
+#: functions.php:239 functions.php:258
 msgid "Customize"
 msgstr ""
 
@@ -60,19 +60,23 @@ msgstr ""
 msgid "Customize “%s”"
 msgstr ""
 
-#: functions.php:274
+#: functions.php:263
+msgid "Select options"
+msgstr ""
+
+#: functions.php:285
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:303
+#: functions.php:314
 msgid "Footer — Shop Categories"
 msgstr ""
 
-#: functions.php:304
+#: functions.php:315
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr ""
 
-#: functions.php:305
+#: functions.php:316
 msgid "Footer — Legal/Policies"
 msgstr ""
 
@@ -252,7 +256,7 @@ msgid "Enable custom cutting"
 msgstr ""
 
 #: inc/meta-boxes.php:141 inc/product-customize.php:116
-#: inc/product-customize.php:353 inc/product-customize.php:365
+#: inc/product-customize.php:363 inc/product-customize.php:375
 msgid "Cutting fee per sheet"
 msgstr ""
 
@@ -380,39 +384,39 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: inc/product-customize.php:282
+#: inc/product-customize.php:292
 msgid "Please enter width and length (mm)."
 msgstr ""
 
-#: inc/product-customize.php:289
+#: inc/product-customize.php:299
 msgid "Minimum width is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:290
+#: inc/product-customize.php:300
 msgid "Maximum width is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:291
+#: inc/product-customize.php:301
 msgid "Minimum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:292
+#: inc/product-customize.php:302
 msgid "Maximum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:302
+#: inc/product-customize.php:312
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
-#: inc/product-customize.php:305
+#: inc/product-customize.php:315
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
-#: inc/product-customize.php:349 inc/product-customize.php:363
+#: inc/product-customize.php:359 inc/product-customize.php:373
 msgid "Width"
 msgstr ""
 
-#: inc/product-customize.php:350 inc/product-customize.php:364
+#: inc/product-customize.php:360 inc/product-customize.php:374
 msgid "Length"
 msgstr ""
 
