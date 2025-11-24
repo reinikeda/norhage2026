@@ -358,21 +358,95 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 	$l = (int) $cart_item['nh_custom_size']['length_mm'];
 	if ( $w ) $item_data[] = [ 'name' => __( 'Width', 'nh-theme' ),  'value' => $w . ' mm' ];
 	if ( $l ) $item_data[] = [ 'name' => __( 'Length', 'nh-theme' ), 'value' => $l . ' mm' ];
-	$pid = (int) ( $cart_item['product_id'] ?? 0 );
-	$fee = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
-	if ( $fee > 0 ) $item_data[] = [ 'name' => __( 'Cutting fee per sheet', 'nh-theme' ), 'value' => wc_price( $fee ) ];
+    $pid      = (int) ( $cart_item['product_id'] ?? 0 );
+    $fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
+
+    if ( $fee_raw > 0 ) {
+        $product = $cart_item['data'] ?? ( $pid ? wc_get_product( $pid ) : null );
+        $fee_disp = $fee_raw;
+
+        if ( $product instanceof WC_Product ) {
+            // convert net fee -> display price (incl. VAT according to Woo settings)
+            $fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
+        }
+
+        $item_data[] = [
+            'name'  => __( 'Cutting fee per sheet', 'nh-theme' ),
+            'value' => wc_price( $fee_disp ),
+        ];
+    }
+
 	return $item_data;
 }, 10, 2 );
 
-add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $key, $values ){
-	if ( empty( $values['nh_custom_size'] ) ) return;
-	$w   = (int) ( $values['nh_custom_size']['width_mm'] ?? 0 );
-	$l   = (int) ( $values['nh_custom_size']['length_mm'] ?? 0 );
-	$pid = (int) ( $values['product_id'] ?? 0 );
-	$fee = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
-	if ( $w )  $item->add_meta_data( __( 'Width', 'nh-theme' ),  $w . ' mm', true );
-	if ( $l )  $item->add_meta_data( __( 'Length', 'nh-theme' ), $l . ' mm', true );
-	if ( $fee ) $item->add_meta_data( __( 'Cutting fee per sheet', 'nh-theme' ), wc_price( $fee ), true );
+add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $cart_item_key, $values ) {
+	if ( empty( $values['nh_custom_size'] ) ) {
+		return;
+	}
+
+	$wmm = (int) ( $values['nh_custom_size']['width_mm']  ?? 0 );
+	$lmm = (int) ( $values['nh_custom_size']['length_mm'] ?? 0 );
+
+	// Get product + fee (same as used in custom pricing)
+	$pid     = (int) ( $values['product_id'] ?? 0 );
+	$product = $pid ? wc_get_product( $pid ) : $item->get_product();
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+
+	$price_per_m2 = (float) $product->get_price(); // same base as in custom pricing
+	$fee          = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
+
+	// 1) OLD SHOP COMPATIBLE META KEYS (for your order management tool)
+	if ( $wmm ) {
+		$item->add_meta_data( 'cutting_width', $wmm . ' mm', true );
+	}
+
+	if ( $lmm ) {
+		$item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
+	}
+
+	if ( $wmm && $lmm && $price_per_m2 > 0 ) {
+		$area      = ( $wmm / 1000 ) * ( $lmm / 1000 );
+		$unit_base = $area * $price_per_m2; // without cutting fee
+		$item->add_meta_data(
+			'unit_price',
+			wc_format_decimal( $unit_base, wc_get_price_decimals() ),
+			true
+		);
+	}
+
+	if ( $fee ) {
+		$item->add_meta_data(
+			'cutting_fee',
+			wc_format_decimal( $fee, wc_get_price_decimals() ),
+			true
+		);
+	}
+
+	// 2) Human-readable labels for Woo admin/emails
+
+	if ( $wmm ) {
+		$item->add_meta_data( __( 'Width', 'nh-theme' ), $wmm . ' mm', true );
+	}
+
+	if ( $lmm ) {
+		$item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
+	}
+
+	if ( $fee ) {
+		// Fee for display (incl. VAT according to Woo tax settings)
+		$fee_disp = $fee;
+		if ( $product instanceof WC_Product ) {
+			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
+		}
+
+		$item->add_meta_data(
+			__( 'Cutting fee per sheet', 'nh-theme' ),
+			wc_price( $fee_disp ), // only THIS one, VAT included
+			true
+		);
+	}
 }, 10, 3 );
 
 /* ============================================================================
