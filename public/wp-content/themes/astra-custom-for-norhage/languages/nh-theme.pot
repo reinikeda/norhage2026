@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-11-21 14:47:18+00:00\n"
+"POT-Creation-Date: 2025-11-24 08:28:57+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -255,8 +255,9 @@ msgstr ""
 msgid "Enable custom cutting"
 msgstr ""
 
-#: inc/meta-boxes.php:141 inc/product-customize.php:116
-#: inc/product-customize.php:363 inc/product-customize.php:375
+#: inc/meta-boxes.php:141 inc/order-attributes.php:154
+#: inc/order-attributes.php:289 inc/product-customize.php:116
+#: inc/product-customize.php:374 inc/product-customize.php:445
 msgid "Cutting fee per sheet"
 msgstr ""
 
@@ -326,6 +327,16 @@ msgstr ""
 
 #: inc/meta-boxes.php:476
 msgid "Remove row"
+msgstr ""
+
+#: inc/order-attributes.php:136 inc/order-attributes.php:287
+#: inc/product-customize.php:359 inc/product-customize.php:430
+msgid "Width"
+msgstr ""
+
+#: inc/order-attributes.php:140 inc/order-attributes.php:288
+#: inc/product-customize.php:360 inc/product-customize.php:434
+msgid "Length"
 msgstr ""
 
 #: inc/product-customize.php:51 inc/product-customize.php:56
@@ -410,14 +421,6 @@ msgstr ""
 
 #: inc/product-customize.php:315
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
-msgstr ""
-
-#: inc/product-customize.php:359 inc/product-customize.php:373
-msgid "Width"
-msgstr ""
-
-#: inc/product-customize.php:360 inc/product-customize.php:374
-msgid "Length"
 msgstr ""
 
 #. translators: product category name for items currently on sale

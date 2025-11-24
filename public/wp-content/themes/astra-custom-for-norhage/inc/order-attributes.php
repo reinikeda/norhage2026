@@ -26,9 +26,7 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	 * -------------------------------------------------------*/
 	if ( $product->is_type( 'variation' ) ) {
 
-		// Chosen attribute values for this variation: [ 'pa_length' => '6-m', ... ]
 		$var_attrs = $product->get_attributes();
-
 		if ( empty( $var_attrs ) ) {
 			return $pairs;
 		}
@@ -42,12 +40,10 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 				continue;
 			}
 
-			// Is this attribute actually used for variations on the parent?
 			$is_variation_attr = true;
 			if ( isset( $parent_attrs[ $attr_slug ] ) && $parent_attrs[ $attr_slug ] instanceof WC_Product_Attribute ) {
 				$is_variation_attr = (bool) $parent_attrs[ $attr_slug ]->get_variation();
 			}
-
 			if ( ! $is_variation_attr ) {
 				continue;
 			}
@@ -77,75 +73,86 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	}
 
 	/* ---------------------------------------------------------
-	 * CASE B: simple product
+	 * CASE B: simple product (custom-cut vs normal)
 	 * -------------------------------------------------------*/
 
-	// Detect "sheet by measures" items by presence of our meta.
 	$meta_data = $item->get_meta_data();
-	$meta_keys = wp_list_pluck( $meta_data, 'key' );
 
-	$is_measured_sheet =
-		in_array( 'Cutting fee per sheet', $meta_keys, true ) ||
-		in_array( 'cutting_fee_per_sheet', $meta_keys, true ) ||
-		in_array( 'cutting_width', $meta_keys, true ) ||
-		in_array( 'cutting_height', $meta_keys, true ) ||
-		in_array( 'cutting_fee', $meta_keys, true );
+	// Technical keys (language-independent)
+	$width_val  = '';
+	$length_val = '';
+	$fee_val    = '';
 
-	if ( $is_measured_sheet ) {
-		$width_val  = '';
-		$length_val = '';
-		$fee_val    = '';
+	foreach ( $meta_data as $meta ) {
+		$key = (string) ( $meta->key ?? '' );
+		$val = $meta->value ?? '';
 
-		foreach ( $meta_data as $meta ) {
-			$key = (string) ( $meta->key ?? '' );
-			$val = $meta->value ?? '';
-
-			if ( $val === '' ) {
-				continue;
-			}
-
-			// Width – can come from "Width" or "cutting_width".
-			if ( $key === 'Width' || $key === 'cutting_width' ) {
-				$width_val = (string) $val;
-				continue;
-			}
-
-			// Length – can come from "Length" or "cutting_height".
-			if ( $key === 'Length' || $key === 'cutting_height' ) {
-				$length_val = (string) $val;
-				continue;
-			}
-
-			// Cutting fee – several possible keys.
-			if ( $key === 'Cutting fee per sheet' || $key === 'cutting_fee_per_sheet' || $key === 'cutting_fee' ) {
-				$fee_val = $val;
-				continue;
-			}
+		if ( $val === '' ) {
+			continue;
 		}
 
+		switch ( $key ) {
+			case 'cutting_width':
+				$width_val = (string) $val;
+				break;
+
+			case 'cutting_height':
+				$length_val = (string) $val;
+				break;
+
+			case 'cutting_fee':
+			case 'cutting_fee_per_sheet':
+				$fee_val = $val;
+				break;
+
+			// Backwards compatibility with old orders that stored human keys only
+			case 'Width':
+				if ( $width_val === '' ) {
+					$width_val = (string) $val;
+				}
+				break;
+
+			case 'Length':
+				if ( $length_val === '' ) {
+					$length_val = (string) $val;
+				}
+				break;
+
+			case 'Cutting fee per sheet':
+				if ( $fee_val === '' ) {
+					$fee_val = $val;
+				}
+				break;
+		}
+	}
+
+	$is_measured_sheet = ( $width_val !== '' || $length_val !== '' || $fee_val !== '' );
+
+	if ( $is_measured_sheet ) {
+
+		// Labels are translatable; keys in PO will be:
+		// "Width", "Length", "Cutting fee per sheet"
 		if ( $width_val !== '' ) {
-			$pairs['Width'] = $width_val;
+			$pairs[ __( 'Width', 'nh-theme' ) ] = $width_val;
 		}
 
 		if ( $length_val !== '' ) {
-			$pairs['Length'] = $length_val;
+			$pairs[ __( 'Length', 'nh-theme' ) ] = $length_val;
 		}
 
-        if ( $fee_val !== '' ) {
-            if ( is_numeric( $fee_val ) ) {
-                $amount = (float) $fee_val;
+		if ( $fee_val !== '' ) {
+			if ( is_numeric( $fee_val ) ) {
+				$amount = (float) $fee_val;
 
-                if ( $product ) {
-                    $amount = wc_get_price_to_display( $product, [ 'price' => $amount ] );
-                }
+				if ( $product ) {
+					$amount = wc_get_price_to_display( $product, [ 'price' => $amount ] );
+				}
 
-                $price_plaintext = wp_strip_all_tags( wc_price( $amount ) );
-            } else {
-                $price_plaintext = wp_strip_all_tags( (string) $fee_val );
-            }
+				$fee_val = wp_strip_all_tags( wc_price( $amount ) );
+			}
 
-            $pairs['Cutting fee per sheet'] = $price_plaintext;
-        }
+			$pairs[ __( 'Cutting fee per sheet', 'nh-theme' ) ] = $fee_val;
+		}
 
 		return $pairs;
 	}
@@ -162,13 +169,11 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		$options   = [];
 		$is_tax    = false;
 
-		// New-style: WC_Product_Attribute object.
 		if ( $attr instanceof WC_Product_Attribute ) {
 			$attr_name = $attr->get_name();
 			$options   = $attr->get_options();
 			$is_tax    = $attr->is_taxonomy();
 		} else {
-			// Old-style / edge cases: array or string.
 			$attr_name = is_string( $attr_key ) ? $attr_key : '';
 			if ( is_array( $attr ) && isset( $attr['options'] ) ) {
 				$options = (array) $attr['options'];
@@ -187,7 +192,6 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		if ( $is_tax ) {
 			$names = [];
 			foreach ( $options as $term_id ) {
-				// Can be term ID or slug depending on how Woo saved it.
 				if ( is_numeric( $term_id ) ) {
 					$term = get_term( (int) $term_id );
 				} else {
@@ -247,30 +251,26 @@ function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
  * Hide Woo's default formatted meta for:
  * - variation attributes (we show our own)  [frontend + emails only]
  * - our measured-sheet meta (Width, Length, Cutting fee per sheet)
- * - technical keys (cutting_width, cutting_height, unit_price, cutting_fee)
+ * - technical keys (cutting_width, cutting_height, unit_price, cutting_fee, cutting_fee_per_sheet)
  */
 add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	// Technical keys that should be hidden everywhere
-	$technical_keys = [ 'cutting_width', 'cutting_height', 'unit_price', 'cutting_fee' ];
+	// Technical keys in raw meta
+	$technical_keys = [ 'cutting_width', 'cutting_height', 'unit_price', 'cutting_fee', 'cutting_fee_per_sheet' ];
 
 	/* ===== ADMIN (Edit order screen / popup) =====
-	 * Only hide the technical keys. Keep variation attrs & human labels visible.
+	 * Only hide technical keys. Keep variation attrs & human labels visible.
 	 */
 	if ( is_admin() ) {
 		$filtered = [];
 
 		foreach ( $formatted_meta as $fm ) {
-			$dk = $fm->display_key;
-
-			if ( in_array( $dk, $technical_keys, true ) ) {
-				// Hide raw ERP/meta keys in admin list
+			if ( in_array( $fm->key, $technical_keys, true ) ) {
 				continue;
 			}
-
 			$filtered[] = $fm;
 		}
 
@@ -279,17 +279,17 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 
 	/* ===== FRONTEND + EMAILS ===== */
 
-	// Human-facing keys we hide from Woo's default meta list
-	$hide_keys = [
+	// Human-facing labels we hide (msgids; will be translated via PO)
+	$hide_labels = [
 		'Width',
 		'Length',
 		'Cutting fee per sheet',
-		// Also hide technical ones on frontend/emails
-		'cutting_width',
-		'cutting_height',
-		'unit_price',
-		'cutting_fee',
+		__( 'Width', 'nh-theme' ),
+		__( 'Length', 'nh-theme' ),
+		__( 'Cutting fee per sheet', 'nh-theme' ),
 	];
+
+	$hide_labels = array_unique( array_filter( $hide_labels ) );
 
 	$attr_labels = [];
 	$product     = $item->get_product();
@@ -316,15 +316,19 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 	$filtered = [];
 
 	foreach ( $formatted_meta as $fm ) {
-		$dk = $fm->display_key;
 
-		// Hide our measured-sheet meta and technical keys
-		if ( in_array( $dk, $hide_keys, true ) ) {
+		// Hide our technical keys
+		if ( in_array( $fm->key, $technical_keys, true ) ) {
+			continue;
+		}
+
+		// Hide our human-facing measured sheet labels (any language, as long as PO matches)
+		if ( in_array( $fm->display_key, $hide_labels, true ) ) {
 			continue;
 		}
 
 		// Hide default variation attribute lines (we render them ourselves)
-		if ( ! empty( $attr_labels ) && in_array( $dk, $attr_labels, true ) ) {
+		if ( ! empty( $attr_labels ) && in_array( $fm->display_key, $attr_labels, true ) ) {
 			continue;
 		}
 
