@@ -453,30 +453,80 @@ body.dark-mode .woocommerce-error{
 }
 
 /* =========================
-   10) Product page — Attribute & Custom cut
+   10) Product page — Attribute & Custom cut (Dark Mode)
    ========================= */
-/* Attribute buttons */
-body.dark-mode .variations_form .nh-attr-btn{
+
+/* Base dark-mode buttons */
+body.dark-mode .variations_form .nh-attr-btn {
   background: var(--ui-bg-content);
   border-color: var(--ui-border) !important;
   color: var(--dm-primary);
 }
-body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):hover{
+
+/* Hover (unselected, enabled) */
+body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
   background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%) !important;
   border-color: var(--dm-primary) !important;
   color: #fff !important;
   transform: translateY(-1px);
 }
-body.dark-mode .variations_form .nh-attr-btn.is-selected{
+
+/* Selected */
+body.dark-mode .variations_form .nh-attr-btn.is-selected {
   background: var(--dm-primary) !important;
   border-color: var(--dm-primary) !important;
   color: #0f2019 !important;
 }
-body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
+
+/* Selected hover (pressed) */
+body.dark-mode .variations_form .nh-attr-btn.is-selected:hover {
   background: var(--dm-forest) !important;
   border-color: var(--dm-forest) !important;
   color: #fff !important;
 }
+
+/* Disabled (impossible combination) */
+body.dark-mode .variations_form .nh-attr-btn.is-disabled,
+body.dark-mode .variations_form .nh-attr-btn[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--dm-surface) 92%, var(--dm-primary) 8%) !important;
+  border-color: color-mix(in srgb, var(--dm-border, #46534a) 60%, var(--dm-primary) 40%) !important;
+  color: color-mix(in srgb, var(--dm-text, #d4d7d5) 70%, var(--dm-primary) 30%) !important;
+  transform: none !important;
+  filter: grayscale(0.3);
+}
+
+/* Disabled hover override */
+body.dark-mode .variations_form .nh-attr-btn.is-disabled:hover {
+  background: color-mix(in srgb, var(--dm-surface) 92%, var(--dm-primary) 8%) !important;
+  border-color: color-mix(in srgb, var(--dm-border, #46534a) 60%, var(--dm-primary) 40%) !important;
+  color: color-mix(in srgb, var(--dm-text, #d4d7d5) 70%, var(--dm-primary) 30%) !important;
+  transform: none !important;
+}
+
+/* ============================================
+   OUT-OF-STOCK (selected variation)
+   ============================================ */
+body.dark-mode .variations_form .nh-attr-btn.is-oos,
+body.dark-mode .variations_form .nh-attr-btn.is-selected.is-oos {
+  background: #4C1A1A !important;   /* deep muted red */
+  border-color: #B94E4E !important; /* warm medium red border */
+  color: #F2B8B5 !important;        /* soft readable red text */
+  box-shadow: 0 0 0 1px #B94E4E;
+  transform: none !important;
+}
+
+/* Hover stays identical */
+body.dark-mode .variations_form .nh-attr-btn.is-oos:hover,
+body.dark-mode .variations_form .nh-attr-btn.is-selected.is-oos:hover {
+  background: #4C1A1A !important;
+  border-color: #B94E4E !important;
+  color: #F2B8B5 !important;
+  box-shadow: 0 0 0 1px #B94E4E;
+  transform: none !important;
+}
+
 
 /* =========================================
    Custom cut size control — Dark Mode v2
@@ -982,13 +1032,14 @@ body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):
   transform: translateY(-1px);
 }
 
-/* Active / selected */
-body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected{
+/* Active / selected (but NOT out-of-stock) */
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:not(.is-oos){
   background: var(--dm-primary) !important;
   border-color: var(--dm-primary) !important;
   color: #0f2019 !important;
 }
-body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:hover{
+
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:not(.is-oos):hover{
   background: var(--dm-forest) !important;
   border-color: var(--dm-forest) !important;
   color: #fff !important;

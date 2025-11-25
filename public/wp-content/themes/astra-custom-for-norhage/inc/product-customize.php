@@ -164,6 +164,7 @@ add_action( 'wp_enqueue_scripts', function () {
 
 	// 2) Attribute buttons (for selects → buttons)
 	wp_enqueue_script( 'wc-add-to-cart-variation' );
+
 	if ( file_exists( $theme_dir . '/assets/js/nh-attr-buttons.js' ) ) {
 		wp_enqueue_script(
 			'nh-attr-buttons',
@@ -171,6 +172,14 @@ add_action( 'wp_enqueue_scripts', function () {
 			[ 'jquery', 'wc-add-to-cart-variation' ],
 			filemtime( $theme_dir . '/assets/js/nh-attr-buttons.js' ),
 			true
+		);
+
+		wp_localize_script(
+			'nh-attr-buttons',
+			'NH_ATTR_I18N',
+			[
+				'all_oos_msg' => __( 'Sorry, all combinations are unavailable.', 'nh-theme' ),
+			]
 		);
 	}
 
