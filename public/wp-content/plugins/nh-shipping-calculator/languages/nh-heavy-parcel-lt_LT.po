@@ -1,0 +1,128 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Universal Shipping Calculator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 00:00+0000\n"
+"PO-Revision-Date: 2025-11-25 13:45+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: includes/class-nhgp-admin.php
+msgid "Universal Shipping Calculator"
+msgstr "Universalus pristatymo skaičiuoklis"
+
+#: includes/class-nhgp-admin.php
+msgid "Shipping Calculator"
+msgstr "Pristatymo skaičiuoklė"
+
+#: includes/class-nhgp-admin.php
+msgid "Heavy parcels"
+msgstr "Sunkūs siuntiniai"
+
+#: includes/class-nhgp-admin.php
+msgid "Custom cutting"
+msgstr "Pjovimas pagal išmatavimus"
+
+#: includes/class-nhgp-admin.php
+msgid "Heavy tiers"
+msgstr "Svorio lygiai"
+
+#: includes/class-nhgp-admin.php
+msgid "Enable rule"
+msgstr "Įjungti taisyklę"
+
+#: includes/class-nhgp-admin.php
+msgid "Enabled"
+msgstr "Įjungta"
+
+#: includes/class-nhgp-admin.php
+msgid ""
+"When total cart weight reaches a level, override the Flat rate with that "
+"level’s amount. The active level will be shown as \"(Heavy L1–L5)\" after the "
+"shipping method name."
+msgstr ""
+"Kai bendra krepšelio masė pasiekia nustatytą lygį, fiksuoto įkainio kaina "
+"pakeičiama to lygio suma. Aktyvus lygis bus rodomas kaip „(Heavy L1–L5)“ po "
+"pristatymo metodo pavadinimu."
+
+#: includes/class-nhgp-admin.php
+msgid "Level %d"
+msgstr "Lygis %d"
+
+#: includes/class-nhgp-admin.php
+msgid "Weight ≥"
+msgstr "Svoris ≥"
+
+#: includes/class-nhgp-admin.php
+msgid "Amount"
+msgstr "Suma"
+
+#: includes/class-nhgp-admin.php
+msgid ""
+"Tip: Keep ONE Flat rate in your zone. Below Level 1 your normal class costs "
+"apply."
+msgstr ""
+"Patarimas: zonoje naudokite tik VIENĄ fiksuoto įkainio pristatymo metodą. "
+"Žemiau 1 lygio taikomi įprasti pristatymo klasių įkainiai."
+
+#: includes/class-nhgp-admin.php
+msgid "Custom-cut size rules"
+msgstr "Pjovimo dydžių taisyklės"
+
+#: includes/class-nhgp-admin.php
+msgid ""
+"Custom-cut items with a width/height will be mapped to a shipping class using "
+"the rules below. The feature is always enabled for items that have the custom-"
+"cut flag. The active shipping class name will be appended in brackets after "
+"the Flat rate name."
+msgstr ""
+"Pagal išmatavimus pjaunami gaminiai (su pločio ir aukščio reikšmėmis) bus "
+"priskiriami pristatymo klasėms pagal žemiau esančias taisykles. Ši funkcija "
+"visada įjungta gaminiams su pažymėtu pjovimo požymiu. Aktyvios pristatymo "
+"klasės pavadinimas bus pridėtas skliausteliuose po fiksuoto įkainio "
+"pavadinimo."
+
+#: includes/class-nhgp-admin.php
+msgid "Rule %d"
+msgstr "Taisyklė %d"
+
+#: includes/class-nhgp-admin.php
+msgid "Height ≤"
+msgstr "Aukštis ≤"
+
+#: includes/class-nhgp-admin.php
+msgid "Shipping class"
+msgstr "Pristatymo klasė"
+
+#: includes/class-nhgp-admin.php
+msgid "Leave the row empty (no width, no height, no class) to ignore this rule."
+msgstr ""
+"Palikite eilutę tuščią (be pločio, aukščio ir klasės), jei nenorite taikyti "
+"šios taisyklės."
+
+#: includes/class-nhgp-admin.php
+msgid "Default class (if no rule matches)"
+msgstr "Numatytoji klasė (jei neatitinka nė viena taisyklė)"
+
+#: includes/class-nhgp-admin.php
+msgid ""
+"Used when a custom-cut item is larger than all defined rules and has no "
+"product-specific fallback."
+msgstr ""
+"Naudojama, kai pjovimo gaminys yra didesnis už visas apibrėžtas taisykles ir "
+"neturi atskiros numatytos klasės produkto lygiu."
+
+#: includes/class-nhgp-admin.php
+msgid "— none —"
+msgstr "— nėra —"
+
+#: includes/class-nhgp-overrides.php
+msgid "Heavy %s"
+msgstr "Sunkus %s"
