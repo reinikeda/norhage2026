@@ -126,11 +126,30 @@ jQuery(function ($) {
     });
     return Array.from(map.values());
   }
+
+  // --- BUNDLE BUTTON ENABLE / DISABLE ---
+  function updateBundleButtonState() {
+    const $btn = $('#add-bundle-to-cart');
+    if (!$btn.length) return;
+
+    const items        = collectDesiredAddons();
+    const anyQty       = items.length > 0;
+    const variationOk  = isVariationChosen();
+    const shouldEnable = anyQty && variationOk;
+
+    $btn.prop('disabled', !shouldEnable)
+        .toggleClass('is-disabled', !shouldEnable)
+        .attr('aria-disabled', shouldEnable ? 'false' : 'true');
+  }
+
   function updateGrandTotal() {
     const items  = collectDesiredAddons();
     const addOns = items.reduce((sum, it) => sum + it.unit * it.qty, 0);
     const main   = INCLUDE_MAIN_IN_TOTAL ? getMainDisplayedTotal() : 0;
     $('#bundle-total-amount').html(fmt(main + addOns));
+
+    // also keep the button state in sync with current selections
+    updateBundleButtonState();
   }
 
   // Observe the main total changing
@@ -171,6 +190,7 @@ jQuery(function ($) {
     setTimeout(updateGrandTotal, 0);
   });
 
+  // initial totals & button state
   updateGrandTotal();
 
   // --- HELPERS for building the MAIN payload correctly ---
@@ -254,16 +274,22 @@ jQuery(function ($) {
     const $btn = $(e.target).closest('#add-bundle-to-cart');
     if (!$btn.length) return;
 
+    // if disabled (no qty or no variation), do nothing
+    if ($btn.is(':disabled')) {
+      e.preventDefault();
+      return;
+    }
+
     e.preventDefault();
     if (posting) return;
 
     const pid = getParentProductId();
-    if (!pid) { 
+    if (!pid) {
       const msg = 'Please refresh the page and try again (product id missing).';
       const $wrap = $('.woocommerce-notices-wrapper, form.cart').first();
       if ($wrap.length){ $wrap.prepend('<ul class="woocommerce-error" role="alert"><li>'+msg+'</li></ul>'); }
       else { alert(msg); }
-      return; 
+      return;
     }
 
     posting = true;
@@ -331,6 +357,7 @@ jQuery(function ($) {
               refreshFragments().always(function(){
                 posting = false;
                 $btn.prop('disabled', false).removeClass('is-busy');
+                updateBundleButtonState(); // re-sync after cart operations
                 if (REDIRECT_AFTER_ADD && cartUrl) window.location = cartUrl;
               });
             });

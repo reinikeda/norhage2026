@@ -234,13 +234,18 @@ function nh_render_bundle_box() {
 	echo '<div class="nc-bundle-footer">';
 	/* translators: label before the computed bundle total price */
 	echo '  <div class="nc-total">' . esc_html__( 'Total:', 'nh-theme' ) . ' <strong id="bundle-total-amount">' . wp_kses_post( wc_price( 0 ) ) . '</strong></div>';
-	echo '  <button type="button" id="add-bundle-to-cart" class="button alt nc-bundle-btn">' . esc_html__( 'Add all to basket', 'nh-theme' ) . '</button>';
+
+	// *** CHANGED: disabled by default + extra classes for JS/visual state ***
+	echo '  <button type="button" id="add-bundle-to-cart" class="button alt nc-bundle-btn nh-bundle-add-all is-disabled" disabled aria-disabled="true">'
+	     . esc_html__( 'Add all to basket', 'nh-theme' ) .
+	     '</button>';
+
 	echo '</div>';
 
 	echo '</form>';
 	echo '</section>';
 }}
- 
+
 add_action( 'wp_enqueue_scripts', function () {
 	if ( ! is_product() ) return;
 
