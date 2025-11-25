@@ -131,6 +131,7 @@ function nh_footer_menu_block($title, $locations){
           type="email"
           name="email"
           placeholder="<?php esc_attr_e('Your email address', 'nh-theme'); ?>"
+          autocomplete="email"
           required
         >
         <button class="nh-nl__btn" type="submit"><?php esc_html_e('Subscribe', 'nh-theme'); ?></button>
