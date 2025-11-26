@@ -428,6 +428,7 @@ body.dark-mode .woocommerce ul.products li.product a.nh-btn-customize:hover{
 body.dark-mode .price,
 body.dark-mode .woocommerce-Price-amount,
 body.dark-mode .amount,
+body.dark-mode .price span[aria-hidden="true"],
 body.dark-mode .woocommerce-product-rating{ color: var(--dm-primary); }
 
 body.dark-mode input.qty,
@@ -657,7 +658,7 @@ body.dark-mode .nh-bundle-qty-wrap .plus:hover {
 /* Input */
 body.dark-mode .quantity.buttons_added .qty,
 body.dark-mode .nh-bundle-qty-wrap .qty {
-  width: 56px;              /* enough for 3 digits */
+  /* width: 56px;              enough for 3 digits */
   height: 38px;
   text-align: center;
   background: transparent;  /* same plate as wrapper */

@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.6.0
+ * Version: 1.6.1
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -33,7 +33,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.6.0'
+		'1.6.1'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,7 +41,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.6.0',
+		'1.6.1',
 		true
 	);
 
@@ -142,14 +142,47 @@ function nhf_expand_with_variations( array $parent_ids ): array {
 	return array_values( array_unique( array_map( 'absint', $all ) ) );
 }
 
+/**
+ * Helper: get current "Sale" category slug from locale
+ */
+function nhf_get_sale_slug(): string {
+	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+
+	$map = [
+		// Lithuanian
+		'lt_LT' => 'ispardavimas',
+
+		// Norwegian (Bokmål)
+		'nb_NO' => 'salg',
+
+		// Swedish
+		'sv_SE' => 'rea',
+
+		// Finnish
+		'fi_FI' => 'ale',
+
+		// German
+		'de_DE' => 'sale',
+	];
+
+	if ( isset( $map[ $locale ] ) ) {
+		return $map[ $locale ];
+	}
+
+	// Generic fallback
+	return 'sale';
+}
+
 /* ------------------------------------------------------------
- *  Category Tree (unchanged)
+ *  Category Tree
  * ------------------------------------------------------------ */
 function nhf_render_categories() {
 	$current_term_id = 0;
 	if ( is_product_taxonomy() ) {
 		$obj = get_queried_object();
-		if ( isset( $obj->term_id ) ) $current_term_id = (int) $obj->term_id;
+		if ( isset( $obj->term_id ) ) {
+			$current_term_id = (int) $obj->term_id;
+		}
 	}
 
 	$categories = get_terms([
@@ -163,9 +196,18 @@ function nhf_render_categories() {
 		return;
 	}
 
+	// Get the "Sale" slug for current locale (so we can hide that top-level cat)
+	$sale_slug = nhf_get_sale_slug();
+
 	echo '<ul class="nhf-cat-list">';
 
 	foreach ( $categories as $cat ) {
+
+		// Skip "Sale" category for this language
+		if ( $sale_slug && $cat->slug === $sale_slug ) {
+			continue;
+		}
+
 		$is_current  = ( $cat->term_id === $current_term_id );
 		$is_ancestor = ( $current_term_id && term_is_ancestor_of( $cat->term_id, $current_term_id, 'product_cat' ) );
 		$is_open     = ( $is_current || $is_ancestor );
