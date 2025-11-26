@@ -73,6 +73,33 @@ function nh_get_services_url() {
 	return home_url( '/' . trim( $slug, '/' ) . '/' );
 }
 
+if ( ! function_exists( 'nh_get_faq_url' ) ) {
+	/**
+	 * Get FAQ page URL in a translatable way.
+	 *
+	 * Default: looks for a page with slug "frequently-asked-questions-faq"
+	 * (translated via .po). If the page is not found, falls back to home_url() with that slug.
+	 *
+	 * You can override via the `nh_get_faq_url` filter for WPML/Polylang, etc.
+	 */
+	function nh_get_faq_url() {
+		// Translatable/default slug
+		$slug = sanitize_title(
+			_x( 'frequently-asked-questions-faq', 'Default FAQ page slug', 'nh-theme' )
+		);
+
+		$page = get_page_by_path( $slug );
+		if ( $page ) {
+			$url = get_permalink( $page );
+		} else {
+			// Fallback if page doesn’t exist (yet)
+			$url = home_url( '/' . $slug . '/' );
+		}
+
+		return apply_filters( 'nh_get_faq_url', $url, $page, $slug );
+	}
+}
+
 /* --------------------------------------------------------------------------
  * Assets
  * ----------------------------------------------------------------------- */
@@ -157,18 +184,32 @@ add_action( 'astra_masthead_top', function () {
 		$left_menu_html .= '</ul>';
 	}
 
+	// Phone: text and href both translatable via .po.
+	// Example default values (you translate them per language):
+	$phone_display = __( '+49 176 65 10 6609', 'nh-theme' );
+	$phone_href    = __( '+4917665106609', 'nh-theme' );
+
+	// Build tel: link (strip spaces just in case)
+	$phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
+
 	?>
 	<div class="nh-utility" role="navigation" aria-label="<?php echo esc_attr__( 'Utility bar', 'nh-theme' ); ?>">
 		<div class="nh-utility__left">
 			<?php echo $left_menu_html; // phpcs:ignore ?>
 		</div>
 		<div class="nh-utility__right">
-			<a class="nh-utility__tel" href="tel:+4917665106609">
-				<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>" alt="Phone icon" class="nh-icon nh-icon--phone" width="18" height="18" />
-				+49 176 65 10 6609
+			<a class="nh-utility__tel" href="<?php echo esc_attr( $phone_href_clean ); ?>">
+				<img
+					src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>"
+					alt="<?php echo esc_attr__( 'Phone icon', 'nh-theme' ); ?>"
+					class="nh-icon nh-icon--phone"
+					width="18"
+					height="18"
+				/>
+				<?php echo esc_html( $phone_display ); ?>
 			</a>
 			<span class="nh-utility__sep" aria-hidden="true">·</span>
-			<a class="nh-utility__faq" href="<?php echo esc_url( home_url( 'frequently-asked-questions-faq/' ) ); ?>">
+			<a class="nh-utility__faq" href="<?php echo esc_url( nh_get_faq_url() ); ?>">
 				<?php echo esc_html__( 'FAQ', 'nh-theme' ); ?>
 			</a>
 		</div>

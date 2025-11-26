@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-11-24 08:28:57+00:00\n"
+"POT-Creation-Date: 2025-11-26 07:22:59+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,55 +28,72 @@ msgstr ""
 msgid "Footer — Bottom Bar"
 msgstr ""
 
-#: functions.php:111 inc/services.php:26 inc/services.php:51
+#: functions.php:88
+msgctxt "Default FAQ page slug"
+msgid "frequently-asked-questions-faq"
+msgstr ""
+
+#: functions.php:181 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr ""
 
-#: functions.php:112 inc/blog.php:25 inc/hero.php:12
+#: functions.php:182 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
 msgstr ""
 
-#: functions.php:113
+#: functions.php:183
 msgid "Contact Us"
 msgstr ""
 
-#: functions.php:118
+#: functions.php:189 template-parts/footer/footer.php:13
+msgid "+49 176 65 10 6609"
+msgstr ""
+
+#: functions.php:190
+msgid "+4917665106609"
+msgstr ""
+
+#: functions.php:196
 msgid "Utility bar"
 msgstr ""
 
-#: functions.php:129
+#: functions.php:204
+msgid "Phone icon"
+msgstr ""
+
+#: functions.php:213
 msgid "FAQ"
 msgstr ""
 
-#: functions.php:192
+#: functions.php:276
 msgid "Shop by Category"
 msgstr ""
 
-#: functions.php:239 functions.php:258
+#: functions.php:323 functions.php:342
 msgid "Customize"
 msgstr ""
 
-#: functions.php:240
+#: functions.php:324
 msgid "Customize “%s”"
 msgstr ""
 
-#: functions.php:263
+#: functions.php:347
 msgid "Select options"
 msgstr ""
 
-#: functions.php:285
+#: functions.php:369
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:314
+#: functions.php:398
 msgid "Footer — Shop Categories"
 msgstr ""
 
-#: functions.php:315
+#: functions.php:399
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr ""
 
-#: functions.php:316
+#: functions.php:400
 msgid "Footer — Legal/Policies"
 msgstr ""
 
@@ -211,7 +228,7 @@ msgstr ""
 msgid "Total:"
 msgstr ""
 
-#: inc/bundle-box.php:237
+#: inc/bundle-box.php:240
 msgid "Add all to basket"
 msgstr ""
 
@@ -257,7 +274,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:141 inc/order-attributes.php:154
 #: inc/order-attributes.php:289 inc/product-customize.php:116
-#: inc/product-customize.php:374 inc/product-customize.php:445
+#: inc/product-customize.php:383 inc/product-customize.php:454
 msgid "Cutting fee per sheet"
 msgstr ""
 
@@ -330,12 +347,12 @@ msgid "Remove row"
 msgstr ""
 
 #: inc/order-attributes.php:136 inc/order-attributes.php:287
-#: inc/product-customize.php:359 inc/product-customize.php:430
+#: inc/product-customize.php:368 inc/product-customize.php:439
 msgid "Width"
 msgstr ""
 
 #: inc/order-attributes.php:140 inc/order-attributes.php:288
-#: inc/product-customize.php:360 inc/product-customize.php:434
+#: inc/product-customize.php:369 inc/product-customize.php:443
 msgid "Length"
 msgstr ""
 
@@ -395,37 +412,41 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: inc/product-customize.php:292
-msgid "Please enter width and length (mm)."
-msgstr ""
-
-#: inc/product-customize.php:299
-msgid "Minimum width is %d mm."
-msgstr ""
-
-#: inc/product-customize.php:300
-msgid "Maximum width is %d mm."
+#: inc/product-customize.php:181
+msgid "Sorry, all combinations are unavailable."
 msgstr ""
 
 #: inc/product-customize.php:301
+msgid "Please enter width and length (mm)."
+msgstr ""
+
+#: inc/product-customize.php:308
+msgid "Minimum width is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:309
+msgid "Maximum width is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:310
 msgid "Minimum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:302
+#: inc/product-customize.php:311
 msgid "Maximum length is %d mm."
 msgstr ""
 
-#: inc/product-customize.php:312
+#: inc/product-customize.php:321
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
-#: inc/product-customize.php:315
+#: inc/product-customize.php:324
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
 
 #. translators: product category name for items currently on sale
 
-#: inc/sale-category-sync.php:48
+#: inc/sale-category-sync.php:93
 msgid "Sale"
 msgstr ""
 
@@ -473,10 +494,6 @@ msgstr ""
 
 #: template-parts/footer/footer.php:12
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
-msgstr ""
-
-#: template-parts/footer/footer.php:13
-msgid "+49 176 65 10 6609"
 msgstr ""
 
 #: template-parts/footer/footer.php:14
@@ -575,23 +592,23 @@ msgstr ""
 msgid "Your email address"
 msgstr ""
 
-#: template-parts/footer/footer.php:136
+#: template-parts/footer/footer.php:137
 msgid "Subscribe"
 msgstr ""
 
-#: template-parts/footer/footer.php:138
+#: template-parts/footer/footer.php:139
 msgid "By subscribing you agree to our"
 msgstr ""
 
-#: template-parts/footer/footer.php:139
+#: template-parts/footer/footer.php:140
 msgid "Privacy Policy"
 msgstr ""
 
-#: template-parts/footer/footer.php:151
+#: template-parts/footer/footer.php:152
 msgid "B2B Portal"
 msgstr ""
 
-#: template-parts/footer/footer.php:154
+#: template-parts/footer/footer.php:155
 msgid "Legal bottom"
 msgstr ""
 
