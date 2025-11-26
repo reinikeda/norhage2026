@@ -4,11 +4,13 @@ if (!defined('ABSPATH')) exit;
 
 wp_enqueue_style('nhhb-newsletter'); // registered in front_assets()
 
-// Read saved settings
-$title        = isset($data['title'])        ? sanitize_text_field($data['title'])        : __('Don’t Miss Out Latest Trends & Offers','nhhb');
-$text         = isset($data['text'])         ? sanitize_text_field($data['text'])         : __('Register to receive news about the latest offers & discount codes','nhhb');
-$placeholder  = isset($data['placeholder'])  ? sanitize_text_field($data['placeholder'])  : __('Enter your email','nhhb');
-$btn_text     = isset($data['btn_text'])     ? sanitize_text_field($data['btn_text'])     : __('Subscribe','nhhb');
+// Visible texts: ALWAYS from translations (PO), not from saved data.
+$title       = __('Don’t Miss Out Latest Trends & Offers', 'nhhb');
+$text        = __('Register to receive news about the latest offers & discount codes', 'nhhb');
+$placeholder = __('Enter your email', 'nhhb');
+$btn_text    = __('Subscribe', 'nhhb');
+
+// Only technical settings come from $data (per-site config)
 $action       = isset($data['action'])       ? esc_url($data['action'])                   : '';
 $method       = isset($data['method'])       ? strtoupper(sanitize_text_field($data['method'])) : 'POST';
 $consent_text = isset($data['consent_text']) ? sanitize_text_field($data['consent_text']) : '';
@@ -25,13 +27,23 @@ if (!in_array($method, ['GET','POST'], true)) {
       <?php if ($text):  ?><p class="nhhb-nl-text"><?php echo esc_html($text); ?></p><?php endif; ?>
     </div>
 
-    <form class="nhhb-nl-form" action="<?php echo $action ? esc_url($action) : '#'; ?>" method="<?php echo esc_attr($method); ?>" <?php echo $action ? '' : 'onsubmit="return false"'; ?>>
+    <form class="nhhb-nl-form"
+          action="<?php echo $action ? esc_url($action) : '#'; ?>"
+          method="<?php echo esc_attr($method); ?>"
+          <?php echo $action ? '' : 'onsubmit="return false"'; ?>>
+
       <label class="nhhb-nl-field">
-        <input type="email" name="email" required placeholder="<?php echo esc_attr($placeholder); ?>" aria-label="<?php esc_attr_e('Email address','nhhb'); ?>">
+        <input type="email"
+               name="email"
+               required
+               placeholder="<?php echo esc_attr($placeholder); ?>"
+               aria-label="<?php esc_attr_e('Email address','nhhb'); ?>">
       </label>
+
       <button class="nhhb-nl-btn" type="<?php echo $action ? 'submit' : 'button'; ?>">
         <?php echo esc_html($btn_text); ?>
       </button>
+
       <?php if ($consent_text): ?>
         <p class="nhhb-nl-consent"><?php echo esc_html($consent_text); ?></p>
       <?php endif; ?>
