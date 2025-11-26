@@ -166,8 +166,8 @@ class NH_FAQ_Render {
             echo '<div class="nh-faq-card-head">';
             echo '<h2 class="nh-faq-topic-heading" id="'.esc_attr($anchor).'-label">'. esc_html($g['label']) .'</h2>';
             echo '<div class="nh-faq-toolbar">';
-            echo '  <button type="button" class="nh-faq-tool" data-nh="expand-all">'. esc_html__('Expand all','nh-faq') .'</button>';
-            echo '  <button type="button" class="nh-faq-tool" data-nh="collapse-all">'. esc_html__('Collapse all','nh-faq') .'</button>';
+            echo '  <button type="button" class="nh-faq-tool" data-nh="expand-all">'. esc_html__( 'Expand all', 'nh-faq' ) .'</button>';
+            echo '  <button type="button" class="nh-faq-tool" data-nh="collapse-all">'. esc_html__( 'Collapse all', 'nh-faq' ) .'</button>';
             echo '</div>';
             echo '</div>';
 

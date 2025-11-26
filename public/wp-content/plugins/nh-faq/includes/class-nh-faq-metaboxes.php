@@ -22,7 +22,7 @@ class NH_FAQ_Metaboxes {
     public function add_boxes() {
         add_meta_box(
             'nh_faq_details',
-            'FAQ Details',
+            __( 'FAQ Details', 'nh-faq' ),
             [$this,'render'],
             'nh_faq',
             'normal',
@@ -65,19 +65,28 @@ class NH_FAQ_Metaboxes {
 
         <div class="nh-grid">
             <div>
-                <h4>Attach to products</h4>
+                <h4><?php echo esc_html__( 'Attach to products', 'nh-faq' ); ?></h4>
 
                 <div class="nh-products-wrap">
                     <div class="nh-products-toolbar">
-                        <input type="search" id="nh-filter" class="nh-products-filter" placeholder="Type to filter…">
-                        <button type="button" class="button" id="nh-select-all">Select visible</button>
-                        <button type="button" class="button" id="nh-clear-all">Clear visible</button>
+                        <input
+                            type="search"
+                            id="nh-filter"
+                            class="nh-products-filter"
+                            placeholder="<?php echo esc_attr__( 'Type to filter…', 'nh-faq' ); ?>"
+                        >
+                        <button type="button" class="button" id="nh-select-all">
+                            <?php echo esc_html__( 'Select visible', 'nh-faq' ); ?>
+                        </button>
+                        <button type="button" class="button" id="nh-clear-all">
+                            <?php echo esc_html__( 'Clear visible', 'nh-faq' ); ?>
+                        </button>
                         <span class="nh-muted" id="nh-count"></span>
                     </div>
 
-                    <div class="nh-products-list" id="nh-products-list" aria-label="Products checklist">
+                    <div class="nh-products-list" id="nh-products-list" aria-label="<?php echo esc_attr__( 'Products checklist', 'nh-faq' ); ?>">
                         <?php if ( empty( $products ) ) : ?>
-                            <p class="nh-muted">No products found.</p>
+                            <p class="nh-muted"><?php echo esc_html__( 'No products found.', 'nh-faq' ); ?></p>
                         <?php else : ?>
                             <?php foreach ( $products as $p ) : ?>
                                 <label class="nh-item" data-title="<?php echo esc_attr( mb_strtolower( get_the_title( $p ) ) ); ?>">
@@ -90,18 +99,30 @@ class NH_FAQ_Metaboxes {
                     </div>
 
                     <p class="nh-muted" style="margin-top:.5rem;">
-                        Tip: use the filter to narrow the list, then “Select visible”.
+                        <?php echo esc_html__( 'Tip: use the filter to narrow the list, then “Select visible”.', 'nh-faq' ); ?>
                     </p>
                     <p class="nh-muted" style="margin-top:.25rem;">
-                        To show this FAQ on the <strong>Global FAQ page</strong>, assign one or more <em>FAQ Topics</em> in the sidebar (“FAQ Topics”).
+                        <?php
+                        printf(
+                            /* translators: 1: Global FAQ page, 2: FAQ Topics */
+                            esc_html__( 'To show this FAQ on the %1$s, assign one or more %2$s in the sidebar.', 'nh-faq' ),
+                            esc_html__( 'Global FAQ page', 'nh-faq' ),
+                            esc_html__( 'FAQ Topics', 'nh-faq' )
+                        );
+                        ?>
                     </p>
                 </div>
             </div>
 
             <div>
-                <h4>Last reviewed</h4>
-                <input type="date" name="nh_last_reviewed" value="<?php echo esc_attr( $last ?: date('Y-m-d') ); ?>">
-                <p class="nh-muted">Keep answers fresh for support and SEO.</p>
+                <h4><?php echo esc_html__( 'Last reviewed', 'nh-faq' ); ?></h4>
+                <input
+                    type="date"
+                    name="nh_last_reviewed"
+                    value="<?php echo esc_attr( $last ?: date( 'Y-m-d' ) ); ?>">
+                <p class="nh-muted">
+                    <?php echo esc_html__( 'Keep answers fresh for support and SEO.', 'nh-faq' ); ?>
+                </p>
             </div>
         </div>
 
@@ -117,7 +138,8 @@ class NH_FAQ_Metaboxes {
             const total   = list.querySelectorAll('.nh-item').length;
             const visible = list.querySelectorAll('.nh-item:not([hidden])').length;
             const checked = list.querySelectorAll('.nh-item input:checked').length;
-            count.textContent = checked + ' selected • ' + visible + '/' + total + ' visible';
+            count.textContent = checked + ' <?php echo esc_js( __( 'selected', 'nh-faq' ) ); ?> • ' +
+                                visible + '/' + total + ' <?php echo esc_js( __( 'visible', 'nh-faq' ) ); ?>';
           }
           updateCount();
 
@@ -152,25 +174,33 @@ class NH_FAQ_Metaboxes {
      * Global visibility is determined solely by having Topics assigned.
      */
     public function save( $post_id, $post ) {
-        if ( ! isset($_POST['nh_faq_nonce']) || ! wp_verify_nonce( $_POST['nh_faq_nonce'], 'nh_faq_save' ) ) return;
-        if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+        if ( ! isset( $_POST['nh_faq_nonce'] ) || ! wp_verify_nonce( $_POST['nh_faq_nonce'], 'nh_faq_save' ) ) return;
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
         if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
         // Last reviewed
-        $last = isset($_POST['nh_last_reviewed']) ? sanitize_text_field($_POST['nh_last_reviewed']) : '';
-        if ( $last ) update_post_meta( $post_id, 'nh_last_reviewed', $last );
-        else delete_post_meta( $post_id, 'nh_last_reviewed' );
+        $last = isset( $_POST['nh_last_reviewed'] ) ? sanitize_text_field( wp_unslash( $_POST['nh_last_reviewed'] ) ) : '';
+        if ( $last ) {
+            update_post_meta( $post_id, 'nh_last_reviewed', $last );
+        } else {
+            delete_post_meta( $post_id, 'nh_last_reviewed' );
+        }
 
         // Products from checkbox list
         $products = [];
-        if ( isset($_POST['nh_products']) && is_array($_POST['nh_products']) ) {
+        if ( isset( $_POST['nh_products'] ) && is_array( $_POST['nh_products'] ) ) {
             foreach ( $_POST['nh_products'] as $id ) {
                 $id = (int) $id;
-                if ( $id > 0 ) $products[] = $id;
+                if ( $id > 0 ) {
+                    $products[] = $id;
+                }
             }
         }
-        if ( $products ) update_post_meta( $post_id, 'nh_products', $products );
-        else delete_post_meta( $post_id, 'nh_products' );
+        if ( $products ) {
+            update_post_meta( $post_id, 'nh_products', $products );
+        } else {
+            delete_post_meta( $post_id, 'nh_products' );
+        }
 
         // Remove legacy keys to avoid confusion
         delete_post_meta( $post_id, 'nh_scope' );
@@ -183,7 +213,7 @@ class NH_FAQ_Metaboxes {
     public function add_product_box() {
         add_meta_box(
             'nh_faq_attached',
-            'FAQs attached to this product',
+            __( 'FAQs attached to this product', 'nh-faq' ),
             function( $post ) {
                 $faqs = get_posts([
                     'post_type'   => 'nh_faq',
@@ -195,14 +225,16 @@ class NH_FAQ_Metaboxes {
                         'compare' => 'LIKE',
                     ]],
                 ]);
-                if ( empty($faqs) ) {
-                    echo '<p>No FAQs attached.</p>';
+
+                if ( empty( $faqs ) ) {
+                    echo '<p>' . esc_html__( 'No FAQs attached.', 'nh-faq' ) . '</p>';
                     return;
                 }
+
                 echo '<ul>';
                 foreach ( $faqs as $f ) {
-                    $edit = get_edit_post_link($f->ID);
-                    echo '<li><a href="'.esc_url($edit).'">'.esc_html(get_the_title($f)).'</a></li>';
+                    $edit = get_edit_post_link( $f->ID );
+                    echo '<li><a href="' . esc_url( $edit ) . '">' . esc_html( get_the_title( $f ) ) . '</a></li>';
                 }
                 echo '</ul>';
             },
@@ -218,23 +250,25 @@ class NH_FAQ_Metaboxes {
      */
     public function cols( $cols ) {
         $ins = [
-            'nh_last'  => 'Last reviewed',
-            'nh_count' => '#Products',
+            'nh_last'  => __( 'Last reviewed', 'nh-faq' ),
+            'nh_count' => __( '#Products', 'nh-faq' ),
         ];
         $new = [];
         foreach ( $cols as $k => $v ) {
-            $new[$k] = $v;
-            if ( $k === 'title' ) { $new = array_merge( $new, $ins ); }
+            $new[ $k ] = $v;
+            if ( 'title' === $k ) {
+                $new = array_merge( $new, $ins );
+            }
         }
         return $new;
     }
 
     public function coldata( $col, $post_id ) {
-        if ( $col === 'nh_last' ) {
-            echo esc_html( get_post_meta($post_id, 'nh_last_reviewed', true ) ?: '—' );
-        } elseif ( $col === 'nh_count' ) {
-            $arr = (array) get_post_meta($post_id, 'nh_products', true );
-            echo esc_html( count($arr) );
+        if ( 'nh_last' === $col ) {
+            echo esc_html( get_post_meta( $post_id, 'nh_last_reviewed', true ) ?: '—' );
+        } elseif ( 'nh_count' === $col ) {
+            $arr = (array) get_post_meta( $post_id, 'nh_products', true );
+            echo esc_html( count( $arr ) );
         }
     }
 }

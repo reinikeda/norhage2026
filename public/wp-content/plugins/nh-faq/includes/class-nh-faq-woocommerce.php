@@ -34,7 +34,10 @@ class NH_FAQ_Woo {
         $priority = apply_filters( 'nh_faq_tab_priority', 25, $tabs );
 
         $tabs['nh_faq'] = [
-            'title'    => apply_filters( 'nh_faq_tab_title', __( 'Questions & Answers', 'nh-faq' ) ),
+            'title'    => apply_filters(
+                'nh_faq_tab_title',
+                __( 'Questions & Answers', 'nh-faq' )
+            ),
             'priority' => $priority,
             'callback' => [ $this, 'render_faq_tab' ],
         ];
@@ -52,6 +55,7 @@ class NH_FAQ_Woo {
         }
 
         $renderer = new NH_FAQ_Render();
+
         echo $renderer->shortcode( [
             'scope'      => 'product',
             'product_id' => $product->get_id(),
@@ -70,7 +74,9 @@ class NH_FAQ_Woo {
      */
     private function has_product_faqs( $product_id ) {
         $product_id = absint( $product_id );
-        if ( ! $product_id ) return false;
+        if ( ! $product_id ) {
+            return false;
+        }
 
         $ids = get_posts( [
             'post_type'      => 'nh_faq',
