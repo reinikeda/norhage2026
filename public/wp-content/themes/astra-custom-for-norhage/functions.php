@@ -30,6 +30,49 @@ function norhage_register_menus() {
 }
 add_action( 'after_setup_theme', 'norhage_register_menus' );
 
+/**
+ * Locale-aware "Services" slug + URL helper.
+ * Adjust the $map values to match the actual slugs you use per site.
+ */
+function nh_get_services_slug() {
+	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+
+	$map = [
+		// Lithuanian
+		'lt_LT' => 'paslaugos',
+
+		// Norwegian (Bokmål) – example, change if needed
+		'nb_NO' => 'tjenester',
+
+		// Swedish – example
+		'sv_SE' => 'tjanster',
+
+		// Finnish – example
+		'fi_FI' => 'palvelut',
+
+		// German – example
+		'de_DE' => 'leistungen',
+	];
+
+	$slug = isset( $map[ $locale ] ) ? $map[ $locale ] : 'services';
+
+	/**
+	 * Filter to allow per-site override without editing theme files.
+	 *
+	 * @param string $slug   The resolved slug (without slashes).
+	 * @param string $locale Current site locale, e.g. 'lt_LT'.
+	 */
+	return apply_filters( 'nh_services_slug', $slug, $locale );
+}
+
+/**
+ * Convenience helper: full URL to the Services page.
+ */
+function nh_get_services_url() {
+	$slug = nh_get_services_slug();
+	return home_url( '/' . trim( $slug, '/' ) . '/' );
+}
+
 /* --------------------------------------------------------------------------
  * Assets
  * ----------------------------------------------------------------------- */
@@ -108,7 +151,7 @@ add_action( 'astra_masthead_top', function () {
 
 	if ( $left_menu_html === '' ) {
 		$left_menu_html  = '<ul class="nh-utility-menu">';
-		$left_menu_html .= '<li><a href="' . esc_url( home_url( '/services/' ) ) . '">' . esc_html__( 'Services', 'nh-theme' ) . '</a></li>';
+		$left_menu_html .= '<li><a href="' . esc_url( nh_get_services_url() ) . '">' . esc_html__( 'Services', 'nh-theme' ) . '</a></li>';
 		$left_menu_html .= '<li><a href="' . esc_url( get_permalink( get_option( 'page_for_posts' ) ) ) . '">' . esc_html__( 'Blog', 'nh-theme' ) . '</a></li>';
 		$left_menu_html .= '<li><a href="' . esc_url( home_url( '/contact-us/' ) ) . '">' . esc_html__( 'Contact Us', 'nh-theme' ) . '</a></li>';
 		$left_menu_html .= '</ul>';
