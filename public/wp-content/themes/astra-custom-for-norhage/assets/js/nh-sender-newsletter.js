@@ -33,21 +33,24 @@ jQuery(function ($) {
       })
         .done(function (resp) {
           if (resp && resp.success) {
-            showMessage(
-              $this,
-              (resp.data && resp.data.message) || 'Thank you! You are subscribed.',
-              'success'
-            );
-            // Reset only email field to keep consent text etc.
-            var emailInput = $this.find('input[name="email"]')[0];
-            if (emailInput) emailInput.value = '';
+              showMessage(
+                $this,
+                (resp.data && resp.data.message) || 'Thank you! You are subscribed.',
+                'success'
+              );
+              $this.find('input[name="email"]').val('');
           } else {
-            showMessage(
-              $this,
-              (resp && resp.data && resp.data.message) ||
-                'Sorry, subscription failed. Please try again.',
-              'error'
-            );
+              showMessage(
+                $this,
+                (resp && resp.data && resp.data.message) ||
+                  'Sorry, subscription failed. Please try again.',
+                'error'
+              );
+
+              // 🔥 Console debug output
+              if (resp && resp.data && resp.data.debug) {
+                console.warn("Sender debug:", resp.data.debug);
+              }
           }
         })
         .fail(function () {

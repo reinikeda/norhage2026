@@ -35,6 +35,7 @@ if (!in_array($method, ['GET','POST'], true)) {
       <label class="nhhb-nl-field">
         <input type="email"
                name="email"
+               autocomplete="email"
                required
                placeholder="<?php echo esc_attr($placeholder); ?>"
                aria-label="<?php esc_attr_e('Email address','nhhb'); ?>">

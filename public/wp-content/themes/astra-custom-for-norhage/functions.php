@@ -586,8 +586,30 @@ function nh_sender_subscribe() {
 		] );
 	}
 
+	// Build a readable error message from Sender
+	$public_error = '';
+	if ( is_array( $resp_body ) ) {
+		if ( ! empty( $resp_body['message'] ) ) {
+			$public_error = $resp_body['message'];
+		} elseif ( ! empty( $resp_body['errors'] ) ) {
+			$error_list = [];
+			foreach ( $resp_body['errors'] as $field => $msg ) {
+				$error_list[] = $field . ': ' . implode(', ', (array) $msg);
+			}
+			$public_error = implode(' | ', $error_list);
+		}
+	}
+
+	if ( $public_error === '' ) {
+		$public_error = 'Unknown error.';
+	}
+
 	wp_send_json_error( [
-		'message' => __( 'Sorry, subscription failed. Please try again later.', 'nh-theme' ),
-		'raw'     => $resp_body,
+		'message'   => 'Subscription failed: ' . $public_error,
+		'debug'     => [
+			'status' => $status,
+			'body'   => $resp_body,   // safe, contains no API key
+		],
 	] );
+
 }
