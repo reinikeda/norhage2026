@@ -1436,6 +1436,11 @@ input.shipping_method:checked ~ .nh-pickup-details{ display:block; }
 
 /* MOBILE DRAWER — ultra-compact secondary menu */
 @media (max-width: 1023px) {
+  
+  /* EXTRA BOTTOM SPACE so last menu items aren't blocked */
+  #nh-mobile-drawer .nh-drawer__panel {
+    padding-bottom: 4.5rem; /* adjust if needed */
+  }
 
   .drawer-menu--secondary {
     margin-top: 0.25rem;
