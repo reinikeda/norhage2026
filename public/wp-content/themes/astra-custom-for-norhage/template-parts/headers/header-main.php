@@ -155,15 +155,32 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
         </button>
       </header>
 
-      <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e('Primary menu','nh-theme'); ?>">
+      <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e( 'Mobile navigation', 'nh-theme' ); ?>">
+
         <?php
+        // Primary menu (shop categories)
         wp_nav_menu( [
           'theme_location' => 'primary',
           'container'      => false,
-          'menu_class'     => 'drawer-menu',
+          'menu_class'     => 'drawer-menu drawer-menu--primary',
           'fallback_cb'    => false,
         ] );
         ?>
+
+        <div class="nh-drawer__section-title">
+          <?php esc_html_e( 'More', 'nh-theme' ); ?>
+        </div>
+
+        <?php
+        // Use Footer Explore menu instead of Secondary
+        wp_nav_menu( [
+          'theme_location' => 'footer_explore',
+          'container'      => false,
+          'menu_class'     => 'drawer-menu drawer-menu--secondary',
+          'fallback_cb'    => false,
+        ] );
+        ?>
+
       </nav>
 
     </aside>

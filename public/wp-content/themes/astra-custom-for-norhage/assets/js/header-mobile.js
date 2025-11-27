@@ -26,6 +26,7 @@
 
   let lastY = window.scrollY || 0;
   let moved = false;
+  let everLeftTop = (window.scrollY || 0) > 8;
 
   /* ---------- Tools relocation (icons only) ---------- */
   function moveIconsToRow1(){
@@ -89,19 +90,30 @@
 
   /* ---------- Scroll behavior ---------- */
   function onScrollMobile(){
-    const y = window.scrollY || 0;
+    const y     = window.scrollY || 0;
     const delta = y - lastY;   // +down, -up
     const atTop = y <= 8;
     const THRESH = 2;
 
-    if (atTop){
-      exitCompact();
+    if (atTop) {
+      if (everLeftTop) {
+        enterCompact();
+      } else {
+        exitCompact();
+      }
     } else {
-      if (delta > THRESH) hideCompact();
-      else if (delta < -THRESH) enterCompact();
+      everLeftTop = true;
+
+      if (delta > THRESH) {
+        hideCompact();
+      } else if (delta < -THRESH) {
+        enterCompact();
+      }
     }
+
     lastY = y;
   }
+
   function onScroll(){ if (mq.matches) onScrollMobile(); }
   function onResize(){ if (!mq.matches) exitCompact(); }
 

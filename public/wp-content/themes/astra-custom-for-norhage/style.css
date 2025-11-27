@@ -1434,6 +1434,40 @@ input.shipping_method:checked ~ .nh-pickup-details{ display:block; }
   text-decoration:none;
 }
 
+/* MOBILE DRAWER — ultra-compact secondary menu */
+@media (max-width: 1023px) {
+
+  .drawer-menu--secondary {
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(0,0,0,.05);
+    font-size: 0.85rem;       /* smaller text */
+    line-height: 0.5;        /* tight line-height */
+  }
+
+  .drawer-menu--secondary > li {
+    margin: 0;                /* remove WP default li spacing */
+  }
+
+  .drawer-menu--secondary a {
+    display: block;
+    padding: 0.15rem 0;       /* VERY compact vertical spacing */
+    font-weight: 400;
+    opacity: 0.9;
+  }
+
+  /* "MORE" label even tighter */
+  .nh-drawer__section-title {
+    margin-top: 0.5rem;
+    margin-bottom: 0.1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: 0.55;
+    letter-spacing: 0.05em;
+  }
+
+}
+
 /* When the drawer is open, disable masthead transform so fixed children use the viewport */
 @media (max-width:1023px){
   body.drawer-open #masthead.mh-fixed,
