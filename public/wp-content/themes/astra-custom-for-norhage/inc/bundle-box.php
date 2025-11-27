@@ -47,63 +47,90 @@ add_action( 'wc_ajax_nopriv_nh_bundle_notice', 'nh_ajax_bundle_notice' );
 
 if ( ! function_exists( 'nh_ajax_bundle_notice' ) ) {
 function nh_ajax_bundle_notice() {
-	$raw   = isset( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : '[]';
-	$items = json_decode( $raw, true );
-	if ( ! is_array( $items ) ) $items = [];
+    $raw   = isset( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : '[]';
+    $items = json_decode( $raw, true );
+    if ( ! is_array( $items ) ) $items = [];
 
-	$parts      = [];   // lines: "4 × “Name”"
-	$total_qty  = 0;    // N = total units
-	$prod_count = 0;    // M = distinct products
+    $parts      = [];   // lines: "4 × “Name”"
+    $total_qty  = 0;    // N = total units
+    $prod_count = 0;    // M = distinct products
 
-	foreach ( $items as $line ) {
-		$pid = isset( $line['product_id'] ) ? absint( $line['product_id'] ) : 0;
-		$qty = isset( $line['quantity'] )   ? max( 1, absint( $line['quantity'] ) ) : 1;
-		if ( ! $pid ) continue;
+    foreach ( $items as $line ) {
+        $pid = isset( $line['product_id'] ) ? absint( $line['product_id'] ) : 0;
+        $qty = isset( $line['quantity'] )   ? max( 1, absint( $line['quantity'] ) ) : 1;
+        if ( ! $pid ) continue;
 
-		$p = wc_get_product( $pid );
-		if ( $p ) {
-			$prod_count++;
-			$total_qty += $qty;
+        $p = wc_get_product( $pid );
+        if ( $p ) {
+            $prod_count++;
+            $total_qty += $qty;
 
-			/* translators: 1: quantity, 2: product name */
-			$parts[] = sprintf(
-				esc_html__( '%1$d × “%2$s”', 'nh-theme' ),
-				$qty,
-				$p->get_name()
-			);
-		}
-	}
+            /* translators: 1: quantity, 2: product name */
+            $parts[] = sprintf(
+                esc_html__( '%1$d × “%2$s”', 'nh-theme' ),
+                $qty,
+                $p->get_name()
+            );
+        }
+    }
 
-	if ( ! empty( $parts ) ) {
-		// Build lead: "5 items have been added to your basket (2 products):"
-		$lead_items = sprintf(
-			/* translators: %d: number of items */
-			esc_html( _n( '%d item has been added to your basket', '%d items have been added to your basket', $total_qty, 'woocommerce' ) ),
-			$total_qty
-		);
-		$lead_products = sprintf(
-			/* translators: %d: number of distinct products */
-			esc_html( _n( '(%d product):', '(%d products):', $prod_count, 'woocommerce' ) ),
-			$prod_count
-		);
+    if ( ! empty( $parts ) ) {
 
-		// Standard Woo forward button
-		$button = sprintf(
-			'<a href="%s" class="button wc-forward">%s</a>',
-			esc_url( wc_get_cart_url() ),
-			esc_html__( 'View basket', 'woocommerce' )
-		);
+        /**
+         * Before adding our combined success notice, drop any *existing* success notices
+         * created by individual add_to_cart AJAX calls. Keep errors / other types.
+         */
+        $all_notices = wc_get_notices();
+        if ( ! empty( $all_notices['success'] ) ) {
+            // Remove all notices
+            wc_clear_notices();
 
-		$msg = $button . ' ' . $lead_items . ' ' . $lead_products . '<br>' . implode( '<br>', array_map( 'esc_html', $parts ) );
-		wc_add_notice( $msg, 'success' );
-	}
+            // Re-add only non-success types (error, notice, etc.)
+            foreach ( $all_notices as $type => $notices_of_type ) {
+                if ( $type === 'success' ) {
+                    continue;
+                }
+                if ( ! is_array( $notices_of_type ) ) {
+                    continue;
+                }
+                foreach ( $notices_of_type as $n ) {
+                    if ( empty( $n['notice'] ) ) {
+                        continue;
+                    }
+                    wc_add_notice( $n['notice'], $type );
+                }
+            }
+        }
 
-	// Render notices to HTML and return
-	ob_start();
-	wc_print_notices(); // prints & clears
-	$html = ob_get_clean();
+        // Build lead: "5 items have been added to your basket (2 products):"
+        $lead_items = sprintf(
+            /* translators: %d: number of items */
+            esc_html( _n( '%d item has been added to your basket', '%d items have been added to your basket', $total_qty, 'woocommerce' ) ),
+            $total_qty
+        );
+        $lead_products = sprintf(
+            /* translators: %d: number of distinct products */
+            esc_html( _n( '(%d product):', '(%d products):', $prod_count, 'woocommerce' ) ),
+            $prod_count
+        );
 
-	wp_send_json_success( [ 'html' => $html ] );
+        // Standard Woo forward button
+        $button = sprintf(
+            '<a href="%s" class="button wc-forward">%s</a>',
+            esc_url( wc_get_cart_url() ),
+            esc_html__( 'View basket', 'woocommerce' )
+        );
+
+        $msg = $button . ' ' . $lead_items . ' ' . $lead_products . '<br>' . implode( '<br>', array_map( 'esc_html', $parts ) );
+        wc_add_notice( $msg, 'success' );
+    }
+
+    // Render notices to HTML and return
+    ob_start();
+    wc_print_notices(); // prints & clears
+    $html = ob_get_clean();
+
+    wp_send_json_success( [ 'html' => $html ] );
 }}
 
 /** Render the bundle box under the product form */

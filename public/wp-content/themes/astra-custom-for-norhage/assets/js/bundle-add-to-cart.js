@@ -269,101 +269,110 @@ jQuery(function ($) {
     });
   }
 
-  // --- CORE HANDLER ---
-  function handleAddAllClick(e) {
-    const $btn = $(e.target).closest('#add-bundle-to-cart');
-    if (!$btn.length) return;
+// --- CORE HANDLER ---
+function handleAddAllClick(e) {
+  const $btn = $(e.target).closest('#add-bundle-to-cart');
+  if (!$btn.length) return;
 
-    // if disabled (no qty or no variation), do nothing
-    if ($btn.is(':disabled')) {
-      e.preventDefault();
-      return;
-    }
-
+  // if disabled (no qty or no variation), do nothing
+  if ($btn.is(':disabled')) {
     e.preventDefault();
-    if (posting) return;
+    return;
+  }
 
-    const pid = getParentProductId();
-    if (!pid) {
-      const msg = 'Please refresh the page and try again (product id missing).';
+  e.preventDefault();
+  if (posting) return;
+
+  const pid = getParentProductId();
+  if (!pid) {
+    const msg = 'Please refresh the page and try again (product id missing).';
+    const $wrap = $('.woocommerce-notices-wrapper, form.cart').first();
+    if ($wrap.length){ $wrap.prepend('<ul class="woocommerce-error" role="alert"><li>'+msg+'</li></ul>'); }
+    else { alert(msg); }
+    return;
+  }
+
+  posting = true;
+  $btn.prop('disabled', true).addClass('is-busy');
+
+  const mainData    = buildMainPayload();
+  const addonItems  = collectDesiredAddons();
+  const successAddons = []; // only add-ons that Woo actually accepted
+
+  // 1) Add main product (we assume it should succeed when button is enabled)
+  $.post(ADD_TO_CART_URL, mainData)
+    .fail(function () {
+      const msg = 'Choose product options (size/variation) before adding the complete set.';
       const $wrap = $('.woocommerce-notices-wrapper, form.cart').first();
       if ($wrap.length){ $wrap.prepend('<ul class="woocommerce-error" role="alert"><li>'+msg+'</li></ul>'); }
       else { alert(msg); }
-      return;
-    }
+    })
+    .always(function () {
+      // 2) Add-ons in sequence
+      let seq = $.Deferred().resolve().promise();
 
-    posting = true;
-    $btn.prop('disabled', true).addClass('is-busy');
-
-    const mainData = buildMainPayload();
-
-    // 1) Add main
-    $.post(ADD_TO_CART_URL, mainData)
-      .fail(function () {
-        const msg = 'Choose product options (size/variation) before adding the complete set.';
-        const $wrap = $('.woocommerce-notices-wrapper, form.cart').first();
-        if ($wrap.length){ $wrap.prepend('<ul class="woocommerce-error" role="alert"><li>'+msg+'</li></ul>'); }
-        else { alert(msg); }
-      })
-      .always(function () {
-        // 2) Add-ons sequence
-        const items = collectDesiredAddons();
-        let seq = $.Deferred().resolve().promise();
-        items.forEach(function (it) {
+      addonItems.forEach(function (it) {
+        seq = seq.then(function () {
           const data = { product_id: it.pid, quantity: it.qty };
           Object.keys(it.attrs || {}).forEach(function (k) {
             data['variation[' + k + ']'] = it.attrs[k];
           });
           if (it.vid) data.variation_id = it.vid;
 
-          seq = seq.then(function () { return $.post(ADD_TO_CART_URL, data).catch(function(){}); });
-        });
-
-        // 3) Combined notice + refresh (NO redirect unless toggled)
-        seq.always(function () {
-          // Build the list for the combined Woo notice (main + add-ons)
-          const parentId = getParentProductId();
-          const vId = parseInt($('form.variations_form').find('input[name="variation_id"]').val(), 10) || 0;
-          const mainLine = {
-            product_id: String(vId || parentId),   // use variation id if present
-            quantity:   getMainQty()
-          };
-
-          const addonLines = collectDesiredAddons().map(it => ({
-            product_id: String(it.vid || it.pid), // variation id if present
-            quantity:   it.qty
-          }));
-
-          const lines = [mainLine].concat(addonLines);
-
-          // Ask PHP to render the notice HTML and inject it right away
-          $.post(wcAjaxEndpoint('nh_bundle_notice'), { items: JSON.stringify(lines) })
+          return $.post(ADD_TO_CART_URL, data)
             .done(function (resp) {
-              if (resp && resp.success && resp.data && resp.data.html) {
-                // Find or create a notices wrapper near the form
-                let $wrap = $('.woocommerce-notices-wrapper').first();
-                if (!$wrap.length) {
-                  const $anchor = $('.woocommerce-notices-wrapper, form.cart, .summary').first();
-                  $wrap = $('<div class="woocommerce-notices-wrapper"></div>');
-                  if ($anchor.length) $wrap.insertBefore($anchor);
-                  else $('main, body').first().prepend($wrap);
-                }
-                $wrap.html(resp.data.html);
-                $(document.body).trigger('wc_notices_refreshed');
+              // Only count this line as "added" if Woo accepted it.
+              if (resp && !resp.error) {
+                successAddons.push({
+                  product_id: String(it.vid || it.pid),
+                  quantity:   it.qty
+                });
               }
             })
-            .always(function () {
-              // Refresh fragments so mini-cart + counters update
-              refreshFragments().always(function(){
-                posting = false;
-                $btn.prop('disabled', false).removeClass('is-busy');
-                updateBundleButtonState(); // re-sync after cart operations
-                if (REDIRECT_AFTER_ADD && cartUrl) window.location = cartUrl;
-              });
-            });
+            .catch(function () {});
         });
       });
-  }
+
+      // 3) Combined notice + refresh (NO redirect unless toggled)
+      seq.always(function () {
+        // Build main line from current selection
+        const parentId = getParentProductId();
+        const vId      = parseInt($('form.variations_form').find('input[name="variation_id"]').val(), 10) || 0;
+        const mainLine = {
+          product_id: String(vId || parentId),   // use variation id if present
+          quantity:   getMainQty()
+        };
+
+        // Lines: main product + only successful add-ons
+        const lines = [mainLine].concat(successAddons);
+
+        $.post(wcAjaxEndpoint('nh_bundle_notice'), { items: JSON.stringify(lines) })
+          .done(function (resp) {
+            if (resp && resp.success && resp.data && resp.data.html) {
+              // Find or create a notices wrapper near the form
+              let $wrap = $('.woocommerce-notices-wrapper').first();
+              if (!$wrap.length) {
+                const $anchor = $('.woocommerce-notices-wrapper, form.cart, .summary').first();
+                $wrap = $('<div class="woocommerce-notices-wrapper"></div>');
+                if ($anchor.length) $wrap.insertBefore($anchor);
+                else $('main, body').first().prepend($wrap);
+              }
+              $wrap.html(resp.data.html);
+              $(document.body).trigger('wc_notices_refreshed');
+            }
+          })
+          .always(function () {
+            // Refresh fragments so mini-cart + counters update
+            refreshFragments().always(function(){
+              posting = false;
+              $btn.prop('disabled', false).removeClass('is-busy');
+              updateBundleButtonState(); // re-sync after cart operations
+              if (REDIRECT_AFTER_ADD && cartUrl) window.location = cartUrl;
+            });
+          });
+      });
+    });
+}
 
   // LISTENERS
   $(document).off('click.ncBundle', '#add-bundle-to-cart')
