@@ -219,8 +219,8 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 .nhhb-row--bottom{ padding-top:10px; padding-bottom:12px; }
 
 /* Logo */
-.nhhb-logo img{ height:48px; width:auto; display:block; }
-@media (max-width:480px){ .nhhb-logo img{ height:42px; } }
+.nhhb-logo img{ height:60px; width:auto; display:block; }
+@media (max-width:480px){ .nhhb-logo img{ height:50px; } }
 .nhhb-logo .custom-logo-link{ display:inline-flex; align-items:center; }
 .site-title{ font-weight:700; font-size:22px; color:#fff; text-decoration:none; }
 
@@ -1121,176 +1121,10 @@ input.shipping_method:checked ~ .nh-pickup-details{ display:block; }
 .nhhb-compact-burger-wrap{ display:none; }
 
 /* ======================================================
-   COMPACT HEADER (scroll-up bar) — ≤1023px
+   COMPACT HEADER (scroll-up bar + drawer) — ≤980px
    Scope: #masthead.mh-compact only
    ====================================================== */
-@media (max-width:1023px){
-
-  /* Compact container */
-  #masthead.mh-compact{
-    --mhc-h: 56px;
-    background: var(--nh-forest,#1E3932);
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-    transform: translateY(-100%);          /* start hidden; JS toggles .mh-fixed/.mh-hidden */
-    transition: transform .18s ease;
-  }
-
-  /* Visible sticky state (JS adds .mh-fixed) */
-  #masthead.mh-compact.mh-fixed{
-    position: fixed;
-    top: var(--admin-offset,0);
-    left: 0; right: 0;
-    z-index: 1000;
-    transform: translateY(0);
-  }
-
-  /* Slide away when scrolling down (JS adds .mh-hidden) */
-  #masthead.mh-compact.mh-hidden{
-    transform: translateY(-100%);
-  }
-
-  /* Row 1: logo | spacer | burger | tools (tools moved here by JS) */
-  #masthead.mh-compact .nhhb-row--top{
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 10px;
-    min-height: var(--mhc-h);
-    padding: 8px 12px;
-    background: transparent;
-  }
-
-  /* Small logo */
-  #masthead.mh-compact .nhhb-logo img{
-    height: 32px; max-height: 32px; width: auto;
-  }
-
-  /* Hide inline primary menu in compact; drawer handles navigation */
-  #masthead.mh-compact .nhhb-main-nav{ display: none !important; }
-
-  /* Show burger ONLY in compact */
-  #masthead.mh-compact .nhhb-compact-burger-wrap{ display:block; }
-  #masthead.mh-compact .nhhb-compact-burger-wrap .nh-burger{
-    display: inline-flex;
-    align-items: center; justify-content: center;
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: transparent;
-    color: var(--nh-offwhite,#FAF7F2);
-  }
-  #masthead.mh-compact .nhhb-compact-burger-wrap .nh-burger:active{
-    background: rgba(255,255,255,.08);
-  }
-
-  /* Tools in compact (icons only) */
-  #masthead.mh-compact .nhhb-tools{
-    display: inline-flex !important;
-    align-items: center;
-    gap: 10px;
-    color: var(--nh-offwhite,#FAF7F2);
-  }
-  #masthead.mh-compact .nhhb-tools .nh-icon{
-    width: 22px; height: 22px;
-    stroke: currentColor;
-  }
-  #masthead.mh-compact .nhhb-tools .nh-account__text{ display:none; } /* keep compact */
-
-  /* Hide the bottom row while compact is active (JS moved tools up) */
-  #masthead.mh-compact .nhhb-row--bottom{ display: none !important; }
-
-  /* Body padding when compact is fixed (JS toggles .mh-fixed-on) */
-  body.mh-fixed-on{ padding-top: var(--mhc-h); }
-
-  /* Don’t mask layout issues globally; drawer manages overflow */
-  html, body{ overflow-x: visible; }
-}
-
-/* ======================================================
-   MOBILE DRAWER (off-canvas) for compact header
-   Elements from header-main.php (#nh-mobile-drawer)
-   ====================================================== */
-.nh-drawer[hidden]{ display:none !important; }
-
-.nh-drawer{
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-}
-
-.nh-drawer__scrim{
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.45);
-  opacity: 0;
-  transition: opacity .18s ease;
-}
-
-.nh-drawer__panel{
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  width: min(92vw, 380px);
-  background: var(--nh-cream,#FAF7F2);
-  color: var(--nh-forest,#1E3932);
-  box-shadow: 0 20px 40px rgba(0,0,0,.25);
-  transform: translateX(-100%);
-  transition: transform .22s ease;
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-}
-
-.nh-drawer__header{
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 14px 16px;
-  border-bottom: 1px solid rgba(0,0,0,.08);
-}
-.nh-drawer__title{ font-weight: 700; font-size: 1rem; }
-.nh-drawer__close{
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; border-radius: 8px;
-  border: 1px solid rgba(0,0,0,.15); background: transparent;
-}
-
-.nh-drawer__search{ padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,.06); }
-.nh-drawer__search .nh-header-search{ width:100%; }
-
-.nh-drawer__nav{ overflow: auto; padding: 12px 6px; }
-.nh-drawer__nav .drawer-menu{ list-style: none; margin: 0; padding: 0; }
-.nh-drawer__nav .drawer-menu > li > a{
-  display: block; padding: 12px 14px;
-  border-radius: 10px; text-decoration: none; color: inherit;
-}
-.nh-drawer__nav .drawer-menu > li > a:hover{ background: rgba(0,0,0,.06); }
-
-.nh-drawer__footer{
-  border-top: 1px solid rgba(0,0,0,.08);
-  padding: 12px 16px;
-  display: flex; gap: 14px; align-items: center; justify-content: space-between;
-}
-.nh-drawer__cart-count{
-  display: inline-block; min-width: 1.4em; padding: 0 .4em;
-  text-align: center; border-radius: 999px;
-  background: var(--nh-forest,#1E3932); color: #fff; font-size: .85em;
-}
-
-/* Open/close states (JS toggles .is-open) */
-.nh-drawer.is-open .nh-drawer__scrim{ opacity: 1; }
-.nh-drawer.is-open .nh-drawer__panel{ transform: translateX(0); }
-
-/* Lock page scroll when drawer is open (JS adds .drawer-open on <body>) */
-body.drawer-open{ overflow: hidden; }
-
-@media (prefers-reduced-motion: reduce){
-  .nh-drawer__scrim, .nh-drawer__panel{ transition: none; }
-}
-
-/* Burger hidden by default */
-.nhhb-compact-burger-wrap{ display:none; }
-
-/* ================================
-   COMPACT HEADER (≤1023px) — clean
-   ================================ */
-@media (max-width:1023px){
+@media (max-width:980px){
 
   /* Container / visibility (JS toggles these) */
   #masthead.mh-compact{
@@ -1299,32 +1133,70 @@ body.drawer-open{ overflow: hidden; }
     --masthead-h: calc(var(--mhc-row1) + var(--mhc-row2));
     background: var(--nh-forest,#1E3932);
     box-shadow: 0 4px 12px rgba(0,0,0,.24);
-    overflow: visible; /* allow drop-panel to sit below */
-  }
-  #masthead.mh-fixed{
-    position: fixed; top: var(--admin-offset,0); left: 0; right: 0;
-    z-index: 1000; transform: translateY(0);
+    overflow: visible;               /* allow drop-panel to sit below */
+    transform: translateY(-100%);    /* start hidden; JS toggles .mh-fixed/.mh-hidden */
     transition: transform .22s ease;
   }
-  #masthead.mh-hidden{ transform: translateY(-100%); }
-  body.mh-fixed-on{ padding-top: var(--mhc-total, calc(var(--mhc-row1) + var(--mhc-row2))); }
 
-  /* Hide utility/ticker; desktop menu off */
+  /* Visible sticky state (JS adds .mh-fixed / .mh-hidden) */
+  #masthead.mh-compact.mh-fixed{
+    position: fixed;
+    top: var(--admin-offset,0);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transform: translateY(0);
+  }
+  #masthead.mh-compact.mh-hidden{
+    transform: translateY(-100%);
+  }
+
+  /* Generic fixed header helper (kept for safety) */
+  #masthead.mh-fixed{
+    position: fixed;
+    top: var(--admin-offset,0);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transform: translateY(0);
+    transition: transform .22s ease;
+  }
+
+  /* Body padding when compact is fixed */
+  body.mh-fixed-on{
+    padding-top: var(--masthead-h);
+  }
+
+  /* Hide utility / ticker / desktop primary menu in compact */
   #masthead.mh-compact .nh-utility,
-  #masthead.mh-compact .nh-ticker-wrap{ display:none !important; }
-  #masthead.mh-compact .nhhb-main-nav{ display:none !important; }
+  #masthead.mh-compact .nh-ticker-wrap{
+    display:none !important;
+  }
+  #masthead.mh-compact .nhhb-main-nav{
+    display:none !important;
+  }
 
   /* ---------- Row 1: logo + icons ---------- */
   #masthead.mh-compact .nhhb-row--top{
     display:grid !important;
     grid-template-columns:auto 1fr auto; /* logo | spacer | tools */
-    align-items:center; gap:10px;
+    align-items:center;
+    gap:10px;
     min-height: var(--mhc-row1);
     padding: 8px 14px;
   }
-  #masthead.mh-compact .nhhb-logo img{ height:30px; width:auto; }
 
-  #masthead.mh-compact .nhhb-tools-slot{ display:block; }
+  /* Compact logo size (mobile) */
+  #masthead.mh-compact .nhhb-logo img{
+    height:36px;        /* adjust if you want larger/smaller */
+    max-height:36px;
+    width:auto;
+  }
+
+  #masthead.mh-compact .nhhb-tools-slot{
+    display:block;
+  }
+
   #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact{
     display:inline-flex !important;
     align-items:center;
@@ -1333,72 +1205,112 @@ body.drawer-open{ overflow: hidden; }
     margin-left:6px;
   }
   #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact .nh-icon{
-    width:24px !important; height:24px !important; stroke:currentColor;
+    width:24px !important;
+    height:24px !important;
+    stroke:currentColor;
   }
-  #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact .nh-account__text{ display:none; }
+  #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact .nh-account__text{
+    display:none;
+  }
   #masthead.mh-compact .nhhb-row--top .nhhb-tools--compact .nh-cart-icon{
-    display:inline-flex; align-items:center;
+    display:inline-flex;
+    align-items:center;
   }
 
   /* ---------- Row 2: hamburger + search ---------- */
   #masthead.mh-compact .nhhb-row--bottom{
     display:grid !important;
     grid-template-columns:auto 1fr;      /* burger | search */
-    align-items:center; gap:10px;
+    align-items:center;
+    gap:10px;
     min-height: var(--mhc-row2);
     padding: 6px 14px 10px;
   }
 
-  /* Burger (SVG, light, no borders) */
-  #masthead.mh-compact .nhhb-row--bottom .nhhb-compact-burger-wrap{
-    position: static !important; pointer-events:auto;
+  /* Burger visibility + styling */
+  #masthead.mh-compact .nhhb-compact-burger-wrap{
+    display:block;
+    position: static !important;
+    pointer-events:auto;
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-burger{
-    width:40px; height:40px; padding:0;
-    display:inline-flex; align-items:center; justify-content:center;
-    background:transparent !important; border:0 !important; box-shadow:none !important;
+    width:40px;
+    height:40px;
+    padding:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-burger__icon{
-    width:24px; height:24px; display:block;
+    width:24px;
+    height:24px;
+    display:block;
     filter: invert(1) brightness(1.25) contrast(1.05); /* make icon light */
     opacity:.95;
   }
 
   /* Search — standard dark header style */
-  #masthead.mh-compact .nhhb-tools{ display:block !important; } /* wraps only the search */
-  #masthead.mh-compact .nhhb-row--bottom .nh-live-search{ width:100%; }
+  #masthead.mh-compact .nhhb-tools{
+    display:block !important; /* wraps only the search */
+  }
+  #masthead.mh-compact .nhhb-row--bottom .nh-live-search{
+    width:100%;
+  }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search{
-    display:flex !important; align-items:center;
-    height:40px !important; width:100%;
-    margin:0; overflow:hidden;
+    display:flex !important;
+    align-items:center;
+    height:40px !important;
+    width:100%;
+    margin:0;
+    overflow:hidden;
     background: rgba(255,255,255,.08) !important;
     border: 1px solid rgba(255,255,255,.14) !important;
     border-radius:8px !important;
     backdrop-filter: saturate(130%) blur(.5px);
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search input[type="search"]{
-    flex:1 1 auto; min-width:0;
-    height:100%; padding:0 12px; border:0; outline:0;
-    background:transparent; color:#fff; font-size:14px;
-    -webkit-appearance:none; appearance:none;
+    flex:1 1 auto;
+    min-width:0;
+    height:100%;
+    padding:0 12px;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:#fff;
+    font-size:14px;
+    -webkit-appearance:none;
+    appearance:none;
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search input::placeholder{
     color:rgba(255,255,255,.78);
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search button{
-    display:flex; align-items:center; justify-content:center;
-    width:44px; height:100%; padding:0;
-    border:0; background:transparent; cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:44px;
+    height:100%;
+    padding:0;
+    border:0;
+    background:transparent;
+    cursor:pointer;
     border-left:1px solid rgba(255,255,255,.12);
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search button:hover{
     background:rgba(255,255,255,.06);
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search .nh-icon{
-    width:18px; height:18px; stroke: var(--nh-offwhite); opacity:.9;
+    width:18px;
+    height:18px;
+    stroke: var(--nh-offwhite);
+    opacity:.9;
   }
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search button:hover .nh-icon{
-    stroke: var(--nh-mint); opacity:1;
+    stroke: var(--nh-mint);
+    opacity:1;
   }
 
   /* ================================
@@ -1406,20 +1318,28 @@ body.drawer-open{ overflow: hidden; }
      ================================ */
 
   .nh-drawer{
-    position: fixed; inset: 0; z-index: 1100;
-    display: none; pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: none;
+    pointer-events: none;
   }
-  .nh-drawer[aria-hidden="false"]{ display:block; pointer-events:auto; }
+  .nh-drawer[aria-hidden="false"]{
+    display:block;
+    pointer-events:auto;
+  }
 
   .nh-drawer__scrim{
-    position:absolute; inset:0;
+    position:absolute;
+    inset:0;
     background: rgba(0,0,0,.15); /* set to transparent to remove dimming */
   }
 
   /* Panel: left-aligned, 2/3 width, flush under header, auto height */
   .nh-drawer__panel{
     position: fixed;
-    left: 0; right: auto;
+    left: 0;
+    right: auto;
     width: 66.6667vw;                                   /* 2/3 width */
 
     top: calc(var(--admin-offset,0) + var(--masthead-h, 112px)); /* exact bottom of header */
@@ -1438,29 +1358,49 @@ body.drawer-open{ overflow: hidden; }
     transition: transform .18s ease, opacity .18s ease;
     outline: none;
   }
-  .dark .nh-drawer__panel{ background:#0f1916; color:#f2f0ea; }
-  .nh-drawer.is-open .nh-drawer__panel{ transform:none; opacity:1; }
+  .dark .nh-drawer__panel{
+    background:#0f1916;
+    color:#f2f0ea;
+  }
+  .nh-drawer.is-open .nh-drawer__panel{
+    transform:none;
+    opacity:1;
+  }
 
-  /* Header + centered close */
+  /* Drawer header + close button */
   .nh-drawer__header{
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
     padding: 14px 16px;
     border-bottom: 1px solid rgba(0,0,0,.08);
-    background: inherit; color: inherit;
+    background: inherit;
+    color: inherit;
   }
-  .dark .nh-drawer__header{ border-color: rgba(255,255,255,.10); }
+  .dark .nh-drawer__header{
+    border-color: rgba(255,255,255,.10);
+  }
 
   .nh-drawer__close{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:36px; height:36px; padding:0; margin:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    padding:0;
+    margin:0;
     border-radius:8px;
     background: rgba(255,255,255,0.9);
     border:1px solid rgba(0,0,0,0.1);
-    color:#1e3932; font-size:20px; line-height:1; text-align:center;
+    color:#1e3932;
+    font-size:20px;
+    line-height:1;
+    text-align:center;
     cursor:pointer;
   }
   .nh-drawer__close:hover{
-    background:#fff; border-color:rgba(0,0,0,0.15);
+    background:#fff;
+    border-color:rgba(0,0,0,0.15);
   }
   .dark .nh-drawer__close{
     background: rgba(255,255,255,0.12);
@@ -1468,14 +1408,30 @@ body.drawer-open{ overflow: hidden; }
     color:#fff;
   }
 
-  .nh-drawer__nav{ padding: 8px 10px 12px; }
-  .nh-drawer__nav .drawer-menu{
-    list-style:none; margin:0; padding:0;
-    display:flex; flex-direction:column; gap:2px;
+  /* Don’t mask layout issues globally; drawer manages overflow */
+  html, body{
+    overflow-x: visible;
   }
-  .nh-drawer__nav .drawer-menu > li > a{
-    display:block; padding:14px 10px; border-radius:6px; font-weight:600; text-decoration:none;
-  }
+}
+
+/* Drawer nav styles (single source of truth) */
+.nh-drawer__nav{
+  padding: 8px 10px 12px;
+}
+.nh-drawer__nav .drawer-menu{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.nh-drawer__nav .drawer-menu > li > a{
+  display:block;
+  padding:14px 10px;
+  border-radius:6px;
+  font-weight:600;
+  text-decoration:none;
 }
 
 /* When the drawer is open, disable masthead transform so fixed children use the viewport */
@@ -1483,5 +1439,52 @@ body.drawer-open{ overflow: hidden; }
   body.drawer-open #masthead.mh-fixed,
   body.drawer-open #masthead.mh-fixed.mh-hidden{
     transform: none !important;
+  }
+}
+
+/* ---------------------------------------------
+   Desktop: logo on second line (left),
+   menu stays in first line
+   --------------------------------------------- */
+@media (min-width: 981px) {
+
+  /* Hide original logo in the top row */
+  .nhhb-header-main .nhhb-row--top .nhhb-logo {
+    display: none;
+  }
+
+  /* Show and position the second-row logo */
+  .nhhb-header-main .nhhb-logo--bottom-desktop {
+    display: block;
+  }
+  .nhhb-row--bottom .nhhb-logo--bottom-desktop {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  /* Tools on the right in the bottom row */
+  .nhhb-row--bottom .nhhb-tools {
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  /* Optional: tweak desktop logo size */
+  .nhhb-row--bottom .nhhb-logo--bottom-desktop img {
+    height: 60px;          /* adjust 48–60px to taste */
+    max-height: 60px;
+    width: auto;
+  }
+}
+
+/* ---------------------------------------------
+   Mobile / compact: use only original top logo
+   and hide bottom duplicate
+   --------------------------------------------- */
+@media (max-width: 980px) {
+  .nhhb-header-main .nhhb-logo--bottom-desktop {
+    display: none;
+  }
+  .nhhb-header-main .nhhb-row--top .nhhb-logo {
+    display: block;
   }
 }

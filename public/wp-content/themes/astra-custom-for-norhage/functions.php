@@ -496,6 +496,10 @@ function nh_custom_order_number_by_country( $order_number, $order ) {
     return $prefix . $formatted;
 }
 
+/* --------------------------------------------------------------------------
+ * Newsletters connection to sender.net
+ * ----------------------------------------------------------------------- */
+
 // === 1) Enqueue JS & pass AJAX URL + nonce ==========================
 add_action( 'wp_enqueue_scripts', function () {
 	// Adjust path if you put the JS somewhere else.
@@ -540,9 +544,8 @@ function nh_sender_subscribe() {
 		] );
 	}
 
-	// TODO: replace these with your real values from Sender
-	$api_key  = 'YOUR_SENDER_API_KEY_HERE';
-	$group_id = 'YOUR_GROUP_ID_HERE';
+	$api_key  = defined('NH_SENDER_API_KEY')  ? NH_SENDER_API_KEY  : '';
+	$group_id = defined('NH_SENDER_GROUP_ID') ? NH_SENDER_GROUP_ID : '';
 
 	if ( ! $api_key || ! $group_id ) {
 		wp_send_json_error( [

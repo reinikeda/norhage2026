@@ -2,7 +2,8 @@
 /**
  * Main Header — two rows + ticker
  *  - Row 1: Logo + Primary Menu (desktop) / Logo + Icons (compact)
- *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)  → in compact this reads as Burger + Search
+ *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)
+ *            + Desktop logo on second line (new)
  *  - Drawer: Off-canvas with ONLY the Primary Menu
  *  - Row 3: News ticker (optional)
  */
@@ -46,10 +47,21 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
     <div class="nhhb-tools-slot" aria-hidden="true"></div>
   </div>
 
-  <!-- Row 2: Burger + Tools (icons + search) -->
+  <!-- Row 2: Desktop logo (second line) + Burger + Tools (icons + search) -->
   <div class="nhhb-row nhhb-row--bottom">
 
-    <!-- Burger first (opens drawer with only primary menu) -->
+    <!-- Desktop logo on second line (hidden on mobile/compact via CSS) -->
+    <div class="nhhb-logo nhhb-logo--bottom-desktop">
+      <?php
+      if ( has_custom_logo() ) {
+        the_custom_logo();
+      } else {
+        echo '<a class="site-title" href="' . esc_url( home_url('/') ) . '">' . esc_html( get_bloginfo('name') ) . '</a>';
+      }
+      ?>
+    </div>
+
+    <!-- Burger (used only in compact/mobile via CSS/JS) -->
     <div class="nhhb-compact-burger-wrap">
       <button
         class="nh-burger"
