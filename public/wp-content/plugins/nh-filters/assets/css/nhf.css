@@ -561,6 +561,12 @@ body.dark-mode .nhf-all a:hover{ color: var(--dm-primary); }
 body.dark-mode .nhf-filters{
   border-top: 1px solid var(--dm-border);
 }
+
+/* Dark mode: same separator using dark border color */
+body.dark-mode .nhf-filter--attribute + .nhf-filter--toggles {
+  border-top: 1px solid var(--dm-border);
+}
+
 body.dark-mode .nhf-filter-toggle{
   color: var(--dm-text);
 }
@@ -581,6 +587,13 @@ body.dark-mode .nhf-filter-body label{
 body.dark-mode .nhf-filter-body input[type="checkbox"],
 body.dark-mode .nhf-filter--toggles input[type="checkbox"]{
   accent-color: var(--dm-primary);
+}
+
+/* Separator between last attribute group and the toggles */
+.nhf-filter--attribute + .nhf-filter--toggles {
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(0,0,0,.06);
 }
 
 /* price slider + value text */

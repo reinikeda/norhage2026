@@ -281,17 +281,6 @@ add_shortcode( 'nh_filters_sidebar', function() {
 		echo '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( $v ) . '">';
 	}
 
-	/* ========== Toggles (In stock / On sale) ========== */
-	$instock = isset($_GET['instock']) ? (int) $_GET['instock'] : 0;
-	$onsale  = isset($_GET['onsale'])  ? (int) $_GET['onsale']  : 0;
-
-	echo '<section class="nhf-filter nhf-filter--toggles is-open">';
-	echo '  <div class="nhf-filter-body" aria-hidden="false">';
-	echo '    <label><input type="checkbox" name="instock" value="1" ' . checked( $instock, 1, false ) . '> ' . esc_html__( 'In stock only', 'nhf' ) . '</label>';
-	echo '    <label><input type="checkbox" name="onsale" value="1" ' . checked( $onsale, 1, false ) . '> ' . esc_html__( 'On sale', 'nhf' ) . '</label>';
-	echo '  </div>';
-	echo '</section>';
-
 	/* ========== Attribute groups (auto + pruned) ========== */
 	$attrs = wc_get_attribute_taxonomies();
 	if ( $attrs ) {
@@ -338,6 +327,17 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			echo '</section>';
 		}
 	}
+
+	/* ========== Toggles (In stock / On sale) — MOVED AFTER ATTRIBUTES ========== */
+	$instock = isset($_GET['instock']) ? (int) $_GET['instock'] : 0;
+	$onsale  = isset($_GET['onsale'])  ? (int) $_GET['onsale']  : 0;
+
+	echo '<section class="nhf-filter nhf-filter--toggles is-open">';
+	echo '  <div class="nhf-filter-body" aria-hidden="false">';
+	echo '    <label><input type="checkbox" name="instock" value="1" ' . checked( $instock, 1, false ) . '> ' . esc_html__( 'In stock only', 'nhf' ) . '</label>';
+	echo '    <label><input type="checkbox" name="onsale" value="1" ' . checked( $onsale, 1, false ) . '> ' . esc_html__( 'On sale', 'nhf' ) . '</label>';
+	echo '  </div>';
+	echo '</section>';
 
 	/* ========== Apply / Reset ========== */
 	echo '<div class="nhf-applybar">';
