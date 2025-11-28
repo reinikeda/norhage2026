@@ -112,6 +112,13 @@ function norhage_enqueue_assets() {
 	);
 
 	wp_enqueue_style(
+		'norhage-header-style',
+		get_stylesheet_directory_uri() . '/assets/css/header.css',
+		array(),
+		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+	);
+
+	wp_enqueue_style(
 		'norhage-custom-style',
 		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
 		array(),
@@ -142,10 +149,10 @@ function norhage_enqueue_assets() {
 	);
 
 	wp_enqueue_script(
-		'nh-mobile-header',
-		get_stylesheet_directory_uri() . '/assets/js/header-mobile.js',
-		array(),
-		'1.0.0',
+		'norhage-header-dynamic',
+		get_stylesheet_directory_uri() . '/assets/js/header-dynamic.js',
+		array('jquery'),
+		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
 		true
 	);
 }

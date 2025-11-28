@@ -17,6 +17,10 @@ $cart_count  = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_c
 $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_html__( 'My Account', 'nh-theme' ) : esc_html__( 'Sign in', 'nh-theme' );
 $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
+$phone_display = __( '+49 176 65 10 6609', 'nh-theme' );
+$phone_href    = __( '+4917665106609', 'nh-theme' );
+$phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
+
 ?>
 <div class="nhhb-header-main">
 
@@ -182,6 +186,19 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
         ?>
 
       </nav>
+
+      <div class="nh-drawer__extras">
+        <a class="nh-drawer__phone" href="<?php echo esc_attr( $phone_href_clean ); ?>">
+          <img 
+            src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>" 
+            alt="Phone" 
+            class="nh-icon nh-icon--phone" 
+            width="18" 
+            height="18"
+          >
+          <?php echo esc_html( $phone_display ); ?>
+        </a>
+      </div>
 
     </aside>
   </div>
