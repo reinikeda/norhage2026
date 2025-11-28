@@ -11,6 +11,7 @@
   function isMobile() {
     return mqMobile.matches;
   }
+
   function desktopCompactEnabled() {
     return mqDesktop.matches && window.innerHeight <= DESK_MIN_H;
   }
@@ -83,9 +84,13 @@
     document.body.style.setProperty('--mhc-total', `${h}px`);
     masthead.style.setProperty('--masthead-h', `${h}px`);
     document.body.classList.add('mh-fixed-on');
+    // NEW: mark that compact header is active (mobile or short desktop)
+    document.body.classList.add('nhhb-compact-header');
   }
+
   function clearBodyOffset() {
     document.body.classList.remove('mh-fixed-on');
+    document.body.classList.remove('nhhb-compact-header');
     document.body.style.removeProperty('--mhc-total');
     masthead.style.removeProperty('--masthead-h');
   }
@@ -98,12 +103,14 @@
     moveIconsToRow1();
     requestAnimationFrame(setBodyOffsetFromHeader);
   }
+
   function exitCompactMobile() {
     masthead.classList.remove('mh-compact', 'mh-fixed', 'mh-hidden');
     moveIconsBack();
     clearBodyOffset();
     closeDrawer(true);
   }
+
   function hideCompactMobile() {
     masthead.classList.add('mh-hidden');
   }
@@ -205,8 +212,6 @@
     const maxH = window.innerHeight - top;
     panel.style.height = 'auto';
     panel.style.maxHeight = `${Math.max(200, maxH)}px`;
-
-    // Left/right/width are now controlled purely by CSS
   }
 
   /* ---------- Drawer controls ---------- */
@@ -252,6 +257,7 @@
     const expanded = burger.getAttribute('aria-expanded') === 'true';
     expanded ? closeDrawer() : openDrawer();
   });
+
   // Close interactions
   scrim && scrim.addEventListener('click', () => closeDrawer());
   close && close.addEventListener('click', () => closeDrawer());

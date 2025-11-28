@@ -936,3 +936,22 @@ input.shipping_method:checked ~ .nh-pickup-details{
 .page .wp-post-image{
   display: none !important;
 }
+
+/* Desktop compact */
+@media (min-width: 1024px) {
+  body.nhhb-compact-header .ast-container {
+    margin-top: 80px;
+  }
+}
+
+/* Mobile compact */
+@media (max-width: 1023px) {
+  body.nhhb-compact-header .ast-container {
+    margin-top: 80px;
+  }
+}
+
+/* Breadcrumb micro-adjust if needed */
+body.nhhb-compact-header nav.woocommerce-breadcrumb {
+  padding-top: 8px; /* subtle, no crowding */
+}
