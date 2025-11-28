@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-11-26 07:22:59+00:00\n"
+"POT-Creation-Date: 2025-11-28 08:47:35+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -33,68 +33,89 @@ msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
 msgstr ""
 
-#: functions.php:181 inc/services.php:26 inc/services.php:51
+#: functions.php:188 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr ""
 
-#: functions.php:182 inc/blog.php:25 inc/hero.php:12
+#: functions.php:189 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
 msgstr ""
 
-#: functions.php:183
+#: functions.php:190
 msgid "Contact Us"
 msgstr ""
 
-#: functions.php:189 template-parts/footer/footer.php:13
+#: functions.php:196 template-parts/footer/footer.php:13
+#: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
 msgstr ""
 
-#: functions.php:190
+#: functions.php:197 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
 msgstr ""
 
-#: functions.php:196
+#: functions.php:203
 msgid "Utility bar"
 msgstr ""
 
-#: functions.php:204
+#: functions.php:211
 msgid "Phone icon"
 msgstr ""
 
-#: functions.php:213
+#: functions.php:220
 msgid "FAQ"
 msgstr ""
 
-#: functions.php:276
+#: functions.php:283
 msgid "Shop by Category"
 msgstr ""
 
-#: functions.php:323 functions.php:342
+#: functions.php:330 functions.php:349
 msgid "Customize"
 msgstr ""
 
-#: functions.php:324
+#: functions.php:331
 msgid "Customize “%s”"
 msgstr ""
 
-#: functions.php:347
+#: functions.php:354
 msgid "Select options"
 msgstr ""
 
-#: functions.php:369
+#: functions.php:376
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:398
+#: functions.php:405
 msgid "Footer — Shop Categories"
 msgstr ""
 
-#: functions.php:399
+#: functions.php:406
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr ""
 
-#: functions.php:400
+#: functions.php:407
 msgid "Footer — Legal/Policies"
+msgstr ""
+
+#: functions.php:542
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: functions.php:550
+msgid "Thank you!"
+msgstr ""
+
+#: functions.php:559
+msgid "Subscription is temporarily unavailable. Please contact site administrator."
+msgstr ""
+
+#: functions.php:584
+msgid "Could not connect to email service. Please try again."
+msgstr ""
+
+#: functions.php:594
+msgid "Thank you! You are subscribed."
 msgstr ""
 
 #: inc/basket-customize.php:174
@@ -152,7 +173,7 @@ msgstr ""
 
 #. translators: %d: number of items
 
-#: inc/bundle-box.php:81
+#: inc/bundle-box.php:108
 msgid "%d item has been added to your basket"
 msgid_plural "%d items have been added to your basket"
 msgstr[0] ""
@@ -160,75 +181,75 @@ msgstr[1] ""
 
 #. translators: %d: number of distinct products
 
-#: inc/bundle-box.php:86
+#: inc/bundle-box.php:113
 msgid "(%d product):"
 msgid_plural "(%d products):"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/bundle-box.php:94
+#: inc/bundle-box.php:121
 msgid "View basket"
 msgstr ""
 
-#: inc/bundle-box.php:127
+#: inc/bundle-box.php:154
 msgid "Buy a complete set"
 msgstr ""
 
-#: inc/bundle-box.php:129
+#: inc/bundle-box.php:156
 msgid "Complete set add-ons"
 msgstr ""
 
-#: inc/bundle-box.php:137
+#: inc/bundle-box.php:164
 msgid "Image"
 msgstr ""
 
-#: inc/bundle-box.php:138
+#: inc/bundle-box.php:165
 msgid "Product"
 msgstr ""
 
-#: inc/bundle-box.php:139
+#: inc/bundle-box.php:166
 msgid "Qty"
 msgstr ""
 
-#: inc/bundle-box.php:140
+#: inc/bundle-box.php:167
 msgid "Price"
 msgstr ""
 
-#: inc/bundle-box.php:178
+#: inc/bundle-box.php:205
 msgid "In stock"
 msgstr ""
 
-#: inc/bundle-box.php:179
+#: inc/bundle-box.php:206
 msgid "Out of stock"
 msgstr ""
 
-#: inc/bundle-box.php:195
+#: inc/bundle-box.php:222
 msgid "Only %d left in stock"
 msgstr ""
 
-#: inc/bundle-box.php:196 inc/bundle-box.php:202 inc/bundle-box.php:210
+#: inc/bundle-box.php:223 inc/bundle-box.php:229 inc/bundle-box.php:237
 msgid "Max per bundle: %d"
 msgstr ""
 
-#: inc/bundle-box.php:219
+#: inc/bundle-box.php:246
 msgid "Minus Quantity"
 msgstr ""
 
-#: inc/bundle-box.php:221
+#: inc/bundle-box.php:248
 msgid "Quantity"
 msgstr ""
 
-#: inc/bundle-box.php:226
+#: inc/bundle-box.php:253
 msgid "Plus Quantity"
 msgstr ""
 
 #. translators: label before the computed bundle total price
 
-#: inc/bundle-box.php:236
+#: inc/bundle-box.php:263
 msgid "Total:"
 msgstr ""
 
-#: inc/bundle-box.php:240
+#: inc/bundle-box.php:267
 msgid "Add all to basket"
 msgstr ""
 
@@ -450,7 +471,7 @@ msgstr ""
 msgid "Sale"
 msgstr ""
 
-#: inc/search.php:14 template-parts/headers/header-main.php:114
+#: inc/search.php:14 template-parts/headers/header-main.php:130
 msgid "Search products…"
 msgstr ""
 
@@ -612,49 +633,56 @@ msgstr ""
 msgid "Legal bottom"
 msgstr ""
 
-#: template-parts/headers/header-main.php:17
+#: template-parts/headers/header-main.php:18
 msgid "My Account"
 msgstr ""
 
-#: template-parts/headers/header-main.php:17
+#: template-parts/headers/header-main.php:18
 msgid "Sign in"
 msgstr ""
 
-#: template-parts/headers/header-main.php:34
-#: template-parts/headers/header-main.php:146
+#: template-parts/headers/header-main.php:39
 msgid "Primary menu"
 msgstr ""
 
-#: template-parts/headers/header-main.php:57
+#: template-parts/headers/header-main.php:73
 msgid "Open menu"
 msgstr ""
 
-#: template-parts/headers/header-main.php:80
+#: template-parts/headers/header-main.php:96
 msgid "Cart"
 msgstr ""
 
-#: template-parts/headers/header-main.php:91
+#: template-parts/headers/header-main.php:107
 msgid "View cart"
 msgstr ""
 
-#: template-parts/headers/header-main.php:99
+#: template-parts/headers/header-main.php:115
 msgid "Switch theme"
 msgstr ""
 
-#: template-parts/headers/header-main.php:119
+#: template-parts/headers/header-main.php:135
 msgid "Search"
 msgstr ""
 
-#: template-parts/headers/header-main.php:126
+#: template-parts/headers/header-main.php:142
 msgid "Search suggestions"
 msgstr ""
 
-#: template-parts/headers/header-main.php:139
+#: template-parts/headers/header-main.php:155
 msgid "Menu"
 msgstr ""
 
-#: template-parts/headers/header-main.php:141
+#: template-parts/headers/header-main.php:157
 msgid "Close menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:162
+msgid "Mobile navigation"
+msgstr ""
+
+#: template-parts/headers/header-main.php:175
+msgid "More"
 msgstr ""
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
