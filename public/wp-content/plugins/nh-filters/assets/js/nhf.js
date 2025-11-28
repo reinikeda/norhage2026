@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const item = toggle.closest('.nhf-cat-item');
       const wasOpen = item.classList.contains('is-open');
 
+      // close all others
       document.querySelectorAll('.nhf-cat-item.is-open').forEach(openItem => {
         openItem.classList.remove('is-open');
         openItem.querySelector('.nhf-cat-toggle').setAttribute('aria-expanded', 'false');
@@ -42,20 +43,34 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', e => {
       e.preventDefault();
       const section = toggle.closest('.nhf-filter');
-      const body = section.querySelector('.nhf-filter-body');
+      const body    = section.querySelector('.nhf-filter-body');
+
+      const wasOpen = section.classList.contains('is-open');
+
+      // If we are closing, move focus OUT of the body to the toggle
+      // so that no focused element ends up inside aria-hidden="true"
+      if (wasOpen) {
+        toggle.focus();
+      }
 
       section.classList.toggle('is-open');
-
       const isOpen = section.classList.contains('is-open');
+
       toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      if (body) body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      if (body) {
+        body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      }
     });
 
+    // Initial ARIA state on load
     const section = toggle.closest('.nhf-filter');
-    const body = section.querySelector('.nhf-filter-body');
-    const isOpen = section.classList.contains('is-open');
+    const body    = section.querySelector('.nhf-filter-body');
+    const isOpen  = section.classList.contains('is-open');
+
     toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    if (body) body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    if (body) {
+      body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    }
   });
 });
 
@@ -66,10 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.nhf-form');
   if (!form) return;
 
+  // Auto-submit on checkbox change (desktop)
   form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => form.submit());
   });
 
+  // Submit on Enter in number fields (price, if used later)
   form.querySelectorAll('input[type="number"]').forEach(inp => {
     inp.addEventListener('keydown', e => {
       if (e.key === 'Enter') form.submit();
@@ -78,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Keep filter groups open if active
+ * Keep filter groups open if active (checked values / price)
  */
 document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('.nhf-filter');
@@ -103,8 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
       body?.setAttribute('aria-hidden', 'false');
     } else {
       section.classList.toggle('is-active-group', false);
+      // don't force closed/open here, just don't mark as active
     }
 
+    // Update "active-group" state when checkboxes change
     section.querySelectorAll('input[type="checkbox"]').forEach(cb => {
       cb.addEventListener('change', () => {
         const nowActive = !!section.querySelector('input[type="checkbox"]:checked');
@@ -112,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Update "active-group" state when price inputs change
     section.querySelectorAll('input[type="number"]').forEach(inp => {
       inp.addEventListener('input', () => {
         const minVal = section.querySelector('input[name="price_min"]')?.value || '';
@@ -176,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(wrap);
 
+    // Focus trap + ESC close
     wrap.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDrawer(wrap, true);
       if (e.key !== 'Tab') return;
@@ -194,19 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Click backdrop / close button
     wrap.addEventListener('click', (e) => {
       if (e.target.dataset.close) closeDrawer(wrap, true);
     });
 
-    let startY = null;
-    const panel = qs('.nhf-drawer__panel', wrap);
-
-    panel.addEventListener('touchstart', (e)=>{ startY = e.touches[0].clientY; }, {passive:true});
-    panel.addEventListener('touchmove', (e)=>{
-      if (startY === null) return;
-      const dy = e.touches[0].clientY - startY;
-      if (dy > 70) { closeDrawer(wrap, true); startY = null; }
-    }, {passive:true});
     return wrap;
   }
 
@@ -238,6 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function preventDesktopAutoSubmitOnMobile() {
+    if (!filtersFormClone) return;
+    // On mobile we DON'T auto-submit; just update badge
     qsa('.nhf-form input[type="checkbox"]', filtersFormClone).forEach(cb=>{
       cb.addEventListener('change', () => updateBadge());
     });
@@ -283,11 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sidebar = qs('#nhf-sidebar');
     const filters = qs('.nhf-filters', sidebar);
-    const cats = qs('.nhf-cat-list', sidebar);
+    const cats    = qs('.nhf-cat-list', sidebar);
 
     filtersFormClone = filters ? filters.querySelector('form').cloneNode(true) : null;
 
     if (filtersFormClone) {
+      // keep active groups open
       qsa('.nhf-filter', filtersFormClone).forEach(sec => {
         const hasChecked = !!sec.querySelector('input[type="checkbox"]:checked');
         if (hasChecked) {
@@ -299,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       qs('.nhf-drawer__body', filtersDrawer).appendChild(filtersFormClone);
 
+      // Remove desktop apply bar/buttons inside clone
       qsa('.nhf-applybar, .nhf-reset, .nhf-apply, .nhf-applybtn', filtersFormClone)
         .forEach(el => el.remove());
     }
@@ -308,12 +325,13 @@ document.addEventListener('DOMContentLoaded', () => {
       qs('.nhf-drawer__body', catsDrawer).appendChild(catsClone);
     }
 
-    const catsBtn = qs('#nhf-mb-cats', bar);
+    const catsBtn    = qs('#nhf-mb-cats', bar);
     const filtersBtn = qs('#nhf-mb-filters', bar);
 
     catsBtn.addEventListener('click', ()=> openDrawer(catsDrawer, catsBtn));
     filtersBtn.addEventListener('click', ()=> openDrawer(filtersDrawer, filtersBtn));
 
+    // Footer buttons
     filtersDrawer.addEventListener('click', (e)=>{
       const act = e.target?.dataset?.action;
       if (!act) return;
@@ -328,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Update badge when toggling checkboxes (mobile only)
     preventDesktopAutoSubmitOnMobile();
     updateBadge();
 

@@ -1,10 +1,13 @@
 /* =========================================================
-   Norhage Filters – Final Refined Category Sidebar Styles
+   Norhage Filters – Refined Category Sidebar Styles
    ========================================================= */
 
-/* NEW: shared variable for the mobile bar height */
-:root { --nhf-mb-h: 60px; }
+/* Shared variables (mobile bar height only) */
+:root {
+  --nhf-mb-h: 60px;
+}
 
+/* Sidebar wrapper (inside the Woo sidebar widget) */
 #nhf-sidebar {
   padding: 0.75rem 0 1rem;
   margin: 0;
@@ -196,47 +199,54 @@
    Norhage Filters — Filter Block (clean, conflict-safe)
    ========================================================= */
 
-.nhf-filters{
-  margin-top:1.25rem;
-  padding-top:1rem;
-  border-top:1px solid rgba(0,0,0,.08);
+.nhf-filters {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,.08);
 }
 
-.nhf-filter{ margin-bottom:.75rem; }
+.nhf-filter {
+  margin-bottom: .75rem;
+}
 
-.nhf-filter-toggle{
-  all:unset;
-  cursor:pointer;
-  display:flex; justify-content:space-between; align-items:center;
-  width:100%;
-  padding:.35rem .4rem;
-  border-radius:6px;
-  font-weight:500;
-  color:inherit;
-  transition:background-color .25s ease, color .25s ease;
+.nhf-filter-toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: .35rem .4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  color: inherit;
+  transition: background-color .25s ease, color .25s ease;
 }
 
 .nhf-filter-toggle:hover,
 .nhf-filter-toggle:focus-visible{
-  color:var(--nh-green,#00704A);
-  background-color:rgba(0,112,74,.06);
+  color: var(--nh-green,#00704A);
+  background-color: rgba(0,112,74,.06);
 }
 
 .nhf-filters .nhf-filter.is-open > .nhf-filter-toggle{
-  color:var(--nh-green,#00704A);
-  background-color:rgba(0,112,74,.05);
-  font-weight:600;
-  box-shadow:none; border:none;
+  color: var(--nh-green,#00704A);
+  background-color: rgba(0,112,74,.05);
+  font-weight: 600;
+  box-shadow: none;
+  border: none;
 }
 
 /* Chevron */
 .nhf-filter-toggle .nhf-icon::before{
   content:"›";
-  font-size:.9em; opacity:.6;
+  font-size:.9em;
+  opacity:.6;
   transition:transform .25s ease, opacity .25s ease;
 }
 .nhf-filter.is-open .nhf-filter-toggle .nhf-icon::before{
-  transform:rotate(90deg); opacity:1;
+  transform:rotate(90deg);
+  opacity:1;
 }
 
 /* Body */
@@ -245,7 +255,8 @@
   margin:.3rem 0 0 .75rem;
 }
 .nhf-filter.is-open .nhf-filter-body{
-  display:block; animation:nhfFadeIn .25s ease;
+  display:block;
+  animation:nhfFadeIn .25s ease;
 }
 @keyframes nhfFadeIn{
   from{opacity:0; transform:translateY(-2px)}
@@ -256,69 +267,133 @@
 .nhf-filter-body label{
   display:block;
   margin:.25rem 0;
-  cursor:pointer; user-select:none;
+  cursor:pointer;
+  user-select:none;
 }
 .nhf-filter-body input[type="checkbox"]{
   accent-color:var(--nh-green,#00704A);
-  width:16px; height:16px; margin-right:6px; vertical-align:-2px;
+  width:16px;
+  height:16px;
+  margin-right:6px;
+  vertical-align:-2px;
 }
 
 /* Toggles (In stock / On sale) */
-.nhf-filter--toggles label{ display:block; margin:.35rem 0; }
+.nhf-filter--toggles label{
+  display:block;
+  margin:.35rem 0;
+}
 .nhf-filter--toggles input[type="checkbox"]{
   accent-color:var(--nh-green,#00704A);
-  width:16px; height:16px; margin-right:8px; vertical-align:-2px;
+  width:16px;
+  height:16px;
+  margin-right:8px;
+  vertical-align:-2px;
 }
 
 /* Price slider placeholder */
 .nhf-price-slider{
   position:relative;
-  height:4px; border-radius:2px; margin:.5rem 0;
+  height:4px;
+  border-radius:2px;
+  margin:.5rem 0;
   background:linear-gradient(to right, var(--nh-green,#00704A) 0%, var(--nh-mint,#C3E8C6) 100%);
 }
 .nhf-price-slider::after{
-  content:"●"; position:absolute; right:20%; top:-6px;
-  color:var(--nh-green,#00704A); font-size:12px;
+  content:"●";
+  position:absolute;
+  right:20%;
+  top:-6px;
+  color:var(--nh-green,#00704A);
+  font-size:12px;
 }
-.nhf-price-values{ font-size:.9em; color:rgba(0,0,0,.7); }
+.nhf-price-values{
+  font-size:.9em;
+  color:rgba(0,0,0,.7);
+}
 
 /* Reset */
 .nhf-reset{
-  display:block; margin-top:1rem; text-align:right;
-  font-size:.9em; color:rgba(0,0,0,.6); text-decoration:none;
+  display:block;
+  margin-top:1rem;
+  text-align:right;
+  font-size:.9em;
+  color:rgba(0,0,0,.6);
+  text-decoration:none;
 }
-.nhf-reset:hover{ color:var(--nh-green,#00704A); text-decoration:underline; }
+.nhf-reset:hover{
+  color:var(--nh-green,#00704A);
+  text-decoration:underline;
+}
 
 .nhf-applybar{
-  display:flex; align-items:center; gap:.75rem; justify-content:flex-end;
-  margin-top:.75rem; border-top:1px solid rgba(0,0,0,.06); padding-top:.75rem;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  justify-content:flex-end;
+  margin-top:.75rem;
+  border-top:1px solid rgba(0,0,0,.06);
+  padding-top:.75rem;
 }
 .nhf-applybtn{
-  appearance:none; border:0; border-radius:8px; padding:.45rem .7rem;
-  background:var(--nh-green,#00704A); color:#fff; font-weight:600; cursor:pointer;
+  appearance:none;
+  border:0;
+  border-radius:8px;
+  padding:.45rem .7rem;
+  background:var(--nh-green,#00704A);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
 }
-.nhf-applybtn:hover{ background:var(--nh-forest,#1E3932); }
+.nhf-applybtn:hover{
+  background:var(--nh-forest,#1E3932);
+}
 
-.nhf-price-row{ display:flex; align-items:center; gap:.5rem; }
-.nhf-price-field{
-  display:flex; align-items:center; gap:.3rem;
-  border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:.25rem .4rem;
+.nhf-price-row{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
 }
-.nhf-price-field input{ border:0; outline:0; width:90px; background:transparent; }
+.nhf-price-field{
+  display:flex;
+  align-items:center;
+  gap:.3rem;
+  border:1px solid rgba(0,0,0,.15);
+  border-radius:8px;
+  padding:.25rem .4rem;
+}
+.nhf-price-field input{
+  border:0;
+  outline:0;
+  width:90px;
+  background:transparent;
+}
 .nhf-price-sep{ opacity:.7; }
 
-.nhf-filter.is-active-group > .nhf-filter-toggle { color: var(--nh-green, #00704A); }
+.nhf-filter.is-active-group > .nhf-filter-toggle {
+  color: var(--nh-green, #00704A);
+}
 .nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon {
   position: relative;
 }
 .nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon::after {
   content: "";
   position: absolute;
-  right: -6px; top: 50%;
-  width: 6px; height: 6px; border-radius: 50%;
+  right: -6px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
   background: var(--nh-green, #00704A);
   transform: translateY(-50%);
   opacity: .6;
+}
+
+/* Separator between last attribute group and the toggles */
+.nhf-filter--attribute + .nhf-filter--toggles {
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(0,0,0,.06);
 }
 
 /* =========================================================
@@ -333,8 +408,10 @@
 /* Sticky bottom bar */
 .nhf-mobilebar {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: var(--nhf-mb-h); /* NEW */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--nhf-mb-h);
   padding: 0 max(env(safe-area-inset-right, 0),16px)
             max(env(safe-area-inset-bottom, 0),0)
             max(env(safe-area-inset-left, 0),16px);
@@ -346,75 +423,121 @@
 }
 
 @media (max-width: 992px) {
-  .nhf-mobilebar { display: flex; gap: 12px; align-items: center; justify-content: space-around; }
+  .nhf-mobilebar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-around;
+  }
 }
 
-/* NEW: when the bar is present, reserve space for it */
+/* Reserve space for the bar */
 @media (max-width: 992px) {
-  body.nhf-has-mobilebar { /* add/remove this class in plugin JS when bar mounts */
+  body.nhf-has-mobilebar {
     padding-bottom: calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px));
   }
-  /* Optional: give the site footer extra breathing room while bar is present */
   body.nhf-has-mobilebar .site-footer {
     padding-bottom: max(24px, calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px)));
   }
 }
 
 .nhf-mb-btn {
-  appearance: none; border: 0; background: transparent;
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 12px; border-radius: 12px;
-  font-weight: 600; color: var(--nh-charcoal,#2C2A29);
+  appearance: none;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: var(--nh-charcoal,#2C2A29);
 }
 
-.nhf-mb-btn:focus-visible { outline: 2px solid var(--nh-mint,#C3E8C6); outline-offset: 2px; }
-.nhf-mb-btn:hover { background: rgba(0,0,0,.04); }
+.nhf-mb-btn:focus-visible {
+  outline: 2px solid var(--nh-mint,#C3E8C6);
+  outline-offset: 2px;
+}
+.nhf-mb-btn:hover {
+  background: rgba(0,0,0,.04);
+}
 
 .nhf-mb-icon { font-size: 18px; line-height: 1; }
 .nhf-mb-label { font-size: 14px; }
 
 .nhf-badge {
-  min-width: 20px; height: 20px; border-radius: 10px;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nh-green,#00704A); color:#fff; font-size: 12px; font-weight: 700;
-  padding: 0 6px; margin-left: 6px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--nh-green,#00704A);
+  color:#fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+  margin-left: 6px;
 }
 
 /* Body scroll lock when drawers open */
-html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
+html.nhf-lock,
+body.nhf-lock {
+  overflow: hidden;
+  height: 100%;
+}
 
 /* Drawer backdrop + panel */
 .nhf-drawer {
-  position: fixed; inset: 0; display: none;
+  position: fixed;
+  inset: 0;
+  display: none;
   z-index: 1001; /* above the bar */
 }
 
 .nhf-drawer.is-open { display: block; }
 
 .nhf-drawer__backdrop {
-  position: absolute; inset: 0; background: rgba(0,0,0,.45);
-  opacity: 0; transition: opacity .25s ease;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  opacity: 0;
+  transition: opacity .25s ease;
 }
 
 .nhf-drawer.is-open .nhf-drawer__backdrop { opacity: 1; }
 
 .nhf-drawer__panel {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  background: #fff; border-radius: 16px 16px 0 0;
-  max-height: 85vh; height: 85vh;
-  transform: translateY(100%); transition: transform .28s ease;
-  display: flex; flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  max-height: 85vh;
+  height: 85vh;
+  transform: translateY(100%);
+  transition: transform .28s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .nhf-drawer.is-open .nhf-drawer__panel { transform: translateY(0); }
 
 /* Drawer header */
 .nhf-drawer__header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
 }
 
-.nhf-drawer__title { font-weight: 700; font-size: 16px; color: var(--nh-forest,#1E3932); }
+.nhf-drawer__title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--nh-forest,#1E3932);
+}
 
 .nhf-drawer__close {
   appearance: none;
@@ -437,28 +560,45 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
 
 /* Drawer content */
 .nhf-drawer__body {
-  /* NEW: derive bottom padding from the bar height so buttons are not hidden */
   padding: 12px 16px calc(16px + var(--nhf-mb-h));
-  overflow: auto; -webkit-overflow-scrolling: touch;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Drawer footer */
 .nhf-drawer__footer {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom,0));
-  border-top: 1px solid rgba(0,0,0,.08); background: #fff; border-radius: 16px 16px 0 0;
+  border-top: 1px solid rgba(0,0,0,.08);
+  background: #fff;
+  border-radius: 16px 16px 0 0;
 }
 
 .nhf-drawer__apply {
-  appearance:none; border:0; border-radius: 10px; padding: 10px 14px;
-  background: var(--nh-green,#00704A); color:#fff; font-weight: 700;
+  appearance:none;
+  border:0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--nh-green,#00704A);
+  color:#fff;
+  font-weight: 700;
 }
 .nhf-drawer__apply:hover { background: var(--nh-forest,#1E3932); }
 
 .nhf-drawer__reset {
-  appearance:none; border:0; background: transparent; color: rgba(0,0,0,.7);
-  text-decoration: underline; font-weight: 600;
+  appearance:none;
+  border:0;
+  background: transparent;
+  color: rgba(0,0,0,.7);
+  text-decoration: underline;
+  font-weight: 600;
 }
 
 /* Make checkboxes/tap targets roomier on mobile inside drawer */
@@ -468,31 +608,8 @@ html.nhf-lock, body.nhf-lock { overflow: hidden; height: 100%; }
   .nhf-drawer__body .nhf-applybar { display: none !important; }
 }
 
-/* Sticky, scrollable Woo sidebar (desktop) */
-@media (min-width: 992px) {
-  #secondary {
-    position: sticky;
-    top: calc(72px + var(--wp-admin-bar-height, 0px));
-    max-height: calc(100vh - (84px + var(--wp-admin-bar-height, 0px)));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    padding-bottom: 28px;
-    -webkit-mask-image: linear-gradient(to bottom, #000 92%, rgba(0,0,0,0));
-            mask-image: linear-gradient(to bottom, #000 92%, rgba(0,0,0,0));
-  }
-  #secondary::-webkit-scrollbar { width: 6px; }
-  #secondary::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,.22);
-    border-radius: 3px;
-  }
-}
-
-/* If the admin bar is present, expose its height as a CSS var */
-body.admin-bar { --wp-admin-bar-height: 32px; } /* WP default on desktop */
-
 /* =========================================================
-   Norhage Filters — Dark mode overrides (flat + cohesive)
+   Norhage Filters — Dark mode overrides
    ========================================================= */
 
 body.dark-mode #nhf-sidebar{
@@ -506,7 +623,7 @@ body.dark-mode .nhf-heading{
   color: color-mix(in srgb, var(--dm-text) 85%, var(--dm-primary) 15%);
 }
 
-/* ===== Category list ===== */
+/* Category list */
 body.dark-mode .nhf-cat-item{ background: transparent; }
 body.dark-mode .nhf-cat-toggle{
   color: var(--dm-text);
@@ -554,15 +671,17 @@ body.dark-mode .nhf-cat-sub .is-active > a:hover::before{
 }
 
 /* "All" link */
-body.dark-mode .nhf-all a{ color: color-mix(in srgb, var(--dm-text) 70%, #000 30%); }
+body.dark-mode .nhf-all a{
+  color: color-mix(in srgb, var(--dm-text) 70%, #000 30%);
+}
 body.dark-mode .nhf-all a:hover{ color: var(--dm-primary); }
 
-/* ===== Filters block ===== */
+/* Filters block */
 body.dark-mode .nhf-filters{
   border-top: 1px solid var(--dm-border);
 }
 
-/* Dark mode: same separator using dark border color */
+/* Dark mode separator */
 body.dark-mode .nhf-filter--attribute + .nhf-filter--toggles {
   border-top: 1px solid var(--dm-border);
 }
@@ -589,13 +708,6 @@ body.dark-mode .nhf-filter--toggles input[type="checkbox"]{
   accent-color: var(--dm-primary);
 }
 
-/* Separator between last attribute group and the toggles */
-.nhf-filter--attribute + .nhf-filter--toggles {
-  margin-top: .75rem;
-  padding-top: .75rem;
-  border-top: 1px solid rgba(0,0,0,.06);
-}
-
 /* price slider + value text */
 body.dark-mode .nhf-price-slider{
   background: linear-gradient(
@@ -605,7 +717,9 @@ body.dark-mode .nhf-price-slider{
   );
 }
 body.dark-mode .nhf-price-slider::after{ color: var(--dm-primary); }
-body.dark-mode .nhf-price-values{ color: color-mix(in srgb, var(--dm-text) 75%, #000 25%); }
+body.dark-mode .nhf-price-values{
+  color: color-mix(in srgb, var(--dm-text) 75%, #000 25%);
+}
 
 /* reset link */
 body.dark-mode .nhf-reset{
@@ -638,20 +752,27 @@ body.dark-mode .nhf-price-field input{
 }
 
 /* active group dot */
-body.dark-mode .nhf-filter.is-active-group > .nhf-filter-toggle{ color: var(--dm-primary); }
+body.dark-mode .nhf-filter.is-active-group > .nhf-filter-toggle{
+  color: var(--dm-primary);
+}
 body.dark-mode .nhf-filter.is-active-group > .nhf-filter-toggle .nhf-icon::after{
   background: var(--dm-primary);
 }
 
-/* ===== Mobile bar & drawer ===== */
+/* Mobile bar & drawer */
 body.dark-mode .nhf-mobilebar{
   background: var(--dm-bg);
   border-top: 1px solid var(--dm-border);
   box-shadow: 0 -6px 18px rgba(0,0,0,.25);
 }
 body.dark-mode .nhf-mb-btn{ color: var(--dm-text); }
-body.dark-mode .nhf-mb-btn:hover{ background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%); }
-body.dark-mode .nhf-badge{ background: var(--dm-primary); color:#0f2019; }
+body.dark-mode .nhf-mb-btn:hover{
+  background: color-mix(in srgb, var(--dm-bg) 88%, var(--dm-forest) 12%);
+}
+body.dark-mode .nhf-badge{
+  background: var(--dm-primary);
+  color:#0f2019;
+}
 
 body.dark-mode .nhf-drawer__backdrop{ background: rgba(0,0,0,.55); }
 body.dark-mode .nhf-drawer__panel{
