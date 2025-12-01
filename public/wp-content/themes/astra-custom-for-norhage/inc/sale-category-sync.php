@@ -1,18 +1,24 @@
 <?php
 /**
  * Auto “Sale” Category Sync
- * Keeps the product category with slug `sale` in sync with products that are on sale.
+ * Keeps the product category with a language-specific slug in sync
+ * with products that are on sale.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class NHG_Sale_Category_Sync {
-	const CAT_SLUG  = 'sale';
+
+	/**
+	 * Fallback slug if locale is not mapped.
+	 */
+	const DEFAULT_CAT_SLUG  = 'sale';
+
 	const CRON_HOOK = 'nhg_sync_sale_category';
 
 	public function __construct() {
 		// When products are saved/updated
-		add_action( 'save_post_product',         [ $this, 'sync_single' ], 20 );
+		add_action( 'save_post_product',          [ $this, 'sync_single' ], 20 );
 		add_action( 'woocommerce_update_product', [ $this, 'sync_single' ], 20 );
 
 		// Hourly sweep for scheduled start/end
@@ -39,14 +45,64 @@ class NHG_Sale_Category_Sync {
 		wp_clear_scheduled_hook( self::CRON_HOOK );
 	}
 
-	/** Create/get the “sale” term; create it if missing */
+	/**
+	 * Get the correct slug for the current site language.
+	 * Adjust the map below for your actual languages/slugs.
+	 */
+	private function get_sale_slug() {
+		$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+
+		$map = [
+			// Lithuanian
+			'lt_LT' => 'ispardavimas',
+
+			// Norwegian (Bokmål) – example, adjust as needed
+			'nb_NO' => 'salg',
+
+			// Swedish – example
+			'sv_SE' => 'rea',
+
+			// Finnish – example
+			'fi_FI' => 'ale',
+
+			// German – example (you can change to 'angebote' or whatever you use)
+			'de_DE' => 'sale',
+		];
+
+		$slug = isset( $map[ $locale ] ) ? $map[ $locale ] : self::DEFAULT_CAT_SLUG;
+
+		/**
+		 * Filter to allow per-site override without editing this file.
+		 *
+		 * @param string $slug   The resolved slug.
+		 * @param string $locale Current site locale, e.g. 'lt_LT'.
+		 */
+		return apply_filters( 'nhg_sale_category_slug', $slug, $locale );
+	}
+
+	/** Create/get the sale term; create it if missing */
 	private function get_or_create_sale_term() {
-		$term = get_term_by( 'slug', self::CAT_SLUG, 'product_cat' );
-		if ( $term && ! is_wp_error( $term ) ) return $term;
+		$slug = $this->get_sale_slug();
+
+		$term = get_term_by( 'slug', $slug, 'product_cat' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return $term;
+		}
 
 		// translators: product category name for items currently on sale
-		$created = wp_insert_term( __( 'Sale', 'nh-theme' ), 'product_cat', [ 'slug' => self::CAT_SLUG ] );
-		if ( is_wp_error( $created ) ) return null;
+		$name = __( 'Sale', 'nh-theme' );
+
+		$created = wp_insert_term(
+			$name,
+			'product_cat',
+			[
+				'slug' => $slug,
+			]
+		);
+
+		if ( is_wp_error( $created ) ) {
+			return null;
+		}
 
 		return get_term( (int) $created['term_id'], 'product_cat' );
 	}
@@ -70,6 +126,7 @@ class NHG_Sale_Category_Sync {
 		} else {
 			wp_remove_object_terms( $post_id, (int) $term->term_id, 'product_cat' );
 		}
+
 		clean_object_term_cache( $post_id, 'product_cat' );
 	}
 

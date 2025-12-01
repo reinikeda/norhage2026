@@ -29,14 +29,14 @@
 
 /* Variant backgrounds live on the card itself so they cover EVERYTHING */
 .nhhb-pt-hero{
-  grid-column: 1 / -1;            /* full width on first row */
+  grid-column: 1 / -1;              /* full width on first row */
   display: grid;
   grid-template-columns: 1.1fr 0.9fr; /* copy left, image right feel */
-  background: var(--nh-off);      /* full-card background */
+  background: var(--nh-off);        /* full-card background */
 }
 
 .nhhb-pt-small{
-  background: var(--nh-cream);    /* full-card background */
+  background: var(--nh-cream);      /* full-card background */
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -44,7 +44,7 @@
 /* Media inherits the card background (so transparent PNGs show the card color) */
 .nhhb-pt-media{
   position: relative;
-  background: inherit;            /* critical change: inherit the card bg */
+  background: inherit;
   min-height: 220px;
 }
 
@@ -98,6 +98,7 @@
   color: var(--nh-ink-sub);
 }
 
+/* CTA base */
 .nhhb-pt-btn{
   display: inline-flex;
   align-items: center;
@@ -105,23 +106,32 @@
   padding: 10px 18px;
   border-radius: 4px;
   background: var(--nh-green);
-  color: #fff;
-  text-decoration: none;
   font-weight: 700;
-  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
   box-shadow: 0 10px 18px rgba(30,57,50,.16);
 }
+
+/* Light-mode: force white text in all link states (beats global link rules) */
+.nhhb-promo-trio .nhhb-pt-btn,
+.nhhb-promo-trio .nhhb-pt-btn:link,
+.nhhb-promo-trio .nhhb-pt-btn:visited,
+.nhhb-promo-trio .nhhb-pt-btn:hover,
+.nhhb-promo-trio .nhhb-pt-btn:active{
+  color:#fff !important;
+  text-decoration:none;
+}
+
 .nhhb-pt-btn:hover{
   transform: translateY(-1px);
   box-shadow: 0 14px 24px rgba(30,57,50,.22);
 }
 
 /* Layout adjustments */
-.nhhb-pt-hero .nhhb-pt-copy{ order:1 }
-.nhhb-pt-hero .nhhb-pt-media{ order:2 }
+.nhhb-pt-hero .nhhb-pt-copy{ order:1; }
+.nhhb-pt-hero .nhhb-pt-media{ order:2; }
 
-.nhhb-pt-small .nhhb-pt-media{ order:2 }
-.nhhb-pt-small .nhhb-pt-copy { order:1 }
+.nhhb-pt-small .nhhb-pt-media{ order:2; }
+.nhhb-pt-small .nhhb-pt-copy { order:1; }
 
 /* =========================================================
    Promo Trio — Dark Mode (same background & depth as Top Offers)
@@ -180,29 +190,34 @@ body.dark-mode .nhhb-pt-img{
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
 }
 
-/* Text hierarchy (same as Top Offers) */
+/* Text hierarchy */
 body.dark-mode .nhhb-pt-kicker{ color: var(--nh-ink-sub); }
-body.dark-mode .nhhb-pt-h2,
-body.dark-mode .nhhb-pt-h3{ color: var(--nh-ink); }
-body.dark-mode .nhhb-pt-p{ color: var(--nh-ink-sub); }
+body-dark-mode .nhhb-pt-h2,
+body-dark-mode .nhhb-pt-h3{ color: var(--nh-ink); }
+body-dark-mode .nhhb-pt-p{ color: var(--nh-ink-sub); }
 
-/* CTA button */
-body.dark-mode .nhhb-pt-btn{
+/* Dark-mode CTA: only background changes; text stays light */
+/* (ultra-specific so it beats global dark-mode link color rules) */
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn{
   background: var(--dm-primary);
-  color:#111;
-  text-shadow:none;
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--dm-primary) 45%, transparent);
 }
-body.dark-mode .nhhb-pt-btn:hover{
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn:hover{
   background: var(--dm-forest);
-  color:#fff;
-  box-shadow: 0 10px 22px color-mix(in srgb, var(--dm-forest) 48%, transparent);
+}
+
+/* Dark-mode: force white text in all link states */
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn,
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn:link,
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn:visited,
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn:hover,
+body.dark-mode .nhhb-promo-trio .nhhb-pt-btn:active{
+  color:#fff !important;
 }
 
 /* Responsive */
 @media (max-width: 1024px){
-  .nhhb-pt-h2{ font-size: 30px }
-  .nhhb-pt-grid{ gap: 16px }
+  .nhhb-pt-h2{ font-size: 30px; }
+  .nhhb-pt-grid{ gap: 16px; }
 }
 @media (max-width: 860px){
   .nhhb-pt-hero{ grid-template-columns: 1fr; }

@@ -2,7 +2,8 @@
 /**
  * Main Header — two rows + ticker
  *  - Row 1: Logo + Primary Menu (desktop) / Logo + Icons (compact)
- *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)  → in compact this reads as Burger + Search
+ *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)
+ *            + Desktop logo on second line (new)
  *  - Drawer: Off-canvas with ONLY the Primary Menu
  *  - Row 3: News ticker (optional)
  */
@@ -16,6 +17,10 @@ $cart_count  = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_c
 $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_html__( 'My Account', 'nh-theme' ) : esc_html__( 'Sign in', 'nh-theme' );
 $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
+$phone_display = __( '+49 176 65 10 6609', 'nh-theme' );
+$phone_href    = __( '+4917665106609', 'nh-theme' );
+$phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
+
 ?>
 <div class="nhhb-header-main">
 
@@ -46,10 +51,21 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
     <div class="nhhb-tools-slot" aria-hidden="true"></div>
   </div>
 
-  <!-- Row 2: Burger + Tools (icons + search) -->
+  <!-- Row 2: Desktop logo (second line) + Burger + Tools (icons + search) -->
   <div class="nhhb-row nhhb-row--bottom">
 
-    <!-- Burger first (opens drawer with only primary menu) -->
+    <!-- Desktop logo on second line (hidden on mobile/compact via CSS) -->
+    <div class="nhhb-logo nhhb-logo--bottom-desktop">
+      <?php
+      if ( has_custom_logo() ) {
+        the_custom_logo();
+      } else {
+        echo '<a class="site-title" href="' . esc_url( home_url('/') ) . '">' . esc_html( get_bloginfo('name') ) . '</a>';
+      }
+      ?>
+    </div>
+
+    <!-- Burger (used only in compact/mobile via CSS/JS) -->
     <div class="nhhb-compact-burger-wrap">
       <button
         class="nh-burger"
@@ -143,16 +159,46 @@ $account_href  = $is_logged_in ? $account_url : wp_login_url( get_permalink() );
         </button>
       </header>
 
-      <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e('Primary menu','nh-theme'); ?>">
+      <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e( 'Mobile navigation', 'nh-theme' ); ?>">
+
         <?php
+        // Primary menu (shop categories)
         wp_nav_menu( [
           'theme_location' => 'primary',
           'container'      => false,
-          'menu_class'     => 'drawer-menu',
+          'menu_class'     => 'drawer-menu drawer-menu--primary',
           'fallback_cb'    => false,
         ] );
         ?>
+
+        <div class="nh-drawer__section-title">
+          <?php esc_html_e( 'More', 'nh-theme' ); ?>
+        </div>
+
+        <?php
+        // Use Footer Explore menu instead of Secondary
+        wp_nav_menu( [
+          'theme_location' => 'footer_explore',
+          'container'      => false,
+          'menu_class'     => 'drawer-menu drawer-menu--secondary',
+          'fallback_cb'    => false,
+        ] );
+        ?>
+
       </nav>
+
+      <div class="nh-drawer__extras">
+        <a class="nh-drawer__phone" href="<?php echo esc_attr( $phone_href_clean ); ?>">
+          <img 
+            src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>" 
+            alt="Phone" 
+            class="nh-icon nh-icon--phone" 
+            width="18" 
+            height="18"
+          >
+          <?php echo esc_html( $phone_display ); ?>
+        </a>
+      </div>
 
     </aside>
   </div>

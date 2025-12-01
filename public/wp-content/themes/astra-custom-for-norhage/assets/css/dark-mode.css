@@ -346,7 +346,6 @@ body.dark-mode{
 
   /* Related grid */
   .nh-related__title{ color: var(--dm-text); }
-  .nh-related__thumb img{ /* images unchanged, keep contrast via card bg */ }
 }
 
 /* Extra safety: hide services/blog meta in dark mode too */
@@ -429,6 +428,7 @@ body.dark-mode .woocommerce ul.products li.product a.nh-btn-customize:hover{
 body.dark-mode .price,
 body.dark-mode .woocommerce-Price-amount,
 body.dark-mode .amount,
+body.dark-mode .price span[aria-hidden="true"],
 body.dark-mode .woocommerce-product-rating{ color: var(--dm-primary); }
 
 body.dark-mode input.qty,
@@ -454,30 +454,80 @@ body.dark-mode .woocommerce-error{
 }
 
 /* =========================
-   10) Product page — Attribute & Custom cut
+   10) Product page — Attribute & Custom cut (Dark Mode)
    ========================= */
-/* Attribute buttons */
-body.dark-mode .variations_form .nh-attr-btn{
+
+/* Base dark-mode buttons */
+body.dark-mode .variations_form .nh-attr-btn {
   background: var(--ui-bg-content);
   border-color: var(--ui-border) !important;
   color: var(--dm-primary);
 }
-body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):hover{
+
+/* Hover (unselected, enabled) */
+body.dark-mode .variations_form .nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
   background: color-mix(in srgb, var(--dm-surface) 70%, var(--dm-forest) 30%) !important;
   border-color: var(--dm-primary) !important;
   color: #fff !important;
   transform: translateY(-1px);
 }
-body.dark-mode .variations_form .nh-attr-btn.is-selected{
+
+/* Selected */
+body.dark-mode .variations_form .nh-attr-btn.is-selected {
   background: var(--dm-primary) !important;
   border-color: var(--dm-primary) !important;
   color: #0f2019 !important;
 }
-body.dark-mode .variations_form .nh-attr-btn.is-selected:hover{
+
+/* Selected hover (pressed) */
+body.dark-mode .variations_form .nh-attr-btn.is-selected:hover {
   background: var(--dm-forest) !important;
   border-color: var(--dm-forest) !important;
   color: #fff !important;
 }
+
+/* Disabled (impossible combination) */
+body.dark-mode .variations_form .nh-attr-btn.is-disabled,
+body.dark-mode .variations_form .nh-attr-btn[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--dm-surface) 92%, var(--dm-primary) 8%) !important;
+  border-color: color-mix(in srgb, var(--dm-border, #46534a) 60%, var(--dm-primary) 40%) !important;
+  color: color-mix(in srgb, var(--dm-text, #d4d7d5) 70%, var(--dm-primary) 30%) !important;
+  transform: none !important;
+  filter: grayscale(0.3);
+}
+
+/* Disabled hover override */
+body.dark-mode .variations_form .nh-attr-btn.is-disabled:hover {
+  background: color-mix(in srgb, var(--dm-surface) 92%, var(--dm-primary) 8%) !important;
+  border-color: color-mix(in srgb, var(--dm-border, #46534a) 60%, var(--dm-primary) 40%) !important;
+  color: color-mix(in srgb, var(--dm-text, #d4d7d5) 70%, var(--dm-primary) 30%) !important;
+  transform: none !important;
+}
+
+/* ============================================
+   OUT-OF-STOCK (selected variation)
+   ============================================ */
+body.dark-mode .variations_form .nh-attr-btn.is-oos,
+body.dark-mode .variations_form .nh-attr-btn.is-selected.is-oos {
+  background: #4C1A1A !important;   /* deep muted red */
+  border-color: #B94E4E !important; /* warm medium red border */
+  color: #F2B8B5 !important;        /* soft readable red text */
+  box-shadow: 0 0 0 1px #B94E4E;
+  transform: none !important;
+}
+
+/* Hover stays identical */
+body.dark-mode .variations_form .nh-attr-btn.is-oos:hover,
+body.dark-mode .variations_form .nh-attr-btn.is-selected.is-oos:hover {
+  background: #4C1A1A !important;
+  border-color: #B94E4E !important;
+  color: #F2B8B5 !important;
+  box-shadow: 0 0 0 1px #B94E4E;
+  transform: none !important;
+}
+
 
 /* =========================================
    Custom cut size control — Dark Mode v2
@@ -608,7 +658,7 @@ body.dark-mode .nh-bundle-qty-wrap .plus:hover {
 /* Input */
 body.dark-mode .quantity.buttons_added .qty,
 body.dark-mode .nh-bundle-qty-wrap .qty {
-  width: 56px;              /* enough for 3 digits */
+  /* width: 56px;              enough for 3 digits */
   height: 38px;
   text-align: center;
   background: transparent;  /* same plate as wrapper */
@@ -787,26 +837,32 @@ body.dark-mode .woocommerce-tabs ul.tabs li a[aria-selected="true"] {
 /* =========================
    14) Media (product & category images)
    ========================= */
-body.dark-mode .woocommerce ul.products li.product img,
-body.dark-mode .woocommerce-product-gallery__image img,
-body.dark-mode .product-category img{
-  background: var(--dm-media);
-  border: 1px solid color-mix(in srgb, var(--ui-border) 85%, white 15%);
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow:
-    0 2px 6px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+
+/* Base background for all product-related images */
+body.dark-mode 
+  .woocommerce ul.products li.product img,
+body.dark-mode 
+  .woocommerce-product-gallery__image img,
+body.dark-mode 
+  .product-category img,
+body-dark-mode 
+  .flex-control-thumbs img,
+body.dark-mode 
+  .nc-col-image img {
+    background: #262724 !important; /* your chosen plate */
 }
-body.dark-mode .woocommerce ul.products li.product:hover img,
-body.dark-mode .product-category a:hover img{
-  background: color-mix(in srgb, var(--dm-media) 80%, var(--dm-surface) 20%);
-  border-color: var(--dm-primary);
+
+/* Hover — only on single product + thumbnails + bundle rows */
+body.dark-mode 
+  .woocommerce-product-gallery__image:hover img,
+body.dark-mode 
+  .flex-control-thumbs li:hover img,
+body.dark-mode 
+  .nc-col-image:hover img {
+    background: #343530 !important; /* your chosen hover plate */
 }
-body.dark-mode .woocommerce-loop-product__title,
-body.dark-mode .product-category .woocommerce-loop-category__title{
-  color: color-mix(in srgb, var(--dm-text) 88%, black 12%);
-}
+
+body.dark-mode .astra-shop-thumbnail-wrap img.attachment-woocommerce_thumbnail { background: #262724 !important; }
 
 /* =========================
    15) Pagination (Woo) — DARK
@@ -977,13 +1033,14 @@ body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):
   transform: translateY(-1px);
 }
 
-/* Active / selected */
-body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected{
+/* Active / selected (but NOT out-of-stock) */
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:not(.is-oos){
   background: var(--dm-primary) !important;
   border-color: var(--dm-primary) !important;
   color: #0f2019 !important;
 }
-body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:hover{
+
+body.dark-mode .variations_form .nh-attr-buttons .nh-attr-btn.is-selected:not(.is-oos):hover{
   background: var(--dm-forest) !important;
   border-color: var(--dm-forest) !important;
   color: #fff !important;

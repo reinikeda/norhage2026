@@ -3,12 +3,24 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.6.0
+ * Version: 1.6.1
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
+ * Load plugin textdomain
+ */
+function nhf_load_textdomain() {
+	load_plugin_textdomain(
+		'nhf',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+	);
+}
+add_action( 'plugins_loaded', 'nhf_load_textdomain' );
 
 /* ------------------------------------------------------------
  *  Enqueue (only on product archives)
@@ -17,13 +29,38 @@ add_action( 'wp_enqueue_scripts', function() {
 	if ( ! function_exists( 'is_shop' ) ) return;
 	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return;
 
-	wp_register_style( 'nhf-styles', plugins_url( 'assets/css/nhf.css', __FILE__ ), [], '1.6.0' );
+	wp_register_style(
+		'nhf-styles',
+		plugins_url( 'assets/css/nhf.css', __FILE__ ),
+		[],
+		'1.6.1'
+	);
 	wp_enqueue_style( 'nhf-styles' );
 
-	wp_register_script( 'nhf-script', plugins_url( 'assets/js/nhf.js', __FILE__ ), [], '1.6.0', true );
+	wp_register_script(
+		'nhf-script',
+		plugins_url( 'assets/js/nhf.js', __FILE__ ),
+		[],
+		'1.6.1',
+		true
+	);
+
+	// 🔹 Make mobile UI texts translatable in JS
+	wp_localize_script(
+		'nhf-script',
+		'nhfL10n',
+		[
+			'categories'     => __( 'Categories', 'nhf' ),
+			'filters'        => __( 'Filters', 'nhf' ),
+			'filterProducts' => __( 'Filter Products', 'nhf' ),
+			'reset'          => __( 'Reset', 'nhf' ),
+			'apply'          => __( 'Apply', 'nhf' ),
+			'close'          => __( 'Close', 'nhf' ),
+		]
+	);
+
 	wp_enqueue_script( 'nhf-script' );
 });
-
 
 /* ------------------------------------------------------------
  *  Helpers
@@ -105,14 +142,47 @@ function nhf_expand_with_variations( array $parent_ids ): array {
 	return array_values( array_unique( array_map( 'absint', $all ) ) );
 }
 
+/**
+ * Helper: get current "Sale" category slug from locale
+ */
+function nhf_get_sale_slug(): string {
+	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+
+	$map = [
+		// Lithuanian
+		'lt_LT' => 'ispardavimas',
+
+		// Norwegian (Bokmål)
+		'nb_NO' => 'salg',
+
+		// Swedish
+		'sv_SE' => 'rea',
+
+		// Finnish
+		'fi_FI' => 'ale',
+
+		// German
+		'de_DE' => 'sale',
+	];
+
+	if ( isset( $map[ $locale ] ) ) {
+		return $map[ $locale ];
+	}
+
+	// Generic fallback
+	return 'sale';
+}
+
 /* ------------------------------------------------------------
- *  Category Tree (unchanged)
+ *  Category Tree
  * ------------------------------------------------------------ */
 function nhf_render_categories() {
 	$current_term_id = 0;
 	if ( is_product_taxonomy() ) {
 		$obj = get_queried_object();
-		if ( isset( $obj->term_id ) ) $current_term_id = (int) $obj->term_id;
+		if ( isset( $obj->term_id ) ) {
+			$current_term_id = (int) $obj->term_id;
+		}
 	}
 
 	$categories = get_terms([
@@ -126,9 +196,18 @@ function nhf_render_categories() {
 		return;
 	}
 
+	// Get the "Sale" slug for current locale (so we can hide that top-level cat)
+	$sale_slug = nhf_get_sale_slug();
+
 	echo '<ul class="nhf-cat-list">';
 
 	foreach ( $categories as $cat ) {
+
+		// Skip "Sale" category for this language
+		if ( $sale_slug && $cat->slug === $sale_slug ) {
+			continue;
+		}
+
 		$is_current  = ( $cat->term_id === $current_term_id );
 		$is_ancestor = ( $current_term_id && term_is_ancestor_of( $cat->term_id, $current_term_id, 'product_cat' ) );
 		$is_open     = ( $is_current || $is_ancestor );
@@ -202,17 +281,6 @@ add_shortcode( 'nh_filters_sidebar', function() {
 		echo '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( $v ) . '">';
 	}
 
-	/* ========== Toggles (In stock / On sale) ========== */
-	$instock = isset($_GET['instock']) ? (int) $_GET['instock'] : 0;
-	$onsale  = isset($_GET['onsale'])  ? (int) $_GET['onsale']  : 0;
-
-	echo '<section class="nhf-filter nhf-filter--toggles is-open">';
-	echo '  <div class="nhf-filter-body" aria-hidden="false">';
-	echo '    <label><input type="checkbox" name="instock" value="1" ' . checked( $instock, 1, false ) . '> ' . esc_html__( 'In stock only', 'nhf' ) . '</label>';
-	echo '    <label><input type="checkbox" name="onsale" value="1" ' . checked( $onsale, 1, false ) . '> ' . esc_html__( 'On sale', 'nhf' ) . '</label>';
-	echo '  </div>';
-	echo '</section>';
-
 	/* ========== Attribute groups (auto + pruned) ========== */
 	$attrs = wc_get_attribute_taxonomies();
 	if ( $attrs ) {
@@ -259,6 +327,17 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			echo '</section>';
 		}
 	}
+
+	/* ========== Toggles (In stock / On sale) — MOVED AFTER ATTRIBUTES ========== */
+	$instock = isset($_GET['instock']) ? (int) $_GET['instock'] : 0;
+	$onsale  = isset($_GET['onsale'])  ? (int) $_GET['onsale']  : 0;
+
+	echo '<section class="nhf-filter nhf-filter--toggles is-open">';
+	echo '  <div class="nhf-filter-body" aria-hidden="false">';
+	echo '    <label><input type="checkbox" name="instock" value="1" ' . checked( $instock, 1, false ) . '> ' . esc_html__( 'In stock only', 'nhf' ) . '</label>';
+	echo '    <label><input type="checkbox" name="onsale" value="1" ' . checked( $onsale, 1, false ) . '> ' . esc_html__( 'On sale', 'nhf' ) . '</label>';
+	echo '  </div>';
+	echo '</section>';
 
 	/* ========== Apply / Reset ========== */
 	echo '<div class="nhf-applybar">';

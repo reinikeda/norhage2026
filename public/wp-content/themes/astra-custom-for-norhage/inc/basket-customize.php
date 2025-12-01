@@ -112,58 +112,6 @@ add_filter( 'woocommerce_cart_item_name', function ( $name, $cart_item ) {
 }, 10, 2 );
 
 /* ===========================================================
- * EMAILS / ORDER VIEW: hide defaults + add same <dl> for variations
- * ========================================================= */
-add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
-	if ( ! ( $item instanceof WC_Order_Item_Product ) ) return $formatted_meta;
-	if ( nh_is_custom_cut_item( $item ) ) return $formatted_meta;
-
-	$product = $item->get_product();
-	if ( $product && $product->is_type( 'variation' ) ) {
-		$parent = wc_get_product( $product->get_parent_id() );
-		if ( $parent ) {
-			$attr_labels = [];
-			foreach ( $parent->get_attributes() as $attr_key => $attr_obj ) {
-				$attr_labels[] = wc_attribute_label( $attr_key, $parent );
-			}
-			$filtered = [];
-			foreach ( $formatted_meta as $fm ) {
-				if ( ! in_array( $fm->display_key, $attr_labels, true ) ) {
-					$filtered[] = $fm;
-				}
-			}
-			return $filtered;
-		}
-	}
-	return $formatted_meta;
-}, 10, 2 );
-
-add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $order, $plain_text ) {
-	if ( $plain_text ) return;
-	if ( ! ( $item instanceof WC_Order_Item_Product ) ) return;
-	if ( nh_is_custom_cut_item( $item ) ) return;
-
-	$product = $item->get_product();
-	if ( ! $product || ! $product->is_type( 'variation' ) ) return;
-
-	$pairs = [];
-	foreach ( $item->get_meta_data() as $m ) {
-		$k = $m->key ?? '';
-		if ( strpos( $k, 'attribute_' ) === 0 ) {
-			$attr_slug = substr( $k, strlen( 'attribute_' ) );
-			$label     = wc_attribute_label( $attr_slug, $product );
-			$val       = wc_clean( $m->value );
-			if ( taxonomy_exists( $attr_slug ) ) {
-				$term = get_term_by( 'slug', $val, $attr_slug );
-				$val  = $term && ! is_wp_error( $term ) ? $term->name : wc_clean( str_replace( '-', ' ', $val ) );
-			}
-			$pairs[ $label ] = $val;
-		}
-	}
-	if ( ! empty( $pairs ) ) echo nh_render_dl_variation( $pairs );
-}, 10, 4 );
-
-/* ===========================================================
  * CUSTOM-CUT WEIGHT PIPELINE (capture → restore → apply)
  * ========================================================= */
 

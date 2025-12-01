@@ -116,11 +116,96 @@ jQuery(function ($) {
   function syncDisabledStates($select) {
     const $wrap = $select.next('.nh-attr-buttons');
     if (!$wrap.length) return;
+
     $wrap.find('.nh-attr-btn').each(function () {
-      const val = $(this).attr('data-value');
-      const isDisabled = $select.find('option[value="' + val + '"]').is(':disabled');
-      $(this).prop('disabled', isDisabled).toggleClass('is-disabled', isDisabled);
+      const $btn = $(this);
+      const val  = $btn.attr('data-value');
+
+      // Look for matching <option>
+      const $opt = $select.find('option[value="' + val + '"]');
+
+      // If there is no <option> OR it’s disabled → our button should be disabled
+      const isDisabled = !$opt.length || $opt.is(':disabled');
+
+      $btn
+        .prop('disabled', isDisabled)
+        .toggleClass('is-disabled', isDisabled)
+        .attr('aria-disabled', isDisabled ? 'true' : null);
     });
+  }
+
+  /* ---------------------- Out-of-stock visual state (.is-oos) ---------------------- */
+  function updateOOSState($form, variation) {
+    // Clear previous OOS styling
+    $form.find('.nh-attr-btn.is-oos').removeClass('is-oos');
+
+    // If we have no variation or it is in stock, nothing more to do
+    if (!variation || variation.is_in_stock !== false) {
+      return;
+    }
+
+    // For an out-of-stock variation, mark the CURRENTLY SELECTED values
+    $form.find('select[name^="attribute_"]').each(function () {
+      const $select = $(this);
+      const val = String($select.val() || '');
+      if (!val) return;
+
+      const $wrap = $select.next('.nh-attr-buttons');
+      if (!$wrap.length) return;
+
+      $wrap.find('.nh-attr-btn[data-value="' + val + '"]').addClass('is-oos');
+    });
+  }
+
+  /* ---------------- All variations out of stock → show custom notice --------------- */
+  function checkAllOutOfStock($form) {
+    if (!$form || !$form.length) return;
+
+    // Avoid repeating work
+    if ($form.data('nh-all-oos-checked')) return;
+
+    var variations = $form.data('product_variations');
+    if (!variations || !variations.length) return;
+
+    var anyInStock = false;
+    for (var i = 0; i < variations.length; i++) {
+      if (variations[i].is_in_stock) {
+        anyInStock = true;
+        break;
+      }
+    }
+    if (anyInStock) return; // at least one variation in stock → nothing to do
+
+    // Mark as processed
+    $form.data('nh-all-oos-checked', true);
+    $form.addClass('nh-all-variations-oos');
+
+    // Build our own message text (translated via NH_ATTR_I18N)
+    var msgText = 'Sorry, all combinations are unavailable.';
+    if (window.NH_ATTR_I18N && NH_ATTR_I18N.all_oos_msg) {
+      msgText = NH_ATTR_I18N.all_oos_msg;
+    }
+
+    // Create (or reuse) our custom message element
+    var $msg = $form.find('.nh-all-oos-msg');
+    if (!$msg.length) {
+      $msg = $('<p class="nh-all-oos-msg stock out-of-stock"></p>');
+      // Insert just AFTER the attributes table
+      var $attrs = $form.find('table.variations').first();
+      if ($attrs.length) {
+        $msg.insertAfter($attrs);
+      } else {
+        // Fallback: at the top of the form
+        $form.prepend($msg);
+      }
+    }
+    $msg.text(msgText).show();
+
+    // Disable Add to basket
+    $form.closest('form.cart')
+      .find('.single_add_to_cart_button')
+      .addClass('disabled wc-variation-is-unavailable')
+      .prop('disabled', true);
   }
 
   /* ------------------------------ Init & re-init ------------------------------ */
@@ -133,9 +218,15 @@ jQuery(function ($) {
   // Initial build
   initAll();
 
-  // Woo fires this when it (re)initializes a variations form
+  // Check if all variations are out of stock on initial load
+  $('.variations_form').each(function () {
+    checkAllOutOfStock($(this));
+  });
+
   $(document).on('wc_variation_form', function (e) {
-    initAll($(e.target));
+    var $form = $(e.target);
+    initAll($form);
+    checkAllOutOfStock($form);
   });
 
   // Woo fires this after it recalculates which options are available
@@ -144,6 +235,18 @@ jQuery(function ($) {
       syncDisabledStates($(this));
       syncSelectedState($(this));
     });
+  });
+
+  // Woo fires this when it finds a variation for current attributes
+  $(document).on('found_variation', '.variations_form', function (e, variation) {
+    const $form = $(this);
+    updateOOSState($form, variation);
+  });
+
+  // Woo fires this when variation data is cleared / no match
+  $(document).on('reset_data hide_variation', '.variations_form', function () {
+    const $form = $(this);
+    updateOOSState($form, null);
   });
 
   // If SelectWoo re-renders the select container, rebuild our buttons just once

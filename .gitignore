@@ -11,6 +11,8 @@
 /public/wp-content/*
 !/public/wp-content/themes/
 /public/wp-content/themes/*
+!/public/wp-content/plugins/
+!/public/wp-content/plugins/**
 !/public/wp-content/themes/astra-custom-for-norhage/
 !/public/wp-content/themes/astra-custom-for-norhage/**
 
@@ -49,6 +51,10 @@
 !/public/wp-content/plugins/nh-home-builder/**
 !/public/wp-content/plugins/nh-filters/
 !/public/wp-content/plugins/nh-filters/**
+!/public/wp-content/plugins/nh-feature-box/
+!/public/wp-content/plugins/nh-feature-box/**
+!/public/wp-content/plugins/nh-tax-switcher/
+!/public/wp-content/plugins/nh-tax-switcher/**
 
 # Uploads
 /public/wp-content/uploads/

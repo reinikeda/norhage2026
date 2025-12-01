@@ -5,9 +5,23 @@
  * Author: Daiva Reinike
  * Version: 0.9
  * License: GPL-2.0+
+ * Text Domain: nhg-labels
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
+ * Load plugin textdomain.
+ */
+function nhg_labels_load_textdomain() {
+	load_plugin_textdomain(
+		'nhg-labels',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages'
+	);
+}
+add_action( 'plugins_loaded', 'nhg_labels_load_textdomain' );
 
 class NHG_Product_Labels {
 	const NEW_DAYS      = 30;
@@ -51,30 +65,64 @@ class NHG_Product_Labels {
 		// SALE % (supports variable range)
 		if ( $product->is_on_sale() ) {
 			if ( $product->is_type( 'variable' ) ) {
-				$min = 0; $max = 0;
+
+				// ----- VARIABLE PRODUCTS -----
+				$discounts      = [];
+				$total_children = 0;
+				$sale_children  = 0;
+
 				foreach ( $product->get_children() as $vid ) {
 					$child = wc_get_product( $vid );
-					if ( ! $child || ! $child->is_on_sale() ) continue;
+					if ( ! $child ) {
+						continue;
+					}
+
+					$total_children++;
+
 					$reg  = (float) $child->get_regular_price();
 					$sale = (float) $child->get_sale_price();
+
 					if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
+						$sale_children++;
+
 						$pct = (int) round( ( ( $reg - $sale ) / $reg ) * 100 );
 						if ( $pct > 0 ) {
-							$min = $min ? min( $min, $pct ) : $pct;
-							$max = max( $max, $pct );
+							$discounts[] = $pct;
 						}
 					}
 				}
-				if ( $max > 0 ) {
-					$range = ( $min && $min !== $max ) ? "{$min}–{$max}%" : "{$max}%";
-					$labels[] = [
-						'key'   => 'sale',
-						'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ),
-						'line1' => __( 'Sale', 'nhg' ),
-						'line2' => $range,
-					];
+
+				if ( ! empty( $discounts ) ) {
+					$min = min( $discounts );
+					$max = max( $discounts );
+
+					$all_discounted = ( $total_children > 0 && $sale_children === $total_children );
+
+					if ( $all_discounted ) {
+						// All variations on sale: show X–Y% (or single X%)
+						$range = ( $min === $max ) ? "{$max}%" : "{$min}–{$max}%";
+
+						$labels[] = [
+							'key'   => 'sale',
+							'text'  => sprintf( __( 'Sale %s', 'nhg-labels' ), $range ),
+							'line1' => __( 'Sale', 'nhg-labels' ),
+							'line2' => $range,
+						];
+					} else {
+						// Only some variations on sale: "Up to X%"
+						$range = sprintf( __( 'Up to %s', 'nhg-labels' ), "{$max}%" );
+
+						$labels[] = [
+							'key'   => 'sale',
+							'text'  => $range, // aria-label
+							'line1' => __( 'Sale', 'nhg-labels' ),
+							'line2' => $range,
+						];
+					}
 				}
+
 			} else {
+				// ----- SIMPLE PRODUCTS -----
 				$reg  = (float) $product->get_regular_price();
 				$sale = (float) $product->get_sale_price();
 				if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
@@ -83,8 +131,8 @@ class NHG_Product_Labels {
 						$range = "{$pct}%";
 						$labels[] = [
 							'key'   => 'sale',
-							'text'  => sprintf( __( 'Sale %s', 'nhg' ), $range ),
-							'line1' => __( 'Sale', 'nhg' ),
+							'text'  => sprintf( __( 'Sale %s', 'nhg-labels' ), $range ),
+							'line1' => __( 'Sale', 'nhg-labels' ),
 							'line2' => $range,
 						];
 					}
@@ -97,7 +145,7 @@ class NHG_Product_Labels {
 		if ( $created ) {
 			$days = (int) floor( ( time() - $created->getTimestamp() ) / DAY_IN_SECONDS );
 			if ( $days >= 0 && $days < self::NEW_DAYS ) {
-				$labels[] = [ 'key' => 'new', 'text' => __( 'New', 'nhg' ) ];
+				$labels[] = [ 'key' => 'new', 'text' => __( 'New', 'nhg-labels' ) ];
 			}
 		}
 
@@ -118,7 +166,7 @@ class NHG_Product_Labels {
 				if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) $low_any = true;
 			}
 		}
-		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg' ) ];
+		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg-labels' ) ];
 
 		usort( $labels, function( $a, $b ) {
 			$order = [ 'sale' => 1, 'new' => 2, 'low' => 3 ];
@@ -148,7 +196,7 @@ class NHG_Product_Labels {
 
 			// SALE — ribbon (CSS draws triangle; we only output data)
 			if ( 'sale' === $key ) {
-				$line1 = $l['line1'] ?? __( 'Sale', 'nhg' );
+				$line1 = $l['line1'] ?? __( 'Sale', 'nhg-labels' );
 				$line2 = $l['line2'] ?? '';
 				printf(
 					'<span class="nhg-badge nhg-badge--sale" aria-label="%s" data-l1="%s" data-l2="%s"></span>',
@@ -162,7 +210,7 @@ class NHG_Product_Labels {
 			// LOW STOCK — small pill (loop only)
 			if ( 'low' === $key ) {
 				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg' ) . '</span>';
+					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg-labels' ) . '</span>';
 				}
 				continue;
 			}
@@ -243,10 +291,10 @@ class NHG_Product_Labels {
 
 		$icon_url = get_stylesheet_directory_uri() . '/assets/icons/megaphone.svg';
 
-		echo '<div class="nhg-new-inline" aria-label="New product">'
-		   . '<img src="' . esc_url( $icon_url ) . '" alt="New" class="nhg-new-icon" loading="lazy" decoding="async" />'
-		   . '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg' ) . '</span>'
-		   . '</div>';
+		echo '<div class="nhg-new-inline" aria-label="' . esc_attr__( 'New product', 'nhg-labels' ) . '">'
+		. '<img src="' . esc_url( $icon_url ) . '" alt="' . esc_attr__( 'New', 'nhg-labels' ) . '" class="nhg-new-icon" loading="lazy" decoding="async" />'
+		. '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg-labels' ) . '</span>'
+		. '</div>';
 	}
 }
 

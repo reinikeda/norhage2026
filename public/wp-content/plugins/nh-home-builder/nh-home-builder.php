@@ -12,6 +12,18 @@ define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
 define('NHHB_VER', '0.1.0');
 
+/**
+ * Load plugin textdomain.
+ */
+function nhhb_load_textdomain() {
+    load_plugin_textdomain(
+        'nhhb',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+    );
+}
+add_action( 'plugins_loaded', 'nhhb_load_textdomain' );
+
 require_once NHHB_PATH . 'includes/class-admin.php';
 
 function nhhb_render($section, $data = []) {

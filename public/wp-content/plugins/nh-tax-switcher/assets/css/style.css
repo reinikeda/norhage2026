@@ -1,0 +1,58 @@
+/* Bar placement */
+.nh-tax-bar { width: 100%; margin: 8px 0 12px; }
+.nh-tax-bar--archive { padding: 6px 0; }
+.nh-tax-bar--single  { margin: 12px 0 6px; }
+
+/* Keep archive control on its own line above result count */
+.woocommerce .woocommerce-notices-wrapper + .nh-tax-bar--archive,
+.nh-tax-bar--archive { display: block; }
+
+/* Wrap & label */
+.nh-tax-switch-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.nh-tax-label { font-size: 14px; color: var(--ui-text, #2C2A29); }
+
+/* Switch button (brand palette) */
+.nh-tax-switch {
+  --nh-green: #00704A;
+  --nh-track: #e9e9ea;
+
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border: 0;
+  background: var(--nh-track);
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s ease;
+}
+.nh-tax-switch .nh-tax-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .15s ease;
+}
+
+/* pressed = Including VAT (ON) */
+.nh-tax-switch[aria-pressed="true"] { background: var(--nh-green); }
+.nh-tax-switch[aria-pressed="true"] .nh-tax-slider { transform: translateX(20px); }
+
+/* a11y */
+.nh-tax-visuallyhidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* Smooth price fades while swapping */
+.nh-tax-price { display: inline-block; }

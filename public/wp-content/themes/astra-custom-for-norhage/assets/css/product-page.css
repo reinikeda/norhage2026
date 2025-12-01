@@ -47,11 +47,11 @@
     transform 0.02s ease;
 }
 
-/* Hover (unselected) — soft cream tone */
-.single-product .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):hover,
-.single-product .variations_form label.nh-attr-btn:not(.is-selected):hover,
-.single-product .variations_form a.nh-attr-btn:not(.is-selected):hover,
-.single-product .variations_form button.nh-attr-btn:not(.is-selected):hover {
+/* Hover (unselected + enabled only) */
+.single-product .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
+.single-product .variations_form label.nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
+.single-product .variations_form a.nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
+.single-product .variations_form button.nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
   background: var(--nh-cream) !important;
   border-color: var(--nh-green) !important;
   color: var(--nh-forest) !important;
@@ -74,11 +74,24 @@
   transform: none;
 }
 
-/* Disabled state */
-.variations_form .nh-attr-btn.is-disabled {
-  opacity: 0.55;
+/* Disabled state (impossible combinations) */
+.variations_form .nh-attr-btn.is-disabled,
+.variations_form .nh-attr-btn[disabled] {
+  opacity: 0.45;
   cursor: not-allowed;
-  text-decoration: line-through;
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #9ca3af !important;
+  pointer-events: none;
+  transform: none !important;
+  text-decoration: none;
+}
+
+.variations_form .nh-attr-btn.is-disabled:hover {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #9ca3af !important;
+  transform: none !important;
 }
 
 /* Focus ring */
@@ -97,6 +110,42 @@
 [data-attribute_name="attribute_width"]     .nh-attr-btn[data-term="custom"],
 [data-attribute_name="attribute_pa_length"] .nh-attr-btn[data-term="custom"],
 [data-attribute_name="attribute_length"]    .nh-attr-btn[data-term="custom"] {
+  display: none !important;
+}
+
+/* OUT-OF-STOCK (selected variation) Applied when Woo says the current selection variation is out of stock. */
+
+.variations_form .nh-attr-btn.is-oos {
+  background: #FDE8E8 !important;       /* soft red-rose */
+  border-color: #F5A5A5 !important;     /* warm red border */
+  color: #7A1F1F !important;            /* deep red text */
+  transform: none !important;
+}
+
+/* Prevent hover effect on OOS state */
+.variations_form .nh-attr-btn.is-oos:hover {
+  background: #FDE8E8 !important;
+  border-color: #F5A5A5 !important;
+  color: #7A1F1F !important;
+  transform: none !important;
+}
+
+/* If button uses inline styling from JS, this ensures OOS overrides it */
+.variations_form .nh-attr-btn.is-oos.is-selected {
+  background: #FDE8E8 !important;
+  border-color: #F5A5A5 !important;
+  color: #7A1F1F !important;
+}
+
+/* "All variations out of stock" message under attribute table */
+.variations_form .nh-all-oos-msg {
+  margin: 0.35rem 0 0.75rem;
+}
+
+/* Hide WooCommerce out-of-stock message when our global OOS notice is present */
+.variations_form.nh-all-variations-oos 
+  .woocommerce-variation.single_variation 
+  .stock.out-of-stock {
   display: none !important;
 }
 
@@ -366,7 +415,11 @@
 /* Starbucks-style alert (soft red-brown instead of harsh red) */
 .nc-pill--oos { background: #F4E7E3; color: #7A3E2B; }
 
-.nc-meta-small { font-size: .85em; color: var(--ui-muted); margin-top: .25rem; }
+.nc-meta-small { font-size: .80em; color: var(--ui-muted); margin-top: .25rem; }
+
+.nc-meta-small div {
+    line-height: 1.3;
+}
 
 .nc-price-desktop { font-weight: 600; white-space: nowrap; }
 .nc-price-mobile { display: none; font-weight: 600; margin-top: 6px; }

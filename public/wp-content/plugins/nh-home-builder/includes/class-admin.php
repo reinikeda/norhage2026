@@ -430,9 +430,13 @@ class NHHB_Admin {
 
             <div class="nhhb-grid nhhb-3">
                 <p>
-                <label>Section Title<br>
-                    <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($title); ?>" placeholder="<?php esc_attr_e('Our Services','nhhb'); ?>">
-                </label>
+                    <label>Section Title<br>
+                        <input type="text"
+                                class="widefat"
+                                name="data[services_title]"
+                                value="<?php echo esc_attr($title); ?>"
+                                placeholder="<?php esc_attr_e('Our Services','nhhb'); ?>">
+                    </label>
                 </p>
 
                 <p>
@@ -637,9 +641,14 @@ class NHHB_Admin {
             $words_desktop = isset($data['words_desktop']) ? max(8, (int) $data['words_desktop']) : 36;
             $words_mobile  = isset($data['words_mobile'])  ? max(6, (int) $data['words_mobile'])  : 16;
 
-            // Write only the lightweight settings. DO NOT persist per-service overrides.
+            // Title comes from a dedicated field so it doesn't clash with other section types
+            $raw_title = isset($data['services_title']) ? (string) $data['services_title'] : '';
+            if ($raw_title === '') {
+                $raw_title = __('Our Services', 'nhhb');
+            }
+
             $clean = [
-                'title'          => sanitize_text_field($data['title'] ?? __('Our Services', 'nhhb')),
+                'title'          => sanitize_text_field($raw_title),
                 'words_desktop'  => $words_desktop,
                 'words_mobile'   => $words_mobile,
                 // 'services' intentionally omitted to purge legacy overrides

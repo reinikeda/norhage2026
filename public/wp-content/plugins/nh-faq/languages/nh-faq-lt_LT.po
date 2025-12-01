@@ -1,0 +1,147 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-faq\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=9 && (n%100<11 || n%100>19) ? 1 : 2);\n"
+"X-Generator: Poedit 3.8\n"
+
+# ---------------------------------------------------------
+# CPT + taxonomy labels
+# ---------------------------------------------------------
+msgid "FAQs"
+msgstr "DUK"
+
+msgid "FAQ"
+msgstr "Dažniausiai užduodami klausimai"
+
+msgid "Add New"
+msgstr "Pridėti naują"
+
+msgid "Add New FAQ"
+msgstr "Pridėti naują DUK įrašą"
+
+msgid "Edit FAQ"
+msgstr "Redaguoti DUK"
+
+msgid "New FAQ"
+msgstr "Naujas DUK"
+
+msgid "View FAQ"
+msgstr "Peržiūrėti DUK"
+
+msgid "Search FAQs"
+msgstr "Ieškoti DUK"
+
+msgid "No FAQs found"
+msgstr "DUK nerasta"
+
+msgid "FAQ Details"
+msgstr "DUK informacija"
+
+msgid "FAQ Topics"
+msgstr "DUK temos"
+
+msgid "FAQ Topic"
+msgstr "DUK tema"
+
+msgid "Search Topics"
+msgstr "Ieškoti temų"
+
+msgid "All Topics"
+msgstr "Visos temos"
+
+msgid "Edit Topic"
+msgstr "Redaguoti temą"
+
+msgid "Update Topic"
+msgstr "Atnaujinti temą"
+
+msgid "Add New Topic"
+msgstr "Pridėti naują temą"
+
+msgid "New Topic Name"
+msgstr "Naujos temos pavadinimas"
+
+msgid "Order"
+msgstr "Eiliškumas"
+
+msgid "Drag to reorder"
+msgstr "Tempti norint perrikiuoti"
+
+# ---------------------------------------------------------
+# Product tab
+# ---------------------------------------------------------
+msgid "Questions & Answers"
+msgstr "Klausimai ir atsakymai"
+
+# ---------------------------------------------------------
+# Metabox labels
+# ---------------------------------------------------------
+msgid "Attach to products"
+msgstr "Priskirti produktams"
+
+msgid "Type to filter…"
+msgstr "Įveskite filtravimui…"
+
+msgid "Select visible"
+msgstr "Pažymėti matomus"
+
+msgid "Clear visible"
+msgstr "Nuimti matomus"
+
+msgid "Products checklist"
+msgstr "Produktų sąrašas"
+
+msgid "No products found."
+msgstr "Produktų nerasta."
+
+msgid "Tip: use the filter to narrow the list, then “Select visible”."
+msgstr ""
+"Patarimas: naudokite filtrą sąrašui susiaurinti, tada „Pažymėti matomus“."
+
+msgid "Global FAQ page"
+msgstr "Bendras DUK puslapis"
+
+msgid "Last reviewed"
+msgstr "Paskutinį kartą peržiūrėta"
+
+msgid "Keep answers fresh for support and SEO."
+msgstr "Reguliariai atnaujinkite atsakymus pagalbos ir SEO tikslais."
+
+msgid "selected"
+msgstr "pasirinkta"
+
+msgid "visible"
+msgstr "matoma"
+
+msgid "#Products"
+msgstr "#Produktai"
+
+msgid "FAQs attached to this product"
+msgstr "Šiam produktui priskirti DUK"
+
+msgid "No FAQs attached."
+msgstr "DUK nepriskirta."
+
+# ---------------------------------------------------------
+# Global FAQ page expand/collapse
+# ---------------------------------------------------------
+msgid "Expand all"
+msgstr "Išskleisti visus"
+
+msgid "Collapse all"
+msgstr "Suskleisti visus"
+
+# ---------------------------------------------------------
+# Slug translation helper
+# ---------------------------------------------------------
+msgid "faq"
+msgstr "duk"

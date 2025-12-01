@@ -1,0 +1,51 @@
+/* =========================================================
+   Featured Box Plugin Admin
+   ========================================================= */
+
+.nhf-field label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.nhf-media-wrap .button {
+  margin-right: 6px;
+}
+
+#nhf-sortable {
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+  max-height: 380px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+}
+
+#nhf-sortable .nhf-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  color: #222;
+}
+
+#nhf-sortable .nhf-item:last-child {
+  border-bottom: 0;
+}
+
+#nhf-sortable .nhf-item label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+#nhf-sortable .nhf-grip {
+  cursor: move;
+  opacity: .6;
+}

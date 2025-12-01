@@ -25,7 +25,8 @@
   color:var(--nh-charcoal, #223);
   font-size:16px; font-weight:600; line-height:0;
   padding:0; margin:0; cursor:pointer; box-sizing:border-box;
-  transition:background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  transition:background-color .18s ease, color .18s ease, border-color .18s ease,
+             transform .18s ease, box-shadow .18s ease;
 }
 .nhhb-cat-prev:hover,
 .nhhb-cat-next:hover{
@@ -38,7 +39,8 @@
 .nhhb-cat-next:active{ transform:translateY(0); }
 .nhhb-cat-prev:focus-visible,
 .nhhb-cat-next:focus-visible{
-  outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--nh-green,#00704A) 35%, transparent);
+  outline:none;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--nh-green,#00704A) 35%, transparent);
 }
 
 /* Disabled state if you set aria-disabled="true" in JS */
@@ -63,20 +65,24 @@
   transition:transform .25s ease, color .2s ease;
 }
 
-/* Circle chip behind transparent images */
+/* Circle chip – now acts as a mask for a full-bleed image */
 .nhhb-cat-figure{
-  width:128px; height:128px; margin:0 auto 14px; border-radius:999px;
+  width:128px; height:128px; margin:0 auto 14px;
+  border-radius:999px;
+  position:relative;
+  overflow:hidden;                    /* key: clip the image to circle */
   display:grid; place-items:center;
   background: color-mix(in srgb, var(--nh-offwhite, #FAF7F2) 75%, white);
-  /* subtle ring so white-on-white still has shape */
   box-shadow: inset 0 0 0 2px rgba(0,0,0,.03), 0 1px 1px rgba(0,0,0,.02);
   transition: transform .3s ease, background-color .3s ease, box-shadow .3s ease;
 }
 
-/* Transparent thumbs: size safely inside circle */
+/* Thumbs now fill the bubble */
 .nhhb-cat-figure img{
-  width:74px; height:74px; object-fit:contain; display:block;
-  /* add a tiny ambient shadow so light PNGs don’t disappear */
+  width:100%; height:100%;
+  object-fit:cover;                   /* fill the circle */
+  border-radius:inherit;
+  display:block;
   filter: drop-shadow(0 1px 1px rgba(0,0,0,.05));
   transition: transform .25s ease;
 }
@@ -94,7 +100,8 @@
 }
 .nhhb-cat-name::after{
   content:""; position:absolute; left:50%; bottom:-4px; width:100%; height:2px;
-  background:var(--nh-green,#00704A); transform:translateX(-50%) scaleX(0); transform-origin:50% 50%;
+  background:var(--nh-green,#00704A);
+  transform:translateX(-50%) scaleX(0); transform-origin:50% 50%;
   border-radius:1px; transition:transform .22s ease;
 }
 .nhhb-cat:hover .nhhb-cat-name{ color:var(--nh-green,#00704A); }
@@ -112,7 +119,6 @@
   .nhhb-cats-title{ font-size:24px; }
   .nhhb-cat{ width:160px; }
   .nhhb-cat-figure{ width:114px; height:114px; }
-  .nhhb-cat-figure img{ width:64px; height:64px; }
 }
 
 /* =========================================================
@@ -157,7 +163,7 @@ body.dark-mode .nhhb-cat-name{ color: rgba(255,255,255,.85); }
 body.dark-mode .nhhb-cat:hover .nhhb-cat-name{ color: var(--nh-mint, #2EA26F); }
 body.dark-mode .nhhb-cat-name::after{ background: var(--nh-mint, #2EA26F); }
 
-/* thumbs: keep natural color, just a slightly stronger shadow for separation */
+/* thumbs: keep natural color, slightly stronger shadow for separation */
 body.dark-mode .nhhb-cat-figure img{
   filter: drop-shadow(0 1px 1px rgba(0,0,0,.35));
 }

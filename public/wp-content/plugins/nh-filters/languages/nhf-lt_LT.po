@@ -1,0 +1,84 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-filters\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2025-11-21 15:23+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: nh-filters.php:XX
+msgid "No categories found."
+msgstr "Kategorijų nerasta."
+
+#: nh-filters.php:XX
+msgid "All "
+msgstr "Visos "
+
+#: nh-filters.php:XX
+msgid "Product Categories"
+msgstr "Prekių kategorijos"
+
+#: nh-filters.php:XX
+msgid "Filter Products"
+msgstr "Filtruoti prekes"
+
+#: nh-filters.php:XX
+msgid "In stock only"
+msgstr "Yra sandėlyje"
+
+#: nh-filters.php:XX
+msgid "On sale"
+msgstr "Akcijinės prekės"
+
+#: nh-filters.php:XX
+msgid "Apply filters"
+msgstr "Taikyti filtrus"
+
+#: nh-filters.php:XX
+msgid "Reset filters"
+msgstr "Išvalyti filtrus"
+
+#: assets/js/nhf.js
+msgid "Categories"
+msgstr "Kategorijos"
+
+#: assets/js/nhf.js
+msgid "Filters"
+msgstr "Filtrai"
+
+#: assets/js/nhf.js
+msgid "Close"
+msgstr "Uždaryti"
+
+#: assets/js/nhf.js
+msgid "Reset"
+msgstr "Išvalyti"
+
+#: assets/js/nhf.js
+msgid "Apply"
+msgstr "Taikyti"
+
+# ------------------------------------------------------------
+# Optional: Plugin header metadata (appears in WP admin)
+# ------------------------------------------------------------
+#. Plugin Name
+msgid "Custom Filters"
+msgstr "Tinkinti filtrai"
+
+#. Description
+msgid ""
+"Custom WooCommerce sidebar with accordion Product Categories + real Filters "
+"(attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] "
+"in any sidebar widget area."
+msgstr ""
+"Tinkintas WooCommerce šoninis skydelis su suskleidžiamu prekių kategorijų "
+"sąrašu ir tikrais filtrais (atributai, likutis, išpardavimas), pritaikytais "
+"esamam archyvui. Naudokite [nh_filters_sidebar] bet kurioje valdiklių srityje."
