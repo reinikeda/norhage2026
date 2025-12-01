@@ -1,0 +1,40 @@
+/* =========================================================
+   BASKET – Local pickup details
+   ========================================================= */
+
+.nh-pickup-details {
+  display: none;
+  margin: .75rem 0 .25rem;
+  padding: .5rem 1.25rem .5rem 1.75rem;
+  border: 1px solid var(--nh-mint);
+  border-left: 4px solid var(--nh-green);
+  border-radius: 4px;
+  background: var(--nh-offwhite);
+  color: var(--nh-charcoal);
+  font-size: .85em;
+  line-height: 1.5;
+}
+
+.nh-pickup-details strong {
+  display: block;
+  font-weight: 600;
+  color: var(--nh-forest);
+  margin-bottom: .15rem;
+}
+
+.nh-pickup-details .nh-note {
+  color: var(--nh-green);
+  margin-top: .15rem;
+  font-style: italic;
+}
+
+input.shipping_method:checked ~ .nh-pickup-details {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .woocommerce-checkout .nh-pickup-details {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+}

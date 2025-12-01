@@ -125,6 +125,13 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
+	wp_enqueue_style(
+		'norhage-basket-style',
+		get_stylesheet_directory_uri() . '/assets/css/cart.css',
+		array(),
+		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+	);
+
 	wp_enqueue_script(
 		'theme-toggle',
 		get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
