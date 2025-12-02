@@ -117,7 +117,6 @@ jobs:
           - nh-shipping-calculator
           - running-ticker-line
           - product-labels
-          - nh-delivery-time
 
     steps:
       - name: Check out repository
