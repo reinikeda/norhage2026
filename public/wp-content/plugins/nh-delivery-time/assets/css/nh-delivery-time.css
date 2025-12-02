@@ -1,0 +1,18 @@
+/* Delivery time under price – inside the same <p class="price"> */
+
+.price .nh-delivery-time-under {
+  display: block;           /* new line under price */
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ui-text-muted, #707070);
+}
+
+.nh-delivery-time__label {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.nh-delivery-time__value {
+  font-weight: 400;
+}
