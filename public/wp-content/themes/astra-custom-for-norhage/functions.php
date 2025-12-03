@@ -125,13 +125,6 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
-	wp_enqueue_style(
-		'norhage-basket-style',
-		get_stylesheet_directory_uri() . '/assets/css/cart.css',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
-	);
-
 	wp_enqueue_script(
 		'theme-toggle',
 		get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
@@ -313,13 +306,10 @@ require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
-require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/order-attributes.php';
-
-/* New split modules */
-require_once get_stylesheet_directory() . '/inc/hero.php';      // hero helpers (title + image)
-require_once get_stylesheet_directory() . '/inc/blog.php';      // blog titles/meta/nav/related
-require_once get_stylesheet_directory() . '/inc/services.php';  // services CPT + titles/meta/related
+require_once get_stylesheet_directory() . '/inc/hero.php';
+require_once get_stylesheet_directory() . '/inc/blog.php';
+require_once get_stylesheet_directory() . '/inc/services.php';
 
 /* --------------------------------------------------------------------------
  * Shop archive button tweaks (Customize flow for simple products)

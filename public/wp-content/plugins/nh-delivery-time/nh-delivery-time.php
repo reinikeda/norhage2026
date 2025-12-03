@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Norhage – Delivery Time Under Price
+ * Plugin Name: Delivery Time Under Price
  * Description: Appends delivery time (from a product attribute) just under the price on single product pages.
- * Author: Norhage 2026
+ * Author: Daiva Reinike
  * Version: 1.4.0
  * Text Domain: nh-delivery-time
  * Domain Path: /languages
