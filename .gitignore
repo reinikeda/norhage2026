@@ -84,5 +84,7 @@ local-xdebuginfo.php
 # uncomment the next line
 #/wp-content/themes
 
+robots.txt
+llms.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/wordpress
