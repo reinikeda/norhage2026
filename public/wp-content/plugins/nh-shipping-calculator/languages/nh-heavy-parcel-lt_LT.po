@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Universal Shipping Calculator\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-25 00:00+0000\n"
-"PO-Revision-Date: 2025-11-25 13:45+0200\n"
+"PO-Revision-Date: 2025-12-03 13:30+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -126,3 +126,7 @@ msgstr "— nėra —"
 #: includes/class-nhgp-overrides.php
 msgid "Heavy %s"
 msgstr "Sunkus %s"
+
+#: nh-shipping-calculator.php
+msgid "Total weight"
+msgstr "Bendras svoris"
