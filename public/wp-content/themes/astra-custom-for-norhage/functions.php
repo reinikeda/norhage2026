@@ -638,44 +638,33 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
  * Hardcoded missing basket and checkout translations.
  */
 
-add_filter( 'render_block', 'nh_woo_blocks_hardcoded_lt', 20, 2 );
-function nh_woo_blocks_hardcoded_lt( $block_content, $block ) {
+add_filter( 'the_content', 'nh_lt_woo_cart_checkout_replace_strings', 999 );
+function nh_lt_woo_cart_checkout_replace_strings( $content ) {
 
-    // Only apply for Lithuanian front-end
+    // Only on cart & checkout pages
+    if ( ! ( function_exists( 'is_cart' ) && is_cart() ) &&
+         ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
+        return $content;
+    }
+
+    // Only for Lithuanian locale (so it doesn't mess other languages)
     if ( get_locale() !== 'lt_LT' ) {
-        return $block_content;
+        return $content;
     }
 
-    // Safety: only touch WooCommerce cart/checkout summary blocks
-    if (
-        empty( $block['blockName'] ) ||
-        ! in_array(
-            $block['blockName'],
-            [
-                'woocommerce/cart-order-summary-block',
-                'woocommerce/checkout-order-summary-block',
-                'woocommerce/checkout-order-summary-totals-block',
-            ],
-            true
-        )
-    ) {
-        return $block_content;
-    }
-
-    // Simple search/replace map – extend as you like
-    $search  = [
+    // What to search for in the rendered HTML
+    $search = [
         'Add coupons',
         'Estimated total',
-        'Including ',
+        'Including ',        // note the space at the end!
     ];
 
+    // What to replace with (hardcoded LT)
     $replace = [
         'Pridėti kuponą',
         'Preliminari suma',
         'Įskaičiuota ',
     ];
 
-    $block_content = str_replace( $search, $replace, $block_content );
-
-    return $block_content;
+    return str_replace( $search, $replace, $content );
 }
