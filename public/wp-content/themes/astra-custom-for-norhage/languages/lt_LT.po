@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2025-11-28 08:47:35+00:00\n"
-"PO-Revision-Date: 2025-11-28 10:51+0200\n"
+"POT-Creation-Date: 2025-12-03 12:10:18+00:00\n"
+"PO-Revision-Date: 2025-12-03 14:11+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -75,76 +75,55 @@ msgstr "DUK"
 msgid "Shop by Category"
 msgstr "Pirkti pagal kategoriją"
 
-#: functions.php:330 functions.php:349
+#: functions.php:327 functions.php:346
 msgid "Customize"
 msgstr "Pritaikyti"
 
-#: functions.php:331
+#: functions.php:328
 msgid "Customize “%s”"
 msgstr "Pritaikyti „%s“"
 
-#: functions.php:354
+#: functions.php:351
 msgid "Select options"
 msgstr "Pasirinkti"
 
-#: functions.php:376
+#: functions.php:373
 msgid "Secondary product title"
 msgstr "Antrinis prekės pavadinimas"
 
-#: functions.php:405
+#: functions.php:402
 msgid "Footer — Shop Categories"
 msgstr "Poraštė — parduotuvės kategorijos"
 
-#: functions.php:406
+#: functions.php:403
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr "Poraštė — antrinė (paslaugos, tinklaraštis, kontaktai)"
 
-#: functions.php:407
+#: functions.php:404
 msgid "Footer — Legal/Policies"
 msgstr "Poraštė — teisinė informacija / taisyklės"
 
-#: functions.php:542
+#: functions.php:539
 msgid "Please enter a valid email address."
 msgstr "Įveskite galiojantį el. pašto adresą."
 
-#: functions.php:550
+#: functions.php:547
 msgid "Thank you!"
 msgstr "Ačiū!"
 
-#: functions.php:559
+#: functions.php:556
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 "Prenumerata laikinai negalima. Susisiekite su svetainės administratoriumi."
 
-#: functions.php:584
+#: functions.php:581
 msgid "Could not connect to email service. Please try again."
 msgstr "Nepavyko prisijungti prie el. pašto paslaugos. Bandykite dar kartą."
 
-#: functions.php:594
+#: functions.php:591
 msgid "Thank you! You are subscribed."
 msgstr "Ačiū! Jūs užsiprenumeravote."
-
-#: inc/basket-customize.php:174
-msgid "Pickup hours: Mon–Fri 8:30–16:30"
-msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
-
-#: inc/basket-customize.php:175
-msgid "You’ll receive an SMS/email."
-msgstr "Gausite SMS žinutę ir (arba) el. laišką."
-
-#. translators: 1: postcode, 2: country name
-#: inc/basket-customize.php:282
-msgid "%1$s, %2$s"
-msgstr "%1$s, %2$s"
-
-#: inc/basket-customize.php:310
-msgid "Shipping to"
-msgstr "Pristatymas į"
-
-#: inc/basket-customize.php:360 inc/basket-customize.php:361
-msgid "Total weight"
-msgstr "Bendras svoris"
 
 #: inc/blog.php:12
 msgid "All"
@@ -708,3 +687,18 @@ msgstr "Dukterinė tema Norhage svetainės pritaikymams"
 #. Author of the plugin/theme
 msgid "Daiva Reinike"
 msgstr "Daiva Reinike"
+
+#~ msgid "Pickup hours: Mon–Fri 8:30–16:30"
+#~ msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
+
+#~ msgid "You’ll receive an SMS/email."
+#~ msgstr "Gausite SMS žinutę ir (arba) el. laišką."
+
+#~ msgid "%1$s, %2$s"
+#~ msgstr "%1$s, %2$s"
+
+#~ msgid "Shipping to"
+#~ msgstr "Pristatymas į"
+
+#~ msgid "Total weight"
+#~ msgstr "Bendras svoris"

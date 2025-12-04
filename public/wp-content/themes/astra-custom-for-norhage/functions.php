@@ -620,3 +620,17 @@ function nh_sender_subscribe() {
 	] );
 
 }
+
+/**
+ * Make the State / County field optional for ALL countries
+ * in both billing and shipping addresses (classic + Blocks).
+ */
+add_filter( 'woocommerce_default_address_fields', function( $fields ) {
+
+	if ( isset( $fields['state'] ) ) {
+		$fields['state']['required'] = false;
+	}
+
+	return $fields;
+}, 20 );
+
