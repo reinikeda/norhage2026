@@ -634,33 +634,48 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
 	return $fields;
 }, 20 );
 
-add_filter( 'gettext', 'nh_woo_blocks_fallback_translations', 20, 3 );
-function nh_woo_blocks_fallback_translations( $translated, $text, $domain ) {
+/**
+ * Hardcoded missing basket and checkout translations.
+ */
 
-    // WooCommerce classic + WooCommerce Blocks text domains
-    $woo_domains = [ 'woocommerce', 'woo-gutenberg-products-block', 'woocommerce-blocks' ];
+add_filter( 'render_block', 'nh_woo_blocks_hardcoded_lt', 20, 2 );
+function nh_woo_blocks_hardcoded_lt( $block_content, $block ) {
 
-    if ( ! in_array( $domain, $woo_domains, true ) ) {
-        return $translated;
+    // Only apply for Lithuanian front-end
+    if ( get_locale() !== 'lt_LT' ) {
+        return $block_content;
     }
 
-    // Strings we want to handle (msgid as they appear in Woo)
-    $targets = [
+    // Safety: only touch WooCommerce cart/checkout summary blocks
+    if (
+        empty( $block['blockName'] ) ||
+        ! in_array(
+            $block['blockName'],
+            [
+                'woocommerce/cart-order-summary-block',
+                'woocommerce/checkout-order-summary-block',
+                'woocommerce/checkout-order-summary-totals-block',
+            ],
+            true
+        )
+    ) {
+        return $block_content;
+    }
+
+    // Simple search/replace map – extend as you like
+    $search  = [
         'Add coupons',
         'Estimated total',
-        'Including %s',
-        // add more here if you find other missing ones
+        'Including ',
     ];
 
-    // If WooCommerce did NOT translate it (still identical to original English)
-    if ( in_array( $text, $targets, true ) && $translated === $text ) {
+    $replace = [
+        'Pridėti kuponą',
+        'Preliminari suma',
+        'Įskaičiuota ',
+    ];
 
-        // Fallback to your theme's translations (change textdomain if needed)
-        $fallback_domain = 'astra-child'; // or your actual child theme textdomain
+    $block_content = str_replace( $search, $replace, $block_content );
 
-        // Use the same msgid, but look it up in your theme's .po/.mo
-        $translated = translate( $text, $fallback_domain );
-    }
-
-    return $translated;
+    return $block_content;
 }

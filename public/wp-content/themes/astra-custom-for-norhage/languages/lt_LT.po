@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2025-12-03 12:10:18+00:00\n"
-"PO-Revision-Date: 2025-12-04 10:18+0200\n"
+"PO-Revision-Date: 2025-12-04 10:23+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -687,18 +687,6 @@ msgstr "Dukterinė tema Norhage svetainės pritaikymams"
 #. Author of the plugin/theme
 msgid "Daiva Reinike"
 msgstr "Daiva Reinike"
-
-# WooCommerce Blocks: Add coupons
-msgid "Add coupons"
-msgstr "Pridėti kuponą"
-
-# WooCommerce Blocks: Estimated total
-msgid "Estimated total"
-msgstr "Bendra suma"
-
-# WooCommerce Blocks: Including VAT (formatted with %s)
-msgid "Including %s"
-msgstr "Įskaitant %s"
 
 #~ msgid "Pickup hours: Mon–Fri 8:30–16:30"
 #~ msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
