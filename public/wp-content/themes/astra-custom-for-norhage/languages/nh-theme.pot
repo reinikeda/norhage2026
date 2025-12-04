@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-11-28 08:47:35+00:00\n"
+"POT-Creation-Date: 2025-12-03 12:10:18+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -70,74 +70,52 @@ msgstr ""
 msgid "Shop by Category"
 msgstr ""
 
-#: functions.php:330 functions.php:349
+#: functions.php:327 functions.php:346
 msgid "Customize"
 msgstr ""
 
-#: functions.php:331
+#: functions.php:328
 msgid "Customize “%s”"
 msgstr ""
 
-#: functions.php:354
+#: functions.php:351
 msgid "Select options"
 msgstr ""
 
-#: functions.php:376
+#: functions.php:373
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:405
+#: functions.php:402
 msgid "Footer — Shop Categories"
 msgstr ""
 
-#: functions.php:406
+#: functions.php:403
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr ""
 
-#: functions.php:407
+#: functions.php:404
 msgid "Footer — Legal/Policies"
 msgstr ""
 
-#: functions.php:542
+#: functions.php:539
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: functions.php:550
+#: functions.php:547
 msgid "Thank you!"
 msgstr ""
 
-#: functions.php:559
+#: functions.php:556
 msgid "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 
-#: functions.php:584
+#: functions.php:581
 msgid "Could not connect to email service. Please try again."
 msgstr ""
 
-#: functions.php:594
+#: functions.php:591
 msgid "Thank you! You are subscribed."
-msgstr ""
-
-#: inc/basket-customize.php:174
-msgid "Pickup hours: Mon–Fri 8:30–16:30"
-msgstr ""
-
-#: inc/basket-customize.php:175
-msgid "You’ll receive an SMS/email."
-msgstr ""
-
-#. translators: 1: postcode, 2: country name
-
-#: inc/basket-customize.php:282
-msgid "%1$s, %2$s"
-msgstr ""
-
-#: inc/basket-customize.php:310
-msgid "Shipping to"
-msgstr ""
-
-#: inc/basket-customize.php:360 inc/basket-customize.php:361
-msgid "Total weight"
 msgstr ""
 
 #: inc/blog.php:12
