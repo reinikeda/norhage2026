@@ -634,3 +634,33 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
 	return $fields;
 }, 20 );
 
+add_filter( 'gettext', 'nh_woo_blocks_fallback_translations', 20, 3 );
+function nh_woo_blocks_fallback_translations( $translated, $text, $domain ) {
+
+    // WooCommerce classic + WooCommerce Blocks text domains
+    $woo_domains = [ 'woocommerce', 'woo-gutenberg-products-block', 'woocommerce-blocks' ];
+
+    if ( ! in_array( $domain, $woo_domains, true ) ) {
+        return $translated;
+    }
+
+    // Strings we want to handle (msgid as they appear in Woo)
+    $targets = [
+        'Add coupons',
+        'Estimated total',
+        'Including %s',
+        // add more here if you find other missing ones
+    ];
+
+    // If WooCommerce did NOT translate it (still identical to original English)
+    if ( in_array( $text, $targets, true ) && $translated === $text ) {
+
+        // Fallback to your theme's translations (change textdomain if needed)
+        $fallback_domain = 'astra-child'; // or your actual child theme textdomain
+
+        // Use the same msgid, but look it up in your theme's .po/.mo
+        $translated = translate( $text, $fallback_domain );
+    }
+
+    return $translated;
+}
