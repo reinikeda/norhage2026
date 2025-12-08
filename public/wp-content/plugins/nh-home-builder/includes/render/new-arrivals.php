@@ -13,10 +13,20 @@ if (!function_exists('nhhb_img')) {
 wp_enqueue_style('nhhb-new-arrivals');
 
 // Read saved settings (with sane defaults)
-$title       = isset($data['title']) ? sanitize_text_field($data['title']) : __('New Arrivals','nhhb');
-$count       = isset($data['count']) ? max(1, min(24, (int)$data['count'])) : 8;
-$view_label  = isset($data['view_label']) ? sanitize_text_field($data['view_label']) : __('View All','nhhb');
-$view_url    = !empty($data['view_url']) ? esc_url($data['view_url']) : esc_url(home_url('/shop/'));
+$title      = isset($data['title']) ? sanitize_text_field($data['title']) : __('New Arrivals','nhhb');
+$count      = isset($data['count']) ? max(1, min(24, (int)$data['count'])) : 8;
+$view_label = isset($data['view_label']) ? sanitize_text_field($data['view_label']) : __('View All','nhhb');
+
+// Get Shop page URL from WooCommerce (respects language + settings)
+if ( function_exists('wc_get_page_permalink') ) {
+    $default_shop_url = wc_get_page_permalink('shop');
+} else {
+    $default_shop_url = get_post_type_archive_link('product');
+}
+
+$view_url = !empty($data['view_url'])
+    ? esc_url($data['view_url'])
+    : esc_url($default_shop_url);
 
 $q = new WP_Query([
     'post_type'      => 'product',
@@ -26,7 +36,6 @@ $q = new WP_Query([
     'order'          => 'DESC',
     'no_found_rows'  => true,
 ]);
-
 ?>
 <section class="nhhb-new-arrivals">
   <div class="nhhb-na-head">
@@ -38,9 +47,9 @@ $q = new WP_Query([
 
   <div class="nhhb-na-grid">
     <?php if ($q->have_posts()): while ($q->have_posts()): $q->the_post();
-        $product   = wc_get_product(get_the_ID());
+        $product    = wc_get_product(get_the_ID());
         if (!$product) continue;
-        $thumb_id  = get_post_thumbnail_id();
+        $thumb_id   = get_post_thumbnail_id();
         $price_html = $product->get_price_html();
     ?>
       <article class="nhhb-na-card">
