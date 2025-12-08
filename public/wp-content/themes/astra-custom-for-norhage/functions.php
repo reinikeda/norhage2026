@@ -634,3 +634,37 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
 	return $fields;
 }, 20 );
 
+/**
+ * Hardcoded missing basket and checkout translations.
+ */
+
+add_filter( 'the_content', 'nh_lt_woo_cart_checkout_replace_strings', 999 );
+function nh_lt_woo_cart_checkout_replace_strings( $content ) {
+
+    // Only on cart & checkout pages
+    if ( ! ( function_exists( 'is_cart' ) && is_cart() ) &&
+         ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
+        return $content;
+    }
+
+    // Only for Lithuanian locale (so it doesn't mess other languages)
+    if ( get_locale() !== 'lt_LT' ) {
+        return $content;
+    }
+
+    // What to search for in the rendered HTML
+    $search = [
+        'Add coupons',
+        'Estimated total',
+        'Including ',        // note the space at the end!
+    ];
+
+    // What to replace with (hardcoded LT)
+    $replace = [
+        'Pridėti kuponą',
+        'Preliminari suma',
+        'Įskaičiuota ',
+    ];
+
+    return str_replace( $search, $replace, $content );
+}
