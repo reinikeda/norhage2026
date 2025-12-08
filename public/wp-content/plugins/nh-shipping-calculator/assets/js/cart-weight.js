@@ -37,8 +37,8 @@
 	function normalizeWeight(rawWeight, unit) {
 		let value = Number(rawWeight || 0);
 
-		// Norhage: store unit is kg, cartData.itemsWeight is grams.
-		if (unit.toLowerCase() === 'kg' && value > 1000) {
+	    // Store unit is kg, Woo Blocks cartData.itemsWeight is in grams.
+		if (unit.toLowerCase() === 'kg') {
 			value = value / 1000;
 		}
 
