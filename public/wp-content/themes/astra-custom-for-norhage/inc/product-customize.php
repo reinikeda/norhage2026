@@ -356,8 +356,20 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 
 	$w = (int) ( $_POST['nh_width_mm'] ?? 0 );
 	$l = (int) ( $_POST['nh_length_mm'] ?? 0 );
-	$cart_item_data['nh_custom_size'] = [ 'width_mm' => $w, 'length_mm' => $l ];
-	$cart_item_data['nh_unique']      = md5( $product_id . '|' . $w . 'x' . $l . '|' . microtime( true ) );
+
+	$cart_item_data['nh_custom_size'] = [
+		'width_mm'  => $w,
+		'length_mm' => $l,
+	];
+
+	// make each size line unique
+	$cart_item_data['nh_unique'] = md5( $product_id . '|' . $w . 'x' . $l . '|' . microtime( true ) );
+
+	// NEW: store per-sheet weight (kg) from hidden input
+	if ( isset( $_POST['nh_custom_unit_kg'] ) ) {
+		$cart_item_data['nh_custom_unit_kg'] = (float) wc_clean( wp_unslash( $_POST['nh_custom_unit_kg'] ) );
+	}
+
 	return $cart_item_data;
 }, 10, 2 );
 
@@ -473,15 +485,35 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 		if ( ! $product instanceof WC_Product || ! $product->is_type( 'simple' ) ) continue;
 		if ( ! (bool) get_post_meta( $product->get_id(), '_nh_cc_enabled', true ) ) continue;
 
+		$wmm = (int) ( $item['nh_custom_size']['width_mm'] ?? 0 );
+		$lmm = (int) ( $item['nh_custom_size']['length_mm'] ?? 0 );
+		if ( $wmm <= 0 || $lmm <= 0 ) continue;
+
+		// area in m²
+		$area = ( $wmm / 1000 ) * ( $lmm / 1000 );
+
+		// === PRICE (existing logic) ===
 		$price_per_m2 = (float) $product->get_price();
 		$fee          = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
 
-		$wmm = (int) ( $item['nh_custom_size']['width_mm'] ?? 0 );
-		$lmm = (int) ( $item['nh_custom_size']['length_mm'] ?? 0 );
-		if ( $price_per_m2 <= 0 || $wmm <= 0 || $lmm <= 0 ) continue;
+		if ( $price_per_m2 > 0 ) {
+			$unit_price = $area * $price_per_m2 + max( 0, $fee );
+			$product->set_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+		}
 
-		$area = ( $wmm / 1000 ) * ( $lmm / 1000 );
-		$unit = $area * $price_per_m2 + max( 0, $fee );
-		$product->set_price( wc_format_decimal( $unit, wc_get_price_decimals() ) );
+		// === WEIGHT (NEW) ===
+		// from product meta: kg per m²
+		$kg_per_m2 = (float) get_post_meta( $product->get_id(), '_nh_cc_weight_per_m2', true );
+
+		if ( $kg_per_m2 > 0 ) {
+			// weight per sheet in kg
+			$unit_kg = $area * $kg_per_m2;
+
+			// Save for debugging / transparency (optional)
+			$item['nh_custom_unit_kg'] = $unit_kg;
+
+			// Set per-unit weight in kg; Woo will multiply by qty
+			$product->set_weight( wc_format_decimal( $unit_kg, 4 ) );
+		}
 	}
 }, 20 );
