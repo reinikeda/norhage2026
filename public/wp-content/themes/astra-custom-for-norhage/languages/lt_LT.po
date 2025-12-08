@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2025-12-03 12:10:18+00:00\n"
-"PO-Revision-Date: 2025-12-04 10:23+0200\n"
+"PO-Revision-Date: 2025-12-08 13:24+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -53,11 +53,11 @@ msgstr "Susisiekite su mumis"
 #: functions.php:196 template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
-msgstr "+370 671 20 024"
+msgstr "+370 687 89 950"
 
 #: functions.php:197 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
-msgstr "+37067120024"
+msgstr "+37068789950"
 
 #: functions.php:203
 msgid "Utility bar"
