@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Cutting Type Toggle
  * Description: Adds the "Standard / Cut to custom size" toggle between linked products.
- * Version: 1.5
+ * Version: 1.6
  * Author: Daiva Reinike
  * Text Domain: nh-cutting-toggle
  * Domain Path: /languages
@@ -114,30 +114,50 @@ function nhctt_render_toggle() : void {
 
 	// Stable anchor id used for scrolling after navigation
 	$anchor  = 'cutting-type';
-	// $std_url = get_permalink( $roles['standard_id'] ) . '#' . $anchor;
-	// $cus_url = get_permalink( $roles['custom_id'] )   . '#' . $anchor;
-    $std_url = get_permalink($roles['standard_id']);
-    $cus_url = get_permalink($roles['custom_id']);
+	$std_url = get_permalink( $roles['standard_id'] );
+	$cus_url = get_permalink( $roles['custom_id'] );
 
 	$label_text = apply_filters( 'nhctt_label_text', __( 'Cutting type', 'nh-cutting-toggle' ) );
 	$label_id   = 'nh-cutting-label-' . $current_id;
 	?>
 	<div class="nh-cutting-group" role="group" aria-labelledby="<?php echo esc_attr( $label_id ); ?>">
 		<div id="<?php echo esc_attr( $anchor ); ?>" class="nh-cutting-label">
-			<?php echo esc_html( $label_text ); ?>
+			<span id="<?php echo esc_attr( $label_id ); ?>">
+				<?php echo esc_html( $label_text ); ?>
+			</span>
 		</div>
 
 		<div class="nh-cut-toggle">
 			<?php if ( $is_current_std ) : ?>
-				<span class="nh-cut-btn is-active"><?php esc_html_e( 'Standard sizes', 'nh-cutting-toggle' ); ?></span>
+				<span class="nh-cut-btn is-active">
+					<span class="nh-cut-icon nh-cut-icon-standard" aria-hidden="true"></span>
+					<span class="nh-cut-text">
+						<?php esc_html_e( 'Standard sizes', 'nh-cutting-toggle' ); ?>
+					</span>
+				</span>
 			<?php else : ?>
-				<a class="nh-cut-btn" href="<?php echo esc_url( $std_url ); ?>"><?php esc_html_e( 'Standard sizes', 'nh-cutting-toggle' ); ?></a>
+				<a class="nh-cut-btn" href="<?php echo esc_url( $std_url ); ?>">
+					<span class="nh-cut-icon nh-cut-icon-standard" aria-hidden="true"></span>
+					<span class="nh-cut-text">
+						<?php esc_html_e( 'Standard sizes', 'nh-cutting-toggle' ); ?>
+					</span>
+				</a>
 			<?php endif; ?>
 
 			<?php if ( $is_current_custom ) : ?>
-				<span class="nh-cut-btn is-active"><?php esc_html_e( 'Cut to custom size', 'nh-cutting-toggle' ); ?></span>
+				<span class="nh-cut-btn is-active">
+					<span class="nh-cut-icon nh-cut-icon-custom" aria-hidden="true"></span>
+					<span class="nh-cut-text">
+						<?php esc_html_e( 'Cut to custom size', 'nh-cutting-toggle' ); ?>
+					</span>
+				</span>
 			<?php else : ?>
-				<a class="nh-cut-btn" href="<?php echo esc_url( $cus_url ); ?>"><?php esc_html_e( 'Cut to custom size', 'nh-cutting-toggle' ); ?></a>
+				<a class="nh-cut-btn" href="<?php echo esc_url( $cus_url ); ?>">
+					<span class="nh-cut-icon nh-cut-icon-custom" aria-hidden="true"></span>
+					<span class="nh-cut-text">
+						<?php esc_html_e( 'Cut to custom size', 'nh-cutting-toggle' ); ?>
+					</span>
+				</a>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -165,7 +185,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		'nh-cutting-toggle',
 		plugin_dir_url( __FILE__ ) . 'css/cutting-toggle.css',
 		[],
-		'1.5'
+		'1.6'
 	);
 } );
 

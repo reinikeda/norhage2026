@@ -460,50 +460,99 @@ add_action( 'wp', function () {
 	}
 } );
 
-/* --------------------------------------------------------------------------
- * Custom sequential order numbers per WooCommerce base country
- * ----------------------------------------------------------------------- */
-
-add_filter( 'woocommerce_order_number', 'nh_custom_order_number_by_country', 10, 2 );
-function nh_custom_order_number_by_country( $order_number, $order ) {
-
-    if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
-        return $order_number;
-    }
-
-    // Get WooCommerce base country (set in WooCommerce → Settings → General)
-    if ( function_exists( 'wc_get_base_location' ) ) {
-        $base_location = wc_get_base_location(); // e.g. [ 'country' => 'LT', 'state' => '' ]
-        $country       = isset( $base_location['country'] ) ? strtoupper( $base_location['country'] ) : '';
-    } else {
-        $country = '';
-    }
-
-    // Configure per-shop prefix + starting number
-    $settings = [
+/**
+ * SETTINGS: per-shop prefix + starting number
+ * "start" = first number you want to use in that country.
+ * Example: 'LT' => start 1 => LT-0001, LT-0002, ...
+ */
+function nh_get_order_number_country_settings() {
+    return [
         'LT' => [ 'prefix' => 'LT-', 'start' => 1 ],     // Lithuania: LT-0001, LT-0002...
         'NO' => [ 'prefix' => 'NO-', 'start' => 2000 ],  // Norway:   NO-2000, NO-2001...
         'SE' => [ 'prefix' => 'SE-', 'start' => 2000 ],  // Sweden:   SE-2000...
         'DE' => [ 'prefix' => 'DE-', 'start' => 500 ],   // Germany:  DE-0500...
         'FI' => [ 'prefix' => 'FI-', 'start' => 100 ],   // Finland:  FI-0100...
     ];
+}
 
-    // If this shop's country is not configured, keep default Woo number
+/**
+ * Get this shop's base country (WooCommerce → Settings → General).
+ */
+function nh_get_shop_country_code() {
+    if ( function_exists( 'wc_get_base_location' ) ) {
+        $base_location = wc_get_base_location();
+        return isset( $base_location['country'] ) ? strtoupper( $base_location['country'] ) : '';
+    }
+    return '';
+}
+
+/**
+ * Assign a NEW permanent sequential number when the order is created.
+ * This runs once per order and stores number in meta _nh_custom_seq_number.
+ */
+add_action( 'woocommerce_new_order', 'nh_assign_custom_seq_on_new_order', 10, 2 );
+function nh_assign_custom_seq_on_new_order( $order_id, $order = null ) {
+
+    if ( ! $order instanceof WC_Order ) {
+        $order = wc_get_order( $order_id );
+    }
+    if ( ! $order ) {
+        return;
+    }
+
+    // If order already has a sequence, do nothing (don’t reassign).
+    if ( $order->get_meta( '_nh_custom_seq_number', true ) ) {
+        return;
+    }
+
+    $country   = nh_get_shop_country_code();
+    $settings  = nh_get_order_number_country_settings();
+
+    // If this shop's country not configured – skip.
     if ( ! isset( $settings[ $country ] ) ) {
-        return $order_number;
+        return;
     }
 
     $prefix = $settings[ $country ]['prefix'];
     $start  = (int) $settings[ $country ]['start'];
 
-    // WooCommerce internal order ID
-    $order_id = (int) $order->get_id();
+    // Option key that stores the LAST used number for this country.
+    $option_key = 'nh_last_seq_' . $country;
 
-    // Create sequential number with offset
-    $custom_number = $start + ( $order_id - 1 );
+    // If no value yet, start from "start - 1" so first order becomes "start".
+    $last_used = (int) get_option( $option_key, $start - 1 );
+
+    $next = $last_used + 1;
+
+    // Save back the last used number (per country) – persistent in DB.
+    update_option( $option_key, $next, false );
+
+    // Store sequence + prefix in order meta (permanent).
+    $order->update_meta_data( '_nh_custom_seq_number', $next );
+    $order->update_meta_data( '_nh_custom_seq_prefix', $prefix );
+    $order->save();
+}
+
+/**
+ * Display custom order number: PREFIX + 4-digit sequence (XX-0001).
+ */
+add_filter( 'woocommerce_order_number', 'nh_display_custom_order_number', 10, 2 );
+function nh_display_custom_order_number( $order_number, $order ) {
+
+    if ( ! $order instanceof WC_Order ) {
+        return $order_number;
+    }
+
+    $seq    = $order->get_meta( '_nh_custom_seq_number', true );
+    $prefix = $order->get_meta( '_nh_custom_seq_prefix', true );
+
+    // If there is no stored sequence, fallback to default WooCommerce number.
+    if ( ! $seq || ! $prefix ) {
+        return $order_number;
+    }
 
     // Always 4 digits: 0001, 0200, 2000, etc.
-    $formatted = str_pad( $custom_number, 4, '0', STR_PAD_LEFT );
+    $formatted = str_pad( (int) $seq, 4, '0', STR_PAD_LEFT );
 
     return $prefix . $formatted;
 }
