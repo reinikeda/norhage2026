@@ -20,18 +20,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: flex-start; /* important: top-align when button heights differ */
+  align-items: flex-start; /* top-align when button heights differ */
 }
 
-/* Toggle buttons (Light Mode) – match attribute buttons */
+/* Toggle buttons – match attribute buttons */
 .nh-cut-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;                /* space between icon + text */
   padding: 6px 14px;
   box-sizing: border-box;
   min-height: 36px;
-  line-height: 1.5; /* match global/attr line-height */
+  line-height: 1.5;
   border-width: 1px;
   border-style: solid;
   border-color: var(--ui-border, #C3E8C6);
@@ -55,6 +56,36 @@
   text-decoration: none;
 }
 
+/* Icon inside button */
+.nh-cut-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Adjust paths/filenames to your actual icons */
+.nh-cut-icon-standard {
+  background-image: url('../icons/cutting-standard.svg');
+}
+
+.nh-cut-icon-custom {
+  background-image: url('../icons/cutting-custom.svg');
+}
+
+/* Default icon tone (inactive) */
+.nh-cut-btn .nh-cut-icon {
+  filter: none; /* keep original dark icon */
+}
+
+/* Active button → light/white icon on green background */
+.nh-cut-btn.is-active .nh-cut-icon {
+  filter: invert(1) brightness(110) contrast(110);
+}
+
 /* Hover (soft cream tone) */
 .nh-cut-btn:hover {
   background: var(--nh-cream, #F1E6D6);
@@ -72,7 +103,7 @@
   transform: none;
 }
 
-/* Active + hover → darker forest (pressed feel, like attribute buttons) */
+/* Active + hover → darker forest */
 .nh-cut-btn.is-active:hover {
   background: var(--nh-forest, #1E3932) !important;
   border-color: var(--nh-forest, #1E3932) !important;
@@ -143,7 +174,7 @@ body.dark-mode .nh-cut-btn.is-active:hover {
   transform: translateY(-1px);
 }
 
-/* Optional: disabled state (if you ever need it) */
+/* Optional: disabled state */
 body.dark-mode .nh-cut-btn[aria-disabled="true"],
 body.dark-mode .nh-cut-btn.is-disabled {
   opacity: 0.55;
