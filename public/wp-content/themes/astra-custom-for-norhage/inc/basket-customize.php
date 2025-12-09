@@ -13,10 +13,11 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 
 		public static function init() {
 
-			// 1) Cart item meta: show Length for profiles, but not for custom-cut products.
-			add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'add_length_attribute_to_item_data' ), 20, 2 );
+			// 1) Cart item meta: show selected attributes + Length for profiles,
+			//    but do not duplicate / break custom-cut products.
+			add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'filter_cart_item_data' ), 20, 2 );
 
-			// 2) Shipping calculator fields @ cart: only Country + Postcode.
+			// 2) Shipping calculator fields @ cart: only Country + Postcode (when enabled).
 			add_filter( 'woocommerce_shipping_calculator_enable_state', '__return_false' );
 			add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_false' );
 			add_filter( 'woocommerce_shipping_calculator_enable_address', '__return_false' );
@@ -57,9 +58,20 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 		 * 1) Cart item attributes
 		 * ------------------------------------------------------------------ */
 
-		public static function add_length_attribute_to_item_data( $item_data, $cart_item ) {
+		/**
+		 * Ensure selected attributes of variable products are visible in cart,
+		 * and add a Length line for simple products like aluminium profiles.
+		 *
+		 * Custom-cut products (nh_custom_size) are left untouched, they already
+		 * print Width, Length & Cutting fee from a different plugin.
+		 *
+		 * @param array $item_data Existing item meta rows.
+		 * @param array $cart_item The cart item array.
+		 * @return array
+		 */
+		public static function filter_cart_item_data( $item_data, $cart_item ) {
 
-			// Skip for custom-cut sheets (they already show Width / Length / Cutting fee).
+			// 0) Skip custom-cut sheets completely – they render their own meta.
 			if ( ! empty( $cart_item['nh_custom_size'] ) ) {
 				return $item_data;
 			}
@@ -68,54 +80,85 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 				return $item_data;
 			}
 
-			$product      = $cart_item['data'];
-			$length_value = '';
+			$product = $cart_item['data'];
 
-			// 1) Variation attributes (for variable products).
+			/*
+			 * A) VARIABLE PRODUCTS: force all selected attributes to show
+			 *    (Colour, Width, Length, etc.), even if Woo doesn't add them.
+			 */
 			if ( ! empty( $cart_item['variation'] ) && is_array( $cart_item['variation'] ) ) {
+
 				foreach ( $cart_item['variation'] as $attr_name => $attr_value ) {
 
-					if ( false === stripos( $attr_name, 'length' ) ) {
+					if ( '' === $attr_value ) {
 						continue;
 					}
 
-					$taxonomy = str_replace( 'attribute_', '', $attr_name );
-
-					if ( taxonomy_exists( $taxonomy ) ) {
-						$term         = get_term_by( 'slug', $attr_value, $taxonomy );
-						$length_value = $term ? $term->name : $attr_value;
+					// Normalise the taxonomy name.
+					if ( 0 === strpos( $attr_name, 'attribute_' ) ) {
+						$taxonomy = substr( $attr_name, strlen( 'attribute_' ) );
 					} else {
-						$length_value = $attr_value;
+						$taxonomy = $attr_name;
 					}
 
-					break;
-				}
-			}
+					$label = '';
+					$value = $attr_value;
 
-			// 2) Fallback: product attributes.
-			if ( '' === $length_value ) {
-				$length_value = $product->get_attribute( 'pa_length' );
-				if ( '' === $length_value ) {
-					$length_value = $product->get_attribute( 'length' );
-				}
-			}
+					if ( taxonomy_exists( $taxonomy ) ) {
+						$label = wc_attribute_label( $taxonomy );
+						$term  = get_term_by( 'slug', $attr_value, $taxonomy );
+						if ( $term && ! is_wp_error( $term ) ) {
+							$value = $term->name;
+						}
+					} else {
+						// Non-taxonomy attribute (rare, but possible).
+						$label = wc_attribute_label( $taxonomy );
+					}
 
-			if ( '' === $length_value ) {
+					if ( '' === $label ) {
+						continue;
+					}
+
+					// Avoid duplicates: if a row with same label already exists, skip.
+					$already = false;
+					foreach ( $item_data as $row ) {
+						if ( isset( $row['key'] ) && mb_strtolower( wp_strip_all_tags( $row['key'] ) ) === mb_strtolower( $label ) ) {
+							$already = true;
+							break;
+						}
+					}
+					if ( $already ) {
+						continue;
+					}
+
+					$item_data[] = array(
+						'key'     => $label,
+						'value'   => wp_kses_post( $value ),
+						'display' => wp_kses_post( $value ),
+					);
+				}
+
+				// For variable products, we don't need the special "Length" fallback –
+				// it comes from the variation attributes above.
 				return $item_data;
 			}
 
-			// Avoid duplicate "Length" key.
-			foreach ( $item_data as $row ) {
-				if ( isset( $row['key'] ) && false !== stripos( $row['key'], 'length' ) ) {
-					return $item_data;
-				}
+			/*
+			 * B) SIMPLE PRODUCTS: add a Length line if the product has that attribute.
+			 *    This is mainly for the aluminium profiles (2 m, 3 m, 6 m, etc.).
+			 */
+			$length_value = $product->get_attribute( 'pa_length' );
+			if ( '' === $length_value ) {
+				$length_value = $product->get_attribute( 'length' );
 			}
 
-			$item_data[] = array(
-				'key'     => __( 'Length', 'astra-custom-for-norhage' ),
-				'value'   => wp_kses_post( $length_value ),
-				'display' => wp_kses_post( $length_value ),
-			);
+			if ( '' !== $length_value ) {
+				$item_data[] = array(
+					'key'     => __( 'Length', 'astra-custom-for-norhage' ),
+					'value'   => wp_kses_post( $length_value ),
+					'display' => wp_kses_post( $length_value ),
+				);
+			}
 
 			return $item_data;
 		}
@@ -126,10 +169,6 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 
 		/**
 		 * Dynamically disable the cart shipping calculator when local pickup is selected.
-		 *
-		 * This filter runs whenever Woo gets the "enable shipping calc" option.
-		 * If we are on the cart and local pickup is the chosen method, return "no"
-		 * so WooCommerce will not output the calculator at all (no "Change address").
 		 *
 		 * @param mixed $value Original option value ("yes" / "no").
 		 * @return mixed
@@ -154,12 +193,11 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 			}
 
 			// Hide WooCommerce default "Shipping to ..." paragraph in cart totals.
-			// (We print our own clean text below.)
 			echo '<style>.cart_totals .woocommerce-shipping-destination{display:none!important;}</style>';
 
 			echo '<p class="nh-pickup-destination">';
 			echo wp_kses_post(
-				__( 'Pickup from Lithuania warehouse<br>Address: Tiekėjų g. 19E, 97123 Kretinga.', 'astra-custom-for-norhage' )
+				__( 'Pickup from Lithuania warehouse:<br>Address: Tiekėjų g. 19E, 97123 Kretinga.', 'astra-custom-for-norhage' )
 			);
 			echo '</p>';
 		}

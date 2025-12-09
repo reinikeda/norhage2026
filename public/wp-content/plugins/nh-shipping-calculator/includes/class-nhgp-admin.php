@@ -73,14 +73,19 @@ class NHGP_Admin {
 					<td>
 						<p class="description">
 							<?php esc_html_e(
-								'When total cart weight reaches a level, override the Flat rate with that level’s amount. The active level will be shown as "(Heavy L1–L5)" after the shipping method name.',
+								'When total cart weight reaches a level (Weight ≥), override the Flat rate with that level’s amount. Levels are sorted by weight; the highest matching level wins.',
+								NHGP_TEXTDOMAIN
+							); ?>
+							<br/>
+							<?php esc_html_e(
+								'Any rows left empty (no weight OR no amount) are ignored. Orders below the first filled level use normal class costs.',
 								NHGP_TEXTDOMAIN
 							); ?>
 						</p>
 					</td>
 				</tr>
 
-				<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+				<?php for ( $i = 1; $i <= 12; $i++ ) : ?>
 					<tr>
 						<th scope="row"><?php echo esc_html( sprintf( __( 'Level %d', NHGP_TEXTDOMAIN ), $i ) ); ?></th>
 						<td>
@@ -108,47 +113,77 @@ class NHGP_Admin {
 			</table>
 			<?php submit_button(); ?>
 			<hr/>
-			<p><?php esc_html_e( 'Tip: Keep ONE Flat rate in your zone. Below Level 1 your normal class costs apply.', NHGP_TEXTDOMAIN ); ?></p>
+			<p><?php esc_html_e( 'Tip: Keep ONE Flat rate in your zone. Below the first filled level your normal class costs apply.', NHGP_TEXTDOMAIN ); ?></p>
 		</form>
 	<?php }
 
 	public static function sanitize_heavy( $in ){
-		$d   = NHGP_Defaults::heavy_all();
 		$out = array();
 
 		// Always enabled now – no checkbox in UI and the flag is ignored in logic.
 		$out['enabled'] = 1;
 
-		$norm = function( $v, $def ){
-			$v = isset( $v ) ? (string) $v : $def;
+		$norm = function( $v ){
+			if ( ! isset( $v ) ) {
+				return '';
+			}
+			$v = (string) $v;
 			$v = preg_replace( '/[^0-9\.\,]/', '', $v );
 			$v = str_replace( ',', '.', $v );
-			return ( $v === '' ) ? $def : $v;
+			return $v;
 		};
 
-		for ( $i = 1; $i <= 5; $i++ ){
-			$out[ "t{$i}_weight" ] = $norm( $in["t{$i}_weight"] ?? null, $d["t{$i}_weight"] );
-			$out[ "t{$i}_amount" ] = $norm( $in["t{$i}_amount"] ?? null, $d["t{$i}_amount"] );
+		// Raw copy from request (allow blanks)
+		for ( $i = 1; $i <= 12; $i++ ){
+			$out[ "t{$i}_weight" ] = $norm( $in["t{$i}_weight"] ?? null );
+			$out[ "t{$i}_amount" ] = $norm( $in["t{$i}_amount"] ?? null );
 		}
 
 		// keep for backward compatibility; no longer user-configurable
 		$out['append_label'] = 1;
 
-		// Ensure levels are sorted by weight
-		$pairs = array(
-			array( 'w' => (float) $out['t1_weight'], 'a' => (float) $out['t1_amount'] ),
-			array( 'w' => (float) $out['t2_weight'], 'a' => (float) $out['t2_amount'] ),
-			array( 'w' => (float) $out['t3_weight'], 'a' => (float) $out['t3_amount'] ),
-			array( 'w' => (float) $out['t4_weight'], 'a' => (float) $out['t4_amount'] ),
-			array( 'w' => (float) $out['t5_weight'], 'a' => (float) $out['t5_amount'] ),
-		);
+		/* ------------------------------------------------------------------
+		* Sort all non-empty levels by weight (ascending).
+		* Empty levels (weight <= 0 OR amount <= 0) are ignored.
+		* The last non-empty level automatically becomes "and more".
+		* ---------------------------------------------------------------- */
+		$pairs = array();
 
-		usort( $pairs, fn( $A, $B ) => $A['w'] <=> $B['w'] );
+		for ( $i = 1; $i <= 12; $i++ ){
+			$w = isset( $out[ "t{$i}_weight" ] ) ? (float) $out[ "t{$i}_weight" ] : 0;
+			$a = isset( $out[ "t{$i}_amount" ] ) ? (float) $out[ "t{$i}_amount" ] : 0;
 
-		for ( $i = 0; $i < 5; $i++ ){
-			$idx                     = $i + 1;
-			$out[ "t{$idx}_weight" ] = (string) $pairs[ $i ]['w'];
-			$out[ "t{$idx}_amount" ] = (string) $pairs[ $i ]['a'];
+			if ( $w <= 0 || $a <= 0 ) {
+				continue;
+			}
+
+			$pairs[] = array(
+				'w' => $w,
+				'a' => $a,
+			);
+		}
+
+		if ( ! empty( $pairs ) ) {
+			usort(
+				$pairs,
+				static function( $A, $B ) {
+					return $A['w'] <=> $B['w'];
+				}
+			);
+		}
+
+		// Rewrite sorted tiers into slots 1–12
+		$idx = 1;
+		foreach ( $pairs as $p ){
+			$out[ "t{$idx}_weight" ] = (string) $p['w'];
+			$out[ "t{$idx}_amount" ] = (string) $p['a'];
+			$idx++;
+		}
+
+		// Clear remaining slots
+		for ( ; $idx <= 12; $idx++ ){
+			$out[ "t{$idx}_weight" ] = '';
+			$out[ "t{$idx}_amount" ] = '';
 		}
 
 		return $out;
