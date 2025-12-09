@@ -641,3 +641,27 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
 
 	return $fields;
 }, 20 );
+
+// Always show link in cart for products with catalog visibility = "search".
+add_filter( 'woocommerce_cart_item_permalink', function( $permalink, $cart_item, $cart_item_key ) {
+
+    // If Woo already set a permalink, do nothing.
+    if ( ! empty( $permalink ) ) {
+        return $permalink;
+    }
+
+    // Safety: ensure we have a product.
+    if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product ) {
+        return $permalink;
+    }
+
+    /** @var WC_Product $product */
+    $product = $cart_item['data'];
+
+    // If product is "Search only", force a permalink anyway.
+    if ( 'search' === $product->get_catalog_visibility() ) {
+        $permalink = $product->get_permalink( $cart_item );
+    }
+
+    return $permalink;
+}, 10, 3 );
