@@ -184,3 +184,71 @@ function nhgp_cart_total_weight_shortcode() {
 	return ob_get_clean();
 }
 add_shortcode( 'nhgp_cart_total_weight', 'nhgp_cart_total_weight_shortcode' );
+
+/* -------------------------------------------------------------------------
+ * Cart + Checkout: show total weight row in totals table (classic templates)
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Format the cart total weight into a readable string (e.g. "12,50 kg").
+ */
+function nhgp_format_cart_weight_for_display() {
+	$total = nhgp_get_cart_total_weight();
+	if ( $total <= 0 ) {
+		return '';
+	}
+
+	$unit = get_option( 'woocommerce_weight_unit', 'kg' );
+	$formatted_number = number_format(
+		$total,
+		2,
+		',',
+		''
+	);
+
+	return $formatted_number . ' ' . $unit;
+}
+
+/**
+ * Output weight row in Cart totals (classic cart).
+ */
+function nhgp_output_cart_weight_row_cart() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return;
+	}
+
+	$formatted = nhgp_format_cart_weight_for_display();
+	if ( $formatted === '' ) {
+		return;
+	}
+
+	echo '<tr class="nhgp-cart-total-weight-row">';
+	echo '<th>' . esc_html__( 'Total weight', NHGP_TEXTDOMAIN ) . '</th>';
+	echo '<td data-title="' . esc_attr__( 'Total weight', NHGP_TEXTDOMAIN ) . '">'
+		 . esc_html( $formatted ) .
+		 '</td>';
+	echo '</tr>';
+}
+add_action( 'woocommerce_cart_totals_before_order_total', 'nhgp_output_cart_weight_row_cart' );
+
+/**
+ * Output weight row in Checkout order review (classic checkout).
+ */
+function nhgp_output_cart_weight_row_checkout() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return;
+	}
+
+	$formatted = nhgp_format_cart_weight_for_display();
+	if ( $formatted === '' ) {
+		return;
+	}
+
+	echo '<tr class="nhgp-checkout-total-weight-row">';
+	echo '<th>' . esc_html__( 'Total weight', NHGP_TEXTDOMAIN ) . '</th>';
+	echo '<td data-title="' . esc_attr__( 'Total weight', NHGP_TEXTDOMAIN ) . '">'
+		 . esc_html( $formatted ) .
+		 '</td>';
+	echo '</tr>';
+}
+add_action( 'woocommerce_review_order_before_order_total', 'nhgp_output_cart_weight_row_checkout' );

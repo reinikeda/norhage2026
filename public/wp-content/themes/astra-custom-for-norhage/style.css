@@ -925,3 +925,8 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
 body.nhhb-compact-header nav.woocommerce-breadcrumb {
   padding-top: 8px; /* subtle, no crowding */
 }
+
+/* Hide short description in Cart & Checkout blocks */
+.wc-block-components-product-metadata__description {
+    display: none !important;
+}

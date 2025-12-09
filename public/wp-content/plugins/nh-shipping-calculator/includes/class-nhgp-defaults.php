@@ -12,11 +12,47 @@ class NHGP_Defaults {
 	public static function heavy_all(){
 		return array(
 			'enabled'      => 1,
-			't1_weight'    => '200',   't1_amount' => '300',
-			't2_weight'    => '500',   't2_amount' => '450',
-			't3_weight'    => '1000',  't3_amount' => '700',
-			't4_weight'    => '2000',  't4_amount' => '1100',
-			't5_weight'    => '3000',  't5_amount' => '1500',
+
+			// These are interpreted as "Weight ≥ X kg"
+			// but you can still mirror your table nicely:
+
+			// ~5–10 kg price band
+			't1_weight'    => '5',    't1_amount' => '8',   // "iki 5 kg" in your table
+
+			// ~10–20 kg
+			't2_weight'    => '10',   't2_amount' => '12',
+
+			// ~20–30 kg
+			't3_weight'    => '20',   't3_amount' => '17',
+
+			// ~30–55 kg
+			't4_weight'    => '30',   't4_amount' => '21',
+
+			// ~55–75 kg
+			't5_weight'    => '55',   't5_amount' => '29',
+
+			// ~75–100 kg
+			't6_weight'    => '75',   't6_amount' => '35',
+
+			// ~100–200 kg
+			't7_weight'    => '100',  't7_amount' => '45',
+
+			// ~200–500 kg
+			't8_weight'    => '200',  't8_amount' => '59',
+
+			// ~500–700 kg
+			't9_weight'    => '500',  't9_amount' => '95',
+
+			// ~700–1000 kg
+			't10_weight'   => '700',  't10_amount' => '120',
+
+			// ≥ 1000 kg (this will become your last tier if 12 is empty)
+			't11_weight'   => '1000', 't11_amount' => '150',
+
+			// Extra slot if you want another breakpoint (e.g. 1500 kg)
+			// or leave both empty to ignore:
+			't12_weight'   => '',     't12_amount' => '200',
+
 			'append_label' => 1,
 		);
 	}

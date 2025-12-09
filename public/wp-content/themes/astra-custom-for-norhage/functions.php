@@ -140,6 +140,13 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
+	wp_enqueue_style(
+		'custom-basket-css',
+		get_stylesheet_directory_uri() . '/assets/css/basket.css',
+		array(),
+		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+	);
+
 	wp_enqueue_script(
 		'norhage-custom-js',
 		get_stylesheet_directory_uri() . '/assets/js/script.js',
@@ -306,6 +313,7 @@ require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
+require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
@@ -634,37 +642,26 @@ add_filter( 'woocommerce_default_address_fields', function( $fields ) {
 	return $fields;
 }, 20 );
 
-/**
- * Hardcoded missing basket and checkout translations.
- */
+// Always show link in cart for products with catalog visibility = "search".
+add_filter( 'woocommerce_cart_item_permalink', function( $permalink, $cart_item, $cart_item_key ) {
 
-add_filter( 'the_content', 'nh_lt_woo_cart_checkout_replace_strings', 999 );
-function nh_lt_woo_cart_checkout_replace_strings( $content ) {
-
-    // Only on cart & checkout pages
-    if ( ! ( function_exists( 'is_cart' ) && is_cart() ) &&
-         ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
-        return $content;
+    // If Woo already set a permalink, do nothing.
+    if ( ! empty( $permalink ) ) {
+        return $permalink;
     }
 
-    // Only for Lithuanian locale (so it doesn't mess other languages)
-    if ( get_locale() !== 'lt_LT' ) {
-        return $content;
+    // Safety: ensure we have a product.
+    if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product ) {
+        return $permalink;
     }
 
-    // What to search for in the rendered HTML
-    $search = [
-        'Add coupons',
-        'Estimated total',
-        'Including ',        // note the space at the end!
-    ];
+    /** @var WC_Product $product */
+    $product = $cart_item['data'];
 
-    // What to replace with (hardcoded LT)
-    $replace = [
-        'Pridėti kuponą',
-        'Preliminari suma',
-        'Įskaičiuota ',
-    ];
+    // If product is "Search only", force a permalink anyway.
+    if ( 'search' === $product->get_catalog_visibility() ) {
+        $permalink = $product->get_permalink( $cart_item );
+    }
 
-    return str_replace( $search, $replace, $content );
-}
+    return $permalink;
+}, 10, 3 );
