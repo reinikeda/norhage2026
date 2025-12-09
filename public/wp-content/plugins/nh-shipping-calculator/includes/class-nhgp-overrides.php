@@ -19,9 +19,38 @@ class NHGP_Overrides {
 		// Always treat custom feature as enabled internally (keys are hard-coded now)
 		$custom['enabled'] = true;
 
-		$total_weight = (float) WC()->cart->get_cart_contents_weight();
+		/* ================= OVERSIZE RULE (LT + big item => ONLY local pickup) ================= */
+
+		$destination_country = '';
+		if ( ! empty( $package['destination']['country'] ) ) {
+			$destination_country = strtoupper( (string) $package['destination']['country'] );
+		}
+
+		$cart_items   = WC()->cart->get_cart();
+		$has_oversize = self::cart_has_oversize_item( $cart_items );
+
+		// Only affect Lithuania – other countries keep normal behaviour
+		if ( $destination_country === 'LT' && $has_oversize ) {
+
+			// Keep only local pickup, remove all other methods (flat rate, etc.)
+			foreach ( $rates as $key => $rate ) {
+				if ( ! is_object( $rate ) || ! method_exists( $rate, 'get_method_id' ) ) {
+					continue;
+				}
+
+				if ( $rate->get_method_id() !== 'local_pickup' ) {
+					unset( $rates[ $key ] );
+				}
+			}
+
+			// Oversize rule wins; skip heavy tiers / class dominance.
+			return $rates;
+		}
 
 		/* ================= HEAVY TIERS ================= */
+
+		$total_weight = (float) WC()->cart->get_cart_contents_weight();
+
 		$tiers = array(
 			array( 'w' => (float) $heavy['t1_weight'], 'a' => (float) $heavy['t1_amount'], 'label' => 'L1' ),
 			array( 'w' => (float) $heavy['t2_weight'], 'a' => (float) $heavy['t2_amount'], 'label' => 'L2' ),
@@ -188,5 +217,121 @@ class NHGP_Overrides {
 		}
 
 		return $rates;
+	}
+
+	/**
+	 * Detect if the cart contains at least one oversize item.
+	 *
+	 * Condition:
+	 *  - any product width ≥ 150 cm OR length ≥ 300 cm
+	 *    using:
+	 *      - custom-cut size stored on the cart item (mm), OR
+	 *      - product dimensions (length/width) in WooCommerce dimension unit.
+	 */
+	protected static function cart_has_oversize_item( $cart_items ) {
+
+		if ( empty( $cart_items ) ) {
+			return false;
+		}
+
+		// --- thresholds ---
+
+		// Custom-cut thresholds in mm.
+		$threshold_width_mm  = 1500; // 150 cm
+		$threshold_length_mm = 3000; // 300 cm
+
+		// Product dimension thresholds based on store unit.
+		$dimension_unit = get_option( 'woocommerce_dimension_unit', 'cm' );
+
+		// Base thresholds in metres.
+		$base_width_m  = 1.5; // 150 cm
+		$base_length_m = 3.0; // 300 cm
+
+		switch ( $dimension_unit ) {
+			case 'mm':
+				$th_w = $base_width_m * 1000;  // 1500
+				$th_l = $base_length_m * 1000; // 3000
+				break;
+
+			case 'cm':
+				$th_w = $base_width_m * 100;   // 150
+				$th_l = $base_length_m * 100;  // 300
+				break;
+
+			case 'm':
+				$th_w = $base_width_m;         // 1.5
+				$th_l = $base_length_m;        // 3
+				break;
+
+			case 'in':
+				// 1 m = 39.3701 in
+				$th_w = $base_width_m  * 39.3701;
+				$th_l = $base_length_m * 39.3701;
+				break;
+
+			case 'yd':
+				// 1 m = 1.09361 yd
+				$th_w = $base_width_m  * 1.09361;
+				$th_l = $base_length_m * 1.09361;
+				break;
+
+			default:
+				// Fallback: assume cm
+				$th_w = $base_width_m * 100;
+				$th_l = $base_length_m * 100;
+				break;
+		}
+
+		foreach ( $cart_items as $item ) {
+
+			if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
+				continue;
+			}
+
+			/** @var WC_Product $product */
+			$product = $item['data'];
+
+			// 1) CUSTOM-CUT SIZE FROM CART (mm)
+			$w_mm = 0;
+			$h_mm = 0;
+
+			// Theme structure: nh_custom_size[width_mm/length_mm]
+			if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
+				$w_mm = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
+				$h_mm = (float) ( $item['nh_custom_size']['length_mm'] ?? 0 );
+			}
+
+			// Flat keys: nh_width_mm / nh_length_mm
+			if ( $w_mm <= 0 && isset( $item[ NHGP_Custom_Cut::WIDTH_KEY ] ) ) {
+				$w_mm = (float) $item[ NHGP_Custom_Cut::WIDTH_KEY ];
+			}
+			if ( $h_mm <= 0 && isset( $item[ NHGP_Custom_Cut::HEIGHT_KEY ] ) ) {
+				$h_mm = (float) $item[ NHGP_Custom_Cut::HEIGHT_KEY ];
+			}
+
+			if ( $w_mm > 0 || $h_mm > 0 ) {
+				// We have an actual custom size in mm on the cart item – use that only.
+				if ( $w_mm >= $threshold_width_mm || $h_mm >= $threshold_length_mm ) {
+					return true;
+				}
+
+				// We do NOT also check product dimensions for this item.
+				continue;
+			}
+
+			// 2) NORMAL PRODUCT DIMENSIONS IN STORE UNIT
+			$length = (float) $product->get_length();
+			$width  = (float) $product->get_width();
+
+			if ( $width <= 0 && $length <= 0 ) {
+				continue;
+			}
+
+			if ( $width >= $th_w || $length >= $th_l ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
