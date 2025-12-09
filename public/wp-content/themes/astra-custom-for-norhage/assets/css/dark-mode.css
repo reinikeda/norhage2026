@@ -1164,3 +1164,197 @@ body.dark-mode ::-webkit-scrollbar-track{ background: transparent; }
     border-left: 2px solid color-mix(in srgb, var(--dm-border), #000 10%);
   }
 }
+
+/* =========================================================
+   18) Cart & Checkout — Dark Mode (Norhage)
+   ========================================================= */
+
+/* 18.1 Shells & tables (cart + checkout) */
+body.dark-mode .woocommerce-cart .woocommerce,
+body.dark-mode .woocommerce-checkout .woocommerce {
+    color: var(--dm-text);
+}
+
+body.dark-mode .woocommerce-cart-form .shop_table.cart,
+body.dark-mode .cart_totals,
+body.dark-mode .cart_totals .shop_table,
+body.dark-mode .woocommerce-checkout-review-order-table,
+body.dark-mode #order_review,
+body.dark-mode #customer_details {
+    background: var(--ui-bg-content);
+    border: 1px solid var(--ui-border);
+    color: var(--dm-text);
+}
+
+/* Table headers (Product / Price / Quantity / Subtotal, etc.) */
+body.dark-mode .woocommerce table.shop_table th {
+    background: var(--ui-bg-content);
+    color: var(--dm-text);
+    border-bottom: 1px solid var(--ui-border);
+    font-weight: 600;
+}
+
+/* Row borders */
+body.dark-mode .woocommerce table.shop_table tr {
+    border-color: var(--ui-border);
+}
+
+/* 18.2 Basket totals heading */
+body.dark-mode .cart_totals h2 {
+    background: var(--ui-bg-content);           /* remove white strip */
+    color: var(--dm-primary);
+    border-bottom: 1px solid var(--ui-border);
+    margin-bottom: 1.2rem;
+}
+
+/* 18.3 Text hierarchy inside totals */
+body.dark-mode .cart_totals th,
+body.dark-mode .cart_totals td {
+    color: var(--dm-text);
+}
+
+/* Small notes: "(incl. VAT)", tax lines, etc. */
+body.dark-mode .cart_totals .tax_label,
+body.dark-mode .cart_totals .includes_tax,
+body.dark-mode .woocommerce-cart-form .product-subtotal .tax_label {
+    color: var(--ui-muted);
+}
+
+/* Amounts in totals (right column) */
+body.dark-mode .cart_totals .cart-subtotal .amount,
+body.dark-mode .cart_totals .order-total .amount {
+    color: var(--dm-primary);
+}
+
+/* Shipping method labels & prices */
+body.dark-mode .cart_totals .woocommerce-shipping-totals label {
+    color: var(--dm-text);
+}
+body.dark-mode .cart_totals .woocommerce-shipping-totals .amount {
+    color: var(--dm-primary);
+}
+
+/* "Shipping to …" text (when shown) */
+body.dark-mode .cart_totals .woocommerce-shipping-destination {
+    color: var(--ui-muted);
+}
+body.dark-mode .cart_totals .woocommerce-shipping-destination strong {
+    color: var(--dm-text);
+}
+
+/* 18.4 Pickup info box (Lithuania warehouse notice) */
+body.dark-mode .cart_totals .nh-pickup-destination {
+    background: var(--ui-bg-dark);
+    border: 1px solid var(--ui-border);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    margin: 0 0 1.2rem;
+}
+body.dark-mode .cart_totals .nh-pickup-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+body.dark-mode .cart_totals .nh-pickup-address {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ui-muted);
+}
+
+/* 18.5 Cart table content (left side) */
+
+/* Product names + links */
+body.dark-mode .woocommerce-cart-form .product-name a {
+    color: var(--dm-primary);
+}
+body.dark-mode .woocommerce-cart-form .product-name a:hover {
+    color: color-mix(in srgb, var(--dm-primary) 85%, white 15%);
+}
+
+/* Attribute labels/values under product name */
+body.dark-mode .woocommerce-cart-form .product-name dl.variation dt {
+    color: var(--ui-muted);
+}
+body.dark-mode .woocommerce-cart-form .product-name dl.variation dd {
+    color: var(--dm-text);
+}
+
+/* Prices in cart rows */
+body.dark-mode .woocommerce-cart-form .product-price,
+body.dark-mode .woocommerce-cart-form .product-subtotal {
+    color: var(--dm-text);           /* calm text */
+}
+body.dark-mode .woocommerce-cart-form .product-subtotal .amount {
+    color: var(--dm-primary);        /* numeric subtotal pops a bit */
+}
+
+/* Remove icons not too bright */
+body.dark-mode .woocommerce-cart-form .product-remove a.remove {
+    color: var(--ui-muted);
+}
+body.dark-mode .woocommerce-cart-form .product-remove a.remove:hover {
+    color: #ff7f7f;
+}
+
+/* 18.6 Quantity & coupon row */
+
+/* Coupon input */
+body.dark-mode .woocommerce-cart-form .actions .coupon .input-text {
+    background: var(--ui-bg-site);
+    border-color: var(--ui-border);
+    color: var(--dm-text);
+}
+body.dark-mode .woocommerce-cart-form .actions .coupon .input-text::placeholder {
+    color: var(--ui-muted);
+}
+
+/* Coupon + Update row background */
+body.dark-mode .woocommerce-cart-form .actions {
+    background: var(--ui-bg-content);
+    border-top: 1px solid var(--ui-border);
+}
+
+/* 18.7 Buttons (Apply coupon, Update basket, Proceed, Place order) */
+
+/* Final override: dark text on green buttons in cart/checkout (normal state) */
+body.dark-mode a.checkout-button.button.alt.wc-forward,
+body.dark-mode .woocommerce-cart-form .actions .coupon .button,
+body.dark-mode .woocommerce-cart-form .actions .button[name="update_cart"],
+body.dark-mode .woocommerce-checkout #place_order.button {
+    color: #0f2019 !important;
+}
+
+/* Hover state: lighter text */
+body.dark-mode a.checkout-button.button.alt.wc-forward:hover,
+body.dark-mode .woocommerce-cart-form .actions .coupon .button:hover,
+body.dark-mode .woocommerce-cart-form .actions .button[name="update_cart"]:hover,
+body.dark-mode .woocommerce-checkout #place_order.button:hover {
+    color: var(--dm-text) !important;
+}
+
+/* Disabled state */
+body.dark-mode .woocommerce-cart-form .actions .button[disabled],
+body.dark-mode .woocommerce-checkout #place_order[disabled] {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* 18.8 Checkout columns & headings */
+body.dark-mode .woocommerce-checkout #customer_details .col-1,
+body.dark-mode .woocommerce-checkout #customer_details .col-2 {
+    background: var(--ui-bg-content);
+    border: 1px solid var(--ui-border);
+}
+
+body.dark-mode .woocommerce-checkout h3 {
+    color: var(--dm-primary);
+}
+
+/* Labels & terms text */
+body.dark-mode .woocommerce-checkout label {
+    color: var(--dm-text);
+}
+body.dark-mode .woocommerce-checkout .woocommerce-terms-and-conditions-wrapper {
+    color: var(--ui-muted);
+}

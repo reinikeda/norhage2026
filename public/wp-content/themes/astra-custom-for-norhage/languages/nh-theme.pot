@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-12-09 09:28:42+00:00\n"
+"POT-Creation-Date: 2025-12-09 11:27:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -124,8 +124,12 @@ msgstr ""
 msgid "Length"
 msgstr ""
 
-#: inc/basket-customize.php:200
-msgid "Pickup from Lithuania warehouse:<br>Address: Tiekėjų g. 19E, 97123 Kretinga."
+#: inc/basket-customize.php:203
+msgid "Pickup from Lithuania warehouse"
+msgstr ""
+
+#: inc/basket-customize.php:208
+msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
 msgstr ""
 
 #: inc/blog.php:12

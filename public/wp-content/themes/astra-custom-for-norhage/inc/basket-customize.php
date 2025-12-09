@@ -195,11 +195,20 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 			// Hide WooCommerce default "Shipping to ..." paragraph in cart totals.
 			echo '<style>.cart_totals .woocommerce-shipping-destination{display:none!important;}</style>';
 
-			echo '<p class="nh-pickup-destination">';
-			echo wp_kses_post(
-				__( 'Pickup from Lithuania warehouse:<br>Address: Tiekėjų g. 19E, 97123 Kretinga.', 'astra-custom-for-norhage' )
-			);
-			echo '</p>';
+			// Wrapper for styling (optional but recommended)
+			echo '<div class="nh-pickup-destination">';
+
+			// Header
+			echo '<h3 class="nh-pickup-title">'
+				. esc_html__( 'Pickup from Lithuania warehouse', 'astra-custom-for-norhage' )
+				. '</h3>';
+
+			// Address paragraph
+			echo '<p class="nh-pickup-address">'
+				. esc_html__( 'Address: Tiekėjų g. 19E, 97123 Kretinga.', 'astra-custom-for-norhage' )
+				. '</p>';
+
+			echo '</div>';
 		}
 	}
 
