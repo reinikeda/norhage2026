@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-inactivity-popup-lite 1.2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-10 12:00+0200\n"
+"PO-Revision-Date: 2025-12-10 15:21+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Domain: nh-iplite\n"
+
+#: classes/popup
+msgid "Need some help?"
+msgstr "Reikia pagalbos?"
+
+#: classes/popup
+msgid "Not sure which product fits your project? We’ll guide you — no pressure."
+msgstr "Nežinote, kuris produktas tinka jūsų projektui? Padėsime išsirinkti – be jokio spaudimo."
+
+#: classes/popup
+msgid "Contact us"
+msgstr "Susisiekite"
+
+#: classes/popup
+msgid "Browse FAQs"
+msgstr "Peržiūrėti DUK"
+
+#: classes/popup button aria-label
+msgid "Close popup"
+msgstr "Uždaryti langą"
+
+#: classes/popup link aria-label
+msgid "Browse frequently asked questions"
+msgstr "Peržiūrėti dažniausiai užduodamus klausimus"
