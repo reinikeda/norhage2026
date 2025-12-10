@@ -250,7 +250,7 @@ class NHGP_Overrides {
 	 * Detect if the cart contains at least one oversize item.
 	 *
 	 * Condition:
-	 *  - any product width ≥ 150 cm OR length ≥ 300 cm
+	 *  - any product width > 150 cm OR length > 300 cm
 	 *    using:
 	 *      - custom-cut size stored on the cart item (mm), OR
 	 *      - product dimensions (length/width) in WooCommerce dimension unit.
@@ -338,7 +338,7 @@ class NHGP_Overrides {
 
 			if ( $w_mm > 0 || $h_mm > 0 ) {
 				// We have an actual custom size in mm on the cart item – use that only.
-				if ( $w_mm >= $threshold_width_mm || $h_mm >= $threshold_length_mm ) {
+				if ( $w_mm > $threshold_width_mm || $h_mm > $threshold_length_mm ) {
 					return true;
 				}
 
@@ -354,7 +354,7 @@ class NHGP_Overrides {
 				continue;
 			}
 
-			if ( $width >= $th_w || $length >= $th_l ) {
+			if ( $width > $th_w || $length > $th_l ) {
 				return true;
 			}
 		}
