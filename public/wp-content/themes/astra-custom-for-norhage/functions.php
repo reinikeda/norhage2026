@@ -679,71 +679,44 @@ function nh_sender_subscribe() {
 }
 
 /**
- * Make the State / County field optional for ALL countries
- * in both billing and shipping addresses (classic + Blocks).
- */
-add_filter( 'woocommerce_default_address_fields', function( $fields ) {
-
-	if ( isset( $fields['state'] ) ) {
-		$fields['state']['required'] = false;
-	}
-
-	return $fields;
-}, 20 );
-
-// Always show link in cart for products with catalog visibility = "search".
-add_filter( 'woocommerce_cart_item_permalink', function( $permalink, $cart_item, $cart_item_key ) {
-
-    // If Woo already set a permalink, do nothing.
-    if ( ! empty( $permalink ) ) {
-        return $permalink;
-    }
-
-    // Safety: ensure we have a product.
-    if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product ) {
-        return $permalink;
-    }
-
-    /** @var WC_Product $product */
-    $product = $cart_item['data'];
-
-    // If product is "Search only", force a permalink anyway.
-    if ( 'search' === $product->get_catalog_visibility() ) {
-        $permalink = $product->get_permalink( $cart_item );
-    }
-
-    return $permalink;
-}, 10, 3 );
-
-/**
- * Remove _gl param
+ * Remove _gl param from frontend URLs, but don't break WooCommerce.
  */
 add_action( 'init', function () {
 
-    // Only run on front-end
+    // Only run on front-end normal page views.
     if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
         return;
     }
 
-    // If _gl parameter is present, clean the URL
-    if ( isset( $_GET['_gl'] ) ) {
-
-        // Build the base URL without any query parameters
-        $scheme = is_ssl() ? 'https://' : 'http://';
-        $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
-
-        // Keep all query parameters EXCEPT _gl
-        $params = $_GET;
-        unset( $params['_gl'] );
-
-        // Rebuild query string if there are other parameters
-        if ( ! empty( $params ) ) {
-            $url .= '?' . http_build_query( $params );
-        }
-
-        // Redirect to clean URL
-        wp_redirect( $url, 301 );
-        exit;
+    // Only clean on GET requests – never redirect POST/PUT etc.
+    if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+        return;
     }
 
+    // Only proceed if _gl is present.
+    if ( ! isset( $_GET['_gl'] ) ) {
+        return;
+    }
+
+    // Don't touch WooCommerce special actions (add to cart, AJAX, etc).
+    if ( isset( $_GET['add-to-cart'] ) || isset( $_GET['wc-ajax'] ) ) {
+        return;
+    }
+
+    // Build the base URL without any query parameters.
+    $scheme = is_ssl() ? 'https://' : 'http://';
+    $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
+
+    // Keep all query parameters EXCEPT _gl.
+    $params = $_GET;
+    unset( $params['_gl'] );
+
+    // Rebuild query string if there are other parameters.
+    if ( ! empty( $params ) ) {
+        $url .= '?' . http_build_query( $params );
+    }
+
+    // Redirect to clean URL.
+    wp_redirect( $url, 301 );
+    exit;
 } );
