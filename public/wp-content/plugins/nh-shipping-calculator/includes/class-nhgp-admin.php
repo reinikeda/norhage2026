@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+if ( ! class_exists( 'NHGP_Defaults' ) ) {
+	require_once dirname( __FILE__ ) . '/class-nhgp-defaults.php';
+}
+
 class NHGP_Admin {
 
 	public static function init(){
