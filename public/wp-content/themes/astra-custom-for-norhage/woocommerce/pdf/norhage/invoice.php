@@ -84,7 +84,7 @@ do_action( 'wpo_wcpdf_before_document', $this->get_type(), $this->order );
 
 				<?php if ( isset( $this->settings['display_date'] ) ) : ?>
 					<tr class="invoice-date">
-						<th><?php $this->date_title(); ?></th>
+						<th><?php esc_html_e( 'Invoice Date', 'nh-theme' ); ?></th>
 						<td><?php $this->date( $this->get_type() ); ?></td>
 					</tr>
 				<?php endif; ?>
@@ -119,6 +119,15 @@ do_action( 'wpo_wcpdf_before_document', $this->get_type(), $this->order );
 	</tr>
 </table>
 
+<?php
+// Extra field 1 from WooCommerce PDF Invoices & Packing Slips
+// (configured under: PDF Invoices → General → Extra field 1)
+if ( method_exists( $this, 'get_extra_1' ) && $this->get_extra_1() ) : ?>
+	<div class="invoice-extra extra-1">
+		<?php $this->extra_1(); ?>
+	</div>
+<?php endif; ?>
+
 <?php do_action( 'wpo_wcpdf_before_order_details', $this->get_type(), $this->order ); ?>
 
 <table class="order-details">
@@ -150,9 +159,8 @@ do_action( 'wpo_wcpdf_before_document', $this->get_type(), $this->order );
 						<?php endif; ?>
 						<?php if ( ! empty( $item['weight'] ) ) : ?>
 							<p class="weight">
-								<span class="label"><?php $this->weight_title(); ?></span>
-								<?php echo esc_attr( $item['weight'] ); ?>
-								<?php echo esc_attr( get_option( 'woocommerce_weight_unit' ) ); ?>
+								<span class="label"><?php esc_html_e( 'Weight', 'nh-theme' ); ?></span>
+								<?php echo esc_attr( $item['weight'] ); ?><?php echo esc_attr( get_option( 'woocommerce_weight_unit' ) ); ?>
 							</p>
 						<?php endif; ?>
 						<!-- ul.wc-item-meta -->
