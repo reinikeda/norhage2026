@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2025-12-09 11:27:47+00:00\n"
-"PO-Revision-Date: 2025-12-09 13:28+0200\n"
+"POT-Creation-Date: 2025-12-10 12:39:02+00:00\n"
+"PO-Revision-Date: 2025-12-10 14:40+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -103,25 +103,25 @@ msgstr "Poraštė — antrinė (paslaugos, tinklaraštis, kontaktai)"
 msgid "Footer — Legal/Policies"
 msgstr "Poraštė — teisinė informacija / taisyklės"
 
-#: functions.php:547
+#: functions.php:596
 msgid "Please enter a valid email address."
 msgstr "Įveskite galiojantį el. pašto adresą."
 
-#: functions.php:555
+#: functions.php:604
 msgid "Thank you!"
 msgstr "Ačiū!"
 
-#: functions.php:564
+#: functions.php:613
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 "Prenumerata laikinai negalima. Susisiekite su svetainės administratoriumi."
 
-#: functions.php:589
+#: functions.php:638
 msgid "Could not connect to email service. Please try again."
 msgstr "Nepavyko prisijungti prie el. pašto paslaugos. Bandykite dar kartą."
 
-#: functions.php:599
+#: functions.php:648
 msgid "Thank you! You are subscribed."
 msgstr "Ačiū! Jūs užsiprenumeravote."
 
@@ -201,7 +201,7 @@ msgstr "Papildomos prekės komplektui"
 msgid "Image"
 msgstr "Paveikslėlis"
 
-#: inc/bundle-box.php:165
+#: inc/bundle-box.php:165 woocommerce/pdf/norhage/invoice.php:128
 msgid "Product"
 msgstr "Prekė"
 
@@ -209,7 +209,7 @@ msgstr "Prekė"
 msgid "Qty"
 msgstr "Kiekis"
 
-#: inc/bundle-box.php:167
+#: inc/bundle-box.php:167 woocommerce/pdf/norhage/invoice.php:134
 msgid "Price"
 msgstr "Kaina"
 
@@ -233,7 +233,7 @@ msgstr "Maks. viename rinkinyje: %d"
 msgid "Minus Quantity"
 msgstr "Mažinti kiekį"
 
-#: inc/bundle-box.php:248
+#: inc/bundle-box.php:248 woocommerce/pdf/norhage/invoice.php:131
 msgid "Quantity"
 msgstr "Kiekis"
 
@@ -430,7 +430,7 @@ msgstr "Kaina už m²"
 msgid "Unit price"
 msgstr "Vieneto kaina"
 
-#: inc/product-customize.php:126
+#: inc/product-customize.php:126 woocommerce/pdf/norhage/invoice.php:215
 msgid "Total"
 msgstr "Iš viso"
 
@@ -685,6 +685,31 @@ msgstr "Mobilioji navigacija"
 msgid "More"
 msgstr "Daugiau"
 
+#: woocommerce/pdf/norhage/invoice.php:17
+#: woocommerce/pdf/norhage/invoice.php:44
+msgid "Invoice"
+msgstr "Sąskaita faktūra"
+
+#: woocommerce/pdf/norhage/invoice.php:100
+msgid "Order Number"
+msgstr "Užsakymo numeris"
+
+#: woocommerce/pdf/norhage/invoice.php:105
+msgid "Order Date"
+msgstr "Užsakymo data"
+
+#: woocommerce/pdf/norhage/invoice.php:111
+msgid "Payment Method"
+msgstr "Mokėjimo būdas"
+
+#: woocommerce/pdf/norhage/invoice.php:206
+msgid "Subtotal"
+msgstr "Tarpinė suma"
+
+#: woocommerce/pdf/norhage/invoice.php:210
+msgid "Shipping"
+msgstr "Pristatymas"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr "Astra Custom for Norhage"
@@ -705,9 +730,6 @@ msgstr "Daiva Reinike"
 
 #~ msgid "%1$s, %2$s"
 #~ msgstr "%1$s, %2$s"
-
-#~ msgid "Shipping to"
-#~ msgstr "Pristatymas į"
 
 #~ msgid "Total weight"
 #~ msgstr "Bendras svoris"
