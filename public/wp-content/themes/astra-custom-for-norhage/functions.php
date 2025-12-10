@@ -714,3 +714,36 @@ add_filter( 'woocommerce_cart_item_permalink', function( $permalink, $cart_item,
 
     return $permalink;
 }, 10, 3 );
+
+/**
+ * Remove _gl param
+ */
+add_action( 'init', function () {
+
+    // Only run on front-end
+    if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
+        return;
+    }
+
+    // If _gl parameter is present, clean the URL
+    if ( isset( $_GET['_gl'] ) ) {
+
+        // Build the base URL without any query parameters
+        $scheme = is_ssl() ? 'https://' : 'http://';
+        $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
+
+        // Keep all query parameters EXCEPT _gl
+        $params = $_GET;
+        unset( $params['_gl'] );
+
+        // Rebuild query string if there are other parameters
+        if ( ! empty( $params ) ) {
+            $url .= '?' . http_build_query( $params );
+        }
+
+        // Redirect to clean URL
+        wp_redirect( $url, 301 );
+        exit;
+    }
+
+} );
