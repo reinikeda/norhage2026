@@ -720,3 +720,21 @@ add_action( 'init', function () {
     wp_redirect( $url, 301 );
     exit;
 } );
+
+add_action( 'wp_head', function() {
+
+    $domain = $_SERVER['HTTP_HOST'];
+
+    if ( $domain === 'norhage.lt' ) {
+        // Lithuania
+        echo '<meta name="google-site-verification" content="W9xTKiW7L9q2vuDMH0jyjn1LrEdfxJgDAtwAligDDOc" />';
+    }
+
+    // Example for other countries (add when needed)
+    /*
+    elseif ( $domain === 'norhage.no' ) {
+        echo '<meta name="google-site-verification" content="XXXXXX" />';
+    }
+    */
+
+});
