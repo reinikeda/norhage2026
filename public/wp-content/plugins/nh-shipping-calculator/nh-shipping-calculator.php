@@ -47,9 +47,21 @@ add_action(
 /* -------------------------------------------------------------------------
  * Boot core classes
  * ---------------------------------------------------------------------- */
-NHGP_Admin::init();
-NHGP_Session::init();
-NHGP_Overrides::init();
+add_action(
+	'plugins_loaded',
+	function () {
+		// Užtikrinam, kad Woo jau pakeltas ir visos klasės įkrautos.
+		if ( class_exists( 'NHGP_Admin' ) ) {
+			NHGP_Admin::init();
+		}
+		if ( class_exists( 'NHGP_Session' ) ) {
+			NHGP_Session::init();
+		}
+		if ( class_exists( 'NHGP_Overrides' ) ) {
+			NHGP_Overrides::init();
+		}
+	}
+);
 
 /* -------------------------------------------------------------------------
  * Ensure Norhage size-based shipping classes exist

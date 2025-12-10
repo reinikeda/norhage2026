@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2025-12-10 12:39:02+00:00\n"
+"POT-Creation-Date: 2025-12-10 14:12:16+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -195,7 +195,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: inc/bundle-box.php:165 woocommerce/pdf/norhage/invoice.php:128
+#: inc/bundle-box.php:165 woocommerce/pdf/norhage/invoice.php:137
 msgid "Product"
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr ""
 msgid "Qty"
 msgstr ""
 
-#: inc/bundle-box.php:167 woocommerce/pdf/norhage/invoice.php:134
+#: inc/bundle-box.php:167 woocommerce/pdf/norhage/invoice.php:143
 msgid "Price"
 msgstr ""
 
@@ -227,7 +227,7 @@ msgstr ""
 msgid "Minus Quantity"
 msgstr ""
 
-#: inc/bundle-box.php:248 woocommerce/pdf/norhage/invoice.php:131
+#: inc/bundle-box.php:248 woocommerce/pdf/norhage/invoice.php:140
 msgid "Quantity"
 msgstr ""
 
@@ -416,7 +416,7 @@ msgstr ""
 msgid "Unit price"
 msgstr ""
 
-#: inc/product-customize.php:126 woocommerce/pdf/norhage/invoice.php:215
+#: inc/product-customize.php:126 woocommerce/pdf/norhage/invoice.php:223
 msgid "Total"
 msgstr ""
 
@@ -672,9 +672,212 @@ msgstr ""
 msgid "More"
 msgstr ""
 
+#. translators: %1$s: Order number
+
+#: woocommerce/emails/customer-cancelled-order.php:28
+msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
+msgstr ""
+
+#. translators: %1$s: Order number
+
+#: woocommerce/emails/customer-cancelled-order.php:32
+msgid "We’re getting in touch to let you know that your order #%1$s has been cancelled."
+msgstr ""
+
+#. translators: %s: Customer first name
+#. translators: %s: Customer username
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer username
+
+#: woocommerce/emails/customer-completed-order.php:37
+#: woocommerce/emails/customer-failed-order.php:40
+#: woocommerce/emails/customer-new-account.php:36
+#: woocommerce/emails/customer-note.php:31
+#: woocommerce/emails/customer-on-hold-order.php:36
+#: woocommerce/emails/customer-pos-completed-order.php:34
+#: woocommerce/emails/customer-pos-refunded-order.php:32
+#: woocommerce/emails/customer-processing-order.php:31
+#: woocommerce/emails/customer-refunded-order.php:35
+#: woocommerce/emails/customer-reset-password.php:33
+msgid "Hi %s,"
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:41
+#: woocommerce/emails/customer-failed-order.php:44
+#: woocommerce/emails/customer-note.php:35
+#: woocommerce/emails/customer-on-hold-order.php:40
+#: woocommerce/emails/customer-processing-order.php:35
+#: woocommerce/emails/customer-refunded-order.php:39
+msgid "Hi,"
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:45
+msgid "We have finished processing your order."
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:47
+#: woocommerce/emails/customer-on-hold-order.php:48
+#: woocommerce/emails/customer-processing-order.php:43
+#: woocommerce/emails/customer-refunded-order.php:61
+msgid "Here’s a reminder of what you’ve ordered:"
+msgstr ""
+
+#: woocommerce/emails/customer-failed-order.php:48
+msgid "Unfortunately, we couldn't complete your order due to an issue with your payment method."
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-failed-order.php:50
+msgid "If you'd like to continue with your purchase, please return to %s and try a different method of payment."
+msgstr ""
+
+#: woocommerce/emails/customer-failed-order.php:51
+msgid "Your order details are as follows:"
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-new-account.php:41
+msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgstr ""
+
+#. translators: %s: Username
+
+#: woocommerce/emails/customer-new-account.php:50
+#: woocommerce/emails/customer-reset-password.php:46
+msgid "Username: <b>%s</b>"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:60
+msgid "Set your new password."
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:65
+msgid "You can access your account area to view orders, change your password, and more via the link below:"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:66
+msgid "My account"
+msgstr ""
+
+#. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
+
+#: woocommerce/emails/customer-new-account.php:74
+msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:84
+msgid "Click here to set your new password."
+msgstr ""
+
+#: woocommerce/emails/customer-note.php:40
+msgid "The following note has been added to your order:"
+msgstr ""
+
+#: woocommerce/emails/customer-note.php:49
+msgid "As a reminder, here are your order details:"
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:47
+msgid "We’ve received your order and it’s currently on hold until we can confirm your payment has been processed."
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:52
+msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:38
+#: woocommerce/emails/customer-pos-refunded-order.php:36
+msgid "Hi there,"
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:42
+#: woocommerce/emails/customer-pos-refunded-order.php:57
+msgid "Here’s a reminder of what you’ve bought:"
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:108
+#: woocommerce/emails/customer-pos-refunded-order.php:125
+msgid "Refund & Returns Policy"
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-pos-refunded-order.php:46
+#: woocommerce/emails/customer-refunded-order.php:50
+msgid "Your order from %s has been partially refunded."
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-pos-refunded-order.php:52
+#: woocommerce/emails/customer-refunded-order.php:56
+msgid "Your order from %s has been refunded."
+msgstr ""
+
+#: woocommerce/emails/customer-processing-order.php:42
+msgid "Just to let you know — we’ve received your order, and it is now being processed."
+msgstr ""
+
+#. translators: %s: Order number
+
+#: woocommerce/emails/customer-processing-order.php:51
+msgid "Just to let you know — we've received your order #%s, and it is now being processed:"
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-refunded-order.php:66
+msgid "Your order on %s has been partially refunded. There are more details below for your reference:"
+msgstr ""
+
+#. translators: %s: Site title
+
+#: woocommerce/emails/customer-refunded-order.php:72
+msgid "Your order on %s has been refunded. There are more details below for your reference:"
+msgstr ""
+
+#. translators: %s: Store name
+
+#: woocommerce/emails/customer-reset-password.php:36
+msgid "Someone has requested a new password for the following account on %s:"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:54
+msgid "If you didn’t make this request, just ignore this email. If you’d like to proceed, reset your password via the link below:"
+msgstr ""
+
+#. translators: %s: Customer username
+
+#: woocommerce/emails/customer-reset-password.php:59
+msgid "Username: %s"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:60
+msgid "If you didn't make this request, just ignore this email. If you'd like to proceed:"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:68
+msgid "Reset your password"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:70
+msgid "Click here to reset your password"
+msgstr ""
+
 #: woocommerce/pdf/norhage/invoice.php:17
 #: woocommerce/pdf/norhage/invoice.php:44
 msgid "Invoice"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:87
+msgid "Invoice Date"
 msgstr ""
 
 #: woocommerce/pdf/norhage/invoice.php:100
@@ -689,11 +892,15 @@ msgstr ""
 msgid "Payment Method"
 msgstr ""
 
-#: woocommerce/pdf/norhage/invoice.php:206
+#: woocommerce/pdf/norhage/invoice.php:162
+msgid "Weight"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:214
 msgid "Subtotal"
 msgstr ""
 
-#: woocommerce/pdf/norhage/invoice.php:210
+#: woocommerce/pdf/norhage/invoice.php:218
 msgid "Shipping"
 msgstr ""
 #. Theme Name of the plugin/theme
