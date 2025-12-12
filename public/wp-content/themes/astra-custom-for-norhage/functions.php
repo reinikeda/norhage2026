@@ -681,45 +681,45 @@ function nh_sender_subscribe() {
 /**
  * Remove _gl param from frontend URLs, but don't break WooCommerce.
  */
-add_action( 'init', function () {
+// add_action( 'init', function () {
 
-    // Only run on front-end normal page views.
-    if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
-        return;
-    }
+//     // Only run on front-end normal page views.
+//     if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
+//         return;
+//     }
 
-    // Only clean on GET requests – never redirect POST/PUT etc.
-    if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
-        return;
-    }
+//     // Only clean on GET requests – never redirect POST/PUT etc.
+//     if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+//         return;
+//     }
 
-    // Only proceed if _gl is present.
-    if ( ! isset( $_GET['_gl'] ) ) {
-        return;
-    }
+//     // Only proceed if _gl is present.
+//     if ( ! isset( $_GET['_gl'] ) ) {
+//         return;
+//     }
 
-    // Don't touch WooCommerce special actions (add to cart, AJAX, etc).
-    if ( isset( $_GET['add-to-cart'] ) || isset( $_GET['wc-ajax'] ) ) {
-        return;
-    }
+//     // Don't touch WooCommerce special actions (add to cart, AJAX, etc).
+//     if ( isset( $_GET['add-to-cart'] ) || isset( $_GET['wc-ajax'] ) ) {
+//         return;
+//     }
 
-    // Build the base URL without any query parameters.
-    $scheme = is_ssl() ? 'https://' : 'http://';
-    $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
+//     // Build the base URL without any query parameters.
+//     $scheme = is_ssl() ? 'https://' : 'http://';
+//     $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
 
-    // Keep all query parameters EXCEPT _gl.
-    $params = $_GET;
-    unset( $params['_gl'] );
+//     // Keep all query parameters EXCEPT _gl.
+//     $params = $_GET;
+//     unset( $params['_gl'] );
 
-    // Rebuild query string if there are other parameters.
-    if ( ! empty( $params ) ) {
-        $url .= '?' . http_build_query( $params );
-    }
+//     // Rebuild query string if there are other parameters.
+//     if ( ! empty( $params ) ) {
+//         $url .= '?' . http_build_query( $params );
+//     }
 
-    // Redirect to clean URL.
-    wp_redirect( $url, 301 );
-    exit;
-} );
+//     // Redirect to clean URL.
+//     wp_redirect( $url, 301 );
+//     exit;
+// } );
 
 add_action( 'wp_head', function() {
 
