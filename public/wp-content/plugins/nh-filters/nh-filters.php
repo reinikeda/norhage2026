@@ -230,7 +230,12 @@ function nhf_render_categories() {
 		if ( ! empty( $children ) && ! is_wp_error( $children ) ) {
 			echo '<ul id="sub-' . esc_attr( $cat->slug ) . '" class="nhf-cat-sub" aria-hidden="' . ( $is_open ? 'false' : 'true' ) . '">';
 
-			echo '<li class="nhf-all"><a href="' . esc_url( get_term_link( $cat ) ) . '">' . esc_html__( 'All ', 'nhf' ) . esc_html( $cat->name ) . '</a></li>';
+			// Top link: "%category% – All products"
+			echo '<li class="nhf-all"><a href="' . esc_url( get_term_link( $cat ) ) . '">'
+				. esc_html( $cat->name )
+				. ' &ndash; '
+				. esc_html__( 'All products', 'nhf' )
+				. '</a></li>';
 
 			foreach ( $children as $child ) {
 				$child_active = ( $child->term_id === $current_term_id ) ? ' class="is-active"' : '';

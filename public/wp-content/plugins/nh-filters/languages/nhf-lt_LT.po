@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-filters\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2025-11-21 15:23+0200\n"
+"PO-Revision-Date: 2025-12-16 08:32+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -18,9 +18,10 @@ msgstr ""
 msgid "No categories found."
 msgstr "Kategorijų nerasta."
 
+# NEW — replaces former "All " string
 #: nh-filters.php:XX
-msgid "All "
-msgstr "Visos "
+msgid "All products"
+msgstr "Visi produktai"
 
 #: nh-filters.php:XX
 msgid "Product Categories"
@@ -32,7 +33,7 @@ msgstr "Filtruoti prekes"
 
 #: nh-filters.php:XX
 msgid "In stock only"
-msgstr "Yra sandėlyje"
+msgstr "Tik turimos sandėlyje"
 
 #: nh-filters.php:XX
 msgid "On sale"
@@ -65,20 +66,3 @@ msgstr "Išvalyti"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Taikyti"
-
-# ------------------------------------------------------------
-# Optional: Plugin header metadata (appears in WP admin)
-# ------------------------------------------------------------
-#. Plugin Name
-msgid "Custom Filters"
-msgstr "Tinkinti filtrai"
-
-#. Description
-msgid ""
-"Custom WooCommerce sidebar with accordion Product Categories + real Filters "
-"(attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] "
-"in any sidebar widget area."
-msgstr ""
-"Tinkintas WooCommerce šoninis skydelis su suskleidžiamu prekių kategorijų "
-"sąrašu ir tikrais filtrais (atributai, likutis, išpardavimas), pritaikytais "
-"esamam archyvui. Naudokite [nh_filters_sidebar] bet kurioje valdiklių srityje."
