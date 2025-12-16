@@ -738,3 +738,11 @@ add_action( 'wp_head', function() {
     */
 
 });
+
+// no index order received pages
+add_action( 'wp_head', function() {
+    // WooCommerce "Order Received" (Thank You) page
+    if ( is_wc_endpoint_url( 'order-received' ) ) {
+        echo '<meta name="robots" content="noindex,nofollow" />' . "\n";
+    }
+});
