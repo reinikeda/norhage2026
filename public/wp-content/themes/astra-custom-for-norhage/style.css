@@ -205,12 +205,25 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
   margin:8px 0 0;
 }
 
-/* ---------- Meta visibility safety ---------- */
-.post-type-archive-service .ast-article-post .entry-meta,
-.single-service .entry-meta{
-  display:none !important;
+/* SINGLE POST: remove "By admin /" but keep the date */
+.single-post .entry-header .entry-meta{
+  font-size: 0 !important;     /* hides text nodes: "By " and " / " */
+  line-height: 0 !important;
 }
-.single-post .entry-meta .posted-by{
+
+.single-post .entry-header .entry-meta .posted-by{
+  display: none !important;    /* hide author span */
+}
+
+/* bring back the date text */
+.single-post .entry-header .entry-meta .posted-on,
+.single-post .entry-header .entry-meta .posted-on *{
+  font-size: 14px !important;  /* adjust to your design */
+  line-height: 1.2 !important;
+}
+
+/* optional: if Astra outputs a separator element, hide it too */
+.single-post .entry-header .entry-meta .ast-meta-separator{
   display:none !important;
 }
 
