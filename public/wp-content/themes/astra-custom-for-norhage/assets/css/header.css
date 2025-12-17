@@ -1181,3 +1181,20 @@ body.mh-fixed-on{
   background: var(--ui-bg-soft);
   border-bottom: 1px solid var(--ui-border);
 }
+
+
+/* =========================================================
+   11) OTHER
+   ========================================================= */
+
+/* Mobile: keep hero bg under header, but keep title/content below compact fixed header */
+@media (max-width: 1023px){
+  .nhhb-hero .nhhb-hero__inner{
+    --hero-pad: clamp(40px,10vw,120px);
+  }
+
+  #masthead.mh-compact.mh-fixed ~ .nhhb-hero .nhhb-hero__inner{
+    padding-top: calc(var(--hero-pad) + var(--masthead-h, 112px));
+    padding-bottom: var(--hero-pad); /* keep vertical rhythm consistent */
+  }
+}
