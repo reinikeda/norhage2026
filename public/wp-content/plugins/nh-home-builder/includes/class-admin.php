@@ -417,55 +417,95 @@ class NHHB_Admin {
             </div>
         </div>
 
-        <!-- SERVICES SLIDER (CPT-based, fully automatic) -->
+        <!-- SERVICES SLIDER (CPT-based, manual texts per Service) -->
         <?php
-            // Saved values with sensible defaults
-            $sv = is_array($sv ?? null) ? $sv : [];
-            $title         = isset($sv['title'])         ? (string) $sv['title'] : '';
-            $words_desktop = isset($sv['words_desktop']) ? (int) $sv['words_desktop'] : 36; // ~2–3 lines
-            $words_mobile  = isset($sv['words_mobile'])  ? (int) $sv['words_mobile']  : 16; // ~1–2 lines
-            ?>
-            <div id="nhhb_fields_services_slider" class="<?php echo $type==='services-slider' ? '' : 'nhhb-hidden'; ?>">
+        // Saved values with sensible defaults
+        $sv = [
+            'title'    => $data['title'] ?? 'Our Services',
+            'services' => (isset($data['services']) && is_array($data['services'])) ? $data['services'] : [],
+        ];
+
+        // Query services
+        $services_q = new WP_Query([
+            'post_type'      => 'service',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'orderby'        => 'menu_order title',
+            'order'          => 'ASC',
+            'no_found_rows'  => true,
+        ]);
+        ?>
+        <div id="nhhb_fields_services_slider" class="<?php echo $type==='services-slider' ? '' : 'nhhb-hidden'; ?>">
             <h3>Services Slider</h3>
 
-            <div class="nhhb-grid nhhb-3">
-                <p>
-                    <label>Section Title<br>
-                        <input type="text"
-                                class="widefat"
-                                name="data[services_title]"
-                                value="<?php echo esc_attr($title); ?>"
-                                placeholder="<?php esc_attr_e('Our Services','nhhb'); ?>">
-                    </label>
-                </p>
-
-                <p>
-                <label>Desktop text length (words)<br>
-                    <input type="number" min="8" max="80" step="1" class="small-text"
-                        name="data[words_desktop]" value="<?php echo esc_attr($words_desktop); ?>">
+            <p>
+                <label>Section Title<br>
+                    <input type="text"
+                        class="widefat"
+                        name="data[services_title]"
+                        value="<?php echo esc_attr($sv['title']); ?>"
+                        placeholder="<?php esc_attr_e('Our Services','nhhb'); ?>">
                 </label>
-                <br><span class="description">Shown on larger screens (defaults to 36 words).</span>
-                </p>
-
-                <p>
-                <label>Mobile text length (words)<br>
-                    <input type="number" min="6" max="40" step="1" class="small-text"
-                        name="data[words_mobile]" value="<?php echo esc_attr($words_mobile); ?>">
-                </label>
-                <br><span class="description">Shown on phones (defaults to 16 words).</span>
-                </p>
-            </div>
-
-            <p class="description" style="margin-top:8px;">
-                This slider is automatic. It pulls every published <strong>Service</strong>:
-                Title → post title, Description → excerpt (or trimmed content), Image → featured image,
-                Button → “Read More” linking to the service page. Ordering follows menu order / title.
             </p>
 
-            <!-- Optional flag so the front-end knows we're in auto mode (not required, but tidy) -->
-            <input type="hidden" name="data[services_mode]" value="auto">
-        </div>
+            <?php if (!$services_q->have_posts()): ?>
+                <p class="description">No published Service posts found.</p>
+            <?php else: ?>
+                <div class="nhhb-svc-grid" style="margin-top:12px;">
+                    <?php while ($services_q->have_posts()): $services_q->the_post();
+                        $sid = get_the_ID();
 
+                        $savedDesktop = '';
+                        $savedMobile  = '';
+
+                        if (isset($sv['services'][$sid]) && is_array($sv['services'][$sid])) {
+                            $savedDesktop = (string) ($sv['services'][$sid]['desktop'] ?? '');
+                            $savedMobile  = (string) ($sv['services'][$sid]['mobile'] ?? '');
+                        }
+                    ?>
+                        <div class="nhhb-card">
+                            <div class="nhhb-svc-row">
+                                <div>
+                                    <strong><?php echo esc_html(get_the_title()); ?></strong>
+                                    <div class="nhhb-svc-small">
+                                        ID: <?php echo (int)$sid; ?> —
+                                        <a href="<?php echo esc_url(get_permalink($sid)); ?>" target="_blank" rel="noopener">View</a>
+                                    </div>
+                                </div>
+
+                                <div class="nhhb-grid nhhb-2">
+                                    <p style="margin:0;">
+                                        <label>Desktop text<br>
+                                            <textarea class="widefat" rows="3"
+                                                name="data[services][<?php echo (int)$sid; ?>][desktop]"><?php
+                                                    echo esc_textarea($savedDesktop);
+                                                ?></textarea>
+                                        </label>
+                                    </p>
+
+                                    <p style="margin:0;">
+                                        <label>Mobile text<br>
+                                            <textarea class="widefat" rows="3"
+                                                name="data[services][<?php echo (int)$sid; ?>][mobile]"><?php
+                                                    echo esc_textarea($savedMobile);
+                                                ?></textarea>
+                                        </label>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endwhile; wp_reset_postdata(); ?>
+                </div>
+
+                <p class="description" style="margin-top:10px;">
+                    Text is now <strong>manual</strong>. The slider still uses Service title + featured image + link,
+                    but it will display the Desktop/Mobile text you enter here.
+                </p>
+            <?php endif; ?>
+
+            <input type="hidden" name="data[services_mode]" value="manual">
+        </div>
+        
         <script>
         (function($){
             function toggleFields() {
@@ -637,21 +677,35 @@ class NHHB_Admin {
         // Services Slider — automatic (pulls directly from Service posts)
         } elseif ($type === 'services-slider') {
 
-            // Optional length knobs; safe defaults
-            $words_desktop = isset($data['words_desktop']) ? max(8, (int) $data['words_desktop']) : 36;
-            $words_mobile  = isset($data['words_mobile'])  ? max(6, (int) $data['words_mobile'])  : 16;
-
-            // Title comes from a dedicated field so it doesn't clash with other section types
             $raw_title = isset($data['services_title']) ? (string) $data['services_title'] : '';
             if ($raw_title === '') {
                 $raw_title = __('Our Services', 'nhhb');
             }
 
+            $services_clean = [];
+
+            if (!empty($data['services']) && is_array($data['services'])) {
+                foreach ($data['services'] as $sid => $row) {
+                    $sid = absint($sid);
+                    if (!$sid) continue;
+
+                    $desktop = sanitize_textarea_field($row['desktop'] ?? '');
+                    $mobile  = sanitize_textarea_field($row['mobile'] ?? '');
+
+                    // Store only if something is filled (keeps meta smaller)
+                    if ($desktop !== '' || $mobile !== '') {
+                        $services_clean[$sid] = [
+                            'desktop' => $desktop,
+                            'mobile'  => $mobile,
+                        ];
+                    }
+                }
+            }
+
             $clean = [
-                'title'          => sanitize_text_field($raw_title),
-                'words_desktop'  => $words_desktop,
-                'words_mobile'   => $words_mobile,
-                // 'services' intentionally omitted to purge legacy overrides
+                'title'    => sanitize_text_field($raw_title),
+                'services' => $services_clean,
+                'mode'     => 'manual',
             ];
 
         } elseif ($type === 'b2b-banner') {

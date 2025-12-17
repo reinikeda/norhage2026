@@ -5,27 +5,18 @@ if (!defined('ABSPATH')) exit;
 wp_enqueue_style('nhhb-services');
 wp_enqueue_script('nhhb-services');
 
-// Section title
-$section_title = isset($data['title']) ? trim((string)$data['title']) : __('Our Services','nhhb');
-
-// Word limits
-$WORDS_DESKTOP = isset($data['words_desktop']) ? max(8, (int)$data['words_desktop']) : 36;
-$WORDS_MOBILE  = isset($data['words_mobile'])  ? max(6, (int)$data['words_mobile'])  : 16;
-
-// Optional overrides (kept for backward-compatibility)
-$overrides = (isset($data['services']) && is_array($data['services'])) ? $data['services'] : [];
-
-/** Helper: best teaser from a post (excerpt → trimmed content) */
-function nhhb_service_teaser_from_post($post_id){
-  $excerpt = trim(get_post_field('post_excerpt', $post_id));
-  if ($excerpt !== '') return $excerpt;
-
-  $content = get_post_field('post_content', $post_id);
-  $content = do_shortcode($content);
-  $content = wp_strip_all_tags($content);
-  $content = preg_replace('/\s+/', ' ', $content);
-  return trim($content);
+// Section title (new admin field: data[services_title]; fallback to old data[title])
+$section_title = '';
+if (isset($data['services_title']) && trim((string)$data['services_title']) !== '') {
+  $section_title = trim((string)$data['services_title']);
+} elseif (isset($data['title']) && trim((string)$data['title']) !== '') {
+  $section_title = trim((string)$data['title']);
+} else {
+  $section_title = __('Our Services','nhhb');
 }
+
+// Manual texts per service (new behavior)
+$manual = (isset($data['services']) && is_array($data['services'])) ? $data['services'] : [];
 
 /** Query all Service posts */
 $q = new WP_Query([
@@ -40,44 +31,39 @@ $slides = [];
 if ($q->have_posts()){
   while ($q->have_posts()){ $q->the_post();
     $sid = get_the_ID();
-    $ov  = isset($overrides[$sid]) && is_array($overrides[$sid]) ? $overrides[$sid] : [];
 
-    // Include flag (default ON)
-    $include = array_key_exists('include', $ov) ? (int)$ov['include'] : 1;
-    if (!$include) continue;
+    // Manual row saved in section settings (keyed by post ID)
+    $row = (isset($manual[$sid]) && is_array($manual[$sid])) ? $manual[$sid] : [];
 
-    // Title
-    $title = !empty($ov['title']) ? $ov['title'] : get_the_title($sid);
+    // Title + background + link still come from the Service post (automatic)
+    $title  = get_the_title($sid);
+    $bg_url = get_the_post_thumbnail_url($sid, 'full');
+    $btn_text = __('Read More','nhhb');
+    $btn_url  = get_permalink($sid);
 
-    // Description: override > post excerpt > trimmed content
-    $desc_raw = (array_key_exists('desc', $ov) && $ov['desc'] !== '')
-      ? $ov['desc']
-      : nhhb_service_teaser_from_post($sid);
+    // Manual texts
+    $desktop_raw = isset($row['desktop']) ? trim((string)$row['desktop']) : '';
+    $mobile_raw  = isset($row['mobile'])  ? trim((string)$row['mobile'])  : '';
 
-    // Icon / Background
-    $icon_id  = !empty($ov['icon']) ? absint($ov['icon']) : 0;
-    $icon_url = $icon_id ? wp_get_attachment_image_url($icon_id, 'thumbnail') : '';
+    // If both texts are empty, skip (so you control what appears)
+    if ($desktop_raw === '' && $mobile_raw === '') continue;
 
-    $bg_id    = !empty($ov['bg']) ? absint($ov['bg']) : 0;
-    $bg_url   = $bg_id ? wp_get_attachment_image_url($bg_id, 'full')
-                       : get_the_post_thumbnail_url($sid, 'full');
+    // If one is empty, fallback to the other (so you only write once if you want)
+    if ($desktop_raw === '' && $mobile_raw !== '') $desktop_raw = $mobile_raw;
+    if ($mobile_raw === ''  && $desktop_raw !== '') $mobile_raw  = $desktop_raw;
 
-    // CTA
-    $btn_text = !empty($ov['btn_text']) ? $ov['btn_text'] : __('Read More','nhhb');
-    $btn_url  = !empty($ov['btn_url'])  ? $ov['btn_url']  : get_permalink($sid);
+    // Escape for output
+    $desc_full  = esc_html($desktop_raw);
+    $desc_short = esc_html($mobile_raw);
 
-    // Nothing meaningful? skip
-    if (!$bg_url && !$title && $desc_raw === '') continue;
-
-    // Build trimmed copies (HTML-escaped output)
-    $desc_full  = esc_html( wp_trim_words( $desc_raw, $WORDS_DESKTOP, '…' ) );
-    $desc_short = esc_html( wp_trim_words( $desc_raw, $WORDS_MOBILE,  '…' ) );
+    // Skip if nothing meaningful
+    if (!$bg_url && !$title && $desc_full === '' && $desc_short === '') continue;
 
     $slides[] = [
       'title'      => $title,
       'desc_full'  => $desc_full,
       'desc_short' => $desc_short,
-      'icon_url'   => $icon_url,
+      'icon_url'   => '', // icons removed in new admin UI; keep key for template compatibility
       'bg_url'     => $bg_url,
       'btn_text'   => $btn_text,
       'btn_url'    => $btn_url,
@@ -111,11 +97,15 @@ if ($q->have_posts()){
                 <h3 class="nhhb-svc-title"><?php echo esc_html($s['title']); ?></h3>
               <?php endif; ?>
 
-              <?php if (!empty($s['desc_full'])): ?>
-                <!-- Desktop / large -->
-                <p class="nhhb-svc-desc is-desktop"><?php echo $s['desc_full']; ?></p>
-                <!-- Mobile / short -->
-                <p class="nhhb-svc-desc is-mobile"><?php echo $s['desc_short']; ?></p>
+              <?php if (!empty($s['desc_full']) || !empty($s['desc_short'])): ?>
+                <?php if (!empty($s['desc_full'])): ?>
+                  <!-- Desktop / large -->
+                  <p class="nhhb-svc-desc is-desktop"><?php echo $s['desc_full']; ?></p>
+                <?php endif; ?>
+                <?php if (!empty($s['desc_short'])): ?>
+                  <!-- Mobile / short -->
+                  <p class="nhhb-svc-desc is-mobile"><?php echo $s['desc_short']; ?></p>
+                <?php endif; ?>
               <?php endif; ?>
 
               <div class="nhhb-svc-cta">
@@ -145,7 +135,7 @@ if ($q->have_posts()){
     </div>
   <?php else: ?>
     <p class="nhhb-services-empty">
-      <?php esc_html_e('No services to display. Add Services or enable “Include in slider”.','nhhb'); ?>
+      <?php esc_html_e('No services to display. Add Desktop/Mobile text in the section settings.','nhhb'); ?>
     </p>
   <?php endif; ?>
 </section>
