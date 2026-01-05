@@ -306,6 +306,81 @@ function show_subcategories_grid() {
 }
 
 /* --------------------------------------------------------------------------
+ * Woo: Product category "Long description" field (term meta) + output after loop
+ * ----------------------------------------------------------------------- */
+
+/** Admin: add field (Create new category) */
+add_action( 'product_cat_add_form_fields', function () { ?>
+	<div class="form-field term-long-description-wrap">
+		<label for="nh_long_description"><?php esc_html_e( 'Long description', 'nh-theme' ); ?></label>
+		<textarea name="nh_long_description" id="nh_long_description" rows="8" cols="40"></textarea>
+		<p class="description"><?php esc_html_e( 'Shown after the product list and pagination on the category page.', 'nh-theme' ); ?></p>
+	</div>
+<?php } );
+
+/** Admin: edit field (Edit category) */
+add_action( 'product_cat_edit_form_fields', function ( $term ) {
+	$value = get_term_meta( $term->term_id, 'nh_long_description', true );
+	?>
+	<tr class="form-field term-long-description-wrap">
+		<th scope="row">
+			<label for="nh_long_description"><?php esc_html_e( 'Long description', 'nh-theme' ); ?></label>
+		</th>
+		<td>
+			<?php
+			// Use editor to allow formatting and links.
+			wp_editor(
+				(string) $value,
+				'nh_long_description_editor',
+				[
+					'textarea_name' => 'nh_long_description',
+					'textarea_rows' => 10,
+					'media_buttons' => true,
+					'teeny'         => false,
+					'quicktags'     => true,
+				]
+			);
+			?>
+			<p class="description"><?php esc_html_e( 'Shown after the product list and pagination on the category page.', 'nh-theme' ); ?></p>
+		</td>
+	</tr>
+	<?php
+} );
+
+/** Save term meta */
+add_action( 'created_product_cat', 'nh_save_product_cat_long_description' );
+add_action( 'edited_product_cat',  'nh_save_product_cat_long_description' );
+
+function nh_save_product_cat_long_description( $term_id ) {
+	if ( ! isset( $_POST['nh_long_description'] ) ) {
+		return;
+	}
+
+	$value = wp_kses_post( $_POST['nh_long_description'] );
+
+	if ( $value === '' ) {
+		delete_term_meta( $term_id, 'nh_long_description' );
+	} else {
+		update_term_meta( $term_id, 'nh_long_description', $value );
+	}
+}
+
+/** Frontend output: AFTER products + pagination */
+add_action( 'woocommerce_after_shop_loop', function () {
+	if ( ! is_product_category() ) return;
+
+	$term = get_queried_object();
+	if ( empty( $term ) || empty( $term->term_id ) ) return;
+
+	$long = trim( (string) get_term_meta( $term->term_id, 'nh_long_description', true ) );
+	if ( $long === '' ) return;
+
+	echo '<section class="nh-cat-long-description" aria-label="' . esc_attr__( 'Category long description', 'nh-theme' ) . '">';
+	echo wpautop( $long );
+	echo '</section>';
+}, 20 ); // 20 = after pagination (pagination is usually priority 10)
+
+/* --------------------------------------------------------------------------
  * Feature modules (keep functions.php light)
  * ----------------------------------------------------------------------- */
 require_once get_stylesheet_directory() . '/inc/search.php';
