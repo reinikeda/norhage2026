@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-inactivity-popup-lite 1.2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-10 12:00+0200\n"
+"PO-Revision-Date: 2026-01-07 08:56+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: fi_FI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+"X-Domain: nh-iplite\n"
+
+#: classes/popup
+msgid "Need some help?"
+msgstr "Tarvitsetko apua?"
+
+#: classes/popup
+msgid "Not sure which product fits your project? We’ll guide you — no pressure."
+msgstr "Etkö ole varma, mikä tuote sopii projektiisi? Autamme mielellämme – ilman painostusta."
+
+#: classes/popup
+msgid "Contact us"
+msgstr "Ota yhteyttä"
+
+#: classes/popup
+msgid "Browse FAQs"
+msgstr "Selaa UKK"
+
+#: classes/popup button aria-label
+msgid "Close popup"
+msgstr "Sulje ponnahdusikkuna"
+
+#: classes/popup link aria-label
+msgid "Browse frequently asked questions"
+msgstr "Selaa usein kysyttyjä kysymyksiä"
