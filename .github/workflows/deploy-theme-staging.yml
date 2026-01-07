@@ -31,6 +31,7 @@ jobs:
 
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         env:
           - name: lt
@@ -78,9 +79,11 @@ jobs:
   deploy-plugins-staging:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging'
+    needs: deploy-theme-staging
 
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         env:
           - name: lt
