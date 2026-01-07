@@ -29,11 +29,20 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging'
 
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: lt
+            root: /staging
+          - name: fi
+            root: /staging-fi
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy theme to STAGING via SFTP
+      - name: Deploy theme to STAGING (${{ matrix.env.name }}) via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           username: ${{ secrets.SFTP_USER }}
@@ -42,7 +51,7 @@ jobs:
           password: ${{ secrets.SFTP_PASS }}
           sftp_only: true
           local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
-          remote_path: "/staging/wp-content/themes/astra-custom-for-norhage"
+          remote_path: "${{ matrix.env.root }}/wp-content/themes/astra-custom-for-norhage"
 
   deploy-theme-production:
     runs-on: ubuntu-latest
@@ -71,7 +80,13 @@ jobs:
     if: github.ref == 'refs/heads/staging'
 
     strategy:
+      fail-fast: false
       matrix:
+        env:
+          - name: lt
+            root: /staging
+          - name: fi
+            root: /staging-fi
         plugin:
           - nh-cutting-toggle
           - nh-faq
@@ -89,7 +104,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Deploy ${{ matrix.plugin }} plugin to STAGING via SFTP
+      - name: Deploy ${{ matrix.plugin }} plugin to STAGING (${{ matrix.env.name }}) via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           server: ${{ secrets.SFTP_HOST }}
@@ -98,7 +113,7 @@ jobs:
           port: 22
           sftp_only: true
           local_path: "public/wp-content/plugins/${{ matrix.plugin }}/*"
-          remote_path: "/staging/wp-content/plugins/${{ matrix.plugin }}"
+          remote_path: "${{ matrix.env.root }}/wp-content/plugins/${{ matrix.plugin }}"
 
   deploy-plugins-production:
     runs-on: ubuntu-latest
