@@ -35,7 +35,7 @@ add_action( 'after_setup_theme', 'norhage_register_menus' );
  * Adjust the $map values to match the actual slugs you use per site.
  */
 function nh_get_services_slug() {
-	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi'
 
 	$map = [
 		// Lithuanian
@@ -48,7 +48,7 @@ function nh_get_services_slug() {
 		'sv_SE' => 'tjanster',
 
 		// Finnish – example
-		'fi_FI' => 'palvelut',
+		'fi' => 'palvelut',
 
 		// German – example
 		'de_DE' => 'leistungen',

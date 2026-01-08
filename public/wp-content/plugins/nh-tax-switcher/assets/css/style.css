@@ -1,58 +1,169 @@
-/* Bar placement */
-.nh-tax-bar { width: 100%; margin: 8px 0 12px; }
-.nh-tax-bar--archive { padding: 6px 0; }
-.nh-tax-bar--single  { margin: 12px 0 6px; }
+/* ==========================================================================
+   NH Tax Switcher — Astra-safe archive layout
+   Row 1: Result count (left) + Sorting (right) [default Woo/Astra]
+   Row 2: VAT switcher (left aligned, below)
+   ========================================================================== */
 
-/* Keep archive control on its own line above result count */
-.woocommerce .woocommerce-notices-wrapper + .nh-tax-bar--archive,
-.nh-tax-bar--archive { display: block; }
+/* --------------------------------------------------------------------------
+   Keep Woo toolbar spacing sane (Astra-friendly)
+   -------------------------------------------------------------------------- */
+.woocommerce .woocommerce-result-count,
+.woocommerce .woocommerce-ordering{
+  margin: 1em 0;
+}
 
-/* Wrap & label */
-.nh-tax-switch-wrap {
+/* Astra sets line-height:1 which looks cramped */
+.woocommerce-js .woocommerce-result-count{
+  line-height: 1.4;
+}
+
+/* Reduce excessive space under sorting (Astra sometimes uses 2.5em) */
+.woocommerce .woocommerce-ordering{
+  margin-bottom: 0.75em !important;
+}
+
+/* --------------------------------------------------------------------------
+   Archive placement: VAT switcher always BELOW result count + sorting
+   -------------------------------------------------------------------------- */
+.woocommerce .nh-tax-bar--archive{
+  float: none !important;
+  clear: both !important;     /* forces new line under floats */
+  display: block !important;  /* prevents sitting inline between left/right */
+  width: 100% !important;
+
+  margin: 0 0 1em !important;
+  padding: 0 !important;
+}
+
+/* Keep switcher left-aligned */
+.woocommerce .nh-tax-bar--archive .nh-tax-switch-wrap{
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
   white-space: nowrap;
 }
-.nh-tax-label { font-size: 14px; color: var(--ui-text, #2C2A29); }
 
-/* Switch button (brand palette) */
-.nh-tax-switch {
+/* --------------------------------------------------------------------------
+   Match VAT switcher typography to Woo result count
+   -------------------------------------------------------------------------- */
+.woocommerce .nh-tax-bar--archive,
+.woocommerce .nh-tax-bar--archive .nh-tax-label{
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+  line-height: 1.4;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Toggle switch
+   -------------------------------------------------------------------------- */
+.nh-tax-switch{
   --nh-green: #00704A;
-  --nh-track: #e9e9ea;
+  --nh-track: rgba(0,0,0,.12);
 
   position: relative;
-  width: 46px;
-  height: 26px;
+  width: 44px;
+  height: 24px;
   border: 0;
   background: var(--nh-track);
   border-radius: 999px;
   cursor: pointer;
   padding: 0;
-  transition: background .15s ease;
+
+  transition: background .15s ease, box-shadow .15s ease, opacity .15s ease;
 }
-.nh-tax-switch .nh-tax-slider {
+
+.nh-tax-switch .nh-tax-slider{
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   background: #fff;
   border-radius: 50%;
   transition: transform .15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,.25);
 }
 
-/* pressed = Including VAT (ON) */
-.nh-tax-switch[aria-pressed="true"] { background: var(--nh-green); }
-.nh-tax-switch[aria-pressed="true"] .nh-tax-slider { transform: translateX(20px); }
+/* ON = Including VAT */
+.nh-tax-switch[aria-pressed="true"]{
+  background: var(--nh-green);
+}
+.nh-tax-switch[aria-pressed="true"] .nh-tax-slider{
+  transform: translateX(20px);
+}
 
-/* a11y */
-.nh-tax-visuallyhidden {
+/* Hover / focus */
+.nh-tax-switch:hover{
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+}
+.nh-tax-switch:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,112,74,.25);
+}
+
+/* Disabled (while prices update) */
+.nh-tax-switch:disabled{
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility helper
+   -------------------------------------------------------------------------- */
+.nh-tax-visuallyhidden{
   position: absolute !important;
-  height: 1px; width: 1px;
-  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
 }
 
-/* Smooth price fades while swapping */
-.nh-tax-price { display: inline-block; }
+/* --------------------------------------------------------------------------
+   Price fade during switch
+   -------------------------------------------------------------------------- */
+.nh-tax-price{
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px){
+  .woocommerce .nh-tax-bar--archive{
+    margin-top: 0 !important;
+  }
+}
+
+/* ==========================================================================
+   NH Tax Switcher — SINGLE product placement
+   Goal: sits directly under the Woo price, aligned with it
+   ========================================================================== */
+
+.single-product .summary .nh-tax-bar--single{
+  margin: 6px 0 14px;
+  padding: 0;
+  display: block;
+}
+
+.single-product .summary .nh-tax-bar--single .nh-tax-switch-wrap{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+/* Match typography to the price block rhythm */
+.single-product .summary .nh-tax-bar--single,
+.single-product .summary .nh-tax-bar--single .nh-tax-label{
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 400;
+  color: inherit;
+  line-height: 1.4;
+  opacity: 1;
+}

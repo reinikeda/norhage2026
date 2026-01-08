@@ -50,7 +50,7 @@ class NHG_Sale_Category_Sync {
 	 * Adjust the map below for your actual languages/slugs.
 	 */
 	private function get_sale_slug() {
-		$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+		$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi'
 
 		$map = [
 			// Lithuanian
@@ -63,7 +63,7 @@ class NHG_Sale_Category_Sync {
 			'sv_SE' => 'rea',
 
 			// Finnish – example
-			'fi_FI' => 'ale',
+			'fi' => 'alennusmyynti',
 
 			// German – example (you can change to 'angebote' or whatever you use)
 			'de_DE' => 'sale',

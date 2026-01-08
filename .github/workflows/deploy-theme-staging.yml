@@ -2,30 +2,32 @@ name: Deploy Theme and Custom Plugins (Staging & Production)
 
 on:
   push:
-    branches:
-      - staging
-      - main
+    branches: [staging, main]
     paths:
-      # Theme
-      - 'public/wp-content/themes/astra-custom-for-norhage/**'
-      # Custom plugins
-      - 'public/wp-content/plugins/nh-cutting-toggle/**'
-      - 'public/wp-content/plugins/nh-faq/**'
-      - 'public/wp-content/plugins/nh-feature-box/**'
-      - 'public/wp-content/plugins/nh-filters/**'
-      - 'public/wp-content/plugins/nh-home-builder/**'
-      - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
-      - 'public/wp-content/plugins/nh-sale-slider/**'
-      - 'public/wp-content/plugins/nh-shipping-calculator/**'
-      - 'public/wp-content/plugins/running-ticker-line/**'
-      - 'public/wp-content/plugins/product-labels/**'
-      - 'public/wp-content/plugins/nh-delivery-time/**'
+      - "public/wp-content/themes/astra-custom-for-norhage/**"
+      - "public/wp-content/plugins/nh-cutting-toggle/**"
+      - "public/wp-content/plugins/nh-faq/**"
+      - "public/wp-content/plugins/nh-feature-box/**"
+      - "public/wp-content/plugins/nh-filters/**"
+      - "public/wp-content/plugins/nh-home-builder/**"
+      - "public/wp-content/plugins/nh-inactivity-popup-lite/**"
+      - "public/wp-content/plugins/nh-sale-slider/**"
+      - "public/wp-content/plugins/nh-shipping-calculator/**"
+      - "public/wp-content/plugins/running-ticker-line/**"
+      - "public/wp-content/plugins/product-labels/**"
+      - "public/wp-content/plugins/nh-delivery-time/**"
+
+permissions:
+  contents: read
+
+# Prevent two deploy runs from overlapping (big cause of "max connections reached")
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # =========================
-  # THEME
-  # =========================
-  deploy-theme-staging:
+  deploy-staging:
+    name: Deploy to STAGING (lt/fi)
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging'
 
@@ -42,111 +44,189 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Deploy theme to STAGING (${{ matrix.env.name }}) via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          username: ${{ secrets.SFTP_USER }}
-          server: ${{ secrets.SFTP_HOST }}
-          port: 22
-          password: ${{ secrets.SFTP_PASS }}
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
-          remote_path: "${{ matrix.env.root }}/wp-content/themes/astra-custom-for-norhage"
+          fetch-depth: 0
 
-  deploy-theme-production:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Deploy theme to PRODUCTION via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          username: ${{ secrets.SFTP_USER }}
-          server: ${{ secrets.SFTP_HOST }}
-          port: 22
-          password: ${{ secrets.SFTP_PASS }}
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
-          remote_path: "/www/wp-content/themes/astra-custom-for-norhage"
-
-  # =========================
-  # PLUGINS
-  # =========================
-  deploy-plugins-staging:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging'
-    needs: deploy-theme-staging
-
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
+      - name: Deploy changed theme/plugins via single SFTP session (${{ matrix.env.name }})
         env:
-          - name: lt
-            root: /staging
-          - name: fi
-            root: /staging-fi
-        plugin:
-          - nh-cutting-toggle
-          - nh-faq
-          - nh-feature-box
-          - nh-filters
-          - nh-home-builder
-          - nh-inactivity-popup-lite
-          - nh-sale-slider
-          - nh-shipping-calculator
-          - running-ticker-line
-          - product-labels
-          - nh-delivery-time
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+          REMOTE_ROOT: ${{ matrix.env.root }}
+        run: |
+          set -euo pipefail
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+          # Get changed files for this push (handle edge cases)
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
 
-      - name: Deploy ${{ matrix.plugin }} plugin to STAGING (${{ matrix.env.name }}) via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/plugins/${{ matrix.plugin }}/*"
-          remote_path: "${{ matrix.env.root }}/wp-content/plugins/${{ matrix.plugin }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            CHANGED="$(git ls-files)"
+          else
+            CHANGED="$(git diff --name-only "$BEFORE" "$AFTER")"
+          fi
 
-  deploy-plugins-production:
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          THEME_PATH="public/wp-content/themes/astra-custom-for-norhage"
+          PLUGINS_BASE="public/wp-content/plugins"
+
+          THEME_CHANGED=0
+          if echo "$CHANGED" | grep -q "^${THEME_PATH}/"; then
+            THEME_CHANGED=1
+          fi
+
+          # Only allow deploying these plugins (avoid accidental uploads)
+          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time)$"
+
+          PLUGINS_CHANGED="$(
+            echo "$CHANGED" \
+              | sed -n "s|^${PLUGINS_BASE}/\([^/]*\)/.*|\1|p" \
+              | sort -u \
+              | grep -E "${ALLOWED_PLUGINS_REGEX}" || true
+          )"
+
+          echo "Theme changed? $THEME_CHANGED"
+          echo "Plugins changed:"
+          echo "$PLUGINS_CHANGED"
+
+          # If nothing to deploy (should be rare because workflow paths filter), exit cleanly
+          if [ "$THEME_CHANGED" -eq 0 ] && [ -z "$PLUGINS_CHANGED" ]; then
+            echo "Nothing to deploy."
+            exit 0
+          fi
+
+          # Build one lftp script to run in a single SFTP session
+          LFTP_CMDS="$(mktemp)"
+
+          {
+            echo "set sftp:auto-confirm yes"
+            echo "set net:max-retries 8"
+            echo "set net:reconnect-interval-base 5"
+            echo "set net:reconnect-interval-multiplier 1"
+            echo "set net:timeout 25"
+            echo "set cmd:fail-exit yes"
+            echo "set xfer:clobber on"
+            echo "set ssl:verify-certificate no"
+            echo "set dns:fatal-timeout 10"
+            echo "set net:persist-retries 2"
+            echo ""
+
+            if [ "$THEME_CHANGED" -eq 1 ]; then
+              echo "echo 'Uploading theme...'"
+              echo "mirror -R --only-newer --verbose --parallel=1 \"${THEME_PATH}\" \"${REMOTE_ROOT}/wp-content/themes/astra-custom-for-norhage\""
+              echo ""
+            fi
+
+            if [ -n "$PLUGINS_CHANGED" ]; then
+              echo "echo 'Uploading plugins...'"
+              while read -r p; do
+                [ -z "$p" ] && continue
+                echo "mirror -R --only-newer --verbose --parallel=1 \"${PLUGINS_BASE}/${p}\" \"${REMOTE_ROOT}/wp-content/plugins/${p}\""
+              done <<< "$PLUGINS_CHANGED"
+              echo ""
+            fi
+
+            echo "bye"
+          } > "$LFTP_CMDS"
+
+          echo "Running lftp script:"
+          cat "$LFTP_CMDS"
+
+          # Single SFTP connection for everything above
+          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -f "$LFTP_CMDS"
+
+  deploy-production:
+    name: Deploy to PRODUCTION
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
-    strategy:
-      matrix:
-        plugin:
-          - nh-cutting-toggle
-          - nh-faq
-          - nh-feature-box
-          - nh-filters
-          - nh-home-builder
-          - nh-inactivity-popup-lite
-          - nh-sale-slider
-          - nh-shipping-calculator
-          - running-ticker-line
-          - product-labels
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Deploy ${{ matrix.plugin }} plugin to PRODUCTION via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/plugins/${{ matrix.plugin }}/*"
-          remote_path: "/www/wp-content/plugins/${{ matrix.plugin }}"
+          fetch-depth: 0
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy changed theme/plugins via single SFTP session (production)
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+          REMOTE_ROOT: /www
+        run: |
+          set -euo pipefail
+
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            CHANGED="$(git ls-files)"
+          else
+            CHANGED="$(git diff --name-only "$BEFORE" "$AFTER")"
+          fi
+
+          THEME_PATH="public/wp-content/themes/astra-custom-for-norhage"
+          PLUGINS_BASE="public/wp-content/plugins"
+
+          THEME_CHANGED=0
+          if echo "$CHANGED" | grep -q "^${THEME_PATH}/"; then
+            THEME_CHANGED=1
+          fi
+
+          # NOTE: include nh-delivery-time here too (your old production matrix missed it)
+          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time)$"
+
+          PLUGINS_CHANGED="$(
+            echo "$CHANGED" \
+              | sed -n "s|^${PLUGINS_BASE}/\([^/]*\)/.*|\1|p" \
+              | sort -u \
+              | grep -E "${ALLOWED_PLUGINS_REGEX}" || true
+          )"
+
+          if [ "$THEME_CHANGED" -eq 0 ] && [ -z "$PLUGINS_CHANGED" ]; then
+            echo "Nothing to deploy."
+            exit 0
+          fi
+
+          LFTP_CMDS="$(mktemp)"
+          {
+            echo "set sftp:auto-confirm yes"
+            echo "set net:max-retries 8"
+            echo "set net:reconnect-interval-base 5"
+            echo "set net:reconnect-interval-multiplier 1"
+            echo "set net:timeout 25"
+            echo "set cmd:fail-exit yes"
+            echo "set xfer:clobber on"
+            echo "set ssl:verify-certificate no"
+            echo ""
+
+            if [ "$THEME_CHANGED" -eq 1 ]; then
+              echo "echo 'Uploading theme...'"
+              echo "mirror -R --only-newer --verbose --parallel=1 \"${THEME_PATH}\" \"${REMOTE_ROOT}/wp-content/themes/astra-custom-for-norhage\""
+              echo ""
+            fi
+
+            if [ -n "$PLUGINS_CHANGED" ]; then
+              echo "echo 'Uploading plugins...'"
+              while read -r p; do
+                [ -z "$p" ] && continue
+                echo "mirror -R --only-newer --verbose --parallel=1 \"${PLUGINS_BASE}/${p}\" \"${REMOTE_ROOT}/wp-content/plugins/${p}\""
+              done <<< "$PLUGINS_CHANGED"
+              echo ""
+            fi
+
+            echo "bye"
+          } > "$LFTP_CMDS"
+
+          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -f "$LFTP_CMDS"

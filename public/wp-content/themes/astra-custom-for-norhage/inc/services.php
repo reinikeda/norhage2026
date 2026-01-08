@@ -13,7 +13,7 @@ if ( ! function_exists( 'nh_get_services_slug' ) ) {
 			case 'nb_NO': return 'tjenester';
 			case 'sv_SE': return 'tjanster';
 			case 'de_DE': return 'leistungen';
-			case 'fi_FI': return 'palvelut';
+			case 'fi': return 'palvelut';
 			default:      return 'services';
 		}
 	}

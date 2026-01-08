@@ -1,0 +1,113 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-home-builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-01-07 13:35+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Finnish\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+# ===========================
+# browse-cats.php
+# ===========================
+#: includes/render/browse-cats.php:XX
+msgid "Browse by Category"
+msgstr "Selaa kategorioittain"
+
+#: includes/render/browse-cats.php:XX
+msgid "Scroll left"
+msgstr "Vieritä vasemmalle"
+
+#: includes/render/browse-cats.php:XX
+msgid "Scroll right"
+msgstr "Vieritä oikealle"
+
+#: includes/render/browse-cats.php:XX
+msgid "No categories to display. Check your settings."
+msgstr "Näytettäviä kategorioita ei ole. Tarkista asetukset."
+
+# ===========================
+# new-arrivals.php
+# ===========================
+#: includes/render/new-arrivals.php:XX
+msgid "New Arrivals"
+msgstr "Uutuudet"
+
+#: includes/render/new-arrivals.php:XX
+msgid "View All"
+msgstr "Näytä kaikki"
+
+#: includes/render/new-arrivals.php:XX
+msgid "Explore"
+msgstr "Tutustu"
+
+#: includes/render/new-arrivals.php:XX
+msgid "No products yet. Add a few to WooCommerce."
+msgstr "Tuotteita ei vielä ole. Lisää muutama WooCommerceen."
+
+# ===========================
+# newsletter.php
+# ===========================
+#: includes/render/newsletter.php:XX
+msgid "Don’t Miss Out Latest Trends & Offers"
+msgstr "Älä jää paitsi uusimmista trendeistä ja tarjouksista"
+
+#: includes/render/newsletter.php:XX
+msgid "Register to receive news about the latest offers & discount codes"
+msgstr "Tilaa uutiskirje ja saat tiedon uusimmista tarjouksista ja alennuskoodeista"
+
+#: includes/render/newsletter.php:XX
+msgid "Enter your email"
+msgstr "Syötä sähköpostiosoitteesi"
+
+#: includes/render/newsletter.php:XX
+msgid "Subscribe"
+msgstr "Tilaa"
+
+#: includes/render/newsletter.php:XX
+msgid "Email address"
+msgstr "Sähköpostiosoite"
+
+# ===========================
+# services-slider.php
+# ===========================
+#: includes/render/services-slider.php:XX
+msgid "Our Services"
+msgstr "Palvelumme"
+
+#: includes/render/services-slider.php:XX
+msgid "Read More"
+msgstr "Lue lisää"
+
+#: includes/render/services-slider.php:XX
+msgid "Previous slide"
+msgstr "Edellinen dia"
+
+#: includes/render/services-slider.php:XX
+msgid "Next slide"
+msgstr "Seuraava dia"
+
+#: includes/render/services-slider.php:XX
+msgid "No services to display. Add Services or enable “Include in slider”."
+msgstr "Näytettäviä palveluita ei ole. Lisää palveluita tai ota käyttöön ”Sisällytä liukusäätimeen”."
+
+# ===========================
+# bb-banner.php
+# ===========================
+#: includes/render/bb-banner.php:XX
+msgid "For Business Customers"
+msgstr "Yritysasiakkaille"
+
+#: includes/render/bb-banner.php:XX
+msgid "Exclusive pricing and services for B2B partners."
+msgstr "Erityishinnat ja palvelut B2B-kumppaneille."
+
+#: includes/render/bb-banner.php:XX
+msgid "Learn more"
+msgstr "Lue lisää"

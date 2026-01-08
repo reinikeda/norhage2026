@@ -1,0 +1,936 @@
+# Copyright (C) 2025 Daiva Reinike
+# This file is distributed under the same license as the Astra Custom for Norhage package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
+"norhage\n"
+"POT-Creation-Date: 2025-12-10 14:12:16+00:00\n"
+"PO-Revision-Date: 2026-01-07 13:52+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: \n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: functions.php:25
+msgid "Primary Menu"
+msgstr ""
+
+#: functions.php:26
+msgid "Secondary Menu"
+msgstr ""
+
+#: functions.php:27
+msgid "Footer — Explore"
+msgstr ""
+
+#: functions.php:28
+msgid "Footer — Bottom Bar"
+msgstr ""
+
+#: functions.php:88
+msgctxt "Default FAQ page slug"
+msgid "frequently-asked-questions-faq"
+msgstr "usein-kysytyt-kysymykset-ukk"
+
+#: functions.php:195 inc/services.php:26 inc/services.php:51
+msgid "Services"
+msgstr "Palvelut"
+
+#: functions.php:196 inc/blog.php:25 inc/hero.php:12
+msgid "Blog"
+msgstr "Blogi"
+
+#: functions.php:197
+msgid "Contact Us"
+msgstr "Ota yhteyttä"
+
+#: functions.php:203 template-parts/footer/footer.php:13
+#: template-parts/headers/header-main.php:20
+msgid "+49 176 65 10 6609"
+msgstr "+358 44 927 4784"
+
+#: functions.php:204 template-parts/headers/header-main.php:21
+msgid "+4917665106609"
+msgstr "+358449274784"
+
+#: functions.php:210
+msgid "Utility bar"
+msgstr ""
+
+#: functions.php:218
+msgid "Phone icon"
+msgstr ""
+
+#: functions.php:227
+msgid "FAQ"
+msgstr "UKK"
+
+#: functions.php:290
+msgid "Shop by Category"
+msgstr "Osta kategorian mukaan"
+
+#: functions.php:335 functions.php:354
+msgid "Customize"
+msgstr "Mukauta"
+
+#: functions.php:336
+msgid "Customize “%s”"
+msgstr "Mukauta kohdetta “%s”"
+
+#: functions.php:359
+msgid "Select options"
+msgstr "Valitse vaihtoehdot"
+
+#: functions.php:381
+msgid "Secondary product title"
+msgstr ""
+
+#: functions.php:410
+msgid "Footer — Shop Categories"
+msgstr ""
+
+#: functions.php:411
+msgid "Footer — Secondary (Services, Blog, Contact)"
+msgstr ""
+
+#: functions.php:412
+msgid "Footer — Legal/Policies"
+msgstr ""
+
+#: functions.php:596
+msgid "Please enter a valid email address."
+msgstr "Anna kelvollinen sähköpostiosoite."
+
+#: functions.php:604
+msgid "Thank you!"
+msgstr "Kiitos!"
+
+#: functions.php:613
+msgid ""
+"Subscription is temporarily unavailable. Please contact site administrator."
+msgstr ""
+"Tilaus on tilapäisesti poissa käytöstä. Ota yhteyttä sivuston ylläpitäjään."
+
+#: functions.php:638
+msgid "Could not connect to email service. Please try again."
+msgstr "Sähköpostipalveluun ei saatu yhteyttä. Yritä uudelleen."
+
+#: functions.php:648
+msgid "Thank you! You are subscribed."
+msgstr "Kiitos! Olet tilannut kanavan."
+
+#: inc/basket-customize.php:157 inc/order-attributes.php:140
+#: inc/order-attributes.php:288 inc/product-customize.php:381
+#: inc/product-customize.php:455
+msgid "Length"
+msgstr "Pituus"
+
+#: inc/basket-customize.php:203
+msgid "Pickup from Lithuania warehouse"
+msgstr ""
+
+#: inc/basket-customize.php:208
+msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
+msgstr ""
+
+#: inc/blog.php:12
+msgid "All"
+msgstr "Kaikki"
+
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
+#: inc/blog.php:30 inc/blog.php:31
+msgid "Blog: %s"
+msgstr "Blogi: %s"
+
+#: inc/blog.php:62 inc/blog.php:70 inc/services.php:81 inc/services.php:89
+msgid "Read More »"
+msgstr "Lue lisää »"
+
+#: inc/blog.php:81
+msgid "Back to Blog"
+msgstr "Takaisin blogiin"
+
+#: inc/blog.php:87
+msgid "Back to %s"
+msgstr "Takaisin kohteeseen %s"
+
+#: inc/blog.php:107
+msgid "Related posts"
+msgstr "Aiheeseen liittyvät julkaisut"
+
+#. translators: 1: quantity, 2: product name
+#: inc/bundle-box.php:70
+msgid "%1$d × “%2$s”"
+msgstr ""
+
+#. translators: %d: number of items
+#: inc/bundle-box.php:108
+msgid "%d item has been added to your basket"
+msgid_plural "%d items have been added to your basket"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of distinct products
+#: inc/bundle-box.php:113
+msgid "(%d product):"
+msgid_plural "(%d products):"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/bundle-box.php:121
+msgid "View basket"
+msgstr ""
+
+#: inc/bundle-box.php:154
+msgid "Buy a complete set"
+msgstr ""
+
+#: inc/bundle-box.php:156
+msgid "Complete set add-ons"
+msgstr ""
+
+#: inc/bundle-box.php:164
+msgid "Image"
+msgstr ""
+
+#: inc/bundle-box.php:165 woocommerce/pdf/norhage/invoice.php:137
+msgid "Product"
+msgstr ""
+
+#: inc/bundle-box.php:166
+msgid "Qty"
+msgstr ""
+
+#: inc/bundle-box.php:167 woocommerce/pdf/norhage/invoice.php:143
+msgid "Price"
+msgstr ""
+
+#: inc/bundle-box.php:205
+msgid "In stock"
+msgstr ""
+
+#: inc/bundle-box.php:206
+msgid "Out of stock"
+msgstr ""
+
+#: inc/bundle-box.php:222
+msgid "Only %d left in stock"
+msgstr ""
+
+#: inc/bundle-box.php:223 inc/bundle-box.php:229 inc/bundle-box.php:237
+msgid "Max per bundle: %d"
+msgstr ""
+
+#: inc/bundle-box.php:246
+msgid "Minus Quantity"
+msgstr ""
+
+#: inc/bundle-box.php:248 woocommerce/pdf/norhage/invoice.php:140
+msgid "Quantity"
+msgstr ""
+
+#: inc/bundle-box.php:253
+msgid "Plus Quantity"
+msgstr ""
+
+#. translators: label before the computed bundle total price
+#: inc/bundle-box.php:263
+msgid "Total:"
+msgstr ""
+
+#: inc/bundle-box.php:267
+msgid "Add all to basket"
+msgstr ""
+
+#: inc/hero.php:18
+msgid "Search results for “%s”"
+msgstr ""
+
+#: inc/meta-boxes.php:9 inc/meta-boxes.php:274
+msgid "Downloads"
+msgstr ""
+
+#: inc/meta-boxes.php:17 inc/meta-boxes.php:296
+msgid "Video"
+msgstr ""
+
+#: inc/meta-boxes.php:27
+msgid "Custom Cutting"
+msgstr ""
+
+#: inc/meta-boxes.php:43
+msgid "Label"
+msgstr ""
+
+#: inc/meta-boxes.php:44
+msgid "PDF URL"
+msgstr ""
+
+#: inc/meta-boxes.php:57 inc/meta-boxes.php:72
+msgid "Remove download row"
+msgstr ""
+
+#: inc/meta-boxes.php:62
+msgid "Add Download"
+msgstr ""
+
+#: inc/meta-boxes.php:104
+msgid "YouTube / Vimeo URL"
+msgstr ""
+
+#: inc/meta-boxes.php:136
+msgid "Enable custom cutting"
+msgstr ""
+
+#: inc/meta-boxes.php:141 inc/order-attributes.php:154
+#: inc/order-attributes.php:289 inc/product-customize.php:116
+#: inc/product-customize.php:395 inc/product-customize.php:466
+msgid "Cutting fee per sheet"
+msgstr ""
+
+#: inc/meta-boxes.php:146
+msgid "Min width (mm)"
+msgstr ""
+
+#: inc/meta-boxes.php:150
+msgid "Max width (mm)"
+msgstr ""
+
+#: inc/meta-boxes.php:155
+msgid "Min length (mm)"
+msgstr ""
+
+#: inc/meta-boxes.php:159
+msgid "Max length (mm)"
+msgstr ""
+
+#: inc/meta-boxes.php:164
+msgid "Cutting step (mm)"
+msgstr ""
+
+#: inc/meta-boxes.php:169
+msgid "Weight per m² (kg)"
+msgstr ""
+
+#: inc/meta-boxes.php:174
+msgid ""
+"Use this to enable custom cutting on a Simple product. Standard-size "
+"variants are best kept on a separate Variable product."
+msgstr ""
+
+#: inc/meta-boxes.php:354
+msgid "Watch video"
+msgstr ""
+
+#: inc/meta-boxes.php:369
+msgid "Product extras"
+msgstr ""
+
+#: inc/meta-boxes.php:383
+msgid "Product extra's"
+msgstr ""
+
+#: inc/meta-boxes.php:384
+msgid ""
+"Select one or more products that can be added to this product as add-ons. "
+"Only simple products or product-variants are allowed."
+msgstr ""
+
+#: inc/meta-boxes.php:388
+msgid "Product *"
+msgstr ""
+
+#: inc/meta-boxes.php:389
+msgid "Maximum quantity"
+msgstr ""
+
+#: inc/meta-boxes.php:405
+msgid "Add product as add-on"
+msgstr ""
+
+#: inc/meta-boxes.php:457
+msgid "Drag to reorder"
+msgstr ""
+
+#: inc/meta-boxes.php:461
+msgid "Search products & variations…"
+msgstr ""
+
+#: inc/meta-boxes.php:476
+msgid "Remove row"
+msgstr ""
+
+#: inc/order-attributes.php:136 inc/order-attributes.php:287
+#: inc/product-customize.php:380 inc/product-customize.php:451
+msgid "Width"
+msgstr ""
+
+#: inc/product-customize.php:51 inc/product-customize.php:56
+msgid "%1$d–%2$d mm"
+msgstr ""
+
+#: inc/product-customize.php:52 inc/product-customize.php:57
+msgid "≥ %d mm"
+msgstr ""
+
+#: inc/product-customize.php:53 inc/product-customize.php:58
+msgid "≤ %d mm"
+msgstr ""
+
+#: inc/product-customize.php:70
+msgid "Width (mm)"
+msgstr ""
+
+#: inc/product-customize.php:72
+msgid "Decrease width"
+msgstr ""
+
+#: inc/product-customize.php:79
+msgid "Increase width"
+msgstr ""
+
+#: inc/product-customize.php:83
+msgid "Length (mm)"
+msgstr ""
+
+#: inc/product-customize.php:85
+msgid "Decrease length"
+msgstr ""
+
+#: inc/product-customize.php:92
+msgid "Increase length"
+msgstr ""
+
+#: inc/product-customize.php:98
+msgid "Step: %d mm"
+msgstr ""
+
+#: inc/product-customize.php:109
+msgid "Your selection"
+msgstr ""
+
+#: inc/product-customize.php:112
+msgid "Price per m²"
+msgstr ""
+
+#: inc/product-customize.php:120
+msgid "Unit price"
+msgstr ""
+
+#: inc/product-customize.php:126 woocommerce/pdf/norhage/invoice.php:223
+msgid "Total"
+msgstr ""
+
+#: inc/product-customize.php:181
+msgid "Sorry, all combinations are unavailable."
+msgstr ""
+
+#: inc/product-customize.php:301
+msgid "Please enter width and length (mm)."
+msgstr ""
+
+#: inc/product-customize.php:308
+msgid "Minimum width is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:309
+msgid "Maximum width is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:310
+msgid "Minimum length is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:311
+msgid "Maximum length is %d mm."
+msgstr ""
+
+#: inc/product-customize.php:321
+msgid "Width must align to %1$d mm steps starting at %2$d mm."
+msgstr ""
+
+#: inc/product-customize.php:324
+msgid "Length must align to %1$d mm steps starting at %2$d mm."
+msgstr ""
+
+#. translators: product category name for items currently on sale
+#: inc/sale-category-sync.php:93
+msgid "Sale"
+msgstr "Alennusmyynti"
+
+#: inc/search.php:14 template-parts/headers/header-main.php:130
+msgid "Search products…"
+msgstr "Hae tuotteita…"
+
+#: inc/services.php:24
+msgctxt "Post Type General Name"
+msgid "Services"
+msgstr "Palvelut"
+
+#: inc/services.php:25
+msgctxt "Post Type Singular Name"
+msgid "Service"
+msgstr "Palvelu"
+
+#: inc/services.php:27
+msgid "Add New Service"
+msgstr ""
+
+#: inc/services.php:28
+msgid "Edit Service"
+msgstr ""
+
+#: inc/services.php:29
+msgid "View Service"
+msgstr ""
+
+#: inc/services.php:30
+msgid "All Services"
+msgstr "Kaikki palvelut"
+
+#: inc/services.php:98
+msgid "Back to Services"
+msgstr "Takaisin palveluihin"
+
+#: inc/services.php:111
+msgid "Other services"
+msgstr "Muut palvelut"
+
+#: template-parts/footer/footer.php:11
+msgid "Tehi UG"
+msgstr "Norhage Oy"
+
+#: template-parts/footer/footer.php:12
+msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
+msgstr "Koskitie 8, 32700 Huittinen, Suomi"
+
+#: template-parts/footer/footer.php:14
+msgid "info@norhage.de"
+msgstr "info@norhage.fi"
+
+#: template-parts/footer/footer.php:18
+msgid "https://www.facebook.com/yourpage"
+msgstr "https://www.facebook.com/norhage.fi"
+
+#: template-parts/footer/footer.php:19
+msgid "https://www.instagram.com/yourpage"
+msgstr ""
+
+#: template-parts/footer/footer.php:20
+msgid "https://www.youtube.com/@yourchannel"
+msgstr ""
+
+#: template-parts/footer/footer.php:21
+msgid "https://www.linkedin.com/company/yourcompany"
+msgstr ""
+
+#: template-parts/footer/footer.php:25
+msgid "https://norhageindustri.lt/"
+msgstr "https://norhageindustri.fi/"
+
+#: template-parts/footer/footer.php:29
+msgid "Facebook"
+msgstr ""
+
+#: template-parts/footer/footer.php:30
+msgid "Instagram"
+msgstr ""
+
+#: template-parts/footer/footer.php:31
+msgid "YouTube"
+msgstr ""
+
+#: template-parts/footer/footer.php:32
+msgid "LinkedIn"
+msgstr ""
+
+#: template-parts/footer/footer.php:70
+msgid "Company Info"
+msgstr "Yrityksen tiedot"
+
+#: template-parts/footer/footer.php:72
+msgid "Company:"
+msgstr "Yritys:"
+
+#: template-parts/footer/footer.php:73
+msgid "Address:"
+msgstr "Osoite:"
+
+#: template-parts/footer/footer.php:74
+msgid "Phone:"
+msgstr "Puhelin:"
+
+#: template-parts/footer/footer.php:77
+msgid "Email:"
+msgstr "Sähköposti:"
+
+#: template-parts/footer/footer.php:84
+msgid "Follow us"
+msgstr "Seuraa meitä"
+
+#: template-parts/footer/footer.php:85
+msgid "Social media"
+msgstr "Sosiaalinen media"
+
+#: template-parts/footer/footer.php:113
+msgid "Shop Categories"
+msgstr "Kaupan kategoriat"
+
+#: template-parts/footer/footer.php:116
+msgid "Explore & Support"
+msgstr "Tutustu ja tue"
+
+#: template-parts/footer/footer.php:119
+msgid "Legal & Information"
+msgstr "Lakiasiain ja tiedot"
+
+#: template-parts/footer/footer.php:123
+msgid "Stay in the Loop"
+msgstr "Pysy ajan tasalla"
+
+#: template-parts/footer/footer.php:124
+msgid "Get trends, offers and how-tos straight to your inbox."
+msgstr "Saat trendejä, tarjouksia ja ohjeita suoraan sähköpostiisi."
+
+#: template-parts/footer/footer.php:127
+msgid "Email address"
+msgstr "Sähköpostiosoite"
+
+#: template-parts/footer/footer.php:133
+msgid "Your email address"
+msgstr "Sähköpostiosoitteesi"
+
+#: template-parts/footer/footer.php:137
+msgid "Subscribe"
+msgstr "Tilaa"
+
+#: template-parts/footer/footer.php:139
+msgid "By subscribing you agree to our"
+msgstr "Tilaamalla hyväksyt meidän"
+
+#: template-parts/footer/footer.php:140
+msgid "Privacy Policy"
+msgstr "Tietosuojakäytäntö"
+
+#: template-parts/footer/footer.php:152
+msgid "B2B Portal"
+msgstr "B2B-portaali"
+
+#: template-parts/footer/footer.php:155
+msgid "Legal bottom"
+msgstr ""
+
+#: template-parts/headers/header-main.php:18
+msgid "My Account"
+msgstr "Oma tili"
+
+#: template-parts/headers/header-main.php:18
+msgid "Sign in"
+msgstr ""
+
+#: template-parts/headers/header-main.php:39
+msgid "Primary menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:73
+msgid "Open menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:96
+msgid "Cart"
+msgstr "Ostoskori"
+
+#: template-parts/headers/header-main.php:107
+msgid "View cart"
+msgstr ""
+
+#: template-parts/headers/header-main.php:115
+msgid "Switch theme"
+msgstr ""
+
+#: template-parts/headers/header-main.php:135
+msgid "Search"
+msgstr ""
+
+#: template-parts/headers/header-main.php:142
+msgid "Search suggestions"
+msgstr ""
+
+#: template-parts/headers/header-main.php:155
+msgid "Menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:157
+msgid "Close menu"
+msgstr ""
+
+#: template-parts/headers/header-main.php:162
+msgid "Mobile navigation"
+msgstr ""
+
+#: template-parts/headers/header-main.php:175
+msgid "More"
+msgstr ""
+
+#. translators: %1$s: Order number
+#: woocommerce/emails/customer-cancelled-order.php:28
+msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
+msgstr ""
+
+#. translators: %1$s: Order number
+#: woocommerce/emails/customer-cancelled-order.php:32
+msgid ""
+"We’re getting in touch to let you know that your order #%1$s has been "
+"cancelled."
+msgstr ""
+
+#. translators: %s: Customer first name
+#. translators: %s: Customer username
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer first name
+#. translators: %s: Customer username
+#: woocommerce/emails/customer-completed-order.php:37
+#: woocommerce/emails/customer-failed-order.php:40
+#: woocommerce/emails/customer-new-account.php:36
+#: woocommerce/emails/customer-note.php:31
+#: woocommerce/emails/customer-on-hold-order.php:36
+#: woocommerce/emails/customer-pos-completed-order.php:34
+#: woocommerce/emails/customer-pos-refunded-order.php:32
+#: woocommerce/emails/customer-processing-order.php:31
+#: woocommerce/emails/customer-refunded-order.php:35
+#: woocommerce/emails/customer-reset-password.php:33
+msgid "Hi %s,"
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:41
+#: woocommerce/emails/customer-failed-order.php:44
+#: woocommerce/emails/customer-note.php:35
+#: woocommerce/emails/customer-on-hold-order.php:40
+#: woocommerce/emails/customer-processing-order.php:35
+#: woocommerce/emails/customer-refunded-order.php:39
+msgid "Hi,"
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:45
+msgid "We have finished processing your order."
+msgstr ""
+
+#: woocommerce/emails/customer-completed-order.php:47
+#: woocommerce/emails/customer-on-hold-order.php:48
+#: woocommerce/emails/customer-processing-order.php:43
+#: woocommerce/emails/customer-refunded-order.php:61
+msgid "Here’s a reminder of what you’ve ordered:"
+msgstr ""
+
+#: woocommerce/emails/customer-failed-order.php:48
+msgid ""
+"Unfortunately, we couldn't complete your order due to an issue with your "
+"payment method."
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-failed-order.php:50
+msgid ""
+"If you'd like to continue with your purchase, please return to %s and try a "
+"different method of payment."
+msgstr ""
+
+#: woocommerce/emails/customer-failed-order.php:51
+msgid "Your order details are as follows:"
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-new-account.php:41
+msgid ""
+"Thanks for creating an account on %s. Here’s a copy of your user details."
+msgstr ""
+
+#. translators: %s: Username
+#: woocommerce/emails/customer-new-account.php:50
+#: woocommerce/emails/customer-reset-password.php:46
+msgid "Username: <b>%s</b>"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:60
+msgid "Set your new password."
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:65
+msgid ""
+"You can access your account area to view orders, change your password, and "
+"more via the link below:"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:66
+msgid "My account"
+msgstr ""
+
+#. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
+#: woocommerce/emails/customer-new-account.php:74
+msgid ""
+"Thanks for creating an account on %1$s. Your username is %2$s. You can "
+"access your account area to view orders, change your password, and more at: "
+"%3$s"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:84
+msgid "Click here to set your new password."
+msgstr ""
+
+#: woocommerce/emails/customer-note.php:40
+msgid "The following note has been added to your order:"
+msgstr ""
+
+#: woocommerce/emails/customer-note.php:49
+msgid "As a reminder, here are your order details:"
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:47
+msgid ""
+"We’ve received your order and it’s currently on hold until we can confirm "
+"your payment has been processed."
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:52
+msgid ""
+"Thanks for your order. It’s on-hold until we confirm that payment has been "
+"received."
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:38
+#: woocommerce/emails/customer-pos-refunded-order.php:36
+msgid "Hi there,"
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:42
+#: woocommerce/emails/customer-pos-refunded-order.php:57
+msgid "Here’s a reminder of what you’ve bought:"
+msgstr ""
+
+#: woocommerce/emails/customer-pos-completed-order.php:108
+#: woocommerce/emails/customer-pos-refunded-order.php:125
+msgid "Refund & Returns Policy"
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-pos-refunded-order.php:46
+#: woocommerce/emails/customer-refunded-order.php:50
+msgid "Your order from %s has been partially refunded."
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-pos-refunded-order.php:52
+#: woocommerce/emails/customer-refunded-order.php:56
+msgid "Your order from %s has been refunded."
+msgstr ""
+
+#: woocommerce/emails/customer-processing-order.php:42
+msgid ""
+"Just to let you know — we’ve received your order, and it is now being "
+"processed."
+msgstr ""
+
+#. translators: %s: Order number
+#: woocommerce/emails/customer-processing-order.php:51
+msgid ""
+"Just to let you know — we've received your order #%s, and it is now being "
+"processed:"
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-refunded-order.php:66
+msgid ""
+"Your order on %s has been partially refunded. There are more details below "
+"for your reference:"
+msgstr ""
+
+#. translators: %s: Site title
+#: woocommerce/emails/customer-refunded-order.php:72
+msgid ""
+"Your order on %s has been refunded. There are more details below for your "
+"reference:"
+msgstr ""
+
+#. translators: %s: Store name
+#: woocommerce/emails/customer-reset-password.php:36
+msgid "Someone has requested a new password for the following account on %s:"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:54
+msgid ""
+"If you didn’t make this request, just ignore this email. If you’d like to "
+"proceed, reset your password via the link below:"
+msgstr ""
+
+#. translators: %s: Customer username
+#: woocommerce/emails/customer-reset-password.php:59
+msgid "Username: %s"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:60
+msgid ""
+"If you didn't make this request, just ignore this email. If you'd like to "
+"proceed:"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:68
+msgid "Reset your password"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:70
+msgid "Click here to reset your password"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:17
+#: woocommerce/pdf/norhage/invoice.php:44
+msgid "Invoice"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:87
+msgid "Invoice Date"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:100
+msgid "Order Number"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:105
+msgid "Order Date"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:111
+msgid "Payment Method"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:162
+msgid "Weight"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:214
+msgid "Subtotal"
+msgstr ""
+
+#: woocommerce/pdf/norhage/invoice.php:218
+msgid "Shipping"
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "Astra Custom for Norhage"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Child theme for Norhage site customizations"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Daiva Reinike"
+msgstr ""
