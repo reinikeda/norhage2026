@@ -4,7 +4,10 @@ on:
   push:
     branches: [staging, main]
     paths:
+      # Theme
       - "public/wp-content/themes/astra-custom-for-norhage/**"
+
+      # Plugins
       - "public/wp-content/plugins/nh-cutting-toggle/**"
       - "public/wp-content/plugins/nh-faq/**"
       - "public/wp-content/plugins/nh-feature-box/**"
@@ -16,18 +19,22 @@ on:
       - "public/wp-content/plugins/running-ticker-line/**"
       - "public/wp-content/plugins/product-labels/**"
       - "public/wp-content/plugins/nh-delivery-time/**"
+      - "public/wp-content/plugins/nh-tax-switcher/**"
 
 permissions:
   contents: read
 
-# Prevent two deploy runs from overlapping (big cause of "max connections reached")
+# Prevent overlapping deploys (fixes max SFTP connections issue)
 concurrency:
   group: deploy-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# =========================================================
+# STAGING (lt / fi)
+# =========================================================
 jobs:
   deploy-staging:
-    name: Deploy to STAGING (lt/fi)
+    name: Deploy to STAGING
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging'
 
@@ -52,7 +59,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
 
-      - name: Deploy changed theme/plugins via single SFTP session (${{ matrix.env.name }})
+      - name: Deploy changed theme/plugins (${{ matrix.env.name }})
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_USER: ${{ secrets.SFTP_USER }}
@@ -61,7 +68,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Get changed files for this push (handle edge cases)
           BEFORE="${{ github.event.before }}"
           AFTER="${{ github.sha }}"
 
@@ -82,8 +88,7 @@ jobs:
             THEME_CHANGED=1
           fi
 
-          # Only allow deploying these plugins (avoid accidental uploads)
-          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time)$"
+          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time|nh-tax-switcher)$"
 
           PLUGINS_CHANGED="$(
             echo "$CHANGED" \
@@ -96,26 +101,20 @@ jobs:
           echo "Plugins changed:"
           echo "$PLUGINS_CHANGED"
 
-          # If nothing to deploy (should be rare because workflow paths filter), exit cleanly
           if [ "$THEME_CHANGED" -eq 0 ] && [ -z "$PLUGINS_CHANGED" ]; then
             echo "Nothing to deploy."
             exit 0
           fi
 
-          # Build one lftp script to run in a single SFTP session
           LFTP_CMDS="$(mktemp)"
 
           {
             echo "set sftp:auto-confirm yes"
             echo "set net:max-retries 8"
-            echo "set net:reconnect-interval-base 5"
-            echo "set net:reconnect-interval-multiplier 1"
             echo "set net:timeout 25"
             echo "set cmd:fail-exit yes"
             echo "set xfer:clobber on"
             echo "set ssl:verify-certificate no"
-            echo "set dns:fatal-timeout 10"
-            echo "set net:persist-retries 2"
             echo ""
 
             if [ "$THEME_CHANGED" -eq 1 ]; then
@@ -136,12 +135,11 @@ jobs:
             echo "bye"
           } > "$LFTP_CMDS"
 
-          echo "Running lftp script:"
-          cat "$LFTP_CMDS"
+          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -e "source \"$LFTP_CMDS\""
 
-          # Single SFTP connection for everything above
-          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -f "$LFTP_CMDS"
-
+# =========================================================
+# PRODUCTION
+# =========================================================
   deploy-production:
     name: Deploy to PRODUCTION
     runs-on: ubuntu-latest
@@ -158,7 +156,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
 
-      - name: Deploy changed theme/plugins via single SFTP session (production)
+      - name: Deploy changed theme/plugins (production)
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_USER: ${{ secrets.SFTP_USER }}
@@ -184,8 +182,7 @@ jobs:
             THEME_CHANGED=1
           fi
 
-          # NOTE: include nh-delivery-time here too (your old production matrix missed it)
-          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time)$"
+          ALLOWED_PLUGINS_REGEX="^(nh-cutting-toggle|nh-faq|nh-feature-box|nh-filters|nh-home-builder|nh-inactivity-popup-lite|nh-sale-slider|nh-shipping-calculator|running-ticker-line|product-labels|nh-delivery-time|nh-tax-switcher)$"
 
           PLUGINS_CHANGED="$(
             echo "$CHANGED" \
@@ -200,11 +197,10 @@ jobs:
           fi
 
           LFTP_CMDS="$(mktemp)"
+
           {
             echo "set sftp:auto-confirm yes"
             echo "set net:max-retries 8"
-            echo "set net:reconnect-interval-base 5"
-            echo "set net:reconnect-interval-multiplier 1"
             echo "set net:timeout 25"
             echo "set cmd:fail-exit yes"
             echo "set xfer:clobber on"
@@ -212,13 +208,11 @@ jobs:
             echo ""
 
             if [ "$THEME_CHANGED" -eq 1 ]; then
-              echo "echo 'Uploading theme...'"
               echo "mirror -R --only-newer --verbose --parallel=1 \"${THEME_PATH}\" \"${REMOTE_ROOT}/wp-content/themes/astra-custom-for-norhage\""
               echo ""
             fi
 
             if [ -n "$PLUGINS_CHANGED" ]; then
-              echo "echo 'Uploading plugins...'"
               while read -r p; do
                 [ -z "$p" ] && continue
                 echo "mirror -R --only-newer --verbose --parallel=1 \"${PLUGINS_BASE}/${p}\" \"${REMOTE_ROOT}/wp-content/plugins/${p}\""
@@ -229,4 +223,4 @@ jobs:
             echo "bye"
           } > "$LFTP_CMDS"
 
-          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -f "$LFTP_CMDS"
+          lftp -u "$SFTP_USER","$SFTP_PASS" "sftp://$SFTP_HOST" -e "source \"$LFTP_CMDS\""
