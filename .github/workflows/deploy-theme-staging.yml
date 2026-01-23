@@ -20,6 +20,7 @@ on:
       - 'public/wp-content/plugins/running-ticker-line/**'
       - 'public/wp-content/plugins/product-labels/**'
       - 'public/wp-content/plugins/nh-delivery-time/**'
+      - 'public/wp-content/plugins/nh-important-notes/**'
 
 jobs:
   # =========================
@@ -84,6 +85,7 @@ jobs:
           - running-ticker-line
           - product-labels
           - nh-delivery-time
+          - nh-important-notes
 
     steps:
       - name: Check out repository
@@ -117,6 +119,7 @@ jobs:
           - nh-shipping-calculator
           - running-ticker-line
           - product-labels
+          - nh-important-notes
 
     steps:
       - name: Check out repository
