@@ -1,0 +1,128 @@
+/* NH Important Notes (frontend)
+   Uses site variables:
+   --nh-green, --nh-forest, --nh-mint, --nh-offwhite, --nh-charcoal
+   Dark mode uses:
+   --dm-surface, --dm-border, --dm-primary, --dm-text
+*/
+
+.nh-important-notes {
+  margin-top: 18px;
+  padding: 14px 14px;
+  border-radius: 12px;
+
+  /* Light mode defaults */
+  background: var(--nh-offwhite, #FAF7F2);
+  border: 1px solid var(--nh-mint, #C3E8C6);
+  border-left: 4px solid var(--nh-green, #00704A);
+}
+
+/* Header */
+.nh-in-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.nh-in-head-ico {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--nh-green, #00704A);
+  opacity: 0.9;
+  flex: 0 0 auto;
+}
+
+.nh-in-title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--nh-forest, #1E3932);
+  font-weight: 600;
+}
+
+/* List */
+.nh-in-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Row */
+.nh-in-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.nh-in-ico {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+
+  opacity: 0.75;
+  flex: 0 0 auto;
+
+  /* Keep icons aligned and readable */
+  color: var(--nh-forest, #1E3932);
+}
+
+.nh-in-txt {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  /* Slightly softer body text for readability */
+  color: rgba(44, 42, 41, 0.88); /* close to --nh-charcoal */
+  line-height: 1.45;
+}
+
+.nh-in-txt strong {
+  color: var(--nh-charcoal, #2C2A29);
+  font-weight: 600;
+}
+
+/* Nice touch: tighter spacing on very small screens */
+@media (max-width: 420px) {
+  .nh-important-notes {
+    padding: 12px 12px;
+  }
+  .nh-in-list {
+    gap: 9px;
+  }
+}
+
+/* DARK MODE
+   You said you use body.dark-mode, so we target that.
+*/
+body.dark-mode .nh-important-notes {
+  background: var(--dm-surface, #343530);
+  border: 1px solid var(--dm-border, #3E5F50);
+  border-left: 4px solid var(--dm-primary, #36B47A);
+}
+
+body.dark-mode .nh-in-head-ico {
+  color: var(--dm-primary, #36B47A);
+  opacity: 0.95;
+}
+
+body.dark-mode .nh-in-title {
+  color: var(--dm-text, #ECEAE6);
+}
+
+body.dark-mode .nh-in-ico {
+  color: var(--dm-text, #ECEAE6);
+  opacity: 0.8;
+}
+
+body.dark-mode .nh-in-txt {
+  color: rgba(236, 234, 230, 0.86); /* softened dm text */
+}
+
+body.dark-mode .nh-in-txt strong {
+  color: var(--dm-text, #ECEAE6);
+}

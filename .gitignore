@@ -57,6 +57,8 @@
 !/public/wp-content/plugins/nh-tax-switcher/**
 !/public/wp-content/plugins/nh-delivery-time/
 !/public/wp-content/plugins/nh-delivery-time/**
+!/public/wp-content/plugins/nh-important-notes
+!/public/wp-content/plugins/nh-important-notes/**
 
 # Uploads
 /public/wp-content/uploads/

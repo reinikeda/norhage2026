@@ -1,0 +1,48 @@
+.nh-in-admin-help {
+  margin-top: 0;
+  color: #555;
+}
+
+.nh-in-admin-list {
+  margin: 0;
+  padding-left: 0;
+}
+
+.nh-note-item {
+  list-style: none;
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #fff;
+  cursor: move;
+}
+
+.nh-note-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.nh-note-row input[type="checkbox"] {
+  margin-top: 2px;
+}
+
+.nh-note-text {
+  display: block;
+}
+
+.nh-note-preview {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.nh-note-placeholder {
+  border: 2px dashed #bbb;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
