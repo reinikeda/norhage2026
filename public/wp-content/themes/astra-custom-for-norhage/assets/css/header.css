@@ -439,8 +439,8 @@ body.mh-fixed-on{
   padding-top: var(--masthead-h);
 }
 
-/* Tall desktops: full-time fixed header, never hides */
-@media (min-width:1024px) and (min-height: 901px){
+/* Tall desktop breakpoint (must be DESK_MIN_H + 1 from JS) */
+@media (min-width:1024px) and (min-height: 881px){
   :root{
     --masthead-h-desktop: 168px; /* adjust if your header height changes */
   }

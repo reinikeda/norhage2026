@@ -6,7 +6,8 @@
   // Breakpoints
   const mqMobile   = window.matchMedia('(max-width: 1023px)');
   const mqDesktop  = window.matchMedia('(min-width: 1024px)');
-  const DESK_MIN_H = 900;
+  // Desktop compact header height limit (change this if compact triggers too early/late)
+  const DESK_MIN_H = 880;
 
   function isMobile() {
     return mqMobile.matches;
