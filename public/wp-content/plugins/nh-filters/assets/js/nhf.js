@@ -4,40 +4,43 @@
 const nhfT = (key, fallback) =>
   (window.nhfL10n && window.nhfL10n[key]) || fallback;
 
-/**
- * Category accordion logic
- */
-document.addEventListener('DOMContentLoaded', () => {
-  const toggles = document.querySelectorAll('.nhf-cat-toggle');
+/* ============================================================
+ * Category accordion logic (event delegation)
+ * - Only intercept BUTTON toggles (leaf categories can be <a>)
+ * - Works for BOTH original sidebar AND mobile cloned drawer
+ * ============================================================ */
+document.addEventListener('click', (e) => {
+  const toggle = e.target.closest('button.nhf-cat-toggle');
+  if (!toggle) return;
 
-  toggles.forEach(toggle => {
-    toggle.addEventListener('click', e => {
-      e.preventDefault();
+  e.preventDefault();
 
-      const item = toggle.closest('.nhf-cat-item');
-      const wasOpen = item.classList.contains('is-open');
+  const item = toggle.closest('.nhf-cat-item');
+  if (!item) return;
 
-      // close all others
-      document.querySelectorAll('.nhf-cat-item.is-open').forEach(openItem => {
-        openItem.classList.remove('is-open');
-        openItem.querySelector('.nhf-cat-toggle').setAttribute('aria-expanded', 'false');
-        const sub = openItem.querySelector('.nhf-cat-sub');
-        if (sub) sub.setAttribute('aria-hidden', 'true');
-      });
+  // Scope closing to the nearest category list (sidebar OR drawer clone)
+  const rootList = toggle.closest('.nhf-cat-list') || document;
+  const wasOpen = item.classList.contains('is-open');
 
-      if (!wasOpen) {
-        item.classList.add('is-open');
-        toggle.setAttribute('aria-expanded', 'true');
-        const sub = item.querySelector('.nhf-cat-sub');
-        if (sub) sub.setAttribute('aria-hidden', 'false');
-      }
-    });
+  // close all others within the same list
+  rootList.querySelectorAll('.nhf-cat-item.is-open').forEach(openItem => {
+    openItem.classList.remove('is-open');
+    openItem.querySelector('button.nhf-cat-toggle')?.setAttribute('aria-expanded', 'false');
+    const sub = openItem.querySelector('.nhf-cat-sub');
+    if (sub) sub.setAttribute('aria-hidden', 'true');
   });
+
+  if (!wasOpen) {
+    item.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    const sub = item.querySelector('.nhf-cat-sub');
+    if (sub) sub.setAttribute('aria-hidden', 'false');
+  }
 });
 
-/**
+/* ============================================================
  * Filter Accordion (multi-open)
- */
+ * ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nhf-filter-toggle').forEach(toggle => {
     toggle.addEventListener('click', e => {
@@ -74,17 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/**
+/* ============================================================
  * Submit form when checkboxes change (desktop)
- */
+ * - Don't auto-submit on mobile (mobile has Apply/Reset drawer UX)
+ * ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.nhf-form');
   if (!form) return;
 
-  // Auto-submit on checkbox change (desktop)
-  form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.addEventListener('change', () => form.submit());
-  });
+  const isMobile = window.matchMedia('(max-width: 992px)').matches;
+
+  // Auto-submit on checkbox change (desktop only)
+  if (!isMobile) {
+    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => form.submit());
+    });
+  }
 
   // Submit on Enter in number fields (price, if used later)
   form.querySelectorAll('input[type="number"]').forEach(inp => {
@@ -94,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/**
+/* ============================================================
  * Keep filter groups open if active (checked values / price)
- */
+ * ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('.nhf-filter');
 
@@ -143,9 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/**
+/* ============================================================
  * Mobile bar padding
- */
+ * ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const bar = document.querySelector('.nhf-mobilebar');
   if (!bar) return;
@@ -158,9 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('nhf-has-mobilebar');
 });
 
-/**
+/* ============================================================
  * MOBILE FILTER UX
- */
+ * ============================================================ */
 (function(){
   const mq = window.matchMedia('(max-width: 992px)');
   let initialized = false;
@@ -300,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filters = qs('.nhf-filters', sidebar);
     const cats    = qs('.nhf-cat-list', sidebar);
 
-    filtersFormClone = filters ? filters.querySelector('form').cloneNode(true) : null;
+    filtersFormClone = filters ? filters.querySelector('form')?.cloneNode(true) : null;
 
     if (filtersFormClone) {
       // keep active groups open

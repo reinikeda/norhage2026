@@ -65,8 +65,8 @@ class NHG_Sale_Category_Sync {
 			// Finnish – example
 			'fi' => 'alennusmyynti',
 
-			// German – example (you can change to 'angebote' or whatever you use)
-			'de_DE' => 'sale',
+			// German – example
+			'de_DE' => 'verkauf',
 		];
 
 		$slug = isset( $map[ $locale ] ) ? $map[ $locale ] : self::DEFAULT_CAT_SLUG;
@@ -84,21 +84,16 @@ class NHG_Sale_Category_Sync {
 	private function get_or_create_sale_term() {
 		$slug = $this->get_sale_slug();
 
-		$term = get_term_by( 'slug', $slug, 'product_cat' );
-		if ( $term && ! is_wp_error( $term ) ) {
-			return $term;
+		// Prefer term_exists for reliability
+		$existing = term_exists( $slug, 'product_cat' );
+		if ( $existing && ! is_wp_error( $existing ) ) {
+			return get_term( (int) $existing['term_id'], 'product_cat' );
 		}
 
-		// translators: product category name for items currently on sale
+		// Name can stay "Sale" if you want, but slug is language-specific
 		$name = __( 'Sale', 'nh-theme' );
 
-		$created = wp_insert_term(
-			$name,
-			'product_cat',
-			[
-				'slug' => $slug,
-			]
-		);
+		$created = wp_insert_term( $name, 'product_cat', [ 'slug' => $slug ] );
 
 		if ( is_wp_error( $created ) ) {
 			return null;

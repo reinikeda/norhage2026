@@ -212,40 +212,51 @@ function nhf_render_categories() {
 		$is_ancestor = ( $current_term_id && term_is_ancestor_of( $cat->term_id, $current_term_id, 'product_cat' ) );
 		$is_open     = ( $is_current || $is_ancestor );
 
-		$toggle_state = $is_open ? 'true' : 'false';
-		$open_class   = $is_open ? ' is-open' : '';
-
-		echo '<li class="nhf-cat-item' . esc_attr( $open_class ) . '">';
-		echo '<button class="nhf-cat-toggle" aria-expanded="' . esc_attr( $toggle_state ) . '" aria-controls="sub-' . esc_attr( $cat->slug ) . '">';
-		echo '<span class="nhf-cat-name">' . esc_html( $cat->name ) . '</span>';
-		echo '<span class="nhf-icon" aria-hidden="true"></span>';
-		echo '</button>';
-
 		$children = get_terms([
 			'taxonomy'   => 'product_cat',
 			'hide_empty' => true,
 			'parent'     => $cat->term_id,
 		]);
 
-		if ( ! empty( $children ) && ! is_wp_error( $children ) ) {
-			echo '<ul id="sub-' . esc_attr( $cat->slug ) . '" class="nhf-cat-sub" aria-hidden="' . ( $is_open ? 'false' : 'true' ) . '">';
+		$has_children = ( ! empty( $children ) && ! is_wp_error( $children ) );
 
-			// Top link: "%category% – All products"
-			echo '<li class="nhf-all"><a href="' . esc_url( get_term_link( $cat ) ) . '">'
-				. esc_html( $cat->name )
-				. ' &ndash; '
-				. esc_html__( 'All products', 'nhf' )
-				. '</a></li>';
+		$open_class = ( $has_children && $is_open ) ? ' is-open' : '';
+		echo '<li class="nhf-cat-item' . esc_attr( $open_class ) . '">';
 
-			foreach ( $children as $child ) {
-				$child_active = ( $child->term_id === $current_term_id ) ? ' class="is-active"' : '';
-				echo '<li' . $child_active . '>';
-				echo '<a href="' . esc_url( get_term_link( $child ) ) . '">' . esc_html( $child->name ) . '</a>';
-				echo '</li>';
-			}
-			echo '</ul>';
+		// ✅ If no children: make category name a normal link
+		if ( ! $has_children ) {
+			echo '<a class="nhf-cat-link" href="' . esc_url( get_term_link( $cat ) ) . '">';
+			echo '<span class="nhf-cat-name">' . esc_html( $cat->name ) . '</span>';
+			echo '</a>';
+			echo '</li>';
+			continue;
 		}
 
+		// ✅ If has children: keep accordion button
+		$toggle_state = $is_open ? 'true' : 'false';
+
+		echo '<button class="nhf-cat-toggle" aria-expanded="' . esc_attr( $toggle_state ) . '" aria-controls="sub-' . esc_attr( $cat->slug ) . '">';
+		echo '<span class="nhf-cat-name">' . esc_html( $cat->name ) . '</span>';
+		echo '<span class="nhf-icon" aria-hidden="true"></span>';
+		echo '</button>';
+
+		echo '<ul id="sub-' . esc_attr( $cat->slug ) . '" class="nhf-cat-sub" aria-hidden="' . ( $is_open ? 'false' : 'true' ) . '">';
+
+		// Top link: "%category% – All products"
+		echo '<li class="nhf-all"><a href="' . esc_url( get_term_link( $cat ) ) . '">'
+			. esc_html( $cat->name )
+			. ' &ndash; '
+			. esc_html__( 'All products', 'nhf' )
+			. '</a></li>';
+
+		foreach ( $children as $child ) {
+			$child_active = ( $child->term_id === $current_term_id ) ? ' class="is-active"' : '';
+			echo '<li' . $child_active . '>';
+			echo '<a href="' . esc_url( get_term_link( $child ) ) . '">' . esc_html( $child->name ) . '</a>';
+			echo '</li>';
+		}
+
+		echo '</ul>';
 		echo '</li>';
 	}
 
