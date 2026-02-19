@@ -110,17 +110,17 @@ if ( is_admin() ) {
 	}
 
 	// --- Render the Custom Cutting metabox ---
+	// UPDATED: removed "Weight per m² (kg)" field. Weight-per-m² is now taken from Woo "Weight (kg)" on product/variation.
 	function nh_custom_cutting_box_html( $post ) {
 		$pfx  = '_nh_cc_';
 		$vals = [
-			'enabled'       => (bool) get_post_meta( $post->ID, $pfx . 'enabled', true ),
-			'cut_fee'       => get_post_meta( $post->ID, $pfx . 'cut_fee', true ),
-			'min_w'         => get_post_meta( $post->ID, $pfx . 'min_w', true ),
-			'max_w'         => get_post_meta( $post->ID, $pfx . 'max_w', true ),
-			'min_l'         => get_post_meta( $post->ID, $pfx . 'min_l', true ),
-			'max_l'         => get_post_meta( $post->ID, $pfx . 'max_l', true ),
-			'step_mm'       => get_post_meta( $post->ID, $pfx . 'step_mm', true ),
-			'weight_per_m2' => get_post_meta( $post->ID, $pfx . 'weight_per_m2', true ),
+			'enabled' => (bool) get_post_meta( $post->ID, $pfx . 'enabled', true ),
+			'cut_fee' => get_post_meta( $post->ID, $pfx . 'cut_fee', true ),
+			'min_w'   => get_post_meta( $post->ID, $pfx . 'min_w', true ),
+			'max_w'   => get_post_meta( $post->ID, $pfx . 'max_w', true ),
+			'min_l'   => get_post_meta( $post->ID, $pfx . 'min_l', true ),
+			'max_l'   => get_post_meta( $post->ID, $pfx . 'max_l', true ),
+			'step_mm' => get_post_meta( $post->ID, $pfx . 'step_mm', true ),
 		];
 		wp_nonce_field( 'nh_cc_save', 'nh_cc_nonce' );
 		?>
@@ -165,13 +165,13 @@ if ( is_admin() ) {
 				<input type="number" step="1" min="1" name="nh_cc_step_mm" id="nh_cc_step_mm" value="<?php echo esc_attr( $vals['step_mm'] ); ?>" />
 			</div>
 
-			<div class="nh-cc-row">
-				<label for="nh_cc_weight_per_m2"><?php esc_html_e( 'Weight per m² (kg)', 'nh-theme' ); ?></label>
-				<input type="number" step="0.001" min="0" name="nh_cc_weight_per_m2" id="nh_cc_weight_per_m2" value="<?php echo esc_attr( $vals['weight_per_m2'] ); ?>" />
-			</div>
-
 			<div class="nh-cc-desc">
-				<?php esc_html_e( 'Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product.', 'nh-theme' ); ?>
+				<?php
+				echo esc_html__(
+					'Weight is taken from the WooCommerce "Weight (kg)" field. For custom cutting, that weight is interpreted as kg per m² (set per product or per variation).',
+					'ny-theme'
+				);
+				?>
 			</div>
 		</div>
 		<?php
@@ -211,6 +211,7 @@ if ( is_admin() ) {
 		}
 
 		// ----- Custom Cutting -----
+		// UPDATED: removed weight_per_m2 save; we now use Woo product/variation weight field.
 		if (
 			isset( $_POST['nh_cc_nonce'] ) &&
 			wp_verify_nonce( $_POST['nh_cc_nonce'], 'nh_cc_save' ) &&
@@ -218,14 +219,13 @@ if ( is_admin() ) {
 		) {
 			$pfx    = '_nh_cc_';
 			$fields = [
-				'enabled'       => isset( $_POST['nh_cc_enabled'] ) ? '1' : '',
-				'cut_fee'       => wc_format_decimal( $_POST['nh_cc_cut_fee'] ?? '' ),
-				'min_w'         => ( $v = $_POST['nh_cc_min_w'] ?? '' ) === '' ? '' : absint( $v ),
-				'max_w'         => ( $v = $_POST['nh_cc_max_w'] ?? '' ) === '' ? '' : absint( $v ),
-				'min_l'         => ( $v = $_POST['nh_cc_min_l'] ?? '' ) === '' ? '' : absint( $v ),
-				'max_l'         => ( $v = $_POST['nh_cc_max_l'] ?? '' ) === '' ? '' : absint( $v ),
-				'step_mm'       => ( $v = $_POST['nh_cc_step_mm'] ?? '' ) === '' ? '' : max( 1, absint( $v ) ),
-				'weight_per_m2' => wc_format_decimal( $_POST['nh_cc_weight_per_m2'] ?? '' ),
+				'enabled' => isset( $_POST['nh_cc_enabled'] ) ? '1' : '',
+				'cut_fee' => wc_format_decimal( $_POST['nh_cc_cut_fee'] ?? '' ),
+				'min_w'   => ( $v = $_POST['nh_cc_min_w'] ?? '' ) === '' ? '' : absint( $v ),
+				'max_w'   => ( $v = $_POST['nh_cc_max_w'] ?? '' ) === '' ? '' : absint( $v ),
+				'min_l'   => ( $v = $_POST['nh_cc_min_l'] ?? '' ) === '' ? '' : absint( $v ),
+				'max_l'   => ( $v = $_POST['nh_cc_max_l'] ?? '' ) === '' ? '' : absint( $v ),
+				'step_mm' => ( $v = $_POST['nh_cc_step_mm'] ?? '' ) === '' ? '' : max( 1, absint( $v ) ),
 			];
 
 			foreach ( $fields as $k => $v ) {
@@ -236,6 +236,9 @@ if ( is_admin() ) {
 					update_post_meta( $post_id, $meta_key, $v );
 				}
 			}
+
+			// Backward cleanup (optional but recommended): remove old meta key if it exists
+			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
 		}
 	} );
 }
@@ -281,12 +284,10 @@ add_filter( 'woocommerce_product_tabs', function ( $tabs ) {
 	$video_url = trim( (string) get_post_meta( $product_id, '_nrh_video_url', true ) );
 	$has_video = false;
 	if ( $video_url !== '' ) {
-		// If wp_oembed_get() yields HTML, we know it's embeddable.
 		$embed = wp_oembed_get( esc_url( $video_url ) );
 		if ( $embed ) {
 			$has_video = true;
 		} else {
-			// fallback: allow direct link tabs too — set to false if you prefer to hide when not embeddable
 			$has_video = true;
 		}
 	}
@@ -347,7 +348,6 @@ function nrh_video_tab_content() {
 	if ( $embed ) {
 		echo $embed; // safe from wp_oembed_get
 	} else {
-		// Fallback: simple link if not embeddable
 		printf(
 			'<p><a href="%s" target="_blank" rel="noopener">%s</a></p>',
 			esc_url( $url ),
@@ -395,7 +395,6 @@ function nc_bundle_items_box_html( $post ) {
 	} else {
 		foreach ( $rows as $r ) {
 			$id  = isset( $r['id'] ) ? (int) $r['id'] : 0;
-			// allow empty max
 			$max = ( isset( $r['max'] ) && $r['max'] !== '' ) ? (int) $r['max'] : '';
 			echo nc_bundle_row_template_wc( $id, $max );
 		}
@@ -412,37 +411,29 @@ function nc_bundle_items_box_html( $post ) {
 	</style>
 	<script>
 	jQuery(function($){
-		// Add row
 		$('#nc-add-bundle-row').on('click', function(){
-			// do not prefill max with 1 — leave empty
 			var html = <?php echo json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '' ) ) ); ?>;
 			$('#nc-bundle-rows tbody').append(html);
-			// Initialize Woo enhanced selects on the newly added field
 			$(document.body).trigger('wc-enhanced-select-init');
 		});
-		// Remove row
 		$(document).on('click', '.nc-remove', function(){
 			$(this).closest('tr').remove();
 		});
-		// Sortable (optional)
 		if ($.fn.sortable) {
 			$('#nc-bundle-rows tbody.nc-sortable').sortable({
 				handle: '.nc-handle',
 				items: '> tr'
 			});
 		}
-		// Ensure any pre-rendered fields are initialized
 		$(document.body).trigger('wc-enhanced-select-init');
 	});
 	</script>
 	<?php
 }
 
-// $max default is '' and value can remain empty
 function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 	$prod_id = $prod_id ? (int) $prod_id : 0;
 
-	// Preload selected option if we have one
 	$option_html = '';
 	if ( $prod_id ) {
 		$p = wc_get_product( $prod_id );
@@ -461,7 +452,7 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 				data-placeholder="<?php echo esc_attr__( 'Search products & variations…', 'nh-theme' ); ?>"
 				data-action="woocommerce_json_search_products_and_variations"
 				style="width:92%">
-				<?php echo $option_html; // already escaped above ?>
+				<?php echo $option_html; ?>
 			</select>
 		</td>
 		<td>
@@ -480,7 +471,6 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 	return ob_get_clean();
 }
 
-// Save rows
 add_action( 'save_post_product', function ( $post_id ){
 	if ( ! isset( $_POST['nc_bundle_items_nonce'] ) || ! wp_verify_nonce( $_POST['nc_bundle_items_nonce'], 'nc_bundle_items_save' ) ) return;
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -496,7 +486,6 @@ add_action( 'save_post_product', function ( $post_id ){
 
 		$row = [ 'id' => $id ];
 
-		// Only save max if user entered something
 		$raw_max = isset( $mxs[ $i ] ) ? trim( (string) $mxs[ $i ] ) : '';
 		if ( $raw_max !== '' ) {
 			$row['max'] = max( 1, (int) $raw_max );

@@ -1,12 +1,122 @@
 <?php
 /**
- * Custom Cutting — Product-level logic (SIMPLE products with _nh_cc_enabled = true)
+ * Custom Cutting — Product-level logic
+ * Supports SIMPLE + VARIABLE products when _nh_cc_enabled = true
+ *
+ * Weight model (UPDATED):
+ * - Uses WooCommerce "Weight (kg)" as kg per 1 m²
+ *   - SIMPLE: product weight = kg/m²
+ *   - VARIABLE: variation weight = kg/m² (fallback to parent weight if variation weight empty)
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* ============================================================================
- * BODY CLASS — flag custom-cut simple product pages
+ * BUNDLE BACK LINK (shown only when arriving from bundle)
+ * Expects URL format from bundle-box.php:
+ *   /bundle-item/?bundle_parent=123#nc-complete-set
+ * ========================================================================== */
+add_action( 'woocommerce_single_product_summary', function () {
+
+	// Only on product pages
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
+
+	// Show only when coming from a bundle click
+	if ( empty( $_GET['bundle_parent'] ) ) return;
+
+	$parent_id = absint( wp_unslash( $_GET['bundle_parent'] ) );
+	if ( ! $parent_id ) return;
+
+	// Ensure parent exists and is a product
+	$parent = wc_get_product( $parent_id );
+	if ( ! $parent instanceof WC_Product ) return;
+
+	$back_url = get_permalink( $parent_id ) . '#nc-complete-set';
+
+	echo '<a class="nh-bundle-back-link" href="' . esc_url( $back_url ) . '" aria-label="' . esc_attr__( 'Back to bundle', 'nh-theme' ) . '">';
+	echo '← ' . esc_html__( 'Back to bundle', 'nh-theme' );
+	echo '</a>';
+
+}, 1 );
+
+/* ============================================================================
+ * BUNDLE BACK LINK (secondary) — below the entire add-to-cart form (new line)
+ * ========================================================================== */
+add_action( 'woocommerce_after_add_to_cart_form', function () {
+
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
+	if ( empty( $_GET['bundle_parent'] ) ) return;
+
+	$parent_id = absint( wp_unslash( $_GET['bundle_parent'] ) );
+	if ( ! $parent_id ) return;
+
+	$parent = wc_get_product( $parent_id );
+	if ( ! $parent instanceof WC_Product ) return;
+
+	$back_url = get_permalink( $parent_id ) . '#nc-complete-set';
+
+	echo '<div class="nh-bundle-back-link--after-form">';
+	echo '<a class="nh-bundle-back-link" href="' . esc_url( $back_url ) . '">← ' . esc_html__( 'Back to bundle', 'nh-theme' ) . '</a>';
+	echo '</div>';
+
+}, 5 );
+
+/* ============================================================================
+ * HELPERS
+ * ========================================================================== */
+function nh_cc_is_enabled_product( $product_id ) : bool {
+	return (bool) get_post_meta( (int) $product_id, '_nh_cc_enabled', true );
+}
+
+/**
+ * Get display regular/sale prices for "price per m²" for a given product object (simple or variation)
+ * Returns array: [ 'reg' => float, 'sale' => float ]
+ */
+function nh_cc_get_perm2_display_prices( WC_Product $p ) : array {
+	$reg_raw  = $p->get_regular_price();
+	$sale_raw = $p->get_sale_price();
+	$base_raw = $p->get_price();
+
+	$reg_d  = ( $reg_raw  !== '' ) ? wc_get_price_to_display( $p, [ 'price' => (float) $reg_raw ] ) : 0;
+	$sale_d = ( $sale_raw !== '' ) ? wc_get_price_to_display( $p, [ 'price' => (float) $sale_raw ] ) : 0;
+
+	if ( $reg_d <= 0 && $sale_d <= 0 ) {
+		$reg_d = wc_get_price_to_display( $p, [ 'price' => (float) $base_raw ] );
+	}
+	if ( $reg_d <= 0 && $sale_d > 0 ) {
+		$reg_d = $sale_d;
+	}
+
+	return [
+		'reg'  => (float) $reg_d,
+		'sale' => (float) $sale_d,
+	];
+}
+
+/**
+ * Get kg per m² from Woo "weight" field.
+ * - For a variation: use variation weight if set, else fallback to parent weight if set
+ * - For a simple product: use its own weight
+ */
+function nh_cc_get_kg_per_m2_from_product( WC_Product $p ) : float {
+	$w = (float) $p->get_weight();
+
+	if ( $w > 0 ) return $w;
+
+	// Fallback for variations: use parent weight if provided
+	if ( $p->is_type( 'variation' ) ) {
+		$parent = wc_get_product( $p->get_parent_id() );
+		if ( $parent instanceof WC_Product ) {
+			$pw = (float) $parent->get_weight();
+			if ( $pw > 0 ) return $pw;
+		}
+	}
+
+	return 0.0;
+}
+
+/* ============================================================================
+ * BODY CLASS — flag custom-cut product pages (simple OR variable)
  * ========================================================================== */
 add_filter( 'body_class', function ( $classes ) {
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) return $classes;
@@ -16,22 +126,27 @@ add_filter( 'body_class', function ( $classes ) {
 		global $product;
 		if ( $product instanceof WC_Product ) $product_obj = $product;
 	}
-	if ( $product_obj instanceof WC_Product && $product_obj->is_type( 'simple' ) ) {
-		if ( (bool) get_post_meta( $product_obj->get_id(), '_nh_cc_enabled', true ) ) {
-			$classes[] = 'nh-has-custom-cut';
-		}
+
+	if (
+		$product_obj instanceof WC_Product
+		&& ( $product_obj->is_type( 'simple' ) || $product_obj->is_type( 'variable' ) )
+		&& nh_cc_is_enabled_product( $product_obj->get_id() )
+	) {
+		$classes[] = 'nh-has-custom-cut';
 	}
+
 	return $classes;
 } );
 
 /* ============================================================================
- * FRONTEND — Custom inputs (ONLY on the custom-cut SIMPLE product)
+ * FRONTEND — Custom inputs (ONLY on the custom-cut product)
+ * Supports: SIMPLE + VARIABLE parent
  * ========================================================================== */
 add_action( 'woocommerce_before_add_to_cart_button', function () {
 	global $product;
 	if ( ! $product instanceof WC_Product ) return;
-	if ( ! $product->is_type( 'simple' ) ) return;
-	if ( ! (bool) get_post_meta( $product->get_id(), '_nh_cc_enabled', true ) ) return;
+	if ( ! ( $product->is_type( 'simple' ) || $product->is_type( 'variable' ) ) ) return;
+	if ( ! nh_cc_is_enabled_product( $product->get_id() ) ) return;
 
 	$pid = $product->get_id();
 	$min_w = get_post_meta( $pid, '_nh_cc_min_w', true );
@@ -131,12 +246,38 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 }, 11 );
 
 /* ============================================================================
- * ASSETS (moved JS to files)
+ * VARIABLE SUPPORT — expose custom-cut pricing info per variation
+ * The selected variation price is "price per m²"
+ * Weight per m² comes from Woo weight field on the variation (fallback to parent)
+ * ========================================================================== */
+add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
+
+	if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) return $data;
+	if ( ! nh_cc_is_enabled_product( $product->get_id() ) ) return $data;
+	if ( ! $variation instanceof WC_Product_Variation ) return $data;
+
+	$perm2 = nh_cc_get_perm2_display_prices( $variation );
+
+	$fee_raw  = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
+	$fee_disp = $fee_raw > 0 ? wc_get_price_to_display( $variation, [ 'price' => $fee_raw ] ) : 0;
+
+	$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $variation ); // UPDATED
+
+	$data['nh_cc_enabled']         = true;
+	$data['nh_cc_perm2_reg_disp']  = (float) $perm2['reg'];
+	$data['nh_cc_perm2_sale_disp'] = (float) $perm2['sale'];
+	$data['nh_cc_cut_fee_disp']    = (float) $fee_disp;
+	$data['nh_cc_kg_per_m2']       = (float) $kg_per_m2;
+
+	return $data;
+}, 10, 3 );
+
+/* ============================================================================
+ * ASSETS
  * ========================================================================== */
 add_action( 'wp_enqueue_scripts', function () {
 	if ( ! is_product() ) return;
 
-	// Detect current product (queried first, then global)
 	$product_obj = wc_get_product( get_queried_object_id() );
 	if ( ! $product_obj instanceof WC_Product ) {
 		global $product;
@@ -183,78 +324,61 @@ add_action( 'wp_enqueue_scripts', function () {
 		);
 	}
 
-	// Determine custom-cut simple vs others
-	$is_custom_simple = (
+	$is_custom_cut = (
 		$product_obj instanceof WC_Product
-		&& $product_obj->is_type( 'simple' )
-		&& (bool) get_post_meta( $product_obj->get_id(), '_nh_cc_enabled', true )
+		&& ( $product_obj->is_type( 'simple' ) || $product_obj->is_type( 'variable' ) )
+		&& nh_cc_is_enabled_product( $product_obj->get_id() )
 	);
 
-	if ( $is_custom_simple ) {
+	if ( $is_custom_cut ) {
 
-        // --- Custom-cut SIMPLE: enqueue custom-cutting + summary init
+		$pid = $product_obj->get_id();
 
-        $pid      = $product_obj->get_id();
-        $reg_raw  = $product_obj->get_regular_price();
-        $sale_raw = $product_obj->get_sale_price();
-        $base_raw = $product_obj->get_price(); // value/m² (net)
+		// Fee display (from parent meta)
+		$fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
+		$fee_disp = $fee_raw > 0 ? wc_get_price_to_display( $product_obj, [ 'price' => $fee_raw ] ) : 0;
 
-        // Display prices (follow Woo "shop" tax setting, usually incl. VAT)
-        $reg_d  = ( $reg_raw  !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $reg_raw ] ) : 0 );
-        $sale_d = ( $sale_raw !== '' ? wc_get_price_to_display( $product_obj, [ 'price' => (float) $sale_raw ] ) : 0 );
-        if ( $reg_d <= 0 && $sale_d <= 0 ) {
-            $reg_d = wc_get_price_to_display( $product_obj, [ 'price' => (float) $base_raw ] );
-        }
-        if ( $reg_d <= 0 && $sale_d > 0 ) {
-            $reg_d = $sale_d;
-        }
+		// Weight per m² from Woo weight:
+		// - SIMPLE: we can pass now
+		// - VARIABLE: pass 0, JS fills from selected variation via woocommerce_available_variation data
+		$kg_per_m2 = 0.0;
+		if ( $product_obj->is_type( 'simple' ) ) {
+			$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $product_obj );
+		}
 
-        // Cutting fee: get raw value from meta, then convert to display price (incl. VAT)
-        $fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
-        $fee_disp = $fee_raw > 0
-            ? wc_get_price_to_display( $product_obj, [ 'price' => $fee_raw ] )
-            : 0;
+		// For SIMPLE we can set perm² immediately; for VARIABLE JS will fill after variation selection
+		$perm2_reg  = 0.0;
+		$perm2_sale = 0.0;
+		if ( $product_obj->is_type( 'simple' ) ) {
+			$perm2       = nh_cc_get_perm2_display_prices( $product_obj );
+			$perm2_reg   = (float) $perm2['reg'];
+			$perm2_sale  = (float) $perm2['sale'];
+		}
 
-		// custom-cutting.js config
-		$kg_per_m2 = (float) get_post_meta( $pid, '_nh_cc_weight_per_m2', true );
 		wp_enqueue_script(
 			'custom-cutting',
 			$theme_uri . '/assets/js/custom-cutting.js',
-			[ 'jquery', 'nh-price-summary-core' ],
+			[ 'jquery', 'nh-price-summary-core', 'wc-add-to-cart-variation' ],
 			filemtime( $theme_dir . '/assets/js/custom-cutting.js' ),
 			true
 		);
+
 		wp_localize_script( 'custom-cutting', 'NH_CC', [
 			'enabled'         => true,
-			'price_per_m2'    => (float) $base_raw,
+			'perm2_reg_disp'  => (float) $perm2_reg,
+			'perm2_sale_disp' => (float) $perm2_sale,
 			'cut_fee'         => (float) $fee_disp,
 			'min_w'           => ( $v = get_post_meta( $pid, '_nh_cc_min_w', true ) ) === '' ? '' : (int) $v,
 			'max_w'           => ( $v = get_post_meta( $pid, '_nh_cc_max_w', true ) ) === '' ? '' : (int) $v,
 			'min_l'           => ( $v = get_post_meta( $pid, '_nh_cc_min_l', true ) ) === '' ? '' : (int) $v,
 			'max_l'           => ( $v = get_post_meta( $pid, '_nh_cc_max_l', true ) ) === '' ? '' : (int) $v,
 			'step'            => ( $v = get_post_meta( $pid, '_nh_cc_step_mm', true ) ) === '' ? 1 : (int) $v,
-			'perm2_reg_disp'  => (float) $reg_d,
-			'perm2_sale_disp' => (float) $sale_d,
-			'kg_per_m2'       => $kg_per_m2,
-			'weight_per_m2'   => $kg_per_m2,
-		] );
-
-		// summary init for custom-cut
-		wp_enqueue_script(
-			'nh-summary-customcut-init',
-			$theme_uri . '/assets/js/nh-summary-customcut-init.js',
-			[ 'jquery', 'nh-price-summary-core' ],
-			filemtime( $theme_dir . '/assets/js/nh-summary-customcut-init.js' ),
-			true
-		);
-		wp_localize_script( 'nh-summary-customcut-init', 'NH_PS_INIT', [
-			'perm2_reg'  => (float) $reg_d,
-			'perm2_sale' => (float) $sale_d,
-			'cut_fee'    => (float) $fee_disp,
+			'kg_per_m2'       => (float) $kg_per_m2,
+			'weight_per_m2'   => (float) $kg_per_m2,
 		] );
 
 	} else {
-		// --- VARIABLE products + SIMPLE (non-custom): summary handler
+		// Non custom-cut products use your normal summary handler
 		wp_enqueue_script(
 			'nh-summary-variable',
 			$theme_uri . '/assets/js/nh-summary-variable.js',
@@ -263,7 +387,7 @@ add_action( 'wp_enqueue_scripts', function () {
 			true
 		);
 
-		// Provide defaults for SIMPLE non-custom so Unit/Total render immediately
+		// defaults for SIMPLE non-custom
 		if ( $product_obj instanceof WC_Product && $product_obj->is_type( 'simple' ) ) {
 			$reg  = $product_obj->get_regular_price();
 			$sale = $product_obj->get_sale_price();
@@ -283,22 +407,36 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 98 );
 
 /* ============================================================================
- * ADD-TO-CART VALIDATION (ONLY when a custom-cut request is being posted)
+ * ADD-TO-CART VALIDATION (custom-cut simple OR variable parent)
  * ========================================================================== */
 add_filter( 'woocommerce_add_to_cart_validation', 'nh_cc_validate_custom_cut', 10, 4 );
 function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_id = 0 ) {
+
 	$p = wc_get_product( $product_id );
-	if ( ! $p || ! $p->is_type( 'simple' ) ) return $passed;
-	if ( ! (bool) get_post_meta( $product_id, '_nh_cc_enabled', true ) ) return $passed;
+	if ( ! $p instanceof WC_Product ) return $passed;
+
+	// Only when enabled on the parent (simple or variable parent)
+	if ( ! ( $p->is_type( 'simple' ) || $p->is_type( 'variable' ) ) ) return $passed;
+	if ( ! nh_cc_is_enabled_product( $product_id ) ) return $passed;
 
 	$w_raw = isset( $_POST['nh_width_mm'] )  ? trim( wp_unslash( $_POST['nh_width_mm'] ) )  : '';
 	$l_raw = isset( $_POST['nh_length_mm'] ) ? trim( wp_unslash( $_POST['nh_length_mm'] ) ) : '';
 	$flag  = isset( $_POST['nh_custom_cutting'] ) && $_POST['nh_custom_cutting'] === '1';
+
 	if ( ! $flag && $w_raw === '' && $l_raw === '' ) return $passed;
+
+	// If variable: require a variation to be selected (Woo will also validate, but this improves messaging)
+	if ( $p->is_type( 'variable' ) && (int) $variation_id <= 0 ) {
+		wc_add_notice( esc_html__( 'Please choose product options (variation) before entering dimensions.', 'nh-theme' ), 'error' );
+		return false;
+	}
 
 	$w = absint( $w_raw );
 	$l = absint( $l_raw );
-	if ( $w <= 0 || $l <= 0 ) { wc_add_notice( esc_html__( 'Please enter width and length (mm).', 'nh-theme' ), 'error' ); return false; }
+	if ( $w <= 0 || $l <= 0 ) {
+		wc_add_notice( esc_html__( 'Please enter width and length (mm).', 'nh-theme' ), 'error' );
+		return false;
+	}
 
 	$min_w = absint( get_post_meta( $product_id, '_nh_cc_min_w', true ) );
 	$max_w = absint( get_post_meta( $product_id, '_nh_cc_max_w', true ) );
@@ -318,12 +456,15 @@ function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_i
 		if ( ! $origin_l ) $origin_l = $min_l ?: 0;
 
 		if ( ( ( $w - $origin_w ) % $step ) !== 0 ) {
-			wc_add_notice( sprintf( esc_html__( 'Width must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_w ), 'error' ); return false;
+			wc_add_notice( sprintf( esc_html__( 'Width must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_w ), 'error' );
+			return false;
 		}
 		if ( ( ( $l - $origin_l ) % $step ) !== 0 ) {
-			wc_add_notice( sprintf( esc_html__( 'Length must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_l ), 'error' ); return false;
+			wc_add_notice( sprintf( esc_html__( 'Length must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_l ), 'error' );
+			return false;
 		}
 	}
+
 	return $passed;
 }
 
@@ -347,12 +488,20 @@ add_filter( 'woocommerce_add_to_cart_redirect', function ( $redirect_url = '', $
 }, 10, 2 );
 
 /* ============================================================================
- * ADD CUSTOM DATA TO CART / ORDER (ONLY for custom-cut SIMPLE product)
+ * ADD CUSTOM DATA TO CART / ORDER (custom-cut simple OR variable parent)
+ * Store base price-per-m² so cart totals are stable even after set_price()
+ * Weight model updated: store kg per m² from Woo weight (variation or product)
  * ========================================================================== */
 add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $product_id ){
-	$p = wc_get_product( $product_id );
-	if ( ! $p || ! $p->is_type( 'simple' ) ) return $cart_item_data;
-	if ( ! (bool) get_post_meta( $product_id, '_nh_cc_enabled', true ) ) return $cart_item_data;
+
+	$parent = wc_get_product( $product_id );
+	if ( ! $parent instanceof WC_Product ) return $cart_item_data;
+	if ( ! ( $parent->is_type( 'simple' ) || $parent->is_type( 'variable' ) ) ) return $cart_item_data;
+	if ( ! nh_cc_is_enabled_product( $product_id ) ) return $cart_item_data;
+
+	$variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
+	$chosen = $variation_id ? wc_get_product( $variation_id ) : $parent;
+	if ( ! $chosen instanceof WC_Product ) $chosen = $parent;
 
 	$w = (int) ( $_POST['nh_width_mm'] ?? 0 );
 	$l = (int) ( $_POST['nh_length_mm'] ?? 0 );
@@ -362,10 +511,17 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 		'length_mm' => $l,
 	];
 
-	// make each size line unique
-	$cart_item_data['nh_unique'] = md5( $product_id . '|' . $w . 'x' . $l . '|' . microtime( true ) );
+	// Base per m² price (RAW) from the selected product/variation
+	$cart_item_data['nh_cc_base_price_per_m2'] = (float) $chosen->get_price();
 
-	// NEW: store per-sheet weight (kg) from hidden input
+	// Fee from PARENT meta (shared across variations)
+	$cart_item_data['nh_cc_cut_fee_raw'] = (float) get_post_meta( $product_id, '_nh_cc_cut_fee', true );
+
+	// UPDATED: kg per m² comes from Woo "weight" on chosen (variation or simple), fallback handled in helper
+	$cart_item_data['nh_cc_kg_per_m2'] = (float) nh_cc_get_kg_per_m2_from_product( $chosen );
+
+	$cart_item_data['nh_unique'] = md5( $product_id . '|' . $variation_id . '|' . $w . 'x' . $l . '|' . microtime( true ) );
+
 	if ( isset( $_POST['nh_custom_unit_kg'] ) ) {
 		$cart_item_data['nh_custom_unit_kg'] = (float) wc_clean( wp_unslash( $_POST['nh_custom_unit_kg'] ) );
 	}
@@ -374,145 +530,122 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 }, 10, 2 );
 
 add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
+
 	if ( empty( $cart_item['nh_custom_size'] ) ) return $item_data;
+
 	$w = (int) $cart_item['nh_custom_size']['width_mm'];
 	$l = (int) $cart_item['nh_custom_size']['length_mm'];
+
 	if ( $w ) $item_data[] = [ 'name' => __( 'Width', 'nh-theme' ),  'value' => $w . ' mm' ];
 	if ( $l ) $item_data[] = [ 'name' => __( 'Length', 'nh-theme' ), 'value' => $l . ' mm' ];
-    $pid      = (int) ( $cart_item['product_id'] ?? 0 );
-    $fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
 
-    if ( $fee_raw > 0 ) {
-        $product = $cart_item['data'] ?? ( $pid ? wc_get_product( $pid ) : null );
-        $fee_disp = $fee_raw;
+	$fee_raw = isset( $cart_item['nh_cc_cut_fee_raw'] ) ? (float) $cart_item['nh_cc_cut_fee_raw'] : 0;
+	if ( $fee_raw > 0 ) {
+		$product = $cart_item['data'] ?? null;
+		$fee_disp = $fee_raw;
+		if ( $product instanceof WC_Product ) {
+			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
+		}
 
-        if ( $product instanceof WC_Product ) {
-            // convert net fee -> display price (incl. VAT according to Woo settings)
-            $fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
-        }
-
-        $item_data[] = [
-            'name'  => __( 'Cutting fee per sheet', 'nh-theme' ),
-            'value' => wc_price( $fee_disp ),
-        ];
-    }
+		$item_data[] = [
+			'name'  => __( 'Cutting fee per sheet', 'nh-theme' ),
+			'value' => wc_price( $fee_disp ),
+		];
+	}
 
 	return $item_data;
 }, 10, 2 );
 
 add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $cart_item_key, $values ) {
-	if ( empty( $values['nh_custom_size'] ) ) {
-		return;
-	}
+
+	if ( empty( $values['nh_custom_size'] ) ) return;
 
 	$wmm = (int) ( $values['nh_custom_size']['width_mm']  ?? 0 );
 	$lmm = (int) ( $values['nh_custom_size']['length_mm'] ?? 0 );
 
-	// Get product + fee (same as used in custom pricing)
-	$pid     = (int) ( $values['product_id'] ?? 0 );
-	$product = $pid ? wc_get_product( $pid ) : $item->get_product();
-	if ( ! $product instanceof WC_Product ) {
-		return;
-	}
+	/** @var WC_Product|null $product */
+	$product = $item->get_product();
+	if ( ! $product instanceof WC_Product ) return;
 
-	$price_per_m2 = (float) $product->get_price(); // same base as in custom pricing
-	$fee          = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
+	$price_per_m2 = isset( $values['nh_cc_base_price_per_m2'] ) ? (float) $values['nh_cc_base_price_per_m2'] : (float) $product->get_price();
+	$fee          = isset( $values['nh_cc_cut_fee_raw'] ) ? (float) $values['nh_cc_cut_fee_raw'] : 0;
 
-	// 1) OLD SHOP COMPATIBLE META KEYS (for your order management tool)
-	if ( $wmm ) {
-		$item->add_meta_data( 'cutting_width', $wmm . ' mm', true );
-	}
-
-	if ( $lmm ) {
-		$item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
-	}
+	// Old shop meta keys (compat)
+	if ( $wmm ) $item->add_meta_data( 'cutting_width',  $wmm . ' mm', true );
+	if ( $lmm ) $item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
 
 	if ( $wmm && $lmm && $price_per_m2 > 0 ) {
 		$area      = ( $wmm / 1000 ) * ( $lmm / 1000 );
-		$unit_base = $area * $price_per_m2; // without cutting fee
-		$item->add_meta_data(
-			'unit_price',
-			wc_format_decimal( $unit_base, wc_get_price_decimals() ),
-			true
-		);
+		$unit_base = $area * $price_per_m2; // without fee
+		$item->add_meta_data( 'unit_price', wc_format_decimal( $unit_base, wc_get_price_decimals() ), true );
 	}
 
-	if ( $fee ) {
-		$item->add_meta_data(
-			'cutting_fee',
-			wc_format_decimal( $fee, wc_get_price_decimals() ),
-			true
-		);
+	if ( $fee > 0 ) {
+		$item->add_meta_data( 'cutting_fee', wc_format_decimal( $fee, wc_get_price_decimals() ), true );
 	}
 
-	// 2) Human-readable labels for Woo admin/emails
+	// Human-readable Woo meta
+	if ( $wmm ) $item->add_meta_data( __( 'Width', 'nh-theme' ),  $wmm . ' mm', true );
+	if ( $lmm ) $item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
 
-	if ( $wmm ) {
-		$item->add_meta_data( __( 'Width', 'nh-theme' ), $wmm . ' mm', true );
+	if ( $fee > 0 ) {
+		$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
+		$item->add_meta_data( __( 'Cutting fee per sheet', 'nh-theme' ), wc_price( $fee_disp ), true );
 	}
 
-	if ( $lmm ) {
-		$item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
-	}
-
-	if ( $fee ) {
-		// Fee for display (incl. VAT according to Woo tax settings)
-		$fee_disp = $fee;
-		if ( $product instanceof WC_Product ) {
-			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
-		}
-
-		$item->add_meta_data(
-			__( 'Cutting fee per sheet', 'nh-theme' ),
-			wc_price( $fee_disp ), // only THIS one, VAT included
-			true
-		);
-	}
 }, 10, 3 );
 
 /* ============================================================================
- * CUSTOM PRICING — area × value/m² + fee (ONLY for custom-cut SIMPLE product)
+ * CUSTOM PRICING — area × price_per_m² + fee
+ * Works for cart items that are variations too
+ * Weight model updated: kg per m² from Woo weight stored per cart line
  * ========================================================================== */
 add_action( 'woocommerce_before_calculate_totals', function( $cart ){
+
 	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
 	if ( empty( $cart ) ) return;
 
-	foreach ( $cart->get_cart() as $item ) {
+	foreach ( $cart->get_cart() as $cart_item_key => $item ) {
+
 		if ( empty( $item['nh_custom_size'] ) ) continue;
 
 		/** @var WC_Product $product */
 		$product = $item['data'];
-		if ( ! $product instanceof WC_Product || ! $product->is_type( 'simple' ) ) continue;
-		if ( ! (bool) get_post_meta( $product->get_id(), '_nh_cc_enabled', true ) ) continue;
+		if ( ! $product instanceof WC_Product ) continue;
+
+		// Enabled on parent product id stored in cart item
+		$parent_id = (int) ( $item['product_id'] ?? 0 );
+		if ( $parent_id <= 0 || ! nh_cc_is_enabled_product( $parent_id ) ) continue;
 
 		$wmm = (int) ( $item['nh_custom_size']['width_mm'] ?? 0 );
 		$lmm = (int) ( $item['nh_custom_size']['length_mm'] ?? 0 );
 		if ( $wmm <= 0 || $lmm <= 0 ) continue;
 
-		// area in m²
 		$area = ( $wmm / 1000 ) * ( $lmm / 1000 );
 
-		// === PRICE (existing logic) ===
-		$price_per_m2 = (float) $product->get_price();
-		$fee          = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
+		$price_per_m2 = isset( $item['nh_cc_base_price_per_m2'] )
+			? (float) $item['nh_cc_base_price_per_m2']
+			: (float) $product->get_price();
+
+		$fee = isset( $item['nh_cc_cut_fee_raw'] )
+			? (float) $item['nh_cc_cut_fee_raw']
+			: (float) get_post_meta( $parent_id, '_nh_cc_cut_fee', true );
 
 		if ( $price_per_m2 > 0 ) {
 			$unit_price = $area * $price_per_m2 + max( 0, $fee );
 			$product->set_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
 		}
 
-		// === WEIGHT (NEW) ===
-		// from product meta: kg per m²
-		$kg_per_m2 = (float) get_post_meta( $product->get_id(), '_nh_cc_weight_per_m2', true );
+		// UPDATED: Weight (kg per m²) from stored cart data (variation or simple)
+		$kg_per_m2 = isset( $item['nh_cc_kg_per_m2'] ) ? (float) $item['nh_cc_kg_per_m2'] : 0.0;
+
+		// Fallback if missing for some reason: use current product object (variation) weight / parent fallback
+		if ( $kg_per_m2 <= 0 ) {
+			$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $product );
+		}
 
 		if ( $kg_per_m2 > 0 ) {
-			// weight per sheet in kg
 			$unit_kg = $area * $kg_per_m2;
-
-			// Save for debugging / transparency (optional)
-			$item['nh_custom_unit_kg'] = $unit_kg;
-
-			// Set per-unit weight in kg; Woo will multiply by qty
 			$product->set_weight( wc_format_decimal( $unit_kg, 4 ) );
 		}
 	}

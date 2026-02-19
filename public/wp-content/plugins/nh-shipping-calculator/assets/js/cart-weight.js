@@ -1,107 +1,110 @@
 (function (window) {
-	// Ensure the WordPress data module exists
-	if (!window.wp || !window.wp.data) {
-		return;
-	}
+  if (!window.wp || !window.wp.data) return;
 
-	const { select, subscribe } = window.wp.data;
+  const { select, subscribe } = window.wp.data;
 
-	// Known Woo cart store keys (varies a bit by version)
-	const STORE_KEYS = ['wc/store/cart', 'wc/store'];
+  const STORE_KEYS = ['wc/store/cart', 'wc/store'];
 
-	/**
-	 * Get current cart data from one of the known stores.
-	 * Returns null if not available (e.g. classic cart).
-	 */
-	function getCartDataSafe() {
-		for (let i = 0; i < STORE_KEYS.length; i++) {
-			try {
-				const store = select(STORE_KEYS[i]);
-				if (store && typeof store.getCartData === 'function') {
-					const data = store.getCartData();
-					if (data) {
-						return data;
-					}
-				}
-			} catch (e) {
-				// Try next key
-			}
-		}
-		return null;
-	}
+  function getCartDataSafe() {
+    for (let i = 0; i < STORE_KEYS.length; i++) {
+      try {
+        const store = select(STORE_KEYS[i]);
+        if (store && typeof store.getCartData === 'function') {
+          const data = store.getCartData();
+          if (data) return data;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
 
-	/**
-	 * Convert raw itemsWeight into display weight.
-	 * On Woo Blocks, itemsWeight is in GRAMS when the store unit is kg.
-	 */
-	function normalizeWeight(rawWeight, unit) {
-		let value = Number(rawWeight || 0);
+  function formatWeight(weight, unit) {
+    const decimals = 2;
+    const decSep = ',';
+    const fixed = Number(weight || 0).toFixed(decimals);
+    let [intPart, fracPart] = fixed.split('.');
+    return intPart + decSep + fracPart + ' ' + unit;
+  }
 
-	    // Store unit is kg, Woo Blocks cartData.itemsWeight is in grams.
-		if (unit.toLowerCase() === 'kg') {
-			value = value / 1000;
-		}
+  // Build Woo wc-ajax endpoint url
+  function wcAjaxEndpoint(endpoint) {
+    const src =
+      (window.wc_add_to_cart_params && window.wc_add_to_cart_params.wc_ajax_url) ||
+      (window.wc_cart_fragments_params && window.wc_cart_fragments_params.wc_ajax_url) ||
+      '/?wc-ajax=%%endpoint%%';
+    return src.replace('%%endpoint%%', endpoint);
+  }
 
-		return value;
-	}
+  const WEIGHT_URL = wcAjaxEndpoint('nhgp_get_cart_weight');
 
-	/**
-	 * Format a numeric weight value in clean EU style:
-	 * - always 2 decimals
-	 * - comma as decimal separator
-	 * - NO thousands separator
-	 */
-	function formatWeight(weight, unit) {
-		const decimals    = 2;
-		const decSep      = ',';
-		const thousandSep = ''; // no thousands separator
+  // Debounce helper
+  function debounce(fn, wait) {
+    let t = null;
+    return function () {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(null, arguments), wait);
+    };
+  }
 
-		const fixed = Number(weight || 0).toFixed(decimals);
-		let [intPart, fracPart] = fixed.split('.');
+  async function fetchServerWeight(unitHint) {
+    try {
+      const url = WEIGHT_URL + (unitHint ? ('&unit=' + encodeURIComponent(unitHint)) : '');
+      const resp = await fetch(url, { credentials: 'same-origin' });
+      const json = await resp.json().catch(() => null);
+      if (!json || json.success !== true || !json.data) return null;
+      const w = Number(json.data.weight || 0);
+      const u = String(json.data.unit || unitHint || 'kg');
+      return { weight: w, unit: u };
+    } catch (e) {
+      return null;
+    }
+  }
 
-		if (thousandSep) {
-			intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
-		}
+  async function renderWeight() {
+    const el = document.querySelector('.nhgp-cart-total-weight');
+    if (!el) return;
 
-		return intPart + decSep + fracPart + ' ' + unit;
-	}
+    const unit = el.getAttribute('data-unit') || 'kg';
 
-	/**
-	 * Render the current cart weight into the `.nhgp-cart-total-weight`
-	 * value element, if present.
-	 */
-	function renderWeight() {
-		const el = document.querySelector('.nhgp-cart-total-weight');
-		if (!el) return;
+    // Always prefer server weight (it knows custom-cut line weights).
+    const payload = await fetchServerWeight(unit);
+    if (!payload) return;
 
-		const cartData = getCartDataSafe();
-		if (!cartData || typeof cartData.itemsWeight === 'undefined') {
-			return;
-		}
+    el.setAttribute('data-weight', String(payload.weight || 0));
+    el.setAttribute('data-unit', payload.unit || unit);
+    el.textContent = formatWeight(payload.weight, payload.unit || unit);
+  }
 
-		const unit   = el.getAttribute('data-unit') || 'kg';
-		const value  = normalizeWeight(cartData.itemsWeight, unit);
-		el.textContent = formatWeight(value, unit);
-	}
+  const renderWeightDebounced = debounce(renderWeight, 150);
 
-	// Initial render after the DOM is ready
-	document.addEventListener('DOMContentLoaded', renderWeight);
+  // Initial render
+  document.addEventListener('DOMContentLoaded', function () {
+    renderWeightDebounced();
+  });
 
-	// Re-render whenever the cart store changes (qty change, add/remove, etc.)
-	let lastWeight = null;
+  // Re-render on Blocks cart store changes
+  let lastSig = null;
 
-	subscribe(function () {
-		const cartData = getCartDataSafe();
-		if (!cartData || typeof cartData.itemsWeight === 'undefined') {
-			return;
-		}
+  subscribe(function () {
+    const cartData = getCartDataSafe();
+    if (!cartData) return;
 
-		const weight = cartData.itemsWeight;
-		if (weight === lastWeight) {
-			return;
-		}
+    // Use a stable signature so we don’t spam requests.
+    // totals/itemsWeight may be wrong for custom-cut, but changes reliably when cart updates.
+    const sig = [
+      cartData.itemsCount,
+      cartData.itemsWeight,
+      cartData.totalItems,
+      cartData.totalPrice
+    ].join('|');
 
-		lastWeight = weight;
-		renderWeight();
-	});
+    if (sig === lastSig) return;
+    lastSig = sig;
+
+    renderWeightDebounced();
+  });
+
+  // Also listen for classic events / fragment refreshes
+  document.addEventListener('wc_fragments_refreshed', renderWeightDebounced);
+  document.addEventListener('updated_wc_div', renderWeightDebounced);
 })(window);

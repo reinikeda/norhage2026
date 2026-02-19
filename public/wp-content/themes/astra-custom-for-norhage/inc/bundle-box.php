@@ -174,7 +174,10 @@ function nh_render_bundle_box() {
 		$price_html = $p->get_price_html();
 		$price_num  = wc_get_price_to_display( $p );
 		$price_attr = wc_format_decimal( $price_num, wc_get_price_decimals() );
-		$link       = get_permalink( $p->get_id() );
+
+		// ✅ UPDATED: carry the parent product id + anchor so bundle-item pages can show "Back to bundle"
+		$parent_id  = $product->get_id(); // main product (bundle parent)
+		$link       = add_query_arg( 'bundle_parent', $parent_id, get_permalink( $p->get_id() ) ) . '#nc-complete-set';
 
 		$has_meta_max  = array_key_exists( 'max', $r ) && $r['max'] !== '' && (int) $r['max'] > 0;
 		$meta_max      = $has_meta_max ? (int) $r['max'] : null;
@@ -288,4 +291,4 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_localize_script( 'nh-bundle-add', 'bundle_ajax', [
 		'cart_url' => wc_get_cart_url(),
 	] );
-}, 50);
+}, 50 );

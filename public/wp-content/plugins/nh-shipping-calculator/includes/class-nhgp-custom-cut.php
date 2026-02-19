@@ -4,11 +4,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class NHGP_Custom_Cut {
 
 	/* ------------------------------------------------------------
-	 * Hard-coded meta keys (no more user-configurable keys)
+	 * Cart/meta keys
 	 * ------------------------------------------------------------ */
-	const FLAG_KEY   = 'nh_custom_mode';
-	const WIDTH_KEY  = 'nh_width_mm';
-	const HEIGHT_KEY = 'nh_length_mm';
+
+	// NEW primary flag used by your theme
+	const FLAG_KEY          = 'nh_custom_cutting';
+
+	// Legacy flag used by older plugin/theme versions
+	const LEGACY_FLAG_KEY   = 'nh_custom_mode';
+
+	// Dimension keys (match your theme + current JS)
+	const WIDTH_KEY         = 'nh_width_mm';
+	const HEIGHT_KEY        = 'nh_length_mm';
 
 	/* ------------------------------------------------------------
 	 * Check if item is custom-cut
@@ -31,19 +38,20 @@ class NHGP_Custom_Cut {
 			return true;
 		}
 
-		// 3) Cart item flag (nh_custom_mode)
-		if ( ! empty( $item[ self::FLAG_KEY ] ) ) {
+		// 3) Cart item flag (new + legacy)
+		if ( ! empty( $item[ self::FLAG_KEY ] ) || ! empty( $item[ self::LEGACY_FLAG_KEY ] ) ) {
 			return true;
 		}
 
-		// 4) Product meta (_nh_custom_mode or nh_custom_mode)
+		// 4) Product meta flags (new + legacy, with/without underscore)
 		if ( $product ) {
-			if ( (int) $product->get_meta( '_' . self::FLAG_KEY, true ) === 1 ) {
-				return true;
-			}
-			if ( (int) $product->get_meta( self::FLAG_KEY, true ) === 1 ) {
-				return true;
-			}
+			// new
+			if ( (int) $product->get_meta( '_' . self::FLAG_KEY, true ) === 1 ) return true;
+			if ( (int) $product->get_meta( self::FLAG_KEY, true ) === 1 ) return true;
+
+			// legacy
+			if ( (int) $product->get_meta( '_' . self::LEGACY_FLAG_KEY, true ) === 1 ) return true;
+			if ( (int) $product->get_meta( self::LEGACY_FLAG_KEY, true ) === 1 ) return true;
 		}
 
 		return false;
@@ -74,14 +82,9 @@ class NHGP_Custom_Cut {
 			return array( $w, $h );
 		}
 
-		// 3) Last resort: product meta (for backwards compatibility)
-		$w = $product
-			? $product->get_meta( '_' . self::WIDTH_KEY, true )
-			: null;
-
-		$h = $product
-			? $product->get_meta( '_' . self::HEIGHT_KEY, true )
-			: null;
+		// 3) Last resort: product meta (backwards compatibility)
+		$w = $product ? $product->get_meta( '_' . self::WIDTH_KEY, true ) : null;
+		$h = $product ? $product->get_meta( '_' . self::HEIGHT_KEY, true ) : null;
 
 		$w = (float) str_replace( ',', '.', (string) $w );
 		$h = (float) str_replace( ',', '.', (string) $h );
@@ -90,32 +93,46 @@ class NHGP_Custom_Cut {
 	}
 
 	/* ------------------------------------------------------------
-	 * Map width + height to one of 7 size classes
+	 * Map width + height to a shipping class slug using rules
+	 *  - 0 (empty) limit means "no limit" for that dimension
 	 * ------------------------------------------------------------ */
 	public static function map_to_class_slug( $w, $h, $cs ) {
 
-		// Build 7 rules dynamically from settings (r1…r7)
+		$w = (float) $w;
+		$h = (float) $h;
+
+		// Build rules from settings (r1…r7)
 		$rules = array();
 
 		for ( $i = 1; $i <= 7; $i++ ) {
-			$rw = isset( $cs["r{$i}_w"] )     ? (float) $cs["r{$i}_w"]     : 0;
-			$rh = isset( $cs["r{$i}_h"] )     ? (float) $cs["r{$i}_h"]     : 0;
-			$cl = isset( $cs["r{$i}_class"] ) ?        $cs["r{$i}_class"]  : '';
+			$rw = isset( $cs["r{$i}_w"] )      ? (float) $cs["r{$i}_w"]      : 0;
+			$rh = isset( $cs["r{$i}_h"] )      ? (float) $cs["r{$i}_h"]      : 0;
+			$cl = isset( $cs["r{$i}_class"] )  ? (string) $cs["r{$i}_class"] : '';
 
-			// Only add valid rows (non-empty class, at least one non-zero dimension)
+			// Valid row: has a class AND at least one limit set
 			if ( $cl !== '' && ( $rw > 0 || $rh > 0 ) ) {
 				$rules[] = array( $rw, $rh, $cl );
 			}
 		}
 
-		// Check each rule in order
+		// Check each rule in order:
+		// - if rw > 0 then must satisfy w <= rw
+		// - if rh > 0 then must satisfy h <= rh
+		// - if rw/rh is 0 => ignore that dimension
 		foreach ( $rules as $r ) {
-			if ( $w <= $r[0] && $h <= $r[1] ) {
-				return $r[2];
+			$rw = (float) $r[0];
+			$rh = (float) $r[1];
+			$cl = (string) $r[2];
+
+			$ok_w = ( $rw <= 0 ) ? true : ( $w <= $rw );
+			$ok_h = ( $rh <= 0 ) ? true : ( $h <= $rh );
+
+			if ( $ok_w && $ok_h ) {
+				return $cl;
 			}
 		}
 
 		// Fallback: default class from settings
-		return ! empty( $cs['default_class'] ) ? $cs['default_class'] : '';
+		return ! empty( $cs['default_class'] ) ? (string) $cs['default_class'] : '';
 	}
 }

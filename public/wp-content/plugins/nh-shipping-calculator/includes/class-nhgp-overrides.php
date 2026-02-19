@@ -82,7 +82,6 @@ class NHGP_Overrides {
 		$chosen_heavy = null;
 
 		// Behaviour: last tier with weight ≤ cart weight wins
-		// => orders below the smallest tier are NOT counted by weight.
 		foreach ( $tiers as $t ) {
 			if ( $total_weight >= $t['w'] ) {
 				$chosen_heavy = $t;
@@ -133,6 +132,7 @@ class NHGP_Overrides {
 
 				// Gather present classes from NON custom-cut items
 				$present = array();
+
 				foreach ( WC()->cart->get_cart() as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
@@ -149,7 +149,7 @@ class NHGP_Overrides {
 					}
 				}
 
-				// Add mapped classes from custom-cut items
+				// Add mapped classes from custom-cut items (always contribute something if item is custom)
 				foreach ( WC()->cart->get_cart() as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
@@ -161,22 +161,22 @@ class NHGP_Overrides {
 					}
 
 					list( $w, $h ) = NHGP_Custom_Cut::get_dims( $item, $p, $custom );
-					if ( $w > 0 && $h > 0 ) {
-						$slug = NHGP_Custom_Cut::map_to_class_slug( $w, $h, $custom );
-						if ( $slug ) {
-							$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
-							if ( $term && ! is_wp_error( $term ) ) {
-								$present[ (int) $term->term_id ] = true;
-							}
-						}
-					}
-				}
 
-				// If still nothing, try default custom-cut class
-				if ( empty( $present ) && ! empty( $custom['default_class'] ) ) {
-					$term = get_term_by( 'slug', $custom['default_class'], 'product_shipping_class' );
-					if ( $term && ! is_wp_error( $term ) ) {
-						$present[ (int) $term->term_id ] = true;
+					$slug = '';
+					if ( $w > 0 || $h > 0 ) {
+						$slug = NHGP_Custom_Cut::map_to_class_slug( $w, $h, $custom );
+					}
+
+					// If no dims / no match, fall back to default class (if set)
+					if ( ! $slug && ! empty( $custom['default_class'] ) ) {
+						$slug = $custom['default_class'];
+					}
+
+					if ( $slug ) {
+						$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+						if ( $term && ! is_wp_error( $term ) ) {
+							$present[ (int) $term->term_id ] = true;
+						}
 					}
 				}
 
@@ -184,7 +184,7 @@ class NHGP_Overrides {
 				foreach ( $present as $tid => $_ ) {
 					if ( isset( $class_costs[ $tid ] ) && $class_costs[ $tid ] > $best_cost ) {
 						$best_cost = $class_costs[ $tid ];
-						$best_tid  = $tid;
+						$best_tid  = (int) $tid;
 					}
 				}
 			}
@@ -229,7 +229,6 @@ class NHGP_Overrides {
 				$label = $rate->get_label();
 
 				if ( $use_heavy && $chosen_heavy ) {
-					// Translatable "Heavy %s"
 					$suffix = sprintf( __( 'Heavy %s', NHGP_TEXTDOMAIN ), $chosen_heavy['label'] );
 					$label .= ' (' . $suffix . ')';
 				} elseif ( $use_class && $best_tid ) {
@@ -261,8 +260,6 @@ class NHGP_Overrides {
 			return false;
 		}
 
-		// --- thresholds ---
-
 		// Custom-cut thresholds in mm.
 		$threshold_width_mm  = 1500; // 150 cm
 		$threshold_length_mm = 3000; // 300 cm
@@ -271,39 +268,31 @@ class NHGP_Overrides {
 		$dimension_unit = get_option( 'woocommerce_dimension_unit', 'cm' );
 
 		// Base thresholds in metres.
-		$base_width_m  = 1.5; // 150 cm
-		$base_length_m = 3.0; // 300 cm
+		$base_width_m  = 1.5;
+		$base_length_m = 3.0;
 
 		switch ( $dimension_unit ) {
 			case 'mm':
-				$th_w = $base_width_m * 1000;  // 1500
-				$th_l = $base_length_m * 1000; // 3000
+				$th_w = $base_width_m * 1000;
+				$th_l = $base_length_m * 1000;
 				break;
-
 			case 'cm':
-				$th_w = $base_width_m * 100;   // 150
-				$th_l = $base_length_m * 100;  // 300
+				$th_w = $base_width_m * 100;
+				$th_l = $base_length_m * 100;
 				break;
-
 			case 'm':
-				$th_w = $base_width_m;         // 1.5
-				$th_l = $base_length_m;        // 3
+				$th_w = $base_width_m;
+				$th_l = $base_length_m;
 				break;
-
 			case 'in':
-				// 1 m = 39.3701 in
 				$th_w = $base_width_m  * 39.3701;
 				$th_l = $base_length_m * 39.3701;
 				break;
-
 			case 'yd':
-				// 1 m = 1.09361 yd
 				$th_w = $base_width_m  * 1.09361;
 				$th_l = $base_length_m * 1.09361;
 				break;
-
 			default:
-				// Fallback: assume cm
 				$th_w = $base_width_m * 100;
 				$th_l = $base_length_m * 100;
 				break;
@@ -322,13 +311,11 @@ class NHGP_Overrides {
 			$w_mm = 0;
 			$h_mm = 0;
 
-			// Theme structure: nh_custom_size[width_mm/length_mm]
 			if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
 				$w_mm = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
 				$h_mm = (float) ( $item['nh_custom_size']['length_mm'] ?? 0 );
 			}
 
-			// Flat keys: nh_width_mm / nh_length_mm
 			if ( $w_mm <= 0 && isset( $item[ NHGP_Custom_Cut::WIDTH_KEY ] ) ) {
 				$w_mm = (float) $item[ NHGP_Custom_Cut::WIDTH_KEY ];
 			}
@@ -337,12 +324,9 @@ class NHGP_Overrides {
 			}
 
 			if ( $w_mm > 0 || $h_mm > 0 ) {
-				// We have an actual custom size in mm on the cart item – use that only.
 				if ( $w_mm > $threshold_width_mm || $h_mm > $threshold_length_mm ) {
 					return true;
 				}
-
-				// We do NOT also check product dimensions for this item.
 				continue;
 			}
 

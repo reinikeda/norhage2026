@@ -1,5 +1,19 @@
-/* NH Price Summary — VARIABLE products + SIMPLE (non-custom) */
+/* NH Price Summary — VARIABLE products + SIMPLE (non-custom)
+   IMPORTANT: Must not run on custom-cut products (custom-cutting.js owns pricing there).
+*/
 (function($){
+  // ===== Guard: do nothing on custom-cut pages =====
+  function isCustomCutPage(){
+    try {
+      if (window.NH_CC && window.NH_CC.enabled) return true;
+    } catch(e){}
+    if ($('body').hasClass('nh-has-custom-cut')) return true;
+    if ($('#nh-custom-size-wrap').length) return true;
+    return false;
+  }
+
+  if (isCustomCutPage()) return;
+
   function fmt(n){ return (window.NHPriceSummary && NHPriceSummary.fmt) ? NHPriceSummary.fmt(n) : (''+n); }
   function parse(t){ return (window.NHPriceSummary && NHPriceSummary.parse) ? NHPriceSummary.parse(t) : 0; }
 

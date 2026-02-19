@@ -3,6 +3,7 @@
  * Order / email attributes display
  * - Show product attributes under the product name (same idea as cart).
  * - Works for simple + variable products.
+ * - NEW: Also shows custom-cut Width/Length/Fee for variations (previously missing).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,75 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Build attribute label => value pairs for an order line item.
+ * Extract measured-sheet info (Width/Length/Fee) from order item meta.
+ * Returns array [ 'width' => string, 'length' => string, 'fee' => mixed ]
  */
-function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
-	$pairs   = [];
-	$product = $item->get_product();
-
-	if ( ! $product ) {
-		return $pairs;
-	}
-
-	/* ---------------------------------------------------------
-	 * CASE A: variation product → show ONLY attributes that are
-	 *         flagged "Used for variations" on the parent.
-	 * -------------------------------------------------------*/
-	if ( $product->is_type( 'variation' ) ) {
-
-		$var_attrs = $product->get_attributes();
-		if ( empty( $var_attrs ) ) {
-			return $pairs;
-		}
-
-		$parent         = wc_get_product( $product->get_parent_id() );
-		$parent_attrs   = $parent ? $parent->get_attributes() : [];
-		$product_for_lb = $parent ?: $product;
-
-		foreach ( $var_attrs as $attr_slug => $val ) {
-			if ( $val === '' ) {
-				continue;
-			}
-
-			$is_variation_attr = true;
-			if ( isset( $parent_attrs[ $attr_slug ] ) && $parent_attrs[ $attr_slug ] instanceof WC_Product_Attribute ) {
-				$is_variation_attr = (bool) $parent_attrs[ $attr_slug ]->get_variation();
-			}
-			if ( ! $is_variation_attr ) {
-				continue;
-			}
-
-			$label = wc_attribute_label( $attr_slug, $product_for_lb );
-			if ( $label === '' ) {
-				continue;
-			}
-
-			$val = wc_clean( $val );
-
-			if ( taxonomy_exists( $attr_slug ) ) {
-				$term = get_term_by( 'slug', $val, $attr_slug );
-				if ( $term && ! is_wp_error( $term ) ) {
-					$val = $term->name;
-				} else {
-					$val = wc_clean( str_replace( '-', ' ', $val ) );
-				}
-			}
-
-			if ( $val !== '' ) {
-				$pairs[ $label ] = $val;
-			}
-		}
-
-		return $pairs;
-	}
-
-	/* ---------------------------------------------------------
-	 * CASE B: simple product (custom-cut vs normal)
-	 * -------------------------------------------------------*/
-
+function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	$meta_data = $item->get_meta_data();
 
-	// Technical keys (language-independent)
 	$width_val  = '';
 	$length_val = '';
 	$fee_val    = '';
@@ -92,6 +30,7 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		}
 
 		switch ( $key ) {
+			// Technical keys (preferred)
 			case 'cutting_width':
 				$width_val = (string) $val;
 				break;
@@ -105,7 +44,7 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 				$fee_val = $val;
 				break;
 
-			// Backwards compatibility with old orders that stored human keys only
+			// Backwards compatibility: human keys
 			case 'Width':
 				if ( $width_val === '' ) {
 					$width_val = (string) $val;
@@ -126,34 +65,127 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		}
 	}
 
+	return [
+		'width'  => $width_val,
+		'length' => $length_val,
+		'fee'    => $fee_val,
+	];
+}
+
+/**
+ * Apply measured-sheet meta to pairs array (Width/Length/Fee) if present.
+ */
+function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $item ): array {
+	$m = nh_order_item_measured_meta( $item );
+
+	$width_val  = $m['width'] ?? '';
+	$length_val = $m['length'] ?? '';
+	$fee_val    = $m['fee'] ?? '';
+
 	$is_measured_sheet = ( $width_val !== '' || $length_val !== '' || $fee_val !== '' );
 
-	if ( $is_measured_sheet ) {
+	if ( ! $is_measured_sheet ) {
+		return $pairs;
+	}
 
-		// Labels are translatable; keys in PO will be:
-		// "Width", "Length", "Cutting fee per sheet"
-		if ( $width_val !== '' ) {
-			$pairs[ __( 'Width', 'nh-theme' ) ] = $width_val;
+	if ( $width_val !== '' ) {
+		$pairs[ __( 'Width', 'nh-theme' ) ] = $width_val;
+	}
+
+	if ( $length_val !== '' ) {
+		$pairs[ __( 'Length', 'nh-theme' ) ] = $length_val;
+	}
+
+	if ( $fee_val !== '' ) {
+		$product = $item->get_product();
+
+		// Fee can be numeric (raw) or already formatted. If numeric, format as display price.
+		if ( is_numeric( $fee_val ) ) {
+			$amount = (float) $fee_val;
+			if ( $product ) {
+				$amount = wc_get_price_to_display( $product, [ 'price' => $amount ] );
+			}
+			$fee_val = wp_strip_all_tags( wc_price( $amount ) );
 		}
 
-		if ( $length_val !== '' ) {
-			$pairs[ __( 'Length', 'nh-theme' ) ] = $length_val;
-		}
+		$pairs[ __( 'Cutting fee per sheet', 'nh-theme' ) ] = (string) $fee_val;
+	}
 
-		if ( $fee_val !== '' ) {
-			if ( is_numeric( $fee_val ) ) {
-				$amount = (float) $fee_val;
+	return $pairs;
+}
 
-				if ( $product ) {
-					$amount = wc_get_price_to_display( $product, [ 'price' => $amount ] );
+/**
+ * Build attribute label => value pairs for an order line item.
+ */
+function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
+	$pairs   = [];
+	$product = $item->get_product();
+
+	if ( ! $product ) {
+		return $pairs;
+	}
+
+	/* ---------------------------------------------------------
+	 * CASE A: variation product → show ONLY attributes that are
+	 *         flagged "Used for variations" on the parent.
+	 *         PLUS measured-sheet meta (Width/Length/Fee) if present.
+	 * -------------------------------------------------------*/
+	if ( $product->is_type( 'variation' ) ) {
+
+		$var_attrs = $product->get_attributes();
+		$parent         = wc_get_product( $product->get_parent_id() );
+		$parent_attrs   = $parent ? $parent->get_attributes() : [];
+		$product_for_lb = $parent ?: $product;
+
+		if ( ! empty( $var_attrs ) ) {
+			foreach ( $var_attrs as $attr_slug => $val ) {
+				if ( $val === '' ) {
+					continue;
 				}
 
-				$fee_val = wp_strip_all_tags( wc_price( $amount ) );
-			}
+				$is_variation_attr = true;
+				if ( isset( $parent_attrs[ $attr_slug ] ) && $parent_attrs[ $attr_slug ] instanceof WC_Product_Attribute ) {
+					$is_variation_attr = (bool) $parent_attrs[ $attr_slug ]->get_variation();
+				}
+				if ( ! $is_variation_attr ) {
+					continue;
+				}
 
-			$pairs[ __( 'Cutting fee per sheet', 'nh-theme' ) ] = $fee_val;
+				$label = wc_attribute_label( $attr_slug, $product_for_lb );
+				if ( $label === '' ) {
+					continue;
+				}
+
+				$val = wc_clean( $val );
+
+				if ( taxonomy_exists( $attr_slug ) ) {
+					$term = get_term_by( 'slug', $val, $attr_slug );
+					if ( $term && ! is_wp_error( $term ) ) {
+						$val = $term->name;
+					} else {
+						$val = wc_clean( str_replace( '-', ' ', $val ) );
+					}
+				}
+
+				if ( $val !== '' ) {
+					$pairs[ $label ] = $val;
+				}
+			}
 		}
 
+		// NEW: also show measured-sheet meta for variations
+		$pairs = nh_order_apply_measured_pairs( $pairs, $item );
+
+		return $pairs;
+	}
+
+	/* ---------------------------------------------------------
+	 * CASE B: simple product (custom-cut vs normal)
+	 * -------------------------------------------------------*/
+
+	// Measured sheet? If yes, show width/length/fee and return.
+	$pairs = nh_order_apply_measured_pairs( $pairs, $item );
+	if ( ! empty( $pairs ) ) {
 		return $pairs;
 	}
 
@@ -258,28 +290,19 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 		return $formatted_meta;
 	}
 
-	// Technical keys in raw meta
 	$technical_keys = [ 'cutting_width', 'cutting_height', 'unit_price', 'cutting_fee', 'cutting_fee_per_sheet' ];
 
-	/* ===== ADMIN (Edit order screen / popup) =====
-	 * Only hide technical keys. Keep variation attrs & human labels visible.
-	 */
 	if ( is_admin() ) {
 		$filtered = [];
-
 		foreach ( $formatted_meta as $fm ) {
 			if ( in_array( $fm->key, $technical_keys, true ) ) {
 				continue;
 			}
 			$filtered[] = $fm;
 		}
-
 		return $filtered;
 	}
 
-	/* ===== FRONTEND + EMAILS ===== */
-
-	// Human-facing labels we hide (msgids; will be translated via PO)
 	$hide_labels = [
 		'Width',
 		'Length',
@@ -294,7 +317,6 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 	$attr_labels = [];
 	$product     = $item->get_product();
 
-	// For variations, collect attribute labels to hide Woo's default variation display
 	if ( $product && $product->is_type( 'variation' ) ) {
 		$parent = wc_get_product( $product->get_parent_id() );
 
@@ -317,17 +339,14 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 
 	foreach ( $formatted_meta as $fm ) {
 
-		// Hide our technical keys
 		if ( in_array( $fm->key, $technical_keys, true ) ) {
 			continue;
 		}
 
-		// Hide our human-facing measured sheet labels (any language, as long as PO matches)
 		if ( in_array( $fm->display_key, $hide_labels, true ) ) {
 			continue;
 		}
 
-		// Hide default variation attribute lines (we render them ourselves)
 		if ( ! empty( $attr_labels ) && in_array( $fm->display_key, $attr_labels, true ) ) {
 			continue;
 		}

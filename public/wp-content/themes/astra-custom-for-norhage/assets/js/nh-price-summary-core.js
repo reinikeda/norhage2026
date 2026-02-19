@@ -5,9 +5,13 @@
     const F  = window.NH_PRICE_FMT || {};
     const sym = F.symbol || '';
     const pos = F.pos || 'right_space';
-    const d   = (typeof F.decs === 'number') ? F.decs : 2;
-    const th  = F.thousand || '.';
-    const dc  = F.decimal  || ',';
+
+    // decs can come as string from wp_localize_script
+    const dRaw = (F.decs != null) ? F.decs : 2;
+    const d = Number.isFinite(Number(dRaw)) ? parseInt(dRaw, 10) : 2;
+
+    const th  = (F.thousand != null) ? F.thousand : '.';
+    const dc  = (F.decimal  != null) ? F.decimal  : ',';
 
     n = Number(n || 0);
     const parts = n.toFixed(d).split('.');
@@ -44,17 +48,44 @@
     return isNaN(n) ? 0 : n;
   }
 
+  function setBoxVal($box, key, val, isHtml){
+    const $el = $box.find('[data-ps="'+ key +'"]');
+    if (!$el.length) return;
+
+    if (isHtml){
+      $el.html(val || '—').attr('data-mode','html');
+      return;
+    }
+
+    // only write plain text if current mode isn't html
+    const mode = ($el.attr('data-mode') || 'text');
+    if (mode !== 'html') $el.text(val || '—');
+  }
+
   window.NHPriceSummary = window.NHPriceSummary || {
     update:function(data){
-      var $b=$('#nh-price-summary'); if(!$b.length) return;
-      if('unit_html'  in data){ $b.find('[data-ps="unit"]').html(data.unit_html||'—').attr('data-mode','html'); }
-      if('total_html' in data){ $b.find('[data-ps="total"]').html(data.total_html||'—').attr('data-mode','html'); }
-      if('unit'  in data && ($b.find('[data-ps="unit"]').attr('data-mode')||'text')!=='html'){  $b.find('[data-ps="unit"]').text(data.unit); }
-      if('total' in data && ($b.find('[data-ps="total"]').attr('data-mode')||'text')!=='html'){ $b.find('[data-ps="total"]').text(data.total); }
-      if('perm2_html' in data){ $b.find('[data-ps="perm2"]').html(data.perm2_html||'—').attr('data-mode','html'); }
-      else if('perm2' in data){ $b.find('[data-ps="perm2"]').text(data.perm2); }
-      if('cutfee_html' in data){ $b.find('[data-ps="cutfee"]').html(data.cutfee_html||'—').attr('data-mode','html'); }
-      else if('cutfee' in data){ $b.find('[data-ps="cutfee"]').text(data.cutfee); }
+      var $b = $('#nh-price-summary'); if(!$b.length) return;
+
+      // Unit / Total
+      if ('unit_html' in data)  setBoxVal($b, 'unit',  data.unit_html,  true);
+      if ('total_html' in data) setBoxVal($b, 'total', data.total_html, true);
+      if ('unit' in data)       setBoxVal($b, 'unit',  data.unit,       false);
+      if ('total' in data)      setBoxVal($b, 'total', data.total,      false);
+
+      // Price per m² + cutting fee
+      if ('perm2_html' in data) setBoxVal($b, 'perm2', data.perm2_html, true);
+      else if ('perm2' in data) setBoxVal($b, 'perm2', data.perm2, false);
+
+      if ('cutfee_html' in data) setBoxVal($b, 'cutfee', data.cutfee_html, true);
+      else if ('cutfee' in data) setBoxVal($b, 'cutfee', data.cutfee, false);
+
+      // OPTIONAL weight support (only works if your markup includes data-ps="weight")
+      if ('weight_html' in data) setBoxVal($b, 'weight', data.weight_html, true);
+      else if ('weight' in data) setBoxVal($b, 'weight', data.weight, false);
+
+      // Optional: if you later add separate fields data-ps="unit_weight" / "total_weight"
+      if ('unit_weight_html' in data)  setBoxVal($b, 'unit_weight',  data.unit_weight_html,  true);
+      if ('total_weight_html' in data) setBoxVal($b, 'total_weight', data.total_weight_html, true);
     },
     fmt:fmt,
     parse:parse

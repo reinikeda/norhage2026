@@ -235,14 +235,16 @@ add_action( 'astra_masthead_bottom', function () {
 	locate_template( 'template-parts/headers/header-main.php', true, false );
 }, 12 );
 
-/* Woo cart count fragment used by header */
+/* Woo cart badge fragment used by header */
 add_filter( 'woocommerce_add_to_cart_fragments', function( $fragments ) {
-	ob_start();
+
 	$count = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
-	?>
-	<span class="nh-cart-count"><?php echo (int) $count; ?></span>
-	<?php
-	$fragments['span.nh-cart-count'] = ob_get_clean();
+
+	$fragments['span.nh-cart-badge'] =
+		'<span class="nh-cart-badge" aria-hidden="true" data-count="' . esc_attr( $count ) . '">' .
+			esc_html( $count ) .
+		'</span>';
+
 	return $fragments;
 } );
 
@@ -752,49 +754,6 @@ function nh_sender_subscribe() {
 	] );
 
 }
-
-/**
- * Remove _gl param from frontend URLs, but don't break WooCommerce.
- */
-// add_action( 'init', function () {
-
-//     // Only run on front-end normal page views.
-//     if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
-//         return;
-//     }
-
-//     // Only clean on GET requests – never redirect POST/PUT etc.
-//     if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
-//         return;
-//     }
-
-//     // Only proceed if _gl is present.
-//     if ( ! isset( $_GET['_gl'] ) ) {
-//         return;
-//     }
-
-//     // Don't touch WooCommerce special actions (add to cart, AJAX, etc).
-//     if ( isset( $_GET['add-to-cart'] ) || isset( $_GET['wc-ajax'] ) ) {
-//         return;
-//     }
-
-//     // Build the base URL without any query parameters.
-//     $scheme = is_ssl() ? 'https://' : 'http://';
-//     $url    = $scheme . $_SERVER['HTTP_HOST'] . strtok( $_SERVER['REQUEST_URI'], '?' );
-
-//     // Keep all query parameters EXCEPT _gl.
-//     $params = $_GET;
-//     unset( $params['_gl'] );
-
-//     // Rebuild query string if there are other parameters.
-//     if ( ! empty( $params ) ) {
-//         $url .= '?' . http_build_query( $params );
-//     }
-
-//     // Redirect to clean URL.
-//     wp_redirect( $url, 301 );
-//     exit;
-// } );
 
 add_action( 'wp_head', function() {
 

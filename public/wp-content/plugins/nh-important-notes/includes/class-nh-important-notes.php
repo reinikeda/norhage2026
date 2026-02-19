@@ -41,6 +41,7 @@ final class Plugin {
 			'cutting_fee'       => __('Cutting fee', 'nh-important-notes'),
 			'standard_width'    => __('Standard width', 'nh-important-notes'),
 			'regulations'       => __('Regulations', 'nh-important-notes'),
+			'warehouse_sale' => __('Warehouse sale', 'nh-important-notes'),
 		];
 	}
 
@@ -54,6 +55,7 @@ final class Plugin {
 			'cutting_fee'       => 'dashicons-money-alt',
 			'standard_width'    => 'dashicons-editor-table',
 			'regulations'       => 'dashicons-clipboard',
+			'warehouse_sale' => 'dashicons-tag',
 		];
 		return $map[$type] ?? 'dashicons-info-outline';
 	}

@@ -454,6 +454,27 @@
   text-decoration: none;
 }
 
+.nh-bundle-back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:0 0 10px;
+  font-size:14px;
+  text-decoration:none;
+}
+.single-product form.cart{
+  flex-wrap: wrap;
+}
+.single-product form.cart .nh-bundle-back-link--below-cart{
+  flex: 0 0 100%;
+  width: 100%;
+  margin-top: 8px;
+}
+
+@media (max-width:768px){
+  .nh-bundle-back-link{display:block;padding:10px 0;}
+}
+
 @media (max-width: 720px) {
   .nc-bundle-header { display: none; }
   .nc-bundle-row {

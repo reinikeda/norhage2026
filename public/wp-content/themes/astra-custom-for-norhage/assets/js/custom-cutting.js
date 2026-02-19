@@ -27,28 +27,6 @@
     }
   }
 
-  function moneyHtml(n) {
-    const p = window.NH_PRICE_FMT || {};
-    const sym = p.symbol || '';
-    const pos = p.pos || 'right_space';
-    const num = fmtNumber(n);
-    const nbsp = '\u00A0';
-    let before = '', after = '';
-    switch (pos) {
-      case 'left':        before = sym; break;
-      case 'left_space':  before = sym + nbsp; break;
-      case 'right':       after  = sym; break;
-      default:            after  = sym ? (nbsp + sym) : ''; break;
-    }
-    return (
-      '<span class="woocommerce-Price-amount amount"><bdi>' +
-        (before ? '<span class="woocommerce-Price-currencySymbol">' + before + '</span>' : '') +
-        num +
-        (after  ? '<span class="woocommerce-Price-currencySymbol">' + after  + '</span>' : '') +
-      '</bdi></span>'
-    );
-  }
-
   function pairHTML(reg, sale, F){
     reg = Number(reg||0); sale = Number(sale||0);
     if (reg > 0 && sale > 0 && sale < reg) return '<del>'+F(reg)+'</del> <ins>'+F(sale)+'</ins>';
@@ -75,54 +53,30 @@
   function $mmInputs() { return $('#nh_width_mm, #nh_length_mm'); }
   function $psBox()    { return $('#nh-price-summary'); }
   function $qtyInput() { return $('form.cart .quantity input.qty'); }
-  function $modeRadios(){ return $('input[name="nh_cutting_mode"]'); }
-  function $modeHidden(){ return $('#nh_custom_mode'); }
-  function $cartForm()  { return $('form.cart'); }
+  function $cartForm() { return $('form.cart'); }
 
-  // ensure the hidden nh_custom_mode field exists
-  function ensureCustomModeHidden() {
-    const $f = $cartForm();
-    if (!$f.length) return;
-    if (!$f.find('#nh_custom_mode').length) {
-      $f.append('<input type="hidden" id="nh_custom_mode" name="nh_custom_mode" value="0" />');
-    }
+  function isVariableProduct() {
+    return !!$('form.variations_form').length;
+  }
+  function variationSelected() {
+    const $v = $('form.variations_form input[name="variation_id"]');
+    if (!$v.length) return true;
+    return parseInt($v.val() || '0', 10) > 0;
   }
 
   var CC = window.NH_CC || {
-    enabled:false, price_per_m2:0, cut_fee:0, step:1,
-    min_w:'', max_w:'', min_l:'', max_l:'', perm2_reg_disp:0, perm2_sale_disp:0,
+    enabled:false,
+    perm2_reg_disp:0,
+    perm2_sale_disp:0,
+    cut_fee:0,
+    step:1,
+    min_w:'', max_w:'', min_l:'', max_l:'',
     kg_per_m2: 0
   };
 
   // accept either kg_per_m2 or weight_per_m2 from PHP
   if (CC.kg_per_m2 == null && CC.weight_per_m2 != null) {
     CC.kg_per_m2 = Number(CC.weight_per_m2) || 0;
-  }
-
-  /* ================== Price Summary placement ================== */
-  var $psHome = null;
-  function ensurePSHomeOnce(){
-    var $box = $psBox();
-    if (!$box.length) return false;
-    if ($psHome && $psHome.length) return true;
-    $psHome = $('<div id="nh-ps-home" style="display:none"></div>');
-    $box.after($psHome);
-    return true;
-  }
-  function raf(fn){ (window.requestAnimationFrame || function(f){ setTimeout(f,0); })(fn); }
-  function placeSummaryAtHome(){
-    raf(function(){
-      if (!ensurePSHomeOnce()) { setTimeout(placeSummaryAtHome, 0); return; }
-      var $box = $psBox();
-      if ($box.length && $psHome && $psHome.length){ $box.insertAfter($psHome); }
-    });
-  }
-  function placeSummaryAfterCustom(){
-    raf(function(){
-      var $box = $psBox(), $cw = $mmWrap();
-      if (!$box.length || !$cw.length){ setTimeout(placeSummaryAfterCustom, 0); return; }
-      $box.insertAfter($cw);
-    });
   }
 
   /* =================== Summary bridge ========================== */
@@ -155,7 +109,7 @@
     $f.find('input[name="nh_custom_total_kg"]').val(String(totalKg || 0));
   }
 
-  /* =================== Perm² + Cut fee (one-time) ============== */
+  /* =================== Perm² + Cut fee (render) ================= */
   function renderPerm2AndFee() {
     var reg = Number(CC.perm2_reg_disp || 0);
     var sale = Number(CC.perm2_sale_disp || 0);
@@ -214,13 +168,11 @@
     $w.attr('placeholder', rangePH(CC.min_w, CC.max_w));
     $l.attr('placeholder', rangePH(CC.min_l, CC.max_l));
 
-    // only digits (no live debug recalcs)
     $wrap.on('input.ccDigits', 'input.nh-mm-input', function(){
       var $el = $(this), raw = String($el.val()), digits = raw.replace(/\D+/g,'');
       if (raw !== digits) $el.val(digits);
     });
 
-    // clamp + snap
     $wrap.on('change.ccClamp blur.ccClamp', 'input.nh-mm-input', function(){
       var $el = $(this);
       var raw = $el.val();
@@ -253,8 +205,14 @@
     return (Number.isFinite(n) && n > 0) ? n : 1;
   }
 
-  // cache last computed values (for AJAX / fallback)
-  var NH_LAST_WEIGHT = { unit_kg: 0, total_kg: 0, area_m2: 0, wmm: 0, lmm: 0, qty: 1 };
+  // cache last computed values (exposed so bundle-add-to-cart.js can read it)
+  window.NH_LAST_WEIGHT = window.NH_LAST_WEIGHT || { unit_kg: 0, total_kg: 0, area_m2: 0, wmm: 0, lmm: 0, qty: 1 };
+  function setLastWeight(obj){
+    window.NH_LAST_WEIGHT = Object.assign(
+      { unit_kg:0,total_kg:0,area_m2:0,wmm:0,lmm:0,qty:1 },
+      obj || {}
+    );
+  }
 
   /* =================== Recalculate (custom) ===================== */
   function recalcCustom(){
@@ -268,6 +226,17 @@
 
     var wmm = parseInt($('#nh_width_mm').val() || '0', 10);
     var lmm = parseInt($('#nh_length_mm').val() || '0', 10);
+
+    // Variable product and no variation selected: keep UI calm
+    if (isVariableProduct() && !variationSelected()) {
+      ensureWeightInputs();
+      setWeightInputs(0, 0);
+      setLastWeight({ unit_kg:0,total_kg:0,area_m2:0,wmm:wmm||0,lmm:lmm||0,qty:q });
+      writeSummary({ unit: '—', total: '—', weight_html: '—' });
+      renderPerm2AndFee();
+      return;
+    }
+
     var valid = Number.isFinite(wmm) && wmm > 0 && Number.isFinite(lmm) && lmm > 0;
 
     ensureWeightInputs();
@@ -278,10 +247,11 @@
 
       // Price
       if (M2_REG > 0 || M2_SALE > 0) {
-        var unit_reg  = area * M2_REG  + Math.max(0, FEE);
-        var unit_sale = area * M2_SALE + Math.max(0, FEE);
+        var unit_reg   = area * M2_REG  + Math.max(0, FEE);
+        var unit_sale  = area * M2_SALE + Math.max(0, FEE);
         var total_reg  = unit_reg  * q;
         var total_sale = unit_sale * q;
+
         writeSummary({
           unit_html:  pairHTML(unit_reg,  unit_sale, money),
           total_html: pairHTML(total_reg, total_sale, money)
@@ -304,20 +274,18 @@
             ' &nbsp; <em>Total:</em> ' + weightHtml(total_kg) + '</span>'
         });
 
-        // cache + hidden inputs (for POST submit path)
-        NH_LAST_WEIGHT = { unit_kg: unit_kg, total_kg: total_kg, area_m2: area, wmm: wmm, lmm: lmm, qty: q };
+        setLastWeight({ unit_kg: unit_kg, total_kg: total_kg, area_m2: area, wmm: wmm, lmm: lmm, qty: q });
         setWeightInputs(unit_kg, total_kg);
       } else {
-        // nothing to compute without kg/m²
+        setLastWeight({ unit_kg: 0, total_kg: 0, area_m2: area, wmm: wmm, lmm: lmm, qty: q });
       }
     } else {
       writeSummary({ unit: '—', total: '—', weight_html: '—' });
       $psBox().find('.nh-ps-weight').css('display','');
-      NH_LAST_WEIGHT = { unit_kg: 0, total_kg: 0, area_m2: 0, wmm: 0, lmm: 0, qty: 1 };
+      setLastWeight({ unit_kg: 0, total_kg: 0, area_m2: 0, wmm: 0, lmm: 0, qty: 1 });
     }
 
-    $psBox().find('.nh-ps-perm2').css('display','flex');
-    $psBox().find('.nh-ps-cutfee').css('display', (Number(CC.cut_fee||0) > 0) ? 'flex' : '');
+    renderPerm2AndFee();
   }
 
   /* =================== Add-to-cart button state ================= */
@@ -325,9 +293,14 @@
   function updateButtonState() {
     var $btn = $(BTN_SEL);
     if (!$btn.length) return;
+
     var wOk = parseInt($('#nh_width_mm').val(), 10);
     var lOk = parseInt($('#nh_length_mm').val(), 10);
-    var enabled = Number.isFinite(wOk) && wOk > 0 && Number.isFinite(lOk) && lOk > 0;
+    var dimsOk = Number.isFinite(wOk) && wOk > 0 && Number.isFinite(lOk) && lOk > 0;
+
+    var varOk = variationSelected();
+    var enabled = dimsOk && varOk;
+
     $btn.toggleClass('disabled nh-forced-disabled', !enabled)
         .attr('aria-disabled', String(!enabled))
         .prop('disabled', !enabled);
@@ -366,95 +339,63 @@
   );
 
   /* =================== Qty → recalc ============================= */
-  $(document).on('input change', 'form.cart .quantity input.qty', recalcCustom);
+  $(document).on('input change', 'form.cart .quantity input.qty', function(){
+    recalcCustom();
+    updateButtonState();
+  });
 
-  /* =================== Mode switching ========================== */
-  function currentMode(){
-    var $sel = $modeRadios().filter(':checked');
-    return $sel.length ? $sel.val() : 'standard';
-  }
-  function setHiddenMode(val){ $modeHidden().val(val === 'custom' ? '1' : '0'); }
+  /* =================== Variation events =================== */
+  $(document).on('found_variation', 'form.variations_form', function(e, variation){
+    if (!CC.enabled || !variation) return;
 
-  function nhToggleWidthLengthVariations(hide){
-    var $sels = $('select[name="attribute_pa_width"], select[name="attribute_width"], select[name="attribute_pa_length"], select[name="attribute_length"]');
-    var $blocks = $sels.map(function(){
-      var $s = $(this);
-      var $b = $s.closest('tr');
-      if (!$b.length) $b = $s.closest('.variations .value').parent();
-      if (!$b.length) $b = $s.closest('.form-row, .row, .col, div');
-      if ($b.closest('#nh-custom-size-wrap').length) return null;
-      return $b[0] || this;
-    });
-    var $reset = $('.reset_variations').not('#nh-custom-size-wrap .reset_variations');
-    if (hide){ $($blocks).stop(true,true).slideUp(150); $reset.hide(); }
-    else     { $($blocks).stop(true,true).slideDown(150); $reset.show(); }
-  }
+    if (variation.nh_cc_perm2_reg_disp != null)  CC.perm2_reg_disp  = Number(variation.nh_cc_perm2_reg_disp) || 0;
+    if (variation.nh_cc_perm2_sale_disp != null) CC.perm2_sale_disp = Number(variation.nh_cc_perm2_sale_disp) || 0;
+    if (variation.nh_cc_cut_fee_disp != null)    CC.cut_fee         = Number(variation.nh_cc_cut_fee_disp) || 0;
 
-  function onModeChanged(){
-    var mode = currentMode();
-    setHiddenMode(mode);
-    $qtyInput().val(1).trigger('change');
+    // UPDATED: kg per m² now comes from variation weight provided by PHP (or fallback to parent)
+    if (variation.nh_cc_kg_per_m2 != null)       CC.kg_per_m2       = Number(variation.nh_cc_kg_per_m2) || 0;
 
-    if (mode === 'custom'){
-      nhToggleWidthLengthVariations(true);
-      if (CC.enabled){
-        $mmWrap().stop(true,true).slideDown(120);
-        $mmInputs().prop('disabled',false).prop('readonly',false);
-        applyLimitsFromMeta();
-        placeSummaryAfterCustom();
-        renderPerm2AndFee();
-        ensureWeightInputs();
-        ensureCustomModeHidden();
-        $('#nh_custom_mode').val('1');
-        recalcCustom();
-      } else {
-        $mmWrap().stop(true,true).slideUp(120);
-        placeSummaryAtHome();
-      }
-    } else {
-      nhToggleWidthLengthVariations(false);
-      $mmWrap().stop(true,true).slideUp(120);
-      placeSummaryAtHome();
-      ensureCustomModeHidden();
-      $('#nh_custom_mode').val('0');
-    }
-  }
+    renderPerm2AndFee();
+    recalcCustom();
+    updateButtonState();
+  });
 
-  $(document).on('change', 'input[name="nh_cutting_mode"]', onModeChanged);
+  $(document).on('reset_data', 'form.variations_form', function(){
+    if (!CC.enabled) return;
+    CC.perm2_reg_disp  = 0;
+    CC.perm2_sale_disp = 0;
+    // keep CC.kg_per_m2 as-is? better reset to 0 so weight doesn't “stick” between variations
+    CC.kg_per_m2       = 0;
+    renderPerm2AndFee();
+    recalcCustom();
+    updateButtonState();
+  });
 
-  /* =================== Ensure weights are present for ALL flows == */
+  /* =================== Ensure weights for ALL flows ============= */
   function nhWriteWeightsToForm() {
     ensureWeightInputs();
-    var unit = (NH_LAST_WEIGHT && NH_LAST_WEIGHT.unit_kg) ? NH_LAST_WEIGHT.unit_kg : 0;
-    var tot  = (NH_LAST_WEIGHT && NH_LAST_WEIGHT.total_kg) ? NH_LAST_WEIGHT.total_kg : 0;
+    var LW = window.NH_LAST_WEIGHT || {};
+    var unit = (LW.unit_kg) ? LW.unit_kg : 0;
+    var tot  = (LW.total_kg) ? LW.total_kg : 0;
     setWeightInputs(unit, tot);
   }
 
-  // Non-AJAX submit path
   $(document).on('submit', 'form.cart', function () {
     nhWriteWeightsToForm();
   });
 
-  // Some themes trigger programmatic submit on click
   $(document).on('click', '.single_add_to_cart_button', function () {
     nhWriteWeightsToForm();
   });
 
-  /* =================== Inject weight into AJAX add-to-cart ====== */
   $(document).on('adding_to_cart', function(e, $button, data){
     try {
       nhWriteWeightsToForm();
-      if (NH_LAST_WEIGHT && (NH_LAST_WEIGHT.unit_kg > 0 || NH_LAST_WEIGHT.total_kg > 0)) {
-        data['nh_custom_unit_kg']  = String(NH_LAST_WEIGHT.unit_kg);
-        data['nh_custom_total_kg'] = String(NH_LAST_WEIGHT.total_kg);
-      } else {
-        const $f = $cartForm();
-        var unit = $f.find('input[name="nh_custom_unit_kg"]').val() || '0';
-        var tot  = $f.find('input[name="nh_custom_total_kg"]').val() || '0';
-        data['nh_custom_unit_kg']  = unit;
-        data['nh_custom_total_kg'] = tot;
+      var LW = window.NH_LAST_WEIGHT || {};
+      if (LW && (LW.unit_kg > 0 || LW.total_kg > 0)) {
+        data['nh_custom_unit_kg']  = String(LW.unit_kg);
+        data['nh_custom_total_kg'] = String(LW.total_kg);
       }
-      ensureCustomModeHidden();
     } catch(err){ /* silent */ }
   });
 
@@ -463,33 +404,24 @@
     if (!CC.enabled) return;
 
     ensureWeightInputs();
-    ensureCustomModeHidden();
+    applyLimitsFromMeta();
 
-    if (!$modeRadios().length){
-      $('#nh_custom_mode').val('1');
-      applyLimitsFromMeta();
-      placeSummaryAfterCustom();
-      renderPerm2AndFee();
+    // For variable products: summary will fill after variation selected
+    renderPerm2AndFee();
+    recalcCustom();
+    updateButtonState();
+
+    // Keep button state synced as selects change (before found_variation fires)
+    $(document).on('change', 'form.variations_form select', function(){
+      updateButtonState();
+      recalcCustom();
+    });
+
+    // Recalc on mm input typing
+    $(document).on('input change', '#nh_width_mm, #nh_length_mm', function(){
       recalcCustom();
       updateButtonState();
-      ensurePSHomeOnce();
-      return;
-    }
-
-    if (currentMode() === 'custom'){
-      $('#nh_custom_mode').val('1');
-      $mmWrap().show();
-      applyLimitsFromMeta();
-      placeSummaryAfterCustom();
-      renderPerm2AndFee();
-      recalcCustom();
-    } else {
-      $('#nh_custom_mode').val('0');
-      $mmWrap().hide();
-      placeSummaryAtHome();
-    }
-    updateButtonState();
-    ensurePSHomeOnce();
+    });
   });
 
 })(jQuery);
