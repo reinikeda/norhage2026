@@ -10,17 +10,17 @@ on:
       - 'public/wp-content/themes/astra-custom-for-norhage/**'
       # Custom plugins
       - 'public/wp-content/plugins/nh-cutting-toggle/**'
+      - 'public/wp-content/plugins/nh-delivery-time/**'
       - 'public/wp-content/plugins/nh-faq/**'
       - 'public/wp-content/plugins/nh-feature-box/**'
       - 'public/wp-content/plugins/nh-filters/**'
       - 'public/wp-content/plugins/nh-home-builder/**'
+      - 'public/wp-content/plugins/nh-important-notes/**'
       - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
       - 'public/wp-content/plugins/nh-sale-slider/**'
       - 'public/wp-content/plugins/nh-shipping-calculator/**'
-      - 'public/wp-content/plugins/running-ticker-line/**'
       - 'public/wp-content/plugins/product-labels/**'
-      - 'public/wp-content/plugins/nh-delivery-time/**'
-      - 'public/wp-content/plugins/nh-important-notes/**'
+      - 'public/wp-content/plugins/running-ticker-line/**'
 
 jobs:
   # =========================
@@ -75,17 +75,17 @@ jobs:
       matrix:
         plugin:
           - nh-cutting-toggle
+          - nh-delivery-time
           - nh-faq
           - nh-feature-box
           - nh-filters
           - nh-home-builder
+          - nh-important-notes
           - nh-inactivity-popup-lite
           - nh-sale-slider
           - nh-shipping-calculator
-          - running-ticker-line
           - product-labels
-          - nh-delivery-time
-          - nh-important-notes
+          - running-ticker-line
 
     steps:
       - name: Check out repository
@@ -110,16 +110,17 @@ jobs:
       matrix:
         plugin:
           - nh-cutting-toggle
+          - nh-delivery-time
           - nh-faq
           - nh-feature-box
           - nh-filters
           - nh-home-builder
+          - nh-important-notes
           - nh-inactivity-popup-lite
           - nh-sale-slider
           - nh-shipping-calculator
-          - running-ticker-line
           - product-labels
-          - nh-important-notes
+          - running-ticker-line
 
     steps:
       - name: Check out repository
