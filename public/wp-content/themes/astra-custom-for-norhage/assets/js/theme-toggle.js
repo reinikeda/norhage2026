@@ -7,9 +7,8 @@
   const sunIcon  = btn.dataset.sunIcon || '';
   const moonIcon = btn.dataset.moonIcon || '';
 
-  // Prefer previously chosen theme; otherwise follow OS preference.
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const initial = localStorage.getItem(KEY) || (prefersDark ? 'dark' : 'light');
+  // Prefer previously chosen theme; otherwise default to LIGHT.
+  const initial = localStorage.getItem(KEY) || 'light';
 
   // ---- GTM helper ----
   function pushThemeEvent(eventName, theme, source) {
@@ -55,7 +54,7 @@
   apply(initial);
 
   // Track initial theme (page load)
-  const initialSource = localStorage.getItem(KEY) ? 'storage' : 'os';
+  const initialSource = localStorage.getItem(KEY) ? 'storage' : 'default';
   pushThemeEvent('theme_init', initial, initialSource);
 
   btn.addEventListener('click', () => {
