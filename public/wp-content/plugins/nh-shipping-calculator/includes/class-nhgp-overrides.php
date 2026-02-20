@@ -313,7 +313,7 @@ class NHGP_Overrides {
 
 			if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
 				$w_mm = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
-				$h_mm = (float) ( $item['nh_custom_size']['length_mm'] ?? 0 );
+				$h_mm = (float) ( $item['nh_custom_size']['length_mm'] ?? ( $item['nh_custom_size']['height_mm'] ?? 0 ) );
 			}
 
 			if ( $w_mm <= 0 && isset( $item[ NHGP_Custom_Cut::WIDTH_KEY ] ) ) {
@@ -321,6 +321,10 @@ class NHGP_Overrides {
 			}
 			if ( $h_mm <= 0 && isset( $item[ NHGP_Custom_Cut::HEIGHT_KEY ] ) ) {
 				$h_mm = (float) $item[ NHGP_Custom_Cut::HEIGHT_KEY ];
+			}
+			// ALT height key support: nh_height_mm
+			if ( $h_mm <= 0 && isset( $item['nh_height_mm'] ) ) {
+				$h_mm = (float) $item['nh_height_mm'];
 			}
 
 			if ( $w_mm > 0 || $h_mm > 0 ) {

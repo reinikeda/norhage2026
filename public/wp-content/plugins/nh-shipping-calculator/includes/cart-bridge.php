@@ -6,6 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Supports BOTH:
  * - nh_custom_cutting (theme)
  * - nh_custom_mode (legacy)
+ *
+ * Also supports height posted as:
+ * - nh_length_mm (current expected)
+ * - nh_height_mm (alternate used in some theme versions)
  */
 add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $product_id, $variation_id ){
 
@@ -22,9 +26,14 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 		$cart_item_data[ $w_key ] = (float) wc_clean( wp_unslash( $_POST[ $w_key ] ) );
 	}
 
-	// Height
+	// Height (primary key)
 	if ( isset( $_POST[ $h_key ] ) ) {
 		$cart_item_data[ $h_key ] = (float) wc_clean( wp_unslash( $_POST[ $h_key ] ) );
+	}
+
+	// Height (ALT key support): nh_height_mm -> store into nh_length_mm
+	if ( ! isset( $_POST[ $h_key ] ) && isset( $_POST['nh_height_mm'] ) ) {
+		$cart_item_data[ $h_key ] = (float) wc_clean( wp_unslash( $_POST['nh_height_mm'] ) );
 	}
 
 	// New custom-cut flag
@@ -37,7 +46,5 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 		$cart_item_data[ $old_flag ] = (int) wc_clean( wp_unslash( $_POST[ $old_flag ] ) );
 	}
 
-	// Also accept your theme’s hidden marker "nh_custom_cutting=1" even if posted as string
-	// (this is already handled above, but keeping it explicit doesn’t hurt)
 	return $cart_item_data;
 }, 10, 3 );

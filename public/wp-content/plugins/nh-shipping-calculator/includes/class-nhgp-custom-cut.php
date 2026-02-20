@@ -17,23 +17,33 @@ class NHGP_Custom_Cut {
 	const WIDTH_KEY         = 'nh_width_mm';
 	const HEIGHT_KEY        = 'nh_length_mm';
 
+	// ALT height key (some theme versions)
+	const HEIGHT_KEY_ALT    = 'nh_height_mm';
+
 	/* ------------------------------------------------------------
 	 * Check if item is custom-cut
 	 * ------------------------------------------------------------ */
 	public static function is_custom_item( $item, $product, $cs ) {
 
-		// 1) Theme's structured custom size: nh_custom_size[width_mm/length_mm]
+		// 1) Theme's structured custom size: nh_custom_size[width_mm/length_mm OR height_mm]
 		if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
 			$w = (int) ( $item['nh_custom_size']['width_mm']  ?? 0 );
-			$h = (int) ( $item['nh_custom_size']['length_mm'] ?? 0 );
+			$h = (int) ( $item['nh_custom_size']['length_mm'] ?? ( $item['nh_custom_size']['height_mm'] ?? 0 ) );
 			if ( $w > 0 && $h > 0 ) {
 				return true;
 			}
 		}
 
-		// 2) Flat dimension keys on cart item (nh_width_mm / nh_length_mm)
-		$w_item = isset( $item[ self::WIDTH_KEY ] )  ? (float) $item[ self::WIDTH_KEY ]  : 0;
-		$h_item = isset( $item[ self::HEIGHT_KEY ] ) ? (float) $item[ self::HEIGHT_KEY ] : 0;
+		// 2) Flat dimension keys on cart item (nh_width_mm / nh_length_mm OR nh_height_mm)
+		$w_item = isset( $item[ self::WIDTH_KEY ] ) ? (float) $item[ self::WIDTH_KEY ] : 0;
+
+		$h_item = 0;
+		if ( isset( $item[ self::HEIGHT_KEY ] ) ) {
+			$h_item = (float) $item[ self::HEIGHT_KEY ];
+		} elseif ( isset( $item[ self::HEIGHT_KEY_ALT ] ) ) {
+			$h_item = (float) $item[ self::HEIGHT_KEY_ALT ];
+		}
+
 		if ( $w_item > 0 && $h_item > 0 ) {
 			return true;
 		}
@@ -62,29 +72,25 @@ class NHGP_Custom_Cut {
 	 * ------------------------------------------------------------ */
 	public static function get_dims( $item, $product, $cs ) {
 
-		// 1) Prefer structured custom size from theme: nh_custom_size[width_mm/length_mm]
+		// 1) Prefer structured custom size from theme: nh_custom_size[width_mm/length_mm OR height_mm]
 		if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
 			$w = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
-			$h = (float) ( $item['nh_custom_size']['length_mm'] ?? 0 );
+			$h = (float) ( $item['nh_custom_size']['length_mm'] ?? ( $item['nh_custom_size']['height_mm'] ?? 0 ) );
 			if ( $w > 0 || $h > 0 ) {
 				return array( $w, $h );
 			}
 		}
 
 		// 2) Fallback: flat keys on cart item
-		if ( isset( $item[ self::WIDTH_KEY ] ) || isset( $item[ self::HEIGHT_KEY ] ) ) {
-			$w = isset( $item[ self::WIDTH_KEY ] )  ? $item[ self::WIDTH_KEY ]  : 0;
-			$h = isset( $item[ self::HEIGHT_KEY ] ) ? $item[ self::HEIGHT_KEY ] : 0;
+		$w = isset( $item[ self::WIDTH_KEY ] ) ? $item[ self::WIDTH_KEY ] : 0;
 
-			$w = (float) str_replace( ',', '.', (string) $w );
-			$h = (float) str_replace( ',', '.', (string) $h );
-
-			return array( $w, $h );
+		if ( isset( $item[ self::HEIGHT_KEY ] ) ) {
+			$h = $item[ self::HEIGHT_KEY ];
+		} elseif ( isset( $item[ self::HEIGHT_KEY_ALT ] ) ) {
+			$h = $item[ self::HEIGHT_KEY_ALT ];
+		} else {
+			$h = 0;
 		}
-
-		// 3) Last resort: product meta (backwards compatibility)
-		$w = $product ? $product->get_meta( '_' . self::WIDTH_KEY, true ) : null;
-		$h = $product ? $product->get_meta( '_' . self::HEIGHT_KEY, true ) : null;
 
 		$w = (float) str_replace( ',', '.', (string) $w );
 		$h = (float) str_replace( ',', '.', (string) $h );
