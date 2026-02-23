@@ -514,12 +514,36 @@ a.ast-on-card-button.ast-select-options-trigger,
   display:none !important;
 }
 
+/* Make each product tile a flex column (enables consistent bottom-aligned CTAs) */
+.woocommerce ul.products li.product{
+  display:flex;
+  flex-direction:column;
+}
+
+/* Astra wraps title/price/button inside this summary container */
+.woocommerce ul.products li.product .astra-shop-summary-wrap{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
 /* Make "Customize" look like other archive buttons */
 .woocommerce ul.products li.product a.nh-btn-customize{
   display:block;
   width:100%;
   box-sizing:border-box;
   text-align:center;
+}
+
+/* Push CTA buttons to the bottom so they align across cards (range vs single price etc.) */
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.nh-btn-customize{
+  margin-top:auto;
+}
+
+/* Optional: reserve up to ~2 lines for price so card rhythm stays even */
+.woocommerce ul.products li.product .astra-shop-summary-wrap > .price{
+  min-height:2.4em;
 }
 
 /* =========================================================
