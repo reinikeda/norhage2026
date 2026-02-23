@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2026-02-18 14:30:31+00:00\n"
-"PO-Revision-Date: 2026-02-23 09:37+0200\n"
+"POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
+"PO-Revision-Date: 2026-02-23 14:20+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -37,104 +37,116 @@ msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
 msgstr "usein-kysytyt-kysymykset-ukk"
 
-#: functions.php:195 inc/services.php:26 inc/services.php:51
+#: functions.php:204 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr "Palvelut"
 
-#: functions.php:196 inc/blog.php:25 inc/hero.php:12
+#: functions.php:205 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
 msgstr "Blogi"
 
-#: functions.php:197
+#: functions.php:206
 msgid "Contact Us"
 msgstr "Ota yhteyttä"
 
-#: functions.php:203 template-parts/footer/footer.php:13
+#: functions.php:212 template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
 msgstr "+358 44 927 4784"
 
-#: functions.php:204 template-parts/headers/header-main.php:21
+#: functions.php:213 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
 msgstr "+358449274784"
 
-#: functions.php:210
+#: functions.php:219
 msgid "Utility bar"
 msgstr "Yläpalkki"
 
-#: functions.php:218
+#: functions.php:227
 msgid "Phone icon"
 msgstr "Puhelinkuvake"
 
-#: functions.php:227
+#: functions.php:236
 msgid "FAQ"
 msgstr "UKK"
 
-#: functions.php:290
+#: functions.php:301
 msgid "Shop by Category"
 msgstr "Osta kategorian mukaan"
 
-#: functions.php:315 functions.php:327
+#: functions.php:326 functions.php:338
 msgid "Long description"
 msgstr ""
 
-#: functions.php:317 functions.php:344
+#: functions.php:328 functions.php:355
 msgid "Shown after the product list and pagination on the category page."
 msgstr ""
 
-#: functions.php:378
+#: functions.php:389
 msgid "Category long description"
 msgstr ""
 
-#: functions.php:410 functions.php:429
+#: functions.php:421 functions.php:440
 msgid "Customize"
 msgstr "Syötä mitat"
 
-#: functions.php:411
+#: functions.php:422
 msgid "Customize “%s”"
 msgstr "Mukauta kohdetta “%s”"
 
-#: functions.php:434
+#: functions.php:445
 msgid "Select options"
 msgstr "Valitse mitat"
 
-#: functions.php:456
+#: functions.php:467
 msgid "Secondary product title"
 msgstr "Toissijainen tuotteen nimi"
 
-#: functions.php:485
+#: functions.php:496
 msgid "Footer — Shop Categories"
 msgstr "Alatunniste — Kaupan kategoriat"
 
-#: functions.php:486
+#: functions.php:497
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr "Alatunniste — Toissijainen (Palvelut, Blogi, Yhteystiedot)"
 
-#: functions.php:487
+#: functions.php:498
 msgid "Footer — Legal/Policies"
 msgstr "Alatunniste — Lakiasiat/Käytännöt"
 
-#: functions.php:671
+#: functions.php:682
 msgid "Please enter a valid email address."
 msgstr "Anna kelvollinen sähköpostiosoite."
 
-#: functions.php:679
+#: functions.php:690
 msgid "Thank you!"
 msgstr "Kiitos!"
 
-#: functions.php:688
+#: functions.php:699
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 "Tilaus on tilapäisesti poissa käytöstä. Ota yhteyttä sivuston ylläpitäjään."
 
-#: functions.php:713
+#: functions.php:724
 msgid "Could not connect to email service. Please try again."
 msgstr "Sähköpostipalveluun ei saatu yhteyttä. Yritä uudelleen."
 
-#: functions.php:723
+#: functions.php:734
 msgid "Thank you! You are subscribed."
 msgstr "Kiitos! Olet tilannut kanavan."
+
+#: functions.php:848
+msgid "Need help choosing or sizing? We can help."
+msgstr "Tarvitsetko apua tuotteen valinnassa? Autamme mielellämme."
+
+#: functions.php:858 functions.php:868
+msgid "Ask an expert"
+msgstr "Kysy neuvoa"
+
+#: functions.php:869
+msgid "Close"
+msgstr "Sulje"
 
 #: inc/basket-customize.php:157 inc/order-attributes.php:96
 #: inc/order-attributes.php:311 inc/product-customize.php:540

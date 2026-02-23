@@ -162,6 +162,15 @@ function norhage_enqueue_assets() {
 		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
 		true
 	);
+
+	wp_enqueue_script(
+		'nh-product-help-modal',
+		get_stylesheet_directory_uri() . '/assets/js/nh-product-help-modal.js',
+		array(),
+		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+		true
+	);
+
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 
@@ -780,3 +789,88 @@ add_action( 'wp_head', function() {
         echo '<meta name="robots" content="noindex,nofollow" />' . "\n";
     }
 });
+
+// Shorten WooCommerce "Lisää ostoskoriin" to "Lisää koriin" for Finnish locale.
+add_filter( 'gettext', function( $translated, $text, $domain ) {
+
+	if ( $domain !== 'woocommerce' ) {
+		return $translated;
+	}
+
+	// Only Finnish locale (fi, fi_FI).
+	$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+	if ( strpos( $locale, 'fi' ) !== 0 ) {
+		return $translated;
+	}
+
+	// Replace only the exact Finnish string.
+	if ( $translated === 'Lisää ostoskoriin' ) {
+		$translated = 'Lisää koriin';
+	}
+
+	return $translated;
+
+}, 10, 3 );
+
+
+/**
+ * Ask an expert (WPForms) — CTA under add-to-cart + modal in footer (prevents Woo validation on submit)
+ * Prefills 2 hidden-by-CSS fields via JS:
+ * - Product field row class: nh_wpf_product
+ * - URL field row class: nh_wpf_url
+ */
+
+function nh_get_help_form_id_by_host() : int {
+	$host = strtolower( $_SERVER['HTTP_HOST'] ?? '' );
+	$host = preg_replace( '/^www\./', '', $host );
+
+	$form_map = array(
+		'norhage.fi' => 7852,
+		'norhage.lt' => 903,
+		// 'norhage.no' => 3333,
+	);
+
+	return isset( $form_map[ $host ] ) ? (int) $form_map[ $host ] : 1151;
+}
+
+/**
+ * 1) CTA under Add to basket (inside cart form) — OK
+ */
+add_action( 'woocommerce_after_add_to_cart_form', function () {
+
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
+
+	global $product;
+	if ( ! $product ) return;
+
+	$form_id      = nh_get_help_form_id_by_host();
+	$product_name = $product->get_name();
+	$product_url  = get_permalink( $product->get_id() );
+
+	?>
+	<div class="nh-help-accordion" data-nh-help>
+		<div class="nh-help-accordion__hint">
+			<?php echo esc_html__( 'Need help choosing or sizing? We can help.', 'nh-theme' ); ?>
+		</div>
+
+		<button
+			type="button"
+			class="button nh-help-accordion__btn"
+			aria-expanded="false"
+			aria-controls="nh-help-panel"
+			data-nh-help-toggle
+			data-nh-product="<?php echo esc_attr( $product_name ); ?>"
+			data-nh-url="<?php echo esc_url( $product_url ); ?>"
+		>
+			<?php echo esc_html__( 'Ask an expert', 'nh-theme' ); ?>
+		</button>
+
+		<div id="nh-help-panel" class="nh-help-accordion__panel" hidden>
+			<?php echo do_shortcode( '[wpforms id="' . (int) $form_id . '" title="false" description="false" ajax="true"]' ); ?>
+		</div>
+
+		<div class="nh-help-accordion__status" aria-live="polite" aria-atomic="true"></div>
+	</div>
+	<?php
+
+}, 20 );

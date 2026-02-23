@@ -499,6 +499,139 @@
 }
 
 /* ==========================================================================
+   Ask an expert (Accordion version – light style)
+   ========================================================================== */
+
+/* Wrapper */
+.single-product .nh-help-accordion{
+  display: block;
+  width: 100%;
+  clear: both;
+  margin-top: 12px;
+}
+
+/* Hint text */
+.single-product .nh-help-accordion__hint{
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  opacity: .75;
+}
+
+/* Ask an expert: NEVER look like a Woo/Astra button */
+.single-product .nh-help-accordion__btn,
+.single-product .nh-help-accordion__btn.button,
+.single-product form.cart button.nh-help-accordion__btn{
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--nh-green, #00704A) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* Kill theme hover/active styles */
+.single-product .nh-help-accordion__btn:hover,
+.single-product .nh-help-accordion__btn.button:hover,
+.single-product form.cart button.nh-help-accordion__btn:hover{
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--nh-green, #00704A) !important;
+  opacity: .75;
+}
+
+/* Focus/active: no green fill */
+.single-product .nh-help-accordion__btn:focus,
+.single-product .nh-help-accordion__btn:active{
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+/* Form panel */
+.single-product .nh-help-accordion__panel{
+  margin-top: 14px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+}
+
+/* Hidden state */
+.single-product .nh-help-accordion__panel[hidden]{
+  display: none !important;
+}
+
+/* Status message */
+.single-product .nh-help-accordion__status{
+  margin-top: 8px;
+  font-size: 14px;
+  display: none;
+}
+
+.single-product .nh-help-accordion__status.is-visible{
+  display: block;
+}
+
+/* ==========================================================================
+   WPForms styling inside accordion
+   ========================================================================== */
+
+/* Keep WPForms wrapper clean (prevents surprise white cards from theme) */
+.single-product .nh-help-accordion__panel .wpforms-container,
+.single-product .nh-help-accordion__panel .wpforms-container-full,
+.single-product .nh-help-accordion__panel .wpforms-form{
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Submit button — LIGHT style */
+.single-product .nh-help-accordion__panel .wpforms-submit{
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: var(--nh-green, #00704A) !important;
+  border: 1px solid var(--nh-green, #00704A) !important;
+  border-radius: 4px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  transition: all .2s ease !important;
+  box-shadow: none !important;
+}
+
+/* Submit hover */
+.single-product .nh-help-accordion__panel .wpforms-submit:hover{
+  background: rgba(0,112,74,0.05) !important;
+  background-color: rgba(0,112,74,0.05) !important;
+  color: var(--nh-green, #00704A) !important;
+}
+
+/* Hide auto-filled fields (robust: wrapper OR input has the class) */
+.wpforms-field.nh_wpf_product,
+.wpforms-field.nh_wpf_url,
+.wpforms-field-container .nh_wpf_product,
+.wpforms-field-container .nh_wpf_url,
+.wpforms-field input.nh_wpf_product,
+.wpforms-field textarea.nh_wpf_product,
+.wpforms-field input.nh_wpf_url,
+.wpforms-field textarea.nh_wpf_url{
+  display: none !important;
+}
+
+/* ==========================================================================
    6) Theme tweak
    ========================================================================== */
 

@@ -357,6 +357,103 @@ body.dark-mode .variations_form .nh-attr-btn.is-disabled:hover {
   transform: none !important;
 }
 
+/* ==========================================================================
+   Dark mode — WPForms inside accordion (force dark background everywhere)
+   ========================================================================== */
+
+/* Make sure the panel is the dark card */
+body.dark-mode .single-product .nh-help-accordion__panel{
+  background: #141917 !important;
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.9);
+}
+
+/* FINAL override: dark mode panel must be dark */
+body.dark-mode.single-product .nh-help-accordion__panel,
+body.dark-mode .single-product .nh-help-accordion__panel{
+  background: #141917 !important;
+  border-color: rgba(255,255,255,.08) !important;
+  color: rgba(255,255,255,.9) !important;
+}
+
+/* Force all WPForms wrappers INSIDE to be dark (not transparent) */
+body.dark-mode .nh-help-accordion__panel .wpforms-container,
+body.dark-mode .nh-help-accordion__panel .wpforms-container-full,
+body.dark-mode .nh-help-accordion__panel .wpforms-form,
+body.dark-mode .nh-help-accordion__panel form.wpforms-form,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-container,
+body.dark-mode .nh-help-accordion__panel .wpforms-page,
+body.dark-mode .nh-help-accordion__panel .wpforms-pagebreak,
+body.dark-mode .nh-help-accordion__panel .wpforms-field,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-row,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-gutter,
+body.dark-mode .nh-help-accordion__panel .wpforms-layout-wrapper{
+  background: #141917 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Labels */
+body.dark-mode .nh-help-accordion__panel .wpforms-field-label,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-label-inline,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-sublabel,
+body.dark-mode .nh-help-accordion__panel .wpforms-field-description{
+  color: rgba(255,255,255,.85) !important;
+}
+
+/* Required asterisk */
+body.dark-mode .nh-help-accordion__panel .wpforms-required-label{
+  color: #ff6b6b !important;
+}
+
+/* Inputs & textarea */
+body.dark-mode .nh-help-accordion__panel input,
+body.dark-mode .nh-help-accordion__panel textarea,
+body.dark-mode .nh-help-accordion__panel select{
+  background: #0f1312 !important;
+  color: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+}
+
+/* Placeholder */
+body.dark-mode .nh-help-accordion__panel input::placeholder,
+body.dark-mode .nh-help-accordion__panel textarea::placeholder{
+  color: rgba(255,255,255,.45) !important;
+}
+
+/* Focus */
+body.dark-mode .nh-help-accordion__panel input:focus,
+body.dark-mode .nh-help-accordion__panel textarea:focus,
+body.dark-mode .nh-help-accordion__panel select:focus{
+  border-color: var(--nh-green, #26a269) !important;
+  box-shadow: 0 0 0 1px var(--nh-green, #26a269) !important;
+  outline: none !important;
+}
+
+/* Submit */
+body.dark-mode .nh-help-accordion__panel .wpforms-submit{
+  background: var(--nh-green, #00704A) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .nh-help-accordion__panel .wpforms-submit:hover{
+  filter: brightness(1.1);
+}
+
+/* Hide auto-filled fields (robust) */
+body.dark-mode .wpforms-field.nh_wpf_product,
+body.dark-mode .wpforms-field.nh_wpf_url,
+body.dark-mode .wpforms-field-container .nh_wpf_product,
+body.dark-mode .wpforms-field-container .nh_wpf_url,
+body.dark-mode .wpforms-field input.nh_wpf_product,
+body.dark-mode .wpforms-field input.nh_wpf_url,
+body.dark-mode .wpforms-field textarea.nh_wpf_product,
+body.dark-mode .wpforms-field textarea.nh_wpf_url{
+  display: none !important;
+}
+
 /* ============================================
    OUT-OF-STOCK (selected variation)
    ============================================ */
