@@ -440,7 +440,7 @@ body.mh-fixed-on{
 }
 
 /* Tall desktop breakpoint (must be DESK_MIN_H + 1 from JS) */
-@media (min-width:1024px) and (min-height: 881px){
+@media (min-width:1024px) and (min-height: 901px){
   :root{
     --masthead-h-desktop: 168px; /* adjust if your header height changes */
   }
@@ -482,20 +482,25 @@ body.mh-fixed-on{
     background: var(--nh-forest,#1E3932);
     box-shadow: 0 4px 12px rgba(0,0,0,.24);
     overflow: visible;
+
+    /* Mobile is always compact now — don't start off-screen */
+    transform: translateY(0);
+    transition: none;
+  }
+
+  /* If mh-hidden ever gets applied, still allow it to hide */
+  #masthead.mh-compact.mh-hidden{
     transform: translateY(-100%);
     transition: transform .22s ease;
   }
 
-  #masthead.mh-compact.mh-fixed{
-    transform: translateY(0);
-  }
-  #masthead.mh-compact.mh-hidden{
-    transform: translateY(-100%);
+  /* Avoid sticky-inside-fixed jitter (ticker/header inside fixed masthead) */
+  #masthead.mh-compact .nhhb-header-main{
+    position: static;
   }
 
-  /* Hide utility / ticker / desktop primary menu in compact */
-  #masthead.mh-compact .nh-utility,
-  #masthead.mh-compact .nh-ticker-wrap{
+  /* Hide utility in compact (keep ticker visible on mobile) */
+  #masthead.mh-compact .nh-utility{
     display:none !important;
   }
   #masthead.mh-compact .nhhb-main-nav{
@@ -805,7 +810,6 @@ body.mh-fixed-on{
 
 /* MOBILE drawer extras */
 @media (max-width: 1023px){
-
   #nh-mobile-drawer .nh-drawer__panel{
     padding-bottom: 4.5rem;
   }
@@ -931,52 +935,53 @@ body.mh-fixed-on{
 
 /* =========================================================
    8) MOBILE HEADER GRID SIMPLIFICATION (NON-COMPACT)
+   - kept for safety, but only applies if compact is NOT active
    ========================================================= */
 @media (max-width:980px){
-  .nhhb-row{
+  #masthead:not(.mh-compact) .nhhb-row{
     grid-template-columns:1fr;
   }
-  .nhhb-row--top{
+  #masthead:not(.mh-compact) .nhhb-row--top{
     row-gap:10px;
     padding-bottom:10px;
   }
-  .nhhb-row--top .nhhb-logo{
+  #masthead:not(.mh-compact) .nhhb-row--top .nhhb-logo{
     grid-column:1;
     justify-self:start;
     margin:0;
   }
-  .nhhb-row--top .nhhb-main-nav{
+  #masthead:not(.mh-compact) .nhhb-row--top .nhhb-main-nav{
     grid-column:1;
     justify-content:center !important;
     overflow:visible !important;
   }
-  .nhhb-main-nav .primary-menu{
+  #masthead:not(.mh-compact) .nhhb-main-nav .primary-menu{
     flex-wrap:wrap;
     justify-content:center;
     gap:10px 22px;
     margin:0;
     padding:0;
   }
-  .nhhb-main-nav .primary-menu > li > a{
+  #masthead:not(.mh-compact) .nhhb-main-nav .primary-menu > li > a{
     white-space:normal;
     padding:6px 8px;
     border-radius:6px;
     background:transparent;
   }
 
-  .nhhb-row--bottom .nhhb-tools{
+  #masthead:not(.mh-compact) .nhhb-row--bottom .nhhb-tools{
     width:100%;
     justify-content:space-between;
     gap:12px;
     flex-wrap:wrap;
     padding-block:8px;
   }
-  .nhhb-row--bottom .nh-account,
-  .nhhb-row--bottom .nh-cart,
-  .nhhb-row--bottom .theme-toggle{
+  #masthead:not(.mh-compact) .nhhb-row--bottom .nh-account,
+  #masthead:not(.mh-compact) .nhhb-row--bottom .nh-cart,
+  #masthead:not(.mh-compact) .nhhb-row--bottom .theme-toggle{
     order:1;
   }
-  .nhhb-row--bottom .nh-live-search{
+  #masthead:not(.mh-compact) .nhhb-row--bottom .nh-live-search{
     order:2;
     flex:1 1 100%;
     max-width:100%;
