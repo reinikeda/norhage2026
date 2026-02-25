@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-cutting-toggle\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-18 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 08:32+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: nh-cutting-toggle.php:87
+msgid "Cutting type"
+msgstr "Schnittart"
+
+#: nh-cutting-toggle.php:97 nh-cutting-toggle.php:99
+msgid "Standard sizes"
+msgstr "Standardgrößen"
+
+#: nh-cutting-toggle.php:103 nh-cutting-toggle.php:105
+msgid "Cut to custom size"
+msgstr "Auf Maß zugeschnitten"

@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
-"PO-Revision-Date: 2026-02-25 08:06+0200\n"
+"PO-Revision-Date: 2026-02-25 08:28+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -591,15 +591,15 @@ msgstr "Adresse:"
 
 #: template-parts/footer/footer.php:74
 msgid "Phone:"
-msgstr ""
+msgstr "Telefon:"
 
 #: template-parts/footer/footer.php:77
 msgid "Email:"
-msgstr ""
+msgstr "E-Mail:"
 
 #: template-parts/footer/footer.php:84
 msgid "Follow us"
-msgstr ""
+msgstr "Folgen Sie uns"
 
 #: template-parts/footer/footer.php:85
 msgid "Social media"
@@ -607,47 +607,47 @@ msgstr ""
 
 #: template-parts/footer/footer.php:113
 msgid "Shop Categories"
-msgstr ""
+msgstr "Shop-Kategorien"
 
 #: template-parts/footer/footer.php:116
 msgid "Explore & Support"
-msgstr ""
+msgstr "Entdecken & Kundenservice"
 
 #: template-parts/footer/footer.php:119
 msgid "Legal & Information"
-msgstr ""
+msgstr "Rechtliches & Informationen"
 
 #: template-parts/footer/footer.php:123
 msgid "Stay in the Loop"
-msgstr ""
+msgstr "Bleiben Sie auf dem Laufenden"
 
 #: template-parts/footer/footer.php:124
 msgid "Get trends, offers and how-tos straight to your inbox."
-msgstr ""
+msgstr "Erhalten Sie Trends, Angebote und Anleitungen direkt in Ihr Postfach."
 
 #: template-parts/footer/footer.php:127
 msgid "Email address"
-msgstr ""
+msgstr "E-Mail-Adresse"
 
 #: template-parts/footer/footer.php:133
 msgid "Your email address"
-msgstr ""
+msgstr "Ihre E-Mail-Adresse"
 
 #: template-parts/footer/footer.php:137
 msgid "Subscribe"
-msgstr ""
+msgstr "Abonnieren"
 
 #: template-parts/footer/footer.php:139
 msgid "By subscribing you agree to our"
-msgstr ""
+msgstr "Durch das Abonnieren stimmen Sie unserer"
 
 #: template-parts/footer/footer.php:140
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Datenschutzerklärung"
 
 #: template-parts/footer/footer.php:152
 msgid "B2B Portal"
-msgstr ""
+msgstr "B2B-Portal"
 
 #: template-parts/footer/footer.php:155
 msgid "Legal bottom"
@@ -655,11 +655,11 @@ msgstr ""
 
 #: template-parts/headers/header-main.php:18
 msgid "My Account"
-msgstr ""
+msgstr "Mein Konto"
 
 #: template-parts/headers/header-main.php:18
 msgid "Sign in"
-msgstr ""
+msgstr "Anmelden"
 
 #: template-parts/headers/header-main.php:39
 msgid "Primary menu"

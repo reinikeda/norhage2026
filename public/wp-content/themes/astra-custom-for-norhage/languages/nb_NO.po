@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
-"PO-Revision-Date: 2026-02-25 07:58+0200\n"
+"PO-Revision-Date: 2026-02-25 08:28+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -591,15 +591,15 @@ msgstr "Adresse:"
 
 #: template-parts/footer/footer.php:74
 msgid "Phone:"
-msgstr ""
+msgstr "Telefon:"
 
 #: template-parts/footer/footer.php:77
 msgid "Email:"
-msgstr ""
+msgstr "E-post:"
 
 #: template-parts/footer/footer.php:84
 msgid "Follow us"
-msgstr ""
+msgstr "Følg oss"
 
 #: template-parts/footer/footer.php:85
 msgid "Social media"
@@ -607,47 +607,47 @@ msgstr ""
 
 #: template-parts/footer/footer.php:113
 msgid "Shop Categories"
-msgstr ""
+msgstr "Butikkategorier"
 
 #: template-parts/footer/footer.php:116
 msgid "Explore & Support"
-msgstr ""
+msgstr "Utforsk & Kundestøtte"
 
 #: template-parts/footer/footer.php:119
 msgid "Legal & Information"
-msgstr ""
+msgstr "Juridisk & Informasjon"
 
 #: template-parts/footer/footer.php:123
 msgid "Stay in the Loop"
-msgstr ""
+msgstr "Hold deg oppdatert"
 
 #: template-parts/footer/footer.php:124
 msgid "Get trends, offers and how-tos straight to your inbox."
-msgstr ""
+msgstr "Få trender, tilbud og guider rett i innboksen."
 
 #: template-parts/footer/footer.php:127
 msgid "Email address"
-msgstr ""
+msgstr "E-postadresse"
 
 #: template-parts/footer/footer.php:133
 msgid "Your email address"
-msgstr ""
+msgstr "Din e-postadresse"
 
 #: template-parts/footer/footer.php:137
 msgid "Subscribe"
-msgstr ""
+msgstr "Abonner"
 
 #: template-parts/footer/footer.php:139
 msgid "By subscribing you agree to our"
-msgstr ""
+msgstr "Ved å abonnere godtar du vår"
 
 #: template-parts/footer/footer.php:140
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Personvernerklæring"
 
 #: template-parts/footer/footer.php:152
 msgid "B2B Portal"
-msgstr ""
+msgstr "B2B-portal"
 
 #: template-parts/footer/footer.php:155
 msgid "Legal bottom"
@@ -655,11 +655,11 @@ msgstr ""
 
 #: template-parts/headers/header-main.php:18
 msgid "My Account"
-msgstr ""
+msgstr "Min konto"
 
 #: template-parts/headers/header-main.php:18
 msgid "Sign in"
-msgstr ""
+msgstr "Logg inn"
 
 #: template-parts/headers/header-main.php:39
 msgid "Primary menu"
