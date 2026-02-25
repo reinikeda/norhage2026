@@ -105,18 +105,18 @@ jobs:
 
           for p in "${plugins[@]}"; do
             case "$p" in
-              nh-cutting-toggle)          out="${{ steps.filter.outputs.nh-cutting-toggle }}" ;;
-              nh-delivery-time)           out="${{ steps.filter.outputs.nh-delivery-time }}" ;;
-              nh-faq)                     out="${{ steps.filter.outputs.nh-faq }}" ;;
-              nh-feature-box)             out="${{ steps.filter.outputs.nh-feature-box }}" ;;
-              nh-filters)                 out="${{ steps.filter.outputs.nh-filters }}" ;;
-              nh-home-builder)            out="${{ steps.filter.outputs.nh-home-builder }}" ;;
-              nh-important-notes)         out="${{ steps.filter.outputs.nh-important-notes }}" ;;
-              nh-inactivity-popup-lite)   out="${{ steps.filter.outputs.nh-inactivity-popup-lite }}" ;;
-              nh-sale-slider)             out="${{ steps.filter.outputs.nh-sale-slider }}" ;;
-              nh-shipping-calculator)     out="${{ steps.filter.outputs.nh-shipping-calculator }}" ;;
-              product-labels)             out="${{ steps.filter.outputs.product-labels }}" ;;
-              running-ticker-line)        out="${{ steps.filter.outputs.running-ticker-line }}" ;;
+              nh-cutting-toggle)          out="${{ steps.filter.outputs['nh-cutting-toggle'] }}" ;;
+              nh-delivery-time)           out="${{ steps.filter.outputs['nh-delivery-time'] }}" ;;
+              nh-faq)                     out="${{ steps.filter.outputs['nh-faq'] }}" ;;
+              nh-feature-box)             out="${{ steps.filter.outputs['nh-feature-box'] }}" ;;
+              nh-filters)                 out="${{ steps.filter.outputs['nh-filters'] }}" ;;
+              nh-home-builder)            out="${{ steps.filter.outputs['nh-home-builder'] }}" ;;
+              nh-important-notes)         out="${{ steps.filter.outputs['nh-important-notes'] }}" ;;
+              nh-inactivity-popup-lite)   out="${{ steps.filter.outputs['nh-inactivity-popup-lite'] }}" ;;
+              nh-sale-slider)             out="${{ steps.filter.outputs['nh-sale-slider'] }}" ;;
+              nh-shipping-calculator)     out="${{ steps.filter.outputs['nh-shipping-calculator'] }}" ;;
+              product-labels)             out="${{ steps.filter.outputs['product-labels'] }}" ;;
+              running-ticker-line)        out="${{ steps.filter.outputs['running-ticker-line'] }}" ;;
               *) out="false" ;;
             esac
 
@@ -133,6 +133,10 @@ jobs:
             IFS=,
             echo "plugins_json=[${changed[*]}]" >> $GITHUB_OUTPUT
           fi
+
+          # Optional debug (shows in Actions logs)
+          echo "plugins_changed=${#changed[@]}"
+          echo "plugins_json=[${changed[*]}]"
 
   deploy-theme-languages:
     runs-on: ubuntu-latest
