@@ -130,6 +130,7 @@ jobs:
             echo 'plugins_json=[]' >> $GITHUB_OUTPUT
           else
             echo "plugins_changed=true" >> $GITHUB_OUTPUT
+            IFS=,
             echo "plugins_json=[${changed[*]}]" >> $GITHUB_OUTPUT
           fi
 
