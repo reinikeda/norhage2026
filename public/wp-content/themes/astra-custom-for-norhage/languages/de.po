@@ -9,7 +9,7 @@ msgstr ""
 "PO-Revision-Date: 2026-02-25 07:58+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
-"Language: nb_NO\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,15 +35,15 @@ msgstr ""
 #: functions.php:88
 msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
-msgstr "ofte-stilte-sporsmal-faq"
+msgstr "haeufig-gestellte-fragen-faq"
 
 #: functions.php:204 inc/services.php:26 inc/services.php:51
 msgid "Services"
-msgstr "Tjenester"
+msgstr "Dienstleistungen"
 
 #: functions.php:205 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
-msgstr "Blogg"
+msgstr "Blog"
 
 #: functions.php:206
 msgid "Contact Us"
@@ -52,11 +52,11 @@ msgstr "Kontakt"
 #: functions.php:212 template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
-msgstr "+47 940 99 084"
+msgstr "+49 176 65 10 6609"
 
 #: functions.php:213 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
-msgstr "+4794099084"
+msgstr "+4917665106609"
 
 #: functions.php:219
 msgid "Utility bar"
@@ -72,7 +72,7 @@ msgstr "FAQ"
 
 #: functions.php:301
 msgid "Shop by Category"
-msgstr "Handle etter kategori"
+msgstr "Nach Kategorie einkaufen"
 
 #: functions.php:326 functions.php:338
 msgid "Long description"
@@ -579,11 +579,11 @@ msgstr ""
 
 #: template-parts/footer/footer.php:70
 msgid "Company Info"
-msgstr "Firmainformasjon"
+msgstr "Unternehmensinformationen"
 
 #: template-parts/footer/footer.php:72
 msgid "Company:"
-msgstr "Selskap:"
+msgstr "Unternehmen:"
 
 #: template-parts/footer/footer.php:73
 msgid "Address:"

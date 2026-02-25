@@ -4,33 +4,117 @@ on:
   push:
     branches: [staging]
     paths:
-      # Theme
       - 'public/wp-content/themes/astra-custom-for-norhage/**'
-      # Custom plugins
-      - 'public/wp-content/plugins/nh-cutting-toggle/**'
-      - 'public/wp-content/plugins/nh-delivery-time/**'
-      - 'public/wp-content/plugins/nh-faq/**'
-      - 'public/wp-content/plugins/nh-feature-box/**'
-      - 'public/wp-content/plugins/nh-filters/**'
-      - 'public/wp-content/plugins/nh-home-builder/**'
-      - 'public/wp-content/plugins/nh-important-notes/**'
-      - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
-      - 'public/wp-content/plugins/nh-sale-slider/**'
-      - 'public/wp-content/plugins/nh-shipping-calculator/**'
-      - 'public/wp-content/plugins/product-labels/**'
-      - 'public/wp-content/plugins/running-ticker-line/**'
+      - 'public/wp-content/plugins/**'
 
-# Make sure only ONE staging deploy workflow runs at a time
 concurrency:
   group: deploy-staging
   cancel-in-progress: true
 
 jobs:
-  # =========================
-  # THEME (ALL STAGING SITES)
-  # =========================
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      theme_changed: ${{ steps.filter.outputs.theme }}
+      plugins_json: ${{ steps.setmatrix.outputs.plugins_json }}
+      plugins_changed: ${{ steps.setmatrix.outputs.plugins_changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changed paths
+      # This action tells you which "filters" matched the changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            theme:
+              - 'public/wp-content/themes/astra-custom-for-norhage/**'
+            nh-cutting-toggle:
+              - 'public/wp-content/plugins/nh-cutting-toggle/**'
+            nh-delivery-time:
+              - 'public/wp-content/plugins/nh-delivery-time/**'
+            nh-faq:
+              - 'public/wp-content/plugins/nh-faq/**'
+            nh-feature-box:
+              - 'public/wp-content/plugins/nh-feature-box/**'
+            nh-filters:
+              - 'public/wp-content/plugins/nh-filters/**'
+            nh-home-builder:
+              - 'public/wp-content/plugins/nh-home-builder/**'
+            nh-important-notes:
+              - 'public/wp-content/plugins/nh-important-notes/**'
+            nh-inactivity-popup-lite:
+              - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
+            nh-sale-slider:
+              - 'public/wp-content/plugins/nh-sale-slider/**'
+            nh-shipping-calculator:
+              - 'public/wp-content/plugins/nh-shipping-calculator/**'
+            product-labels:
+              - 'public/wp-content/plugins/product-labels/**'
+            running-ticker-line:
+              - 'public/wp-content/plugins/running-ticker-line/**'
+
+      - name: Build plugins matrix JSON (only changed)
+        id: setmatrix
+        shell: bash
+        run: |
+          changed=()
+
+          # Add plugin slugs here (same as filters above)
+          plugins=(
+            nh-cutting-toggle
+            nh-delivery-time
+            nh-faq
+            nh-feature-box
+            nh-filters
+            nh-home-builder
+            nh-important-notes
+            nh-inactivity-popup-lite
+            nh-sale-slider
+            nh-shipping-calculator
+            product-labels
+            running-ticker-line
+          )
+
+          for p in "${plugins[@]}"; do
+            val="${{ steps.filter.outputs[format('{0}', 'REPLACE_ME')] }}"
+          done
+
+          # Bash can't directly index that expression, so we do it with a case map:
+          for p in "${plugins[@]}"; do
+            case "$p" in
+              nh-cutting-toggle)          out="${{ steps.filter.outputs.nh-cutting-toggle }}" ;;
+              nh-delivery-time)           out="${{ steps.filter.outputs.nh-delivery-time }}" ;;
+              nh-faq)                     out="${{ steps.filter.outputs.nh-faq }}" ;;
+              nh-feature-box)             out="${{ steps.filter.outputs.nh-feature-box }}" ;;
+              nh-filters)                 out="${{ steps.filter.outputs.nh-filters }}" ;;
+              nh-home-builder)            out="${{ steps.filter.outputs.nh-home-builder }}" ;;
+              nh-important-notes)         out="${{ steps.filter.outputs.nh-important-notes }}" ;;
+              nh-inactivity-popup-lite)   out="${{ steps.filter.outputs.nh-inactivity-popup-lite }}" ;;
+              nh-sale-slider)             out="${{ steps.filter.outputs.nh-sale-slider }}" ;;
+              nh-shipping-calculator)     out="${{ steps.filter.outputs.nh-shipping-calculator }}" ;;
+              product-labels)             out="${{ steps.filter.outputs.product-labels }}" ;;
+              running-ticker-line)        out="${{ steps.filter.outputs.running-ticker-line }}" ;;
+              *) out="false" ;;
+            esac
+
+            if [ "$out" = "true" ]; then
+              changed+=("\"$p\"")
+            fi
+          done
+
+          if [ ${#changed[@]} -eq 0 ]; then
+            echo "plugins_changed=false" >> $GITHUB_OUTPUT
+            echo 'plugins_json=[]' >> $GITHUB_OUTPUT
+          else
+            echo "plugins_changed=true" >> $GITHUB_OUTPUT
+            echo "plugins_json=[${changed[*]}]" >> $GITHUB_OUTPUT
+          fi
+
   deploy-theme-staging:
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.theme_changed == 'true'
 
     strategy:
       max-parallel: 1
@@ -43,8 +127,7 @@ jobs:
           - /staging-no
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Deploy theme to ${{ matrix.site }} via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
@@ -57,165 +140,24 @@ jobs:
           local_path: "public/wp-content/themes/astra-custom-for-norhage/*"
           remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
 
-  # =========================
-  # PLUGINS (ALL STAGING SITES)
-  # =========================
   deploy-plugins-staging:
     runs-on: ubuntu-latest
-    needs: deploy-theme-staging
+    needs: detect-changes
+    if: needs.detect-changes.outputs.plugins_changed == 'true'
 
     strategy:
-      # CRITICAL: sequential deployments (one SFTP at a time)
       max-parallel: 1
       matrix:
-        include:
-          # ---- nh-cutting-toggle
-          - site: /staging
-            plugin: nh-cutting-toggle
-          - site: /staging-fi
-            plugin: nh-cutting-toggle
-          - site: /staging-de
-            plugin: nh-cutting-toggle
-          - site: /staging-se
-            plugin: nh-cutting-toggle
-          - site: /staging-no
-            plugin: nh-cutting-toggle
-
-          # ---- nh-delivery-time
-          - site: /staging
-            plugin: nh-delivery-time
-          - site: /staging-fi
-            plugin: nh-delivery-time
-          - site: /staging-de
-            plugin: nh-delivery-time
-          - site: /staging-se
-            plugin: nh-delivery-time
-          - site: /staging-no
-            plugin: nh-delivery-time
-
-          # ---- nh-faq
-          - site: /staging
-            plugin: nh-faq
-          - site: /staging-fi
-            plugin: nh-faq
-          - site: /staging-de
-            plugin: nh-faq
-          - site: /staging-se
-            plugin: nh-faq
-          - site: /staging-no
-            plugin: nh-faq
-
-          # ---- nh-feature-box
-          - site: /staging
-            plugin: nh-feature-box
-          - site: /staging-fi
-            plugin: nh-feature-box
-          - site: /staging-de
-            plugin: nh-feature-box
-          - site: /staging-se
-            plugin: nh-feature-box
-          - site: /staging-no
-            plugin: nh-feature-box
-
-          # ---- nh-filters
-          - site: /staging
-            plugin: nh-filters
-          - site: /staging-fi
-            plugin: nh-filters
-          - site: /staging-de
-            plugin: nh-filters
-          - site: /staging-se
-            plugin: nh-filters
-          - site: /staging-no
-            plugin: nh-filters
-
-          # ---- nh-home-builder
-          - site: /staging
-            plugin: nh-home-builder
-          - site: /staging-fi
-            plugin: nh-home-builder
-          - site: /staging-de
-            plugin: nh-home-builder
-          - site: /staging-se
-            plugin: nh-home-builder
-          - site: /staging-no
-            plugin: nh-home-builder
-
-          # ---- nh-important-notes
-          - site: /staging
-            plugin: nh-important-notes
-          - site: /staging-fi
-            plugin: nh-important-notes
-          - site: /staging-de
-            plugin: nh-important-notes
-          - site: /staging-se
-            plugin: nh-important-notes
-          - site: /staging-no
-            plugin: nh-important-notes
-
-          # ---- nh-inactivity-popup-lite
-          - site: /staging
-            plugin: nh-inactivity-popup-lite
-          - site: /staging-fi
-            plugin: nh-inactivity-popup-lite
-          - site: /staging-de
-            plugin: nh-inactivity-popup-lite
-          - site: /staging-se
-            plugin: nh-inactivity-popup-lite
-          - site: /staging-no
-            plugin: nh-inactivity-popup-lite
-
-          # ---- nh-sale-slider
-          - site: /staging
-            plugin: nh-sale-slider
-          - site: /staging-fi
-            plugin: nh-sale-slider
-          - site: /staging-de
-            plugin: nh-sale-slider
-          - site: /staging-se
-            plugin: nh-sale-slider
-          - site: /staging-no
-            plugin: nh-sale-slider
-
-          # ---- nh-shipping-calculator
-          - site: /staging
-            plugin: nh-shipping-calculator
-          - site: /staging-fi
-            plugin: nh-shipping-calculator
-          - site: /staging-de
-            plugin: nh-shipping-calculator
-          - site: /staging-se
-            plugin: nh-shipping-calculator
-          - site: /staging-no
-            plugin: nh-shipping-calculator
-
-          # ---- product-labels
-          - site: /staging
-            plugin: product-labels
-          - site: /staging-fi
-            plugin: product-labels
-          - site: /staging-de
-            plugin: product-labels
-          - site: /staging-se
-            plugin: product-labels
-          - site: /staging-no
-            plugin: product-labels
-
-          # ---- running-ticker-line
-          - site: /staging
-            plugin: running-ticker-line
-          - site: /staging-fi
-            plugin: running-ticker-line
-          - site: /staging-de
-            plugin: running-ticker-line
-          - site: /staging-se
-            plugin: running-ticker-line
-          - site: /staging-no
-            plugin: running-ticker-line
+        site:
+          - /staging
+          - /staging-fi
+          - /staging-de
+          - /staging-se
+          - /staging-no
+        plugin: ${{ fromJSON(needs.detect-changes.outputs.plugins_json) }}
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Deploy plugin ${{ matrix.plugin }} to ${{ matrix.site }} via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
@@ -227,4 +169,3 @@ jobs:
           sftp_only: true
           local_path: "public/wp-content/plugins/${{ matrix.plugin }}/*"
           remote_path: "${{ matrix.site }}/wp-content/plugins/${{ matrix.plugin }}"
-          
