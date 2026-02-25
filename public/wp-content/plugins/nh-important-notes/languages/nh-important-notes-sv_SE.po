@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-important-notes 1.0.0\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+msgid "Important notes"
+msgstr "Viktiga anmärkningar"
+
+msgid "Important information"
+msgstr "Viktig information"

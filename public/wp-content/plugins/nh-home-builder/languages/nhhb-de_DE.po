@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-home-builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 09:01+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+# browse-cats.php
+msgid "Browse by Category"
+msgstr "Nach Kategorie stöbern"
+
+msgid "Scroll left"
+msgstr "Nach links scrollen"
+
+msgid "Scroll right"
+msgstr "Nach rechts scrollen"
+
+msgid "No categories to display. Check your settings."
+msgstr "Keine Kategorien zum Anzeigen. Bitte überprüfen Sie Ihre Einstellungen."
+
+# new-arrivals.php
+msgid "New Arrivals"
+msgstr "Neu eingetroffen"
+
+msgid "View All"
+msgstr "Alle anzeigen"
+
+msgid "Explore"
+msgstr "Entdecken"
+
+msgid "No products yet. Add a few to WooCommerce."
+msgstr "Noch keine Produkte vorhanden. Fügen Sie einige in WooCommerce hinzu."
+
+# newsletter.php
+msgid "Don’t Miss Out Latest Trends & Offers"
+msgstr "Verpassen Sie nicht die neuesten Trends & Angebote"
+
+msgid "Register to receive news about the latest offers & discount codes"
+msgstr "Registrieren Sie sich, um Neuigkeiten zu Angeboten und Rabattcodes zu erhalten"
+
+msgid "Enter your email"
+msgstr "E-Mail eingeben"
+
+msgid "Subscribe"
+msgstr "Abonnieren"
+
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+# services-slider.php
+msgid "Our Services"
+msgstr "Unsere Dienstleistungen"
+
+msgid "Read More"
+msgstr "Mehr erfahren"
+
+msgid "Previous slide"
+msgstr "Vorherige Folie"
+
+msgid "Next slide"
+msgstr "Nächste Folie"
+
+msgid "No services to display. Add Services or enable “Include in slider”."
+msgstr "Keine Dienstleistungen zum Anzeigen. Fügen Sie Dienstleistungen hinzu oder aktivieren Sie „Im Slider anzeigen“."
+
+# bb-banner.php
+msgid "For Business Customers"
+msgstr "Für Geschäftskunden"
+
+msgid "Exclusive pricing and services for B2B partners."
+msgstr "Exklusive Preise und Dienstleistungen für B2B-Partner."
+
+msgid "Learn more"
+msgstr "Mehr erfahren"

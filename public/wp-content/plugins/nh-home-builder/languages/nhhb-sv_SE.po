@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-home-builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 09:01+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+# browse-cats.php
+msgid "Browse by Category"
+msgstr "Bläddra efter kategori"
+
+msgid "Scroll left"
+msgstr "Bläddra åt vänster"
+
+msgid "Scroll right"
+msgstr "Bläddra åt höger"
+
+msgid "No categories to display. Check your settings."
+msgstr "Inga kategorier att visa. Kontrollera dina inställningar."
+
+# new-arrivals.php
+msgid "New Arrivals"
+msgstr "Nyheter"
+
+msgid "View All"
+msgstr "Visa alla"
+
+msgid "Explore"
+msgstr "Utforska"
+
+msgid "No products yet. Add a few to WooCommerce."
+msgstr "Inga produkter ännu. Lägg till några i WooCommerce."
+
+# newsletter.php
+msgid "Don’t Miss Out Latest Trends & Offers"
+msgstr "Missa inte de senaste trenderna och erbjudandena"
+
+msgid "Register to receive news about the latest offers & discount codes"
+msgstr "Registrera dig för att få nyheter om de senaste erbjudandena och rabattkoderna"
+
+msgid "Enter your email"
+msgstr "Ange din e-postadress"
+
+msgid "Subscribe"
+msgstr "Prenumerera"
+
+msgid "Email address"
+msgstr "E-postadress"
+
+# services-slider.php
+msgid "Our Services"
+msgstr "Våra tjänster"
+
+msgid "Read More"
+msgstr "Läs mer"
+
+msgid "Previous slide"
+msgstr "Föregående bild"
+
+msgid "Next slide"
+msgstr "Nästa bild"
+
+msgid "No services to display. Add Services or enable “Include in slider”."
+msgstr "Inga tjänster att visa. Lägg till tjänster eller aktivera ”Inkludera i slider”."
+
+# bb-banner.php
+msgid "For Business Customers"
+msgstr "För företagskunder"
+
+msgid "Exclusive pricing and services for B2B partners."
+msgstr "Exklusiva priser och tjänster för B2B-partners."
+
+msgid "Learn more"
+msgstr "Läs mer"

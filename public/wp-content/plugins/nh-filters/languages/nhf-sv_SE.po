@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-filters\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 08:59+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: nh-filters.php:XX
+msgid "No categories found."
+msgstr "Inga kategorier hittades."
+
+#: nh-filters.php:XX
+msgid "All products"
+msgstr "Alla produkter"
+
+#: nh-filters.php:XX
+msgid "Product Categories"
+msgstr "Produktkategorier"
+
+#: nh-filters.php:XX
+msgid "Filter Products"
+msgstr "Filtrera produkter"
+
+#: nh-filters.php:XX
+msgid "In stock only"
+msgstr "Endast i lager"
+
+#: nh-filters.php:XX
+msgid "On sale"
+msgstr "Rea"
+
+#: nh-filters.php:XX
+msgid "Apply filters"
+msgstr "Använd filter"
+
+#: nh-filters.php:XX
+msgid "Reset filters"
+msgstr "Återställ filter"
+
+#: assets/js/nhf.js
+msgid "Categories"
+msgstr "Kategorier"
+
+#: assets/js/nhf.js
+msgid "Filters"
+msgstr "Filter"
+
+#: assets/js/nhf.js
+msgid "Close"
+msgstr "Stäng"
+
+#: assets/js/nhf.js
+msgid "Reset"
+msgstr "Återställ"
+
+#: assets/js/nhf.js
+msgid "Apply"
+msgstr "Använd"

@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-filters\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 08:59+0200\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: nh-filters.php:XX
+msgid "No categories found."
+msgstr "Keine Kategorien gefunden."
+
+#: nh-filters.php:XX
+msgid "All products"
+msgstr "Alle Produkte"
+
+#: nh-filters.php:XX
+msgid "Product Categories"
+msgstr "Produktkategorien"
+
+#: nh-filters.php:XX
+msgid "Filter Products"
+msgstr "Produkte filtern"
+
+#: nh-filters.php:XX
+msgid "In stock only"
+msgstr "Nur auf Lager"
+
+#: nh-filters.php:XX
+msgid "On sale"
+msgstr "Im Angebot"
+
+#: nh-filters.php:XX
+msgid "Apply filters"
+msgstr "Filter anwenden"
+
+#: nh-filters.php:XX
+msgid "Reset filters"
+msgstr "Filter zurücksetzen"
+
+#: assets/js/nhf.js
+msgid "Categories"
+msgstr "Kategorien"
+
+#: assets/js/nhf.js
+msgid "Filters"
+msgstr "Filter"
+
+#: assets/js/nhf.js
+msgid "Close"
+msgstr "Schließen"
+
+#: assets/js/nhf.js
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: assets/js/nhf.js
+msgid "Apply"
+msgstr "Anwenden"
