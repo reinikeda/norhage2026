@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
-"PO-Revision-Date: 2026-02-25 08:28+0200\n"
+"PO-Revision-Date: 2026-03-04 13:49+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -88,15 +88,15 @@ msgstr ""
 
 #: functions.php:421 functions.php:440
 msgid "Customize"
-msgstr ""
+msgstr "Tilpass"
 
 #: functions.php:422
 msgid "Customize “%s”"
-msgstr ""
+msgstr "Tilpass “%s”"
 
 #: functions.php:445
 msgid "Select options"
-msgstr ""
+msgstr "Velg alternativer"
 
 #: functions.php:467
 msgid "Secondary product title"
@@ -116,32 +116,35 @@ msgstr ""
 
 #: functions.php:682
 msgid "Please enter a valid email address."
-msgstr ""
+msgstr "Vennligst skriv inn en gyldig e-postadresse."
 
 #: functions.php:690
 msgid "Thank you!"
-msgstr ""
+msgstr "Takk!"
 
 #: functions.php:699
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
+"Abonnementet er midlertidig utilgjengelig. Vennligst kontakt "
+"nettstedsadministratoren."
 
 #: functions.php:724
 msgid "Could not connect to email service. Please try again."
-msgstr ""
+msgstr "Kunne ikke koble til e-posttjenesten. Vennligst prøv igjen."
 
 #: functions.php:734
 msgid "Thank you! You are subscribed."
-msgstr ""
+msgstr "Takk! Du er nå abonnent."
 
 #: functions.php:848
 msgid "Need help choosing or sizing? We can help."
 msgstr ""
+"Trenger du hjelp med valg eller tilpasning av størrelse? Vi hjelper deg."
 
 #: functions.php:858 functions.php:868
 msgid "Ask an expert"
-msgstr ""
+msgstr "Spør en ekspert"
 
 #: functions.php:869
 msgid "Close"
@@ -168,23 +171,23 @@ msgstr ""
 #: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
 #: inc/blog.php:30 inc/blog.php:31
 msgid "Blog: %s"
-msgstr ""
+msgstr "Blogg: %s"
 
 #: inc/blog.php:62 inc/blog.php:70 inc/services.php:81 inc/services.php:89
 msgid "Read More »"
-msgstr ""
+msgstr "Les mer »"
 
 #: inc/blog.php:81
 msgid "Back to Blog"
-msgstr ""
+msgstr "Tilbake til bloggen"
 
 #: inc/blog.php:87
 msgid "Back to %s"
-msgstr ""
+msgstr "Tilbake til %s"
 
 #: inc/blog.php:107
 msgid "Related posts"
-msgstr ""
+msgstr "Relaterte innlegg"
 
 #. translators: 1: quantity, 2: product name
 #: inc/bundle-box.php:70
@@ -195,8 +198,8 @@ msgstr ""
 #: inc/bundle-box.php:108
 msgid "%d item has been added to your basket"
 msgid_plural "%d items have been added to your basket"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d vare er lagt til i handlekurven"
+msgstr[1] "%d varer er lagt til i handlekurven"
 
 #. translators: %d: number of distinct products
 #: inc/bundle-box.php:113
@@ -207,11 +210,11 @@ msgstr[1] ""
 
 #: inc/bundle-box.php:121
 msgid "View basket"
-msgstr ""
+msgstr "Se handlekurv"
 
 #: inc/bundle-box.php:154
 msgid "Buy a complete set"
-msgstr ""
+msgstr "Kjøp et komplett sett"
 
 #: inc/bundle-box.php:156
 msgid "Complete set add-ons"
@@ -531,35 +534,35 @@ msgstr ""
 
 #: template-parts/footer/footer.php:11
 msgid "Tehi UG"
-msgstr ""
+msgstr "Tehi AS"
 
 #: template-parts/footer/footer.php:12
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
-msgstr ""
+msgstr "Vardheivegen 68, 4340 Bryne, Norge"
 
 #: template-parts/footer/footer.php:14
 msgid "info@norhage.de"
-msgstr ""
+msgstr "info@norhage.no"
 
 #: template-parts/footer/footer.php:18
 msgid "https://www.facebook.com/yourpage"
-msgstr ""
+msgstr "https://www.facebook.com/norhage.no/"
 
 #: template-parts/footer/footer.php:19
 msgid "https://www.instagram.com/yourpage"
-msgstr ""
+msgstr "https://www.instagram.com/norhage.no/"
 
 #: template-parts/footer/footer.php:20
 msgid "https://www.youtube.com/@yourchannel"
-msgstr ""
+msgstr "https://www.youtube.com/@NorhageNorge"
 
 #: template-parts/footer/footer.php:21
 msgid "https://www.linkedin.com/company/yourcompany"
-msgstr ""
+msgstr "https://www.linkedin.com/company/norhage-industri-norge/"
 
 #: template-parts/footer/footer.php:25
 msgid "https://norhageindustri.lt/"
-msgstr ""
+msgstr "https://norhageindustri.no/"
 
 #: template-parts/footer/footer.php:29
 msgid "Facebook"
