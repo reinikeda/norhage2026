@@ -304,10 +304,13 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			$tax = wc_attribute_taxonomy_name( $attr->attribute_name ); // e.g. pa_length
 			if ( ! taxonomy_exists( $tax ) ) continue;
 
+			$selected = nhf_get_selected_attr_slugs( $tax );
+			$label    = wc_attribute_label( $tax );
+
 			// Prune to only terms actually used by products in this archive
 			$term_args = [
 				'taxonomy'   => $tax,
-				'hide_empty' => true,   // hide terms unused globally
+				'hide_empty' => true,
 				'orderby'    => 'name',
 				'order'      => 'ASC',
 			];
@@ -319,19 +322,25 @@ add_shortcode( 'nh_filters_sidebar', function() {
 
 			$terms = get_terms( $term_args );
 			if ( empty( $terms ) || is_wp_error( $terms ) ) {
-				// If no terms are relevant for this archive, skip the whole attribute group
 				continue;
 			}
 
-			$selected = nhf_get_selected_attr_slugs( $tax );
-			$label    = wc_attribute_label( $tax );
+			// Hide attribute group if it has only 0 or 1 available values
+			// But preserve selected values as hidden inputs, so active filters don't get lost
+			if ( count( $terms ) <= 1 ) {
+				if ( ! empty( $selected ) ) {
+					foreach ( $selected as $slug ) {
+						echo '<input type="hidden" name="attr_' . esc_attr( $tax ) . '[]" value="' . esc_attr( $slug ) . '">';
+					}
+				}
+				continue;
+			}
 
 			echo '<section class="nhf-filter nhf-filter--attribute">';
 			echo '  <button type="button" class="nhf-filter-toggle" aria-expanded="false">' . esc_html( $label ) . ' <span class="nhf-icon"></span></button>';
 			echo '  <div class="nhf-filter-body" aria-hidden="true">';
 
 			foreach ( $terms as $t ) {
-				// (Terms returned here are guaranteed to be used by at least one product/variation in this archive)
 				$checked = in_array( $t->slug, $selected, true ) ? ' checked' : '';
 				echo '<label>';
 				echo '  <input type="checkbox" name="attr_' . esc_attr( $tax ) . '[]" value="' . esc_attr( $t->slug ) . '"' . $checked . '>';

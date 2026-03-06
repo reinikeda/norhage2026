@@ -145,7 +145,7 @@ function nhdt_get_delivery_text( $product ) {
 }
 
 /**
- * Append delivery time under price, inside the same <p class="price">.
+ * Append delivery time under price, only for the main product on single product pages.
  *
  * @param string     $price_html
  * @param WC_Product $product
@@ -155,6 +155,27 @@ function nhdt_get_delivery_text( $product ) {
 function nhdt_append_delivery_to_price_html( $price_html, $product ) {
 	// Only on single product page.
 	if ( ! is_product() ) {
+		return $price_html;
+	}
+
+	if ( ! $product instanceof WC_Product ) {
+		return $price_html;
+	}
+
+	// Current main product shown on the page.
+	$main_product_id = (int) get_queried_object_id();
+
+	// Current product being rendered in the price HTML filter.
+	$current_product_id = (int) $product->get_id();
+	$current_parent_id  = method_exists( $product, 'get_parent_id' ) ? (int) $product->get_parent_id() : 0;
+
+	// Show delivery time only for the main product itself
+	// (or its variation if needed), not for bundled/related/extra products.
+	if (
+		$main_product_id > 0 &&
+		$current_product_id !== $main_product_id &&
+		$current_parent_id !== $main_product_id
+	) {
 		return $price_html;
 	}
 
@@ -169,9 +190,9 @@ function nhdt_append_delivery_to_price_html( $price_html, $product ) {
 	$delivery_html .= '<span class="nh-delivery-time__value">' . esc_html( $delivery_text ) . '</span>';
 	$delivery_html .= '</span>';
 
-	// Price + delivery.
 	return $price_html . $delivery_html;
 }
+
 add_filter( 'woocommerce_get_price_html', 'nhdt_append_delivery_to_price_html', 20, 2 );
 
 /**
