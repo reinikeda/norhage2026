@@ -874,3 +874,53 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 	<?php
 
 }, 20 );
+
+/**
+ * Fix /page/1/ pagination URLs for archives and WooCommerce
+ */
+
+/* 1) Clean generated pagination links */
+add_filter('paginate_links', function ($link) {
+	if (!is_string($link) || $link === '') {
+		return $link;
+	}
+
+	$link = preg_replace('#/page/1/?(?=($|\?))#', '/', $link);
+	$link = preg_replace('#(?<!:)//+#', '/', $link);
+	$link = str_replace(':/', '://', $link);
+
+	return $link;
+});
+
+/* 2) Clean WooCommerce pagination base */
+add_filter('woocommerce_pagination_args', function ($args) {
+	$args['base']   = trailingslashit(get_pagenum_link(1)) . '%_%';
+	$args['format'] = 'page/%#%/';
+	return $args;
+});
+
+/* 3) Redirect direct /page/1/ requests to canonical URL */
+add_action('template_redirect', function () {
+	if (is_admin() || wp_doing_ajax()) {
+		return;
+	}
+
+	$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+
+	if (!preg_match('#/page/1/?(\?.*)?$#', $request_uri)) {
+		return;
+	}
+
+	$path = parse_url($request_uri, PHP_URL_PATH);
+	$query = parse_url($request_uri, PHP_URL_QUERY);
+
+	$clean_path = preg_replace('#/page/1/?$#', '/', $path);
+	$target_url = home_url($clean_path);
+
+	if (!empty($query)) {
+		$target_url .= '?' . $query;
+	}
+
+	wp_redirect($target_url, 301);
+	exit;
+});

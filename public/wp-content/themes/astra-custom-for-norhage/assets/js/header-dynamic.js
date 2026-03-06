@@ -1,66 +1,70 @@
-/* header-mobile.js — compact header (mobile always) + short-height desktop compact + drawer */
+/* header-dynamic.js — mobile compact header, short-screen desktop compact, drawer + mobile accordion */
 (function () {
   const masthead = document.getElementById('masthead');
   if (!masthead) return;
 
-  // Breakpoints
-  const mqMobile  = window.matchMedia('(max-width: 1023px)');
+  /* -------------------------------------------------------
+     1) BREAKPOINTS / CONSTANTS
+     ------------------------------------------------------- */
+  const mqMobile = window.matchMedia('(max-width: 1023px)');
   const mqDesktop = window.matchMedia('(min-width: 1024px)');
-
-  // Desktop compact header height limit (compact only on short-height desktops)
   const DESK_MIN_H = 900;
+  const TOP_THRESHOLD = 8;
+  const SCROLL_THRESHOLD = 2;
 
-  function isMobile() {
-    return mqMobile.matches;
-  }
+  const getScrollY = () => window.scrollY || 0;
+  const isMobile = () => mqMobile.matches;
+  const isDesktop = () => mqDesktop.matches;
+  const desktopCompactEnabled = () => isDesktop() && window.innerHeight <= DESK_MIN_H;
 
-  function desktopCompactEnabled() {
-    return mqDesktop.matches && window.innerHeight <= DESK_MIN_H;
-  }
-
-  // Layout refs
-  const topRow    = masthead.querySelector('.nhhb-row--top');
+  /* -------------------------------------------------------
+     2) DOM REFS
+     ------------------------------------------------------- */
+  const topRow = masthead.querySelector('.nhhb-row--top');
   const bottomRow = masthead.querySelector('.nhhb-row--bottom');
+
   const toolsWrap = bottomRow ? bottomRow.querySelector('.nhhb-tools') : null;
   const toolsSlot = topRow ? topRow.querySelector('.nhhb-tools-slot') : null;
 
-  // Individual tools we want to move (NOT the search)
-  const acc       = toolsWrap ? toolsWrap.querySelector('.nh-account')     : null;
-  const cart      = toolsWrap ? toolsWrap.querySelector('.nh-cart')        : null;
-  const theme     = toolsWrap ? toolsWrap.querySelector('#theme-toggle')   : null;
+  const acc = toolsWrap ? toolsWrap.querySelector('.nh-account') : null;
+  const cart = toolsWrap ? toolsWrap.querySelector('.nh-cart') : null;
+  const theme = toolsWrap ? toolsWrap.querySelector('#theme-toggle') : null;
   const searchBox = toolsWrap ? toolsWrap.querySelector('.nh-live-search') : null;
 
-  // Drawer refs
   const burger = masthead.querySelector('.nh-burger');
   const drawer = document.getElementById('nh-mobile-drawer');
-  const scrim  = drawer ? drawer.querySelector('.nh-drawer__scrim') : null;
-  const close  = drawer ? drawer.querySelector('.nh-drawer__close') : null;
-  const panel  = drawer ? drawer.querySelector('.nh-drawer__panel') : null;
+  const scrim = drawer ? drawer.querySelector('.nh-drawer__scrim') : null;
+  const closeBtn = drawer ? drawer.querySelector('.nh-drawer__close') : null;
+  const panel = drawer ? drawer.querySelector('.nh-drawer__panel') : null;
 
   const utilityBar = document.querySelector('.nh-utility');
 
-  // --- state ---
-  let movedIconsMobile   = false;
+  /* -------------------------------------------------------
+     3) STATE
+     ------------------------------------------------------- */
+  let movedIconsMobile = false;
+  let lastYDesktop = getScrollY();
+  let everLeftTopDesktop = getScrollY() > TOP_THRESHOLD;
 
-  let lastYDesktop       = window.scrollY || 0;
-  let everLeftTopDesktop = (window.scrollY || 0) > 8;
-
-  /* ---------- Tools relocation (MOBILE icons only) ---------- */
+  /* -------------------------------------------------------
+     4) TOOL RELOCATION (MOBILE)
+     ------------------------------------------------------- */
   function moveIconsToRow1() {
     if (!isMobile() || !toolsWrap || !toolsSlot || movedIconsMobile) return;
 
     let holder = toolsSlot.querySelector('.nhhb-tools--compact');
+
     if (!holder) {
       holder = document.createElement('div');
       holder.className = 'nhhb-tools nhhb-tools--compact';
       toolsSlot.appendChild(holder);
     }
 
-    acc   && holder.appendChild(acc);
-    cart  && holder.appendChild(cart);
-    theme && holder.appendChild(theme);
+    if (acc) holder.appendChild(acc);
+    if (cart) holder.appendChild(cart);
+    if (theme) holder.appendChild(theme);
 
-    // keep search in row 2
+    // Keep search in row 2
     if (searchBox && !toolsWrap.contains(searchBox)) {
       toolsWrap.appendChild(searchBox);
     }
@@ -70,128 +74,61 @@
 
   function moveIconsBack() {
     if (!movedIconsMobile || !toolsWrap) return;
+
     const ref = toolsWrap.firstChild;
-    acc   && toolsWrap.insertBefore(acc,   ref);
-    cart  && toolsWrap.insertBefore(cart,  ref);
-    theme && toolsWrap.insertBefore(theme, ref);
+
+    if (acc) toolsWrap.insertBefore(acc, ref);
+    if (cart) toolsWrap.insertBefore(cart, ref);
+    if (theme) toolsWrap.insertBefore(theme, ref);
+
     movedIconsMobile = false;
   }
 
-  /* ---------- Body offset while fixed ---------- */
+  /* -------------------------------------------------------
+     5) BODY OFFSET
+     ------------------------------------------------------- */
   function setBodyOffsetFromHeader() {
-    const h = masthead.offsetHeight || 112;
-    masthead.style.setProperty('--masthead-h', `${h}px`);
-    document.body.classList.add('mh-fixed-on');
-    document.body.classList.add('nhhb-compact-header');
+    const height = masthead.offsetHeight || 112;
+    masthead.style.setProperty('--masthead-h', `${height}px`);
+    document.body.classList.add('mh-fixed-on', 'nhhb-compact-header');
   }
 
   function clearBodyOffset() {
-    document.body.classList.remove('mh-fixed-on');
-    document.body.classList.remove('nhhb-compact-header');
     masthead.style.removeProperty('--masthead-h');
+    document.body.classList.remove('mh-fixed-on', 'nhhb-compact-header');
   }
 
-  /* ---------- MOBILE: always compact, always visible ---------- */
-  function enterCompactMobile() {
-    if (!isMobile()) return;
-
-    masthead.classList.add('mh-compact', 'mh-fixed');
-    masthead.classList.remove('mh-hidden');
-
-    moveIconsToRow1();
-
-    requestAnimationFrame(setBodyOffsetFromHeader);
-  }
-
-  function exitCompactMobile() {
-    masthead.classList.remove('mh-compact', 'mh-fixed', 'mh-hidden');
-    moveIconsBack();
-    clearBodyOffset();
-    closeDrawer(true);
-  }
-
-  /* ---------- DESKTOP compact mode (short height) ---------- */
-  function enterDesktopCompact() {
-    if (!desktopCompactEnabled()) return;
-
-    masthead.classList.add('mh-desktop-compact', 'mh-fixed');
-    masthead.classList.remove('mh-hidden');
-
-    if (utilityBar) utilityBar.classList.add('is-hidden-compact');
-
-    setBodyOffsetFromHeader();
-  }
-
-  function exitDesktopCompact() {
-    masthead.classList.remove('mh-desktop-compact', 'mh-fixed', 'mh-hidden');
-
-    if (utilityBar) utilityBar.classList.remove('is-hidden-compact');
-
-    clearBodyOffset();
-  }
-
-  function hideDesktopCompact() {
-    masthead.classList.add('mh-hidden');
-  }
-
-  /* ---------- Scroll behavior ---------- */
-  function onScrollMobile() {
-    // Mobile never hides; keep compact always
-    enterCompactMobile();
-    masthead.classList.remove('mh-hidden');
-  }
-
-  function onScrollDesktop() {
-    // Only do hide/show behaviour when compact desktop is enabled
-    if (!desktopCompactEnabled()) {
-      exitDesktopCompact();
-      lastYDesktop = window.scrollY || 0;
-      return;
-    }
-
-    const y      = window.scrollY || 0;
-    const delta  = y - lastYDesktop; // +down, -up
-    const atTop  = y <= 8;
-    const THRESH = 2;
-
-    if (atTop) {
-      if (everLeftTopDesktop) {
-        enterDesktopCompact();
-      } else {
-        exitDesktopCompact(); // full header until user leaves the top once
-      }
-    } else {
-      everLeftTopDesktop = true;
-
-      if (delta > THRESH)       hideDesktopCompact();
-      else if (delta < -THRESH) enterDesktopCompact();
-    }
-
-    lastYDesktop = y;
-  }
-
-  function handleScroll() {
-    if (isMobile()) onScrollMobile();
-    else            onScrollDesktop();
-  }
-
-  /* ---------- Drawer helpers ---------- */
+  /* -------------------------------------------------------
+     6) DRAWER POSITIONING
+     ------------------------------------------------------- */
   function updateDrawerPosition() {
     if (!panel) return;
 
-    panel.style.position = 'fixed';
-
-    const mrect = masthead.getBoundingClientRect();
-    const top   = Math.max(0, mrect.bottom);
-
-    panel.style.top = `${top}px`;
-
+    const rect = masthead.getBoundingClientRect();
+    const top = Math.max(0, rect.bottom);
     const maxH = window.innerHeight - top;
+
+    panel.style.position = 'fixed';
+    panel.style.top = `${top}px`;
     panel.style.height = 'auto';
     panel.style.maxHeight = `${Math.max(200, maxH)}px`;
   }
 
-  /* ---------- Drawer controls ---------- */
+  function resetDrawerInlineStyles() {
+    if (!panel) return;
+
+    panel.style.position = '';
+    panel.style.top = '';
+    panel.style.left = '';
+    panel.style.right = '';
+    panel.style.width = '';
+    panel.style.height = '';
+    panel.style.maxHeight = '';
+  }
+
+  /* -------------------------------------------------------
+     7) DRAWER CONTROLS
+     ------------------------------------------------------- */
   function openDrawer() {
     if (!drawer) return;
 
@@ -204,101 +141,259 @@
 
     updateDrawerPosition();
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       const firstFocus = drawer.querySelector('.nh-drawer__nav a, .nh-drawer__close');
-      if (firstFocus) firstFocus.focus({ preventScroll: true });
-      else if (panel) panel.focus({ preventScroll: true });
+      if (firstFocus) {
+        firstFocus.focus({ preventScroll: true });
+      } else if (panel) {
+        panel.focus({ preventScroll: true });
+      }
     }, 10);
   }
 
-  function closeDrawer(force) {
+  function closeDrawer(force = false) {
     if (!drawer) return;
+    if (!force && !drawer.classList.contains('is-open')) return;
 
-    if (force || drawer.classList.contains('is-open')) {
-      drawer.classList.remove('is-open');
-      drawer.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('drawer-open');
+    drawer.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.hidden = true;
+    document.body.classList.remove('drawer-open');
 
-      if (burger) burger.setAttribute('aria-expanded', 'false');
+    if (burger) burger.setAttribute('aria-expanded', 'false');
 
-      if (panel) {
-        panel.style.top = '';
-        panel.style.left = '';
-        panel.style.right = '';
-        panel.style.width = '';
-        panel.style.maxHeight = '';
-        panel.style.position = '';
-      }
-
-      setTimeout(() => { drawer.hidden = true; }, 200);
-    }
+    resetDrawerInlineStyles();
   }
 
-  // Toggle
-  if (burger) {
-    burger.addEventListener('click', () => {
-      const expanded = burger.getAttribute('aria-expanded') === 'true';
-      expanded ? closeDrawer() : openDrawer();
+  /* -------------------------------------------------------
+     8) MOBILE ACCORDION IN DRAWER
+     ------------------------------------------------------- */
+  function initDrawerAccordion() {
+    if (!drawer) return;
+
+    const menuItems = drawer.querySelectorAll('.drawer-menu--primary .menu-item-has-children');
+
+    menuItems.forEach((item) => {
+      if (item.dataset.accordionReady === 'true') return;
+      item.dataset.accordionReady = 'true';
+
+      const link = item.querySelector(':scope > a');
+      const submenu = item.querySelector(':scope > .sub-menu');
+      if (!link || !submenu) return;
+
+      item.classList.remove('is-open');
+      submenu.hidden = true;
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'nh-submenu-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', `Expand ${link.textContent.trim()}`);
+      toggle.innerHTML = '<span class="nh-submenu-toggle__icon" aria-hidden="true"></span>';
+
+      item.insertBefore(toggle, submenu);
+
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isMobile()) return;
+
+        const isOpen = item.classList.contains('is-open');
+
+        menuItems.forEach((otherItem) => {
+          const otherSub = otherItem.querySelector(':scope > .sub-menu');
+          const otherBtn = otherItem.querySelector(':scope > .nh-submenu-toggle');
+          const otherLink = otherItem.querySelector(':scope > a');
+
+          if (!otherSub || !otherBtn) return;
+
+          otherItem.classList.remove('is-open');
+          otherSub.hidden = true;
+          otherBtn.setAttribute('aria-expanded', 'false');
+
+          if (otherLink) {
+            otherBtn.setAttribute('aria-label', `Expand ${otherLink.textContent.trim()}`);
+          }
+        });
+
+        if (!isOpen) {
+          item.classList.add('is-open');
+          submenu.hidden = false;
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', `Collapse ${link.textContent.trim()}`);
+        }
+      });
     });
   }
 
-  // Close interactions
-  if (scrim) scrim.addEventListener('click', () => closeDrawer());
-  if (close) close.addEventListener('click', () => closeDrawer());
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeDrawer();
-  });
+  /* -------------------------------------------------------
+     9) MODE HELPERS
+     ------------------------------------------------------- */
+  function enterCompactMobile() {
+    if (!isMobile()) return;
 
-  /* ---------- Resize + scroll wiring ---------- */
+    masthead.classList.add('mh-compact', 'mh-fixed');
+    masthead.classList.remove('mh-hidden');
+
+    moveIconsToRow1();
+    requestAnimationFrame(setBodyOffsetFromHeader);
+  }
+
+  function exitCompactMobile() {
+    masthead.classList.remove('mh-compact', 'mh-fixed', 'mh-hidden');
+    moveIconsBack();
+    clearBodyOffset();
+    closeDrawer(true);
+  }
+
+  function enterDesktopCompact() {
+    if (!desktopCompactEnabled()) return;
+
+    masthead.classList.add('mh-desktop-compact', 'mh-fixed');
+    masthead.classList.remove('mh-hidden');
+
+    if (utilityBar) {
+      utilityBar.classList.add('is-hidden-compact');
+    }
+
+    setBodyOffsetFromHeader();
+  }
+
+  function exitDesktopCompact() {
+    masthead.classList.remove('mh-desktop-compact', 'mh-fixed', 'mh-hidden');
+
+    if (utilityBar) {
+      utilityBar.classList.remove('is-hidden-compact');
+    }
+
+    clearBodyOffset();
+  }
+
+  function hideDesktopCompact() {
+    masthead.classList.add('mh-hidden');
+  }
+
+  /* -------------------------------------------------------
+     10) SCROLL HANDLERS
+     ------------------------------------------------------- */
+  function onScrollMobile() {
+    enterCompactMobile();
+    masthead.classList.remove('mh-hidden');
+  }
+
+  function onScrollDesktop() {
+    if (!desktopCompactEnabled()) {
+      exitDesktopCompact();
+      lastYDesktop = getScrollY();
+      return;
+    }
+
+    const y = getScrollY();
+    const delta = y - lastYDesktop;
+    const atTop = y <= TOP_THRESHOLD;
+
+    if (atTop) {
+      if (everLeftTopDesktop) {
+        enterDesktopCompact();
+      } else {
+        exitDesktopCompact();
+      }
+    } else {
+      everLeftTopDesktop = true;
+
+      if (delta > SCROLL_THRESHOLD) {
+        hideDesktopCompact();
+      } else if (delta < -SCROLL_THRESHOLD) {
+        enterDesktopCompact();
+      }
+    }
+
+    lastYDesktop = y;
+  }
+
+  function handleScroll() {
+    if (isMobile()) {
+      onScrollMobile();
+    } else {
+      onScrollDesktop();
+    }
+
+    if (drawer && drawer.classList.contains('is-open')) {
+      updateDrawerPosition();
+    }
+  }
+
+  /* -------------------------------------------------------
+     11) RESIZE HANDLER
+     ------------------------------------------------------- */
   function handleResize() {
     if (drawer && drawer.classList.contains('is-open')) {
       updateDrawerPosition();
     }
 
     if (isMobile()) {
-      // entering mobile breakpoint
       exitDesktopCompact();
-
-      // Always compact on mobile
       enterCompactMobile();
-    } else {
-      // entering desktop
-      exitCompactMobile();
+      return;
+    }
 
-      if (desktopCompactEnabled()) {
-        if ((window.scrollY || 0) > 8) {
-          everLeftTopDesktop = true;
-          enterDesktopCompact();
-        } else {
-          exitDesktopCompact();
-        }
+    exitCompactMobile();
+
+    if (desktopCompactEnabled()) {
+      if (getScrollY() > TOP_THRESHOLD) {
+        everLeftTopDesktop = true;
+        enterDesktopCompact();
       } else {
         exitDesktopCompact();
       }
+    } else {
+      exitDesktopCompact();
     }
   }
 
-  window.addEventListener('resize', handleResize, { passive: true });
-  window.addEventListener('scroll', () => {
-    if (drawer && drawer.classList.contains('is-open')) updateDrawerPosition();
-    handleScroll();
-  }, { passive: true });
+  /* -------------------------------------------------------
+     12) EVENTS
+     ------------------------------------------------------- */
+  if (burger) {
+    burger.addEventListener('click', () => {
+      const isExpanded = burger.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) closeDrawer();
+      else openDrawer();
+    });
+  }
 
-  /* ---------- Initial state ---------- */
+  if (scrim) {
+    scrim.addEventListener('click', () => closeDrawer());
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => closeDrawer());
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  window.addEventListener('resize', handleResize, { passive: true });
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  /* -------------------------------------------------------
+     13) INIT
+     ------------------------------------------------------- */
+  initDrawerAccordion();
+
   if (isMobile()) {
-    // Always compact on mobile
     enterCompactMobile();
   } else if (desktopCompactEnabled()) {
-    if ((window.scrollY || 0) > 8) {
+    if (getScrollY() > TOP_THRESHOLD) {
       everLeftTopDesktop = true;
       enterDesktopCompact();
     } else {
-      exitDesktopCompact(); // full header, compact only after scrolling once
+      exitDesktopCompact();
     }
   } else {
-    // ensure normal desktop state
     exitCompactMobile();
     exitDesktopCompact();
   }
-
 })();
