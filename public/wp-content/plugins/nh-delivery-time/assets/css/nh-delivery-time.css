@@ -1,18 +1,31 @@
-/* Delivery time under price – inside the same <p class="price"> */
+/* Delivery time under price */
 
-.price .nh-delivery-time-under {
-  display: block;           /* new line under price */
-  margin-top: 4px;
+.price + .nh-delivery-time-under {
+  display: block;
+  margin-top: 6px;
+  margin-bottom: 12px; /* add breathing space before description */
   font-size: 14px;
   line-height: 1.4;
-  color: var(--ui-text-muted, #707070);
+  color: var(--ui-text-muted, #6b7280);
 }
 
+/* Label lighter */
 .nh-delivery-time__label {
-  font-weight: 500;
+  font-weight: 400;
   margin-right: 4px;
+  color: inherit;
 }
 
+/* Delivery time value emphasized */
 .nh-delivery-time__value {
-  font-weight: 400;
+  font-weight: 600;
+  color: var(--ui-text, #2b2b2b);
+}
+
+/* Optional truck icon */
+.nh-delivery-time-under::before {
+  content: "🚚";
+  margin-right: 6px;
+  font-size: 14px;
+  opacity: 0.9;
 }
