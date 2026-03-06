@@ -650,3 +650,88 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 		}
 	}
 }, 20 );
+
+/* ============================================================================
+ * PRICE DISPLAY — add "/ m²" for custom-cut products
+ * Applies on archives + single product pages.
+ * Also supports variable products and selected variations.
+ * ========================================================================== */
+
+/**
+ * Returns true when this product's displayed Woo price is a "price per m²".
+ * Supports:
+ * - simple custom-cut product
+ * - variable custom-cut parent
+ * - variation of a custom-cut parent
+ */
+function nh_cc_is_price_per_m2_product( $product ) : bool {
+	if ( ! $product instanceof WC_Product ) {
+		return false;
+	}
+
+	// Variation: check parent setting
+	if ( $product->is_type( 'variation' ) ) {
+		$parent_id = $product->get_parent_id();
+		return $parent_id > 0 && nh_cc_is_enabled_product( $parent_id );
+	}
+
+	// Simple or variable parent
+	return nh_cc_is_enabled_product( $product->get_id() );
+}
+
+/**
+ * Small reusable HTML suffix.
+ */
+function nh_cc_get_price_per_m2_suffix_html() : string {
+	return '<span class="nh-price-unit"> / m²</span>';
+}
+
+/**
+ * Append "/ m²" to Woo price HTML for custom-cut products only.
+ */
+add_filter( 'woocommerce_get_price_html', function ( $price_html, $product ) {
+
+	if ( ! $product instanceof WC_Product ) {
+		return $price_html;
+	}
+
+	// Only for custom-cut products
+	if ( ! nh_cc_is_price_per_m2_product( $product ) ) {
+		return $price_html;
+	}
+
+	// Avoid double suffix
+	if ( strpos( $price_html, 'nh-price-unit' ) !== false ) {
+		return $price_html;
+	}
+
+	// Do not modify empty price html
+	if ( trim( wp_strip_all_tags( $price_html ) ) === '' ) {
+		return $price_html;
+	}
+
+	return $price_html . nh_cc_get_price_per_m2_suffix_html();
+
+}, 20, 2 );
+
+/**
+ * Ensure selected variation price on single product page also gets "/ m²".
+ * Woo outputs variation price_html from variation data.
+ */
+add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
+
+	if ( ! $variation instanceof WC_Product_Variation ) {
+		return $data;
+	}
+
+	if ( ! nh_cc_is_price_per_m2_product( $variation ) ) {
+		return $data;
+	}
+
+	if ( ! empty( $data['price_html'] ) && strpos( $data['price_html'], 'nh-price-unit' ) === false ) {
+		$data['price_html'] .= nh_cc_get_price_per_m2_suffix_html();
+	}
+
+	return $data;
+
+}, 20, 3 );

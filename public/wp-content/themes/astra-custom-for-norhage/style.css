@@ -546,6 +546,12 @@ a.ast-on-card-button.ast-select-options-trigger,
   min-height:2.4em;
 }
 
+.nh-price-unit {
+	white-space: nowrap;
+	font-size: 0.95em;
+	font-weight: 400;
+}
+
 /* =========================================================
    6) PRODUCT PAGE TWEAKS
    ========================================================= */
