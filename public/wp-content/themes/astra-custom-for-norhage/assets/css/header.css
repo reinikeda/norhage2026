@@ -600,7 +600,7 @@
 :is(.nh-live-search, .nrh-live-search){
   position:relative;
   width:clamp(240px, 26vw, 420px);
-  z-index:3000;
+  z-index:10;
 }
 
 .nh-header-search{
