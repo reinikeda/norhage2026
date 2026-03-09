@@ -21,3 +21,19 @@
     line-height: 1.4;
     color: #244025;
 }
+
+@media (max-width: 767px) {
+  form.checkout.woocommerce-checkout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  form.checkout #order_review_heading,
+  form.checkout #order_review {
+    order: 1;
+  }
+
+  form.checkout .col2-set#customer_details {
+    order: 2;
+  }
+}
