@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.6.1
+ * Version: 1.7.0
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -33,7 +33,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.6.1'
+		'1.7.0'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,11 +41,11 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.6.1',
+		'1.7.0',
 		true
 	);
 
-	// 🔹 Make mobile UI texts translatable in JS
+	// Make mobile UI texts translatable in JS
 	wp_localize_script(
 		'nhf-script',
 		'nhfL10n',
@@ -60,7 +60,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	);
 
 	wp_enqueue_script( 'nhf-script' );
-});
+} );
 
 /* ------------------------------------------------------------
  *  Helpers
@@ -75,17 +75,75 @@ function nhf_current_archive_url(): string {
 	} else {
 		$url = get_post_type_archive_link( 'product' );
 	}
+
 	return is_wp_error( $url ) ? home_url( '/' ) : $url;
 }
 
-/** Selected slugs for an attribute tax (e.g. "pa_length") */
-function nhf_get_selected_attr_slugs( string $tax ): array {
-	$key = 'attr_' . $tax;
-	if ( empty( $_GET[ $key ] ) ) return [];
-	$vals = $_GET[ $key ];
-	if ( ! is_array( $vals ) ) $vals = explode( ',', (string) $vals );
+/**
+ * Map attribute taxonomy => clean query key
+ * Example: pa_paksuus => paksuus
+ */
+function nhf_get_filter_param_map(): array {
+	$map   = [];
+	$attrs = wc_get_attribute_taxonomies();
+
+	if ( ! $attrs ) {
+		return $map;
+	}
+
+	foreach ( $attrs as $attr ) {
+		$tax = wc_attribute_taxonomy_name( $attr->attribute_name ); // pa_paksuus
+		$key = sanitize_title( $attr->attribute_name );             // paksuus
+		$map[ $tax ] = $key;
+	}
+
+	return $map;
+}
+
+/**
+ * Get clean query key for taxonomy
+ */
+function nhf_get_filter_param_for_tax( string $tax ): string {
+	$map = nhf_get_filter_param_map();
+	return $map[ $tax ] ?? $tax;
+}
+
+/**
+ * Normalize raw selected values into unique sorted slugs
+ */
+function nhf_normalize_filter_values( $vals ): array {
+	if ( ! is_array( $vals ) ) {
+		$vals = explode( ',', (string) $vals );
+	}
+
 	$vals = array_filter( array_map( 'sanitize_title', $vals ) );
-	return array_values( array_unique( $vals ) );
+	$vals = array_values( array_unique( $vals ) );
+
+	if ( ! empty( $vals ) ) {
+		sort( $vals, SORT_NATURAL );
+	}
+
+	return $vals;
+}
+
+/**
+ * Get selected slugs for attribute taxonomy from clean URL param.
+ * Supports both new format (?paksuus=10-mm,16-mm)
+ * and legacy format (?attr_pa_paksuus[]=10-mm)
+ */
+function nhf_get_selected_attr_slugs( string $tax ): array {
+	$clean_key  = nhf_get_filter_param_for_tax( $tax );
+	$legacy_key = 'attr_' . $tax;
+
+	if ( isset( $_GET[ $clean_key ] ) ) {
+		return nhf_normalize_filter_values( wp_unslash( $_GET[ $clean_key ] ) );
+	}
+
+	if ( isset( $_GET[ $legacy_key ] ) ) {
+		return nhf_normalize_filter_values( wp_unslash( $_GET[ $legacy_key ] ) );
+	}
+
+	return [];
 }
 
 /**
@@ -94,18 +152,19 @@ function nhf_get_selected_attr_slugs( string $tax ): array {
  */
 function nhf_get_archive_parent_ids( int $max = 2000 ): array {
 	$args = [
-		'post_type'      => 'product',
-		'post_status'    => 'publish',
-		'fields'         => 'ids',
-		'posts_per_page' => $max,
-		'no_found_rows'  => true,
+		'post_type'              => 'product',
+		'post_status'            => 'publish',
+		'fields'                 => 'ids',
+		'posts_per_page'         => $max,
+		'no_found_rows'          => true,
 		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
 	];
 
-	// Constrain to current taxonomy archive if present
+	// Constrain to current taxonomy archive if present.
 	if ( is_product_taxonomy() ) {
 		$obj = get_queried_object();
+
 		if ( isset( $obj->taxonomy, $obj->term_id ) ) {
 			$args['tax_query'] = [[
 				'taxonomy' => $obj->taxonomy,
@@ -125,12 +184,15 @@ function nhf_get_archive_parent_ids( int $max = 2000 ): array {
  */
 function nhf_expand_with_variations( array $parent_ids ): array {
 	if ( empty( $parent_ids ) ) return [];
+
 	$all = $parent_ids;
 
 	foreach ( $parent_ids as $pid ) {
 		$product = wc_get_product( $pid );
+
 		if ( $product && $product->is_type( 'variable' ) ) {
 			$children = $product->get_children();
+
 			if ( $children ) {
 				foreach ( $children as $vid ) {
 					$all[] = (int) $vid;
@@ -146,22 +208,13 @@ function nhf_expand_with_variations( array $parent_ids ): array {
  * Helper: get current "Sale" category slug from locale
  */
 function nhf_get_sale_slug(): string {
-	$locale = get_locale(); // e.g. 'lt_LT', 'nb_NO', 'sv_SE', 'de_DE', 'fi_FI'
+	$locale = get_locale();
 
 	$map = [
-		// Lithuanian
 		'lt_LT' => 'ispardavimas',
-
-		// Norwegian (Bokmål)
 		'nb_NO' => 'salg',
-
-		// Swedish
 		'sv_SE' => 'rea',
-
-		// Finnish
 		'fi_FI' => 'ale',
-
-		// German
 		'de_DE' => 'sale',
 	];
 
@@ -169,17 +222,86 @@ function nhf_get_sale_slug(): string {
 		return $map[ $locale ];
 	}
 
-	// Generic fallback
 	return 'sale';
 }
+
+/* ------------------------------------------------------------
+ *  Normalize filter URLs
+ *  - legacy: ?attr_pa_paksuus[]=10-mm
+ *  - array:  ?paksuus[]=10-mm&paksuus[]=16-mm
+ *  - clean:  ?paksuus=10-mm,16-mm
+ * ------------------------------------------------------------ */
+add_action( 'template_redirect', function() {
+	if ( is_admin() ) return;
+	if ( ! function_exists( 'is_shop' ) ) return;
+	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return;
+	if ( empty( $_GET ) ) return;
+
+	$map = nhf_get_filter_param_map();
+	if ( empty( $map ) ) return;
+
+	$clean_keys   = array_values( $map );
+	$current_url  = nhf_current_archive_url();
+	$new_args     = [];
+	$changed      = false;
+
+	foreach ( $_GET as $key => $value ) {
+		// Legacy keys like attr_pa_paksuus[]
+		if ( 0 === strpos( $key, 'attr_' ) ) {
+			$tax = substr( $key, 5 );
+
+			if ( isset( $map[ $tax ] ) ) {
+				$vals = nhf_normalize_filter_values( wp_unslash( $value ) );
+
+				if ( ! empty( $vals ) ) {
+					$new_args[ $map[ $tax ] ] = implode( ',', $vals );
+				}
+
+				$changed = true;
+				continue;
+			}
+		}
+
+		// Clean keys submitted as arrays: paksuus[]=10-mm&paksuus[]=16-mm
+		if ( in_array( $key, $clean_keys, true ) ) {
+			if ( is_array( $value ) ) {
+				$vals = nhf_normalize_filter_values( wp_unslash( $value ) );
+
+				if ( ! empty( $vals ) ) {
+					$new_args[ $key ] = implode( ',', $vals );
+				}
+
+				$changed = true;
+			} else {
+				$new_args[ $key ] = sanitize_text_field( wp_unslash( $value ) );
+			}
+			continue;
+		}
+
+		// Preserve normal args
+		if ( is_array( $value ) ) {
+			continue;
+		}
+
+		$new_args[ $key ] = sanitize_text_field( wp_unslash( $value ) );
+	}
+
+	if ( ! $changed ) return;
+
+	$target = add_query_arg( $new_args, $current_url );
+	wp_safe_redirect( $target, 301 );
+	exit;
+}, 1 );
 
 /* ------------------------------------------------------------
  *  Category Tree
  * ------------------------------------------------------------ */
 function nhf_render_categories() {
 	$current_term_id = 0;
+
 	if ( is_product_taxonomy() ) {
 		$obj = get_queried_object();
+
 		if ( isset( $obj->term_id ) ) {
 			$current_term_id = (int) $obj->term_id;
 		}
@@ -196,14 +318,11 @@ function nhf_render_categories() {
 		return;
 	}
 
-	// Get the "Sale" slug for current locale (so we can hide that top-level cat)
 	$sale_slug = nhf_get_sale_slug();
 
 	echo '<ul class="nhf-cat-list">';
 
 	foreach ( $categories as $cat ) {
-
-		// Skip "Sale" category for this language
 		if ( $sale_slug && $cat->slug === $sale_slug ) {
 			continue;
 		}
@@ -219,11 +338,11 @@ function nhf_render_categories() {
 		]);
 
 		$has_children = ( ! empty( $children ) && ! is_wp_error( $children ) );
+		$open_class   = ( $has_children && $is_open ) ? ' is-open' : '';
 
-		$open_class = ( $has_children && $is_open ) ? ' is-open' : '';
 		echo '<li class="nhf-cat-item' . esc_attr( $open_class ) . '">';
 
-		// ✅ If no children: make category name a normal link
+		// If no children: normal link
 		if ( ! $has_children ) {
 			echo '<a class="nhf-cat-link" href="' . esc_url( get_term_link( $cat ) ) . '">';
 			echo '<span class="nhf-cat-name">' . esc_html( $cat->name ) . '</span>';
@@ -232,7 +351,6 @@ function nhf_render_categories() {
 			continue;
 		}
 
-		// ✅ If has children: keep accordion button
 		$toggle_state = $is_open ? 'true' : 'false';
 
 		echo '<button class="nhf-cat-toggle" aria-expanded="' . esc_attr( $toggle_state ) . '" aria-controls="sub-' . esc_attr( $cat->slug ) . '">';
@@ -242,7 +360,6 @@ function nhf_render_categories() {
 
 		echo '<ul id="sub-' . esc_attr( $cat->slug ) . '" class="nhf-cat-sub" aria-hidden="' . ( $is_open ? 'false' : 'true' ) . '">';
 
-		// Top link: "%category% – All products"
 		echo '<li class="nhf-all"><a href="' . esc_url( get_term_link( $cat ) ) . '">'
 			. esc_html( $cat->name )
 			. ' &ndash; '
@@ -265,49 +382,50 @@ function nhf_render_categories() {
 
 /* ------------------------------------------------------------
  *  Shortcode: [nh_filters_sidebar]
- *  - Categories
- *  - REAL Filters form (GET)
- *  - PRUNED attributes & values to current archive (parent+variations)
- *  - Price disabled (for now)
  * ------------------------------------------------------------ */
 add_shortcode( 'nh_filters_sidebar', function() {
-
 	if ( ! function_exists( 'is_shop' ) ) return '';
 	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return '';
 
 	ob_start();
 
+	$action              = nhf_current_archive_url();
+	$parent_ids          = nhf_get_archive_parent_ids( 2000 );
+	$object_ids          = nhf_expand_with_variations( $parent_ids );
+	$filter_param_map    = nhf_get_filter_param_map();
+	$filter_param_values = array_values( $filter_param_map );
+
 	echo '<div id="nhf-sidebar" class="nhf-sidebar-block">';
 	echo '<h3 class="nhf-heading">' . esc_html__( 'Product Categories', 'nhf' ) . '</h3>';
 	nhf_render_categories();
-
-	$action      = nhf_current_archive_url();
-	$parent_ids  = nhf_get_archive_parent_ids( 2000 );
-	$object_ids  = nhf_expand_with_variations( $parent_ids ); // includes variations for pruning
 
 	echo '<div class="nhf-filters">';
 	echo '<h3 class="nhf-heading">' . esc_html__( 'Filter Products', 'nhf' ) . '</h3>';
 	echo '<form class="nhf-form" method="get" action="' . esc_url( $action ) . '">';
 
-	// Preserve non-filter args (orderby, paged, etc.)
+	// Preserve non-filter args
 	foreach ( $_GET as $k => $v ) {
 		if ( 0 === strpos( $k, 'attr_' ) ) continue;
-		if ( in_array( $k, [ 'price_min','price_max','instock','onsale' ], true ) ) continue; // price disabled
+		if ( in_array( $k, $filter_param_values, true ) ) continue;
+		if ( in_array( $k, [ 'price_min', 'price_max', 'instock', 'onsale' ], true ) ) continue;
 		if ( is_array( $v ) ) continue;
-		echo '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( $v ) . '">';
+
+		echo '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( wp_unslash( $v ) ) . '">';
 	}
 
 	/* ========== Attribute groups (auto + pruned) ========== */
 	$attrs = wc_get_attribute_taxonomies();
+
 	if ( $attrs ) {
 		foreach ( $attrs as $attr ) {
-			$tax = wc_attribute_taxonomy_name( $attr->attribute_name ); // e.g. pa_length
+			$tax       = wc_attribute_taxonomy_name( $attr->attribute_name );
+			$param_key = nhf_get_filter_param_for_tax( $tax );
+
 			if ( ! taxonomy_exists( $tax ) ) continue;
 
 			$selected = nhf_get_selected_attr_slugs( $tax );
 			$label    = wc_attribute_label( $tax );
 
-			// Prune to only terms actually used by products in this archive
 			$term_args = [
 				'taxonomy'   => $tax,
 				'hide_empty' => true,
@@ -315,23 +433,21 @@ add_shortcode( 'nh_filters_sidebar', function() {
 				'order'      => 'ASC',
 			];
 
-			// Further limit to terms attached to current archive parents/variations
 			if ( ! empty( $object_ids ) ) {
 				$term_args['object_ids'] = $object_ids;
 			}
 
 			$terms = get_terms( $term_args );
+
 			if ( empty( $terms ) || is_wp_error( $terms ) ) {
 				continue;
 			}
 
-			// Hide attribute group if it has only 0 or 1 available values
-			// But preserve selected values as hidden inputs, so active filters don't get lost
+			// Hide group if only 0 or 1 available value,
+			// but preserve active selected filter.
 			if ( count( $terms ) <= 1 ) {
 				if ( ! empty( $selected ) ) {
-					foreach ( $selected as $slug ) {
-						echo '<input type="hidden" name="attr_' . esc_attr( $tax ) . '[]" value="' . esc_attr( $slug ) . '">';
-					}
+					echo '<input type="hidden" name="' . esc_attr( $param_key ) . '" value="' . esc_attr( implode( ',', $selected ) ) . '">';
 				}
 				continue;
 			}
@@ -343,7 +459,7 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			foreach ( $terms as $t ) {
 				$checked = in_array( $t->slug, $selected, true ) ? ' checked' : '';
 				echo '<label>';
-				echo '  <input type="checkbox" name="attr_' . esc_attr( $tax ) . '[]" value="' . esc_attr( $t->slug ) . '"' . $checked . '>';
+				echo '  <input type="checkbox" name="' . esc_attr( $param_key ) . '[]" value="' . esc_attr( $t->slug ) . '"' . $checked . '>';
 				echo    esc_html( $t->name );
 				echo '</label>';
 			}
@@ -353,9 +469,9 @@ add_shortcode( 'nh_filters_sidebar', function() {
 		}
 	}
 
-	/* ========== Toggles (In stock / On sale) — MOVED AFTER ATTRIBUTES ========== */
-	$instock = isset($_GET['instock']) ? (int) $_GET['instock'] : 0;
-	$onsale  = isset($_GET['onsale'])  ? (int) $_GET['onsale']  : 0;
+	/* ========== Toggles ========== */
+	$instock = isset( $_GET['instock'] ) ? (int) $_GET['instock'] : 0;
+	$onsale  = isset( $_GET['onsale'] )  ? (int) $_GET['onsale']  : 0;
 
 	echo '<section class="nhf-filter nhf-filter--toggles is-open">';
 	echo '  <div class="nhf-filter-body" aria-hidden="false">';
@@ -371,14 +487,14 @@ add_shortcode( 'nh_filters_sidebar', function() {
 	echo '</div>';
 
 	echo '</form>';
-	echo '</div>'; // .nhf-filters
-	echo '</div>'; // .nhf-sidebar-block
+	echo '</div>';
+	echo '</div>';
 
 	return ob_get_clean();
-});
+} );
 
 /* ------------------------------------------------------------
- *  Apply GET filters to WooCommerce archive queries (no price)
+ *  Apply GET filters to WooCommerce archive queries
  * ------------------------------------------------------------ */
 add_action( 'pre_get_posts', function( $q ) {
 	if ( ! function_exists( 'is_shop' ) ) return;
@@ -388,54 +504,64 @@ add_action( 'pre_get_posts', function( $q ) {
 	$tax_query  = (array) $q->get( 'tax_query', [] );
 	$meta_query = (array) $q->get( 'meta_query', [] );
 
-	// Make relations explicit
-	if ( empty($tax_query)  || ! isset($tax_query['relation']) )  $tax_query['relation']  = 'AND';
-	if ( empty($meta_query) || ! isset($meta_query['relation']) ) $meta_query['relation'] = 'AND';
+	if ( empty( $tax_query ) || ! isset( $tax_query['relation'] ) ) {
+		$tax_query['relation'] = 'AND';
+	}
 
-	// On sale — robust: use Woo's resolver and intersect with any existing post__in
-	if ( isset($_GET['onsale']) && (int) $_GET['onsale'] === 1 ) {
-		$on_sale_ids = array_map( 'absint', wc_get_product_ids_on_sale() ); // returns parents for variable products too
+	if ( empty( $meta_query ) || ! isset( $meta_query['relation'] ) ) {
+		$meta_query['relation'] = 'AND';
+	}
 
-		// If Woo says nothing is on sale, force empty result set
+	// On sale
+	if ( isset( $_GET['onsale'] ) && (int) $_GET['onsale'] === 1 ) {
+		$on_sale_ids = array_map( 'absint', wc_get_product_ids_on_sale() );
+
 		if ( empty( $on_sale_ids ) ) {
 			$q->set( 'post__in', [0] );
 		} else {
 			$existing_in = (array) $q->get( 'post__in', [] );
 
 			if ( ! empty( $existing_in ) ) {
-				// Intersect with anything already constrained (attributes, category, etc.)
 				$intersect = array_values( array_intersect( $existing_in, $on_sale_ids ) );
 				$q->set( 'post__in', $intersect ? $intersect : [0] );
 			} else {
-				// No prior constraint: just apply the on-sale set
 				$q->set( 'post__in', $on_sale_ids );
 			}
 		}
 	}
 
 	// In stock
-	if ( isset($_GET['instock']) && (int) $_GET['instock'] === 1 ) {
+	if ( isset( $_GET['instock'] ) && (int) $_GET['instock'] === 1 ) {
 		$meta_query[] = [
 			'key'     => '_stock_status',
 			'value'   => 'instock',
-			'compare' => '='
+			'compare' => '=',
 		];
 	}
 
 	// Attributes
 	$attrs = wc_get_attribute_taxonomies();
+
 	if ( $attrs ) {
 		foreach ( $attrs as $attr ) {
 			$tax = wc_attribute_taxonomy_name( $attr->attribute_name );
 			if ( ! taxonomy_exists( $tax ) ) continue;
 
-			$key  = 'attr_' . $tax;
-			if ( ! isset($_GET[$key]) ) continue;
+			$clean_key  = nhf_get_filter_param_for_tax( $tax );
+			$legacy_key = 'attr_' . $tax;
 
-			$vals = $_GET[$key];
-			if ( ! is_array( $vals ) ) $vals = explode( ',', (string) $vals );
-			$vals = array_filter( array_map( 'sanitize_title', $vals ) );
-			if ( ! $vals ) continue;
+			$vals = null;
+
+			if ( isset( $_GET[ $clean_key ] ) ) {
+				$vals = wp_unslash( $_GET[ $clean_key ] );
+			} elseif ( isset( $_GET[ $legacy_key ] ) ) {
+				$vals = wp_unslash( $_GET[ $legacy_key ] );
+			} else {
+				continue;
+			}
+
+			$vals = nhf_normalize_filter_values( $vals );
+			if ( empty( $vals ) ) continue;
 
 			$tax_query[] = [
 				'taxonomy' => $tax,
@@ -446,29 +572,23 @@ add_action( 'pre_get_posts', function( $q ) {
 		}
 	}
 
-	$q->set( 'tax_query',  $tax_query );
+	$q->set( 'tax_query', $tax_query );
 	$q->set( 'meta_query', $meta_query );
-});
+} );
 
-// Robust "On sale" constraint (runs late enough to stick)
-add_action('woocommerce_product_query', function( $q ) {
-	// limit to front-end product archives only
+// Robust "On sale" constraint
+add_action( 'woocommerce_product_query', function( $q ) {
 	if ( is_admin() ) return;
 	if ( ! ( is_shop() || is_product_taxonomy() || is_product_tag() ) ) return;
+	if ( ! isset( $_GET['onsale'] ) || (string) $_GET['onsale'] !== '1' ) return;
 
-	// Only if checkbox is set (value "1")
-	if ( ! isset($_GET['onsale']) || (string)$_GET['onsale'] !== '1' ) return;
-
-	// Ask Woo for the definitive set (includes variable parents with any sale variation)
 	$on_sale_ids = array_map( 'absint', wc_get_product_ids_on_sale() );
 
-	// If none on sale at all, force empty
 	if ( empty( $on_sale_ids ) ) {
 		$q->set( 'post__in', [0] );
 		return;
 	}
 
-	// Intersect with any existing post__in (from other filters, search, etc.)
 	$existing_in = (array) $q->get( 'post__in', [] );
 
 	if ( ! empty( $existing_in ) ) {
@@ -477,4 +597,4 @@ add_action('woocommerce_product_query', function( $q ) {
 	} else {
 		$q->set( 'post__in', $on_sale_ids );
 	}
-}, 20);
+}, 20 );
