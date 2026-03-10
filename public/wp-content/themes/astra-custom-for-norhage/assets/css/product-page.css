@@ -741,3 +741,31 @@
 .single-product div.product .product_meta {
   border-top: 0 !important;
 }
+
+/* ==========================================================================
+   7) Image gallery note
+   ========================================================================== */
+
+.single-product .woocommerce-product-gallery .nh-product-image-note{
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6f7b76;
+}
+
+.single-product .woocommerce-product-gallery .nh-product-image-note p{
+  margin: 0;
+}
+
+.single-product .woocommerce-product-gallery .nh-product-image-note p::before{
+  content: "* ";
+  color: #8a9691;
+}
