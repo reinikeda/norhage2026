@@ -171,6 +171,14 @@ function norhage_enqueue_assets() {
 		true
 	);
 
+	wp_enqueue_script(
+		'nh-product-gallery-note',
+		get_stylesheet_directory_uri() . '/assets/js/product-gallery-note.js',
+		array(),
+		'1.0',
+		true
+	);
+
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 
@@ -924,3 +932,18 @@ add_action('template_redirect', function () {
 	wp_redirect($target_url, 301);
 	exit;
 });
+
+/**
+ * Single product image note
+ * Shows right after gallery / main product image.
+ */
+add_action( 'woocommerce_before_single_product_summary', 'nh_single_product_image_note', 25 );
+
+function nh_single_product_image_note() {
+	if ( ! is_product() ) {
+		return;
+	}
+
+	echo '<div class="nh-product-image-note" role="note" aria-label="Product image note">';
+	echo '<p>' . esc_html__( 'Image is for illustrative purposes only. Actual product color, shape, or other features may vary.', 'nh-theme' ) . '</p>';	echo '</div>';
+}

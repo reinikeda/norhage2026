@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
-"PO-Revision-Date: 2026-02-23 14:20+0200\n"
+"POT-Creation-Date: 2026-03-10 12:56:27+00:00\n"
+"PO-Revision-Date: 2026-03-10 15:05+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -37,116 +37,120 @@ msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
 msgstr "usein-kysytyt-kysymykset-ukk"
 
-#: functions.php:204 inc/services.php:26 inc/services.php:51
+#: functions.php:212 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr "Palvelut"
 
-#: functions.php:205 inc/blog.php:25 inc/hero.php:12
+#: functions.php:213 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
 msgstr "Blogi"
 
-#: functions.php:206
+#: functions.php:214
 msgid "Contact Us"
 msgstr "Ota yhteyttä"
 
-#: functions.php:212 template-parts/footer/footer.php:13
+#: functions.php:220 template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
 msgstr "+358 44 927 4784"
 
-#: functions.php:213 template-parts/headers/header-main.php:21
+#: functions.php:221 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
 msgstr "+358449274784"
 
-#: functions.php:219
+#: functions.php:227
 msgid "Utility bar"
 msgstr "Yläpalkki"
 
-#: functions.php:227
+#: functions.php:235
 msgid "Phone icon"
 msgstr "Puhelinkuvake"
 
-#: functions.php:236
+#: functions.php:244
 msgid "FAQ"
 msgstr "UKK"
 
-#: functions.php:301
+#: functions.php:309
 msgid "Shop by Category"
 msgstr "Osta kategorian mukaan"
 
-#: functions.php:326 functions.php:338
+#: functions.php:334 functions.php:346
 msgid "Long description"
 msgstr ""
 
-#: functions.php:328 functions.php:355
+#: functions.php:336 functions.php:363
 msgid "Shown after the product list and pagination on the category page."
 msgstr ""
 
-#: functions.php:389
+#: functions.php:397
 msgid "Category long description"
 msgstr ""
 
-#: functions.php:421 functions.php:440
+#: functions.php:429 functions.php:448
 msgid "Customize"
 msgstr "Syötä mitat"
 
-#: functions.php:422
+#: functions.php:430
 msgid "Customize “%s”"
 msgstr "Mukauta kohdetta “%s”"
 
-#: functions.php:445
+#: functions.php:453
 msgid "Select options"
 msgstr "Valitse mitat"
 
-#: functions.php:467
+#: functions.php:475
 msgid "Secondary product title"
 msgstr "Toissijainen tuotteen nimi"
 
-#: functions.php:496
+#: functions.php:504
 msgid "Footer — Shop Categories"
 msgstr "Alatunniste — Kaupan kategoriat"
 
-#: functions.php:497
+#: functions.php:505
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr "Alatunniste — Toissijainen (Palvelut, Blogi, Yhteystiedot)"
 
-#: functions.php:498
+#: functions.php:506
 msgid "Footer — Legal/Policies"
 msgstr "Alatunniste — Lakiasiat/Käytännöt"
 
-#: functions.php:682
+#: functions.php:690
 msgid "Please enter a valid email address."
 msgstr "Anna kelvollinen sähköpostiosoite."
 
-#: functions.php:690
+#: functions.php:698
 msgid "Thank you!"
 msgstr "Kiitos!"
 
-#: functions.php:699
+#: functions.php:707
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 "Tilaus on tilapäisesti poissa käytöstä. Ota yhteyttä sivuston ylläpitäjään."
 
-#: functions.php:724
+#: functions.php:732
 msgid "Could not connect to email service. Please try again."
 msgstr "Sähköpostipalveluun ei saatu yhteyttä. Yritä uudelleen."
 
-#: functions.php:734
+#: functions.php:742
 msgid "Thank you! You are subscribed."
 msgstr "Kiitos! Olet tilannut kanavan."
 
-#: functions.php:848
+#: functions.php:861
 msgid "Need help choosing or sizing? We can help."
 msgstr "Tarvitsetko apua tuotteen valinnassa? Autamme mielellämme."
 
-#: functions.php:858 functions.php:868
+#: functions.php:873
 msgid "Ask an expert"
 msgstr "Kysy neuvoa"
 
-#: functions.php:869
-msgid "Close"
-msgstr "Sulje"
+#: functions.php:948
+msgid ""
+"Image is for illustrative purposes only. Actual product color, shape, or "
+"other features may vary."
+msgstr ""
+"Tuotekuvat ovat vain viitteellisiä. Tuotteen todellinen väri, muoto tai muut "
+"ominaisuudet voivat poiketa."
 
 #: inc/basket-customize.php:157 inc/order-attributes.php:96
 #: inc/order-attributes.php:311 inc/product-customize.php:540
@@ -985,6 +989,9 @@ msgstr "Lapsiteema Norhage-sivuston mukautuksia varten"
 #. Author of the plugin/theme
 msgid "Daiva Reinike"
 msgstr ""
+
+#~ msgid "Close"
+#~ msgstr "Sulje"
 
 #~ msgid "Weight per m² (kg)"
 #~ msgstr "Paino / m² (kg)"

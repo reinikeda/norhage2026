@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
-"POT-Creation-Date: 2026-02-23 12:16:47+00:00\n"
-"PO-Revision-Date: 2026-03-04 13:49+0200\n"
+"POT-Creation-Date: 2026-03-10 12:56:27+00:00\n"
+"PO-Revision-Date: 2026-03-10 15:05+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -37,117 +37,121 @@ msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
 msgstr "vanliga-fragor-faq"
 
-#: functions.php:204 inc/services.php:26 inc/services.php:51
+#: functions.php:212 inc/services.php:26 inc/services.php:51
 msgid "Services"
 msgstr "Tjänster"
 
-#: functions.php:205 inc/blog.php:25 inc/hero.php:12
+#: functions.php:213 inc/blog.php:25 inc/hero.php:12
 msgid "Blog"
 msgstr "Blogg"
 
-#: functions.php:206
+#: functions.php:214
 msgid "Contact Us"
 msgstr "Kontakt"
 
-#: functions.php:212 template-parts/footer/footer.php:13
+#: functions.php:220 template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:20
 msgid "+49 176 65 10 6609"
 msgstr "+46 728 380 058"
 
-#: functions.php:213 template-parts/headers/header-main.php:21
+#: functions.php:221 template-parts/headers/header-main.php:21
 msgid "+4917665106609"
 msgstr "+46728380058"
 
-#: functions.php:219
+#: functions.php:227
 msgid "Utility bar"
 msgstr ""
 
-#: functions.php:227
+#: functions.php:235
 msgid "Phone icon"
 msgstr ""
 
-#: functions.php:236
+#: functions.php:244
 msgid "FAQ"
 msgstr "FAQ"
 
-#: functions.php:301
+#: functions.php:309
 msgid "Shop by Category"
 msgstr "Handla efter kategori"
 
-#: functions.php:326 functions.php:338
+#: functions.php:334 functions.php:346
 msgid "Long description"
 msgstr ""
 
-#: functions.php:328 functions.php:355
+#: functions.php:336 functions.php:363
 msgid "Shown after the product list and pagination on the category page."
 msgstr ""
 
-#: functions.php:389
+#: functions.php:397
 msgid "Category long description"
 msgstr ""
 
-#: functions.php:421 functions.php:440
+#: functions.php:429 functions.php:448
 msgid "Customize"
 msgstr "Anpassa"
 
-#: functions.php:422
+#: functions.php:430
 msgid "Customize “%s”"
 msgstr "Anpassa “%s”"
 
-#: functions.php:445
+#: functions.php:453
 msgid "Select options"
 msgstr "Välj alternativ"
 
-#: functions.php:467
+#: functions.php:475
 msgid "Secondary product title"
 msgstr ""
 
-#: functions.php:496
+#: functions.php:504
 msgid "Footer — Shop Categories"
 msgstr ""
 
-#: functions.php:497
+#: functions.php:505
 msgid "Footer — Secondary (Services, Blog, Contact)"
 msgstr ""
 
-#: functions.php:498
+#: functions.php:506
 msgid "Footer — Legal/Policies"
 msgstr ""
 
-#: functions.php:682
+#: functions.php:690
 msgid "Please enter a valid email address."
 msgstr "Vänligen ange en giltig e-postadress."
 
-#: functions.php:690
+#: functions.php:698
 msgid "Thank you!"
 msgstr "Tack!"
 
-#: functions.php:699
+#: functions.php:707
 msgid ""
 "Subscription is temporarily unavailable. Please contact site administrator."
 msgstr ""
 "Prenumerationen är tillfälligt otillgänglig. Vänligen kontakta "
 "webbplatsadministratören."
 
-#: functions.php:724
+#: functions.php:732
 msgid "Could not connect to email service. Please try again."
 msgstr "Kunde inte ansluta till e-posttjänsten. Vänligen försök igen."
 
-#: functions.php:734
+#: functions.php:742
 msgid "Thank you! You are subscribed."
 msgstr "Tack! Du prenumererar nu."
 
-#: functions.php:848
+#: functions.php:861
 msgid "Need help choosing or sizing? We can help."
 msgstr "Behöver du hjälp med val eller måttanpassning? Vi hjälper dig."
 
-#: functions.php:858 functions.php:868
+#: functions.php:873
 msgid "Ask an expert"
 msgstr "Fråga en expert"
 
-#: functions.php:869
-msgid "Close"
+#: functions.php:948
+msgid ""
+"Image is for illustrative purposes only. Actual product color, shape, or "
+"other features may vary."
 msgstr ""
+"Produktbilder är endast för referens. Produktens faktiska färg, form eller "
+"andra egenskaper kan skilja sig."
 
 #: inc/basket-customize.php:157 inc/order-attributes.php:96
 #: inc/order-attributes.php:311 inc/product-customize.php:540
