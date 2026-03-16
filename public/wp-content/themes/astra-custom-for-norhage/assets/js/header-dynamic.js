@@ -1,4 +1,6 @@
-/* header-dynamic.js — mobile compact header, short-screen desktop compact, drawer + mobile accordion */
+/* header-dynamic.js — mobile compact header only
+   drawer + mobile accordion
+*/
 (function () {
   const masthead = document.getElementById('masthead');
   if (!masthead) return;
@@ -8,14 +10,10 @@
      ------------------------------------------------------- */
   const mqMobile = window.matchMedia('(max-width: 1023px)');
   const mqDesktop = window.matchMedia('(min-width: 1024px)');
-  const DESK_MIN_H = 900;
-  const TOP_THRESHOLD = 8;
-  const SCROLL_THRESHOLD = 2;
 
-  const getScrollY = () => window.scrollY || 0;
+  const getScrollY = () => window.scrollY || window.pageYOffset || 0;
   const isMobile = () => mqMobile.matches;
   const isDesktop = () => mqDesktop.matches;
-  const desktopCompactEnabled = () => isDesktop() && window.innerHeight <= DESK_MIN_H;
 
   /* -------------------------------------------------------
      2) DOM REFS
@@ -37,14 +35,10 @@
   const closeBtn = drawer ? drawer.querySelector('.nh-drawer__close') : null;
   const panel = drawer ? drawer.querySelector('.nh-drawer__panel') : null;
 
-  const utilityBar = document.querySelector('.nh-utility');
-
   /* -------------------------------------------------------
      3) STATE
      ------------------------------------------------------- */
   let movedIconsMobile = false;
-  let lastYDesktop = getScrollY();
-  let everLeftTopDesktop = getScrollY() > TOP_THRESHOLD;
 
   /* -------------------------------------------------------
      4) TOOL RELOCATION (MOBILE)
@@ -64,7 +58,7 @@
     if (cart) holder.appendChild(cart);
     if (theme) holder.appendChild(theme);
 
-    // Keep search in row 2
+    /* Keep search in row 2 */
     if (searchBox && !toolsWrap.contains(searchBox)) {
       toolsWrap.appendChild(searchBox);
     }
@@ -130,7 +124,7 @@
      7) DRAWER CONTROLS
      ------------------------------------------------------- */
   function openDrawer() {
-    if (!drawer) return;
+    if (!drawer || !isMobile()) return;
 
     drawer.hidden = false;
     drawer.setAttribute('aria-hidden', 'false');
@@ -234,122 +228,58 @@
     if (!isMobile()) return;
 
     masthead.classList.add('mh-compact', 'mh-fixed');
-    masthead.classList.remove('mh-hidden');
+    masthead.classList.remove('mh-hidden', 'mh-desktop-compact');
 
     moveIconsToRow1();
     requestAnimationFrame(setBodyOffsetFromHeader);
   }
 
   function exitCompactMobile() {
-    masthead.classList.remove('mh-compact', 'mh-fixed', 'mh-hidden');
+    masthead.classList.remove('mh-compact', 'mh-hidden');
     moveIconsBack();
-    clearBodyOffset();
     closeDrawer(true);
   }
 
-  function enterDesktopCompact() {
-    if (!desktopCompactEnabled()) return;
-
-    masthead.classList.add('mh-desktop-compact', 'mh-fixed');
-    masthead.classList.remove('mh-hidden');
-
-    if (utilityBar) {
-      utilityBar.classList.add('is-hidden-compact');
-    }
-
-    setBodyOffsetFromHeader();
-  }
-
-  function exitDesktopCompact() {
-    masthead.classList.remove('mh-desktop-compact', 'mh-fixed', 'mh-hidden');
-
-    if (utilityBar) {
-      utilityBar.classList.remove('is-hidden-compact');
-    }
-
+  function applyDesktopDefault() {
+    masthead.classList.remove('mh-compact', 'mh-desktop-compact', 'mh-hidden', 'mh-fixed');
     clearBodyOffset();
-  }
-
-  function hideDesktopCompact() {
-    masthead.classList.add('mh-hidden');
+    moveIconsBack();
+    closeDrawer(true);
   }
 
   /* -------------------------------------------------------
      10) SCROLL HANDLERS
      ------------------------------------------------------- */
-  function onScrollMobile() {
-    enterCompactMobile();
-    masthead.classList.remove('mh-hidden');
-  }
+  function handleScroll() {
+    if (isMobile()) {
+      enterCompactMobile();
+      masthead.classList.remove('mh-hidden');
 
-  function onScrollDesktop() {
-    if (!desktopCompactEnabled()) {
-      exitDesktopCompact();
-      lastYDesktop = getScrollY();
+      if (drawer && drawer.classList.contains('is-open')) {
+        updateDrawerPosition();
+      }
       return;
     }
 
-    const y = getScrollY();
-    const delta = y - lastYDesktop;
-    const atTop = y <= TOP_THRESHOLD;
-
-    if (atTop) {
-      if (everLeftTopDesktop) {
-        enterDesktopCompact();
-      } else {
-        exitDesktopCompact();
-      }
-    } else {
-      everLeftTopDesktop = true;
-
-      if (delta > SCROLL_THRESHOLD) {
-        hideDesktopCompact();
-      } else if (delta < -SCROLL_THRESHOLD) {
-        enterDesktopCompact();
-      }
-    }
-
-    lastYDesktop = y;
-  }
-
-  function handleScroll() {
-    if (isMobile()) {
-      onScrollMobile();
-    } else {
-      onScrollDesktop();
-    }
-
-    if (drawer && drawer.classList.contains('is-open')) {
-      updateDrawerPosition();
-    }
+    /* Desktop should always stay standard */
+    applyDesktopDefault();
   }
 
   /* -------------------------------------------------------
      11) RESIZE HANDLER
      ------------------------------------------------------- */
   function handleResize() {
-    if (drawer && drawer.classList.contains('is-open')) {
-      updateDrawerPosition();
-    }
-
     if (isMobile()) {
-      exitDesktopCompact();
       enterCompactMobile();
+
+      if (drawer && drawer.classList.contains('is-open')) {
+        updateDrawerPosition();
+      }
       return;
     }
 
     exitCompactMobile();
-
-    if (desktopCompactEnabled()) {
-      if (getScrollY() > TOP_THRESHOLD) {
-        everLeftTopDesktop = true;
-        enterDesktopCompact();
-      } else {
-        exitDesktopCompact();
-      }
-    } else {
-      exitDesktopCompact();
-    }
+    applyDesktopDefault();
   }
 
   /* -------------------------------------------------------
@@ -357,9 +287,14 @@
      ------------------------------------------------------- */
   if (burger) {
     burger.addEventListener('click', () => {
+      if (!isMobile()) return;
+
       const isExpanded = burger.getAttribute('aria-expanded') === 'true';
-      if (isExpanded) closeDrawer();
-      else openDrawer();
+      if (isExpanded) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
     });
   }
 
@@ -385,15 +320,7 @@
 
   if (isMobile()) {
     enterCompactMobile();
-  } else if (desktopCompactEnabled()) {
-    if (getScrollY() > TOP_THRESHOLD) {
-      everLeftTopDesktop = true;
-      enterDesktopCompact();
-    } else {
-      exitDesktopCompact();
-    }
   } else {
-    exitCompactMobile();
-    exitDesktopCompact();
+    applyDesktopDefault();
   }
 })();

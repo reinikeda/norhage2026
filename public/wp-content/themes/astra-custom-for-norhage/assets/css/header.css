@@ -11,7 +11,7 @@
 
 .ast-above-header-bar,
 .ast-primary-header{
-  background: var(--nh-forest,#1E3932);
+  background:var(--nh-forest,#1E3932);
 }
 
 
@@ -27,7 +27,7 @@
   padding:8px 18px;
   font-size:13px;
   line-height:1.2;
-  background: var(--nh-cream,#EDE2CE);
+  background:var(--nh-cream,#EDE2CE);
   border-bottom:1px solid var(--ui-border);
 }
 
@@ -75,7 +75,7 @@
   color:var(--ui-text);
   text-decoration:none;
   padding:2px 0;
-  transition: color .2s ease, opacity .2s ease;
+  transition:color .2s ease, opacity .2s ease;
 }
 
 .nh-utility__tel:hover{
@@ -90,10 +90,6 @@
 .nh-utility__faq:hover{
   text-decoration:underline;
   text-underline-offset:2px;
-}
-
-.nh-utility.is-hidden-compact{
-  display:none !important;
 }
 
 @media (max-width:768px){
@@ -189,7 +185,7 @@
   background:var(--ui-bg-dark);
   color:#fff;
   border-bottom:0;
-  transition: box-shadow .18s ease, background-color .18s ease;
+  transition:box-shadow .18s ease, background-color .18s ease;
   overflow:visible;
 }
 
@@ -210,10 +206,14 @@
 }
 
 .nhhb-row--top{
+  position:relative;
+  z-index:30;
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 
 .nhhb-row--bottom{
+  position:relative;
+  z-index:20;
   padding-top:10px;
   padding-bottom:12px;
 }
@@ -314,6 +314,8 @@
    ========================================================= */
 
 .nhhb-main-nav{
+  position:relative;
+  z-index:30;
   display:flex;
   justify-content:center;
   overflow:visible;
@@ -360,7 +362,11 @@
   background:rgba(255,255,255,.12);
 }
 
-/* Parent chevron */
+.nhhb-main-nav .dropdown-menu-toggle,
+.nhhb-main-nav .ast-menu-toggle{
+  display:none !important;
+}
+
 .nhhb-main-nav .primary-menu > .menu-item-has-children > a::after{
   content:"";
   display:inline-block;
@@ -394,14 +400,14 @@
   top:calc(100% + 10px);
   left:0;
   min-width:260px;
-  max-width:320px;
+  max-width:min(360px, 90vw);
   margin:0;
   padding:10px 0;
-  background:var(--nh-forest, #1E3932);
+  background:var(--nh-forest,#1E3932);
   border:1px solid rgba(255,255,255,.10);
   border-radius:10px;
   box-shadow:0 12px 28px rgba(0,0,0,.24);
-  z-index:3000;
+  z-index:40;
   opacity:0;
   visibility:hidden;
   transform:translateY(6px);
@@ -437,7 +443,7 @@
 .nhhb-main-nav .primary-menu .sub-menu a{
   display:block;
   padding:10px 16px;
-  color:var(--nh-offwhite, #FAF7F2);
+  color:var(--nh-offwhite,#FAF7F2);
   text-decoration:none;
   font-size:14px;
   line-height:1.35;
@@ -453,24 +459,20 @@
 .nhhb-main-nav .primary-menu .sub-menu a:hover,
 .nhhb-main-nav .primary-menu .sub-menu a:focus{
   background:rgba(255,255,255,.08);
-  color:var(--nh-mint, #d8efe4);
+  color:var(--nh-mint,#d8efe4);
   padding-left:20px;
 }
 
 .nhhb-main-nav .primary-menu .sub-menu .current-menu-item > a,
 .nhhb-main-nav .primary-menu .sub-menu .current-menu-ancestor > a{
   background:rgba(255,255,255,.10);
-  color:var(--nh-mint, #d8efe4);
+  color:var(--nh-mint,#d8efe4);
 }
 
 @media (max-width:1023px){
   .nhhb-main-nav .primary-menu .sub-menu{
     display:none !important;
   }
-}
-
-#masthead.mh-desktop-compact .nhhb-main-nav .sub-menu{
-  display:none !important;
 }
 
 
@@ -592,6 +594,12 @@
   display:none;
 }
 
+@media (min-width:1024px){
+  .nhhb-compact-burger-wrap{
+    display:none !important;
+  }
+}
+
 
 /* =========================================================
    11) LIVE PRODUCT SEARCH
@@ -670,7 +678,6 @@
   opacity:1;
 }
 
-/* Results popover */
 :is(.nh-live-results, .nrh-live-search-results){
   position:absolute;
   top:calc(100% + 8px);
@@ -743,7 +750,7 @@
   display:block;
   font-weight:600;
   margin-top:2px;
-  color:var(--nh-forest, #1E3932);
+  color:var(--nh-forest,#1E3932);
 }
 
 :is(.nh-live-results, .nrh-live-search-results) .no-results{
@@ -1058,7 +1065,7 @@
 
 
 /* =========================================================
-   14) HEADER FIXED / HIDE-SHOW STATES
+   14) HEADER FIXED STATE
    ========================================================= */
 
 #masthead.mh-fixed{
@@ -1067,12 +1074,6 @@
   left:0;
   right:0;
   z-index:1000;
-  transform:translateY(0);
-  transition:transform .22s ease;
-}
-
-#masthead.mh-fixed.mh-hidden{
-  transform:translateY(-100%);
 }
 
 body.mh-fixed-on{
@@ -1086,19 +1087,12 @@ body.mh-fixed-on{
 
 @media (max-width:1023px){
   #masthead.mh-compact{
-    --mhc-row1: 52px;
-    --mhc-row2: 60px;
-    --masthead-h: calc(var(--mhc-row1) + var(--mhc-row2));
+    --mhc-row1:52px;
+    --mhc-row2:60px;
+    --masthead-h:calc(var(--mhc-row1) + var(--mhc-row2));
     background:var(--nh-forest,#1E3932);
     box-shadow:0 4px 12px rgba(0,0,0,.24);
     overflow:visible;
-    transform:translateY(0);
-    transition:none;
-  }
-
-  #masthead.mh-compact.mh-hidden{
-    transform:translateY(-100%);
-    transition:transform .22s ease;
   }
 
   #masthead.mh-compact .nhhb-header-main{
@@ -1239,13 +1233,12 @@ body.mh-fixed-on{
     left:0;
     right:auto;
     width:66.6667vw;
-    top:calc(var(--admin-offset,0) + var(--masthead-h, 112px));
+    top:calc(var(--admin-offset,0) + var(--masthead-h,112px));
     max-height:calc(100dvh - (var(--admin-offset,0) + var(--masthead-h,112px)));
     padding-bottom:4.5rem;
   }
 
-  body.drawer-open #masthead.mh-fixed,
-  body.drawer-open #masthead.mh-fixed.mh-hidden{
+  body.drawer-open #masthead.mh-fixed{
     transform:none !important;
   }
 
@@ -1257,119 +1250,7 @@ body.mh-fixed-on{
 
 
 /* =========================================================
-   16) DESKTOP COMPACT HEADER (SHORT SCREENS)
-   ========================================================= */
-
-@media (min-width:1024px){
-  #masthead.mh-desktop-compact .nhhb-row--top{
-    display:none !important;
-  }
-
-  #masthead.mh-desktop-compact .nhhb-header-main{
-    background:var(--nh-forest, #1E3932);
-    border-bottom:0;
-    box-shadow:0 4px 12px rgba(0,0,0,.24);
-  }
-
-  #masthead.mh-desktop-compact .nhhb-row--bottom{
-    display:flex !important;
-    align-items:center;
-    padding:6px 18px;
-    gap:14px;
-  }
-
-  #masthead.mh-desktop-compact .nhhb-logo--bottom-desktop{
-    order:0;
-    margin-right:1.5rem;
-    display:block;
-  }
-
-  #masthead.mh-desktop-compact .nhhb-tools{
-    order:1;
-    margin-left:auto;
-    display:flex;
-    align-items:center;
-    gap:14px;
-  }
-
-  #masthead.mh-desktop-compact .nhhb-compact-burger-wrap{
-    order:2;
-    display:flex;
-    align-items:center;
-    margin-left:.75rem;
-  }
-
-  #masthead.mh-desktop-compact .nh-burger{
-    width:40px;
-    height:40px;
-    padding:0;
-    border-radius:999px;
-    border:0;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,.06);
-    box-shadow:none;
-    cursor:pointer;
-  }
-
-  #masthead.mh-desktop-compact .nh-burger:hover{
-    background:rgba(255,255,255,.12);
-  }
-
-  #masthead.mh-desktop-compact .nh-burger__icon{
-    width:24px;
-    height:24px;
-    display:block;
-    filter:invert(1) brightness(1.25) contrast(1.05);
-    opacity:.95;
-  }
-
-  .nh-drawer__panel{
-    right:0;
-    left:auto;
-    width:min(420px, 32vw);
-    top:calc(var(--admin-offset,0) + var(--masthead-h, 112px));
-    max-height:calc(100dvh - (var(--admin-offset,0) + var(--masthead-h,112px)));
-    border-radius:0 0 0 12px;
-  }
-}
-
-
-/* =========================================================
-   17) TALL DESKTOP FIXED HEADER
-   ========================================================= */
-
-@media (min-width:1024px) and (min-height:901px){
-  :root{
-    --masthead-h-desktop: 168px;
-  }
-
-  #masthead{
-    position:fixed;
-    left:0;
-    right:0;
-    top:var(--admin-offset,0px);
-    z-index:1000;
-  }
-
-  body{
-    padding-top:calc(var(--masthead-h-desktop) + var(--admin-offset,0px));
-  }
-
-  .admin-bar{
-    --admin-offset: 32px;
-  }
-
-  #masthead.mh-fixed,
-  #masthead.mh-fixed.mh-hidden{
-    transform:translateY(0) !important;
-  }
-}
-
-
-/* =========================================================
-   18) MOBILE HEADER FALLBACK (NON-COMPACT)
+   16) MOBILE HEADER FALLBACK (NON-COMPACT)
    ========================================================= */
 
 @media (max-width:980px){
@@ -1432,16 +1313,16 @@ body.mh-fixed-on{
 
 
 /* =========================================================
-   19) HERO OFFSET UNDER COMPACT MOBILE HEADER
+   17) HERO OFFSET UNDER COMPACT MOBILE HEADER
    ========================================================= */
 
 @media (max-width:1023px){
   .nhhb-hero .nhhb-hero__inner{
-    --hero-pad: clamp(40px,10vw,120px);
+    --hero-pad:clamp(40px,10vw,120px);
   }
 
   #masthead.mh-compact.mh-fixed ~ .nhhb-hero .nhhb-hero__inner{
-    padding-top:calc(var(--hero-pad) + var(--masthead-h, 112px));
+    padding-top:calc(var(--hero-pad) + var(--masthead-h,112px));
     padding-bottom:var(--hero-pad);
   }
 }
