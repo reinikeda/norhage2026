@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$slides = function_exists( 'nhhb_get_home_hero_slides' ) ? nhhb_get_home_hero_slides() : [];
+$slides   = function_exists( 'nhhb_get_home_hero_slides' ) ? nhhb_get_home_hero_slides() : [];
 $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : get_bloginfo( 'name' );
 ?>
 

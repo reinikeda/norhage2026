@@ -49,6 +49,7 @@ if ( is_admin() ) {
 		}
 
 		wp_nonce_field( 'nrh_save_downloads', 'nrh_downloads_nonce' );
+		$remove_download_label = esc_js( esc_html__( 'Remove download row', 'nh-theme' ) );
 
 		echo '<table class="form-table widefat fixed" id="nrh-downloads-table"><thead><tr>
 				<th style="width:40%;">' . esc_html__( 'Label', 'nh-theme' ) . '</th>
@@ -61,7 +62,7 @@ if ( is_admin() ) {
 				'<tr>
 					<td><input type="text" name="nrh_downloads[%1$d][label]" value="%2$s" style="width:100%%;"></td>
 					<td><input type="url"  name="nrh_downloads[%1$d][url]"   value="%3$s" style="width:100%%;"></td>
-					<td><button class="button remove-download" type="button" aria-label="%4$s">–</button></td>
+					<td><button class="button remove-download" type="button" aria-label="%4$s">-</button></td>
 				</tr>',
 				$i,
 				esc_attr( $row['label'] ?? '' ),
@@ -72,25 +73,25 @@ if ( is_admin() ) {
 
 		echo '</tbody></table>';
 		echo '<p><button id="add-download" class="button" type="button">+ '
-			 . esc_html__( 'Add Download', 'nh-theme' )
-			 . '</button></p>';
+			. esc_html__( 'Add Download', 'nh-theme' )
+			. '</button></p>';
 		?>
 		<script>
 		jQuery(function($){
 			var $tbody   = $('#nrh-downloads-table tbody'),
 				template = '<tr><td><input type="text" name="" style="width:100%;"></td>'
 						 + '<td><input type="url"  name="" style="width:100%;"></td>'
-						 + '<td><button class="button remove-download" type="button" aria-label="<​?php echo esc_js( esc_html__( 'Remove download row', 'nh-theme' ) ); ?>">–</button></td></tr>';
+						 + '<td><button class="button remove-download" type="button" aria-label="<?php echo $remove_download_label; ?>">-</button></td></tr>';
 
 			$('#add-download').on('click', function(){
 				var idx  = $tbody.children('tr').length,
 					$row = $(template);
 
 				$row.find('input[type=text]')
-					.attr('name','nrh_downloads['+idx+'][label]');
+					.attr('name', 'nrh_downloads[' + idx + '][label]');
 
 				$row.find('input[type=url]')
-					.attr('name','nrh_downloads['+idx+'][url]');
+					.attr('name', 'nrh_downloads[' + idx + '][url]');
 
 				$tbody.append($row);
 			});
@@ -100,9 +101,9 @@ if ( is_admin() ) {
 
 				$tbody.children('tr').each(function(i){
 					$(this).find('input[type=text]')
-						.attr('name','nrh_downloads['+i+'][label]');
+						.attr('name', 'nrh_downloads[' + i + '][label]');
 					$(this).find('input[type=url]')
-						.attr('name','nrh_downloads['+i+'][url]');
+						.attr('name', 'nrh_downloads[' + i + '][url]');
 				});
 			});
 		});
@@ -117,16 +118,16 @@ if ( is_admin() ) {
 
 		echo '<table class="form-table"><tr>
 				<th><label for="nrh_video_url">'
-				  . esc_html__( 'YouTube / Vimeo URL', 'nh-theme' )
+					. esc_html__( 'YouTube / Vimeo URL', 'nh-theme' )
 				. '</label></th>
 				<td><input type="url" id="nrh_video_url" name="nrh_video_url" '
-				  . 'value="' . esc_url( $video_url ) . '" style="width:100%;" />'
+					. 'value="' . esc_url( $video_url ) . '" style="width:100%;" />'
 				. '</td>
 			  </tr></table>';
 	}
 
 	// Render the Custom Cutting metabox
-	// Weight per m² is now taken from WooCommerce "Weight (kg)" on product/variation
+	// Weight per m2 is now taken from WooCommerce "Weight (kg)" on product/variation
 	function nh_custom_cutting_box_html( $post ) {
 		$pfx  = '_nh_cc_';
 		$vals = [
@@ -156,38 +157,38 @@ if ( is_admin() ) {
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_cut_fee"><?php esc_html_e( 'Cutting fee per sheet', 'nh-theme' ); ?></label>
-				<input type="number" step="0.01" min="0" name="nh_cc_cut_fee" id="nh_cc_cut_fee" value="<​?php echo esc_attr( $vals['cut_fee'] ); ?>" />
+				<input type="number" step="0.01" min="0" name="nh_cc_cut_fee" id="nh_cc_cut_fee" value="<?php echo esc_attr( $vals['cut_fee'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_min_w"><?php esc_html_e( 'Min width (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_min_w" id="nh_cc_min_w" value="<​?php echo esc_attr( $vals['min_w'] ); ?>" />
+				<input type="number" step="1" min="0" name="nh_cc_min_w" id="nh_cc_min_w" value="<?php echo esc_attr( $vals['min_w'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_max_w"><?php esc_html_e( 'Max width (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_max_w" id="nh_cc_max_w" value="<​?php echo esc_attr( $vals['max_w'] ); ?>" />
+				<input type="number" step="1" min="0" name="nh_cc_max_w" id="nh_cc_max_w" value="<?php echo esc_attr( $vals['max_w'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_min_l"><?php esc_html_e( 'Min length (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_min_l" id="nh_cc_min_l" value="<​?php echo esc_attr( $vals['min_l'] ); ?>" />
+				<input type="number" step="1" min="0" name="nh_cc_min_l" id="nh_cc_min_l" value="<?php echo esc_attr( $vals['min_l'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_max_l"><?php esc_html_e( 'Max length (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_max_l" id="nh_cc_max_l" value="<​?php echo esc_attr( $vals['max_l'] ); ?>" />
+				<input type="number" step="1" min="0" name="nh_cc_max_l" id="nh_cc_max_l" value="<?php echo esc_attr( $vals['max_l'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-row">
 				<label for="nh_cc_step_mm"><?php esc_html_e( 'Cutting step (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="1" name="nh_cc_step_mm" id="nh_cc_step_mm" value="<​?php echo esc_attr( $vals['step_mm'] ); ?>" />
+				<input type="number" step="1" min="1" name="nh_cc_step_mm" id="nh_cc_step_mm" value="<?php echo esc_attr( $vals['step_mm'] ); ?>" />
 			</div>
 
 			<div class="nh-cc-desc">
 				<?php
 				echo esc_html__(
-					'Weight is taken from the WooCommerce "Weight (kg)" field. For custom cutting, that weight is interpreted as kg per m² (set per product or per variation).',
+					'Weight is taken from the WooCommerce "Weight (kg)" field. For custom cutting, that weight is interpreted as kg per m2 (set per product or per variation).',
 					'nh-theme'
 				);
 				?>
@@ -201,7 +202,7 @@ if ( is_admin() ) {
 		$front_page_id = (int) get_option( 'page_on_front' );
 
 		if ( ! $front_page_id ) {
-			echo '<p>' . esc_html__( 'Set a static homepage first in Settings → Reading.', 'nh-theme' ) . '</p>';
+			echo '<p>' . esc_html__( 'Set a static homepage first in Settings > Reading.', 'nh-theme' ) . '</p>';
 			return;
 		}
 
@@ -227,6 +228,10 @@ if ( is_admin() ) {
 		}
 
 		wp_nonce_field( 'nh_save_home_hero_slider', 'nh_home_hero_slider_nonce' );
+
+		$select_slide_image = esc_js( __( 'Select slide image', 'nh-theme' ) );
+		$use_image_text     = esc_js( __( 'Use image', 'nh-theme' ) );
+		$no_image_text      = esc_js( __( 'No image selected', 'nh-theme' ) );
 		?>
 		<style>
 			.nh-hero-admin-wrap{display:grid;gap:18px}
@@ -280,7 +285,7 @@ if ( is_admin() ) {
 						<div>
 							<div class="nh-hero-admin-preview" data-preview>
 								<?php if ( $image_url ) : ?>
-									<img src="<​?php echo esc_url( $image_url ); ?>" alt="">
+									<img src="<?php echo esc_url( $image_url ); ?>" alt="">
 								<?php else : ?>
 									<span><?php esc_html_e( 'No image selected', 'nh-theme' ); ?></span>
 								<?php endif; ?>
@@ -290,7 +295,7 @@ if ( is_admin() ) {
 								type="hidden"
 								class="nh-hero-image-id"
 								name="nh_home_hero_slides[<?php echo esc_attr( $i ); ?>][image_id]"
-								value="<​?php echo esc_attr( $image_id ); ?>"
+								value="<?php echo esc_attr( $image_id ); ?>"
 							>
 
 							<p style="margin-top:10px;">
@@ -314,7 +319,7 @@ if ( is_admin() ) {
 									class="widefat"
 									id="nh_home_hero_title_<?php echo esc_attr( $i ); ?>"
 									name="nh_home_hero_slides[<?php echo esc_attr( $i ); ?>][title]"
-									value="<​?php echo esc_attr( $title ); ?>"
+									value="<?php echo esc_attr( $title ); ?>"
 								>
 							</p>
 
@@ -346,9 +351,9 @@ if ( is_admin() ) {
 				const $remove  = $card.find('.nh-hero-remove');
 
 				const frame = wp.media({
-					title: '<?php echo esc_js( __( 'Select slide image', 'nh-theme' ) ); ?>',
+					title: '<?php echo $select_slide_image; ?>',
 					button: {
-						text: '<?php echo esc_js( __( 'Use image', 'nh-theme' ) ); ?>'
+						text: '<?php echo $use_image_text; ?>'
 					},
 					multiple: false
 				});
@@ -375,7 +380,7 @@ if ( is_admin() ) {
 				const $input   = $card.find('.nh-hero-image-id');
 
 				$input.val('');
-				$preview.html('<span><?php echo esc_js( __( 'No image selected', 'nh-theme' ) ); ?></span>');
+				$preview.html('<span><?php echo $no_image_text; ?></span>');
 				$(this).prop('disabled', true);
 			});
 		});
@@ -561,11 +566,7 @@ add_filter( 'woocommerce_product_tabs', function ( $tabs ) {
 
 	if ( $video_url !== '' ) {
 		$embed = wp_oembed_get( esc_url( $video_url ) );
-		if ( $embed ) {
-			$has_video = true;
-		} else {
-			$has_video = true;
-		}
+		$has_video = (bool) $embed || $video_url !== '';
 	}
 
 	if ( $has_video ) {
@@ -644,7 +645,6 @@ function nrh_video_tab_content() {
 	echo '</div>';
 }
 
-
 // === Product extras metabox (uses Woo wc-product-search) =====================
 if ( ! defined( 'NC_BUNDLE_META_KEY' ) ) {
 	define( 'NC_BUNDLE_META_KEY', '_nc_bundle_items_v2' );
@@ -700,7 +700,7 @@ function nc_bundle_items_box_html( $post ) {
 	<script>
 	jQuery(function($){
 		$('#nc-add-bundle-row').on('click', function(){
-			var html = <?php echo json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '' ) ) ); ?>;
+			var html = <?php echo wp_json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '' ) ) ); ?>;
 			$('#nc-bundle-rows tbody').append(html);
 			$(document.body).trigger('wc-enhanced-select-init');
 		});
@@ -737,11 +737,11 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 	?>
 	<tr>
 		<td>
-			<span class="dashicons dashicons-menu nc-handle" title="<​?php echo esc_attr__( 'Drag to reorder', 'nh-theme' ); ?>"></span>
+			<span class="dashicons dashicons-menu nc-handle" title="<?php echo esc_attr__( 'Drag to reorder', 'nh-theme' ); ?>"></span>
 			<select
 				class="wc-product-search"
 				name="nc_bundle[id][]"
-				data-placeholder="<​?php echo esc_attr__( 'Search products & variations…', 'nh-theme' ); ?>"
+				data-placeholder="<?php echo esc_attr__( 'Search products & variations...', 'nh-theme' ); ?>"
 				data-action="woocommerce_json_search_products_and_variations"
 				style="width:92%">
 				<?php echo $option_html; ?>
@@ -753,11 +753,11 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 				min="1"
 				step="1"
 				name="nc_bundle[max][]"
-				value="<​?php echo esc_attr( $max ); ?>"
-				placeholder="—" />
+				value="<?php echo esc_attr( $max ); ?>"
+				placeholder="-" />
 		</td>
 		<td>
-			<button type="button" class="button-link nc-remove" aria-label="<​?php echo esc_attr__( 'Remove row', 'nh-theme' ); ?>">&times;</button>
+			<button type="button" class="button-link nc-remove" aria-label="<?php echo esc_attr__( 'Remove row', 'nh-theme' ); ?>">&times;</button>
 		</td>
 	</tr>
 	<?php
@@ -777,8 +777,8 @@ add_action( 'save_post_product', function ( $post_id ) {
 		return;
 	}
 
-	$ids = isset( $_POST['nc_bundle']['id'] ) ? (array) $_POST['nc_bundle']['id'] : [];
-	$mxs = isset( $_POST['nc_bundle']['max'] ) ? (array) $_POST['nc_bundle']['max'] : [];
+	$ids = isset( $_POST['nc_bundle']['id'] ) ? (array) wp_unslash( $_POST['nc_bundle']['id'] ) : [];
+	$mxs = isset( $_POST['nc_bundle']['max'] ) ? (array) wp_unslash( $_POST['nc_bundle']['max'] ) : [];
 
 	$out = [];
 
