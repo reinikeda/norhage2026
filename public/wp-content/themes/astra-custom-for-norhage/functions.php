@@ -179,6 +179,16 @@ function norhage_enqueue_assets() {
 		true
 	);
 
+	if ( is_front_page() ) {
+		wp_enqueue_script(
+			'nh-home-hero-slider',
+			get_stylesheet_directory_uri() . '/assets/js/home-hero-slider.js',
+			array(),
+			CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+			true
+		);
+	}
+
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 

@@ -1,23 +1,13 @@
-/* header-dynamic.js — mobile compact header only
-   drawer + mobile accordion
+/* header-dynamic.js — always-visible header
+   mobile compact tools relocation + drawer + mobile accordion
 */
 (function () {
   const masthead = document.getElementById('masthead');
   if (!masthead) return;
 
-  /* -------------------------------------------------------
-     1) BREAKPOINTS / CONSTANTS
-     ------------------------------------------------------- */
   const mqMobile = window.matchMedia('(max-width: 1023px)');
-  const mqDesktop = window.matchMedia('(min-width: 1024px)');
-
-  const getScrollY = () => window.scrollY || window.pageYOffset || 0;
   const isMobile = () => mqMobile.matches;
-  const isDesktop = () => mqDesktop.matches;
 
-  /* -------------------------------------------------------
-     2) DOM REFS
-     ------------------------------------------------------- */
   const topRow = masthead.querySelector('.nhhb-row--top');
   const bottomRow = masthead.querySelector('.nhhb-row--bottom');
 
@@ -35,14 +25,9 @@
   const closeBtn = drawer ? drawer.querySelector('.nh-drawer__close') : null;
   const panel = drawer ? drawer.querySelector('.nh-drawer__panel') : null;
 
-  /* -------------------------------------------------------
-     3) STATE
-     ------------------------------------------------------- */
   let movedIconsMobile = false;
+  let resizeRaf = null;
 
-  /* -------------------------------------------------------
-     4) TOOL RELOCATION (MOBILE)
-     ------------------------------------------------------- */
   function moveIconsToRow1() {
     if (!isMobile() || !toolsWrap || !toolsSlot || movedIconsMobile) return;
 
@@ -58,7 +43,6 @@
     if (cart) holder.appendChild(cart);
     if (theme) holder.appendChild(theme);
 
-    /* Keep search in row 2 */
     if (searchBox && !toolsWrap.contains(searchBox)) {
       toolsWrap.appendChild(searchBox);
     }
@@ -69,43 +53,37 @@
   function moveIconsBack() {
     if (!movedIconsMobile || !toolsWrap) return;
 
-    const ref = toolsWrap.firstChild;
+    if (acc) toolsWrap.insertBefore(acc, searchBox || toolsWrap.firstChild);
+    if (cart) toolsWrap.insertBefore(cart, searchBox || toolsWrap.firstChild);
+    if (theme) toolsWrap.insertBefore(theme, searchBox || toolsWrap.firstChild);
 
-    if (acc) toolsWrap.insertBefore(acc, ref);
-    if (cart) toolsWrap.insertBefore(cart, ref);
-    if (theme) toolsWrap.insertBefore(theme, ref);
+    const compactHolder = toolsSlot ? toolsSlot.querySelector('.nhhb-tools--compact') : null;
+    if (compactHolder && !compactHolder.children.length) {
+      compactHolder.remove();
+    }
 
     movedIconsMobile = false;
   }
 
-  /* -------------------------------------------------------
-     5) BODY OFFSET
-     ------------------------------------------------------- */
   function setBodyOffsetFromHeader() {
-    const height = masthead.offsetHeight || 112;
-    masthead.style.setProperty('--masthead-h', `${height}px`);
-    document.body.classList.add('mh-fixed-on', 'nhhb-compact-header');
+    const height = Math.ceil(masthead.offsetHeight || 112);
+    document.documentElement.style.setProperty('--masthead-h', `${height}px`);
+    document.body.classList.add('has-fixed-masthead');
   }
 
-  function clearBodyOffset() {
-    masthead.style.removeProperty('--masthead-h');
-    document.body.classList.remove('mh-fixed-on', 'nhhb-compact-header');
-  }
-
-  /* -------------------------------------------------------
-     6) DRAWER POSITIONING
-     ------------------------------------------------------- */
   function updateDrawerPosition() {
-    if (!panel) return;
+    if (!panel || !drawer || drawer.hidden || !isMobile()) return;
 
     const rect = masthead.getBoundingClientRect();
     const top = Math.max(0, rect.bottom);
-    const maxH = window.innerHeight - top;
+    const maxH = Math.max(200, window.innerHeight - top);
 
     panel.style.position = 'fixed';
     panel.style.top = `${top}px`;
+    panel.style.left = '0';
+    panel.style.right = 'auto';
     panel.style.height = 'auto';
-    panel.style.maxHeight = `${Math.max(200, maxH)}px`;
+    panel.style.maxHeight = `${maxH}px`;
   }
 
   function resetDrawerInlineStyles() {
@@ -120,9 +98,6 @@
     panel.style.maxHeight = '';
   }
 
-  /* -------------------------------------------------------
-     7) DRAWER CONTROLS
-     ------------------------------------------------------- */
   function openDrawer() {
     if (!drawer || !isMobile()) return;
 
@@ -159,9 +134,6 @@
     resetDrawerInlineStyles();
   }
 
-  /* -------------------------------------------------------
-     8) MOBILE ACCORDION IN DRAWER
-     ------------------------------------------------------- */
   function initDrawerAccordion() {
     if (!drawer) return;
 
@@ -221,9 +193,6 @@
     });
   }
 
-  /* -------------------------------------------------------
-     9) MODE HELPERS
-     ------------------------------------------------------- */
   function enterCompactMobile() {
     if (!isMobile()) return;
 
@@ -231,60 +200,33 @@
     masthead.classList.remove('mh-hidden', 'mh-desktop-compact');
 
     moveIconsToRow1();
-    requestAnimationFrame(setBodyOffsetFromHeader);
-  }
-
-  function exitCompactMobile() {
-    masthead.classList.remove('mh-compact', 'mh-hidden');
-    moveIconsBack();
-    closeDrawer(true);
   }
 
   function applyDesktopDefault() {
-    masthead.classList.remove('mh-compact', 'mh-desktop-compact', 'mh-hidden', 'mh-fixed');
-    clearBodyOffset();
+    masthead.classList.remove('mh-compact', 'mh-desktop-compact', 'mh-hidden');
+    masthead.classList.add('mh-fixed');
+
     moveIconsBack();
     closeDrawer(true);
   }
 
-  /* -------------------------------------------------------
-     10) SCROLL HANDLERS
-     ------------------------------------------------------- */
-  function handleScroll() {
+  function syncHeaderMode() {
     if (isMobile()) {
       enterCompactMobile();
-      masthead.classList.remove('mh-hidden');
-
-      if (drawer && drawer.classList.contains('is-open')) {
-        updateDrawerPosition();
-      }
-      return;
+    } else {
+      applyDesktopDefault();
     }
-
-    /* Desktop should always stay standard */
-    applyDesktopDefault();
   }
 
-  /* -------------------------------------------------------
-     11) RESIZE HANDLER
-     ------------------------------------------------------- */
-  function handleResize() {
-    if (isMobile()) {
-      enterCompactMobile();
+  function refreshHeaderLayout() {
+    syncHeaderMode();
 
-      if (drawer && drawer.classList.contains('is-open')) {
-        updateDrawerPosition();
-      }
-      return;
-    }
-
-    exitCompactMobile();
-    applyDesktopDefault();
+    requestAnimationFrame(() => {
+      setBodyOffsetFromHeader();
+      updateDrawerPosition();
+    });
   }
 
-  /* -------------------------------------------------------
-     12) EVENTS
-     ------------------------------------------------------- */
   if (burger) {
     burger.addEventListener('click', () => {
       if (!isMobile()) return;
@@ -310,17 +252,28 @@
     if (e.key === 'Escape') closeDrawer();
   });
 
-  window.addEventListener('resize', handleResize, { passive: true });
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
 
-  /* -------------------------------------------------------
-     13) INIT
-     ------------------------------------------------------- */
-  initDrawerAccordion();
+    resizeRaf = requestAnimationFrame(() => {
+      refreshHeaderLayout();
+    });
+  }, { passive: true });
 
-  if (isMobile()) {
-    enterCompactMobile();
-  } else {
-    applyDesktopDefault();
+  window.addEventListener('scroll', () => {
+    if (drawer && drawer.classList.contains('is-open')) {
+      updateDrawerPosition();
+    }
+  }, { passive: true });
+
+  window.addEventListener('load', refreshHeaderLayout);
+
+  if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+    document.fonts.ready.then(() => {
+      refreshHeaderLayout();
+    });
   }
+
+  initDrawerAccordion();
+  refreshHeaderLayout();
 })();
