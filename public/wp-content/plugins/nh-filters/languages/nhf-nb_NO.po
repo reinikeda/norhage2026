@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-filters\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2026-02-25 08:59+0200\n"
+"PO-Revision-Date: 2026-03-20 08:49+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Norwegian Bokmål\n"
 "Language: nb_NO\n"
@@ -51,7 +51,7 @@ msgstr "Kategorier"
 
 #: assets/js/nhf.js
 msgid "Filters"
-msgstr "Filtre"
+msgstr "Åpne filtre"
 
 #: assets/js/nhf.js
 msgid "Close"

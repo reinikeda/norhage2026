@@ -1,250 +1,76 @@
-/**
- * Helper: translation lookup
- */
 const nhfT = (key, fallback) =>
   (window.nhfL10n && window.nhfL10n[key]) || fallback;
 
-/* ============================================================
- * Category accordion logic (event delegation)
- * - Only intercept BUTTON toggles (leaf categories can be <a>)
- * - Works for BOTH original sidebar AND mobile cloned drawer
- * ============================================================ */
-document.addEventListener('click', (e) => {
-  const toggle = e.target.closest('button.nhf-cat-toggle');
-  if (!toggle) return;
-
-  e.preventDefault();
-
-  const item = toggle.closest('.nhf-cat-item');
-  if (!item) return;
-
-  // Scope closing to the nearest category list (sidebar OR drawer clone)
-  const rootList = toggle.closest('.nhf-cat-list') || document;
-  const wasOpen = item.classList.contains('is-open');
-
-  // close all others within the same list
-  rootList.querySelectorAll('.nhf-cat-item.is-open').forEach(openItem => {
-    openItem.classList.remove('is-open');
-    openItem.querySelector('button.nhf-cat-toggle')?.setAttribute('aria-expanded', 'false');
-    const sub = openItem.querySelector('.nhf-cat-sub');
-    if (sub) sub.setAttribute('aria-hidden', 'true');
-  });
-
-  if (!wasOpen) {
-    item.classList.add('is-open');
-    toggle.setAttribute('aria-expanded', 'true');
-    const sub = item.querySelector('.nhf-cat-sub');
-    if (sub) sub.setAttribute('aria-hidden', 'false');
-  }
-});
-
-/* ============================================================
- * Filter Accordion (multi-open)
- * ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.nhf-filter-toggle').forEach(toggle => {
-    toggle.addEventListener('click', e => {
-      e.preventDefault();
-      const section = toggle.closest('.nhf-filter');
-      const body    = section.querySelector('.nhf-filter-body');
-
-      const wasOpen = section.classList.contains('is-open');
-
-      // If we are closing, move focus OUT of the body to the toggle
-      // so that no focused element ends up inside aria-hidden="true"
-      if (wasOpen) {
-        toggle.focus();
-      }
-
-      section.classList.toggle('is-open');
-      const isOpen = section.classList.contains('is-open');
-
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      if (body) {
-        body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-      }
-    });
-
-    // Initial ARIA state on load
-    const section = toggle.closest('.nhf-filter');
-    const body    = section.querySelector('.nhf-filter-body');
-    const isOpen  = section.classList.contains('is-open');
-
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    if (body) {
-      body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-    }
-  });
-});
-
-/* ============================================================
- * Submit form when checkboxes change (desktop)
- * - Don't auto-submit on mobile (mobile has Apply/Reset drawer UX)
- * ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('.nhf-form');
-  if (!form) return;
-
-  const isMobile = window.matchMedia('(max-width: 992px)').matches;
-
-  // Auto-submit on checkbox change (desktop only)
-  if (!isMobile) {
-    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.addEventListener('change', () => form.submit());
-    });
-  }
-
-  // Submit on Enter in number fields (price, if used later)
-  form.querySelectorAll('input[type="number"]').forEach(inp => {
-    inp.addEventListener('keydown', e => {
-      if (e.key === 'Enter') form.submit();
-    });
-  });
-});
-
-/* ============================================================
- * Keep filter groups open if active (checked values / price)
- * ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  const sections = document.querySelectorAll('.nhf-filter');
-
-  sections.forEach(section => {
-    const body   = section.querySelector('.nhf-filter-body');
-    const toggle = section.querySelector('.nhf-filter-toggle');
-
-    const hasChecked = !!section.querySelector('input[type="checkbox"]:checked');
-    const hasPrice   = !!section.querySelector('input[type="number"][name="price_min"], input[type="number"][name="price_max"]');
-
-    const hasPriceVal = hasPrice && (
-      (section.querySelector('input[name="price_min"]')?.value !== '') ||
-      (section.querySelector('input[name="price_max"]')?.value !== '')
-    );
-
-    const isActive = hasChecked || hasPriceVal;
-
-    if (isActive) {
-      section.classList.add('is-open', 'is-active-group');
-      toggle?.setAttribute('aria-expanded', 'true');
-      body?.setAttribute('aria-hidden', 'false');
-    } else {
-      section.classList.toggle('is-active-group', false);
-      // don't force closed/open here, just don't mark as active
-    }
-
-    // Update "active-group" state when checkboxes change
-    section.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const nowActive = !!section.querySelector('input[type="checkbox"]:checked');
-        section.classList.toggle('is-active-group', nowActive);
-      });
-    });
-
-    // Update "active-group" state when price inputs change
-    section.querySelectorAll('input[type="number"]').forEach(inp => {
-      inp.addEventListener('input', () => {
-        const minVal = section.querySelector('input[name="price_min"]')?.value || '';
-        const maxVal = section.querySelector('input[name="price_max"]')?.value || '';
-        const nowActive = (minVal !== '' || maxVal !== '');
-        section.classList.toggle('is-active-group', nowActive);
-      });
-    });
-  });
-});
-
-/* ============================================================
- * Mobile bar padding
- * ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  const bar = document.querySelector('.nhf-mobilebar');
-  if (!bar) return;
-
-  const setH = () =>
-    document.documentElement.style.setProperty('--nhf-mb-h', `${bar.offsetHeight || 60}px`);
-
-  setH();
-  new ResizeObserver(setH).observe(bar);
-  document.body.classList.add('nhf-has-mobilebar');
-});
-
-/* ============================================================
- * MOBILE FILTER UX
- * ============================================================ */
-(function(){
+(function () {
   const mq = window.matchMedia('(max-width: 992px)');
-  let initialized = false;
-  let filtersDrawer, catsDrawer, badgeEl, filtersFormClone, catsClone;
-  let openedByBtn = null;
 
-  function qs(sel, ctx=document){ return ctx.querySelector(sel); }
-  function qsa(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+  let initializedMobileUI = false;
+  let mobileBar = null;
+  let filtersDrawer = null;
+  let filtersFormClone = null;
+  let badgeEl = null;
+  let openedByBtn = null;
+  let resizeObserver = null;
+
+  const qs = (sel, ctx = document) => ctx.querySelector(sel);
+  const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
   function lockBody(lock) {
     document.documentElement.classList.toggle('nhf-lock', lock);
     document.body.classList.toggle('nhf-lock', lock);
   }
 
-  function createDrawer(id, title, footerHTML='') {
-    const wrap = document.createElement('div');
-    wrap.className = 'nhf-drawer';
-    wrap.id = id;
-    wrap.setAttribute('role','dialog');
-    wrap.setAttribute('aria-modal','true');
-    wrap.innerHTML = `
-      <div class="nhf-drawer__backdrop" data-close="1"></div>
-      <div class="nhf-drawer__panel" tabindex="-1">
-        <div class="nhf-drawer__header">
-          <div class="nhf-drawer__title">${title}</div>
-          <button class="nhf-drawer__close" aria-label="${nhfT('close','Close')}" data-close="1">✕</button>
-        </div>
-        <div class="nhf-drawer__body"></div>
-        <div class="nhf-drawer__footer">
-          ${footerHTML}
-        </div>
-      </div>
-    `;
-    document.body.appendChild(wrap);
+  function setFilterSectionAria(section) {
+    if (!section) return;
 
-    // Focus trap + ESC close
-    wrap.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeDrawer(wrap, true);
-      if (e.key !== 'Tab') return;
+    const toggle = qs('.nhf-filter-toggle', section);
+    const body = qs('.nhf-filter-body', section);
+    const isOpen = section.classList.contains('is-open');
 
-      const focusables = qsa('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', wrap)
-        .filter(el => !el.disabled && el.offsetParent !== null);
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
 
-      if (!focusables.length) return;
-
-      const first = focusables[0], last = focusables[focusables.length-1];
-
-      if (e.shiftKey && document.activeElement === first) {
-        last.focus(); e.preventDefault();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        first.focus(); e.preventDefault();
-      }
-    });
-
-    // Click backdrop / close button
-    wrap.addEventListener('click', (e) => {
-      if (e.target.dataset.close) closeDrawer(wrap, true);
-    });
-
-    return wrap;
+    if (body) {
+      body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    }
   }
 
-  function openDrawer(el, openerBtn) {
-    openedByBtn = openerBtn || null;
-    el.classList.add('is-open');
-    lockBody(true);
+  function hasActiveFilters(section) {
+    if (!section) return false;
 
-    setTimeout(()=> { qs('.nhf-drawer__panel', el)?.focus(); }, 10);
+    const hasChecked = !!qs('input[type="checkbox"]:checked', section);
+    const priceMin = qs('input[name="price_min"]', section)?.value?.trim() || '';
+    const priceMax = qs('input[name="price_max"]', section)?.value?.trim() || '';
 
-    updateBadge();
+    return hasChecked || priceMin !== '' || priceMax !== '';
   }
 
-  function closeDrawer(el, restoreFocus) {
-    el.classList.remove('is-open');
-    lockBody(false);
-    if (restoreFocus && openedByBtn) openedByBtn.focus();
+  function syncFilterSectionState(section, { openIfActive = false } = {}) {
+    if (!section) return;
+
+    const isActive = hasActiveFilters(section);
+
+    section.classList.toggle('is-active-group', isActive);
+
+    if (openIfActive && isActive) {
+      section.classList.add('is-open');
+    }
+
+    setFilterSectionAria(section);
+  }
+
+  function initializeFilterSections(root) {
+    qsa('.nhf-filter', root).forEach((section) => {
+      syncFilterSectionState(section, { openIfActive: true });
+    });
+  }
+
+  function updateSectionFromInput(input) {
+    const section = input.closest('.nhf-filter');
+    if (section) {
+      syncFilterSectionState(section);
+    }
   }
 
   function activeCountInForm(ctx) {
@@ -253,136 +79,337 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateBadge() {
     if (!badgeEl || !filtersFormClone) return;
-    const n = activeCountInForm(filtersFormClone);
-    badgeEl.textContent = n;
-    badgeEl.style.display = n > 0 ? 'inline-flex' : 'none';
+
+    const count = activeCountInForm(filtersFormClone);
+    badgeEl.textContent = String(count);
+    badgeEl.style.display = count > 0 ? 'inline-flex' : 'none';
   }
 
-  function preventDesktopAutoSubmitOnMobile() {
-    if (!filtersFormClone) return;
-    // On mobile we DON'T auto-submit; just update badge
-    qsa('.nhf-form input[type="checkbox"]', filtersFormClone).forEach(cb=>{
-      cb.addEventListener('change', () => updateBadge());
+  function setMobileBarHeight() {
+    if (!mobileBar) return;
+
+    document.documentElement.style.setProperty(
+      '--nhf-mb-h',
+      `${mobileBar.offsetHeight || 60}px`
+    );
+    document.body.classList.add('nhf-has-mobilebar');
+  }
+
+  function clearMobileBarHeight() {
+    document.documentElement.style.removeProperty('--nhf-mb-h');
+    document.body.classList.remove('nhf-has-mobilebar');
+  }
+
+  function createDrawer(id, title, footerHTML = '') {
+    const wrap = document.createElement('div');
+    wrap.className = 'nhf-drawer';
+    wrap.id = id;
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+
+    wrap.innerHTML = `
+      <div class="nhf-drawer__backdrop" data-close="1"></div>
+      <div class="nhf-drawer__panel" tabindex="-1">
+        <div class="nhf-drawer__header">
+          <div class="nhf-drawer__title">${title}</div>
+          <button
+            type="button"
+            class="nhf-drawer__close"
+            aria-label="${nhfT('close', 'Close')}"
+            data-close="1"
+          >✕</button>
+        </div>
+        <div class="nhf-drawer__body"></div>
+        <div class="nhf-drawer__footer">
+          ${footerHTML}
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(wrap);
+
+    wrap.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDrawer(wrap, true);
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      const focusables = qsa(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        wrap
+      ).filter((el) => !el.disabled && el.offsetParent !== null);
+
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     });
+
+    wrap.addEventListener('click', (e) => {
+      if (e.target?.dataset?.close) {
+        closeDrawer(wrap, true);
+      }
+    });
+
+    return wrap;
+  }
+
+  function openDrawer(drawer, openerBtn = null) {
+    if (!drawer) return;
+
+    openedByBtn = openerBtn;
+    drawer.classList.add('is-open');
+    lockBody(true);
+
+    requestAnimationFrame(() => {
+      qs('.nhf-drawer__panel', drawer)?.focus();
+    });
+
+    updateBadge();
+  }
+
+  function closeDrawer(drawer, restoreFocus = false) {
+    if (!drawer) return;
+
+    drawer.classList.remove('is-open');
+    lockBody(false);
+
+    if (restoreFocus && openedByBtn) {
+      openedByBtn.focus();
+    }
   }
 
   function buildMobileUI() {
-    const bar = document.createElement('div');
-    bar.className = 'nhf-mobilebar';
-    bar.innerHTML = `
-      <button class="nhf-mb-btn" id="nhf-mb-cats" aria-controls="nhf-drawer-cats">
-        <span class="nhf-mb-icon">📂</span>
-        <span class="nhf-mb-label">${nhfT('categories','Categories')}</span>
-      </button>
+    const sidebar = qs('#nhf-sidebar');
+    const filters = qs('.nhf-filters', sidebar);
+    const originalForm = qs('.nhf-form', filters);
 
-      <button class="nhf-mb-btn" id="nhf-mb-filters" aria-controls="nhf-drawer-filters" aria-live="polite">
-        <span class="nhf-mb-icon">⚙️</span>
-        <span class="nhf-mb-label">${nhfT('filters','Filters')}</span>
+    if (!sidebar || !filters || !originalForm) return;
+
+    mobileBar = document.createElement('div');
+    mobileBar.className = 'nhf-mobilebar';
+    mobileBar.innerHTML = `
+      <button
+        type="button"
+        class="nhf-mb-btn nhf-mb-btn--filters"
+        id="nhf-mb-filters"
+        aria-controls="nhf-drawer-filters"
+        aria-live="polite"
+      >
+        <span class="nhf-mb-icon" aria-hidden="true">⚙️</span>
+        <span class="nhf-mb-label">${nhfT('filters', 'Filters')}</span>
         <span class="nhf-badge" id="nhf-badge" style="display:none">0</span>
       </button>
     `;
-    document.body.appendChild(bar);
+    document.body.appendChild(mobileBar);
 
-    badgeEl = qs('#nhf-badge', bar);
+    badgeEl = qs('#nhf-badge', mobileBar);
 
     filtersDrawer = createDrawer(
       'nhf-drawer-filters',
-      nhfT('filterProducts','Filter Products'),
+      nhfT('filterProducts', 'Filter Products'),
       `
         <button type="button" class="nhf-drawer__reset" data-action="reset">
-          ${nhfT('reset','Reset')}
+          ${nhfT('reset', 'Reset')}
         </button>
         <button type="button" class="nhf-drawer__apply" data-action="apply">
-          ${nhfT('apply','Apply')}
+          ${nhfT('apply', 'Apply')}
         </button>
       `
     );
 
-    catsDrawer = createDrawer(
-      'nhf-drawer-cats',
-      nhfT('categories','Categories'),
-      ``
-    );
+    filtersFormClone = originalForm.cloneNode(true);
 
-    const sidebar = qs('#nhf-sidebar');
-    const filters = qs('.nhf-filters', sidebar);
-    const cats    = qs('.nhf-cat-list', sidebar);
+    qsa('.nhf-applybar', filtersFormClone).forEach((el) => el.remove());
 
-    filtersFormClone = filters ? filters.querySelector('form')?.cloneNode(true) : null;
+    initializeFilterSections(filtersFormClone);
 
-    if (filtersFormClone) {
-      // keep active groups open
-      qsa('.nhf-filter', filtersFormClone).forEach(sec => {
-        const hasChecked = !!sec.querySelector('input[type="checkbox"]:checked');
-        if (hasChecked) {
-          sec.classList.add('is-open', 'is-active-group');
-          sec.querySelector('.nhf-filter-body')?.setAttribute('aria-hidden','false');
-          sec.querySelector('.nhf-filter-toggle')?.setAttribute('aria-expanded','true');
-        }
-      });
+    qs('.nhf-drawer__body', filtersDrawer)?.appendChild(filtersFormClone);
 
-      qs('.nhf-drawer__body', filtersDrawer).appendChild(filtersFormClone);
+    const filtersBtn = qs('#nhf-mb-filters', mobileBar);
 
-      // Remove desktop apply bar/buttons inside clone
-      qsa('.nhf-applybar, .nhf-reset, .nhf-apply, .nhf-applybtn', filtersFormClone)
-        .forEach(el => el.remove());
-    }
+    filtersBtn?.addEventListener('click', () => {
+      openDrawer(filtersDrawer, filtersBtn);
+    });
 
-    catsClone = cats ? cats.cloneNode(true) : null;
-    if (catsClone) {
-      qs('.nhf-drawer__body', catsDrawer).appendChild(catsClone);
-    }
+    filtersDrawer.addEventListener('click', (e) => {
+      const actionEl = e.target.closest('[data-action]');
+      if (!actionEl) return;
 
-    const catsBtn    = qs('#nhf-mb-cats', bar);
-    const filtersBtn = qs('#nhf-mb-filters', bar);
+      const action = actionEl.dataset.action;
 
-    catsBtn.addEventListener('click', ()=> openDrawer(catsDrawer, catsBtn));
-    filtersBtn.addEventListener('click', ()=> openDrawer(filtersDrawer, filtersBtn));
+      if (action === 'reset') {
+        const baseUrl =
+          qs('.nhf-form', filtersFormClone)?.getAttribute('action') ||
+          window.location.pathname;
 
-    // Footer buttons
-    filtersDrawer.addEventListener('click', (e)=>{
-      const act = e.target?.dataset?.action;
-      if (!act) return;
-
-      if (act === 'reset') {
-        const base = (qs('.nhf-form', filtersFormClone)?.getAttribute('action')) || window.location.pathname;
-        window.location.href = base;
+        window.location.href = baseUrl;
       }
 
-      if (act === 'apply') {
+      if (action === 'apply') {
         qs('.nhf-form', filtersDrawer)?.submit();
       }
     });
 
-    // Update badge when toggling checkboxes (mobile only)
-    preventDesktopAutoSubmitOnMobile();
     updateBadge();
+    setMobileBarHeight();
 
-    filtersDrawer.addEventListener('change', (e)=>{
-      if (e.target.matches('input[type="checkbox"]')) updateBadge();
-    });
+    if ('ResizeObserver' in window) {
+      resizeObserver = new ResizeObserver(() => setMobileBarHeight());
+      resizeObserver.observe(mobileBar);
+    }
+
+    initializedMobileUI = true;
   }
 
   function destroyMobileUI() {
-    qsa('.nhf-mobilebar, .nhf-drawer').forEach(el => el.remove());
+    closeDrawer(filtersDrawer, false);
+
+    resizeObserver?.disconnect();
+    resizeObserver = null;
+
+    filtersDrawer?.remove();
+    mobileBar?.remove();
+
     document.documentElement.classList.remove('nhf-lock');
     document.body.classList.remove('nhf-lock');
-    initialized = false;
 
-    filtersDrawer = catsDrawer = badgeEl = filtersFormClone = catsClone = null;
+    clearMobileBarHeight();
+
+    initializedMobileUI = false;
+    mobileBar = null;
+    filtersDrawer = null;
+    filtersFormClone = null;
+    badgeEl = null;
+    openedByBtn = null;
   }
 
-  function onChange(e) {
-    if (e.matches) {
-      if (!initialized) {
-        buildMobileUI();
-        initialized = true;
-      }
-    } else {
-      if (initialized) destroyMobileUI();
+  function handleCategoryToggle(toggle) {
+    const item = toggle.closest('.nhf-cat-item');
+    if (!item) return;
+
+    const rootList = toggle.closest('.nhf-cat-list') || document;
+    const wasOpen = item.classList.contains('is-open');
+
+    qsa('.nhf-cat-item.is-open', rootList).forEach((openItem) => {
+      openItem.classList.remove('is-open');
+      qs('button.nhf-cat-toggle', openItem)?.setAttribute('aria-expanded', 'false');
+      qs('.nhf-cat-sub', openItem)?.setAttribute('aria-hidden', 'true');
+    });
+
+    if (!wasOpen) {
+      item.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      qs('.nhf-cat-sub', item)?.setAttribute('aria-hidden', 'false');
     }
   }
 
-  onChange(mq);
-  mq.addEventListener('change', onChange);
+  function handleFilterToggle(toggle) {
+    const section = toggle.closest('.nhf-filter');
+    if (!section) return;
+
+    const wasOpen = section.classList.contains('is-open');
+
+    if (wasOpen) {
+      toggle.focus();
+    }
+
+    section.classList.toggle('is-open');
+    setFilterSectionAria(section);
+  }
+
+  function bindGlobalEvents() {
+    document.addEventListener('click', (e) => {
+      const catToggle = e.target.closest('button.nhf-cat-toggle');
+      if (catToggle) {
+        e.preventDefault();
+        handleCategoryToggle(catToggle);
+        return;
+      }
+
+      const filterToggle = e.target.closest('button.nhf-filter-toggle');
+      if (filterToggle) {
+        e.preventDefault();
+        handleFilterToggle(filterToggle);
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      const target = e.target;
+
+      if (
+        target.matches('.nhf-filter input, .nhf-filter select, .nhf-filter textarea')
+      ) {
+        updateSectionFromInput(target);
+      }
+
+      if (filtersDrawer && filtersDrawer.contains(target) && target.matches('input[type="checkbox"]')) {
+        updateBadge();
+      }
+
+      if (!mq.matches && target.matches('#nhf-sidebar .nhf-form input[type="checkbox"]')) {
+        target.form?.submit();
+      }
+    });
+
+    document.addEventListener('input', (e) => {
+      const target = e.target;
+
+      if (
+        target.matches(
+          '.nhf-filter input[name="price_min"], .nhf-filter input[name="price_max"]'
+        )
+      ) {
+        updateSectionFromInput(target);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+
+      const target = e.target;
+
+      if (!mq.matches && target.matches('#nhf-sidebar .nhf-form input[type="number"]')) {
+        target.form?.submit();
+      }
+    });
+  }
+
+  function handleViewportChange(e) {
+    if (e.matches) {
+      if (!initializedMobileUI) {
+        buildMobileUI();
+      }
+    } else if (initializedMobileUI) {
+      destroyMobileUI();
+    }
+  }
+
+  function init() {
+    initializeFilterSections(document);
+    bindGlobalEvents();
+    handleViewportChange(mq);
+
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', handleViewportChange);
+    } else if (typeof mq.addListener === 'function') {
+      mq.addListener(handleViewportChange);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
