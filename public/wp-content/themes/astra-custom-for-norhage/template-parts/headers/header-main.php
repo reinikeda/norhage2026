@@ -1,11 +1,6 @@
 <?php
 /**
  * Main Header — two rows + ticker
- *  - Row 1: Logo + Primary Menu (desktop) / Logo + Icons (compact)
- *  - Row 2: Burger + Tools (Account, Cart, Theme, Search)
- *            + Desktop logo on second line (new)
- *  - Drawer: Off-canvas with ONLY the Primary Menu
- *  - Row 3: News ticker (optional)
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -18,14 +13,12 @@ $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_html__( 'My Account', 'nh-theme' ) : esc_html__( 'Sign in', 'nh-theme' );
 $account_href  = $account_url;
 
-$phone_display = __( '+49 176 65 10 6609', 'nh-theme' );
-$phone_href    = __( '+4917665106609', 'nh-theme' );
+$phone_display    = '+49 176 65 10 6609';
+$phone_href       = '+4917665106609';
 $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
-
 ?>
 <div class="nhhb-header-main">
 
-  <!-- Row 1: Logo + Primary Menu (desktop) -->
   <div class="nhhb-row nhhb-row--top">
     <div class="nhhb-logo">
       <?php
@@ -48,14 +41,11 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
       ?>
     </nav>
 
-    <!-- Slot used in COMPACT mode to host the tools (icons) -->
     <div class="nhhb-tools-slot" aria-hidden="true"></div>
   </div>
 
-  <!-- Row 2: Desktop logo (second line) + Burger + Tools (icons + search) -->
   <div class="nhhb-row nhhb-row--bottom">
 
-    <!-- Desktop logo on second line (hidden on mobile/compact via CSS) -->
     <div class="nhhb-logo nhhb-logo--bottom-desktop">
       <?php
       if ( has_custom_logo() ) {
@@ -66,7 +56,6 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
       ?>
     </div>
 
-    <!-- Burger (used only in compact/mobile via CSS/JS) -->
     <div class="nhhb-compact-burger-wrap">
       <button
         class="nh-burger"
@@ -84,16 +73,14 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
 
     <div class="nhhb-tools">
 
-      <!-- Account -->
       <a class="nh-account" href="<?php echo esc_url( $account_href ); ?>" title="<?php echo esc_attr( $account_label ); ?>">
         <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="4" stroke-width="2" fill="none"></circle>
           <path d="M4 20a8 8 0 0 1 16 0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
-        <span class="nh-account__text"><?php echo $account_label; ?></span>
+        <span class="nh-account__text"><?php echo esc_html( $account_label ); ?></span>
       </a>
 
-      <!-- Cart -->
       <a class="nh-cart" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php echo esc_attr__( 'Cart', 'nh-theme' ); ?>">
         <span class="nh-cart-icon">
           <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -101,14 +88,13 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
             <circle cx="19" cy="21" r="1" stroke-width="2" fill="none"></circle>
             <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
-          <span class="nh-cart-badge" aria-hidden="true" data-count="<?php echo (int) $cart_count; ?>">
+          <span class="nh-cart-badge" aria-hidden="true" data-count="<?php echo esc_attr( (string) $cart_count ); ?>">
             <?php echo (int) $cart_count; ?>
           </span>
         </span>
         <span class="screen-reader-text"><?php esc_html_e( 'View cart', 'nh-theme' ); ?></span>
       </a>
 
-      <!-- Theme toggle -->
       <button
         id="theme-toggle"
         class="theme-toggle"
@@ -121,9 +107,9 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
         </svg>
       </button>
 
-      <!-- Live Search -->
       <div class="nh-live-search">
         <form class="nh-header-search nh-header-search--dark" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get" role="search" autocomplete="off">
+          <label class="screen-reader-text" for="nrh-search-input"><?php esc_html_e( 'Search products', 'nh-theme' ); ?></label>
           <input
             type="search"
             id="nrh-search-input"
@@ -146,9 +132,8 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
     </div>
   </div>
 
-  <!-- Off-canvas drawer (ONLY Primary Menu) -->
   <div id="nh-mobile-drawer" class="nh-drawer" hidden aria-hidden="true">
-    <button class="nh-drawer__scrim" tabindex="-1" aria-hidden="true"></button>
+    <button class="nh-drawer__scrim" tabindex="-1" aria-hidden="true" type="button"></button>
 
     <aside class="nh-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="nh-drawer-title">
       <header class="nh-drawer__header">
@@ -161,7 +146,6 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
       </header>
 
       <nav class="nh-drawer__nav" aria-label="<?php esc_attr_e( 'Mobile navigation', 'nh-theme' ); ?>">
-
         <?php
         wp_nav_menu( [
           'theme_location' => 'primary',
@@ -183,26 +167,23 @@ $phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
           'fallback_cb'    => false,
         ] );
         ?>
-
       </nav>
 
       <div class="nh-drawer__extras">
-        <a class="nh-drawer__phone" href="<?php echo esc_attr( $phone_href_clean ); ?>">
-          <img 
-            src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>" 
-            alt="Phone" 
-            class="nh-icon nh-icon--phone" 
-            width="18" 
-            height="18"
-          >
+        <a class="nh-drawer__phone" href="<?php echo esc_url( $phone_href_clean ); ?>">
+          <img
+            src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>"
+            alt=""
+            aria-hidden="true"
+            class="nh-icon nh-icon--phone"
+            width="18"
+            height="18">
           <?php echo esc_html( $phone_display ); ?>
         </a>
       </div>
-
     </aside>
   </div>
 
-  <!-- Row 3: News Ticker -->
   <?php if ( function_exists( 'rtl_display_ticker' ) ) : ?>
     <div class="nh-ticker-wrap">
       <?php rtl_display_ticker(); ?>

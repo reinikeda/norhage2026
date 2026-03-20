@@ -14,9 +14,39 @@
   background:var(--nh-forest,#1E3932);
 }
 
+/* =========================================================
+   2) GLOBAL HEADER OFFSET
+   header is always visible / fixed
+   JS updates --masthead-h on :root
+   ========================================================= */
+
+:root{
+  --masthead-h: 140px;
+  --admin-offset: 0px;
+}
+
+.admin-bar{
+  --admin-offset: 32px;
+}
+
+@media (max-width: 782px){
+  .admin-bar{
+    --admin-offset: 46px;
+  }
+}
+
+body{
+  padding-top: 0 !important;
+}
+
+/* Default pages without hero */
+body.has-fixed-masthead #content.site-content{
+  margin-top: 0 !important;
+  padding-top: var(--masthead-h) !important;
+}
 
 /* =========================================================
-   2) UTILITY BAR
+   3) UTILITY BAR
    ========================================================= */
 
 .nh-utility{
@@ -35,6 +65,7 @@
   display:flex;
   align-items:center;
   min-height:20px;
+  min-width:0;
 }
 
 .nh-utility-menu{
@@ -43,6 +74,7 @@
   list-style:none;
   margin:0;
   padding:0;
+  min-width:0;
 }
 
 .nh-utility-menu > li > a{
@@ -61,6 +93,7 @@
   align-items:center;
   gap:10px;
   flex-wrap:wrap;
+  min-width:0;
 }
 
 .nh-utility__sep{
@@ -132,9 +165,8 @@
   }
 }
 
-
 /* =========================================================
-   3) SHARED ICONS
+   4) SHARED ICONS
    ========================================================= */
 
 .nh-icon{
@@ -173,14 +205,31 @@
   }
 }
 
+/* =========================================================
+   5) MASTHEAD FIXED / ALWAYS VISIBLE
+   ========================================================= */
+
+#masthead{
+  position: fixed;
+  top: var(--admin-offset);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  transform: none !important;
+}
+
+body.drawer-open{
+  overflow:hidden;
+}
+
 
 /* =========================================================
-   4) MAIN HEADER BASE
+   6) MAIN HEADER BASE
    ========================================================= */
 
 .nhhb-header-main{
-  position:sticky;
-  top:0;
+  position:relative;
   z-index:2000;
   background:var(--ui-bg-dark);
   color:#fff;
@@ -198,8 +247,9 @@
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:16px;
+  width:100%;
+  max-width:1400px;
   padding:12px min(4vw,28px);
-  max-width:min(1400px,96vw);
   margin:0 auto;
   position:relative;
   overflow:visible;
@@ -219,24 +269,32 @@
 }
 
 .nh-ticker-wrap{
+  position:relative;
+  overflow:hidden;
+  width:100%;
   margin:0;
   background:var(--ui-bg-soft);
   border-bottom:1px solid var(--ui-border);
 }
 
-
 /* =========================================================
-   5) LOGO
+   7) LOGO
    ========================================================= */
+
+.nhhb-logo{
+  min-width:0;
+}
 
 .nhhb-logo .custom-logo-link{
   display:inline-flex;
   align-items:center;
+  max-width:100%;
 }
 
 .nhhb-logo img{
   height:60px;
   width:auto;
+  max-width:100%;
   display:block;
 }
 
@@ -253,9 +311,8 @@
   }
 }
 
-
 /* =========================================================
-   6) DESKTOP HEADER LAYOUT
+   8) DESKTOP HEADER LAYOUT
    ========================================================= */
 
 .nhhb-row--top .nhhb-logo{
@@ -272,7 +329,7 @@
   justify-self:end;
 }
 
-@media (min-width:981px){
+@media (min-width:1024px){
   .nhhb-header-main .nhhb-row--top .nhhb-logo{
     display:none;
   }
@@ -298,7 +355,7 @@
   }
 }
 
-@media (max-width:980px){
+@media (max-width:1023px){
   .nhhb-header-main .nhhb-logo--bottom-desktop{
     display:none;
   }
@@ -308,9 +365,8 @@
   }
 }
 
-
 /* =========================================================
-   7) PRIMARY NAVIGATION
+   9) PRIMARY NAVIGATION
    ========================================================= */
 
 .nhhb-main-nav{
@@ -318,16 +374,19 @@
   z-index:30;
   display:flex;
   justify-content:center;
+  min-width:0;
   overflow:visible;
 }
 
 .nhhb-main-nav .primary-menu{
   display:flex;
   flex-wrap:nowrap;
+  justify-content:center;
   gap:18px;
   list-style:none;
   margin:0;
   padding:0;
+  min-width:0;
   overflow:visible;
 }
 
@@ -346,6 +405,7 @@
   font-size:13px;
   letter-spacing:.02em;
   line-height:1;
+  white-space:nowrap;
   transition:
     background-color .15s ease,
     color .15s ease,
@@ -385,9 +445,8 @@
   transform:rotate(225deg) translateY(-1px);
 }
 
-
 /* =========================================================
-   8) DESKTOP PRIMARY MENU DROPDOWN
+   10) DESKTOP PRIMARY MENU DROPDOWN
    ========================================================= */
 
 .nhhb-main-nav .primary-menu .sub-menu,
@@ -475,15 +534,15 @@
   }
 }
 
-
 /* =========================================================
-   9) TOOLS CLUSTER
+   11) TOOLS CLUSTER
    ========================================================= */
 
 .nhhb-tools{
   display:flex;
   align-items:center;
   gap:16px;
+  min-width:0;
 }
 
 .nhhb-tools a:hover .nh-icon,
@@ -560,9 +619,8 @@
   }
 }
 
-
 /* =========================================================
-   10) SHARED BURGER BUTTON
+   12) SHARED BURGER BUTTON
    ========================================================= */
 
 .nh-burger{
@@ -600,14 +658,14 @@
   }
 }
 
-
 /* =========================================================
-   11) LIVE PRODUCT SEARCH
+   13) LIVE PRODUCT SEARCH
    ========================================================= */
 
 :is(.nh-live-search, .nrh-live-search){
   position:relative;
   width:clamp(240px, 26vw, 420px);
+  max-width:100%;
   z-index:10;
 }
 
@@ -615,6 +673,7 @@
   display:flex;
   align-items:center;
   height:42px;
+  width:100%;
   margin:0;
   overflow:hidden;
   background:#fff;
@@ -781,7 +840,7 @@
   color:var(--nh-green);
 }
 
-@media (min-width:981px){
+@media (min-width:1024px){
   .nhhb-row--bottom .nh-live-search{
     flex:0 0 auto;
   }
@@ -797,9 +856,8 @@
   }
 }
 
-
 /* =========================================================
-   12) DRAWER SHARED
+   14) DRAWER SHARED
    ========================================================= */
 
 .nh-drawer{
@@ -924,7 +982,7 @@
   padding:.35rem 10px .6rem;
   border-top:1px solid rgba(0,0,0,.05);
   font-size:.85rem;
-  line-height:.5;
+  line-height:1.2;
 }
 
 .dark .drawer-menu--secondary{
@@ -975,9 +1033,8 @@
   opacity:.95;
 }
 
-
 /* =========================================================
-   13) MOBILE DRAWER ACCORDION SUBMENUS
+   15) MOBILE DRAWER ACCORDION SUBMENUS
    ========================================================= */
 
 .nh-drawer__nav .drawer-menu--primary > li.menu-item-has-children{
@@ -1063,33 +1120,14 @@
   background:rgba(255,255,255,.06);
 }
 
-
 /* =========================================================
-   14) HEADER FIXED STATE
-   ========================================================= */
-
-#masthead.mh-fixed{
-  position:fixed;
-  top:var(--admin-offset,0);
-  left:0;
-  right:0;
-  z-index:1000;
-}
-
-body.mh-fixed-on{
-  padding-top:var(--masthead-h);
-}
-
-
-/* =========================================================
-   15) MOBILE / TABLET COMPACT HEADER
+   16) MOBILE / TABLET COMPACT HEADER
    ========================================================= */
 
 @media (max-width:1023px){
   #masthead.mh-compact{
     --mhc-row1:52px;
     --mhc-row2:60px;
-    --masthead-h:calc(var(--mhc-row1) + var(--mhc-row2));
     background:var(--nh-forest,#1E3932);
     box-shadow:0 4px 12px rgba(0,0,0,.24);
     overflow:visible;
@@ -1167,6 +1205,7 @@ body.mh-fixed-on{
 
   #masthead.mh-compact .nhhb-row--bottom .nh-live-search{
     width:100%;
+    max-width:100%;
   }
 
   #masthead.mh-compact .nhhb-row--bottom .nh-header-search{
@@ -1232,28 +1271,18 @@ body.mh-fixed-on{
   #nh-mobile-drawer .nh-drawer__panel{
     left:0;
     right:auto;
-    width:66.6667vw;
+    width:min(66.6667vw, 420px);
     top:calc(var(--admin-offset,0) + var(--masthead-h,112px));
     max-height:calc(100dvh - (var(--admin-offset,0) + var(--masthead-h,112px)));
     padding-bottom:4.5rem;
   }
-
-  body.drawer-open #masthead.mh-fixed{
-    transform:none !important;
-  }
-
-  html,
-  body{
-    overflow-x:visible;
-  }
 }
 
-
 /* =========================================================
-   16) MOBILE HEADER FALLBACK (NON-COMPACT)
+   17) MOBILE HEADER FALLBACK (NON-COMPACT)
    ========================================================= */
 
-@media (max-width:980px){
+@media (max-width:1023px){
   #masthead:not(.mh-compact) .nhhb-row{
     grid-template-columns:1fr;
   }
@@ -1311,18 +1340,28 @@ body.mh-fixed-on{
   }
 }
 
-
 /* =========================================================
-   17) HERO OFFSET UNDER COMPACT MOBILE HEADER
+   18) HERO
    ========================================================= */
 
-@media (max-width:1023px){
-  .nhhb-hero .nhhb-hero__inner{
-    --hero-pad:clamp(40px,10vw,120px);
-  }
+/* Hero pages: hero is outside #content, so offset hero itself */
+body.has-fixed-masthead .nhhb-hero{
+  margin-top: var(--masthead-h);
+}
 
-  #masthead.mh-compact.mh-fixed ~ .nhhb-hero .nhhb-hero__inner{
-    padding-top:calc(var(--hero-pad) + var(--masthead-h,112px));
-    padding-bottom:var(--hero-pad);
+/* If hero appears before content, remove normal content offset */
+body.has-fixed-masthead .nhhb-hero ~ #content.site-content{
+  padding-top: 0 !important;
+}
+
+.home #primary.content-area{
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1023px){
+  .nhhb-hero--page .nhhb-hero__inner{
+    --hero-pad: clamp(40px, 10vw, 120px);
+    padding-top: var(--hero-pad);
+    padding-bottom: var(--hero-pad);
   }
 }

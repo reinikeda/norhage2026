@@ -103,63 +103,62 @@ if ( ! function_exists( 'nh_get_faq_url' ) ) {
 /* --------------------------------------------------------------------------
  * Assets
  * ----------------------------------------------------------------------- */
+
+function norhage_asset_version( $relative_path ) {
+	$path = get_stylesheet_directory() . $relative_path;
+	return file_exists( $path ) ? filemtime( $path ) : wp_get_theme()->get( 'Version' );
+}
+
 function norhage_enqueue_assets() {
 	wp_enqueue_style(
 		'astra-custom-for-norhage-theme-css',
 		get_stylesheet_directory_uri() . '/style.css',
 		array( 'astra-theme-css' ),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+		norhage_asset_version( '/style.css' )
 	);
 
 	wp_enqueue_style(
 		'norhage-header-style',
 		get_stylesheet_directory_uri() . '/assets/css/header.css',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+		array( 'astra-custom-for-norhage-theme-css' ),
+		norhage_asset_version( '/assets/css/header.css' )
 	);
 
 	wp_enqueue_style(
 		'norhage-custom-style',
 		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
+		array( 'astra-custom-for-norhage-theme-css' ),
+		norhage_asset_version( '/assets/css/product-page.css' )
+	);
+
+	wp_enqueue_style(
+		'custom-basket-css',
+		get_stylesheet_directory_uri() . '/assets/css/basket.css',
+		array( 'astra-custom-for-norhage-theme-css' ),
+		norhage_asset_version( '/assets/css/basket.css' )
 	);
 
 	wp_enqueue_script(
 		'theme-toggle',
 		get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
 		array(),
-		null,
+		norhage_asset_version( '/assets/js/theme-toggle.js' ),
 		true
-	);
-
-	// wp_enqueue_style(
-	// 	'norhage-dark-mode-css',
-	// 	get_stylesheet_directory_uri() . '/assets/css/dark-mode.css',
-	// 	array(),
-	// 	CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
-	// );
-
-	wp_enqueue_style(
-		'custom-basket-css',
-		get_stylesheet_directory_uri() . '/assets/css/basket.css',
-		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION
 	);
 
 	wp_enqueue_script(
 		'norhage-custom-js',
 		get_stylesheet_directory_uri() . '/assets/js/script.js',
 		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+		norhage_asset_version( '/assets/js/script.js' ),
 		true
 	);
 
 	wp_enqueue_script(
 		'norhage-header-dynamic',
 		get_stylesheet_directory_uri() . '/assets/js/header-dynamic.js',
-		array('jquery'),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+		array( 'jquery' ),
+		norhage_asset_version( '/assets/js/header-dynamic.js' ),
 		true
 	);
 
@@ -167,7 +166,7 @@ function norhage_enqueue_assets() {
 		'nh-product-help-modal',
 		get_stylesheet_directory_uri() . '/assets/js/nh-product-help-modal.js',
 		array(),
-		CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION,
+		norhage_asset_version( '/assets/js/nh-product-help-modal.js' ),
 		true
 	);
 
@@ -175,10 +174,19 @@ function norhage_enqueue_assets() {
 		'nh-product-gallery-note',
 		get_stylesheet_directory_uri() . '/assets/js/product-gallery-note.js',
 		array(),
-		'1.0',
+		norhage_asset_version( '/assets/js/product-gallery-note.js' ),
 		true
 	);
 
+	if ( is_front_page() ) {
+		wp_enqueue_script(
+			'nh-home-hero-slider',
+			get_stylesheet_directory_uri() . '/assets/js/home-hero-slider.js',
+			array(),
+			norhage_asset_version( '/assets/js/home-hero-slider.js' ),
+			true
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 
