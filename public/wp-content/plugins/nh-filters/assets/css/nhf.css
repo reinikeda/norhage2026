@@ -366,7 +366,7 @@
 .nhf-applybtn {
   appearance: none;
   border: 0;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 0.45rem 0.7rem;
   background: var(--nh-green, #00704A);
   color: #fff;
@@ -635,7 +635,7 @@ body.nhf-lock {
 }
 
 .nhf-drawer__body {
-  padding: 12px 16px calc(16px + var(--nhf-mb-h));
+  padding: 12px 16px calc(88px + env(safe-area-inset-bottom, 0px));
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -647,9 +647,10 @@ body.nhf-lock {
   bottom: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px calc(96px + env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   background: #fff;
   border-radius: 16px 16px 0 0;
@@ -658,11 +659,13 @@ body.nhf-lock {
 .nhf-drawer__apply {
   appearance: none;
   border: 0;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 14px;
   background: var(--nh-green, #00704A);
   color: #fff;
   font-weight: 700;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .nhf-drawer__apply:hover {
@@ -671,11 +674,22 @@ body.nhf-lock {
 
 .nhf-drawer__reset {
   appearance: none;
-  border: 0;
-  background: transparent;
-  color: rgba(0, 0, 0, 0.7);
-  text-decoration: underline;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.72);
+  text-decoration: none;
   font-weight: 600;
+  line-height: 1;
+  padding: 10px 12px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+.nhf-drawer__reset:hover,
+.nhf-drawer__reset:focus-visible {
+  background: #fafafa;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--nh-green, #00704A);
 }
 
 @media (max-width: 992px) {
@@ -924,5 +938,14 @@ body.dark-mode .nhf-drawer__apply:hover {
 }
 
 body.dark-mode .nhf-drawer__reset {
-  color: color-mix(in srgb, var(--dm-text) 70%, #000 30%);
+  color: var(--dm-text);
+  background: color-mix(in srgb, var(--dm-bg) 92%, white 8%);
+  border: 1px solid var(--dm-border);
+}
+
+body.dark-mode .nhf-drawer__reset:hover,
+body.dark-mode .nhf-drawer__reset:focus-visible {
+  background: color-mix(in srgb, var(--dm-bg) 84%, var(--dm-forest) 16%);
+  border-color: color-mix(in srgb, var(--dm-border) 70%, var(--dm-primary) 30%);
+  color: var(--dm-primary);
 }
