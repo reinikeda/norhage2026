@@ -12,10 +12,35 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 add_shortcode( 'live_product_search', 'nrh_live_search_form' );
 function nrh_live_search_form() {
 	$placeholder = esc_attr__( 'Search products…', 'nh-theme' );
+	$label_text  = esc_html__( 'Search products', 'nh-theme' );
+
 	return '
 	<div class="nh-live-search">
-		<input type="search" id="nrh-search-input" placeholder="' . $placeholder . '" autocomplete="off" aria-label="' . $placeholder . '"/>
-		<ul id="nrh-search-results" class="nh-live-results" role="listbox" aria-live="polite"></ul>
+		<label for="nrh-search-input" class="screen-reader-text">' . $label_text . '</label>
+		<input
+			type="search"
+			id="nrh-search-input"
+			name="s"
+			placeholder="' . $placeholder . '"
+			autocomplete="off"
+			aria-label="' . $placeholder . '"
+			role="combobox"
+			aria-haspopup="listbox"
+			aria-expanded="false"
+			aria-autocomplete="list"
+			aria-controls="nrh-search-results"
+			aria-owns="nrh-search-results"
+		/>
+		<ul
+			id="nrh-search-results"
+			class="nh-live-results"
+			role="listbox"
+			aria-label="' . esc_attr__( 'Search results', 'nh-theme' ) . '"
+			aria-hidden="true"
+		></ul>
+
+		<!-- polite status region for announcing counts/changes -->
+		<div id="nrh-search-status" class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true"></div>
 	</div>
 	';
 }

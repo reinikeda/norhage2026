@@ -33,3 +33,52 @@
 .sale-slider-container .swiper-pagination{
   bottom:8px !important;
 }
+
+/* 1. The Pagination Container */
+.sale-slider-container .swiper-pagination {
+  bottom: 10px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 4px !important; 
+  height: 48px !important; /* Slightly taller for safety */
+}
+
+/* 2. The Button - FORCED SQUARE */
+.sale-slider-container .swiper-pagination-bullet {
+  /* Force the physical size to 44x44 */
+  width: 44px !important;   
+  min-width: 44px !important;
+  height: 44px !important;  
+  min-height: 44px !important;
+  
+  /* Reset all default styles */
+  background: transparent !important; 
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
+  display: inline-flex !important; /* Changed to inline-flex */
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+/* 3. The Visible Dot - User sees this */
+.sale-slider-container .swiper-pagination-bullet::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+/* 4. Active State */
+.sale-slider-container .swiper-pagination-bullet-active::before {
+  background: #fff;
+  transform: scale(1.4);
+}
