@@ -51,23 +51,29 @@ if (!empty($data['logo'])) {
 <section class="nhhb-b2b-wrap">
   <div class="nhhb-b2b">
     <?php if ($logo_html): ?>
-      <span class="nhhb-b2b-logo"><?php echo $logo_html; ?></span>
+      <div class="nhhb-b2b-logo"><?php echo $logo_html; ?></div>
     <?php endif; ?>
 
-    <span class="nhhb-b2b-content">
+    <div class="nhhb-b2b-content">
       <?php if (!empty($data['h2'])): ?>
-        <span class="nhhb-b2b-title"><?php echo esc_html($data['h2']); ?></span>
+        <h2 class="nhhb-b2b-title"><?php echo esc_html($data['h2']); ?></h2>
       <?php endif; ?>
 
       <?php if (!empty($data['h3'])): ?>
-        <span class="nhhb-b2b-text"><?php echo esc_html($data['h3']); ?></span>
+        <h3 class="nhhb-b2b-text"><?php echo esc_html($data['h3']); ?></h3>
       <?php endif; ?>
+    </div>
 
-      <?php if (!empty($data['btn_url']) && !empty($data['btn_text'])): ?>
-        <a class="nhhb-b2b-cta" href="<?php echo esc_url($data['btn_url']); ?>" target="_blank" rel="noopener">
+    <?php if (!empty($data['btn_url']) && !empty($data['btn_text'])): ?>
+      <div class="nhhb-b2b-cta-col">
+        <a class="nhhb-b2b-cta"
+           href="<​?php echo esc_url($data['btn_url']); ?>"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="<​?php echo esc_attr($data['btn_text']); ?>">
           <?php echo esc_html($data['btn_text']); ?>
         </a>
-      <?php endif; ?>
-    </span>
+      </div>
+    <?php endif; ?>
   </div>
 </section>

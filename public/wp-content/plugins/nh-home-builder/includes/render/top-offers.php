@@ -43,8 +43,8 @@ if (empty($slides)) {
               <?php echo nhhb_img((int)($s['img'] ?? 0), 'full', ['class' => 'nhhb-bg']); ?>
             </div>
             <div class="nhhb-slide-copy">
-              <?php if (!empty($s['h1'])): ?><div class="nhhb-h1"><?php echo esc_html($s['h1']); ?></div><?php endif; ?>
-              <?php if (!empty($s['h2'])): ?><h2 class="nhhb-h2"><?php echo esc_html($s['h2']); ?></h2><?php endif; ?>
+              <?php if (!empty($s['h1'])): ?><h2 class="nhhb-h1"><?php echo esc_html($s['h1']); ?></h2><?php endif; ?>
+              <?php if (!empty($s['h2'])): ?><div class="nhhb-h2"><?php echo esc_html($s['h2']); ?></div><?php endif; ?>
               <?php if (!empty($s['h3'])): ?><p class="nhhb-h3"><?php echo esc_html($s['h3']); ?></p><?php endif; ?>
               <?php if (!empty($s['btn_text'])): ?>
                 <a href="<?php echo esc_url($s['btn_url'] ?? '#'); ?>" class="nhhb-btn"><?php echo esc_html($s['btn_text']); ?></a>
@@ -72,12 +72,14 @@ if (empty($slides)) {
         </div>
         <div class="nhhb-promo-body">
           <?php if (!empty($p['h1'])): ?>
-            <a class="nhhb-p2 nhhb-link-title" href="<?php echo esc_url($p['btn_url'] ?? '#'); ?>">
-              <?php echo esc_html($p['h1']); ?>
-            </a>
+            <h3 class="nhhb-p2">
+              <a class="nhhb-link-title" href="<?php echo esc_url($p['btn_url'] ?? '#'); ?>">
+                <?php echo esc_html($p['h1']); ?>
+              </a>
+            </h3>
           <?php endif; ?>
           <?php if (!empty($p['h3'])): ?>
-            <div class="nhhb-p3"><?php echo esc_html($p['h3']); ?></div>
+            <p class="nhhb-p3"><?php echo esc_html($p['h3']); ?></p>
           <?php endif; ?>
         </div>
       </div>
