@@ -1092,3 +1092,20 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
 .wc-block-components-product-metadata__description{
   display:none !important;
 }
+
+/* Fix Breadcrumb Contrast for Accessibility */
+.woocommerce-breadcrumb {
+    color: #555 !important; /* Darker gray for the current page text */
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.woocommerce-breadcrumb a {
+    color: #222 !important; /* Much darker color for the links */
+    text-decoration: underline; /* Optional: helps users identify they are links */
+}
+
+.woocommerce-breadcrumb a:hover {
+    color: #000 !important; /* Black on hover */
+    text-decoration: none;
+}
