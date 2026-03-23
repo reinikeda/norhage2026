@@ -987,3 +987,13 @@ add_action('wp_head', function () {
 	</script>
 	<?php
 }, 1);
+
+/**
+ * Remove Dashicons from the frontend for non-logged-in users
+ */
+add_action( 'wp_enqueue_scripts', function() {
+    if ( ! is_user_logged_in() ) {
+        wp_dequeue_style( 'dashicons' );
+        wp_deregister_style( 'dashicons' );
+    }
+}, 100 );
