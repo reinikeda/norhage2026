@@ -997,3 +997,21 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_deregister_style( 'dashicons' );
     }
 }, 100 );
+
+/**
+ * Fail-safe: Strip author links from the final HTML output to fix SEO 3XX errors.
+ */
+add_action( 'template_redirect', 'norhage_start_buffer_strip_author', 1 );
+
+function norhage_start_buffer_strip_author() {
+    if ( is_singular( 'post' ) ) {
+        ob_start( 'norhage_strip_author_links' );
+    }
+}
+
+function norhage_strip_author_links( $html ) {
+    $pattern = '/<a[^>]+href=[^>]+author\/[^>]+>(.*?)<\/a>/is';
+    $html = preg_replace( $pattern, '$1', $html );
+    
+    return $html;
+}
