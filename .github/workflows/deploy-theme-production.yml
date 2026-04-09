@@ -163,7 +163,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme languages to ${{ matrix.site }} via SFTP
@@ -184,7 +184,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme assets to ${{ matrix.site }} via SFTP
@@ -205,7 +205,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme inc to ${{ matrix.site }} via SFTP
@@ -226,7 +226,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme template-parts to ${{ matrix.site }} via SFTP
@@ -247,7 +247,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme woocommerce to ${{ matrix.site }} via SFTP
@@ -268,7 +268,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme functions.php to ${{ matrix.site }} via SFTP
@@ -289,7 +289,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
     steps:
       - uses: actions/checkout@v4
       - name: Deploy theme style.css to ${{ matrix.site }} via SFTP
@@ -310,7 +310,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        site: [/www, /www-fi]
+        site: [/www, /www-fi, /www-no, /www-se, /www-de]
         plugin: ${{ fromJSON(needs.detect-changes.outputs.plugins_json) }}
     steps:
       - uses: actions/checkout@v4
