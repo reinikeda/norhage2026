@@ -897,48 +897,64 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 /* 1) Clean generated pagination links */
 add_filter('paginate_links', function ($link) {
-	if (!is_string($link) || $link === '') {
-		return $link;
-	}
+    if (!is_string($link) || $link === '') {
+        return $link;
+    }
 
-	$link = preg_replace('#/page/1/?(?=($|\?))#', '/', $link);
-	$link = preg_replace('#(?<!:)//+#', '/', $link);
-	$link = str_replace(':/', '://', $link);
+    $link = preg_replace('#/page/1/?(?=($|\?))#', '/', $link);
+    $link = preg_replace('#(?<!:)//+#', '/', $link);
+    $link = str_replace(':/', '://', $link);
 
-	return $link;
+    return $link;
 });
 
-/* 2) Clean WooCommerce pagination base */
+/* 2) Clean WooCommerce pagination base — preserve query args separately */
 add_filter('woocommerce_pagination_args', function ($args) {
-	$args['base']   = trailingslashit(get_pagenum_link(1)) . '%_%';
-	$args['format'] = 'page/%#%/';
-	return $args;
+    // Strip query string from base URL so /page/2/ goes into the PATH, not the query string
+    $base_url = strtok(get_pagenum_link(1), '?');
+
+    $args['base']   = trailingslashit($base_url) . '%_%';
+    $args['format'] = 'page/%#%/';
+
+    // Re-attach allowed WooCommerce query params via add_args
+    $allowed = ['orderby', 'min_price', 'max_price', 'rating_filter', 'product_cat'];
+    $add_args = [];
+    foreach ($allowed as $key) {
+        if (isset($_GET[$key])) {
+            $add_args[$key] = wc_clean(wp_unslash($_GET[$key]));
+        }
+    }
+    if (!empty($add_args)) {
+        $args['add_args'] = $add_args;
+    }
+
+    return $args;
 });
 
 /* 3) Redirect direct /page/1/ requests to canonical URL */
 add_action('template_redirect', function () {
-	if (is_admin() || wp_doing_ajax()) {
-		return;
-	}
+    if (is_admin() || wp_doing_ajax()) {
+        return;
+    }
 
-	$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
 
-	if (!preg_match('#/page/1/?(\?.*)?$#', $request_uri)) {
-		return;
-	}
+    if (!preg_match('#/page/1/?(\?.*)?$#', $request_uri)) {
+        return;
+    }
 
-	$path = parse_url($request_uri, PHP_URL_PATH);
-	$query = parse_url($request_uri, PHP_URL_QUERY);
+    $path  = parse_url($request_uri, PHP_URL_PATH);
+    $query = parse_url($request_uri, PHP_URL_QUERY);
 
-	$clean_path = preg_replace('#/page/1/?$#', '/', $path);
-	$target_url = home_url($clean_path);
+    $clean_path = preg_replace('#/page/1/?$#', '/', $path);
+    $target_url = home_url($clean_path);
 
-	if (!empty($query)) {
-		$target_url .= '?' . $query;
-	}
+    if (!empty($query)) {
+        $target_url .= '?' . $query;
+    }
 
-	wp_redirect($target_url, 301);
-	exit;
+    wp_redirect($target_url, 301);
+    exit;
 });
 
 /**
