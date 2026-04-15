@@ -12,7 +12,7 @@
  *
  * @see https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates\Emails
- * @version 9.8.0
+ * @version 10.4.0
  */
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
@@ -28,39 +28,21 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
 <?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php echo $email_improvements_enabled ? '<div class="email-introduction">' : ''; ?>
-
 <?php /* translators: %s: Customer username */ ?>
 <p><?php printf( esc_html__( 'Hi %s,', 'nh-theme' ), esc_html( $user_login ) ); ?></p>
-
 <?php /* translators: %s: Store name */ ?>
 <p><?php printf( esc_html__( 'Someone has requested a new password for the following account on %s:', 'nh-theme' ), esc_html( $blogname ) ); ?></p>
-
 <?php if ( $email_improvements_enabled ) : ?>
-
 	<div class="hr hr-top"></div>
 	<?php /* translators: %s: Username */ ?>
-	<p>
-		<?php
-		echo wp_kses(
-			sprintf(
-				__( 'Username: <b>%s</b>', 'nh-theme' ),
-				esc_html( $user_login )
-			),
-			array( 'b' => array() )
-		);
-		?>
-	</p>
+	<p><?php echo wp_kses( sprintf( __( 'Username: <b>%s</b>', 'nh-theme' ), esc_html( $user_login ) ), array( 'b' => array() ) ); ?></p>
 	<div class="hr hr-bottom"></div>
 	<p><?php esc_html_e( 'If you didn’t make this request, just ignore this email. If you’d like to proceed, reset your password via the link below:', 'nh-theme' ); ?></p>
-
 <?php else : ?>
-
 	<?php /* translators: %s: Customer username */ ?>
 	<p><?php printf( esc_html__( 'Username: %s', 'nh-theme' ), esc_html( $user_login ) ); ?></p>
 	<p><?php esc_html_e( 'If you didn\'t make this request, just ignore this email. If you\'d like to proceed:', 'nh-theme' ); ?></p>
-
 <?php endif; ?>
-
 <p>
 	<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>"><?php // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound ?>
 		<?php
@@ -72,7 +54,6 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
 		?>
 	</a>
 </p>
-
 <?php echo $email_improvements_enabled ? '</div>' : ''; ?>
 
 <?php
@@ -80,7 +61,7 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
  * Show user-defined additional content - this is set in each email's settings.
  */
 if ( $additional_content ) {
-	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="email-additional-content email-additional-content-aligned">' : '';
+	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation"><tr><td class="email-additional-content email-additional-content-aligned">' : '';
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 	echo $email_improvements_enabled ? '</td></tr></table>' : '';
 }

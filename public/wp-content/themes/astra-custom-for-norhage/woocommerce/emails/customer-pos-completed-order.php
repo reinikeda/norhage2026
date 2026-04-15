@@ -4,9 +4,15 @@
  *
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/customer-pos-completed-order.php.
  *
+ * HOWEVER, on occasion WooCommerce will need to update template files and you
+ * (the theme developer) will need to copy the new files to your theme to
+ * maintain compatibility. We try to do this as little as possible, but it does
+ * happen. When this occurs the version of the template file will be bumped and
+ * the readme will list any important changes.
+ *
  * @see https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates\Emails
- * @version 10.0.0
+ * @version 10.4.0
  */
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
@@ -26,24 +32,23 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
 do_action( 'woocommerce_pos_email_header', $email_heading, $email ); ?>
 
 <div class="email-introduction">
-	<p>
-	<?php
-	if ( ! empty( $order->get_billing_first_name() ) ) {
-		/* translators: %s: Customer first name */
-		printf(
-			esc_html__( 'Hi %s,', 'nh-theme' ),
-			esc_html( $order->get_billing_first_name() )
-		);
-	} else {
-		esc_html_e( 'Hi there,', 'nh-theme' );
-	}
-	?>
-	</p>
-	<p><?php esc_html_e( 'Here’s a reminder of what you’ve bought:', 'nh-theme' ); ?></p>
+<p>
+<?php
+if ( ! empty( $order->get_billing_first_name() ) ) {
+	/* translators: %s: Customer first name */
+	printf(
+		esc_html__( 'Hi %s,', 'nh-theme' ),
+		esc_html( $order->get_billing_first_name() )
+	);
+} else {
+	printf( esc_html__( 'Hi there,', 'nh-theme' ) );
+}
+?>
+</p>
+<p><?php esc_html_e( 'Here’s a reminder of what you’ve bought:', 'nh-theme' ); ?></p>
 </div>
 
 <?php
-
 /**
  * Show order details.
  *
@@ -75,7 +80,7 @@ do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_
  * Show user-defined additional content - this is set in each email's settings.
  */
 if ( $additional_content ) {
-	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="email-additional-content">' : '';
+	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation"><tr><td class="email-additional-content">' : '';
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 	echo $email_improvements_enabled ? '</td></tr></table>' : '';
 }
