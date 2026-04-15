@@ -843,7 +843,9 @@ function nh_get_help_form_id_by_host() : int {
 	$form_map = array(
 		'norhage.fi' => 7852,
 		'norhage.lt' => 903,
-		// 'norhage.no' => 3333,
+		'norhage.no' => 3625,
+		'norhage.se' => 3613,
+		'norhage.de' => 3837,
 	);
 
 	return isset( $form_map[ $host ] ) ? (int) $form_map[ $host ] : 1151;
