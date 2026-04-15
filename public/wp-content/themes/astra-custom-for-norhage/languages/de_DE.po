@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-03-10 12:56:27+00:00\n"
-"PO-Revision-Date: 2026-04-01 11:40+0300\n"
+"PO-Revision-Date: 2026-04-14 16:57+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -173,7 +173,7 @@ msgstr ""
 
 #: inc/blog.php:12
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
 #: inc/blog.php:30 inc/blog.php:31
@@ -212,8 +212,8 @@ msgstr[1] "%d Artikel wurden Ihrem Warenkorb hinzugefügt"
 #: inc/bundle-box.php:113
 msgid "(%d product):"
 msgid_plural "(%d products):"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "(%d Produkt):"
+msgstr[1] "(%d Produkte):"
 
 #: inc/bundle-box.php:121
 msgid "View basket"
@@ -225,39 +225,39 @@ msgstr "Komplettes Set kaufen"
 
 #: inc/bundle-box.php:156
 msgid "Complete set add-ons"
-msgstr ""
+msgstr "Ergänzungen zum Komplettset"
 
 #: inc/bundle-box.php:164
 msgid "Image"
-msgstr ""
+msgstr "Bild"
 
 #: inc/bundle-box.php:165 woocommerce/pdf/norhage/invoice.php:137
 msgid "Product"
-msgstr ""
+msgstr "Produkt"
 
 #: inc/bundle-box.php:166
 msgid "Qty"
-msgstr ""
+msgstr "Anzahl"
 
 #: inc/bundle-box.php:167 woocommerce/pdf/norhage/invoice.php:143
 msgid "Price"
-msgstr ""
+msgstr "Preis"
 
 #: inc/bundle-box.php:208
 msgid "In stock"
-msgstr ""
+msgstr "Auf Lager"
 
 #: inc/bundle-box.php:209
 msgid "Out of stock"
-msgstr ""
+msgstr "Nicht vorrätig"
 
 #: inc/bundle-box.php:225
 msgid "Only %d left in stock"
-msgstr ""
+msgstr "Nur noch %d auf Lager"
 
 #: inc/bundle-box.php:226 inc/bundle-box.php:232 inc/bundle-box.php:240
 msgid "Max per bundle: %d"
-msgstr ""
+msgstr "Maximal pro Paket: %d"
 
 #: inc/bundle-box.php:249
 msgid "Minus Quantity"
@@ -265,7 +265,7 @@ msgstr ""
 
 #: inc/bundle-box.php:251 woocommerce/pdf/norhage/invoice.php:140
 msgid "Quantity"
-msgstr ""
+msgstr "Anzahl"
 
 #: inc/bundle-box.php:256
 msgid "Plus Quantity"
@@ -274,15 +274,15 @@ msgstr ""
 #. translators: label before the computed bundle total price
 #: inc/bundle-box.php:266
 msgid "Total:"
-msgstr ""
+msgstr "Gesamt:"
 
 #: inc/bundle-box.php:270
 msgid "Add all to basket"
-msgstr ""
+msgstr "Alles in den Warenkorb legen"
 
 #: inc/hero.php:18
 msgid "Search results for “%s”"
-msgstr ""
+msgstr "Suchergebnisse für „%s“"
 
 #: inc/meta-boxes.php:9 inc/meta-boxes.php:277
 msgid "Downloads"
@@ -403,7 +403,7 @@ msgstr ""
 #: inc/product-customize.php:36 inc/product-customize.php:37
 #: inc/product-customize.php:59
 msgid "Back to bundle"
-msgstr ""
+msgstr "Zurück zum Paket"
 
 #: inc/product-customize.php:166 inc/product-customize.php:171
 msgid "%1$d–%2$d mm"
@@ -419,7 +419,7 @@ msgstr ""
 
 #: inc/product-customize.php:185
 msgid "Width (mm)"
-msgstr ""
+msgstr "Breite (mm)"
 
 #: inc/product-customize.php:187
 msgid "Decrease width"
@@ -431,7 +431,7 @@ msgstr ""
 
 #: inc/product-customize.php:198
 msgid "Length (mm)"
-msgstr ""
+msgstr "Länge (mm)"
 
 #: inc/product-customize.php:200
 msgid "Decrease length"
@@ -443,77 +443,83 @@ msgstr ""
 
 #: inc/product-customize.php:213
 msgid "Step: %d mm"
-msgstr ""
+msgstr "Schritt: %d mm"
 
 #: inc/product-customize.php:224
 msgid "Your selection"
-msgstr ""
+msgstr "Ihre Auswahl"
 
 #: inc/product-customize.php:227
 msgid "Price per m²"
-msgstr ""
+msgstr "Preis pro m²"
 
 #: inc/product-customize.php:235
 msgid "Unit price"
-msgstr ""
+msgstr "Stückpreis"
 
 #: inc/product-customize.php:241 woocommerce/pdf/norhage/invoice.php:223
 msgid "Total"
-msgstr ""
+msgstr "Insgesamt"
 
 #: inc/product-customize.php:322
 msgid "Sorry, all combinations are unavailable."
-msgstr ""
+msgstr "Leider sind alle Kombinationen nicht verfügbar."
 
 #: inc/product-customize.php:430
 msgid "Please choose product options (variation) before entering dimensions."
 msgstr ""
+"Bitte wählen Sie die Produktoptionen (Varianten) aus, bevor Sie die Maße "
+"eingeben."
 
 #: inc/product-customize.php:437
 msgid "Please enter width and length (mm)."
-msgstr ""
+msgstr "Bitte geben Sie Breite und Länge (mm) ein."
 
 #: inc/product-customize.php:446
 msgid "Minimum width is %d mm."
-msgstr ""
+msgstr "Die Mindestbreite beträgt %d mm."
 
 #: inc/product-customize.php:447
 msgid "Maximum width is %d mm."
-msgstr ""
+msgstr "Die maximale Breite beträgt %d mm."
 
 #: inc/product-customize.php:448
 msgid "Minimum length is %d mm."
-msgstr ""
+msgstr "Die Mindestlänge beträgt %d mm."
 
 #: inc/product-customize.php:449
 msgid "Maximum length is %d mm."
-msgstr ""
+msgstr "Die maximale Länge beträgt %d mm."
 
 #: inc/product-customize.php:459
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
+"Die Breite muss in Schritten von %1$d mm beginnend bei %2$d mm ausgerichtet "
+"werden."
 
 #: inc/product-customize.php:463
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
 msgstr ""
+"Die Länge muss in Schritten von %1$d mm beginnend bei %2$d mm ausgerichtet "
+"sein."
 
 #: inc/sale-category-sync.php:94
 msgid "Sale"
-msgstr ""
+msgstr "Verkauf"
 
 #: inc/search.php:14 template-parts/headers/header-main.php:130
 msgid "Search products…"
-msgstr ""
+msgstr "Produkte suchen…"
 
 #: inc/services.php:24
 msgctxt "Post Type General Name"
 msgid "Services"
-msgstr ""
+msgstr "Dienstleistungen"
 
 #: inc/services.php:25
 msgctxt "Post Type Singular Name"
 msgid "Service"
-msgstr ""
+msgstr "Dienstleistunge"
 
 #: inc/services.php:27
 msgid "Add New Service"
@@ -529,19 +535,19 @@ msgstr ""
 
 #: inc/services.php:30
 msgid "All Services"
-msgstr ""
+msgstr "Alle Dienstleistungen"
 
 #: inc/services.php:98
 msgid "Back to Services"
-msgstr ""
+msgstr "Zurück zu den Dienstleistungen"
 
 #: inc/services.php:111
 msgid "Other services"
-msgstr ""
+msgstr "Sonstige Dienstleistungen"
 
 #: template-parts/footer/footer.php:11
 msgid "Tehi UG"
-msgstr ""
+msgstr "Tehi UG"
 
 #: template-parts/footer/footer.php:12
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
@@ -713,12 +719,14 @@ msgstr ""
 
 #: template-parts/headers/header-main.php:175
 msgid "More"
-msgstr ""
+msgstr "Mehr"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:28
 msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
 msgstr ""
+"Wir bedauern, Ihnen mitteilen zu müssen, dass Ihre Bestellung mit der Nummer "
+"%1$s storniert wurde."
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:32
@@ -726,6 +734,8 @@ msgid ""
 "We’re getting in touch to let you know that your order #%1$s has been "
 "cancelled."
 msgstr ""
+"Wir möchten Sie darüber informieren, dass Ihre Bestellung mit der Nummer "
+"%1$s storniert wurde."
 
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
@@ -747,7 +757,7 @@ msgstr ""
 #: woocommerce/emails/customer-refunded-order.php:35
 #: woocommerce/emails/customer-reset-password.php:33
 msgid "Hi %s,"
-msgstr ""
+msgstr "Hallo %s,"
 
 #: woocommerce/emails/customer-completed-order.php:41
 #: woocommerce/emails/customer-failed-order.php:44
@@ -756,24 +766,26 @@ msgstr ""
 #: woocommerce/emails/customer-processing-order.php:35
 #: woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
-msgstr ""
+msgstr "Hallo,"
 
 #: woocommerce/emails/customer-completed-order.php:45
 msgid "We have finished processing your order."
-msgstr ""
+msgstr "Wir haben Ihre Bestellung bearbeitet."
 
 #: woocommerce/emails/customer-completed-order.php:47
 #: woocommerce/emails/customer-on-hold-order.php:48
 #: woocommerce/emails/customer-processing-order.php:43
 #: woocommerce/emails/customer-refunded-order.php:61
 msgid "Here’s a reminder of what you’ve ordered:"
-msgstr ""
+msgstr "Hier noch einmal eine Übersicht über Ihre Bestellung:"
 
 #: woocommerce/emails/customer-failed-order.php:48
 msgid ""
 "Unfortunately, we couldn't complete your order due to an issue with your "
 "payment method."
 msgstr ""
+"Leider konnten wir Ihre Bestellung aufgrund eines Problems mit Ihrer "
+"Zahlungsmethode nicht abschließen."
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-failed-order.php:50
@@ -781,36 +793,42 @@ msgid ""
 "If you'd like to continue with your purchase, please return to %s and try a "
 "different method of payment."
 msgstr ""
+"Wenn Sie Ihren Einkauf fortsetzen möchten, kehren Sie bitte zu %s zurück und "
+"wählen Sie eine andere Zahlungsmethode."
 
 #: woocommerce/emails/customer-failed-order.php:51
 msgid "Your order details are as follows:"
-msgstr ""
+msgstr "Ihre Bestelldaten lauten wie folgt:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:41
 msgid ""
 "Thanks for creating an account on %s. Here’s a copy of your user details."
 msgstr ""
+"Vielen Dank, dass Sie sich bei %s registriert haben. Hier finden Sie eine "
+"Kopie Ihrer Benutzerdaten."
 
 #. translators: %s: Username
 #: woocommerce/emails/customer-new-account.php:50
 #: woocommerce/emails/customer-reset-password.php:46
 msgid "Username: <b>%s</b>"
-msgstr ""
+msgstr "Benutzername: <b>%s</b>"
 
 #: woocommerce/emails/customer-new-account.php:60
 msgid "Set your new password."
-msgstr ""
+msgstr "Legen Sie Ihr neues Passwort fest."
 
 #: woocommerce/emails/customer-new-account.php:65
 msgid ""
 "You can access your account area to view orders, change your password, and "
 "more via the link below:"
 msgstr ""
+"Über den folgenden Link können Sie auf Ihren Kundenbereich zugreifen, um "
+"Bestellungen einzusehen, Ihr Passwort zu ändern und vieles mehr:"
 
 #: woocommerce/emails/customer-new-account.php:66
 msgid "My account"
-msgstr ""
+msgstr "Mein Konto"
 
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:74
@@ -819,18 +837,21 @@ msgid ""
 "access your account area to view orders, change your password, and more at: "
 "%3$s"
 msgstr ""
+"Vielen Dank, dass Sie sich bei %1$s registriert haben. Ihr Benutzername "
+"lautet %2$s. Unter %3$s können Sie auf Ihren Kundenbereich zugreifen, um "
+"Bestellungen einzusehen, Ihr Passwort zu ändern und vieles mehr."
 
 #: woocommerce/emails/customer-new-account.php:84
 msgid "Click here to set your new password."
-msgstr ""
+msgstr "Klicken Sie hier, um Ihr neues Passwort festzulegen."
 
 #: woocommerce/emails/customer-note.php:40
 msgid "The following note has been added to your order:"
-msgstr ""
+msgstr "Der folgenden Anmerkung wurde Ihrer Bestellung hinzugefügt:"
 
 #: woocommerce/emails/customer-note.php:49
 msgid "As a reminder, here are your order details:"
-msgstr ""
+msgstr "Zur Erinnerung, hier sind Ihre Bestelldaten:"
 
 #: woocommerce/emails/customer-on-hold-order.php:47
 msgid ""
@@ -846,39 +867,43 @@ msgid ""
 "Thanks for your order. It’s on-hold until we confirm that payment has been "
 "received."
 msgstr ""
+"Vielen Dank für Ihre Bestellung. Diese wird zurückgestellt, bis wir den "
+"Zahlungseingang bestätigt haben."
 
 #: woocommerce/emails/customer-pos-completed-order.php:38
 #: woocommerce/emails/customer-pos-refunded-order.php:36
 msgid "Hi there,"
-msgstr ""
+msgstr "Hallo,"
 
 #: woocommerce/emails/customer-pos-completed-order.php:42
 #: woocommerce/emails/customer-pos-refunded-order.php:57
 msgid "Here’s a reminder of what you’ve bought:"
-msgstr ""
+msgstr "Hier noch einmal eine Übersicht über deine Einkäufe:"
 
 #: woocommerce/emails/customer-pos-completed-order.php:108
 #: woocommerce/emails/customer-pos-refunded-order.php:125
 msgid "Refund & Returns Policy"
-msgstr ""
+msgstr "Rückerstattungs- und Rückgabebedingungen"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-pos-refunded-order.php:46
 #: woocommerce/emails/customer-refunded-order.php:50
 msgid "Your order from %s has been partially refunded."
-msgstr ""
+msgstr "Ihre Bestellung bei %s wurde teilweise erstattet."
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-pos-refunded-order.php:52
 #: woocommerce/emails/customer-refunded-order.php:56
 msgid "Your order from %s has been refunded."
-msgstr ""
+msgstr "Ihre Bestellung bei %s wurde erstattet."
 
 #: woocommerce/emails/customer-processing-order.php:42
 msgid ""
 "Just to let you know — we’ve received your order, and it is now being "
 "processed."
 msgstr ""
+"Nur zur Information: Wir haben Ihre Bestellung erhalten und bearbeiten sie "
+"derzeit."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:51
@@ -886,6 +911,8 @@ msgid ""
 "Just to let you know — we've received your order #%s, and it is now being "
 "processed:"
 msgstr ""
+"Nur zur Information: Wir haben Ihre Bestellung mit der Nummer %s erhalten "
+"und bearbeiten sie derzeit:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:66
@@ -893,6 +920,8 @@ msgid ""
 "Your order on %s has been partially refunded. There are more details below "
 "for your reference:"
 msgstr ""
+"Ihre Bestellung vom %s wurde teilweise erstattet. Nachstehend finden Sie "
+"weitere Informationen zu Ihrer Information:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:72
@@ -900,69 +929,77 @@ msgid ""
 "Your order on %s has been refunded. There are more details below for your "
 "reference:"
 msgstr ""
+"Ihre Bestellung vom %s wurde erstattet. Nachstehend finden Sie weitere "
+"Informationen zu Ihrer Information:"
 
 #. translators: %s: Store name
 #: woocommerce/emails/customer-reset-password.php:36
 msgid "Someone has requested a new password for the following account on %s:"
 msgstr ""
+"Jemand hat für das folgende Konto auf %s ein neues Passwort angefordert:"
 
 #: woocommerce/emails/customer-reset-password.php:54
 msgid ""
 "If you didn’t make this request, just ignore this email. If you’d like to "
 "proceed, reset your password via the link below:"
 msgstr ""
+"Falls Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail "
+"bitte. Wenn Sie fortfahren möchten, setzen Sie Ihr Passwort über den unten "
+"stehenden Link zurück:"
 
 #. translators: %s: Customer username
 #: woocommerce/emails/customer-reset-password.php:59
 msgid "Username: %s"
-msgstr ""
+msgstr "Benutzername: %s"
 
 #: woocommerce/emails/customer-reset-password.php:60
 msgid ""
 "If you didn't make this request, just ignore this email. If you'd like to "
 "proceed:"
 msgstr ""
+"Falls Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail "
+"bitte einfach. Wenn Sie fortfahren möchten:"
 
 #: woocommerce/emails/customer-reset-password.php:68
 msgid "Reset your password"
-msgstr ""
+msgstr "Passwort zurücksetzen"
 
 #: woocommerce/emails/customer-reset-password.php:70
 msgid "Click here to reset your password"
-msgstr ""
+msgstr "Klicken Sie hier, um Ihr Passwort zurückzusetzen"
 
 #: woocommerce/pdf/norhage/invoice.php:17
 #: woocommerce/pdf/norhage/invoice.php:44
 msgid "Invoice"
-msgstr ""
+msgstr "Rechnung"
 
 #: woocommerce/pdf/norhage/invoice.php:87
 msgid "Invoice Date"
-msgstr ""
+msgstr "Rechnungsdatum"
 
 #: woocommerce/pdf/norhage/invoice.php:100
 msgid "Order Number"
-msgstr ""
+msgstr "Bestellnummer"
 
 #: woocommerce/pdf/norhage/invoice.php:105
 msgid "Order Date"
-msgstr ""
+msgstr "Bestelldatum"
 
 #: woocommerce/pdf/norhage/invoice.php:111
 msgid "Payment Method"
-msgstr ""
+msgstr "Zahlungsmethode"
 
 #: woocommerce/pdf/norhage/invoice.php:162
 msgid "Weight"
-msgstr ""
+msgstr "Gewicht"
 
 #: woocommerce/pdf/norhage/invoice.php:214
 msgid "Subtotal"
-msgstr ""
+msgstr "Zwischensumme"
 
 #: woocommerce/pdf/norhage/invoice.php:218
 msgid "Shipping"
-msgstr ""
+msgstr "Versand"
 
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
