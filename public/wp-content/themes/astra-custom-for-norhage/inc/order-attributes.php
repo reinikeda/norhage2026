@@ -189,8 +189,8 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		return $pairs;
 	}
 
-	// Normal simple products → all product attributes.
-	$attributes = $product->get_attributes();
+	// Normal simple products → show nothing (attributes are informational only).
+	return $pairs;
 
 	if ( empty( $attributes ) ) {
 		return $pairs;
