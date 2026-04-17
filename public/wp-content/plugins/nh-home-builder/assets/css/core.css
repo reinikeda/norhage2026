@@ -53,3 +53,16 @@
   --nh-space-lg:   24px;
   --nh-space-xl:   32px;
 }
+
+/* Homepage body tint - only targets the home page */
+.home {
+    background-color: #f4f6f5 !important; /* A very soft sage-tinted gray */
+}
+
+/* Ensure sections stay crisp white */
+.nhhb-top-features, 
+.nhhb-promo-trio, 
+.nhhb-new-arrivals, 
+.nhhb-browse-cats {
+    background-color: #ffffff !important;
+}
