@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) exit;
 wp_enqueue_style('nhhb-newsletter'); // registered in front_assets()
 
 // Visible texts: ALWAYS from translations (PO), not from saved data.
+$kicker      = __('✉ Stay in the loop', 'nhhb');
 $title       = __('Don’t Miss Out Latest Trends & Offers', 'nhhb');
 $text        = __('Register to receive news about the latest offers & discount codes', 'nhhb');
 $placeholder = __('Enter your email', 'nhhb');
@@ -23,8 +24,17 @@ if (!in_array($method, ['GET','POST'], true)) {
 <section class="nhhb-newsletter" data-nhhb-newsletter>
   <div class="nhhb-nl-inner">
     <div class="nhhb-nl-copy">
-      <?php if ($title): ?><h2 class="nhhb-nl-title"><?php echo esc_html($title); ?></h2><?php endif; ?>
-      <?php if ($text):  ?><p class="nhhb-nl-text"><?php echo esc_html($text); ?></p><?php endif; ?>
+      <?php if ($kicker): ?>
+        <span class="nhhb-nl-kicker"><?php echo esc_html($kicker); ?></span>
+      <?php endif; ?>
+
+      <?php if ($title): ?>
+        <h2 class="nhhb-nl-title"><?php echo esc_html($title); ?></h2>
+      <?php endif; ?>
+
+      <?php if ($text): ?>
+        <p class="nhhb-nl-text"><?php echo esc_html($text); ?></p>
+      <?php endif; ?>
     </div>
 
     <form class="nhhb-nl-form"

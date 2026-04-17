@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-home-builder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2026-02-25 09:01+0200\n"
+"PO-Revision-Date: 2026-04-17 15:27+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -40,6 +40,9 @@ msgid "No products yet. Add a few to WooCommerce."
 msgstr "Noch keine Produkte vorhanden. Fügen Sie einige in WooCommerce hinzu."
 
 # newsletter.php
+msgid "✉ Stay in the loop"
+msgstr "✉ Bleiben Sie auf dem Laufenden"
+
 msgid "Don’t Miss Out Latest Trends & Offers"
 msgstr "Verpassen Sie nicht die neuesten Trends & Angebote"
 
@@ -72,6 +75,9 @@ msgid "No services to display. Add Services or enable “Include in slider”."
 msgstr "Keine Dienstleistungen zum Anzeigen. Fügen Sie Dienstleistungen hinzu oder aktivieren Sie „Im Slider anzeigen“."
 
 # bb-banner.php
+msgid "🤝 Business Solutions"
+msgstr "🤝 Business-Lösungen"
+
 msgid "For Business Customers"
 msgstr "Für Geschäftskunden"
 
