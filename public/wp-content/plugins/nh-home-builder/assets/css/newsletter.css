@@ -79,25 +79,6 @@
   gap: 10px;
 }
 
-/* Kicker badge above title */
-.nhhb-newsletter .nhhb-nl-copy::before {
-  content: "✉  Stay in the loop";
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--nl-mint);
-  background: rgba(46,162,111,.15);
-  border: 1px solid rgba(46,162,111,.30);
-  border-radius: 999px;
-  padding: 4px 14px;
-  margin-bottom: 2px;
-}
-
 /* Title */
 .nhhb-newsletter .nhhb-nl-title {
   margin: 0;

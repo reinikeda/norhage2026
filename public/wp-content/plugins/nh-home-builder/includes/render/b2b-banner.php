@@ -14,11 +14,14 @@ $defaults = [
   'h3'       => __('Exclusive pricing and services for B2B partners.', 'nhhb'),
   'btn_text' => __('Learn more', 'nhhb'),
   'btn_url'  => '',
-  'logo'     => 0,     // new single-asset key
-  'logo_d'   => 0,     // legacy
-  'logo_m'   => 0,     // legacy
+  'logo'     => 0,     
+  'logo_d'   => 0,     
+  'logo_m'   => 0,     
 ];
 $data = is_array($data ?? null) ? array_merge($defaults, $data) : $defaults;
+
+// New translatable kicker
+$kicker = __('🤝 Business Solutions', 'nhhb');
 
 /* ---- Backwards compatibility (prefer the new single 'logo') ---- */
 if (empty($data['logo'])) {
@@ -31,7 +34,7 @@ if (empty($data['logo'])) {
   }
 }
 
-/* Build logo HTML once (WP adds srcset/sizes for us) */
+/* Build logo HTML */
 $logo_html = '';
 if (!empty($data['logo'])) {
   $logo_html = wp_get_attachment_image(
@@ -42,7 +45,7 @@ if (!empty($data['logo'])) {
       'class' => 'nhhb-b2b-logo-img',
       'loading' => 'lazy',
       'decoding' => 'async',
-      'alt' => '',                 // decorative; set text if you want it announced
+      'alt' => '',
       'aria-hidden' => 'true',
     ]
   );
@@ -55,6 +58,10 @@ if (!empty($data['logo'])) {
     <?php endif; ?>
 
     <div class="nhhb-b2b-content">
+      <?php if ($kicker): ?>
+        <span class="nhhb-b2b-kicker"><?php echo esc_html($kicker); ?></span>
+      <?php endif; ?>
+
       <?php if (!empty($data['h2'])): ?>
         <h2 class="nhhb-b2b-title"><?php echo esc_html($data['h2']); ?></h2>
       <?php endif; ?>

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-home-builder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2026-01-07 13:35+0200\n"
+"PO-Revision-Date: 2026-04-17 15:27+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -55,6 +55,10 @@ msgstr "Tuotteita ei vielä ole. Lisää muutama WooCommerceen."
 # newsletter.php
 # ===========================
 #: includes/render/newsletter.php:XX
+msgid "✉ Stay in the loop"
+msgstr "✉ Pysy ajan tasalla"
+
+#: includes/render/newsletter.php:XX
 msgid "Don’t Miss Out Latest Trends & Offers"
 msgstr "Älä jää paitsi uusimmista trendeistä ja tarjouksista"
 
@@ -100,6 +104,10 @@ msgstr "Näytettäviä palveluita ei ole. Lisää palveluita tai ota käyttöön
 # ===========================
 # bb-banner.php
 # ===========================
+#: includes/render/bb-banner.php:XX
+msgid "🤝 Business Solutions"
+msgstr "🤝 Yritysratkaisut"
+
 #: includes/render/bb-banner.php:XX
 msgid "For Business Customers"
 msgstr "Yritysasiakkaille"
