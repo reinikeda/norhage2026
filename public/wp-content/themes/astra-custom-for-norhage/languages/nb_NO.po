@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-03-10 12:56:27+00:00\n"
-"PO-Revision-Date: 2026-04-14 16:33+0300\n"
+"PO-Revision-Date: 2026-04-15 10:10+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -321,7 +321,7 @@ msgstr ""
 #: inc/order-attributes.php:312 inc/product-customize.php:231
 #: inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
-msgstr ""
+msgstr "Skjæreavgift per ark"
 
 #: inc/meta-boxes.php:146
 msgid "Min width (mm)"
@@ -370,7 +370,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:388
 msgid "Product *"
-msgstr ""
+msgstr "Produkt *"
 
 #: inc/meta-boxes.php:389
 msgid "Maximum quantity"
@@ -395,7 +395,7 @@ msgstr ""
 #: inc/order-attributes.php:92 inc/order-attributes.php:310
 #: inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
-msgstr ""
+msgstr "Bredde"
 
 #: inc/product-customize.php:36 inc/product-customize.php:37
 #: inc/product-customize.php:59
