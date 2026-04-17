@@ -1,31 +1,55 @@
-/* =========================================================
- * NH Home Builder – Core Tokens
- * Shared color palette, typography, radii, shadows, spacing
- * ========================================================= */
+/* ==== NH Home Builder – Core Tokens (global) ====
+   Shared color palette, typography, radii, shadows, spacing
+   Load this globally (site-wide). Sections should avoid redefining these.
+================================================= */
 
 :root {
   /* ---- Brand Palette ---- */
-  --nh-green:      #00704A; /* Primary / CTAs / links */
+  --nh-green:      #2EA26F; /* Primary accent / CTAs / links */
   --nh-forest:     #1E3932; /* Deep headers / footer / active */
-  --nh-brown:      #4B2C20; /* Accent deep */
-  --nh-cream:      #F1E6D6; /* Section bg */
-  --nh-offwhite:   #FAF7F2; /* Site bg */
-  --nh-charcoal:   #2C2A29; /* Text */
-  --nh-mint:       #C3E8C6; /* Soft border/hover */
+  --nh-brown:      #4B2C20; /* Secondary accent */
+  --nh-cream:      #F1E6D6; /* Warm section tint */
+  --nh-offwhite:   #FAF7F2; /* Site background */
+  --nh-charcoal:   #2C2A29; /* Main text */
+  --nh-mint:       #C3E8C6; /* Soft border / hover tint */
   --nh-gold:       #C89F63; /* Premium accent */
 
   /* ---- Neutrals & Utility ---- */
   --nh-white:      #ffffff;
   --nh-black:      #000000;
-  --nh-bg-tint:    #FDFBF8; /* Lighter warm tint (Option 1) */
-  --nh-shadow:     0 8px 24px rgba(0,0,0,.08);
-  --nh-radius-lg:  22px;
-  --nh-radius-md:  14px;
-  --nh-radius-sm:  8px;
+  --nh-bg-tint:    #FDFBF8;
+
+  /* ---- Radii (standardized) ---- */
+  --nh-radius-section: 10px; /* Section wrappers (shells) */
+  --nh-radius-card:    4px;  /* Cards / tiles */
+  --nh-radius-sm:      4px;
+  --nh-radius-md:      10px;
+  --nh-radius-lg:      10px;
+  --nh-radius-pill:    999px;
+
+  /* ---- Shadows (re-usable) ---- */
+  --nh-shadow-xs:   0 2px 8px rgba(17, 32, 28, .06);
+  --nh-shadow-sm:   0 4px 12px rgba(17, 32, 28, .08);
+  --nh-shadow-md:   0 6px 18px rgba(17, 32, 28, .10);
+  --nh-shadow-lg:   0 10px 24px rgba(17, 32, 28, .12);
+  --nh-shadow-xl:   0 12px 40px rgba(0, 0, 0, .18);
+
+  /* ---- Common aliases for section files ---- */
+  --nh-section-radius: var(--nh-radius-section);
+  --nh-card-radius:    var(--nh-radius-card);
+  --nh-section-shadow: var(--nh-shadow-md);
+  --nh-card-shadow:    var(--nh-shadow-sm);
 
   /* ---- Typography scale ---- */
   --nh-font-main:  "Inter", "Helvetica Neue", Arial, sans-serif;
   --nh-h1-size:    46px;
   --nh-h2-size:    34px;
   --nh-body-size:  16px;
+
+  /* ---- Spacing ---- */
+  --nh-space-xs:   4px;
+  --nh-space-sm:   8px;
+  --nh-space-md:   16px;
+  --nh-space-lg:   24px;
+  --nh-space-xl:   32px;
 }

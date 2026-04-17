@@ -7,10 +7,15 @@
   --nhhb-ink:                var(--nh-charcoal, #222222);
   --nhhb-ink-sub:            #6f746f;
 
-  /* Unified surface system for right promo cards */
-  --nhhb-surface-1:          #f6efe2;
-  --nhhb-surface-2:          #f8f4ec;
-  --nhhb-surface-border:     rgba(30, 57, 50, 0.08);
+  /* Bold contrast promo card surfaces */
+  --nhhb-surface-1:          #1E3932;
+  --nhhb-surface-2:          #222222;
+  --nhhb-surface-border:     rgba(255, 255, 255, 0.10);
+
+  /* Promo text colors (white on dark) */
+  --nhhb-promo-ink:          #ffffff;
+  --nhhb-promo-ink-sub:      rgba(255, 255, 255, 0.72);
+  --nhhb-promo-title-hover:  #2EA26F;
 
   /* Shadows */
   --nhhb-hero-shadow:        0 10px 24px rgba(17, 32, 28, 0.12);
@@ -93,7 +98,7 @@
   filter: saturate(1.01) contrast(1.02) brightness(.95);
 }
 
-/* Brand-tinted overlay so the hero matches the promo cards better */
+/* Brand-tinted overlay */
 .nhhb-slide::after{
   content: "";
   position: absolute;
@@ -116,7 +121,6 @@
     );
 }
 
-/* Transparent asset safety */
 .nhhb-slide img{
   background: transparent !important;
   border: 0 !important;
@@ -269,21 +273,16 @@
 
 /* -------- Promo cards -------- */
 .nhhb-promo{
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(126px, 32%, 168px);
-  gap: 18px;
-  align-items: center;
+  display: block;
   min-height: 154px;
   position: relative;
   overflow: hidden;
-
-  padding: 20px 0 20px 20px;
+  padding: 20px;
   border-radius: var(--nhhb-radius-md);
   background: var(--nhhb-surface-1);
   border: 1px solid var(--nhhb-surface-border);
   box-shadow: var(--nhhb-card-shadow);
   color: inherit;
-
   transition:
     transform .18s ease,
     box-shadow .18s ease,
@@ -297,43 +296,59 @@
 
 .nhhb-promo:hover{
   transform: translateY(-2px);
-  border-color: rgba(30, 57, 50, 0.16);
+  border-color: rgba(255, 255, 255, 0.22);
   box-shadow: var(--nhhb-card-shadow-hover);
 }
 
-/* Promo media */
+/* Promo media — full bleed background image */
 .nhhb-promo-media{
-  order: 2;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 0;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 0 var(--nhhb-radius-md) var(--nhhb-radius-md) 0;
-  background: transparent;
-  padding: 0;
-  box-shadow: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .nhhb-promo-media img{
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: right center;
+  object-fit: cover;
+  object-position: center center;
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
 
-/* Promo text */
+/* Gradient overlay for text legibility — dark left fade */
+.nhhb-promo::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(30, 57, 50, .92) 0%,
+    rgba(30, 57, 50, .65) 50%,
+    rgba(30, 57, 50, .10) 100%
+  );
+}
+
+.nhhb-hero-side .nhhb-promo:nth-child(2)::after{
+  background: linear-gradient(
+    90deg,
+    rgba(22, 22, 22, .92) 0%,
+    rgba(22, 22, 22, .65) 50%,
+    rgba(22, 22, 22, .10) 100%
+  );
+}
+
+/* Promo text — sits above image and overlay */
 .nhhb-promo-body{
-  order: 1;
+  position: relative;
+  z-index: 2;
   min-width: 0;
-  padding-right: 8px;
+  max-width: 60%;
   font-family: var(--nh-font-main, inherit);
 }
 
@@ -344,8 +359,8 @@
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--nhhb-primary-dark);
-  opacity: .92;
+  color: var(--nhhb-promo-ink-sub);
+  opacity: 1;
 }
 
 .nhhb-p2{
@@ -353,7 +368,7 @@
   font-size: clamp(18px, 1.6vw, 22px);
   line-height: 1.15;
   font-weight: 800;
-  color: var(--nhhb-ink);
+  color: var(--nhhb-promo-ink);
   overflow-wrap: anywhere;
 }
 
@@ -361,7 +376,7 @@
   margin: 10px 0 0;
   font-size: 15px;
   line-height: 1.45;
-  color: var(--nhhb-ink-sub);
+  color: var(--nhhb-promo-ink-sub);
   overflow-wrap: anywhere;
 }
 
@@ -371,12 +386,13 @@
   text-decoration: underline;
   text-decoration-thickness: .06em;
   text-underline-offset: 2px;
-  text-decoration-color: currentColor;
+  text-decoration-color: rgba(255,255,255,.40);
   transition: color .18s ease, text-decoration-color .18s ease;
 }
 
 .nhhb-link-title:hover{
-  color: var(--nhhb-primary-dark);
+  color: var(--nhhb-promo-title-hover);
+  text-decoration-color: var(--nhhb-promo-title-hover);
 }
 
 /* -------- Placeholder -------- */
@@ -403,12 +419,12 @@
 
 body.dark-mode .nhhb-offers-hero{
   --dm-bg:                  #1F211F;
-  --dm-surface-1:           #2C302C;
-  --dm-surface-2:           #313631;
+  --dm-surface-1:           #122620;
+  --dm-surface-2:           #141414;
   --dm-text:                #EDECE7;
   --dm-text-sub:            rgba(237,236,231,.78);
-  --dm-border:              rgba(255,255,255,.08);
-  --dm-border-strong:       rgba(255,255,255,.14);
+  --dm-border:              rgba(255,255,255,.10);
+  --dm-border-strong:       rgba(255,255,255,.20);
   --dm-primary:             #35B37A;
   --dm-primary-dark:        #1A473D;
   --dm-dot:                 rgba(255,255,255,.34);
@@ -420,9 +436,12 @@ body.dark-mode .nhhb-offers-hero{
   --nhhb-surface-1:         var(--dm-surface-1);
   --nhhb-surface-2:         var(--dm-surface-2);
   --nhhb-surface-border:    var(--dm-border);
+  --nhhb-promo-ink:         #ffffff;
+  --nhhb-promo-ink-sub:     rgba(255,255,255,.68);
+  --nhhb-promo-title-hover: var(--dm-primary);
 
-  --nhhb-card-shadow:       0 8px 20px rgba(0,0,0,.28);
-  --nhhb-card-shadow-hover: 0 12px 28px rgba(0,0,0,.34);
+  --nhhb-card-shadow:       0 8px 20px rgba(0,0,0,.40);
+  --nhhb-card-shadow-hover: 0 12px 28px rgba(0,0,0,.50);
 }
 
 body.dark-mode .nhhb-slide{
@@ -494,8 +513,22 @@ body.dark-mode .nhhb-promo:hover{
   box-shadow: var(--nhhb-card-shadow-hover);
 }
 
-body.dark-mode .nhhb-promo-media img{
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+body.dark-mode .nhhb-promo::after{
+  background: linear-gradient(
+    90deg,
+    rgba(18, 38, 32, .95) 0%,
+    rgba(18, 38, 32, .70) 50%,
+    rgba(18, 38, 32, .10) 100%
+  );
+}
+
+body.dark-mode .nhhb-hero-side .nhhb-promo:nth-child(2)::after{
+  background: linear-gradient(
+    90deg,
+    rgba(10, 10, 10, .95) 0%,
+    rgba(10, 10, 10, .70) 50%,
+    rgba(10, 10, 10, .10) 100%
+  );
 }
 
 body.dark-mode .nhhb-link-title{
@@ -556,24 +589,12 @@ body.dark-mode .nhhb-ph-img{
   }
 
   .nhhb-promo{
-    grid-template-columns: 110px 1fr;
     min-height: 140px;
-    padding: 16px 18px 16px 0;
-  }
-
-  .nhhb-promo-media{
-    order: 1;
-    justify-content: flex-start;
-    border-radius: var(--nhhb-radius-md) 0 0 var(--nhhb-radius-md);
-  }
-
-  .nhhb-promo-media img{
-    object-position: left center;
+    padding: 16px 18px;
   }
 
   .nhhb-promo-body{
-    order: 2;
-    padding-right: 0;
+    max-width: 65%;
   }
 
   .nhhb-p2{
@@ -636,10 +657,12 @@ body.dark-mode .nhhb-ph-img{
   }
 
   .nhhb-promo{
-    grid-template-columns: 96px 1fr;
-    gap: 14px;
     min-height: 122px;
-    padding: 14px 16px 14px 0;
+    padding: 14px 16px;
+  }
+
+  .nhhb-promo-body{
+    max-width: 70%;
   }
 
   .nhhb-p2{
@@ -662,8 +685,8 @@ body.dark-mode .nhhb-ph-img{
     font-size: 24px;
   }
 
-  .nhhb-promo{
-    grid-template-columns: 88px 1fr;
+  .nhhb-promo-body{
+    max-width: 75%;
   }
 }
 
