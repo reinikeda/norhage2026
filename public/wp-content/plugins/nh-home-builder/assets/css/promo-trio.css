@@ -305,28 +305,30 @@ body.dark-mode .nhhb-pt-btn:hover{
 }
 
 /* ===== Responsive – mobile ===== */
-@media (max-width: 540px){
-  .nhhb-pt-grid{ gap: 10px; }
-
-  .nhhb-pt-hero{
-    min-height: 240px;
+@media (max-width: 540px) {
+  .nhhb-pt-grid {
+    gap: 8px;
   }
 
-  .nhhb-pt-hero .nhhb-pt-copy{
-    padding: 18px 20px;
+  .nhhb-pt-hero {
+    min-height: 220px;
   }
 
-  .nhhb-pt-small{
-    min-height: 140px;
+  .nhhb-pt-small {
+    min-height: 130px;
   }
 
-  .nhhb-pt-small .nhhb-pt-copy{
-    padding: 16px 18px;
+  .nhhb-pt-h2 {
+    font-size: 20px;
   }
 
-  .nhhb-pt-h2{ font-size: 22px; }
-  .nhhb-pt-h3{ font-size: 17px; }
-  .nhhb-pt-p{ font-size: 13px; }
+  .nhhb-pt-h3 {
+    font-size: 15px;
+  }
+
+  .nhhb-pt-p {
+    font-size: 12.5px;
+  }
 }
 
 /* ===== Reduced motion ===== */

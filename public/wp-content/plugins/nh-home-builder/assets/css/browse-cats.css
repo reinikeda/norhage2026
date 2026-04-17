@@ -246,24 +246,27 @@
   }
 }
 
-@media (max-width: 540px){
-  .nhhb-browse-cats{
-    padding: 18px 16px 16px;
-    border-radius: 10px;
+@media (max-width: 540px) {
+  .nhhb-browse-cats {
+    padding: 16px 14px 14px;
   }
 
-  .nhhb-cats-title{ font-size: 18px; }
-
-  .nhhb-cats-track{ gap: 10px; }
-
-  .nhhb-cat{ width: 110px; }
-
-  .nhhb-cat-figure{
-    width: 90px;
-    height: 90px;
+  .nhhb-cats-track {
+    padding-bottom: 6px;
   }
 
-  .nhhb-cat-name{ font-size: 12.5px; }
+  .nhhb-cat {
+    width: 96px;
+  }
+
+  .nhhb-cat-figure {
+    width: 84px;
+    height: 84px;
+  }
+
+  .nhhb-cat-name {
+    font-size: 12px;
+  }
 }
 
 /* ===== Dark mode ===== */

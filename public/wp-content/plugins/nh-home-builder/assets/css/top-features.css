@@ -30,6 +30,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  /* Keep consistent horizontal padding for all features (fixes first-item shift) */
   padding: 10px 24px;
   background: none;
   border: none;
@@ -38,10 +39,9 @@
   border-right: 1px solid rgba(30, 57, 50, 0.10);
 }
 
-.nhhb-top-features .nhhb-feature:first-child{
-  padding-left: 0;
-}
+/* removed the brittle first-child zero-left-padding rule */
 
+/* keep last-child behaviour removing right divider */
 .nhhb-top-features .nhhb-feature:last-child{
   border-right: none;
   padding-right: 0;
@@ -51,7 +51,10 @@
 .nhhb-top-features .nhhb-icon{
   width: 44px;
   height: 44px;
-  flex: 0 0 40px;
+
+  /* ensure flex-basis matches actual size to avoid subtle alignment shifts */
+  flex: 0 0 44px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,6 +139,7 @@
   }
 
   .nhhb-top-features .nhhb-feature{
+    /* tablet stacked style */
     padding: 14px 16px;
     border-right: none;
     border-bottom: 1px solid rgba(30, 57, 50, 0.10);
@@ -152,10 +156,7 @@
     border-right: 1px solid rgba(30, 57, 50, 0.10);
   }
 
-  .nhhb-top-features .nhhb-feature:first-child{
-    padding-left: 16px;
-  }
-
+  /* no first-child special-case — keep consistent spacing */
   .nhhb-top-features .nhhb-feature:last-child{
     padding-right: 16px;
   }
@@ -176,16 +177,18 @@
   .nhhb-top-features .nhhb-feature{
     padding: 12px 0;
     border-right: none !important;
-    border-bottom: 1px solid rgba(30, 57, 50, 0.08);
+    /* Force border-bottom back for the 3rd item which was hidden by tablet rules */
+    border-bottom: 1px solid rgba(30, 57, 50, 0.08) !important;
     gap: 12px;
   }
 
+  /* Only the very last item in the list should have no border */
   .nhhb-top-features .nhhb-feature:last-child{
-    border-bottom: none;
+    border-bottom: none !important;
   }
 
   .nhhb-top-features h3.nhhb-feature-title{ font-size: 13px; }
-  .nhhb-top-features .nhhb-feature-sub{ font-size: 12px; }
+  .nhhb-top-features .nhhb-feature-sub{ font-size: 11px; }
 }
 
 /* ===== Dark mode ===== */

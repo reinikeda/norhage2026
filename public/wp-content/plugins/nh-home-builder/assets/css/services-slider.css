@@ -364,34 +364,23 @@ body.dark-mode .nhhb-svc-btn:hover{
 }
 
 /* ---- Responsive: mobile ---- */
-@media (max-width: 540px){
-  .nhhb-services .nhhb-services-swiper{
-    height: clamp(240px, 52vw, 340px);
+@media (max-width: 540px) {
+  .nhhb-services .nhhb-services-swiper {
+    height: 220px;
   }
 
-  .nhhb-svc-inner{
-    max-width: 90%;
-    padding: 22px 16px;
-    gap: 8px;
+  .nhhb-svc-inner {
+    max-width: 92%;
+    padding: 18px 14px;
   }
 
-  .nhhb-services .nhhb-svc-title{
-    font-size: clamp(18px, 6vw, 24px);
+  .nhhb-services .nhhb-svc-title {
+    font-size: 18px;
   }
 
-  .nhhb-svc-desc{
-    font-size: 13.5px;
-    max-width: 100%;
+  .nhhb-svc-desc {
+    font-size: 12.5px;
   }
-
-  .nhhb-svc-btn{
-    padding: 9px 18px;
-    font-size: 13px;
-  }
-
-  .nhhb-svc-pagination{ bottom: 10px; }
-  .nhhb-svc-pagination .swiper-pagination-bullet{ width: 12px; }
-  .nhhb-svc-pagination .swiper-pagination-bullet-active{ width: 20px; }
 }
 
 /* ---- Smallest phones ---- */

@@ -331,18 +331,13 @@ body.dark-mode .nhhb-newsletter .nhhb-nl-btn:hover {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
+  .nhhb-newsletter {
+    margin: 20px 0;
+  }
+
   .nhhb-newsletter .nhhb-nl-inner {
-    padding: 28px 18px;
-  }
-
-  .nhhb-newsletter .nhhb-nl-title {
-    font-size: clamp(20px, 6vw, 26px);
-  }
-
-  .nhhb-newsletter .nhhb-nl-field,
-  .nhhb-newsletter .nhhb-nl-btn {
-    height: 46px;
+    padding: 24px 16px;
   }
 }
 
