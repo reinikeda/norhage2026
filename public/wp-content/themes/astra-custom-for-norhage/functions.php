@@ -193,84 +193,18 @@ add_action( 'wp_enqueue_scripts', 'norhage_enqueue_assets', 15 );
 /* --------------------------------------------------------------------------
  * Header: utility bar + compact header include
  * ----------------------------------------------------------------------- */
-add_action( 'astra_masthead_top', function () {
-
-	$menu_args = [
-		'container'   => false,
-		'menu_class'  => 'nh-utility-menu',
-		'fallback_cb' => '__return_empty_string',
-	];
-
-	$locations = get_nav_menu_locations();
-	if ( ! empty( $locations['secondary'] ) ) {
-		$menu_args['menu'] = (int) $locations['secondary'];
-	} else {
-		$maybe = wp_get_nav_menu_object( 'Info Menu' );
-		if ( $maybe ) {
-			$menu_args['menu'] = (int) $maybe->term_id;
-		}
-	}
-
-	ob_start();
-	wp_nav_menu( $menu_args );
-	$left_menu_html = trim( ob_get_clean() );
-
-	if ( $left_menu_html === '' ) {
-		$left_menu_html  = '<ul class="nh-utility-menu">';
-		$left_menu_html .= '<li><a href="' . esc_url( nh_get_services_url() ) . '">' . esc_html__( 'Services', 'nh-theme' ) . '</a></li>';
-		$left_menu_html .= '<li><a href="' . esc_url( get_permalink( get_option( 'page_for_posts' ) ) ) . '">' . esc_html__( 'Blog', 'nh-theme' ) . '</a></li>';
-		$left_menu_html .= '<li><a href="' . esc_url( home_url( '/contact-us/' ) ) . '">' . esc_html__( 'Contact Us', 'nh-theme' ) . '</a></li>';
-		$left_menu_html .= '</ul>';
-	}
-
-	// Phone: text and href both translatable via .po.
-	// Example default values (you translate them per language):
-	$phone_display = __( '+49 176 65 10 6609', 'nh-theme' );
-	$phone_href    = __( '+4917665106609', 'nh-theme' );
-
-	// Build tel: link (strip spaces just in case)
-	$phone_href_clean = 'tel:' . preg_replace( '/\s+/', '', $phone_href );
-
-	?>
-	<div class="nh-utility" role="navigation" aria-label="<?php echo esc_attr__( 'Utility bar', 'nh-theme' ); ?>">
-		<div class="nh-utility__left">
-			<?php echo $left_menu_html; // phpcs:ignore ?>
-		</div>
-		<div class="nh-utility__right">
-			<a class="nh-utility__tel" href="<?php echo esc_attr( $phone_href_clean ); ?>">
-				<img
-					src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/icons/phone.svg' ); ?>"
-					alt="<?php echo esc_attr__( 'Phone icon', 'nh-theme' ); ?>"
-					class="nh-icon nh-icon--phone"
-					width="18"
-					height="18"
-				/>
-				<?php echo esc_html( $phone_display ); ?>
-			</a>
-			<span class="nh-utility__sep" aria-hidden="true">·</span>
-			<a class="nh-utility__faq" href="<?php echo esc_url( nh_get_faq_url() ); ?>">
-				<?php echo esc_html__( 'FAQ', 'nh-theme' ); ?>
-			</a>
-		</div>
-	</div>
-	<?php
-}, 10 );
-
 add_action( 'astra_masthead_bottom', function () {
-	locate_template( 'template-parts/headers/header-main.php', true, false );
+    locate_template( 'template-parts/headers/header-main.php', true, false );
 }, 12 );
 
-/* Woo cart badge fragment used by header */
-add_filter( 'woocommerce_add_to_cart_fragments', function( $fragments ) {
-
-	$count = ( function_exists('WC') && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
-
-	$fragments['span.nh-cart-badge'] =
-		'<span class="nh-cart-badge" aria-hidden="true" data-count="' . esc_attr( $count ) . '">' .
-			esc_html( $count ) .
-		'</span>';
-
-	return $fragments;
+/* Woo cart badge fragment */
+add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
+    $count = ( function_exists( 'WC' ) && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
+    $fragments['span.nh-cart-badge'] =
+        '<span class="nh-cart-badge" aria-hidden="true" data-count="' . esc_attr( $count ) . '">' .
+            esc_html( $count ) .
+        '</span>';
+    return $fragments;
 } );
 
 /* --------------------------------------------------------------------------
