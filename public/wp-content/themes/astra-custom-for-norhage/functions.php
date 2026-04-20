@@ -967,3 +967,6 @@ function norhage_strip_author_links( $html ) {
     
     return $html;
 }
+
+// Remove Astra's page/archive title when our hero is active
+add_filter( 'astra_the_title_enabled', '__return_false' );

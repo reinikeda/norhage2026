@@ -1140,10 +1140,75 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
 
 .home #primary.content-area { margin-top: 0 !important; }
 
+/* ── PAGE HERO ── */
+.nhhb-hero--page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(140px, 20vh, 220px); /* Slightly taller for better scale */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--nh-forest, #1E3932);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Darker Overlay */
+.nhhb-hero--page .nhhb-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55); /* Increased from 0.45 to 0.55 for better contrast */
+  z-index: 1;
+}
+
+.nhhb-hero--page .nhhb-hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  /* Reduced bottom padding (64px -> 32px) to push the H1 "a bit higher" */
+  padding: clamp(40px, 5vw, 64px) 24px clamp(20px, 3vw, 32px); 
+  text-align: center;
+}
+
+.nhhb-hero--page .nhhb-hero__title {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 42px);
+  line-height: 1.1;
+  color: #fff;
+  font-weight: 700;
+  /* Stronger shadow to help white text pop */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+}
+
+.nhhb-hero--page .nhhb-hero__breadcrumbs {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.nhhb-hero--page .nhhb-hero__breadcrumbs a {
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.nhhb-hero--page .nhhb-hero__breadcrumbs a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 @media (max-width: 1023px) {
+  .nhhb-hero--page {
+    min-height: 120px;
+  }
   .nhhb-hero--page .nhhb-hero__inner {
-    --hero-pad: clamp(40px, 10vw, 120px);
-    padding-top: var(--hero-pad);
-    padding-bottom: var(--hero-pad);
+    padding-top: 40px;
+    padding-bottom: 20px;
   }
 }
