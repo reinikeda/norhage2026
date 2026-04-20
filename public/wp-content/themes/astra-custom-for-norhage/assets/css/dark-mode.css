@@ -74,89 +74,157 @@ body.dark-mode hr.nh-sep{
 /* =========================
    2) Utility bar + News ticker (dark mode)
    ========================= */
-body.dark-mode .nh-utility{
-  background: var(--dm-elev-1, #1b201e);      /* deeper neutral */
-  border-bottom: 1px solid var(--dm-border);
-  color: var(--dm-text);
+
+/* ── Utility bar wrapper ── */
+body.dark-mode .nhhb-row--utility,
+body.dark-mode .nhhb-row--utility::before {
+  background: #1b201e !important;
+  border-bottom: 1px solid rgba(255,255,255,.10);
 }
 
-/* Links inherit text by default */
-body.dark-mode .nh-utility a{
-  color: var(--dm-text);
-  text-decoration: none;
-  transition: color .2s ease;
+/* Left nav links */
+body.dark-mode .nhhb-utility-menu > li > a {
+  color: rgba(232,234,240,.80);
 }
-body.dark-mode .nh-utility a:hover{
+body.dark-mode .nhhb-utility-menu > li > a:hover {
   color: var(--dm-primary);
 }
 
-/* Phone link — make sure the icon lightens */
-body.dark-mode .nh-utility__tel{
-  color: var(--dm-text);
+/* Right side — all icons */
+body.dark-mode .nhhb-utility-right .nh-icon {
+  stroke: rgba(232,234,240,.80);
+  color: rgba(232,234,240,.80);
 }
-body.dark-mode .nh-utility__tel:hover{
+
+/* Icon wrappers (account / cart / dark toggle) */
+body.dark-mode .nhhb-utility-right .nh-account,
+body.dark-mode .nhhb-utility-right .nh-cart,
+body.dark-mode .nhhb-utility-right .theme-toggle {
+  color: rgba(232,234,240,.80);
+}
+
+body.dark-mode .nhhb-utility-right .nh-account:hover,
+body.dark-mode .nhhb-utility-right .nh-cart:hover,
+body.dark-mode .nhhb-utility-right .theme-toggle:hover {
+  background: rgba(255,255,255,.08);
   color: var(--dm-primary);
 }
-/* Lighten external SVG icon in dark mode */
-body.dark-mode .nh-utility__tel img.nh-icon--phone{
+
+body.dark-mode .nhhb-utility-right .nh-account:hover .nh-icon,
+body.dark-mode .nhhb-utility-right .nh-cart:hover .nh-icon,
+body.dark-mode .nhhb-utility-right .theme-toggle:hover .nh-icon {
+  stroke: var(--dm-primary);
+  color: var(--dm-primary);
+  opacity: 1;
+}
+
+/* Cart badge edge on dark bg */
+body.dark-mode .nhhb-utility-right .nh-cart-badge {
+  box-shadow: 0 0 0 2px #1b201e;
+}
+
+/* Separator */
+body.dark-mode .nhhb-utility-sep {
+  background: rgba(255,255,255,.20);
+}
+
+/* Phone */
+body.dark-mode .nh-utility__tel {
+  color: rgba(232,234,240,.80);
+}
+body.dark-mode .nh-utility__tel:hover {
+  color: var(--dm-primary);
+}
+
+/* Phone SVG icon */
+body.dark-mode .nh-utility__tel .nh-icon {
+  stroke: rgba(232,234,240,.80);
+}
+body.dark-mode .nh-utility__tel:hover .nh-icon {
+  stroke: var(--dm-primary);
+}
+
+/* Phone IMG icon (fallback if still using <img>) */
+body.dark-mode .nh-utility__tel img.nh-icon--phone {
   filter: brightness(3) invert(1);
-  opacity: 0.9;
-  transition: filter .25s ease, opacity .25s ease;
+  opacity: 0.8;
+  transition: filter .2s ease, opacity .2s ease;
 }
-body.dark-mode .nh-utility__tel:hover img.nh-icon--phone{
+body.dark-mode .nh-utility__tel:hover img.nh-icon--phone {
   filter: brightness(3.5) invert(1);
   opacity: 1;
 }
 
-/* Separator dot slightly brighter for contrast */
-body.dark-mode .nh-utility__sep{
-  opacity: .6;
-}
-
-/* FAQ link stands out with accent */
-body.dark-mode .nh-utility__faq{
+/* FAQ */
+body.dark-mode .nh-utility__faq {
   color: var(--dm-primary);
 }
-body.dark-mode .nh-utility__faq:hover{
+body.dark-mode .nh-utility__faq:hover {
   color: #fff;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
+/* Search field in utility bar */
+body.dark-mode .nhhb-utility-right .nh-header-search--utility {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+}
+
+body.dark-mode .nhhb-utility-right .nh-header-search--utility input[type="search"] {
+  color: rgba(232,234,240,.90);
+}
+
+body.dark-mode .nhhb-utility-right .nh-header-search--utility input::placeholder {
+  color: rgba(232,234,240,.45);
+}
+
+body.dark-mode .nhhb-utility-right .nh-header-search--utility button {
+  border-left: 1px solid rgba(255,255,255,.12);
+}
+
+body.dark-mode .nhhb-utility-right .nh-header-search--utility button:hover {
+  background: rgba(255,255,255,.07);
+}
+
+body.dark-mode .nhhb-utility-right .nh-header-search--utility .nh-icon {
+  stroke: rgba(232,234,240,.70);
+  opacity: 1;
+}
+
 /* Dark ticker */
-body.dark-mode .nh-ticker-wrap{
-  background: var(--dm-elev-1, #1b201e);
-  border-bottom: 1px solid var(--dm-border);
-  color: var(--dm-text);
+body.dark-mode .nh-ticker-wrap {
+  background: #1b201e;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  color: rgba(232,234,240,.85);
 }
 
 /* =========================
    3) Header (grid) + nav + tools
    ========================= */
-body.dark-mode .nhhb-header-main{
+body.dark-mode .nhhb-header-main {
   background: var(--ui-bg-dark);
-  color:#fff;
+  color: #fff;
   border-bottom: 1px solid rgba(255,255,255,.08);
   box-shadow: 0 4px 16px rgba(0,0,0,.35);
 }
-body.dark-mode .nhhb-row--top{ border-bottom: 1px solid rgba(255,255,255,.08); }
-body.dark-mode .nhhb-main-nav .primary-menu > li > a:hover{ background: rgba(255,255,255,.10); }
+
+body.dark-mode .nhhb-row--top {
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+body.dark-mode .nhhb-main-nav .primary-menu > li > a:hover {
+  background: rgba(255,255,255,.10);
+}
+
 body.dark-mode .nhhb-main-nav .primary-menu > li.current-menu-item > a,
 body.dark-mode .nhhb-main-nav .primary-menu > li.current_page_parent > a,
-body.dark-mode .nhhb-main-nav .primary-menu > li.current-product_cat-ancestor > a{
+body.dark-mode .nhhb-main-nav .primary-menu > li.current-product_cat-ancestor > a {
   background: rgba(255,255,255,.16);
 }
-body.dark-mode .nh-cart-badge{ box-shadow: 0 0 0 2px var(--ui-bg-dark); }
 
-/* Mobile compact header */
-@media (max-width:1023px){
-  body.dark-mode #masthead.mh-compact{
-    background: var(--dm-forest);
-    box-shadow: 0 4px 12px rgba(0,0,0,.35);
-  }
-  body.dark-mode #masthead.mh-compact .nhhb-main-nav .primary-menu > li > a:hover{
-    background: rgba(255,255,255,.10);
-  }
+body.dark-mode .nh-cart-badge {
+  box-shadow: 0 0 0 2px var(--ui-bg-dark);
 }
 
 /* =========================
