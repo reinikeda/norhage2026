@@ -89,7 +89,7 @@ $phone_href_clean = 'tel:+4917665106609';
       <span class="nhhb-utility-sep" aria-hidden="true"></span>
 
       <!-- FAQ -->
-      <a class="nh-utility__faq" href="<?php echo esc_url( home_url( '/faq/' ) ); ?>"><?php esc_html_e( 'FAQ', 'nh-theme' ); ?></a>
+      <a class="nh-utility__faq" href="<?php echo esc_url( home_url( '/frequently-asked-questions-faq/' ) ); ?>"><?php esc_html_e( 'FAQ', 'nh-theme' ); ?></a>
 
       <span class="nhhb-utility-sep" aria-hidden="true"></span>
 
