@@ -12,8 +12,8 @@ $cart_count  = ( function_exists( 'WC' ) && WC()->cart ) ? (int) WC()->cart->get
 $is_logged_in  = is_user_logged_in();
 $account_label = $is_logged_in ? esc_attr__( 'My Account', 'nh-theme' ) : esc_attr__( 'Sign in', 'nh-theme' );
 
-$phone_display    = '+49 176 65 10 6609';
-$phone_href_clean = 'tel:+4917665106609';
+$phone_display    = __( '+49 176 65 10 6609', 'nh-theme' );
+$phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
 ?>
 <div class="nhhb-header-main">
 
