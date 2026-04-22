@@ -26,17 +26,10 @@ $phone_href_clean = 'tel:+4917665106609';
     <div class="nhhb-utility-left">
       <?php
       wp_nav_menu( [
-        'theme_location' => 'utility',
+        'theme_location' => 'secondary',
         'container'      => false,
         'menu_class'     => 'nhhb-utility-menu',
-        'fallback_cb'    => function() {
-          echo '<ul class="nhhb-utility-menu">';
-          echo '<li><a href="' . esc_url( nh_get_services_url() ) . '">' . esc_html__( 'Services', 'nh-theme' ) . '</a></li>';
-          echo '<li><a href="' . esc_url( home_url( '/blog/' ) ) . '">' . esc_html__( 'Blog', 'nh-theme' ) . '</a></li>';
-          echo '<li><a href="' . esc_url( home_url( '/about-us/' ) ) . '">' . esc_html__( 'About Us', 'nh-theme' ) . '</a></li>';
-          echo '<li><a href="' . esc_url( home_url( '/contact-us/' ) ) . '">' . esc_html__( 'Contact Us', 'nh-theme' ) . '</a></li>';
-          echo '</ul>';
-        },
+        'fallback_cb'    => false,
       ] );
       ?>
     </div>
