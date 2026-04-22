@@ -426,6 +426,50 @@ body.dark-mode .variations_form .nh-attr-btn.is-disabled:hover {
 }
 
 /* ==========================================================================
+   Ask an expert — Dark mode
+   ========================================================================== */
+
+body.dark-mode .nh-help-accordion__trigger-wrap {
+  background: #0d2b1f;
+  border-color: rgba(0, 112, 74, .35);
+}
+
+body.dark-mode .nh-help-accordion__icon {
+  color: #4db d88;
+  opacity: .9;
+}
+
+body.dark-mode .nh-help-accordion__hint {
+  color: #b0c4bb;
+}
+
+body.dark-mode .nh-help-accordion__btn,
+body.dark-mode .nh-help-accordion__btn.button,
+body.dark-mode form.cart button.nh-help-accordion__btn {
+  border-color: #3a9e72 !important;
+  color: #3a9e72 !important;
+}
+
+body.dark-mode .nh-help-accordion__btn:hover,
+body.dark-mode .nh-help-accordion__btn.button:hover,
+body.dark-mode form.cart button.nh-help-accordion__btn:hover {
+  background: rgba(58, 158, 114, .12) !important;
+  background-color: rgba(58, 158, 114, .12) !important;
+  border-color: #3a9e72 !important;
+  color: #3a9e72 !important;
+}
+
+body.dark-mode .nh-help-accordion__btn:focus,
+body.dark-mode .nh-help-accordion__btn:active {
+  outline-color: rgba(58, 158, 114, .4);
+}
+
+body.dark-mode .nh-help-accordion__panel {
+  background: #111f18;
+  border-color: rgba(0, 112, 74, .2);
+}
+
+/* ==========================================================================
    Dark mode — WPForms inside accordion (force dark background everywhere)
    ========================================================================== */
 
