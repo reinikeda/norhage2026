@@ -766,58 +766,90 @@
   display: block;
   width: 100%;
   clear: both;
-  margin-top: 12px;
+  margin-top: 16px;
+}
+
+/* Trigger wrap — the soft card that makes the block stand out */
+.single-product .nh-help-accordion__trigger-wrap{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f4faf7;
+  border: 1px solid rgba(0, 112, 74, .18);
+  border-radius: 4px;
+  flex-wrap: wrap;
+}
+
+/* Chat icon */
+.single-product .nh-help-accordion__icon{
+  flex-shrink: 0;
+  color: var(--nh-green, #00704A);
+  opacity: .8;
 }
 
 /* Hint text */
 .single-product .nh-help-accordion__hint{
-  display: block;
-  margin: 0 0 8px;
-  font-size: 14px;
-  opacity: .75;
+  flex: 1 1 auto;
+  font-size: 13.5px;
+  color: #444;
+  margin: 0;
+  opacity: 1;
 }
 
-/* Ask an expert: NEVER look like a Woo/Astra button */
+/* Ask an expert button — subtle pill */
 .single-product .nh-help-accordion__btn,
 .single-product .nh-help-accordion__btn.button,
 .single-product form.cart button.nh-help-accordion__btn{
   background: transparent !important;
   background-color: transparent !important;
-  border: 0 !important;
+  border: 1.5px solid var(--nh-green, #00704A) !important;
   box-shadow: none !important;
-  padding: 0 !important;
+  padding: 5px 14px !important;
   margin: 0 !important;
+  border-radius: 4px !important;
   color: var(--nh-green, #00704A) !important;
   font-weight: 600 !important;
-  font-size: 15px !important;
-  line-height: 1.2 !important;
+  font-size: 13.5px !important;
+  line-height: 1.3 !important;
   text-transform: none !important;
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .18s, color .18s;
 }
 
-/* Kill theme hover/active styles */
+/* Chevron icon inside button */
+.single-product .nh-help-accordion__chevron{
+  transition: transform .25s ease;
+}
+.single-product .nh-help-accordion__btn[aria-expanded="true"] .nh-help-accordion__chevron{
+  transform: rotate(180deg);
+}
+
+/* Hover: very light green tint fill */
 .single-product .nh-help-accordion__btn:hover,
 .single-product .nh-help-accordion__btn.button:hover,
 .single-product form.cart button.nh-help-accordion__btn:hover{
-  background: transparent !important;
-  background-color: transparent !important;
-  border: 0 !important;
+  background: rgba(0, 112, 74, .07) !important;
+  background-color: rgba(0, 112, 74, .07) !important;
+  border: 1.5px solid var(--nh-green, #00704A) !important;
   box-shadow: none !important;
   color: var(--nh-green, #00704A) !important;
-  opacity: .75;
+  opacity: 1;
 }
 
-/* Focus/active: no green fill */
+/* Focus/active */
 .single-product .nh-help-accordion__btn:focus,
 .single-product .nh-help-accordion__btn:active{
   background: transparent !important;
   background-color: transparent !important;
-  border: 0 !important;
   box-shadow: none !important;
-  outline: none;
+  outline: 2px solid rgba(0, 112, 74, .35);
+  outline-offset: 2px;
 }
 
 /* Form panel */
@@ -826,7 +858,7 @@
   padding: 18px;
   background: #ffffff;
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 /* Hidden state */

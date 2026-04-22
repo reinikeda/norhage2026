@@ -801,21 +801,24 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 	?>
 	<div class="nh-help-accordion" data-nh-help>
-		<div class="nh-help-accordion__hint">
-			<?php echo esc_html__( 'Need help choosing or sizing? We can help.', 'nh-theme' ); ?>
+		<div class="nh-help-accordion__trigger-wrap">
+			<svg class="nh-help-accordion__icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+			<div class="nh-help-accordion__hint">
+				<?php echo esc_html__( 'Need help choosing or sizing? We can help.', 'nh-theme' ); ?>
+			</div>
+			<button
+				type="button"
+				class="button nh-help-accordion__btn"
+				aria-expanded="false"
+				aria-controls="nh-help-panel"
+				data-nh-help-toggle
+				data-nh-product="<?php echo esc_attr( $product_name ); ?>"
+				data-nh-url="<?php echo esc_url( $product_url ); ?>"
+			>
+				<?php echo esc_html__( 'Ask an expert', 'nh-theme' ); ?>
+				<svg class="nh-help-accordion__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+			</button>
 		</div>
-
-		<button
-			type="button"
-			class="button nh-help-accordion__btn"
-			aria-expanded="false"
-			aria-controls="nh-help-panel"
-			data-nh-help-toggle
-			data-nh-product="<?php echo esc_attr( $product_name ); ?>"
-			data-nh-url="<?php echo esc_url( $product_url ); ?>"
-		>
-			<?php echo esc_html__( 'Ask an expert', 'nh-theme' ); ?>
-		</button>
 
 		<div id="nh-help-panel" class="nh-help-accordion__panel" hidden>
 			<?php echo do_shortcode( '[wpforms id="' . (int) $form_id . '" title="false" description="false" ajax="true"]' ); ?>

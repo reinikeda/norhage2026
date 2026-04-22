@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-03-10 12:56:27+00:00\n"
-"PO-Revision-Date: 2026-04-15 10:10+0300\n"
+"PO-Revision-Date: 2026-04-22 11:42+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -139,8 +139,7 @@ msgstr "Takk! Du er nå abonnent."
 
 #: functions.php:861
 msgid "Need help choosing or sizing? We can help."
-msgstr ""
-"Trenger du hjelp med valg eller tilpasning av størrelse? Vi hjelper deg."
+msgstr "Trenger du hjelp med dette produktet?"
 
 #: functions.php:873
 msgid "Ask an expert"
