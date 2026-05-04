@@ -975,13 +975,21 @@ function norhage_strip_author_links( $html ) {
 add_filter( 'astra_the_title_enabled', '__return_false' );
 
 /**
- * Translate hardcoded WooCommerce Blocks strings via PHP output buffer.
- * Only runs on norhage.lt
+ * Translate WooCommerce Blocks strings via output buffer
+ * Only on norhage.lt and staging.norhage.lt
  */
 add_action( 'template_redirect', function() {
-    if ( strpos( $_SERVER['HTTP_HOST'] ?? '', 'norhage.lt' ) === false ) return;
+    $host = $_SERVER['HTTP_HOST'] ?? '';
 
-    ob_start( function( $buffer ) {
+    if (
+        strpos($host, 'norhage.lt') === false &&
+        strpos($host, 'staging.norhage.lt') === false
+    ) {
+        return;
+    }
+
+    ob_start(function ($buffer) {
+
         $search = [
             '>Contact information<',
             '>Delivery<',
@@ -992,6 +1000,7 @@ add_action( 'template_redirect', function() {
             '>Add a note to your order<',
             '>Ship<',
         ];
+
         $replace = [
             '>Kontaktinė informacija<',
             '>Pristatymas<',
@@ -1002,6 +1011,7 @@ add_action( 'template_redirect', function() {
             '>Pridėti pastabą prie užsakymo<',
             '>Pristatymas<',
         ];
-        return str_replace( $search, $replace, $buffer );
+
+        return str_replace($search, $replace, $buffer);
     });
 });
