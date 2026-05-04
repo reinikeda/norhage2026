@@ -974,44 +974,68 @@ function norhage_strip_author_links( $html ) {
 // Remove Astra's page/archive title when our hero is active
 add_filter( 'astra_the_title_enabled', '__return_false' );
 
-/**
- * Translate WooCommerce Blocks strings via output buffer
- * Only on norhage.lt and staging.norhage.lt
- */
 add_action( 'template_redirect', function() {
     $host = $_SERVER['HTTP_HOST'] ?? '';
+    if ( ! preg_match( '/(^|\.)norhage\.lt$/', $host ) ) return;
 
-    if (
-        strpos($host, 'norhage.lt') === false &&
-        strpos($host, 'staging.norhage.lt') === false
-    ) {
-        return;
-    }
-
-    ob_start(function ($buffer) {
-
+    ob_start( function( $buffer ) {
         $search = [
-            '>Contact information<',
-            '>Delivery<',
-            '>Pickup locations<',
-            '>Payment options<',
-            '>Place Order<',
-            '>Return to Cart<',
-            '>Add a note to your order<',
-            '>Ship<',
+            // Section headings
+            '>Contact information</h2>',
+            '>Contact information</legend>',
+            '>Delivery</h2>',
+            '>Delivery</legend>',
+            '>Pickup locations</h2>',
+            '>Pickup locations</legend>',
+            '>Payment options</h2>',
+            '>Payment options</legend>',
+
+            // Ship button
+            '>Ship</span>',
+
+            // Order note checkbox
+            '>Add a note to your order</span>',
+
+            // Terms text
+            '>By proceeding with your purchase you agree to our ',
+            '>Terms and Conditions<',
+            '>Privacy Policy<',
+
+            // Place Order button
+            '>Place Order</div>',
+
+            // Return to Cart (text comes after SVG, no > before it)
+            '</svg>Return to Cart</a>',
+
+            // Apartment toggle
+            '>+ Add butas, blokas ir pan.</span>',
         ];
 
         $replace = [
-            '>Kontaktinė informacija<',
-            '>Pristatymas<',
-            '>Atsiėmimo vietos<',
-            '>Mokėjimo būdai<',
-            '>Pateikti užsakymą<',
-            '>Grįžti į krepšelį<',
-            '>Pridėti pastabą prie užsakymo<',
-            '>Pristatymas<',
+            '>Kontaktinė informacija</h2>',
+            '>Kontaktinė informacija</legend>',
+            '>Pristatymas</h2>',
+            '>Pristatymas</legend>',
+            '>Atsiėmimo vietos</h2>',
+            '>Atsiėmimo vietos</legend>',
+            '>Mokėjimo būdai</h2>',
+            '>Mokėjimo būdai</legend>',
+
+            '>Pristatymas kurjeriu</span>',
+
+            '>Pridėti pastabą prie užsakymo</span>',
+
+            '>Tęsdami pirkimą sutinkate su mūsų ',
+            '>Pirkimo-pardavimo taisyklėmis<',
+            '>Privatumo politika<',
+
+            '>Pateikti užsakymą</div>',
+
+            '</svg>Grįžti į krepšelį</a>',
+
+            '>+ Pridėti butą, bloką ir pan.</span>',
         ];
 
-        return str_replace($search, $replace, $buffer);
+        return str_replace( $search, $replace, $buffer );
     });
 });
