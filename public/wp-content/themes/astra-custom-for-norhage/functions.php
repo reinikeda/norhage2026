@@ -973,3 +973,19 @@ function norhage_strip_author_links( $html ) {
 
 // Remove Astra's page/archive title when our hero is active
 add_filter( 'astra_the_title_enabled', '__return_false' );
+
+/**
+ * Force WooCommerce Blocks to use .mo translations for JS strings.
+ * Only runs on norhage.lt domain.
+ */
+add_filter( 'pre_load_script_translations', function ( $translations, $file, $handle, $domain ) {
+    if ( ! isset( $_SERVER['HTTP_HOST'] ) || strpos( $_SERVER['HTTP_HOST'], 'norhage.lt' ) === false ) {
+        return $translations;
+    }
+    
+    if ( 'woo-gutenberg-products-block' === $domain ) {
+        return $translations;
+    }
+    
+    return $translations;
+}, 10, 4 );
