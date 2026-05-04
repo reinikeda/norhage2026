@@ -975,17 +975,33 @@ function norhage_strip_author_links( $html ) {
 add_filter( 'astra_the_title_enabled', '__return_false' );
 
 /**
- * Force WooCommerce Blocks to use .mo translations for JS strings.
- * Only runs on norhage.lt domain.
+ * Translate hardcoded WooCommerce Blocks strings via PHP output buffer.
+ * Only runs on norhage.lt
  */
-add_filter( 'pre_load_script_translations', function ( $translations, $file, $handle, $domain ) {
-    if ( ! isset( $_SERVER['HTTP_HOST'] ) || strpos( $_SERVER['HTTP_HOST'], 'norhage.lt' ) === false ) {
-        return $translations;
-    }
-    
-    if ( 'woo-gutenberg-products-block' === $domain ) {
-        return $translations;
-    }
-    
-    return $translations;
-}, 10, 4 );
+add_action( 'template_redirect', function() {
+    if ( strpos( $_SERVER['HTTP_HOST'] ?? '', 'norhage.lt' ) === false ) return;
+
+    ob_start( function( $buffer ) {
+        $search = [
+            '>Contact information<',
+            '>Delivery<',
+            '>Pickup locations<',
+            '>Payment options<',
+            '>Place Order<',
+            '>Return to Cart<',
+            '>Add a note to your order<',
+            '>Ship<',
+        ];
+        $replace = [
+            '>Kontaktinė informacija<',
+            '>Pristatymas<',
+            '>Atsiėmimo vietos<',
+            '>Mokėjimo būdai<',
+            '>Pateikti užsakymą<',
+            '>Grįžti į krepšelį<',
+            '>Pridėti pastabą prie užsakymo<',
+            '>Pristatymas<',
+        ];
+        return str_replace( $search, $replace, $buffer );
+    });
+});
