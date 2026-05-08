@@ -973,3 +973,28 @@ function norhage_strip_author_links( $html ) {
 
 // Remove Astra's page/archive title when our hero is active
 add_filter( 'astra_the_title_enabled', '__return_false' );
+
+/**
+ * Sort WooCommerce products to show out-of-stock items at the end of the catalog.
+ */
+add_filter( 'posts_clauses', 'push_out_of_stock_to_end', 2000, 2 );
+
+function push_out_of_stock_to_end( $posts_clauses, $query ) {
+    // Only modify the main query on shop and archive pages
+    if ( ! is_admin() && $query->is_main_query() && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
+        global $wpdb;
+
+        // Join the postmeta table to check stock status
+        $posts_clauses['join'] .= " LEFT JOIN $wpdb->postmeta istockstatus ON ($wpdb->posts.ID = istockstatus.post_id AND istockstatus.meta_key = '_stock_status') ";
+
+        // Use a CASE statement to prioritize 'instock' over 'outofstock'
+        // 'instock' usually sorts before 'outofstock' alphabetically, 
+        // but a CASE statement is more reliable across different setups.
+        $posts_clauses['orderby'] = " CASE istockstatus.meta_value 
+            WHEN 'outofstock' THEN 1 
+            ELSE 0 
+        END ASC, " . $posts_clauses['orderby'];
+    }
+
+    return $posts_clauses;
+}
