@@ -3,22 +3,30 @@ name: Deploy Theme (Staging)
 on:
   push:
     branches: [staging]
-    # If any of these theme paths change the workflow triggers; prevents unrelated runs
     paths:
       - 'public/wp-content/themes/astra-custom-for-norhage/**'
+  workflow_dispatch:
 
 concurrency:
   group: deploy-theme-staging
   cancel-in-progress: true
 
 jobs:
-  detect-and-deploy:
+  deploy-theme:
     runs-on: ubuntu-latest
+    env:
+      # staging host (set in repo secrets)
+      SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+      # private key is used in a step (do not place it in job-level env to avoid accidental logging)
     strategy:
       max-parallel: 1
       matrix:
-        # reduce to one for initial testing, then add all
-        site: ['staging.norhage.lt','staging.norhage.fi','staging.norhage.de','staging.norhage.no','staging.norhage.se']
+        site:
+          - 'staging.norhage.lt'
+          - 'staging.norhage.fi'
+          - 'staging.norhage.de'
+          - 'staging.norhage.no'
+          - 'staging.norhage.se'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,48 +35,93 @@ jobs:
         id: setuser
         run: |
           case "${{ matrix.site }}" in
-            staging.norhage.lt) echo "SITE_USER=norhage-staging-lt" >> $GITHUB_ENV ;;
-            staging.norhage.fi) echo "SITE_USER=norhage-staging" >> $GITHUB_ENV ;;
-            staging.norhage.de) echo "SITE_USER=norhage-staging-de" >> $GITHUB_ENV ;;
-            staging.norhage.no) echo "SITE_USER=norhage-staging-no" >> $GITHUB_ENV ;;
-            staging.norhage.se) echo "SITE_USER=norhage-staging-se" >> $GITHUB_ENV ;;
-            *) echo "Unknown site: ${{ matrix.site }}" ; exit 1 ;;
+            staging.norhage.lt) SITE_USER="norhage-staging-lt" ;;
+            staging.norhage.fi) SITE_USER="norhage-staging" ;;
+            staging.norhage.de) SITE_USER="norhage-staging-de" ;;
+            staging.norhage.no) SITE_USER="norhage-staging-no" ;;
+            staging.norhage.se) SITE_USER="norhage-staging-se" ;;
+            *) echo "Unknown site: ${{ matrix.site }}"; exit 1 ;;
           esac
+          echo "SITE_USER=${SITE_USER}" >> $GITHUB_ENV
+          echo "Selected SITE_USER=${SITE_USER} for domain ${{ matrix.site }}"
 
-      - name: Write private key
+      - name: Write private key to file
         run: |
           mkdir -p ~/.ssh
+          # write the private key from secret to a file for ssh/scp
           echo "${{ secrets.SFTP_PRIVATE_KEY_STAGING }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          ls -la ~/.ssh/deploy_key
 
-      - name: (Optional) Add host key
-        if: ${{ secrets.SFTP_KNOWN_HOSTS_STAGING != '' }}
+      - name: (Optional) add known_hosts entry if provided
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SFTP_KNOWN_HOSTS_STAGING }}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          if [ -n "${{ secrets.SFTP_KNOWN_HOSTS_STAGING }}" ]; then
+            mkdir -p ~/.ssh
+            echo "${{ secrets.SFTP_KNOWN_HOSTS_STAGING }}" > ~/.ssh/known_hosts
+            chmod 644 ~/.ssh/known_hosts
+            echo "known_hosts written"
+            cat ~/.ssh/known_hosts
+          else
+            echo "SFTP_KNOWN_HOSTS_STAGING secret not set — skipping known_hosts"
+          fi
 
-      - name: Ensure remote theme directories exist
-        run: |
-          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }} "mkdir -p '${REMOTE_BASE}' && chmod u+rwX '${REMOTE_BASE}' || true"
-
-      - name: Upload theme files (assets, languages, inc, template-parts, woocommerce)
-        run: |
-          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
-          echo "Uploading languages..."
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/languages/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/languages || true
-          echo "Uploading assets..."
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/assets/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/assets || true
-          echo "Uploading inc..."
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/inc/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/inc || true
-          echo "Uploading template-parts..."
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/template-parts/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/template-parts || true
-          echo "Uploading woocommerce..."
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/woocommerce/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/woocommerce || true
-
-      - name: Upload root theme files (functions.php, style.css)
+      - name: Ensure remote theme base directory exists
         run: |
           REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/functions.php ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/functions.php || true
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/style.css ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/style.css || true
+          echo "Creating remote theme base: ${REMOTE_BASE}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "mkdir -p '${REMOTE_BASE}' && chmod u+rwX '${REMOTE_BASE}' || true"
+
+      - name: Upload theme directories and files
+        run: |
+          set -euo pipefail
+          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
+
+          upload_dir () {
+            local src="$1"
+            local dest="$2"
+            if [ -d "$src" ] && [ "$(ls -A "$src" 2>/dev/null || true)" ]; then
+              echo "Uploading contents of $src to ${dest}..."
+              scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "$src"/* "${SITE_USER}@${SFTP_HOST}:${dest}/"
+            else
+              echo "No files to upload in $src -> skipping"
+            fi
+          }
+
+          upload_file () {
+            local src="$1"
+            local dest="$2"
+            if [ -f "$src" ]; then
+              echo "Uploading file $src to ${dest}..."
+              scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "$src" "${SITE_USER}@${SFTP_HOST}:${dest}"
+            else
+              echo "File $src not present -> skipping"
+            fi
+          }
+
+          # languages
+          upload_dir "public/wp-content/themes/astra-custom-for-norhage/languages" "${REMOTE_BASE}/languages"
+
+          # assets
+          upload_dir "public/wp-content/themes/astra-custom-for-norhage/assets" "${REMOTE_BASE}/assets"
+
+          # inc
+          upload_dir "public/wp-content/themes/astra-custom-for-norhage/inc" "${REMOTE_BASE}/inc"
+
+          # template-parts
+          upload_dir "public/wp-content/themes/astra-custom-for-norhage/template-parts" "${REMOTE_BASE}/template-parts"
+
+          # woocommerce
+          upload_dir "public/wp-content/themes/astra-custom-for-norhage/woocommerce" "${REMOTE_BASE}/woocommerce"
+
+          # root files: functions.php, style.css
+          upload_file "public/wp-content/themes/astra-custom-for-norhage/functions.php" "${REMOTE_BASE}/functions.php"
+          upload_file "public/wp-content/themes/astra-custom-for-norhage/style.css" "${REMOTE_BASE}/style.css"
+
+      - name: Verify remote uploads
+        run: |
+          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
+          echo "Remote listing for ${REMOTE_BASE}:"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "ls -la '${REMOTE_BASE}' || echo 'remote base missing'"
+
+      - name: Done
+        run: echo "Theme deploy job finished for ${{ matrix.site }}"
