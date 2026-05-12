@@ -714,14 +714,14 @@ function nh_sender_subscribe() {
 
 }
 
-add_action( 'wp_head', function() {
+// add_action( 'wp_head', function() {
 
-    $domain = $_SERVER['HTTP_HOST'];
+//     $domain = $_SERVER['HTTP_HOST'];
 
-    if ( $domain === 'norhage.lt' ) {
-        // Lithuania
-        echo '<meta name="google-site-verification" content="W9xTKiW7L9q2vuDMH0jyjn1LrEdfxJgDAtwAligDDOc" />';
-    }
+//     if ( $domain === 'norhage.lt' ) {
+//         // Lithuania
+//         echo '<meta name="google-site-verification" content="W9xTKiW7L9q2vuDMH0jyjn1LrEdfxJgDAtwAligDDOc" />';
+//     }
 
     // Example for other countries (add when needed)
     /*
@@ -730,7 +730,7 @@ add_action( 'wp_head', function() {
     }
     */
 
-});
+// });
 
 // no index order received pages
 add_action( 'wp_head', function() {
