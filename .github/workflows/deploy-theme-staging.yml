@@ -1,382 +1,74 @@
-name: Deploy Theme Parts and Custom Plugins (Staging)
+name: Deploy Theme (Staging)
 
 on:
   push:
     branches: [staging]
+    # If any of these theme paths change the workflow triggers; prevents unrelated runs
     paths:
       - 'public/wp-content/themes/astra-custom-for-norhage/**'
-      - 'public/wp-content/plugins/nh-cutting-toggle/**'
-      - 'public/wp-content/plugins/nh-delivery-time/**'
-      - 'public/wp-content/plugins/nh-faq/**'
-      - 'public/wp-content/plugins/nh-feature-box/**'
-      - 'public/wp-content/plugins/nh-filters/**'
-      - 'public/wp-content/plugins/nh-home-builder/**'
-      - 'public/wp-content/plugins/nh-important-notes/**'
-      - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
-      - 'public/wp-content/plugins/nh-sale-slider/**'
-      - 'public/wp-content/plugins/nh-shipping-calculator/**'
-      - 'public/wp-content/plugins/product-labels/**'
-      - 'public/wp-content/plugins/running-ticker-line/**'
 
 concurrency:
-  group: deploy-staging
+  group: deploy-theme-staging
   cancel-in-progress: true
 
 jobs:
-  detect-changes:
+  detect-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      theme_languages: ${{ steps.filter.outputs.theme_languages }}
-      theme_assets: ${{ steps.filter.outputs.theme_assets }}
-      theme_inc: ${{ steps.filter.outputs.theme_inc }}
-      theme_template_parts: ${{ steps.filter.outputs.theme_template_parts }}
-      theme_woocommerce: ${{ steps.filter.outputs.theme_woocommerce }}
-      theme_functions: ${{ steps.filter.outputs.theme_functions }}
-      theme_style: ${{ steps.filter.outputs.theme_style }}
-      plugins_json: ${{ steps.setmatrix.outputs.plugins_json }}
-      plugins_changed: ${{ steps.setmatrix.outputs.plugins_changed }}
-
+    strategy:
+      max-parallel: 1
+      matrix:
+        # reduce to one for initial testing, then add all
+        site: ['staging.norhage.lt','staging.norhage.fi','staging.norhage.de','staging.norhage.no','staging.norhage.se']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 50
 
-      - name: Detect changed paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          base: ${{ github.event.before }}
-          ref: ${{ github.sha }}
-          list-files: shell
-          filters: |
-            # =========================
-            # THEME PARTS
-            # =========================
-            theme_languages:
-              - 'public/wp-content/themes/astra-custom-for-norhage/languages/**'
-
-            theme_assets:
-              - 'public/wp-content/themes/astra-custom-for-norhage/assets/**'
-
-            theme_inc:
-              - 'public/wp-content/themes/astra-custom-for-norhage/inc/**'
-
-            theme_template_parts:
-              - 'public/wp-content/themes/astra-custom-for-norhage/template-parts/**'
-
-            theme_woocommerce:
-              - 'public/wp-content/themes/astra-custom-for-norhage/woocommerce/**'
-
-            theme_functions:
-              - 'public/wp-content/themes/astra-custom-for-norhage/functions.php'
-
-            theme_style:
-              - 'public/wp-content/themes/astra-custom-for-norhage/style.css'
-
-            # =========================
-            # PLUGINS
-            # =========================
-            nh-cutting-toggle:
-              - 'public/wp-content/plugins/nh-cutting-toggle/**'
-
-            nh-delivery-time:
-              - 'public/wp-content/plugins/nh-delivery-time/**'
-
-            nh-faq:
-              - 'public/wp-content/plugins/nh-faq/**'
-
-            nh-feature-box:
-              - 'public/wp-content/plugins/nh-feature-box/**'
-
-            nh-filters:
-              - 'public/wp-content/plugins/nh-filters/**'
-
-            nh-home-builder:
-              - 'public/wp-content/plugins/nh-home-builder/**'
-
-            nh-important-notes:
-              - 'public/wp-content/plugins/nh-important-notes/**'
-
-            nh-inactivity-popup-lite:
-              - 'public/wp-content/plugins/nh-inactivity-popup-lite/**'
-
-            nh-sale-slider:
-              - 'public/wp-content/plugins/nh-sale-slider/**'
-
-            nh-shipping-calculator:
-              - 'public/wp-content/plugins/nh-shipping-calculator/**'
-
-            product-labels:
-              - 'public/wp-content/plugins/product-labels/**'
-
-            running-ticker-line:
-              - 'public/wp-content/plugins/running-ticker-line/**'
-
-      - name: Debug filter outputs
+      - name: Determine site user
+        id: setuser
         run: |
-          echo "theme_languages=${{ steps.filter.outputs.theme_languages }}"
-          echo "theme_assets=${{ steps.filter.outputs.theme_assets }}"
-          echo "theme_inc=${{ steps.filter.outputs.theme_inc }}"
-          echo "theme_template_parts=${{ steps.filter.outputs.theme_template_parts }}"
-          echo "theme_woocommerce=${{ steps.filter.outputs.theme_woocommerce }}"
-          echo "theme_functions=${{ steps.filter.outputs.theme_functions }}"
-          echo "theme_style=${{ steps.filter.outputs.theme_style }}"
-          echo "nh-cutting-toggle=${{ steps.filter.outputs['nh-cutting-toggle'] }}"
-          echo "nh-delivery-time=${{ steps.filter.outputs['nh-delivery-time'] }}"
-          echo "nh-faq=${{ steps.filter.outputs['nh-faq'] }}"
-          echo "nh-feature-box=${{ steps.filter.outputs['nh-feature-box'] }}"
-          echo "nh-filters=${{ steps.filter.outputs['nh-filters'] }}"
-          echo "nh-home-builder=${{ steps.filter.outputs['nh-home-builder'] }}"
-          echo "nh-important-notes=${{ steps.filter.outputs['nh-important-notes'] }}"
-          echo "nh-inactivity-popup-lite=${{ steps.filter.outputs['nh-inactivity-popup-lite'] }}"
-          echo "nh-sale-slider=${{ steps.filter.outputs['nh-sale-slider'] }}"
-          echo "nh-shipping-calculator=${{ steps.filter.outputs['nh-shipping-calculator'] }}"
-          echo "product-labels=${{ steps.filter.outputs['product-labels'] }}"
-          echo "running-ticker-line=${{ steps.filter.outputs['running-ticker-line'] }}"
+          case "${{ matrix.site }}" in
+            staging.norhage.lt) echo "SITE_USER=norhage-staging-lt" >> $GITHUB_ENV ;;
+            staging.norhage.fi) echo "SITE_USER=norhage-staging" >> $GITHUB_ENV ;;
+            staging.norhage.de) echo "SITE_USER=norhage-staging-de" >> $GITHUB_ENV ;;
+            staging.norhage.no) echo "SITE_USER=norhage-staging-no" >> $GITHUB_ENV ;;
+            staging.norhage.se) echo "SITE_USER=norhage-staging-se" >> $GITHUB_ENV ;;
+            *) echo "Unknown site: ${{ matrix.site }}" ; exit 1 ;;
+          esac
 
-      - name: Build plugins matrix JSON (only changed)
-        id: setmatrix
-        shell: bash
+      - name: Write private key
         run: |
-          python3 - <<'PY'
-          import json, os
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SFTP_PRIVATE_KEY_STAGING }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
-          plugin_keys = [
-            "nh-cutting-toggle",
-            "nh-delivery-time",
-            "nh-faq",
-            "nh-feature-box",
-            "nh-filters",
-            "nh-home-builder",
-            "nh-important-notes",
-            "nh-inactivity-popup-lite",
-            "nh-sale-slider",
-            "nh-shipping-calculator",
-            "product-labels",
-            "running-ticker-line",
-          ]
+      - name: (Optional) Add host key
+        if: ${{ secrets.SFTP_KNOWN_HOSTS_STAGING != '' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SFTP_KNOWN_HOSTS_STAGING }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-          changed = []
-          for k in plugin_keys:
-            v = os.environ.get(k, "")
-            print(f"{k}={v}")
-            if v.lower() == "true":
-              changed.append(k)
+      - name: Ensure remote theme directories exist
+        run: |
+          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }} "mkdir -p '${REMOTE_BASE}' && chmod u+rwX '${REMOTE_BASE}' || true"
 
-          plugins_changed = "true" if changed else "false"
-          plugins_json = json.dumps(changed)
+      - name: Upload theme files (assets, languages, inc, template-parts, woocommerce)
+        run: |
+          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
+          echo "Uploading languages..."
+          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/languages/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/languages || true
+          echo "Uploading assets..."
+          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/assets/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/assets || true
+          echo "Uploading inc..."
+          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/inc/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/inc || true
+          echo "Uploading template-parts..."
+          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/template-parts/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/template-parts || true
+          echo "Uploading woocommerce..."
+          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/woocommerce/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/woocommerce || true
 
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-            f.write(f"plugins_changed={plugins_changed}\n")
-            f.write(f"plugins_json={plugins_json}\n")
-
-          print("plugins_changed:", plugins_changed)
-          print("plugins_json:", plugins_json)
-          PY
-        env:
-          nh-cutting-toggle: ${{ steps.filter.outputs['nh-cutting-toggle'] }}
-          nh-delivery-time: ${{ steps.filter.outputs['nh-delivery-time'] }}
-          nh-faq: ${{ steps.filter.outputs['nh-faq'] }}
-          nh-feature-box: ${{ steps.filter.outputs['nh-feature-box'] }}
-          nh-filters: ${{ steps.filter.outputs['nh-filters'] }}
-          nh-home-builder: ${{ steps.filter.outputs['nh-home-builder'] }}
-          nh-important-notes: ${{ steps.filter.outputs['nh-important-notes'] }}
-          nh-inactivity-popup-lite: ${{ steps.filter.outputs['nh-inactivity-popup-lite'] }}
-          nh-sale-slider: ${{ steps.filter.outputs['nh-sale-slider'] }}
-          nh-shipping-calculator: ${{ steps.filter.outputs['nh-shipping-calculator'] }}
-          product-labels: ${{ steps.filter.outputs['product-labels'] }}
-          running-ticker-line: ${{ steps.filter.outputs['running-ticker-line'] }}
-
-  # =========================
-  # THEME: languages/
-  # =========================
-  deploy-theme-languages:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_languages == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme languages to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/languages/**"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage/languages"
-
-  # =========================
-  # THEME: assets/
-  # =========================
-  deploy-theme-assets:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_assets == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme assets to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/assets/**"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage/assets"
-
-  # =========================
-  # THEME: inc/
-  # =========================
-  deploy-theme-inc:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_inc == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme inc to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/inc/**"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage/inc"
-
-  # =========================
-  # THEME: template-parts/
-  # =========================
-  deploy-theme-template-parts:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_template_parts == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme template-parts to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/template-parts/**"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage/template-parts"
-
-  # =========================
-  # THEME: woocommerce/
-  # =========================
-  deploy-theme-woocommerce:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_woocommerce == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme woocommerce to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/woocommerce/**"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage/woocommerce"
-
-  # =========================
-  # THEME: functions.php
-  # =========================
-  deploy-theme-functions:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_functions == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme functions.php to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/functions.php"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
-
-  # =========================
-  # THEME: style.css
-  # =========================
-  deploy-theme-style:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.theme_style == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy theme style.css to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/themes/astra-custom-for-norhage/style.css"
-          remote_path: "${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
-
-  # =========================
-  # PLUGINS (ONLY CHANGED) to ALL STAGING SITES
-  # =========================
-  deploy-plugins-staging:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.plugins_changed == 'true'
-    strategy:
-      max-parallel: 1
-      matrix:
-        site: [/staging, /staging-fi, /staging-de, /staging-se, /staging-no]
-        plugin: ${{ fromJSON(needs.detect-changes.outputs.plugins_json) }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy plugin ${{ matrix.plugin }} to ${{ matrix.site }} via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          port: 22
-          sftp_only: true
-          local_path: "public/wp-content/plugins/${{ matrix.plugin }}/**"
-          remote_path: "${{ matrix.site }}/wp-content/plugins/${{ matrix.plugin }}"
+      - name: Upload root theme files (functions.php, style.css)
+        run: |
+          REMOTE_BASE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/themes/astra-custom-for-norhage"
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/functions.php ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/functions.php || true
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/themes/astra-custom-for-norhage/style.css ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE_BASE}/style.css || true
