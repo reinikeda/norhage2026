@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  # opt into Node.js 24 for JS actions (silences the Node 20 warning)
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
@@ -28,9 +27,8 @@ jobs:
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
-      # EDIT: repo path to your theme (set already to your theme)
-      THEME_DIR: "wp-content/themes/astra-custom-for-norhage"
-      RSYNC_DELETE: "false" # set "true" only when you want to mirror and remove remote files
+      THEME_DIR: "public/wp-content/themes/astra-custom-for-norhage"
+      RSYNC_DELETE: "false"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,7 +51,9 @@ jobs:
         env:
           matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${THEME_DIR}"
+          # strip leading "public/" for remote path if present
+          REMOTE_SUBPATH="${THEME_DIR#public/}"
+          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}"
           echo "Ensuring remote dir: ${REMOTE_DIR}"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
 
@@ -65,15 +65,19 @@ jobs:
           if [ "${RSYNC_DELETE}" = "true" ]; then
             RSYNC_OPTS="${RSYNC_OPTS} --delete"
           fi
-          SRC="${THEME_DIR%/}/"
-          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${THEME_DIR%/}/"
-          echo "Running rsync..."
+
+          SRC="${THEME_DIR%/}/"                     # local repo path (includes public/)
+          REMOTE_SUBPATH="${THEME_DIR#public/}"     # strip public/ for server
+          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
+
+          echo "Running rsync from '${SRC}' to '${DEST}'"
           eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
 
       - name: Verify deployed files (sample)
         env:
           matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${THEME_DIR%/}/"
+          REMOTE_SUBPATH="${THEME_DIR#public/}"
+          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
           echo "Listing remote path: ${REMOTE_PATH}"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 40" || true

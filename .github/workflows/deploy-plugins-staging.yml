@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  # opt into Node.js 24 for JS actions to avoid deprecation warning
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
@@ -28,9 +27,7 @@ jobs:
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
-      # By default: deploy everything under repo/wp-content/plugins
-      PLUGIN_DIR: "wp-content/plugins"
-      # Safe default: do not delete remote files. Set to "true" only when you want to mirror exactly.
+      PLUGIN_DIR: "public/wp-content/plugins"
       RSYNC_DELETE: "false"
     steps:
       - name: Checkout repository
@@ -54,7 +51,8 @@ jobs:
         env:
           matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${PLUGIN_DIR}"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}"
           echo "Ensuring remote dir: ${REMOTE_DIR}"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
 
@@ -63,17 +61,15 @@ jobs:
           matrix_user: ${{ matrix.user }}
           SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
         run: |
-          # rsync options:
-          # -a archive, -z compress, --exclude .git, set file perms for directories and files
           RSYNC_OPTS="-az -e \"ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no\" --exclude='.git' --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r"
           if [ "${RSYNC_DELETE}" = "true" ]; then
             RSYNC_OPTS="${RSYNC_OPTS} --delete"
           fi
 
-          SRC="${PLUGIN_DIR%/}/"   # trailing slash to copy contents of the folder
-          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${PLUGIN_DIR%/}/"
+          SRC="${PLUGIN_DIR%/}/"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
           echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
-          # use eval so the -e ssh string is interpreted properly
           eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
 
       - name: Verify deployed plugin files (sample)
@@ -81,6 +77,7 @@ jobs:
           matrix_user: ${{ matrix.user }}
           SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
         run: |
-          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${PLUGIN_DIR%/}/"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
           echo "Listing remote path: ${REMOTE_PATH}"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
