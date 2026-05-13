@@ -1,19 +1,34 @@
-name: Test Hetzner Connection
+name: Test Hetzner Connection (matrix)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - staging
-  workflow_dispatch:
+
+env:
+  # Opt into Node.js 24 for JS actions to silence the deprecation warning
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  test-connection:
+  matrix-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - domain: staging.norhage.lt
+            user: norhage-staging-lt
+          - domain: staging.norhage.de
+            user: norhage-staging-de
+          - domain: staging.norhage.no
+            user: norhage-staging-no
+          - domain: staging.norhage.se
+            user: norhage-staging-se
+          - domain: staging.norhage.fi
+            user: norhage-staging
     env:
-      # Change SITE_USER to the exact user you added the public key to (or to "root" if you installed the key into /root/.ssh/authorized_keys)
-      SITE_USER: norhage-staging-lt
-      SITE_DOMAIN: staging.norhage.lt
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+      SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,29 +36,38 @@ jobs:
       - name: Show secret presence (masked)
         run: |
           echo "SFTP_HOST set?   : ${SFTP_HOST:+yes}"
-          echo "PRIVATE_KEY set? : ${SFTP_PRIVATE_KEY_STAGING:+yes}"
-        env:
-          SFTP_PRIVATE_KEY_STAGING: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
+          echo "PRIVATE_KEY set? : ${SFTP_PRIVATE_KEY:+yes}"
 
       - name: Write private key to file
         run: |
           mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.SFTP_PRIVATE_KEY_STAGING }}" > ~/.ssh/deploy_key
+          printf "%s\n" "${SFTP_PRIVATE_KEY}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ls -la ~/.ssh/deploy_key
 
-      - name: SSH verbose test (shows auth/connection handshake)
+      - name: Prepare test file
         run: |
-          set -x
-          ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} \
-            "echo 'CONNECTED:'; whoami; id; pwd; ls -la ~ || true"
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+          echo "Hetzner test for ${GITHUB_RUN_ID} ${{ matrix.domain }} - $(date)" > hetzner-${{ matrix.domain }}.txt
+          ls -l hetzner-${{ matrix.domain }}.txt
 
-      - name: Upload a small test file and verify
+      - name: Ensure remote dir exists
         run: |
-          echo "GitHub Actions Hetzner test - $GITHUB_RUN_ID - $(date)" > hetzner-test.txt
-          scp -vvv -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no hetzner-test.txt ${SITE_USER}@${SFTP_HOST}:/tmp/hetzner-test.txt
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${SITE_USER}@${SFTP_HOST} "ls -la /tmp/hetzner-test.txt || echo 'file missing'"
+          REMOTE_DIR="/home/${{ matrix.user }}/htdocs/${{ matrix.domain }}/wp-content"
+          echo "Ensuring remote dir: ${REMOTE_DIR}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
         env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+          matrix_user: ${{ matrix.user }}
+
+      - name: Upload test file
+        run: |
+          REMOTE_DIR="/home/${{ matrix.user }}/htdocs/${{ matrix.domain }}/wp-content"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key hetzner-${{ matrix.domain }}.txt ${matrix_user}@${SFTP_HOST}:"${REMOTE_DIR}/hetzner-${{ matrix.domain }}.txt"
+        env:
+          matrix_user: ${{ matrix.user }}
+
+      - name: Verify remote file exists
+        run: |
+          REMOTE_PATH="/home/${{ matrix.user }}/htdocs/${{ matrix.domain }}/wp-content/hetzner-${{ matrix.domain }}.txt"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' || echo 'file missing'"
+        env:
+          matrix_user: ${{ matrix.user }}
