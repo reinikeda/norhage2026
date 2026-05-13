@@ -1,0 +1,56 @@
+name: Deploy Plugins to Staging (LT only)
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  deploy-plugins:
+    runs-on: ubuntu-latest
+    env:
+      SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+      SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
+      SITE_USER: norhage-staging-lt
+      SITE_DOMAIN: staging.norhage.lt
+      PLUGIN_DIR: "wp-content/plugins"
+      RSYNC_DELETE: "false"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Write private key to file
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s\n" "${{ env.SFTP_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ls -la ~/.ssh/deploy_key
+
+      - name: Show config
+        run: |
+          echo "Plugin path in repo: ${PLUGIN_DIR}"
+          echo "Target: ${SITE_USER}@${SFTP_HOST}:${SITE_DOMAIN}"
+          echo "RSYNC_DELETE=${RSYNC_DELETE}"
+
+      - name: Ensure remote plugin directory exists
+        run: |
+          REMOTE_DIR="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR}"
+          echo "Ensuring remote dir: ${REMOTE_DIR}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+
+      - name: Rsync plugins to remote
+        run: |
+          RSYNC_OPTS="-az -e \"ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no\" --exclude='.git' --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r"
+          if [ "${RSYNC_DELETE}" = "true" ]; then RSYNC_OPTS="${RSYNC_OPTS} --delete"; fi
+          SRC="${PLUGIN_DIR%/}/"
+          DEST="${SITE_USER}@${SFTP_HOST}:/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
+          echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
+          eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
+
+      - name: Verify deployed plugin files (sample)
+        run: |
+          REMOTE_PATH="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
