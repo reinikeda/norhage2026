@@ -1,4 +1,4 @@
-name: Deploy Plugins to Staging (LT only)
+name: Deploy Plugins to Staging (matrix)
 
 on:
   push:
@@ -11,12 +11,23 @@ env:
 jobs:
   deploy-plugins:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - domain: staging.norhage.lt
+            user: norhage-staging-lt
+          - domain: staging.norhage.de
+            user: norhage-staging-de
+          - domain: staging.norhage.no
+            user: norhage-staging-no
+          - domain: staging.norhage.se
+            user: norhage-staging-se
+          - domain: staging.norhage.fi
+            user: norhage-staging
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
-      SITE_USER: norhage-staging-lt
-      SITE_DOMAIN: staging.norhage.lt
-      PLUGIN_DIR: "wp-content/plugins"
+      PLUGIN_DIR: "public/wp-content/plugins"
       RSYNC_DELETE: "false"
     steps:
       - name: Checkout repository
@@ -32,25 +43,41 @@ jobs:
       - name: Show config
         run: |
           echo "Plugin path in repo: ${PLUGIN_DIR}"
-          echo "Target: ${SITE_USER}@${SFTP_HOST}:${SITE_DOMAIN}"
+          echo "Target host: ${SFTP_HOST}"
+          echo "Matrix domain: ${{ matrix.domain }}, user: ${{ matrix.user }}"
           echo "RSYNC_DELETE=${RSYNC_DELETE}"
 
       - name: Ensure remote plugin directory exists
+        env:
+          matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_DIR="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR}"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}"
           echo "Ensuring remote dir: ${REMOTE_DIR}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
 
       - name: Rsync plugins to remote
+        env:
+          matrix_user: ${{ matrix.user }}
+          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
         run: |
           RSYNC_OPTS="-az -e \"ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no\" --exclude='.git' --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r"
-          if [ "${RSYNC_DELETE}" = "true" ]; then RSYNC_OPTS="${RSYNC_OPTS} --delete"; fi
+          if [ "${RSYNC_DELETE}" = "true" ]; then
+            RSYNC_OPTS="${RSYNC_OPTS} --delete"
+          fi
+
           SRC="${PLUGIN_DIR%/}/"
-          DEST="${SITE_USER}@${SFTP_HOST}:/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
           echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
           eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
 
       - name: Verify deployed plugin files (sample)
+        env:
+          matrix_user: ${{ matrix.user }}
+          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
         run: |
-          REMOTE_PATH="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
+          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
+          echo "Listing remote path: ${REMOTE_PATH}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true

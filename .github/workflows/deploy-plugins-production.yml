@@ -1,4 +1,4 @@
-name: Deploy Theme to Production (matrix)
+name: Deploy Plugins to Production (matrix)
 
 on:
   push:
@@ -9,7 +9,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  deploy-theme:
+  deploy-plugins:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,13 +28,13 @@ jobs:
       SFTP_HOST: ${{ secrets.SFTP_HOST_PROD }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_PROD }}
       SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS_PROD }}
-      THEME_DIR: "public/wp-content/themes/astra-custom-for-norhage"
+      PLUGIN_DIR: "public/wp-content/plugins"
       RSYNC_DELETE: "false"
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Write private key
+      - name: Write private key to file
         run: |
           mkdir -p ~/.ssh
           printf "%s\n" "${{ env.SFTP_PRIVATE_KEY }}" > ~/.ssh/deploy_key
@@ -54,24 +54,24 @@ jobs:
             echo "SFTP_KNOWN_HOSTS not set; using StrictHostKeyChecking=no"
           fi
 
-      - name: Show what will run
+      - name: Show config
         run: |
-          echo "Deploying theme from: ${THEME_DIR}"
+          echo "Plugin path in repo: ${PLUGIN_DIR}"
           echo "Target host: ${SFTP_HOST}"
           echo "Matrix domain: ${{ matrix.domain }}, user: ${{ matrix.user }}"
           echo "RSYNC_DELETE=${RSYNC_DELETE}"
           echo "SSH options: $SSH_CMD_OPTS"
 
-      - name: Ensure remote directory exists
+      - name: Ensure remote plugin directory exists
         env:
           matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_SUBPATH="${THEME_DIR#public/}"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
           REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}"
           echo "Ensuring remote dir: ${REMOTE_DIR}"
           ssh $SSH_CMD_OPTS -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
 
-      - name: Rsync theme to remote
+      - name: Rsync plugins to remote
         env:
           matrix_user: ${{ matrix.user }}
         run: |
@@ -81,18 +81,17 @@ jobs:
             RSYNC_OPTS="${RSYNC_OPTS} --delete"
           fi
 
-          SRC="${THEME_DIR%/}/"
-          REMOTE_SUBPATH="${THEME_DIR#public/}"
+          SRC="${PLUGIN_DIR%/}/"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
           DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
-
-          echo "Running rsync from '${SRC}' to '${DEST}'"
+          echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
           eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
 
-      - name: Verify deployed files (sample)
+      - name: Verify deployed plugin files (sample)
         env:
           matrix_user: ${{ matrix.user }}
         run: |
-          REMOTE_SUBPATH="${THEME_DIR#public/}"
+          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
           REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
           echo "Listing remote path: ${REMOTE_PATH}"
-          ssh $SSH_CMD_OPTS -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 40" || true
+          ssh $SSH_CMD_OPTS -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
