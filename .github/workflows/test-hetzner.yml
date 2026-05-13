@@ -1,52 +1,49 @@
 name: Test Hetzner Connection
 
 on:
+  push:
+    branches:
+      - staging
   workflow_dispatch:
 
 jobs:
   test-connection:
     runs-on: ubuntu-latest
     env:
-      SITE_DOMAIN: staging.norhage.lt    # change if needed
-      SITE_USER: norhage-staging-lt      # change to GitHub-Actions-Staging if you will use that user
+      # Change SITE_USER to the exact user you added the public key to (or to "root" if you installed the key into /root/.ssh/authorized_keys)
+      SITE_USER: norhage-staging-lt
+      SITE_DOMAIN: staging.norhage.lt
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create test file
+      - name: Show secret presence (masked)
         run: |
-          echo "Hetzner Test from GitHub Actions - run $GITHUB_RUN_ID - $(date)" > hetzner-test.txt
-          ls -l hetzner-test.txt
+          echo "SFTP_HOST set?   : ${SFTP_HOST:+yes}"
+          echo "PRIVATE_KEY set? : ${SFTP_PRIVATE_KEY_STAGING:+yes}"
+        env:
+          SFTP_PRIVATE_KEY_STAGING: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
 
       - name: Write private key to file
         run: |
           mkdir -p ~/.ssh
-          # Use printf so newlines are preserved
           printf "%s\n" "${{ secrets.SFTP_PRIVATE_KEY_STAGING }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ls -la ~/.ssh/deploy_key
 
-      - name: Ensure remote directory exists
+      - name: SSH verbose test (shows auth/connection handshake)
         run: |
-          REMOTE_DIR="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/wp-content"
-          echo "Ensuring remote dir: ${REMOTE_DIR}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+          set -x
+          ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} \
+            "echo 'CONNECTED:'; whoami; id; pwd; ls -la ~ || true"
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
 
-      - name: Upload test file
+      - name: Upload a small test file and verify
         run: |
-          REMOTE_DIR="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/wp-content"
-          echo "Uploading hetzner-test.txt to ${REMOTE_DIR}/hetzner-test.txt"
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no hetzner-test.txt ${SITE_USER}@${SFTP_HOST}:"${REMOTE_DIR}/hetzner-test.txt"
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
-
-      - name: Verify remote file exists
-        run: |
-          REMOTE_PATH="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/wp-content/hetzner-test.txt"
-          echo "Checking remote path: ${REMOTE_PATH}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' || echo 'file missing'"
+          echo "GitHub Actions Hetzner test - $GITHUB_RUN_ID - $(date)" > hetzner-test.txt
+          scp -vvv -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no hetzner-test.txt ${SITE_USER}@${SFTP_HOST}:/tmp/hetzner-test.txt
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${SITE_USER}@${SFTP_HOST} "ls -la /tmp/hetzner-test.txt || echo 'file missing'"
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
