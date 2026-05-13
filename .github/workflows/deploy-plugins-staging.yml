@@ -1,114 +1,56 @@
-name: Deploy Plugins (Staging)
+name: Deploy Plugins to Staging (LT only)
 
 on:
   push:
     branches: [staging]
-    paths:
-      - 'public/wp-content/plugins/**'
+  workflow_dispatch:
 
-concurrency:
-  group: deploy-plugins-staging
-  cancel-in-progress: true
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  detect-changed-plugins:
+  deploy-plugins:
     runs-on: ubuntu-latest
-    outputs:
-      plugins_json: ${{ steps.setmatrix.outputs.plugins_json }}
-      plugins_changed: ${{ steps.setmatrix.outputs.plugins_changed }}
+    env:
+      SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
+      SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
+      SITE_USER: norhage-staging-lt
+      SITE_DOMAIN: staging.norhage.lt
+      PLUGIN_DIR: "wp-content/plugins"
+      RSYNC_DELETE: "false"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Detect changed plugin folders
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          base: ${{ github.event.before }}
-          ref: ${{ github.sha }}
-          list-files: true
-          filters: |
-            nh-cutting-toggle: ['public/wp-content/plugins/nh-cutting-toggle/**']
-            nh-delivery-time: ['public/wp-content/plugins/nh-delivery-time/**']
-            nh-faq: ['public/wp-content/plugins/nh-faq/**']
-            nh-feature-box: ['public/wp-content/plugins/nh-feature-box/**']
-            nh-filters: ['public/wp-content/plugins/nh-filters/**']
-            nh-home-builder: ['public/wp-content/plugins/nh-home-builder/**']
-            nh-important-notes: ['public/wp-content/plugins/nh-important-notes/**']
-            nh-inactivity-popup-lite: ['public/wp-content/plugins/nh-inactivity-popup-lite/**']
-            nh-sale-slider: ['public/wp-content/plugins/nh-sale-slider/**']
-            nh-shipping-calculator: ['public/wp-content/plugins/nh-shipping-calculator/**']
-            product-labels: ['public/wp-content/plugins/product-labels/**']
-            running-ticker-line: ['public/wp-content/plugins/running-ticker-line/**']
-
-      - name: Build plugins matrix JSON
-        id: setmatrix
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import os, json
-          keys = [
-            "nh-cutting-toggle","nh-delivery-time","nh-faq","nh-feature-box",
-            "nh-filters","nh-home-builder","nh-important-notes",
-            "nh-inactivity-popup-lite","nh-sale-slider","nh-shipping-calculator",
-            "product-labels","running-ticker-line"
-          ]
-          changed=[]
-          for k in keys:
-            if os.environ.get(k,"").lower()=="true":
-              changed.append(k)
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
-            f.write(f"plugins_changed={'true' if changed else 'false'}\n")
-            f.write(f"plugins_json={json.dumps(changed)}\n")
-          PY
-        env:
-          nh-cutting-toggle: ${{ steps.filter.outputs['nh-cutting-toggle'] }}
-          nh-delivery-time: ${{ steps.filter.outputs['nh-delivery-time'] }}
-          nh-faq: ${{ steps.filter.outputs['nh-faq'] }}
-          nh-feature-box: ${{ steps.filter.outputs['nh-feature-box'] }}
-          nh-filters: ${{ steps.filter.outputs['nh-filters'] }}
-          nh-home-builder: ${{ steps.filter.outputs['nh-home-builder'] }}
-          nh-important-notes: ${{ steps.filter.outputs['nh-important-notes'] }}
-          nh-inactivity-popup-lite: ${{ steps.filter.outputs['nh-inactivity-popup-lite'] }}
-          nh-sale-slider: ${{ steps.filter.outputs['nh-sale-slider'] }}
-          nh-shipping-calculator: ${{ steps.filter.outputs['nh-shipping-calculator'] }}
-          product-labels: ${{ steps.filter.outputs['product-labels'] }}
-          running-ticker-line: ${{ steps.filter.outputs['running-ticker-line'] }}
-
-  deploy-changed-plugins:
-    runs-on: ubuntu-latest
-    needs: detect-changed-plugins
-    if: needs.detect-changed-plugins.outputs.plugins_changed == 'true'
-    strategy:
-      matrix:
-        site: ['staging.norhage.lt','staging.norhage.fi','staging.norhage.de','staging.norhage.no','staging.norhage.se']
-        plugin: ${{ fromJSON(needs.detect-changed-plugins.outputs.plugins_json) }}
-      max-parallel: 1
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Determine site user
-        run: |
-          case "${{ matrix.site }}" in
-            staging.norhage.lt) echo "SITE_USER=norhage-staging-lt" >> $GITHUB_ENV ;;
-            staging.norhage.fi) echo "SITE_USER=norhage-staging" >> $GITHUB_ENV ;;
-            staging.norhage.de) echo "SITE_USER=norhage-staging-de" >> $GITHUB_ENV ;;
-            staging.norhage.no) echo "SITE_USER=norhage-staging-no" >> $GITHUB_ENV ;;
-            staging.norhage.se) echo "SITE_USER=norhage-staging-se" >> $GITHUB_ENV ;;
-            *) echo "Unknown site" ; exit 1 ;;
-          esac
-
-      - name: Write private key
+      - name: Write private key to file
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SFTP_PRIVATE_KEY_STAGING }}" > ~/.ssh/deploy_key
+          printf "%s\n" "${{ env.SFTP_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          ls -la ~/.ssh/deploy_key
 
-      - name: Ensure plugin dir exists on remote
+      - name: Show config
         run: |
-          REMOTE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/plugins/${{ matrix.plugin }}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }} "mkdir -p '${REMOTE}' && chmod u+rwX '${REMOTE}' || true"
+          echo "Plugin path in repo: ${PLUGIN_DIR}"
+          echo "Target: ${SITE_USER}@${SFTP_HOST}:${SITE_DOMAIN}"
+          echo "RSYNC_DELETE=${RSYNC_DELETE}"
 
-      - name: Upload plugin ${ { matrix.plugin } }
+      - name: Ensure remote plugin directory exists
         run: |
-          REMOTE="/home/${SITE_USER}/htdocs/${{ matrix.site }}/wp-content/plugins/${{ matrix.plugin }}"
-          scp -r -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no public/wp-content/plugins/${{ matrix.plugin }}/* ${SITE_USER}@${{ secrets.SFTP_HOST_STAGING }}:${REMOTE}
+          REMOTE_DIR="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR}"
+          echo "Ensuring remote dir: ${REMOTE_DIR}"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+
+      - name: Rsync plugins to remote
+        run: |
+          RSYNC_OPTS="-az -e \"ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no\" --exclude='.git' --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r"
+          if [ "${RSYNC_DELETE}" = "true" ]; then RSYNC_OPTS="${RSYNC_OPTS} --delete"; fi
+          SRC="${PLUGIN_DIR%/}/"
+          DEST="${SITE_USER}@${SFTP_HOST}:/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
+          echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
+          eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
+
+      - name: Verify deployed plugin files (sample)
+        run: |
+          REMOTE_PATH="/home/${SITE_USER}/htdocs/${SITE_DOMAIN}/${PLUGIN_DIR%/}/"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${SITE_USER}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
