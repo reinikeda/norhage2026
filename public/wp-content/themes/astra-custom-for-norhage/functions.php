@@ -356,53 +356,41 @@ require_once get_stylesheet_directory() . '/inc/blog.php';
 require_once get_stylesheet_directory() . '/inc/services.php';
 
 /* --------------------------------------------------------------------------
- * Shop archive button tweaks (Customize flow for simple products)
- * ----------------------------------------------------------------------- */
+ * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)
+ * -------------------------------------------------------------------------- */
 
-function nh_is_custom_cut_simple( $product ): bool {
-	if ( ! $product instanceof WC_Product ) return false;
-	if ( ! $product->is_type( 'simple' ) ) return false;
-	return (bool) get_post_meta( $product->get_id(), '_nh_cc_enabled', true );
-}
-
-add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $args ){
-	if ( nh_is_custom_cut_simple( $product ) ) {
-		$url     = $product->get_permalink();
-		$text    = __( 'Customize', 'nh-theme' );
-		$label   = sprintf( __( 'Customize “%s”', 'nh-theme' ), $product->get_name() );
-		$base    = isset( $args['class'] ) ? $args['class'] : 'button';
-		$classes = trim( $base . ' nh-btn-customize' );
-		return sprintf(
-			'<a href="%s" class="%s" aria-label="%s" rel="nofollow">%s</a>',
-			esc_url( $url ),
-			esc_attr( $classes ),
-			esc_attr( $label ),
-			esc_html( $text )
-		);
-	}
-	return $html;
-}, 10, 3 );
-
-add_filter( 'woocommerce_product_add_to_cart_text', function( $text, $product ) {
-
-    // 1) Your custom simple products → "Customize" (already translatable in nh-theme)
-    if ( nh_is_custom_cut_simple( $product ) ) {
-        return __( 'Customize', 'nh-theme' );
+/**
+ * 1. Override ALL loop add-to-cart buttons to link directly to product page
+ * Updated to use 'nh-theme' textdomain for custom translations.
+ */
+add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $args ) {
+    if ( ! $product instanceof WC_Product ) {
+        return $html;
     }
 
-    // 2) Variable products → our own translatable string in the theme
-    if ( $product instanceof WC_Product && $product->is_type( 'variable' ) ) {
-        return __( 'Select options', 'nh-theme' );
-    }
-    return $text;
+    $url   = $product->get_permalink();
+    
+    // Using 'nh-theme' textdomain makes these visible in your theme's POT file
+    $text  = $product->is_type( 'variable' ) 
+        ? __( 'Select options', 'nh-theme' ) 
+        : __( 'View product', 'nh-theme' );
+        
+    $class = isset( $args['class'] ) ? $args['class'] : 'button';
 
-}, 10, 2 );
+    return sprintf(
+        '<a href="%s" class="%s">%s</a>',
+        esc_url( $url ),
+        esc_attr( $class ),
+        esc_html( $text )
+    );
+}, 999, 3 );
 
-add_filter( 'woocommerce_product_single_add_to_cart_text', function( $text ){ return $text; }, 10 );
-
-add_filter( 'woocommerce_product_add_to_cart_url', function( $url, $product ){
-	return nh_is_custom_cut_simple( $product ) ? $product->get_permalink() : $url;
-}, 10, 2 );
+/**
+ * 2. Strip any leftover rel="nofollow" from loop buttons
+ */
+add_filter( 'woocommerce_loop_add_to_cart_link', function( $html ) {
+    return str_replace( 'rel="nofollow"', '', $html );
+}, 9999 );
 
 /* --------------------------------------------------------------------------
  * Secondary product title (editor field + outputs)
