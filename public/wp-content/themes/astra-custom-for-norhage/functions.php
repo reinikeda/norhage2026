@@ -373,7 +373,7 @@ add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $arg
 		$base    = isset( $args['class'] ) ? $args['class'] : 'button';
 		$classes = trim( $base . ' nh-btn-customize' );
 		return sprintf(
-			'<a href="%s" class="%s" aria-label="%s" rel="nofollow">%s</a>',
+			'<a href="%s" class="%s" aria-label="%s">%s</a>',
 			esc_url( $url ),
 			esc_attr( $classes ),
 			esc_attr( $label ),
