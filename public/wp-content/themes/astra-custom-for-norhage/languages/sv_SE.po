@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
 "norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-05-18 16:53+0300\n"
+"PO-Revision-Date: 2026-05-19 07:52+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -102,7 +102,7 @@ msgstr "Tack! Du prenumererar nu."
 
 #: functions.php:777
 msgid "Need help choosing or sizing? We can help."
-msgstr "Behöver du hjälp med denna produkt?"
+msgstr "Behöver du hjälp? Vi hjälper dig."
 
 #: functions.php:788
 msgid "Ask an expert"
@@ -197,34 +197,32 @@ msgstr "Lägg allt i varukorgen"
 
 #: inc/bundle-box.php:426
 msgid "Invalid bundle product."
-msgstr ""
+msgstr "Ogiltig paketprodukt."
 
 #: inc/bundle-box.php:431
 msgid "Bundle product could not be loaded."
-msgstr ""
+msgstr "Paketprodukten kunde inte laddas."
 
 #: inc/bundle-box.php:481
 msgid "Item"
-msgstr ""
+msgstr "Produkt"
 
 #. translators: %s = list of added items
 #: inc/bundle-box.php:488
-#, fuzzy
-#| msgid "Add all to basket"
 msgid "Bundle added to basket: %s"
-msgstr "Lägg allt i varukorgen"
+msgstr "Paketet har lagts i varukorgen: %s"
 
 #: inc/bundle-box.php:548
 msgid "Cart is not available."
-msgstr ""
+msgstr "Varukorgen är inte tillgänglig."
 
 #: inc/bundle-box.php:560
 msgid "Main product data is missing."
-msgstr ""
+msgstr "Huvudproduktens data saknas."
 
 #: inc/bundle-box.php:610
 msgid "Unable to add one of the bundle items to the basket."
-msgstr ""
+msgstr "En av produkterna i paketet kunde inte läggas i varukorgen."
 
 #: inc/hero.php:31
 msgid "Search results for “%s”"
@@ -236,7 +234,7 @@ msgstr "Nedladdningar"
 
 #: inc/meta-boxes.php:18 inc/meta-boxes.php:574
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: inc/meta-boxes.php:27
 msgid "Custom Cutting"
@@ -369,10 +367,8 @@ msgid ""
 msgstr ""
 
 #: inc/meta-boxes.php:677
-#, fuzzy
-#| msgid "Product"
 msgid "Product "
-msgstr "Produkt"
+msgstr "Produkt "
 
 #: inc/meta-boxes.php:678
 msgid "Maximum quantity"
@@ -387,10 +383,8 @@ msgid "Drag to reorder"
 msgstr ""
 
 #: inc/meta-boxes.php:744
-#, fuzzy
-#| msgid "Search products…"
 msgid "Search products & variations..."
-msgstr "Sök efter produkter…"
+msgstr "Sök produkter & varianter..."
 
 #: inc/meta-boxes.php:760
 msgid "Remove row"
@@ -509,16 +503,12 @@ msgstr "Sök efter produkter…"
 
 #: inc/search.php:15 template-parts/headers/header-main.php:93
 #: template-parts/headers/header-main.php:198
-#, fuzzy
-#| msgid "Search products…"
 msgid "Search products"
-msgstr "Sök efter produkter…"
+msgstr "Sök efter produkter"
 
 #: inc/search.php:38
-#, fuzzy
-#| msgid "Search products…"
 msgid "Search results"
-msgstr "Sök efter produkter…"
+msgstr "Sök efter produkter"
 
 #: inc/services.php:24
 msgctxt "Post Type General Name"
