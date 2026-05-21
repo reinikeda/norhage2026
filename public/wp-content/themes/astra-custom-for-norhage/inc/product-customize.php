@@ -61,6 +61,13 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 }, 5 );
 
+add_filter( 'wpseo_canonical', function( $canonical ) {
+    if ( isset( $_GET['bundle_parent'] ) ) {
+        return strtok( $canonical, '?' ); // remove parameters
+    }
+    return $canonical;
+});
+
 /* ============================================================================
  * HELPERS
  * ========================================================================== */

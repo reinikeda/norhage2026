@@ -54,8 +54,8 @@ if (!is_wp_error($terms) && $terms) {
   <div class="nhhb-cats-head">
     <h2 class="nhhb-cats-title"><?php echo esc_html($title); ?></h2>
     <div class="nhhb-cats-arrows">
-      <button class="nhhb-cat-prev" type="button" aria-label="<?php esc_attr_e('Scroll left','nhhb'); ?>">‹</button>
-      <button class="nhhb-cat-next" type="button" aria-label="<?php esc_attr_e('Scroll right','nhhb'); ?>">›</button>
+      <button class="nhhb-cat-prev" type="button" aria-label="<?php esc_attr_e('Scroll left','nhhb'); ?>"></button>
+      <button class="nhhb-cat-next" type="button" aria-label="<?php esc_attr_e('Scroll right','nhhb'); ?>"></button>
     </div>
   </div>
 
