@@ -74,10 +74,10 @@ if (!empty($data['logo'])) {
     <?php if (!empty($data['btn_url']) && !empty($data['btn_text'])): ?>
       <div class="nhhb-b2b-cta-col">
         <a class="nhhb-b2b-cta"
-           href="<​?php echo esc_url($data['btn_url']); ?>"
+           href="<?php echo esc_url($data['btn_url']); ?>"
            target="_blank"
            rel="noopener noreferrer"
-           aria-label="<​?php echo esc_attr($data['btn_text']); ?>">
+           aria-label="<?php echo esc_attr($data['btn_text']); ?>">
           <?php echo esc_html($data['btn_text']); ?>
         </a>
       </div>
