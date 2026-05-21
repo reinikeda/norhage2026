@@ -37,11 +37,12 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
     <div class="nhhb-utility-right">
 
       <!-- Account (icon only) -->
-      <a class="nh-account" href="<?php echo esc_url( $account_url ); ?>" title="<?php echo $account_label; ?>">
+      <a class="nh-account" href="<?php echo esc_url( $account_url ); ?>" aria-label="<?php echo esc_attr( $account_label ); ?>">
         <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="4" stroke-width="2" fill="none" stroke="currentColor"></circle>
           <path d="M4 20a8 8 0 0 1 16 0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>
         </svg>
+        <span class="screen-reader-text"><?php echo esc_html( $account_label ); ?></span>
       </a>
 
       <!-- Cart -->
