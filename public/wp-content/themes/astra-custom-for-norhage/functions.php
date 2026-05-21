@@ -231,33 +231,50 @@ add_action( 'astra_header_after', function () {
 }, 20 );
 
 /* --------------------------------------------------------------------------
- * Woo: subcategory grid on product category
+ * Woo: subcategory grid on product category (IMPROVED)
  * ----------------------------------------------------------------------- */
 add_action( 'woocommerce_before_shop_loop', 'show_subcategories_grid', 10 );
+
 function show_subcategories_grid() {
 	if ( ! is_product_category() ) return;
 
 	$category = get_queried_object();
+
 	$args = array(
 		'taxonomy'   => 'product_cat',
-		'child_of'   => $category->term_id,
-		'hide_empty' => false,
 		'parent'     => $category->term_id,
+		'hide_empty' => false,
 	);
+
 	$subcategories = get_terms( $args );
 
-	if ( ! empty( $subcategories ) ) {
+	if ( ! empty( $subcategories ) && ! is_wp_error( $subcategories ) ) {
+
 		echo '<div class="subcategory-grid">';
 		echo '<h2 class="subcategory-title">' . esc_html__( 'Shop by Category', 'nh-theme' ) . '</h2>';
 		echo '<div class="subcategory-items">';
 
 		foreach ( $subcategories as $subcategory ) {
+
 			$thumbnail_id = get_term_meta( $subcategory->term_id, 'thumbnail_id', true );
-			$image_url    = $thumbnail_id ? wp_get_attachment_url( $thumbnail_id ) : wc_placeholder_img_src();
+
+			// Skip categories without images (makes UI MUCH cleaner)
+			if ( ! $thumbnail_id ) continue;
 
 			echo '<div class="subcategory-item">';
 			echo '<a href="' . esc_url( get_term_link( $subcategory ) ) . '">';
-			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $subcategory->name ) . '" />';
+
+			// Optimized image size
+			echo wp_get_attachment_image(
+				$thumbnail_id,
+				'woocommerce_thumbnail',
+				false,
+				array(
+					'alt' => esc_attr( $subcategory->name ),
+					'loading' => 'lazy'
+				)
+			);
+
 			echo '<span>' . esc_html( $subcategory->name ) . '</span>';
 			echo '</a></div>';
 		}
