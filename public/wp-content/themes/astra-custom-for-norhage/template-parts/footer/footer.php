@@ -91,16 +91,16 @@ function nh_footer_menu_block($title, $locations){
                 class="nh-social__link nh-social__link--light"
                 href="<?php echo esc_url($url); ?>"
                 target="_blank"
-                rel="noopener"
-                aria-label="<?php echo esc_attr($label); ?>"
+                rel="noopener noreferrer"
               >
                 <img
                   loading="lazy"
                   src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/icons/' . $key . '.svg'); ?>"
-                  alt=""
+                  alt="<?php echo esc_attr($label); ?>"
                   width="22"
                   height="22"
                 >
+                <span class="screen-reader-text"><?php echo esc_html($label); ?></span>
               </a>
             <?php endforeach; ?>
           </div>
