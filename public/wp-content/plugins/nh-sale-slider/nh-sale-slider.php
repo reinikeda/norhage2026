@@ -175,7 +175,7 @@ function nhss_settings_page() {
 /* -----------------------------------------------------------------------
  * Front-end render
  * --------------------------------------------------------------------- */
-add_action('woocommerce_before_shop_loop', function () {
+add_action('woocommerce_after_shop_loop', function () {
     if (!function_exists('is_product_category') || !is_product_category()) return;
 
     $active = nhss_get_active_slides();
@@ -202,7 +202,7 @@ add_action('woocommerce_before_shop_loop', function () {
     echo   '</div>';
     echo   '<div class="swiper-pagination"></div>';
     echo '</div>';
-}, 5);
+}, 20);
 
 /* -----------------------------------------------------------------------
  * Assets
