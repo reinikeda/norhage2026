@@ -42,6 +42,7 @@ final class Plugin {
 			'standard_width'    => __('Standard width', 'nh-important-notes'),
 			'regulations'       => __('Regulations', 'nh-important-notes'),
 			'warehouse_sale' => __('Warehouse sale', 'nh-important-notes'),
+			'no-precut' => __('No precut', 'nh-important-notes'),
 		];
 	}
 
@@ -56,6 +57,7 @@ final class Plugin {
 			'standard_width'    => 'dashicons-editor-table',
 			'regulations'       => 'dashicons-clipboard',
 			'warehouse_sale' => 'dashicons-tag',
+			'no-precut' => 'dashicons-layout',
 		];
 		return $map[$type] ?? 'dashicons-info-outline';
 	}
