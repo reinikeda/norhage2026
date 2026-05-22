@@ -114,7 +114,7 @@ class NHG_Product_Labels {
 
 						$labels[] = [
 							'key'   => 'sale',
-							'text'  => $range, // aria-label
+							'text'  => $range,
 							'line1' => __( 'Sale', 'nhg-labels' ),
 							'line2' => $range,
 						];
@@ -199,7 +199,7 @@ class NHG_Product_Labels {
 				$line1 = $l['line1'] ?? __( 'Sale', 'nhg-labels' );
 				$line2 = $l['line2'] ?? '';
 				printf(
-					'<span class="nhg-badge nhg-badge--sale" aria-label="%s" data-l1="%s" data-l2="%s"></span>',
+					'<span class="nhg-badge nhg-badge--sale" data-l1="%s" data-l2="%s"></span>',
 					esc_attr( $l['text'] ?? $line1 . ' ' . $line2 ),
 					esc_attr( $line1 ),
 					esc_attr( $line2 )
@@ -218,7 +218,7 @@ class NHG_Product_Labels {
 			// NEW — burst
 			if ( 'new' === $key ) {
 				printf(
-					'<span class="nhg-badge nhg-badge--new" aria-label="%s" data-text="%s"></span>',
+					'<span class="nhg-badge nhg-badge--new" data-text="%s"></span>',
 					esc_attr( $text ),
 					esc_attr( $text )
 				);
@@ -291,7 +291,7 @@ class NHG_Product_Labels {
 
 		$icon_url = get_stylesheet_directory_uri() . '/assets/icons/megaphone.svg';
 
-		echo '<div class="nhg-new-inline" aria-label="' . esc_attr__( 'New product', 'nhg-labels' ) . '">'
+		echo '<div class="nhg-new-inline"' . esc_attr__( 'New product', 'nhg-labels' ) . '">'
 		. '<img src="' . esc_url( $icon_url ) . '" alt="' . esc_attr__( 'New', 'nhg-labels' ) . '" class="nhg-new-icon" loading="lazy" decoding="async" />'
 		. '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg-labels' ) . '</span>'
 		. '</div>';

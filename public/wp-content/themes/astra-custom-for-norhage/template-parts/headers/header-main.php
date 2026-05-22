@@ -170,6 +170,8 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
         <img
           class="nh-burger__icon"
           src="<?php echo esc_url( $theme_uri . '/assets/icons/hamburger-menu.svg' ); ?>"
+          width="24"
+          height="24"
           alt=""
           aria-hidden="true" />
       </button>
