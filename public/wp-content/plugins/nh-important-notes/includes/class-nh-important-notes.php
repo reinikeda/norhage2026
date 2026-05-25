@@ -43,6 +43,7 @@ final class Plugin {
 			'regulations'       => __('Regulations', 'nh-important-notes'),
 			'warehouse_sale' => __('Warehouse sale', 'nh-important-notes'),
 			'no-precut' => __('No precut', 'nh-important-notes'),
+			'winter' => __('Winter care', 'nh-important-notes'),
 		];
 	}
 
@@ -58,6 +59,7 @@ final class Plugin {
 			'regulations'       => 'dashicons-clipboard',
 			'warehouse_sale' => 'dashicons-tag',
 			'no-precut' => 'dashicons-layout',
+			'winter' => 'dashicons-remove',
 		];
 		return $map[$type] ?? 'dashicons-info-outline';
 	}
