@@ -26,3 +26,9 @@ msgstr "Alle einklappen"
 # ---------------------------------------------------------
 msgid "faq"
 msgstr "faq"
+
+# ---------------------------------------------------------
+# FAQ tab title
+# ---------------------------------------------------------
+msgid "Questions & Answers"
+msgstr "Fragen & Antworten"
