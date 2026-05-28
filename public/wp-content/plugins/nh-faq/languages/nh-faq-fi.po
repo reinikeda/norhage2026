@@ -26,3 +26,9 @@ msgstr "Supista kaikki"
 # ---------------------------------------------------------
 msgid "faq"
 msgstr "ukk"
+
+# ---------------------------------------------------------
+# FAQ tab title
+# ---------------------------------------------------------
+msgid "Questions & Answers"
+msgstr "Kysymyksiä & vastauksia"
