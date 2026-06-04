@@ -13,11 +13,11 @@
   margin-top: 4px;
 }
 
-/* ==========================================================================
-   2) Attribute UI (selects or buttons)
-   ========================================================================== */
+/* -------------------------
+   Attribute UI (selects/buttons)
+   ------------------------- */
 
-/* Groups */
+/* Wrapper for attribute buttons */
 .variations_form .nh-attr-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -25,58 +25,49 @@
   margin-top: 0.25rem;
 }
 
-/* Base button style */
+/* Base button */
 .variations_form .nh-attr-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 6px 14px;
-  border-width: 1px !important;
-  border-style: solid !important;
-  border-color: var(--ui-border) !important;
+  border: 1px solid var(--ui-border) !important;
   border-radius: 4px;
   background: var(--ui-bg-content, #fff);
   cursor: pointer;
   font-weight: 500;
-  text-decoration: none;
   color: var(--nh-green);
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.02s ease;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .02s ease;
 }
 
-/* Hover (unselected + enabled only) */
-.single-product .variations_form .nh-attr-buttons .nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
-.single-product .variations_form label.nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
-.single-product .variations_form a.nh-attr-btn:not(.is-selected):not(.is-disabled):hover,
-.single-product .variations_form button.nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
+/* Hover for enabled, unselected buttons */
+.variations_form .nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
   background: var(--nh-cream) !important;
   border-color: var(--nh-green) !important;
   color: var(--nh-forest) !important;
   transform: translateY(-1px);
 }
 
-/* Selected (active) */
+/* Selected (active) - keep !important to override inline JS styles */
 .variations_form .nh-attr-btn.is-selected {
-  background: var(--nh-green);
-  color: #fff;
+  background: var(--nh-green) !important;
+  color: #fff !important;
   border-color: var(--nh-green) !important;
-  transform: none;
+  transform: none !important;
 }
 
-/* Selected + hover = darker “pressed” forest green */
+/* Selected hover (pressed) */
 .variations_form .nh-attr-btn.is-selected:hover {
   background: var(--nh-forest) !important;
   border-color: var(--nh-forest) !important;
   color: #fff !important;
-  transform: none;
+  transform: none !important;
 }
 
-/* Disabled state (impossible combinations) */
+/* Disabled / impossible combinations (both class and attribute) */
 .variations_form .nh-attr-btn.is-disabled,
-.variations_form .nh-attr-btn[disabled] {
+.variations_form .nh-attr-btn[disabled],
+.variations_form .nh-attr-btn[aria-disabled="true"] {
   opacity: 0.45;
   cursor: not-allowed;
   background: #f3f4f6 !important;
@@ -87,20 +78,22 @@
   text-decoration: none;
 }
 
-.variations_form .nh-attr-btn.is-disabled:hover {
+/* If a disabled button ever becomes .is-selected, show disabled style not green */
+.variations_form .nh-attr-btn.is-disabled.is-selected,
+.variations_form .nh-attr-btn[disabled].is-selected {
   background: #f3f4f6 !important;
   border-color: #d1d5db !important;
   color: #9ca3af !important;
-  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Focus ring */
+/* Focus ring (keyboard) */
 .variations_form .nh-attr-btn:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 
-/* Baseline border for unselected */
+/* Baseline border for unselected (keeps consistent look) */
 .variations_form .nh-attr-btn:not(.is-selected) {
   border-color: var(--ui-border) !important;
 }
@@ -113,40 +106,26 @@
   display: none !important;
 }
 
-/* OUT-OF-STOCK (selected variation) Applied when Woo says the current selection variation is out of stock. */
-
+/* Selected combination is out of stock — keep red OOS visual (overrides inline/selected) */
 .variations_form .nh-attr-btn.is-oos {
-  background: #FDE8E8 !important;       /* soft red-rose */
-  border-color: #F5A5A5 !important;     /* warm red border */
-  color: #7A1F1F !important;            /* deep red text */
-  transform: none !important;
-}
-
-/* Prevent hover effect on OOS state */
-.variations_form .nh-attr-btn.is-oos:hover {
   background: #FDE8E8 !important;
   border-color: #F5A5A5 !important;
   color: #7A1F1F !important;
   transform: none !important;
 }
 
-/* If button uses inline styling from JS, this ensures OOS overrides it */
+/* Prevent hover effect for OOS */
+.variations_form .nh-attr-btn.is-oos:hover,
 .variations_form .nh-attr-btn.is-oos.is-selected {
   background: #FDE8E8 !important;
   border-color: #F5A5A5 !important;
   color: #7A1F1F !important;
+  transform: none !important;
 }
 
-/* "All variations out of stock" message under attribute table */
+/* All-variations OOS message spacing */
 .variations_form .nh-all-oos-msg {
   margin: 0.35rem 0 0.75rem;
-}
-
-/* Hide WooCommerce out-of-stock message when our global OOS notice is present */
-.variations_form.nh-all-variations-oos 
-  .woocommerce-variation.single_variation 
-  .stock.out-of-stock {
-  display: none !important;
 }
 
 /* ==========================================================================
@@ -341,7 +320,8 @@
   margin-top: 28px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
   position: relative;
-  overflow: visible !important;
+  /* allow child elements (qty controls) to overflow slightly without being clipped */
+  overflow: visible;
 }
 
 /* Title “floating” on the border */
@@ -371,9 +351,10 @@
   width: 100%;
 }
 
+/* Layout: let the qty column grow to fit content when necessary */
 .nc-bundle-row {
   display: grid;
-  grid-template-columns: 84px minmax(0, 1fr) var(--nc-qty-width) max-content;
+  grid-template-columns: 84px minmax(0, 1fr) minmax(var(--nc-qty-width), max-content) minmax(0, max-content);
   column-gap: var(--nc-gap);
   row-gap: 8px;
   align-items: center;
@@ -405,9 +386,13 @@
   min-width: 0;
 }
 
+/* Allow qty cell to show overflowing content and layer above siblings */
 .nc-col-qty {
   min-width: 0;
   justify-self: end;
+  overflow: visible;     /* very important to avoid clipping of +/- buttons */
+  position: relative;    /* so we can use z-index for inner controls */
+  z-index: 2;
 }
 
 .nc-col-price {
@@ -531,14 +516,14 @@
   line-height: inherit;
 }
 
-/* Bundle qty control */
+/* Bundle qty control — allow it to size to content but keep a sane minimum */
 #nc-complete-set .quantity.buttons_added {
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: stretch;
-  width: var(--nc-qty-width);
+  width: auto; /* let content define width when needed */
   min-width: var(--nc-qty-width);
-  max-width: var(--nc-qty-width);
+  max-width: none;
   min-height: 40px;
   margin: 0;
   border: 1px solid var(--ui-border);
@@ -546,20 +531,24 @@
   box-sizing: border-box;
   overflow: visible;
   vertical-align: middle;
+  z-index: 3;
 }
 
+/* ensure consistent box-sizing for children */
 #nc-complete-set .quantity.buttons_added .minus,
 #nc-complete-set .quantity.buttons_added .plus,
 #nc-complete-set .quantity.buttons_added .qty {
   box-sizing: border-box;
 }
 
+/* +/- buttons fixed size but non-clipping */
 #nc-complete-set .quantity.buttons_added .minus,
 #nc-complete-set .quantity.buttons_added .plus {
   flex: 0 0 31px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 31px;
   min-width: 31px;
   height: auto;
   margin: 0;
@@ -572,10 +561,10 @@
   line-height: 1;
   cursor: pointer;
   user-select: none;
-  -webkit-user-select: none;
   pointer-events: auto;
 }
 
+/* visual dividers between buttons and input remain */
 #nc-complete-set .quantity.buttons_added .minus {
   border-right: 1px solid var(--ui-border);
 }
@@ -584,11 +573,12 @@
   border-left: 1px solid var(--ui-border);
 }
 
+/* number input: stable width but allowed to grow if needed */
 #nc-complete-set .quantity.buttons_added .qty {
   flex: 1 1 auto;
   width: 44px;
   min-width: 44px;
-  max-width: 44px;
+  max-width: none;
   height: auto;
   margin: 0;
   padding: 0 4px !important;
@@ -612,6 +602,7 @@
   margin: 0;
 }
 
+/* disabled states */
 #nc-complete-set .quantity.buttons_added .qty:disabled,
 #nc-complete-set .quantity.buttons_added .minus[aria-disabled="true"],
 #nc-complete-set .quantity.buttons_added .plus[aria-disabled="true"] {
@@ -619,6 +610,7 @@
   cursor: not-allowed;
 }
 
+/* Footer */
 .nc-bundle-footer {
   position: sticky;
   bottom: 0;
@@ -657,57 +649,32 @@
   margin-top: 8px;
 }
 
-@media (max-width: 768px) {
-  .nh-bundle-back-link {
-    display: block;
-    padding: 10px 0;
-  }
-}
-
-/* Switch earlier to compact layout so medium widths don't break */
+/* Responsive adjustments */
 @media (max-width: 920px) {
   .nc-bundle-header {
     display: none;
   }
 
   .nc-bundle-row {
-    grid-template-columns: 64px minmax(0, 1fr) var(--nc-qty-width);
+    grid-template-columns: 64px minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
     grid-template-areas:
       "img title qty"
       ".   price qty";
     padding: 12px 0;
   }
 
-  .nc-col-image {
-    grid-area: img;
-  }
-
-  .nc-col-title {
-    grid-area: title;
-  }
-
+  .nc-col-image { grid-area: img; }
+  .nc-col-title { grid-area: title; }
   .nc-col-qty {
     grid-area: qty;
     justify-self: end;
     align-self: start;
   }
 
-  .nc-col-price {
-    display: none;
-  }
-
-  .nc-price-mobile {
-    display: block;
-    color: var(--ui-text);
-  }
-
-  .nc-col-image img {
-    max-width: 64px;
-  }
-
-  .nc-bundle-footer {
-    padding-bottom: 6px;
-  }
+  .nc-col-price { display: none; }
+  .nc-price-mobile { display: block; color: var(--ui-text); }
+  .nc-col-image img { max-width: 64px; }
+  .nc-bundle-footer { padding-bottom: 6px; }
 }
 
 @media (max-width: 720px) {
@@ -717,13 +684,11 @@
   }
 
   .nc-bundle-row {
-    grid-template-columns: 64px minmax(0, 1fr) var(--nc-qty-width);
+    grid-template-columns: 64px minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
   }
 
   #nc-complete-set .quantity.buttons_added {
-    width: var(--nc-qty-width);
     min-width: var(--nc-qty-width);
-    max-width: var(--nc-qty-width);
     min-height: 38px;
   }
 
@@ -731,11 +696,11 @@
   #nc-complete-set .quantity.buttons_added .plus {
     flex-basis: 29px;
     min-width: 29px;
+    width: 29px;
   }
 
   #nc-complete-set .quantity.buttons_added .qty {
     min-width: 42px;
-    max-width: 42px;
     font-size: 15px;
   }
 
