@@ -56,6 +56,31 @@ jQuery(function ($) {
     }
   }
 
+  /* ------------------ Compute attribute values present in any in-stock variation ------------------ */
+  function computeAvailableValuesMap($form) {
+    // Build map: { attribute_name: { valueSlug: true, ... }, ... }
+    var variations = $form.data('product_variations') || [];
+    var map = {};
+
+    for (var i = 0; i < variations.length; i++) {
+      var v = variations[i];
+      // Count only IN-STOCK variations as "available"
+      if (!v || v.is_in_stock !== true) continue;
+      var attrs = v.attributes || {};
+      for (var key in attrs) {
+        if (!attrs.hasOwnProperty(key)) continue;
+        var val = attrs[key];
+        if (!val) continue;
+        map[key] = map[key] || {};
+        map[key][val] = true;
+      }
+    }
+
+    // Cache for performance; we will refresh it when Woo updates variation values
+    $form.data('nh-available-map', map);
+    return map;
+  }
+
   /* ---------------------------- Build / Wire buttons --------------------------- */
   function buildButtons($select) {
     // skip if already built
@@ -96,9 +121,11 @@ jQuery(function ($) {
 
     // Keep in sync on change (Woo or user)
     $select.on('change.nhButtons', function () {
-      syncSelectedState($select);
-      // availability may also change because another attribute changed
-      syncDisabledStates($select);
+      var $form = $select.closest('.variations_form');
+      $form.find('select[name^="attribute_"]').each(function () {
+        syncSelectedState($(this));
+        syncDisabledStates($(this));
+      });
     });
   }
 
@@ -117,20 +144,59 @@ jQuery(function ($) {
     const $wrap = $select.next('.nh-attr-buttons');
     if (!$wrap.length) return;
 
+    var $form = $select.closest('.variations_form');
+    var variations = $form.data('product_variations') || [];
+
+    // Build map of current selections for other selects
+    var current = {};
+    $form.find('select[name^="attribute_"]').each(function () {
+      var name = $(this).attr('name');
+      var v = String($(this).val() || '');
+      if (v) current[name] = v;
+    });
+
     $wrap.find('.nh-attr-btn').each(function () {
       const $btn = $(this);
       const val  = $btn.attr('data-value');
 
-      // Look for matching <option>
+      // Look for matching <option> (native Woo disabled states)
       const $opt = $select.find('option[value="' + val + '"]');
+      const isDisabledBySelect = !$opt.length || $opt.is(':disabled');
 
-      // If there is no <option> OR it’s disabled → our button should be disabled
-      const isDisabled = !$opt.length || $opt.is(':disabled');
+      // Determine if there exists an IN-STOCK variation that:
+      // - has this select's attribute == val
+      // - AND for every other attribute that has a current selection, variation[attr] === selected value
+      var selectName = $select.attr('name');
+      var exists = false;
+      for (var i = 0; i < variations.length; i++) {
+        var v = variations[i];
+        if (!v || v.is_in_stock !== true) continue; // only in-stock variations count
+        var attrs = v.attributes || {};
+
+        // must match candidate value for this select
+        if (attrs[selectName] !== val) continue;
+
+        var ok = true;
+        for (var sName in current) {
+          if (!current.hasOwnProperty(sName)) continue;
+          if (sName === selectName) continue;
+          var selVal = current[sName];
+          // if user has selected something for sName and variation doesn't match, it's not a candidate
+          if (selVal && attrs[sName] !== selVal) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) { exists = true; break; }
+      }
+
+      // final disabled if native <option> disabled OR no matching in-stock variation exists for current selections
+      var finalDisabled = isDisabledBySelect || !exists;
 
       $btn
-        .prop('disabled', isDisabled)
-        .toggleClass('is-disabled', isDisabled)
-        .attr('aria-disabled', isDisabled ? 'true' : null);
+        .prop('disabled', finalDisabled)
+        .toggleClass('is-disabled', finalDisabled)
+        .attr('aria-disabled', finalDisabled ? 'true' : null);
     });
   }
 
@@ -213,6 +279,11 @@ jQuery(function ($) {
     ($root || $(document)).find('.variations_form select').each(function () {
       buildButtons($(this));
     });
+
+    // For all forms we initialized, compute the availability map so buttons can be marked
+    ($root || $(document)).find('.variations_form').each(function () {
+      computeAvailableValuesMap($(this));
+    });
   }
 
   // Initial build
@@ -231,9 +302,18 @@ jQuery(function ($) {
 
   // Woo fires this after it recalculates which options are available
   $(document).on('woocommerce_update_variation_values', function () {
-    $('.variations_form select').each(function () {
-      syncDisabledStates($(this));
-      syncSelectedState($(this));
+    // Recompute availability map for each form (clear cached map and recompute)
+    $('.variations_form').each(function () {
+      var $form = $(this);
+      // Clear cached map so it is rebuilt from the latest variations data
+      $form.removeData('nh-available-map');
+      computeAvailableValuesMap($form);
+
+      // Now resync each select inside the form
+      $form.find('select').each(function () {
+        syncDisabledStates($(this));
+        syncSelectedState($(this));
+      });
     });
   });
 

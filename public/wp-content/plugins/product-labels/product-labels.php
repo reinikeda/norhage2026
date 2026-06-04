@@ -149,22 +149,20 @@ class NHG_Product_Labels {
 			}
 		}
 
-		// LOW STOCK (<3, managed, no backorders) — loop only
+		// LOW STOCK (<3, managed, no backorders)
+		// NOTE: Only show the global LOW label for SIMPLE products.
 		$low_any = false;
-		if ( $product->is_type( 'variable' ) ) {
-			foreach ( $product->get_children() as $vid ) {
-				$child = wc_get_product( $vid );
-				if ( ! $child ) continue;
-				if ( $child->managing_stock() && ! $child->backorders_allowed() ) {
-					$qty = $child->get_stock_quantity();
-					if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) { $low_any = true; break; }
+		if ( $product->is_type( 'simple' ) ) {
+			if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
+				$qty = $product->get_stock_quantity();
+				if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) {
+					$low_any = true;
 				}
 			}
 		} else {
-			if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
-				$qty = $product->get_stock_quantity();
-				if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) $low_any = true;
-			}
+			// For variable products: do NOT output a global "Low stock" label here.
+			// Variation-level limited-stock notices should be handled by variation-specific code/JS.
+			$low_any = false;
 		}
 		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg-labels' ) ];
 
