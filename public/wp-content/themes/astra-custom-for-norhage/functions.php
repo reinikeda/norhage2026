@@ -965,3 +965,8 @@ function push_out_of_stock_to_end( $posts_clauses, $query ) {
 
     return $posts_clauses;
 }
+
+add_filter( 'woocommerce_ajax_variation_threshold', 'custom_variation_threshold', 10, 2 );
+function custom_variation_threshold( $threshold, $product ) {
+    return 100; // Increase this to a number higher than your variation count
+}
