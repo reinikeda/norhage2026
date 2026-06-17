@@ -20,7 +20,7 @@ $title = ! empty( $hero['title'] ) ? $hero['title'] : get_the_title();
 <section
   class="nhhb-hero nhhb-hero--page"
   style="background-image: url('<?php echo esc_url( $bg ); ?>');"
-  aria-label="<​?php echo esc_attr( $title ); ?>"
+  aria-label="<?php echo esc_attr( $title ); ?>"
 >
   <div class="nhhb-hero__overlay" aria-hidden="true"></div>
 
@@ -28,7 +28,7 @@ $title = ! empty( $hero['title'] ) ? $hero['title'] : get_the_title();
     <h1 class="nhhb-hero__title"><?php echo esc_html( $title ); ?></h1>
 
     <?php if ( function_exists( 'bcn_display' ) ) : ?>
-      <nav class="nhhb-hero__breadcrumbs" aria-label="<​?php esc_attr_e( 'Breadcrumbs', 'nh-theme' ); ?>">
+      <nav class="nhhb-hero__breadcrumbs" aria-label="<?php esc_attr_e( 'Breadcrumbs', 'nh-theme' ); ?>">
         <?php bcn_display(); ?>
       </nav>
     <?php endif; ?>

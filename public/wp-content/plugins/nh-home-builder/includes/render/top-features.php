@@ -68,7 +68,7 @@ foreach ($items as &$it) {
 }
 unset($it);
 ?>
-<section class="nhhb-top-features" aria-label="<​?php echo esc_attr__('Shop benefits','nhhb'); ?>">
+<section class="nhhb-top-features" aria-label="<?php echo esc_attr__('Shop benefits','nhhb'); ?>">
   <h2 class="screen-reader-text"><?php esc_html_e('Shop benefits','nhhb'); ?></h2>
   <div class="nhhb-features-grid">
     <?php foreach ($items as $it): ?>

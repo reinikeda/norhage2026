@@ -491,11 +491,11 @@ add_action( 'wp', function () {
  */
 function nh_get_order_number_country_settings() {
     return [
-        'LT' => [ 'prefix' => 'LT-', 'start' => 1 ],     // Lithuania: LT-0001, LT-0002...
-        'NO' => [ 'prefix' => 'NO-', 'start' => 2000 ],  // Norway:   NO-2000, NO-2001...
-        'SE' => [ 'prefix' => 'SE-', 'start' => 2000 ],  // Sweden:   SE-2000...
-        'DE' => [ 'prefix' => 'DE-', 'start' => 2000 ],   // Germany:  DE-0500...
-        'FI' => [ 'prefix' => 'FI-', 'start' => 2000 ],   // Finland:  FI-0100...
+        'LT' => [ 'prefix' => 'LT-', 'start' => 1 ],
+        'NO' => [ 'prefix' => 'NO-', 'start' => 3000 ],
+        'SE' => [ 'prefix' => 'SE-', 'start' => 3000 ],
+        'DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
+        'FI' => [ 'prefix' => 'FI-', 'start' => 2000 ],
         'EN' => [ 'prefix' => 'EU-', 'start' => 1 ],
 		];
 }
