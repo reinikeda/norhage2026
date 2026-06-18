@@ -44,6 +44,8 @@ final class Plugin {
 			'warehouse_sale' => __('Warehouse sale', 'nh-important-notes'),
 			'no-precut' => __('No precut', 'nh-important-notes'),
 			'winter' => __('Winter care', 'nh-important-notes'),
+			'colour' => __('Colour', 'nh-important-notes'),
+			'shape' => __('Shape', 'nh-important-notes'),
 		];
 	}
 
@@ -60,6 +62,8 @@ final class Plugin {
 			'warehouse_sale' => 'dashicons-tag',
 			'no-precut' => 'dashicons-layout',
 			'winter' => 'dashicons-remove',
+			'colour' => 'dashicons-visibility',
+			'shape' => 'dashicons-editor-justify',
 		];
 		return $map[$type] ?? 'dashicons-info-outline';
 	}
