@@ -2,6 +2,7 @@
    PRODUCT LABELS — Norhage 2026
    SALE ribbon (top-left, flush to image)
    NEW burst (top-right, can hang outside)
+   CUSTOM SIZE badge (bottom-right)
    Low-stock pill (bottom-left)
    Inline "New Product" text (single product)
    ========================================================= */
@@ -15,6 +16,7 @@
   --nh-brown:   #5A3E2B;
   --nh-sale:    #C93C3C;
   --nh-new:     #37B87C;
+  --nh-custom:  #4A90E2;
 
   --nh-burst-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon fill='%23fff' points='50,2 58,12 72,6 76,20 90,18 88,32 100,40 90,50 100,60 88,68 90,82 76,80 72,94 58,88 50,98 42,88 28,94 24,80 10,82 12,68 2,60 10,50 2,40 12,32 10,18 24,20 28,6 42,12'/%3E%3C/svg%3E");
 }
@@ -57,6 +59,7 @@ body.dark-mode{
 
 .nhg-badge--new{ right:-8px; left:auto; }
 .nhg-badge--sale{ left:0; right:auto; top:0; }
+.nhg-badge--custom{ right:8px; bottom:8px; top:auto; left:auto; }
 
 /* ---------- NEW burst ---------- */
 .nhg-badge--new{
@@ -105,6 +108,28 @@ body.dark-mode{
   line-height:1.05; font-size:10.5px; letter-spacing:.3px; text-align:center;
 }
 
+/* ---------- CUSTOM SIZE badge ---------- */
+.nhg-badge--custom{
+  position:absolute;
+  width:auto;
+  height:auto;
+  min-width:60px;
+  padding:4px 10px;
+  background-color: var(--nh-custom);
+  border-radius: 12px;
+  font: 700 11px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  top:auto;
+  bottom:8px;
+  right:8px;
+  left:auto;
+  transform: none;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width:480px){
   .nhg-badge{
@@ -134,6 +159,15 @@ body.dark-mode{
     top:19px;
     left:4px;
     font-size:9.8px;
+  }
+  
+  /* CUSTOM SIZE badge responsive */
+  .nhg-badge--custom{
+    font-size:9px;
+    padding:3px 8px;
+    min-width:50px;
+    bottom:6px;
+    right:6px;
   }
 }
 
@@ -167,6 +201,7 @@ body.dark-mode{
   color: var(--nh-brown);
   border:1.5px solid color-mix(in srgb, var(--nh-gold), #fff 55%);
   backdrop-filter: blur(2px);
+  z-index:33; /* Above custom badge */
 }
 
 body.dark-mode .nhg-low-stock-banner{
@@ -185,4 +220,9 @@ body.dark-mode .nhg-badge--new{
 
 body.dark-mode .nhg-new-inline{
   color:#E9F1EC;
+}
+
+body.dark-mode .nhg-badge--custom{
+  background-color: color-mix(in srgb, var(--nh-custom) 80%, #000 20%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }

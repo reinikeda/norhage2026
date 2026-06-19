@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nhg-labels\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-21 00:00+0000\n"
-"PO-Revision-Date: 2026-05-26 09:46+0300\n"
+"PO-Revision-Date: 2026-06-19 09:46+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -14,26 +14,23 @@ msgstr ""
 "n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 3.8\n"
 
-#: product-labels.php:XX
 msgid "Sale %s"
 msgstr "%s"
 
-#: product-labels.php:XX
 msgid "Sale"
 msgstr "Akcija"
 
-#: product-labels.php:XX
 msgid "Up to %s"
 msgstr "Iki %s"
 
-#: product-labels.php:XX
 msgid "New"
 msgstr "Nauja"
 
-#: product-labels.php:XX
 msgid "Low stock"
 msgstr "Liko nedaug"
 
-#: product-labels.php:XX
 msgid "New Product!"
 msgstr "Nauja prekė!"
+
+msgid "Custom size"
+msgstr "Pagal Jūsų matmenis"
