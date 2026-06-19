@@ -1,16 +1,18 @@
 # Copyright (C) 2026 Daiva Reinike
 # This file is distributed under the same license as the Astra Custom for Norhage package.
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-19 16:06+0300\n"
 "PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
 
 #: functions.php:25
 msgid "Primary Menu"
@@ -197,7 +199,6 @@ msgid "Item"
 msgstr ""
 
 #. translators: %s = list of added items
-
 #: inc/bundle-box.php:488
 msgid "Bundle added to basket: %s"
 msgstr ""
@@ -744,13 +745,11 @@ msgid "Next slide"
 msgstr ""
 
 #. translators: %1$s: Order number
-
 #: woocommerce/emails/customer-cancelled-order.php:37
 msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
 msgstr ""
 
 #. translators: %1$s: Order number
-
 #: woocommerce/emails/customer-cancelled-order.php:40
 msgid "We’re getting in touch to let you know that your order #%1$s has been cancelled."
 msgstr ""
@@ -764,7 +763,6 @@ msgstr ""
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-
 #: woocommerce/emails/customer-completed-order.php:37
 #: woocommerce/emails/customer-failed-order.php:40
 #: woocommerce/emails/customer-new-account.php:35
@@ -803,7 +801,6 @@ msgid "Unfortunately, we couldn't complete your order due to an issue with your 
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-failed-order.php:50
 msgid "If you'd like to continue with your purchase, please return to %s and try a different method of payment."
 msgstr ""
@@ -813,13 +810,11 @@ msgid "Your order details are as follows:"
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-new-account.php:38
 msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
 msgstr ""
 
 #. translators: %s: Username
-
 #: woocommerce/emails/customer-new-account.php:41
 #: woocommerce/emails/customer-reset-password.php:38
 msgid "Username: <b>%s</b>"
@@ -838,7 +833,6 @@ msgid "My account"
 msgstr ""
 
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
-
 #: woocommerce/emails/customer-new-account.php:51
 msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
 msgstr ""
@@ -879,14 +873,12 @@ msgid "Refund & Returns Policy"
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-pos-refunded-order.php:51
 #: woocommerce/emails/customer-refunded-order.php:49
 msgid "Your order from %s has been partially refunded."
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-pos-refunded-order.php:54
 #: woocommerce/emails/customer-refunded-order.php:52
 msgid "Your order from %s has been refunded."
@@ -897,25 +889,21 @@ msgid "Just to let you know &mdash; we’ve received your order, and it is now b
 msgstr ""
 
 #. translators: %s: Order number
-
 #: woocommerce/emails/customer-processing-order.php:50
 msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-refunded-order.php:59
 msgid "Your order on %s has been partially refunded. There are more details below for your reference:"
 msgstr ""
 
 #. translators: %s: Site title
-
 #: woocommerce/emails/customer-refunded-order.php:62
 msgid "Your order on %s has been refunded. There are more details below for your reference:"
 msgstr ""
 
 #. translators: %s: Store name
-
 #: woocommerce/emails/customer-reset-password.php:34
 msgid "Someone has requested a new password for the following account on %s:"
 msgstr ""
@@ -925,7 +913,6 @@ msgid "If you didn’t make this request, just ignore this email. If you’d lik
 msgstr ""
 
 #. translators: %s: Customer username
-
 #: woocommerce/emails/customer-reset-password.php:43
 msgid "Username: %s"
 msgstr ""
@@ -978,6 +965,7 @@ msgstr ""
 #: woocommerce/pdf/norhage/invoice.php:218
 msgid "Shipping"
 msgstr ""
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
