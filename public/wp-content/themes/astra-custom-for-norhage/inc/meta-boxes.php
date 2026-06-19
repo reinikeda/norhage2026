@@ -2,7 +2,6 @@
 // 1) ADMIN ONLY: metabox registration & save
 if ( is_admin() ) {
 
-	// Register the Downloads, Video, Custom Cutting, Homepage Hero Slider and Product Extra metaboxes
 	add_action( 'add_meta_boxes', function () {
 		add_meta_box(
 			'nrh_downloads_box',
@@ -49,12 +48,6 @@ if ( is_admin() ) {
 			'low'
 		);
 	} );
-
-	// Ensure Dashicons are available on the frontend
-	add_action( 'wp_enqueue_scripts', 'nh_mb_enqueue_dashicons' );
-	function nh_mb_enqueue_dashicons() {
-		wp_enqueue_style( 'dashicons' );
-	}
 
 	// Render the Downloads metabox
 	function nrh_downloads_box_html( $post ) {
@@ -407,31 +400,17 @@ if ( is_admin() ) {
 	function nh_mb_render_product_extra_metabox( $post ) {
 		wp_nonce_field( 'nh_mb_product_extra_nonce', 'nh_mb_product_extra_nonce' );
 
-		// Admin prefill in English but translatable via nh-theme PO files
-		$default_heading_en = __( 'Use cases and compatibility', 'nh-theme' );
-		$default_col1_h_en  = __( 'Ideal for use', 'nh-theme' );
-		$default_col2_h_en  = __( 'Consider alternatives', 'nh-theme' );
-		$default_col3_h_en  = __( 'Pay attention', 'nh-theme' );
+		// Translatable defaults (appear as placeholders when meta is empty)
+		$default_heading = __( 'Use cases and compatibility', 'nh-theme' );
+		$default_col1_h  = __( 'Ideal for use', 'nh-theme' );
+		$default_col2_h  = __( 'Consider alternatives', 'nh-theme' );
+		$default_col3_h  = __( 'Pay attention', 'nh-theme' );
 
+		// Raw stored values (show saved text for editing)
 		$heading = get_post_meta( $post->ID, '_nh_mb_extra_heading', true );
-		if ( $heading === '' ) {
-			$heading = $default_heading_en;
-		}
-
-		$col1_h = get_post_meta( $post->ID, '_nh_mb_col_heading_1', true );
-		if ( $col1_h === '' ) {
-			$col1_h = $default_col1_h_en;
-		}
-
-		$col2_h = get_post_meta( $post->ID, '_nh_mb_col_heading_2', true );
-		if ( $col2_h === '' ) {
-			$col2_h = $default_col2_h_en;
-		}
-
-		$col3_h = get_post_meta( $post->ID, '_nh_mb_col_heading_3', true );
-		if ( $col3_h === '' ) {
-			$col3_h = $default_col3_h_en;
-		}
+		$col1_h  = get_post_meta( $post->ID, '_nh_mb_col_heading_1', true );
+		$col2_h  = get_post_meta( $post->ID, '_nh_mb_col_heading_2', true );
+		$col3_h  = get_post_meta( $post->ID, '_nh_mb_col_heading_3', true );
 
 		$col1_c = get_post_meta( $post->ID, '_nh_mb_col_content_1', true ) ?: '';
 		$col2_c = get_post_meta( $post->ID, '_nh_mb_col_content_2', true ) ?: '';
@@ -445,50 +424,79 @@ if ( is_admin() ) {
 		<p>
 			<label for="nh_mb_enabled">
 				<input type="checkbox" id="nh_mb_enabled" name="nh_mb_enabled" value="1" <?php checked( $enabled, '1' ); ?> />
-				Enable block on frontend
+				<?php esc_html_e( 'Enable block on frontend', 'nh-theme' ); ?>
 			</label>
-			<br/><small class="description">Uncheck to hide this block on the product page.</small>
+			<br/><small class="description"><?php esc_html_e( 'Uncheck to hide this block on the product page.', 'nh-theme' ); ?></small>
 		</p>
 
 		<hr />
 
 		<p>
-			<label for="nh_mb_extra_heading"><strong>Block H2 heading</strong></label><br />
-			<input type="text" id="nh_mb_extra_heading" name="nh_mb_extra_heading" value="<?php echo esc_attr( $heading ); ?>" style="width:100%;" />
-			<small class="description">Editable H2 heading displayed above the 3 columns.</small>
+			<label for="nh_mb_extra_heading"><strong><?php esc_html_e( 'Block H2 heading', 'nh-theme' ); ?></strong></label><br />
+			<input
+				type="text"
+				id="nh_mb_extra_heading"
+				name="nh_mb_extra_heading"
+				value="<?php echo esc_attr( $heading ); ?>"
+				placeholder="<?php echo esc_attr( $default_heading ); ?>"
+				style="width:100%;"
+			/>
+			<small class="description"><?php esc_html_e( 'Editable H2 heading displayed above the 3 columns. Placeholder shows translated default when empty.', 'nh-theme' ); ?></small>
 		</p>
 
 		<hr />
 
-		<p><strong>Column 1</strong></p>
+		<p><strong><?php esc_html_e( 'Column 1', 'nh-theme' ); ?></strong></p>
 		<p>
-			<label for="nh_mb_col_heading_1">Column heading</label><br />
-			<input type="text" id="nh_mb_col_heading_1" name="nh_mb_col_heading_1" value="<?php echo esc_attr( $col1_h ); ?>" style="width:100%;" />
+			<label for="nh_mb_col_heading_1"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
+			<input
+				type="text"
+				id="nh_mb_col_heading_1"
+				name="nh_mb_col_heading_1"
+				value="<?php echo esc_attr( $col1_h ); ?>"
+				placeholder="<?php echo esc_attr( $default_col1_h ); ?>"
+				style="width:100%;"
+			/>
 		</p>
 		<p>
-			<label for="nh_mb_col_content_1">Column content (HTML allowed)</label><br />
+			<label for="nh_mb_col_content_1"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
 			<textarea id="nh_mb_col_content_1" name="nh_mb_col_content_1" rows="4" style="width:100%;"><?php echo esc_textarea( $col1_c ); ?></textarea>
 		</p>
 
-		<p><strong>Column 2</strong></p>
+		<p><strong><?php esc_html_e( 'Column 2', 'nh-theme' ); ?></strong></p>
 		<p>
-			<label for="nh_mb_col_heading_2">Column heading</label><br />
-			<input type="text" id="nh_mb_col_heading_2" name="nh_mb_col_heading_2" value="<?php echo esc_attr( $col2_h ); ?>" style="width:100%;" />
+			<label for="nh_mb_col_heading_2"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
+			<input
+				type="text"
+				id="nh_mb_col_heading_2"
+				name="nh_mb_col_heading_2"
+				value="<?php echo esc_attr( $col2_h ); ?>"
+				placeholder="<?php echo esc_attr( $default_col2_h ); ?>"
+				style="width:100%;"
+			/>
 		</p>
 		<p>
-			<label for="nh_mb_col_content_2">Column content (HTML allowed)</label><br />
+			<label for="nh_mb_col_content_2"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
 			<textarea id="nh_mb_col_content_2" name="nh_mb_col_content_2" rows="4" style="width:100%;"><?php echo esc_textarea( $col2_c ); ?></textarea>
 		</p>
 
-		<p><strong>Column 3</strong></p>
+		<p><strong><?php esc_html_e( 'Column 3', 'nh-theme' ); ?></strong></p>
 		<p>
-			<label for="nh_mb_col_heading_3">Column heading</label><br />
-			<input type="text" id="nh_mb_col_heading_3" name="nh_mb_col_heading_3" value="<?php echo esc_attr( $col3_h ); ?>" style="width:100%;" />
+			<label for="nh_mb_col_heading_3"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
+			<input
+				type="text"
+				id="nh_mb_col_heading_3"
+				name="nh_mb_col_heading_3"
+				value="<?php echo esc_attr( $col3_h ); ?>"
+				placeholder="<?php echo esc_attr( $default_col3_h ); ?>"
+				style="width:100%;"
+			/>
 		</p>
 		<p>
-			<label for="nh_mb_col_content_3">Column content (HTML allowed)</label><br />
+			<label for="nh_mb_col_content_3"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
 			<textarea id="nh_mb_col_content_3" name="nh_mb_col_content_3" rows="4" style="width:100%;"><?php echo esc_textarea( $col3_c ); ?></textarea>
 		</p>
+
 		<?php
 	}
 
@@ -659,6 +667,12 @@ if ( is_admin() ) {
 			delete_post_meta( $post_id, '_nh_home_hero_slides' );
 		}
 	} );
+}
+
+// Enqueue Dashicons on the frontend (moved outside admin-only block)
+add_action( 'wp_enqueue_scripts', 'nh_mb_enqueue_dashicons' );
+function nh_mb_enqueue_dashicons() {
+	wp_enqueue_style( 'dashicons' );
 }
 
 // 2) ALWAYS (admin & front): register product tabs only when there is content
@@ -1012,28 +1026,27 @@ function nh_mb_get_block_html() {
 		return '';
 	}
 
-	$heading = get_post_meta( $post_id, '_nh_mb_extra_heading', true );
-	$col1_h  = get_post_meta( $post_id, '_nh_mb_col_heading_1', true );
-	$col2_h  = get_post_meta( $post_id, '_nh_mb_col_heading_2', true );
-	$col3_h  = get_post_meta( $post_id, '_nh_mb_col_heading_3', true );
+	// get raw stored meta
+	$heading_raw = get_post_meta( $post_id, '_nh_mb_extra_heading', true );
+	$col1_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_1', true );
+	$col2_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_2', true );
+	$col3_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_3', true );
 
 	$col1_c  = get_post_meta( $post_id, '_nh_mb_col_content_1', true );
 	$col2_c  = get_post_meta( $post_id, '_nh_mb_col_content_2', true );
 	$col3_c  = get_post_meta( $post_id, '_nh_mb_col_content_3', true );
 
-	// Front-end fallback (translatable)
-	if ( empty( $heading ) ) {
-		$heading = __( 'Use cases and compatibility', 'nh-theme' );
-	}
-	if ( empty( $col1_h ) ) {
-		$col1_h = __( 'Ideal for light constructions', 'nh-theme' );
-	}
-	if ( empty( $col2_h ) ) {
-		$col2_h = __( 'Consider thicker alternatives', 'nh-theme' );
-	}
-	if ( empty( $col3_h ) ) {
-		$col3_h = __( 'Mounting advice for stability', 'nh-theme' );
-	}
+	// Translatable defaults (standard values)
+	$default_heading = __( 'Use cases and compatibility', 'nh-theme' );
+	$default_col1_h  = __( 'Ideal for use', 'nh-theme' );
+	$default_col2_h  = __( 'Consider alternatives', 'nh-theme' );
+	$default_col3_h  = __( 'Pay attention', 'nh-theme' );
+
+	// Use stored value when present, otherwise use translatable default
+	$heading = $heading_raw !== '' ? $heading_raw : $default_heading;
+	$col1_h  = $col1_raw  !== '' ? $col1_raw  : $default_col1_h;
+	$col2_h  = $col2_raw  !== '' ? $col2_raw  : $default_col2_h;
+	$col3_h  = $col3_raw  !== '' ? $col3_raw  : $default_col3_h;
 
 	// If no content, skip output
 	if ( empty( $col1_c ) && empty( $col2_c ) && empty( $col3_c ) ) {
