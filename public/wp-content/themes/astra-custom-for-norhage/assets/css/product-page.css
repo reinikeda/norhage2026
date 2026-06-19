@@ -922,3 +922,130 @@
   content: "* ";
   color: #8a9691;
 }
+
+/* ==========================================================================
+   8) Meta box table
+   ========================================================================== */
+
+/* Product extra block — Dashicons version */
+.nh-mb-product-extra {
+  background: linear-gradient(180deg, var(--ui-bg-soft) 0%, rgba(255,255,255,0.85) 100%);
+  padding: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--ui-border);
+  box-shadow: 0 8px 20px rgba(30,57,50,0.04);
+  margin-top: 1.5rem;
+}
+
+/* H2 */
+.nh-mb-product-extra > h2 {
+  color: var(--ui-bg-dark);
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin: 0 0 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* H2 dashicon */
+.nh-mb-product-extra > h2 .dashicons {
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nh-green);
+  background: rgba(0,112,74,0.06);
+  border-radius: 4px;
+  flex: 0 0 36px;
+}
+
+/* Columns wrapper */
+.nh-mb-columns {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+/* Card */
+.nh-mb-column {
+  flex: 1 1 260px;
+  min-width: 220px;
+  background: var(--ui-bg-content);
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(30,57,50,0.04);
+  box-shadow: 0 4px 12px rgba(16,24,20,0.03);
+  box-sizing: border-box;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Hover / focus lift */
+.nh-mb-column:hover,
+.nh-mb-column:focus-within {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(30,57,50,0.06);
+  border-color: var(--nh-mint);
+}
+
+/* Column heading with inline Dashicon */
+.nh-mb-col-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  color: var(--ui-bg-dark);
+  font-size: 1.05rem;
+}
+
+/* Dashicon inside the column heading */
+.nh-mb-col-title .dashicons {
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: px;
+  padding: 4px;
+  flex: 0 0 36px;
+  color: currentColor;
+}
+
+/* Per-column icon colours/backgrounds */
+.nh-mb-columns .nh-mb-column:nth-child(1) .nh-mb-col-title .dashicons {
+  color: var(--nh-green);
+  background-color: rgba(0,112,74,0.06);
+}
+.nh-mb-columns .nh-mb-column:nth-child(2) .nh-mb-col-title .dashicons {
+  color: var(--nh-gold);
+  background-color: rgba(200,159,99,0.06);
+}
+.nh-mb-columns .nh-mb-column:nth-child(3) .nh-mb-col-title .dashicons {
+  color: var(--nh-forest);
+  background-color: rgba(30,57,50,0.06);
+}
+
+/* Column text */
+.nh-mb-col-text {
+  color: var(--ui-text);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  margin-top: 6px;
+  flex: 1 1 auto;
+}
+
+/* Responsive stacking */
+@media (max-width: 768px) {
+  .nh-mb-columns { gap: 14px; }
+  .nh-mb-column { flex-basis: 100%; min-width: 100%; }
+  .nh-mb-product-extra { padding: 20px; }
+  .nh-mb-product-extra > h2 { font-size: 1.25rem; }
+}
