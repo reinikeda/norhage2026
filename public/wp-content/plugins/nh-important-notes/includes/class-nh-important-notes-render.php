@@ -37,7 +37,7 @@ final class Render {
 			$title = get_the_title($note);
 
 			$items_html .= '<li class="nh-in-item">'
-				. '<span class="nh-in-ico dashicons ' . esc_attr($icon) . '" aria-hidden="true"></span>'
+				. '<span class="nh-in-ico-wrap"><span class="nh-in-ico dashicons ' . esc_attr($icon) . '" aria-hidden="true"></span></span>'
 				. '<span class="nh-in-txt"><strong>' . esc_html($title) . ':</strong> ' . wp_kses_post($text) . '</span>'
 				. '</li>';
 		}
@@ -48,7 +48,7 @@ final class Render {
 			'<section class="nh-important-notes" aria-label="' . esc_attr__('Important notes', 'nh-important-notes') . '">'
 			. '<div class="nh-in-head">'
 			. '<span class="nh-in-head-ico dashicons dashicons-info-outline" aria-hidden="true"></span>'
-			. '<h3 class="nh-in-title">' . esc_html__('Important information', 'nh-important-notes') . '</h3>'
+			. '<h2 class="nh-in-title">' . esc_html__('Important information', 'nh-important-notes') . '</h2>'
 			. '</div>'
 			. '<ul class="nh-in-list">' . $items_html . '</ul>'
 			. '</section>';

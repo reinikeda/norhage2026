@@ -7,6 +7,42 @@
 /* ==========================================================================
    1) General
    ========================================================================== */
+
+.woocommerce-Tabs-panel--description h2,
+.woocommerce-Tabs-panel--description h3,
+.woocommerce-Tabs-panel--description h4,
+.woocommerce-Tabs-panel--description h5 {
+    color: var(--nh-forest);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.woocommerce-Tabs-panel--description h2 {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    margin: 3rem 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--nh-mint);
+}
+
+.woocommerce-Tabs-panel--description h3 {
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    margin: 2.5rem 0 1rem;
+}
+
+.woocommerce-Tabs-panel--description h4 {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    margin: 2rem 0 0.75rem;
+}
+
+.woocommerce-Tabs-panel--description h5 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--nh-green);
+    margin: 1.75rem 0 0.75rem;
+}
+
 .secondary-title {
   font-size: 13px;
   color: var(--ui-muted);
@@ -937,30 +973,43 @@
   margin-top: 1.5rem;
 }
 
-/* H2 */
+/* H2 title — matches Important Information heading style */
 .nh-mb-product-extra > h2 {
-  color: var(--ui-bg-dark);
-  font-size: 1.6rem;
-  line-height: 1.2;
-  margin: 0 0 18px;
-  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--nh-forest, #1E3932) !important;
+  letter-spacing: 0.07em !important;
+  text-transform: none !important;
+  margin: 0 0 16px 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid rgba(195, 232, 198, 0.6) !important;
+  line-height: 1 !important;
+  background: none !important;
 }
 
-/* H2 dashicon */
+/* Kill any ::after pseudo added by theme H2 styles */
+.nh-mb-product-extra > h2::after {
+  display: none !important;
+}
+
+/* H2 dashicon — matches .nh-in-head-ico exactly */
+.nh-mb-product-extra > h2 > .dashicons,
 .nh-mb-product-extra > h2 .dashicons {
-  font-size: 20px;
-  width: 36px;
-  height: 36px;
+  font-size: 15px !important;
+  width: 15px !important;
+  height: 15px !important;
+  line-height: 15px !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--nh-green);
-  background: rgba(0,112,74,0.06);
-  border-radius: 4px;
-  flex: 0 0 36px;
+  color: var(--nh-green, #00704A);
+  background: none;
+  border-radius: 0;
+  flex: 0 0 auto;
+  opacity: 0.9;
 }
 
 /* Columns wrapper */
@@ -1013,7 +1062,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: px;
+  border-radius: 4px;
   padding: 4px;
   flex: 0 0 36px;
   color: currentColor;
@@ -1047,5 +1096,5 @@
   .nh-mb-columns { gap: 14px; }
   .nh-mb-column { flex-basis: 100%; min-width: 100%; }
   .nh-mb-product-extra { padding: 20px; }
-  .nh-mb-product-extra > h2 { font-size: 1.25rem; }
+  .nh-mb-product-extra > h2 { font-size: 16px !important; }
 }

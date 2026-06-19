@@ -1057,7 +1057,7 @@ function nh_mb_get_block_html() {
 
 	// Build HTML with Dashicons-enhanced headings (Styles moved to style.css)
 	$html  = '<section id="' . esc_attr( $block_id ) . '" class="nh-mb-product-extra" role="region" aria-labelledby="' . esc_attr( $block_id . '-title' ) . '">';
-	$html .= '<h2 id="' . esc_attr( $block_id . '-title' ) . '"> ' . esc_html( $heading ) . '</h2>';
+	$html .= '<h2 id="' . esc_attr( $block_id . '-title' ) . '"> <span class="dashicons dashicons-info-outline" aria-hidden="true"></span>' . esc_html( $heading ) . '</h2>';
 
 	$html .= '<div class="nh-mb-columns">';
 
