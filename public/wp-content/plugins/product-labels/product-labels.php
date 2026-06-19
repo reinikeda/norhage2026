@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Product Labels
- * Description: Sale %, New (30 days), Low stock (<3). Shows on loop card and on the first image of single product.
+ * Description: Sale %, New (30 days), Low stock (<3), Custom Size. Shows on loop card and on the first image of single product.
  * Author: Daiva Reinike
- * Version: 0.9
+ * Version: 1.0
  * License: GPL-2.0+
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -31,7 +31,7 @@ class NHG_Product_Labels {
 
 		/* ========= LOOP (archive/category/shop) =========
 		 * We print TWO containers:
-		 * 1) nhg-labels--loop  → anchored to <li.product>   (NEW + LOW)
+		 * 1) nhg-labels--loop  → anchored to <li.product>   (NEW + LOW + CUSTOM)
 		 * 2) nhg-labels--thumb → anchored inside image link (SALE)
 		 */
 		add_action( 'woocommerce_before_shop_loop_item',          [ $this, 'output_loop_non_sale' ], 9 ); // before <a>, sibling of thumbnail
@@ -54,7 +54,7 @@ class NHG_Product_Labels {
 			'nhg-product-labels',
 			plugins_url( 'css/labels.css', __FILE__ ),
 			[],
-			'0.9'
+			'1.0'
 		);
 	}
 
@@ -149,6 +149,14 @@ class NHG_Product_Labels {
 			}
 		}
 
+		// CUSTOM SIZE
+		if ( $this->is_custom_cut_product( $product ) ) {
+			$labels[] = [ 
+				'key'  => 'custom', 
+				'text' => __( 'Custom size', 'nhg-labels' ) 
+			];
+		}
+
 		// LOW STOCK (<3, managed, no backorders)
 		// NOTE: Only show the global LOW label for SIMPLE products.
 		$low_any = false;
@@ -167,11 +175,47 @@ class NHG_Product_Labels {
 		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg-labels' ) ];
 
 		usort( $labels, function( $a, $b ) {
-			$order = [ 'sale' => 1, 'new' => 2, 'low' => 3 ];
+			$order = [ 'sale' => 1, 'new' => 2, 'custom' => 3, 'low' => 4 ];
 			return ( $order[ $a['key'] ] ?? 99 ) <=> ( $order[ $b['key'] ] ?? 99 );
 		});
 
 		return $labels;
+	}
+
+	/**
+	 * Check if product is custom cut
+	 */
+	private function is_custom_cut_product( WC_Product $product ) : bool {
+		// Check if the nh_cc_is_enabled_product function exists and if product has custom cut enabled
+		if ( function_exists( 'nh_cc_is_enabled_product' ) ) {
+			return nh_cc_is_enabled_product( $product->get_id() );
+		}
+		
+		// Fallback check for body class (in case we're on a product page)
+		if ( 
+			( is_product() && in_array( 'nh-has-custom-cut', get_body_class() ) ) ||
+			( ! is_admin() && ( is_product_category() || is_shop() ) && $this->has_custom_cut_term( $product ) )
+		) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Check if product has custom cut term
+	 */
+	private function has_custom_cut_term( WC_Product $product ) : bool {
+		// Check if product has a custom cut attribute or term
+		$terms = get_the_terms( $product->get_id(), 'product_tag' );
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				if ( strpos( strtolower( $term->name ), 'custom' ) !== false ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private function has_label( array $labels, string $key ) : bool {
@@ -205,6 +249,16 @@ class NHG_Product_Labels {
 				continue;
 			}
 
+			// CUSTOM SIZE — badge
+			if ( 'custom' === $key ) {
+				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
+					echo '<span class="nhg-badge nhg-badge--custom">' . esc_html( $text ) . '</span>';
+				} else if ( 'single' === $context ) {
+					echo '<span class="nhg-badge nhg-badge--custom">' . esc_html( $text ) . '</span>';
+				}
+				continue;
+			}
+
 			// LOW STOCK — small pill (loop only)
 			if ( 'low' === $key ) {
 				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
@@ -227,7 +281,7 @@ class NHG_Product_Labels {
 
 	/** ---------- Hooks (loop) ---------- */
 
-	// LOOP: output NON-SALE badges (NEW / LOW) at the card level (<li.product>)
+	// LOOP: output NON-SALE badges (NEW / LOW / CUSTOM) at the card level (<li.product>)
 	public function output_loop_non_sale() {
 		global $product;
 		if ( empty( $product ) || ! $product instanceof WC_Product ) return;

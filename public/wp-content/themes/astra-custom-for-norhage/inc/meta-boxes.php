@@ -2,7 +2,7 @@
 // 1) ADMIN ONLY: metabox registration & save
 if ( is_admin() ) {
 
-	// Register the Downloads, Video, Custom Cutting, and Homepage Hero Slider metaboxes
+	// Register the Downloads, Video, Custom Cutting, Homepage Hero Slider and Product Extra metaboxes
 	add_action( 'add_meta_boxes', function () {
 		add_meta_box(
 			'nrh_downloads_box',
@@ -39,7 +39,22 @@ if ( is_admin() ) {
 			'normal',
 			'high'
 		);
+
+		add_meta_box(
+			'nh_mb_product_extra',
+			'Product extra block',
+			'nh_mb_render_product_extra_metabox',
+			'product',
+			'normal',
+			'low'
+		);
 	} );
+
+	// Ensure Dashicons are available on the frontend
+	add_action( 'wp_enqueue_scripts', 'nh_mb_enqueue_dashicons' );
+	function nh_mb_enqueue_dashicons() {
+		wp_enqueue_style( 'dashicons' );
+	}
 
 	// Render the Downloads metabox
 	function nrh_downloads_box_html( $post ) {
@@ -388,7 +403,96 @@ if ( is_admin() ) {
 		<?php
 	}
 
-	// Save Downloads, Video, and Custom Cutting meta
+	// --- Render Product Extra metabox (admin) ---
+	function nh_mb_render_product_extra_metabox( $post ) {
+		wp_nonce_field( 'nh_mb_product_extra_nonce', 'nh_mb_product_extra_nonce' );
+
+		// Admin prefill in English but translatable via nh-theme PO files
+		$default_heading_en = __( 'Use cases and compatibility', 'nh-theme' );
+		$default_col1_h_en  = __( 'Ideal for use', 'nh-theme' );
+		$default_col2_h_en  = __( 'Consider alternatives', 'nh-theme' );
+		$default_col3_h_en  = __( 'Pay attention', 'nh-theme' );
+
+		$heading = get_post_meta( $post->ID, '_nh_mb_extra_heading', true );
+		if ( $heading === '' ) {
+			$heading = $default_heading_en;
+		}
+
+		$col1_h = get_post_meta( $post->ID, '_nh_mb_col_heading_1', true );
+		if ( $col1_h === '' ) {
+			$col1_h = $default_col1_h_en;
+		}
+
+		$col2_h = get_post_meta( $post->ID, '_nh_mb_col_heading_2', true );
+		if ( $col2_h === '' ) {
+			$col2_h = $default_col2_h_en;
+		}
+
+		$col3_h = get_post_meta( $post->ID, '_nh_mb_col_heading_3', true );
+		if ( $col3_h === '' ) {
+			$col3_h = $default_col3_h_en;
+		}
+
+		$col1_c = get_post_meta( $post->ID, '_nh_mb_col_content_1', true ) ?: '';
+		$col2_c = get_post_meta( $post->ID, '_nh_mb_col_content_2', true ) ?: '';
+		$col3_c = get_post_meta( $post->ID, '_nh_mb_col_content_3', true ) ?: '';
+
+		$enabled = get_post_meta( $post->ID, '_nh_mb_enabled', true );
+		if ( $enabled === '' ) {
+			$enabled = '0'; // DEFAULT: disabled
+		}
+		?>
+		<p>
+			<label for="nh_mb_enabled">
+				<input type="checkbox" id="nh_mb_enabled" name="nh_mb_enabled" value="1" <?php checked( $enabled, '1' ); ?> />
+				Enable block on frontend
+			</label>
+			<br/><small class="description">Uncheck to hide this block on the product page.</small>
+		</p>
+
+		<hr />
+
+		<p>
+			<label for="nh_mb_extra_heading"><strong>Block H2 heading</strong></label><br />
+			<input type="text" id="nh_mb_extra_heading" name="nh_mb_extra_heading" value="<?php echo esc_attr( $heading ); ?>" style="width:100%;" />
+			<small class="description">Editable H2 heading displayed above the 3 columns.</small>
+		</p>
+
+		<hr />
+
+		<p><strong>Column 1</strong></p>
+		<p>
+			<label for="nh_mb_col_heading_1">Column heading</label><br />
+			<input type="text" id="nh_mb_col_heading_1" name="nh_mb_col_heading_1" value="<?php echo esc_attr( $col1_h ); ?>" style="width:100%;" />
+		</p>
+		<p>
+			<label for="nh_mb_col_content_1">Column content (HTML allowed)</label><br />
+			<textarea id="nh_mb_col_content_1" name="nh_mb_col_content_1" rows="4" style="width:100%;"><?php echo esc_textarea( $col1_c ); ?></textarea>
+		</p>
+
+		<p><strong>Column 2</strong></p>
+		<p>
+			<label for="nh_mb_col_heading_2">Column heading</label><br />
+			<input type="text" id="nh_mb_col_heading_2" name="nh_mb_col_heading_2" value="<?php echo esc_attr( $col2_h ); ?>" style="width:100%;" />
+		</p>
+		<p>
+			<label for="nh_mb_col_content_2">Column content (HTML allowed)</label><br />
+			<textarea id="nh_mb_col_content_2" name="nh_mb_col_content_2" rows="4" style="width:100%;"><?php echo esc_textarea( $col2_c ); ?></textarea>
+		</p>
+
+		<p><strong>Column 3</strong></p>
+		<p>
+			<label for="nh_mb_col_heading_3">Column heading</label><br />
+			<input type="text" id="nh_mb_col_heading_3" name="nh_mb_col_heading_3" value="<?php echo esc_attr( $col3_h ); ?>" style="width:100%;" />
+		</p>
+		<p>
+			<label for="nh_mb_col_content_3">Column content (HTML allowed)</label><br />
+			<textarea id="nh_mb_col_content_3" name="nh_mb_col_content_3" rows="4" style="width:100%;"><?php echo esc_textarea( $col3_c ); ?></textarea>
+		</p>
+		<?php
+	}
+
+	// Save Downloads, Video, Custom Cutting, and Product Extra meta
 	add_action( 'save_post_product', function ( $post_id ) {
 		// Downloads
 		if (
@@ -459,6 +563,45 @@ if ( is_admin() ) {
 
 			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
 		}
+
+		// --- NEW: Save Product Extra meta ---
+		if ( isset( $_POST['nh_mb_product_extra_nonce'] ) && wp_verify_nonce( $_POST['nh_mb_product_extra_nonce'], 'nh_mb_product_extra_nonce' ) && current_user_can( 'edit_post', $post_id ) ) {
+
+			// Enabled checkbox
+			$enabled = isset( $_POST['nh_mb_enabled'] ) && $_POST['nh_mb_enabled'] === '1' ? '1' : '0';
+			update_post_meta( $post_id, '_nh_mb_enabled', $enabled );
+
+			// Headings (sanitize text)
+			$headings = [
+				'nh_mb_extra_heading'    => '_nh_mb_extra_heading',
+				'nh_mb_col_heading_1'    => '_nh_mb_col_heading_1',
+				'nh_mb_col_heading_2'    => '_nh_mb_col_heading_2',
+				'nh_mb_col_heading_3'    => '_nh_mb_col_heading_3',
+			];
+
+			foreach ( $headings as $field => $meta_key ) {
+				if ( isset( $_POST[ $field ] ) ) {
+					$value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+					update_post_meta( $post_id, $meta_key, $value );
+				} else {
+					delete_post_meta( $post_id, $meta_key );
+				}
+			}
+
+			// Column contents (allow safe HTML)
+			for ( $i = 1; $i <= 3; $i++ ) {
+				$key = 'nh_mb_col_content_' . $i;
+				$meta_key = '_nh_mb_col_content_' . $i;
+
+				if ( isset( $_POST[ $key ] ) ) {
+					$value = wp_kses_post( wp_unslash( $_POST[ $key ] ) );
+					update_post_meta( $post_id, $meta_key, $value );
+				} else {
+					delete_post_meta( $post_id, $meta_key );
+				}
+			}
+		}
+
 	} );
 
 	// Save Homepage Hero Slider meta
@@ -804,3 +947,126 @@ add_action( 'save_post_product', function ( $post_id ) {
 		delete_post_meta( $post_id, NC_BUNDLE_META_KEY );
 	}
 }, 10 );
+
+// --- NEW: Inject the product extra block into the Description tab (frontend) ---
+add_filter( 'woocommerce_product_tabs', 'nh_mb_add_to_description_tab', 99 );
+function nh_mb_add_to_description_tab( $tabs ) {
+	// Determine product id
+	$product_id = 0;
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		$product_id = get_the_ID();
+	}
+	if ( ! $product_id ) {
+		global $product;
+		if ( $product instanceof WC_Product ) {
+			$product_id = $product->get_id();
+		}
+	}
+	if ( ! $product_id ) {
+		return $tabs;
+	}
+
+	// Only inject when enabled for this product
+	if ( get_post_meta( $product_id, '_nh_mb_enabled', true ) !== '1' ) {
+		return $tabs;
+	}
+
+	if ( isset( $tabs['description'] ) ) {
+		$tabs['description']['callback'] = 'nh_mb_description_tab_wrapper';
+	}
+
+	return $tabs;
+}
+
+function nh_mb_description_tab_wrapper() {
+	// Output original description
+	if ( function_exists( 'woocommerce_product_description_tab' ) ) {
+		woocommerce_product_description_tab();
+	} else {
+		the_content();
+	}
+
+	// Append our block
+	echo nh_mb_get_block_html();
+}
+
+/**
+ * Helper: build and return the frontend HTML for the 3-column block
+ */
+function nh_mb_get_block_html() {
+	global $post, $product;
+
+	// Ensure we have a post/product
+	$post_id = 0;
+	if ( isset( $post->ID ) ) {
+		$post_id = $post->ID;
+	} elseif ( $product instanceof WC_Product ) {
+		$post_id = $product->get_id();
+	}
+	if ( ! $post_id ) {
+		return '';
+	}
+
+	// Defensive: only show when enabled
+	if ( get_post_meta( $post_id, '_nh_mb_enabled', true ) !== '1' ) {
+		return '';
+	}
+
+	$heading = get_post_meta( $post_id, '_nh_mb_extra_heading', true );
+	$col1_h  = get_post_meta( $post_id, '_nh_mb_col_heading_1', true );
+	$col2_h  = get_post_meta( $post_id, '_nh_mb_col_heading_2', true );
+	$col3_h  = get_post_meta( $post_id, '_nh_mb_col_heading_3', true );
+
+	$col1_c  = get_post_meta( $post_id, '_nh_mb_col_content_1', true );
+	$col2_c  = get_post_meta( $post_id, '_nh_mb_col_content_2', true );
+	$col3_c  = get_post_meta( $post_id, '_nh_mb_col_content_3', true );
+
+	// Front-end fallback (translatable)
+	if ( empty( $heading ) ) {
+		$heading = __( 'Use cases and compatibility', 'nh-theme' );
+	}
+	if ( empty( $col1_h ) ) {
+		$col1_h = __( 'Ideal for light constructions', 'nh-theme' );
+	}
+	if ( empty( $col2_h ) ) {
+		$col2_h = __( 'Consider thicker alternatives', 'nh-theme' );
+	}
+	if ( empty( $col3_h ) ) {
+		$col3_h = __( 'Mounting advice for stability', 'nh-theme' );
+	}
+
+	// If no content, skip output
+	if ( empty( $col1_c ) && empty( $col2_c ) && empty( $col3_c ) ) {
+		return '';
+	}
+
+	$block_id = 'nh-mb-extra-' . $post_id;
+
+	// Build HTML with Dashicons-enhanced headings (Styles moved to style.css)
+	$html  = '<section id="' . esc_attr( $block_id ) . '" class="nh-mb-product-extra" role="region" aria-labelledby="' . esc_attr( $block_id . '-title' ) . '">';
+	$html .= '<h2 id="' . esc_attr( $block_id . '-title' ) . '"> ' . esc_html( $heading ) . '</h2>';
+
+	$html .= '<div class="nh-mb-columns">';
+
+	// Column 1
+	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col1_h ) . '">';
+	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-yes" aria-hidden="true"></span>' . esc_html( $col1_h ) . '</span>';
+	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col1_c ) . '</div>';
+	$html .= '</div>';
+
+	// Column 2
+	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col2_h ) . '">';
+	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-upload" aria-hidden="true"></span>' . esc_html( $col2_h ) . '</span>';
+	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col2_c ) . '</div>';
+	$html .= '</div>';
+
+	// Column 3
+	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col3_h ) . '">';
+	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-warning" aria-hidden="true"></span>' . esc_html( $col3_h ) . '</span>';
+	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col3_c ) . '</div>';
+	$html .= '</div>';
+
+	$html .= '</div></section>';
+
+	return $html;
+}
