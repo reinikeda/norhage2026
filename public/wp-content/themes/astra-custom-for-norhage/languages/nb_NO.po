@@ -3,10 +3,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-"
-"norhage\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-19 10:02+0300\n"
+"PO-Revision-Date: 2026-06-19 16:06+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -86,11 +85,8 @@ msgid "Thank you!"
 msgstr "Takk!"
 
 #: functions.php:637
-msgid ""
-"Subscription is temporarily unavailable. Please contact site administrator."
-msgstr ""
-"Abonnementet er midlertidig utilgjengelig. Vennligst kontakt "
-"nettstedsadministratoren."
+msgid "Subscription is temporarily unavailable. Please contact site administrator."
+msgstr "Abonnementet er midlertidig utilgjengelig. Vennligst kontakt nettstedsadministratoren."
 
 #: functions.php:662
 msgid "Could not connect to email service. Please try again."
@@ -109,16 +105,10 @@ msgid "Ask an expert"
 msgstr "Spør en ekspert"
 
 #: functions.php:881
-msgid ""
-"Image is for illustrative purposes only. Actual product color, shape, or "
-"other features may vary."
-msgstr ""
-"Produktbilder er kun til referanse. Faktisk produktfarge, form eller andre "
-"egenskaper kan avvike."
+msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
+msgstr "Produktbilder er kun til referanse. Faktisk produktfarge, form eller andre egenskaper kan avvike."
 
-#: inc/basket-customize.php:75 inc/basket-customize.php:84
-#: inc/order-attributes.php:96 inc/order-attributes.php:311
-#: inc/product-customize.php:540 inc/product-customize.php:589
+#: inc/basket-customize.php:75 inc/basket-customize.php:84 inc/order-attributes.php:96 inc/order-attributes.php:311 inc/product-customize.php:540 inc/product-customize.php:589
 msgid "Length"
 msgstr "Lengde"
 
@@ -130,8 +120,7 @@ msgstr "Alle"
 msgid "Blog"
 msgstr "Blogg"
 
-#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
-#: inc/blog.php:30 inc/blog.php:31
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29 inc/blog.php:30 inc/blog.php:31
 msgid "Blog: %s"
 msgstr "Blogg: %s"
 
@@ -268,9 +257,7 @@ msgstr ""
 msgid "Enable custom cutting"
 msgstr ""
 
-#: inc/meta-boxes.php:159 inc/order-attributes.php:111
-#: inc/order-attributes.php:312 inc/product-customize.php:231
-#: inc/product-customize.php:551 inc/product-customize.php:593
+#: inc/meta-boxes.php:159 inc/order-attributes.php:111 inc/order-attributes.php:312 inc/product-customize.php:231 inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
 msgstr "Skjæreavgift per ark"
 
@@ -295,10 +282,7 @@ msgid "Cutting step (mm)"
 msgstr ""
 
 #: inc/meta-boxes.php:190
-msgid ""
-"Weight is taken from the WooCommerce \"Weight (kg)\" field. For custom "
-"cutting, that weight is interpreted as kg per m2 (set per product or per "
-"variation)."
+msgid "Weight is taken from the WooCommerce \"Weight (kg)\" field. For custom cutting, that weight is interpreted as kg per m2 (set per product or per variation)."
 msgstr ""
 
 #: inc/meta-boxes.php:205
@@ -306,8 +290,7 @@ msgid "Set a static homepage first in Settings > Reading."
 msgstr ""
 
 #: inc/meta-boxes.php:210
-msgid ""
-"This slider is editable only on the page currently assigned as the homepage."
+msgid "This slider is editable only on the page currently assigned as the homepage."
 msgstr ""
 
 #: inc/meta-boxes.php:232
@@ -323,9 +306,7 @@ msgid "No image selected"
 msgstr ""
 
 #: inc/meta-boxes.php:269
-msgid ""
-"Add up to 5 homepage slides. Each slide has an image, H2 heading, and "
-"paragraph text."
+msgid "Add up to 5 homepage slides. Each slide has an image, H2 heading, and paragraph text."
 msgstr ""
 
 #: inc/meta-boxes.php:281
@@ -361,9 +342,7 @@ msgid "Product extra's"
 msgstr ""
 
 #: inc/meta-boxes.php:673
-msgid ""
-"Select one or more products that can be added to this product as add-ons. "
-"Only simple products or product-variants are allowed."
+msgid "Select one or more products that can be added to this product as add-ons. Only simple products or product-variants are allowed."
 msgstr ""
 
 #: inc/meta-boxes.php:677
@@ -390,13 +369,11 @@ msgstr "Sök produkter & varianter..."
 msgid "Remove row"
 msgstr ""
 
-#: inc/order-attributes.php:92 inc/order-attributes.php:310
-#: inc/product-customize.php:539 inc/product-customize.php:588
+#: inc/order-attributes.php:92 inc/order-attributes.php:310 inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
 msgstr "Bredde"
 
-#: inc/product-customize.php:36 inc/product-customize.php:37
-#: inc/product-customize.php:59
+#: inc/product-customize.php:36 inc/product-customize.php:37 inc/product-customize.php:59
 msgid "Back to bundle"
 msgstr "Tilbake til pakken"
 
@@ -496,13 +473,11 @@ msgstr "Lengden må være innstilt i trinn på %1$d mm, med start ved %2$d mm."
 msgid "Sale"
 msgstr "Salg"
 
-#: inc/search.php:14 template-parts/headers/header-main.php:98
-#: template-parts/headers/header-main.php:203
+#: inc/search.php:14 template-parts/headers/header-main.php:98 template-parts/headers/header-main.php:203
 msgid "Search products…"
 msgstr "Søk etter produkter…"
 
-#: inc/search.php:15 template-parts/headers/header-main.php:93
-#: template-parts/headers/header-main.php:198
+#: inc/search.php:15 template-parts/headers/header-main.php:93 template-parts/headers/header-main.php:198
 msgid "Search products"
 msgstr "Søk etter produkter"
 
@@ -556,8 +531,7 @@ msgstr "Tehi AS"
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
 msgstr "Vardheivegen 68, 4340 Bryne, Norge"
 
-#: template-parts/footer/footer.php:13
-#: template-parts/headers/header-main.php:15
+#: template-parts/footer/footer.php:13 template-parts/headers/header-main.php:15
 msgid "+49 176 65 10 6609"
 msgstr "+47 940 99 084"
 
@@ -689,13 +663,11 @@ msgstr "Logg inn"
 msgid "+4917665106609"
 msgstr "+4794099084"
 
-#: template-parts/headers/header-main.php:48
-#: template-parts/headers/header-main.php:151
+#: template-parts/headers/header-main.php:48 template-parts/headers/header-main.php:151
 msgid "Cart"
 msgstr "Handlekurv"
 
-#: template-parts/headers/header-main.php:57
-#: template-parts/headers/header-main.php:160
+#: template-parts/headers/header-main.php:57 template-parts/headers/header-main.php:160
 msgid "View cart"
 msgstr "Se handlekurv"
 
@@ -707,13 +679,11 @@ msgstr ""
 msgid "FAQ"
 msgstr "FAQ"
 
-#: template-parts/headers/header-main.php:106
-#: template-parts/headers/header-main.php:211
+#: template-parts/headers/header-main.php:106 template-parts/headers/header-main.php:211
 msgid "Search"
 msgstr ""
 
-#: template-parts/headers/header-main.php:113
-#: template-parts/headers/header-main.php:218
+#: template-parts/headers/header-main.php:113 template-parts/headers/header-main.php:218
 msgid "Search suggestions"
 msgstr ""
 
@@ -764,18 +734,12 @@ msgstr ""
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
 msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
-msgstr ""
-"Vi beklager å måtte meddele deg at bestillingen din #%1$s er blitt "
-"kansellert."
+msgstr "Vi beklager å måtte meddele deg at bestillingen din #%1$s er blitt kansellert."
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:40
-msgid ""
-"We’re getting in touch to let you know that your order #%1$s has been "
-"cancelled."
-msgstr ""
-"Vi tar kontakt for å informere deg om at bestillingen din med nummer %1$s er "
-"blitt kansellert."
+msgid "We’re getting in touch to let you know that your order #%1$s has been cancelled."
+msgstr "Vi tar kontakt for å informere deg om at bestillingen din med nummer %1$s er blitt kansellert."
 
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
@@ -786,25 +750,15 @@ msgstr ""
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37
-#: woocommerce/emails/customer-failed-order.php:40
-#: woocommerce/emails/customer-new-account.php:35
-#: woocommerce/emails/customer-note.php:37
-#: woocommerce/emails/customer-on-hold-order.php:35
-#: woocommerce/emails/customer-pos-completed-order.php:40
-#: woocommerce/emails/customer-pos-refunded-order.php:38
-#: woocommerce/emails/customer-processing-order.php:37
-#: woocommerce/emails/customer-refunded-order.php:35
+#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35
+#: woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40
+#: woocommerce/emails/customer-pos-refunded-order.php:38 woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35
 #: woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Hei %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41
-#: woocommerce/emails/customer-failed-order.php:44
-#: woocommerce/emails/customer-note.php:41
-#: woocommerce/emails/customer-on-hold-order.php:39
-#: woocommerce/emails/customer-processing-order.php:41
-#: woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41
+#: woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Hei,"
 
@@ -812,29 +766,19 @@ msgstr "Hei,"
 msgid "We have finished processing your order."
 msgstr "Vi har fullført behandlingen av bestillingen din."
 
-#: woocommerce/emails/customer-completed-order.php:47
-#: woocommerce/emails/customer-on-hold-order.php:45
-#: woocommerce/emails/customer-processing-order.php:47
+#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47
 #: woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Her er en oversikt over det du har bestilt:"
 
 #: woocommerce/emails/customer-failed-order.php:48
-msgid ""
-"Unfortunately, we couldn't complete your order due to an issue with your "
-"payment method."
-msgstr ""
-"Dessverre kunne vi ikke fullføre bestillingen din på grunn av et problem med "
-"betalingsmåten din."
+msgid "Unfortunately, we couldn't complete your order due to an issue with your payment method."
+msgstr "Dessverre kunne vi ikke fullføre bestillingen din på grunn av et problem med betalingsmåten din."
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-failed-order.php:50
-msgid ""
-"If you'd like to continue with your purchase, please return to %s and try a "
-"different method of payment."
-msgstr ""
-"Hvis du ønsker å fortsette med kjøpet, må du gå tilbake til %s og prøve en "
-"annen betalingsmåte."
+msgid "If you'd like to continue with your purchase, please return to %s and try a different method of payment."
+msgstr "Hvis du ønsker å fortsette med kjøpet, må du gå tilbake til %s og prøve en annen betalingsmåte."
 
 #: woocommerce/emails/customer-failed-order.php:51
 msgid "Your order details are as follows:"
@@ -842,15 +786,11 @@ msgstr "Bestillingsopplysningene dine er som følger:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid ""
-"Thanks for creating an account on %s. Here’s a copy of your user details."
-msgstr ""
-"Takk for at du opprettet en konto på %s. Her er en kopi av "
-"brukeropplysningene dine."
+msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgstr "Takk for at du opprettet en konto på %s. Her er en kopi av brukeropplysningene dine."
 
 #. translators: %s: Username
-#: woocommerce/emails/customer-new-account.php:41
-#: woocommerce/emails/customer-reset-password.php:38
+#: woocommerce/emails/customer-new-account.php:41 woocommerce/emails/customer-reset-password.php:38
 msgid "Username: <b>%s</b>"
 msgstr "Brukernavn: <b>%s</b>"
 
@@ -859,12 +799,8 @@ msgid "Set your new password."
 msgstr "Angi ditt nye passord."
 
 #: woocommerce/emails/customer-new-account.php:47
-msgid ""
-"You can access your account area to view orders, change your password, and "
-"more via the link below:"
-msgstr ""
-"Du kan gå inn på kontoområdet ditt for å se bestillinger, endre passord og "
-"mer via lenken nedenfor:"
+msgid "You can access your account area to view orders, change your password, and more via the link below:"
+msgstr "Du kan gå inn på kontoområdet ditt for å se bestillinger, endre passord og mer via lenken nedenfor:"
 
 #: woocommerce/emails/customer-new-account.php:48
 msgid "My account"
@@ -872,14 +808,8 @@ msgstr "Min konto"
 
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:51
-msgid ""
-"Thanks for creating an account on %1$s. Your username is %2$s. You can "
-"access your account area to view orders, change your password, and more at: "
-"%3$s"
-msgstr ""
-"Takk for at du opprettet en konto på %1$s. Brukernavnet ditt er %2$s. Du kan "
-"gå inn på kontoområdet ditt for å se bestillinger, endre passord og mer på: "
-"%3$s"
+msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
+msgstr "Takk for at du opprettet en konto på %1$s. Brukernavnet ditt er %2$s. Du kan gå inn på kontoområdet ditt for å se bestillinger, endre passord og mer på: %3$s"
 
 #: woocommerce/emails/customer-new-account.php:54
 msgid "Click here to set your new password."
@@ -894,82 +824,54 @@ msgid "As a reminder, here are your order details:"
 msgstr "For ordens skyld, her er opplysningene om bestillingen din:"
 
 #: woocommerce/emails/customer-on-hold-order.php:44
-msgid ""
-"We’ve received your order and it’s currently on hold until we can confirm "
-"your payment has been processed."
+msgid "We’ve received your order and it’s currently on hold until we can confirm your payment has been processed."
 msgstr ""
-"Takk for din bestilling! Vi informerer om at din ordre vil bli behandlet så "
-"snart betalingen er mottatt. Du finner fakturaen vedlagt i denne e-posten. "
-"Vennligst utfør betalingen."
+"Takk for din bestilling! Vi informerer om at din ordre vil bli behandlet så snart betalingen er mottatt. Du finner fakturaen vedlagt i denne e-posten. Vennligst utfør betalingen."
 
 #: woocommerce/emails/customer-on-hold-order.php:47
-msgid ""
-"Thanks for your order. It’s on-hold until we confirm that payment has been "
-"received."
-msgstr ""
-"Takk for bestillingen. Den er satt på vent inntil vi har bekreftet at "
-"betalingen er mottatt."
+msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
+msgstr "Takk for bestillingen. Den er satt på vent inntil vi har bekreftet at betalingen er mottatt."
 
-#: woocommerce/emails/customer-pos-completed-order.php:44
-#: woocommerce/emails/customer-pos-refunded-order.php:42
+#: woocommerce/emails/customer-pos-completed-order.php:44 woocommerce/emails/customer-pos-refunded-order.php:42
 msgid "Hi there,"
 msgstr "Hei,"
 
-#: woocommerce/emails/customer-pos-completed-order.php:48
-#: woocommerce/emails/customer-pos-refunded-order.php:57
+#: woocommerce/emails/customer-pos-completed-order.php:48 woocommerce/emails/customer-pos-refunded-order.php:57
 msgid "Here’s a reminder of what you’ve bought:"
 msgstr "Her er en oversikt over hva du har kjøpt:"
 
-#: woocommerce/emails/customer-pos-completed-order.php:113
-#: woocommerce/emails/customer-pos-refunded-order.php:124
+#: woocommerce/emails/customer-pos-completed-order.php:113 woocommerce/emails/customer-pos-refunded-order.php:124
 msgid "Refund & Returns Policy"
 msgstr "Retur- og refusjonsregler"
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:51
-#: woocommerce/emails/customer-refunded-order.php:49
+#: woocommerce/emails/customer-pos-refunded-order.php:51 woocommerce/emails/customer-refunded-order.php:49
 msgid "Your order from %s has been partially refunded."
 msgstr "Bestillingen din fra %s er delvis refundert."
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:54
-#: woocommerce/emails/customer-refunded-order.php:52
+#: woocommerce/emails/customer-pos-refunded-order.php:54 woocommerce/emails/customer-refunded-order.php:52
 msgid "Your order from %s has been refunded."
 msgstr "Bestillingen din fra %s er blitt refundert."
 
 #: woocommerce/emails/customer-processing-order.php:46
-msgid ""
-"Just to let you know &mdash; we’ve received your order, and it is now being "
-"processed."
-msgstr ""
-"Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er "
-"til behandling."
+msgid "Just to let you know &mdash; we’ve received your order, and it is now being processed."
+msgstr "Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er til behandling."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:50
-msgid ""
-"Just to let you know &mdash; we've received your order #%s, and it is now "
-"being processed:"
-msgstr ""
-"Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er "
-"til behandling:"
+msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
+msgstr "Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er til behandling:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:59
-msgid ""
-"Your order on %s has been partially refunded. There are more details below "
-"for your reference:"
-msgstr ""
-"Bestillingen din på %s er delvis refundert. Nedenfor finner du mer "
-"informasjon:"
+msgid "Your order on %s has been partially refunded. There are more details below for your reference:"
+msgstr "Bestillingen din på %s er delvis refundert. Nedenfor finner du mer informasjon:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:62
-msgid ""
-"Your order on %s has been refunded. There are more details below for your "
-"reference:"
-msgstr ""
-"Bestillingen din på %s er refundert. Nedenfor finner du mer informasjon:"
+msgid "Your order on %s has been refunded. There are more details below for your reference:"
+msgstr "Bestillingen din på %s er refundert. Nedenfor finner du mer informasjon:"
 
 #. translators: %s: Store name
 #: woocommerce/emails/customer-reset-password.php:34
@@ -977,12 +879,8 @@ msgid "Someone has requested a new password for the following account on %s:"
 msgstr "Noen har bedt om et nytt passord for følgende konto på %s:"
 
 #: woocommerce/emails/customer-reset-password.php:40
-msgid ""
-"If you didn’t make this request, just ignore this email. If you’d like to "
-"proceed, reset your password via the link below:"
-msgstr ""
-"Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du "
-"ønsker å fortsette, kan du tilbakestille passordet ditt via lenken nedenfor:"
+msgid "If you didn’t make this request, just ignore this email. If you’d like to proceed, reset your password via the link below:"
+msgstr "Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du ønsker å fortsette, kan du tilbakestille passordet ditt via lenken nedenfor:"
 
 #. translators: %s: Customer username
 #: woocommerce/emails/customer-reset-password.php:43
@@ -990,12 +888,8 @@ msgid "Username: %s"
 msgstr "Brukernavn: %s"
 
 #: woocommerce/emails/customer-reset-password.php:44
-msgid ""
-"If you didn't make this request, just ignore this email. If you'd like to "
-"proceed:"
-msgstr ""
-"Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du "
-"ønsker å fortsette:"
+msgid "If you didn't make this request, just ignore this email. If you'd like to proceed:"
+msgstr "Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du ønsker å fortsette:"
 
 #: woocommerce/emails/customer-reset-password.php:50
 msgid "Reset your password"
@@ -1005,8 +899,7 @@ msgstr "Tilbakestill passordet ditt"
 msgid "Click here to reset your password"
 msgstr "Klikk her for å tilbakestille passordet ditt"
 
-#: woocommerce/pdf/norhage/invoice.php:17
-#: woocommerce/pdf/norhage/invoice.php:44
+#: woocommerce/pdf/norhage/invoice.php:17 woocommerce/pdf/norhage/invoice.php:44
 msgid "Invoice"
 msgstr "Faktura"
 
@@ -1069,6 +962,15 @@ msgstr "Vurder alternativer"
 #: inc/meta-boxes.php:126
 msgid "Pay attention"
 msgstr "Vær oppmerksom"
+
+msgid "We couldn't find that page"
+msgstr "Vi fant ikke denne siden"
+
+msgid "We've recently updated our website and are doing everything we can to fix broken links — but sometimes a 404 still slips through. Feel free to browse our updated site."
+msgstr "Vi har nylig oppdatert nettsiden vår og gjør alt vi kan for å fikse ødelagte lenker – men av og til dukker det likevel opp en 404-feil. Let gjerne videre på våre nye sider."
+
+msgid "Back to Homepage"
+msgstr "Tilbake til forsiden"
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
