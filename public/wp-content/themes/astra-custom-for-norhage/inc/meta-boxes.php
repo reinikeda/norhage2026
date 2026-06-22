@@ -135,7 +135,6 @@ if ( is_admin() ) {
 	}
 
 	// Render the Custom Cutting metabox
-	// Weight per m2 is now taken from WooCommerce "Weight (kg)" on product/variation
 	function nh_custom_cutting_box_html( $post ) {
 		$pfx  = '_nh_cc_';
 		$vals = [
@@ -400,13 +399,11 @@ if ( is_admin() ) {
 	function nh_mb_render_product_extra_metabox( $post ) {
 		wp_nonce_field( 'nh_mb_product_extra_nonce', 'nh_mb_product_extra_nonce' );
 
-		// Translatable defaults (appear as placeholders when meta is empty)
 		$default_heading = __( 'Use cases and compatibility', 'nh-theme' );
 		$default_col1_h  = __( 'Ideal for use', 'nh-theme' );
 		$default_col2_h  = __( 'Consider alternatives', 'nh-theme' );
 		$default_col3_h  = __( 'Pay attention', 'nh-theme' );
 
-		// Raw stored values (show saved text for editing)
 		$heading = get_post_meta( $post->ID, '_nh_mb_extra_heading', true );
 		$col1_h  = get_post_meta( $post->ID, '_nh_mb_col_heading_1', true );
 		$col2_h  = get_post_meta( $post->ID, '_nh_mb_col_heading_2', true );
@@ -418,7 +415,7 @@ if ( is_admin() ) {
 
 		$enabled = get_post_meta( $post->ID, '_nh_mb_enabled', true );
 		if ( $enabled === '' ) {
-			$enabled = '0'; // DEFAULT: disabled
+			$enabled = '0';
 		}
 		?>
 		<p>
@@ -449,14 +446,7 @@ if ( is_admin() ) {
 		<p><strong><?php esc_html_e( 'Column 1', 'nh-theme' ); ?></strong></p>
 		<p>
 			<label for="nh_mb_col_heading_1"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
-			<input
-				type="text"
-				id="nh_mb_col_heading_1"
-				name="nh_mb_col_heading_1"
-				value="<?php echo esc_attr( $col1_h ); ?>"
-				placeholder="<?php echo esc_attr( $default_col1_h ); ?>"
-				style="width:100%;"
-			/>
+			<input type="text" id="nh_mb_col_heading_1" name="nh_mb_col_heading_1" value="<?php echo esc_attr( $col1_h ); ?>" placeholder="<?php echo esc_attr( $default_col1_h ); ?>" style="width:100%;" />
 		</p>
 		<p>
 			<label for="nh_mb_col_content_1"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
@@ -466,14 +456,7 @@ if ( is_admin() ) {
 		<p><strong><?php esc_html_e( 'Column 2', 'nh-theme' ); ?></strong></p>
 		<p>
 			<label for="nh_mb_col_heading_2"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
-			<input
-				type="text"
-				id="nh_mb_col_heading_2"
-				name="nh_mb_col_heading_2"
-				value="<?php echo esc_attr( $col2_h ); ?>"
-				placeholder="<?php echo esc_attr( $default_col2_h ); ?>"
-				style="width:100%;"
-			/>
+			<input type="text" id="nh_mb_col_heading_2" name="nh_mb_col_heading_2" value="<?php echo esc_attr( $col2_h ); ?>" placeholder="<?php echo esc_attr( $default_col2_h ); ?>" style="width:100%;" />
 		</p>
 		<p>
 			<label for="nh_mb_col_content_2"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
@@ -483,20 +466,12 @@ if ( is_admin() ) {
 		<p><strong><?php esc_html_e( 'Column 3', 'nh-theme' ); ?></strong></p>
 		<p>
 			<label for="nh_mb_col_heading_3"><?php esc_html_e( 'Column heading', 'nh-theme' ); ?></label><br />
-			<input
-				type="text"
-				id="nh_mb_col_heading_3"
-				name="nh_mb_col_heading_3"
-				value="<?php echo esc_attr( $col3_h ); ?>"
-				placeholder="<?php echo esc_attr( $default_col3_h ); ?>"
-				style="width:100%;"
-			/>
+			<input type="text" id="nh_mb_col_heading_3" name="nh_mb_col_heading_3" value="<?php echo esc_attr( $col3_h ); ?>" placeholder="<?php echo esc_attr( $default_col3_h ); ?>" style="width:100%;" />
 		</p>
 		<p>
 			<label for="nh_mb_col_content_3"><?php esc_html_e( 'Column content (HTML allowed)', 'nh-theme' ); ?></label><br />
 			<textarea id="nh_mb_col_content_3" name="nh_mb_col_content_3" rows="4" style="width:100%;"><?php echo esc_textarea( $col3_c ); ?></textarea>
 		</p>
-
 		<?php
 	}
 
@@ -572,44 +547,41 @@ if ( is_admin() ) {
 			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
 		}
 
-		// --- NEW: Save Product Extra meta ---
-		if ( isset( $_POST['nh_mb_product_extra_nonce'] ) && wp_verify_nonce( $_POST['nh_mb_product_extra_nonce'], 'nh_mb_product_extra_nonce' ) && current_user_can( 'edit_post', $post_id ) ) {
-
-			// Enabled checkbox
+		// --- Save Product Extra meta ---
+		if (
+			isset( $_POST['nh_mb_product_extra_nonce'] ) &&
+			wp_verify_nonce( $_POST['nh_mb_product_extra_nonce'], 'nh_mb_product_extra_nonce' ) &&
+			current_user_can( 'edit_post', $post_id )
+		) {
 			$enabled = isset( $_POST['nh_mb_enabled'] ) && $_POST['nh_mb_enabled'] === '1' ? '1' : '0';
 			update_post_meta( $post_id, '_nh_mb_enabled', $enabled );
 
-			// Headings (sanitize text)
 			$headings = [
-				'nh_mb_extra_heading'    => '_nh_mb_extra_heading',
-				'nh_mb_col_heading_1'    => '_nh_mb_col_heading_1',
-				'nh_mb_col_heading_2'    => '_nh_mb_col_heading_2',
-				'nh_mb_col_heading_3'    => '_nh_mb_col_heading_3',
+				'nh_mb_extra_heading' => '_nh_mb_extra_heading',
+				'nh_mb_col_heading_1' => '_nh_mb_col_heading_1',
+				'nh_mb_col_heading_2' => '_nh_mb_col_heading_2',
+				'nh_mb_col_heading_3' => '_nh_mb_col_heading_3',
 			];
 
 			foreach ( $headings as $field => $meta_key ) {
 				if ( isset( $_POST[ $field ] ) ) {
-					$value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
-					update_post_meta( $post_id, $meta_key, $value );
+					update_post_meta( $post_id, $meta_key, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) );
 				} else {
 					delete_post_meta( $post_id, $meta_key );
 				}
 			}
 
-			// Column contents (allow safe HTML)
 			for ( $i = 1; $i <= 3; $i++ ) {
-				$key = 'nh_mb_col_content_' . $i;
+				$key      = 'nh_mb_col_content_' . $i;
 				$meta_key = '_nh_mb_col_content_' . $i;
 
 				if ( isset( $_POST[ $key ] ) ) {
-					$value = wp_kses_post( wp_unslash( $_POST[ $key ] ) );
-					update_post_meta( $post_id, $meta_key, $value );
+					update_post_meta( $post_id, $meta_key, wp_kses_post( wp_unslash( $_POST[ $key ] ) ) );
 				} else {
 					delete_post_meta( $post_id, $meta_key );
 				}
 			}
 		}
-
 	} );
 
 	// Save Homepage Hero Slider meta
@@ -639,8 +611,8 @@ if ( is_admin() ) {
 			return;
 		}
 
-		$raw = isset( $_POST['nh_home_hero_slides'] ) ? (array) wp_unslash( $_POST['nh_home_hero_slides'] ) : [];
-		$out = [];
+		$raw         = isset( $_POST['nh_home_hero_slides'] ) ? (array) wp_unslash( $_POST['nh_home_hero_slides'] ) : [];
+		$out         = [];
 		$has_content = false;
 
 		for ( $i = 0; $i < 5; $i++ ) {
@@ -669,7 +641,7 @@ if ( is_admin() ) {
 	} );
 }
 
-// Enqueue Dashicons on the frontend (moved outside admin-only block)
+// Enqueue Dashicons on the frontend
 add_action( 'wp_enqueue_scripts', 'nh_mb_enqueue_dashicons' );
 function nh_mb_enqueue_dashicons() {
 	wp_enqueue_style( 'dashicons' );
@@ -722,7 +694,7 @@ add_filter( 'woocommerce_product_tabs', function ( $tabs ) {
 	$has_video = false;
 
 	if ( $video_url !== '' ) {
-		$embed = wp_oembed_get( esc_url( $video_url ) );
+		$embed     = wp_oembed_get( esc_url( $video_url ) );
 		$has_video = (bool) $embed || $video_url !== '';
 	}
 
@@ -741,9 +713,6 @@ add_filter( 'woocommerce_product_tabs', function ( $tabs ) {
 	return $tabs;
 }, 98 );
 
-/**
- * Render Downloads tab
- */
 function nrh_downloads_tab_content() {
 	global $product;
 
@@ -772,9 +741,6 @@ function nrh_downloads_tab_content() {
 	echo '</ul>';
 }
 
-/**
- * Render Video tab
- */
 function nrh_video_tab_content() {
 	global $product;
 
@@ -791,7 +757,7 @@ function nrh_video_tab_content() {
 
 	echo '<div class="product-video-wrap">';
 	if ( $embed ) {
-		echo $embed; // safe from wp_oembed_get
+		echo $embed;
 	} else {
 		printf(
 			'<p><a href="%s" target="_blank" rel="noopener">%s</a></p>',
@@ -802,7 +768,7 @@ function nrh_video_tab_content() {
 	echo '</div>';
 }
 
-// === Product extras metabox (uses Woo wc-product-search) =====================
+// === Bundle items metabox ====================================================
 if ( ! defined( 'NC_BUNDLE_META_KEY' ) ) {
 	define( 'NC_BUNDLE_META_KEY', '_nc_bundle_items_v2' );
 }
@@ -831,23 +797,29 @@ function nc_bundle_items_box_html( $post ) {
 
 	echo '<table class="widefat striped" id="nc-bundle-rows" style="margin-top:10px">';
 	echo '<thead><tr>';
-	echo '<th style="width:65%;">' . esc_html__( 'Product ', 'nh-theme' ) . '</th>';
-	echo '<th style="width:20%;">' . esc_html__( 'Maximum quantity', 'nh-theme' ) . '</th>';
-	echo '<th style="width:15%;"></th>';
-	echo '</tr></thead><tbody class="nc-sortable">';
+	echo '<th style="width:55%;">'  . esc_html__( 'Product', 'nh-theme' )           . '</th>';
+	echo '<th style="width:15%;">'  . esc_html__( 'Maximum quantity', 'nh-theme' )   . '</th>';
+	echo '<th style="width:10%;text-align:center;">' . esc_html__( 'Free', 'nh-theme' ) . '</th>';
+	echo '<th style="width:20%;"></th>';
+	echo '</tr></thead>';
+	echo '<tbody class="nc-sortable">';
 
 	if ( empty( $rows ) ) {
-		echo nc_bundle_row_template_wc( null, '' );
+		// Render one blank row with index 0
+		echo nc_bundle_row_template_wc( null, '', false, 0 );
 	} else {
-		foreach ( $rows as $r ) {
-			$id  = isset( $r['id'] ) ? (int) $r['id'] : 0;
-			$max = ( isset( $r['max'] ) && $r['max'] !== '' ) ? (int) $r['max'] : '';
-			echo nc_bundle_row_template_wc( $id, $max );
+		foreach ( $rows as $i => $r ) {
+			$id   = isset( $r['id'] )  ? (int) $r['id']  : 0;
+			$max  = ( isset( $r['max'] ) && $r['max'] !== '' ) ? (int) $r['max'] : '';
+			$free = ! empty( $r['free'] );
+			echo nc_bundle_row_template_wc( $id, $max, $free, $i );
 		}
 	}
 
 	echo '</tbody></table>';
-	echo '<p><button type="button" class="button button-primary" id="nc-add-bundle-row">' . esc_html__( 'Add product as add-on', 'nh-theme' ) . '</button></p>';
+	echo '<p><button type="button" class="button button-primary" id="nc-add-bundle-row">'
+		. esc_html__( 'Add product as add-on', 'nh-theme' )
+		. '</button></p>';
 	?>
 	<style>
 		#nc-bundle-rows td { vertical-align: middle; }
@@ -856,20 +828,42 @@ function nc_bundle_items_box_html( $post ) {
 	</style>
 	<script>
 	jQuery(function($){
+
+		// Called after every add / remove / sort to keep name indexes sequential
+		function ncBundleReindex() {
+			$('#nc-bundle-rows tbody tr').each(function(i){
+				var $row = $(this);
+				// Product select
+				$row.find('select.wc-product-search').attr('name', 'nc_bundle[id][' + i + ']');
+				// Max qty input
+				$row.find('input.nc-bundle-max').attr('name', 'nc_bundle[max][' + i + ']');
+				// Free hidden + checkbox — both must share the same name
+				$row.find('input.nc-bundle-free-hidden, input.nc-bundle-free-cb')
+					.attr('name', 'nc_bundle[free][' + i + ']');
+			});
+		}
+
+		// Add row
 		$('#nc-add-bundle-row').on('click', function(){
-			var html = <?php echo wp_json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '' ) ) ); ?>;
+			var nextIdx = $('#nc-bundle-rows tbody tr').length;
+			var html    = <?php echo wp_json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '', false, 0 ) ) ); ?>;
 			$('#nc-bundle-rows tbody').append(html);
+			ncBundleReindex();
 			$(document.body).trigger('wc-enhanced-select-init');
 		});
 
+		// Remove row
 		$(document).on('click', '.nc-remove', function(){
 			$(this).closest('tr').remove();
+			ncBundleReindex();
 		});
 
-		if ($.fn.sortable) {
+		// Sortable
+		if ( $.fn.sortable ) {
 			$('#nc-bundle-rows tbody.nc-sortable').sortable({
-				handle: '.nc-handle',
-				items: '> tr'
+				handle : '.nc-handle',
+				items  : '> tr',
+				update : function() { ncBundleReindex(); }
 			});
 		}
 
@@ -879,14 +873,25 @@ function nc_bundle_items_box_html( $post ) {
 	<?php
 }
 
-function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
+/**
+ * Render one bundle row.
+ *
+ * @param int|null   $prod_id  Product ID (0 / null = blank row).
+ * @param int|string $max      Max qty value ('' = no limit).
+ * @param bool       $free     Whether the "Free" checkbox should be checked.
+ * @param int        $index    Row index used for input name attributes.
+ */
+function nc_bundle_row_template_wc( $prod_id = null, $max = '', $free = false, $index = 0 ) {
 	$prod_id = $prod_id ? (int) $prod_id : 0;
+	$index   = (int) $index;
 
 	$option_html = '';
 	if ( $prod_id ) {
 		$p = wc_get_product( $prod_id );
 		if ( $p ) {
-			$option_html = '<option value="' . esc_attr( $prod_id ) . '" selected="selected">' . esc_html( $p->get_formatted_name() ) . '</option>';
+			$option_html = '<option value="' . esc_attr( $prod_id ) . '" selected="selected">'
+				. esc_html( $p->get_formatted_name() )
+				. '</option>';
 		}
 	}
 
@@ -894,10 +899,11 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 	?>
 	<tr>
 		<td>
-			<span class="dashicons dashicons-menu nc-handle" title="<?php echo esc_attr__( 'Drag to reorder', 'nh-theme' ); ?>"></span>
+			<span class="dashicons dashicons-menu nc-handle"
+				title="<?php echo esc_attr__( 'Drag to reorder', 'nh-theme' ); ?>"></span>
 			<select
 				class="wc-product-search"
-				name="nc_bundle[id][]"
+				name="nc_bundle[id][<?php echo esc_attr( $index ); ?>]"
 				data-placeholder="<?php echo esc_attr__( 'Search products & variations...', 'nh-theme' ); ?>"
 				data-action="woocommerce_json_search_products_and_variations"
 				style="width:92%">
@@ -907,22 +913,51 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '' ) {
 		<td>
 			<input
 				type="number"
+				class="nc-bundle-max"
 				min="1"
 				step="1"
-				name="nc_bundle[max][]"
+				name="nc_bundle[max][<?php echo esc_attr( $index ); ?>]"
 				value="<?php echo esc_attr( $max ); ?>"
-				placeholder="-" />
+				placeholder="-"
+				style="width:70px;" />
+		</td>
+		<td style="text-align:center;">
+			<?php
+			/*
+			 * Hidden input always submits 0.
+			 * Checkbox submits 1 when checked and overrides the hidden value
+			 * because it appears after the hidden input in the DOM — PHP takes
+			 * the last value for duplicate keys in the same array index.
+			 *
+			 * Both share the same name so ncBundleReindex() only needs one selector.
+			 */
+			?>
+			<input type="hidden"
+				class="nc-bundle-free-hidden"
+				name="nc_bundle[free][<?php echo esc_attr( $index ); ?>]"
+				value="0" />
+			<input type="checkbox"
+				class="nc-bundle-free-cb"
+				name="nc_bundle[free][<?php echo esc_attr( $index ); ?>]"
+				value="1"
+				<?php checked( $free ); ?>
+				title="<?php echo esc_attr__( 'Mark as free in bundle', 'nh-theme' ); ?>" />
 		</td>
 		<td>
-			<button type="button" class="button-link nc-remove" aria-label="<?php echo esc_attr__( 'Remove row', 'nh-theme' ); ?>">&times;</button>
+			<button type="button" class="button-link nc-remove"
+				aria-label="<?php echo esc_attr__( 'Remove row', 'nh-theme' ); ?>">&times;</button>
 		</td>
 	</tr>
 	<?php
 	return ob_get_clean();
 }
 
+// Save bundle items
 add_action( 'save_post_product', function ( $post_id ) {
-	if ( ! isset( $_POST['nc_bundle_items_nonce'] ) || ! wp_verify_nonce( $_POST['nc_bundle_items_nonce'], 'nc_bundle_items_save' ) ) {
+	if (
+		! isset( $_POST['nc_bundle_items_nonce'] ) ||
+		! wp_verify_nonce( $_POST['nc_bundle_items_nonce'], 'nc_bundle_items_save' )
+	) {
 		return;
 	}
 
@@ -934,38 +969,44 @@ add_action( 'save_post_product', function ( $post_id ) {
 		return;
 	}
 
-	$ids = isset( $_POST['nc_bundle']['id'] ) ? (array) wp_unslash( $_POST['nc_bundle']['id'] ) : [];
-	$mxs = isset( $_POST['nc_bundle']['max'] ) ? (array) wp_unslash( $_POST['nc_bundle']['max'] ) : [];
+	$ids  = isset( $_POST['nc_bundle']['id'] )   ? (array) wp_unslash( $_POST['nc_bundle']['id'] )   : [];
+	$mxs  = isset( $_POST['nc_bundle']['max'] )  ? (array) wp_unslash( $_POST['nc_bundle']['max'] )  : [];
+	$frs  = isset( $_POST['nc_bundle']['free'] ) ? (array) wp_unslash( $_POST['nc_bundle']['free'] ) : [];
 
 	$out = [];
 
-	foreach ( $ids as $i => $id ) {
-		$id = (int) $id;
+	foreach ( $ids as $i => $raw_id ) {
+		$id = (int) $raw_id;
 		if ( $id <= 0 ) {
 			continue;
 		}
 
 		$row = [ 'id' => $id ];
 
+		// Max quantity — omit key entirely when blank so frontend falls back to product max
 		$raw_max = isset( $mxs[ $i ] ) ? trim( (string) $mxs[ $i ] ) : '';
 		if ( $raw_max !== '' ) {
 			$row['max'] = max( 1, (int) $raw_max );
 		}
 
+		// Free flag — hidden input guarantees index $i always exists in $frs
+		$row['free'] = ! empty( $frs[ $i ] ) ? 1 : 0;
+
 		$out[] = $row;
 	}
 
-	if ( $out ) {
-		update_post_meta( $post_id, NC_BUNDLE_META_KEY, $out );
+	if ( ! empty( $out ) ) {
+		update_post_meta( $post_id, NC_BUNDLE_META_KEY,      $out );
+		update_post_meta( $post_id, '_nh_bundle_items_v2',   $out );
 	} else {
 		delete_post_meta( $post_id, NC_BUNDLE_META_KEY );
+		delete_post_meta( $post_id, '_nh_bundle_items_v2' );
 	}
 }, 10 );
 
-// --- NEW: Inject the product extra block into the Description tab (frontend) ---
+// --- Inject the product extra block into the Description tab (frontend) ---
 add_filter( 'woocommerce_product_tabs', 'nh_mb_add_to_description_tab', 99 );
 function nh_mb_add_to_description_tab( $tabs ) {
-	// Determine product id
 	$product_id = 0;
 	if ( function_exists( 'is_product' ) && is_product() ) {
 		$product_id = get_the_ID();
@@ -980,7 +1021,6 @@ function nh_mb_add_to_description_tab( $tabs ) {
 		return $tabs;
 	}
 
-	// Only inject when enabled for this product
 	if ( get_post_meta( $product_id, '_nh_mb_enabled', true ) !== '1' ) {
 		return $tabs;
 	}
@@ -993,24 +1033,18 @@ function nh_mb_add_to_description_tab( $tabs ) {
 }
 
 function nh_mb_description_tab_wrapper() {
-	// Output original description
 	if ( function_exists( 'woocommerce_product_description_tab' ) ) {
 		woocommerce_product_description_tab();
 	} else {
 		the_content();
 	}
 
-	// Append our block
 	echo nh_mb_get_block_html();
 }
 
-/**
- * Helper: build and return the frontend HTML for the 3-column block
- */
 function nh_mb_get_block_html() {
 	global $post, $product;
 
-	// Ensure we have a post/product
 	$post_id = 0;
 	if ( isset( $post->ID ) ) {
 		$post_id = $post->ID;
@@ -1021,59 +1055,49 @@ function nh_mb_get_block_html() {
 		return '';
 	}
 
-	// Defensive: only show when enabled
 	if ( get_post_meta( $post_id, '_nh_mb_enabled', true ) !== '1' ) {
 		return '';
 	}
 
-	// get raw stored meta
 	$heading_raw = get_post_meta( $post_id, '_nh_mb_extra_heading', true );
 	$col1_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_1', true );
 	$col2_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_2', true );
 	$col3_raw    = get_post_meta( $post_id, '_nh_mb_col_heading_3', true );
 
-	$col1_c  = get_post_meta( $post_id, '_nh_mb_col_content_1', true );
-	$col2_c  = get_post_meta( $post_id, '_nh_mb_col_content_2', true );
-	$col3_c  = get_post_meta( $post_id, '_nh_mb_col_content_3', true );
+	$col1_c = get_post_meta( $post_id, '_nh_mb_col_content_1', true );
+	$col2_c = get_post_meta( $post_id, '_nh_mb_col_content_2', true );
+	$col3_c = get_post_meta( $post_id, '_nh_mb_col_content_3', true );
 
-	// Translatable defaults (standard values)
 	$default_heading = __( 'Use cases and compatibility', 'nh-theme' );
 	$default_col1_h  = __( 'Ideal for use', 'nh-theme' );
 	$default_col2_h  = __( 'Consider alternatives', 'nh-theme' );
 	$default_col3_h  = __( 'Pay attention', 'nh-theme' );
 
-	// Use stored value when present, otherwise use translatable default
 	$heading = $heading_raw !== '' ? $heading_raw : $default_heading;
-	$col1_h  = $col1_raw  !== '' ? $col1_raw  : $default_col1_h;
-	$col2_h  = $col2_raw  !== '' ? $col2_raw  : $default_col2_h;
-	$col3_h  = $col3_raw  !== '' ? $col3_raw  : $default_col3_h;
+	$col1_h  = $col1_raw    !== '' ? $col1_raw    : $default_col1_h;
+	$col2_h  = $col2_raw    !== '' ? $col2_raw    : $default_col2_h;
+	$col3_h  = $col3_raw    !== '' ? $col3_raw    : $default_col3_h;
 
-	// If no content, skip output
 	if ( empty( $col1_c ) && empty( $col2_c ) && empty( $col3_c ) ) {
 		return '';
 	}
 
 	$block_id = 'nh-mb-extra-' . $post_id;
 
-	// Build HTML with Dashicons-enhanced headings (Styles moved to style.css)
 	$html  = '<section id="' . esc_attr( $block_id ) . '" class="nh-mb-product-extra" role="region" aria-labelledby="' . esc_attr( $block_id . '-title' ) . '">';
-	$html .= '<h2 id="' . esc_attr( $block_id . '-title' ) . '"> <span class="dashicons dashicons-info-outline" aria-hidden="true"></span>' . esc_html( $heading ) . '</h2>';
-
+	$html .= '<h2 id="' . esc_attr( $block_id . '-title' ) . '"><span class="dashicons dashicons-info-outline" aria-hidden="true"></span>' . esc_html( $heading ) . '</h2>';
 	$html .= '<div class="nh-mb-columns">';
 
-	// Column 1
 	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col1_h ) . '">';
 	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-yes" aria-hidden="true"></span>' . esc_html( $col1_h ) . '</span>';
 	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col1_c ) . '</div>';
 	$html .= '</div>';
 
-	// Column 2
 	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col2_h ) . '">';
 	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-upload" aria-hidden="true"></span>' . esc_html( $col2_h ) . '</span>';
 	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col2_c ) . '</div>';
 	$html .= '</div>';
 
-	// Column 3
 	$html .= '<div class="nh-mb-column" role="article" aria-label="' . esc_attr( $col3_h ) . '">';
 	$html .= '<span class="nh-mb-col-title"><span class="dashicons dashicons-warning" aria-hidden="true"></span>' . esc_html( $col3_h ) . '</span>';
 	$html .= '<div class="nh-mb-col-text">' . wp_kses_post( $col3_c ) . '</div>';

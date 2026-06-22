@@ -24,15 +24,19 @@ jQuery(function ($) {
     (window.bundle_ajax && window.bundle_ajax.add_bundle_url) ||
     wcAjaxEndpoint('nh_add_bundle_to_cart');
 
-  const cartUrl = (window.bundle_ajax && window.bundle_ajax.cart_url) || '';
-  const ajaxNonce = (window.bundle_ajax && window.bundle_ajax.nonce) || '';
+  const cartUrl   = (window.bundle_ajax && window.bundle_ajax.cart_url) || '';
+  const ajaxNonce = (window.bundle_ajax && window.bundle_ajax.nonce)    || '';
+
+  /* ------------------------------------------------------------------
+   * Helpers
+   * ------------------------------------------------------------------ */
 
   function getBundleForm() {
     return $('#nc-bundle-form');
   }
 
   function getPriceCfg() {
-    const $form = getBundleForm();
+    const $form   = getBundleForm();
     const fallback = window.NH_PRICE_FMT || {};
 
     const decimalsRaw =
@@ -41,8 +45,8 @@ jQuery(function ($) {
         : (fallback.decs != null ? fallback.decs : 2);
 
     return {
-      symbol: String($form.attr('data-currency-symbol') || fallback.symbol || ''),
-      pos: String($form.attr('data-currency-pos') || fallback.pos || 'right_space'),
+      symbol:   String($form.attr('data-currency-symbol') || fallback.symbol   || ''),
+      pos:      String($form.attr('data-currency-pos')    || fallback.pos      || 'right_space'),
       decimals: Number.isFinite(Number(decimalsRaw)) ? parseInt(decimalsRaw, 10) : 2,
       thousand: String(
         $form.attr('data-thousand') != null
@@ -70,18 +74,17 @@ jQuery(function ($) {
     const parts = num.toFixed(p.decimals).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, p.thousand);
 
-    const value = p.decimals > 0 ? parts[0] + p.decimal + (parts[1] || '') : parts[0];
+    const value = p.decimals > 0
+      ? parts[0] + p.decimal + (parts[1] || '')
+      : parts[0];
+
     const nbsp = '\u00A0';
 
     switch (p.pos) {
-      case 'left':
-        return p.symbol + value;
-      case 'left_space':
-        return p.symbol + nbsp + value;
-      case 'right':
-        return value + p.symbol;
-      default:
-        return value + (p.symbol ? nbsp + p.symbol : '');
+      case 'left':       return p.symbol + value;
+      case 'left_space': return p.symbol + nbsp + value;
+      case 'right':      return value + p.symbol;
+      default:           return value + (p.symbol ? nbsp + p.symbol : '');
     }
   }
 
@@ -150,9 +153,8 @@ jQuery(function ($) {
   function isMainAddToCartActive() {
     const $btn = $mainForm.find('.single_add_to_cart_button').first();
     if (!$btn.length) return false;
-
-    if ($btn.prop('disabled')) return false;
-    if ($btn.is(':disabled')) return false;
+    if ($btn.prop('disabled'))  return false;
+    if ($btn.is(':disabled'))   return false;
     if ($btn.hasClass('disabled')) return false;
 
     const ariaDisabled = String($btn.attr('aria-disabled') || '').toLowerCase();
@@ -182,14 +184,22 @@ jQuery(function ($) {
     return 0;
   }
 
+  /* ------------------------------------------------------------------
+   * Row helpers
+   * ------------------------------------------------------------------ */
+
   function getRowQtyInput($row) {
     return $row.find('input.qty').first();
   }
 
   function getRowUnitPrice($row) {
-    const raw = String($row.attr('data-base-price') || '').trim();
+    const raw  = String($row.attr('data-base-price') || '').trim();
     const unit = Number(raw);
     return Number.isFinite(unit) && unit > 0 ? unit : 0;
+  }
+
+  function isRowFree($row) {
+    return String($row.attr('data-free') || '0') === '1';
   }
 
   function getRowPerSetQty($row) {
@@ -214,7 +224,7 @@ jQuery(function ($) {
 
     $row.find('.bundle-variation').each(function () {
       const name = this.name || '';
-      const m = name.match(/\[([^\]]+)\]$/);
+      const m    = name.match(/\[([^\]]+)\]$/);
 
       if (m && this.value) {
         attrs['attribute_' + m[1]] = this.value;
@@ -226,7 +236,7 @@ jQuery(function ($) {
 
   function keyFor(pid, vid, attrs) {
     const parts = ['pid=' + pid, 'vid=' + (vid || 0)];
-    const ks = Object.keys(attrs || {}).sort();
+    const ks    = Object.keys(attrs || {}).sort();
 
     ks.forEach(function (k) {
       parts.push(k + '=' + attrs[k]);
@@ -234,6 +244,10 @@ jQuery(function ($) {
 
     return parts.join('|');
   }
+
+  /* ------------------------------------------------------------------
+   * Collect addons
+   * ------------------------------------------------------------------ */
 
   function collectDesiredAddons() {
     const map = new Map();
@@ -245,14 +259,18 @@ jQuery(function ($) {
       const $qty = getRowQtyInput($row);
       if (!$qty.length || !$qty.is(':enabled')) return;
 
-      const pid = String($row.data('product-id') || '');
-      const unit = getRowUnitPrice($row);
-      const qty = getRowPerSetQty($row);
+      const pid  = String($row.data('product-id') || '');
+      const qty  = getRowPerSetQty($row);
+      const free = isRowFree($row);
+
+      // unit for AJAX payload: always use actual data-base-price
+      // (PHP already stores 0 for free rows, but we read it explicitly)
+      const unit = free ? 0 : getRowUnitPrice($row);
 
       if (!pid || !qty) return;
 
       const attrs = collectRowAttributes($row);
-      const vid = parseInt(($row.find('.selected-variation-id').val() || '0'), 10) || 0;
+      const vid   = parseInt(($row.find('.selected-variation-id').val() || '0'), 10) || 0;
 
       if ($row.hasClass('is-variable') && !vid) return;
 
@@ -260,17 +278,22 @@ jQuery(function ($) {
 
       if (!map.has(k)) {
         map.set(k, {
-          product_id: pid,
-          quantity: qty,
+          product_id:   pid,
+          quantity:     qty,
           variation_id: vid,
-          attributes: attrs,
-          unit: unit
+          attributes:   attrs,
+          unit:         unit,   // used locally for total calc only
+          free:         free    // sent to PHP AJAX handler
         });
       }
     });
 
     return Array.from(map.values());
   }
+
+  /* ------------------------------------------------------------------
+   * Main product helpers
+   * ------------------------------------------------------------------ */
 
   function getSerializedMainFormData() {
     const out = {};
@@ -281,7 +304,10 @@ jQuery(function ($) {
       out[pair.name] = pair.value;
     });
 
-    const $button = $mainForm.find('button.single_add_to_cart_button[name="add-to-cart"]').first();
+    const $button = $mainForm
+      .find('button.single_add_to_cart_button[name="add-to-cart"]')
+      .first();
+
     if ($button.length && !$button.prop('disabled') && $button.val()) {
       out['add-to-cart'] = $button.val();
     }
@@ -294,13 +320,15 @@ jQuery(function ($) {
 
     const formData = getSerializedMainFormData();
 
-    const $button = $mainForm.find('button.single_add_to_cart_button[name="add-to-cart"]').first();
+    const $button  = $mainForm
+      .find('button.single_add_to_cart_button[name="add-to-cart"]')
+      .first();
     const buttonVal = $button.length ? $button.val() : '';
 
     const productId = parseInt(
       formData['add-to-cart'] ||
-      formData['product_id'] ||
-      buttonVal ||
+      formData['product_id']  ||
+      buttonVal               ||
       $mainForm.find('input[name="product_id"]').val() ||
       0,
       10
@@ -316,27 +344,35 @@ jQuery(function ($) {
     ) || 0;
 
     const attrs = {};
-    $mainForm.find('select[name^="attribute_"], input[name^="attribute_"]').each(function () {
-      if (this.value) {
-        attrs[this.name] = this.value;
-      }
-    });
+    $mainForm
+      .find('select[name^="attribute_"], input[name^="attribute_"]')
+      .each(function () {
+        if (this.value) {
+          attrs[this.name] = this.value;
+        }
+      });
 
     return {
-      product_id: String(productId),
-      quantity: getMainQty(),
+      product_id:   String(productId),
+      quantity:     getMainQty(),
       variation_id: variationId,
-      attributes: attrs,
-      form_data: formData
+      attributes:   attrs,
+      form_data:    formData
     };
   }
+
+  /* ------------------------------------------------------------------
+   * Notices
+   * ------------------------------------------------------------------ */
 
   function ensureNoticeWrapper() {
     let $wrap = $('.woocommerce-notices-wrapper').first();
 
     if ($wrap.length) return $wrap;
 
-    const $anchor = $('.woocommerce-notices-wrapper, form.cart, .summary, #nc-complete-set').first();
+    const $anchor = $(
+      '.woocommerce-notices-wrapper, form.cart, .summary, #nc-complete-set'
+    ).first();
 
     $wrap = $('<div class="woocommerce-notices-wrapper"></div>');
 
@@ -380,6 +416,10 @@ jQuery(function ($) {
     }
   }
 
+  /* ------------------------------------------------------------------
+   * Cart fragments
+   * ------------------------------------------------------------------ */
+
   function applyFragments(fragments) {
     if (!fragments) return;
 
@@ -394,6 +434,10 @@ jQuery(function ($) {
     });
   }
 
+  /* ------------------------------------------------------------------
+   * Button state
+   * ------------------------------------------------------------------ */
+
   function setBusy($btn, busy) {
     posting = !!busy;
 
@@ -406,6 +450,10 @@ jQuery(function ($) {
       updateBundleButtonState();
     }
   }
+
+  /* ------------------------------------------------------------------
+   * Row price display
+   * ------------------------------------------------------------------ */
 
   function setRowPriceHtml($row, html) {
     const finalHtml = html || '—';
@@ -440,23 +488,40 @@ jQuery(function ($) {
       $qty.prop('disabled', true).val('0');
     }
 
-    $row.addClass('is-needs-variation').removeClass('is-variation-ready is-unavailable');
+    $row
+      .addClass('is-needs-variation')
+      .removeClass('is-variation-ready is-unavailable');
   }
 
+  /**
+   * Enable a variable row once a matching variation is found.
+   * Free rows always display wc_price(0) regardless of variation price.
+   */
   function enableVariableRow($row, variation) {
-    const sale = Number(variation.display_price || 0);
-    const reg = Number(variation.display_regular_price || sale || 0);
+    const free = isRowFree($row);
+    const sale = Number(variation.display_price          || 0);
+    const reg  = Number(variation.display_regular_price  || sale || 0);
 
-    let html = '—';
-    if (sale > 0) {
+    let html;
+    let basePrice;
+
+    if (free) {
+      // Free item: always show 0 price, contribute 0 to total
+      html      = fmtHtml(0);
+      basePrice = 0;
+    } else if (sale > 0 || reg > 0) {
       html = reg > sale
         ? '<del>' + fmtHtml(reg) + '</del> <ins>' + fmtHtml(sale) + '</ins>'
         : fmtHtml(sale);
+      basePrice = sale > 0 ? sale : 0;
+    } else {
+      html      = '—';
+      basePrice = 0;
     }
 
     setRowPriceHtml($row, html);
     $row.find('.selected-variation-id').val(String(variation.variation_id || 0));
-    $row.attr('data-base-price', String(sale > 0 ? sale : 0));
+    $row.attr('data-base-price', String(basePrice));
 
     const $qty = getRowQtyInput($row);
     if ($qty.length) {
@@ -464,7 +529,9 @@ jQuery(function ($) {
       $qty.prop('disabled', false).val(current > 0 ? current : 0);
     }
 
-    $row.removeClass('is-needs-variation is-unavailable').addClass('is-variation-ready');
+    $row
+      .removeClass('is-needs-variation is-unavailable')
+      .addClass('is-variation-ready');
   }
 
   function findMatchingVariation(variations, attrs) {
@@ -472,7 +539,7 @@ jQuery(function ($) {
 
     return variations.find(function (variation) {
       const vAttrs = variation.attributes || {};
-      const keys = Object.keys(vAttrs);
+      const keys   = Object.keys(vAttrs);
 
       if (!keys.length) return false;
 
@@ -490,8 +557,8 @@ jQuery(function ($) {
 
   function updateVariableRow($row) {
     const variations = parseVariationsData($row);
-    const attrs = collectRowAttributes($row);
-    const match = findMatchingVariation(variations, attrs);
+    const attrs      = collectRowAttributes($row);
+    const match      = findMatchingVariation(variations, attrs);
 
     if (!match) {
       clearVariableRow($row);
@@ -500,13 +567,15 @@ jQuery(function ($) {
     }
 
     if (
-      !match.variation_id ||
-      match.is_in_stock === false ||
-      match.is_purchasable === false ||
+      !match.variation_id          ||
+      match.is_in_stock         === false ||
+      match.is_purchasable      === false ||
       match.variation_is_visible === false
     ) {
       clearVariableRow($row);
-      $row.addClass('is-unavailable').removeClass('is-needs-variation is-variation-ready');
+      $row
+        .addClass('is-unavailable')
+        .removeClass('is-needs-variation is-variation-ready');
       updateGrandTotal();
       return;
     }
@@ -521,14 +590,17 @@ jQuery(function ($) {
     });
   }
 
+  /* ------------------------------------------------------------------
+   * Grand total + button state
+   * ------------------------------------------------------------------ */
+
   function updateBundleButtonState() {
     const $btn = $('#add-bundle-to-cart');
     if (!$btn.length) return;
 
-    const items = collectDesiredAddons();
+    const items       = collectDesiredAddons();
     const anyAddonQty = items.length > 0;
-    const mainActive = isMainAddToCartActive();
-
+    const mainActive  = isMainAddToCartActive();
     const shouldEnable = !posting && mainActive && anyAddonQty;
 
     $btn
@@ -539,6 +611,9 @@ jQuery(function ($) {
 
   function updateGrandTotal() {
     const items = collectDesiredAddons();
+
+    // Free items have unit = 0 (set in collectDesiredAddons), so they
+    // contribute nothing to the add-on subtotal automatically.
     const addOns = items.reduce(function (sum, it) {
       return sum + (Number(it.unit || 0) * Number(it.quantity || 0));
     }, 0);
@@ -549,11 +624,15 @@ jQuery(function ($) {
     updateBundleButtonState();
   }
 
+  /* ------------------------------------------------------------------
+   * Observers
+   * ------------------------------------------------------------------ */
+
   function observeMainPriceChanges() {
     const node =
       document.querySelector('#nh-price-summary [data-ps="total"]') ||
-      document.getElementById('nh-line-total') ||
-      document.querySelector('.single_variation .price') ||
+      document.getElementById('nh-line-total')                       ||
+      document.querySelector('.single_variation .price')             ||
       document.querySelector('.summary .price');
 
     if (!node || typeof MutationObserver === 'undefined') return;
@@ -562,11 +641,7 @@ jQuery(function ($) {
       updateGrandTotal();
     });
 
-    mo.observe(node, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
+    mo.observe(node, { childList: true, subtree: true, characterData: true });
   }
 
   function observeMainButtonState() {
@@ -578,27 +653,38 @@ jQuery(function ($) {
     });
 
     mo.observe(btn, {
-      attributes: true,
+      attributes:      true,
       attributeFilter: ['disabled', 'class', 'aria-disabled']
     });
   }
 
+  /* ------------------------------------------------------------------
+   * AJAX
+   * ------------------------------------------------------------------ */
+
   function requestBundleAdd(main, addons) {
     return $.ajax({
-      url: BUNDLE_ADD_URL,
-      type: 'POST',
+      url:      BUNDLE_ADD_URL,
+      type:     'POST',
       dataType: 'json',
       data: {
         security: ajaxNonce,
-        main: JSON.stringify(main),
-        addons: JSON.stringify(addons)
+        main:     JSON.stringify(main),
+        addons:   JSON.stringify(addons)
       }
     });
   }
 
+  /* ------------------------------------------------------------------
+   * Add-all click handler
+   * ------------------------------------------------------------------ */
+
   function cleanupForwardLinksAroundButton($btn) {
     $btn.siblings('a.wc-forward, a.added_to_cart, .button.wc-forward').remove();
-    $btn.closest('.nc-bundle-footer').find('a.wc-forward, a.added_to_cart, .button.wc-forward').remove();
+    $btn
+      .closest('.nc-bundle-footer')
+      .find('a.wc-forward, a.added_to_cart, .button.wc-forward')
+      .remove();
   }
 
   function handleAddAllClick(e) {
@@ -674,67 +760,77 @@ jQuery(function ($) {
       });
   }
 
+  /* ------------------------------------------------------------------
+   * Event bindings
+   * ------------------------------------------------------------------ */
+
   $(document)
     .off('click.ncBundle', '#add-bundle-to-cart')
-    .on('click.ncBundle', '#add-bundle-to-cart', handleAddAllClick);
+    .on('click.ncBundle',  '#add-bundle-to-cart', handleAddAllClick);
 
   $(document)
     .off('click.ncBundleQty', '#nc-bundle-form .quantity .plus, #nc-bundle-form .quantity .minus')
-    .on('click.ncBundleQty', '#nc-bundle-form .quantity .plus, #nc-bundle-form .quantity .minus', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
+    .on('click.ncBundleQty',  '#nc-bundle-form .quantity .plus, #nc-bundle-form .quantity .minus',
+      function (e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-      const $control = $(this);
-      const $wrap = $control.closest('.quantity');
-      const $qty = $wrap.find('input.qty').first();
+        const $control = $(this);
+        const $wrap    = $control.closest('.quantity');
+        const $qty     = $wrap.find('input.qty').first();
 
-      if (!$qty.length) return;
-      if ($qty.prop('disabled') || $qty.is(':disabled')) return;
+        if (!$qty.length) return;
+        if ($qty.prop('disabled') || $qty.is(':disabled')) return;
 
-      const step = parseFloat($qty.attr('step')) || 1;
-      const min = parseFloat($qty.attr('min'));
-      const max = parseFloat($qty.attr('max'));
-      let val = parseFloat($qty.val());
+        const step = parseFloat($qty.attr('step')) || 1;
+        const min  = parseFloat($qty.attr('min'));
+        const max  = parseFloat($qty.attr('max'));
+        let   val  = parseFloat($qty.val());
 
-      if (!isFinite(val)) val = 0;
+        if (!isFinite(val)) val = 0;
 
-      if ($control.hasClass('plus')) {
-        val += step;
-      } else {
-        val -= step;
+        if ($control.hasClass('plus')) {
+          val += step;
+        } else {
+          val -= step;
+        }
+
+        if (isFinite(min)) val = Math.max(min, val);
+        if (isFinite(max) && max > 0) val = Math.min(max, val);
+
+        val = Math.round(val);
+
+        $qty.val(String(val)).trigger('input').trigger('change').focus();
       }
-
-      if (isFinite(min)) val = Math.max(min, val);
-      if (isFinite(max) && max > 0) val = Math.min(max, val);
-
-      val = Math.round(val);
-
-      $qty.val(String(val)).trigger('input').trigger('change').focus();
-    });
+    );
 
   $(document)
-    .off('input.ncBundleManual change.ncBundleManual', '#nc-complete-set .nc-bundle-row input.qty')
-    .on('input.ncBundleManual change.ncBundleManual', '#nc-complete-set .nc-bundle-row input.qty', function () {
-      if (this.disabled) return;
+    .off('input.ncBundleManual change.ncBundleManual',
+         '#nc-complete-set .nc-bundle-row input.qty')
+    .on('input.ncBundleManual change.ncBundleManual',
+        '#nc-complete-set .nc-bundle-row input.qty',
+      function () {
+        if (this.disabled) return;
 
-      let raw = String(this.value || '').replace(/[^\d]/g, '');
-      let val = raw === '' ? 0 : parseInt(raw, 10);
+        let raw = String(this.value || '').replace(/[^\d]/g, '');
+        let val = raw === '' ? 0 : parseInt(raw, 10);
 
-      if (!Number.isFinite(val)) val = 0;
+        if (!Number.isFinite(val)) val = 0;
 
-      const min = Number(this.min || 0);
-      const max = Number(this.max || 0);
+        const min = Number(this.min || 0);
+        const max = Number(this.max || 0);
 
-      if (Number.isFinite(min)) val = Math.max(min, val);
-      if (Number.isFinite(max) && max > 0) val = Math.min(max, val);
+        if (Number.isFinite(min)) val = Math.max(min, val);
+        if (Number.isFinite(max) && max > 0) val = Math.min(max, val);
 
-      this.value = String(val);
-      updateGrandTotal();
-    });
+        this.value = String(val);
+        updateGrandTotal();
+      }
+    );
 
   $(document)
     .off('change.ncBundleRowVar', '#nc-complete-set .bundle-variation')
-    .on('change.ncBundleRowVar', '#nc-complete-set .bundle-variation', function () {
+    .on('change.ncBundleRowVar',  '#nc-complete-set .bundle-variation', function () {
       const $row = $(this).closest('.nc-bundle-row');
       if ($row.length) {
         updateVariableRow($row);
@@ -745,9 +841,11 @@ jQuery(function ($) {
 
   $(document)
     .off('input.ncBundleMainQty change.ncBundleMainQty', 'form.cart .quantity input.qty')
-    .on('input.ncBundleMainQty change.ncBundleMainQty', 'form.cart .quantity input.qty', function () {
-      setTimeout(updateGrandTotal, 10);
-    });
+    .on('input.ncBundleMainQty change.ncBundleMainQty',  'form.cart .quantity input.qty',
+      function () {
+        setTimeout(updateGrandTotal, 10);
+      }
+    );
 
   $(document)
     .off(
@@ -764,15 +862,21 @@ jQuery(function ($) {
 
   $(document)
     .off('input.ncBundleMainCustom change.ncBundleMainCustom', '#nh_width_mm, #nh_length_mm')
-    .on('input.ncBundleMainCustom change.ncBundleMainCustom', '#nh_width_mm, #nh_length_mm', function () {
-      setTimeout(updateGrandTotal, 10);
-    });
+    .on('input.ncBundleMainCustom change.ncBundleMainCustom',  '#nh_width_mm, #nh_length_mm',
+      function () {
+        setTimeout(updateGrandTotal, 10);
+      }
+    );
 
   $(document)
-    .off('click.ncBundleMainCustomBtns', '#nh-custom-size-wrap .plus, #nh-custom-size-wrap .minus')
-    .on('click.ncBundleMainCustomBtns', '#nh-custom-size-wrap .plus, #nh-custom-size-wrap .minus', function () {
-      setTimeout(updateGrandTotal, 10);
-    });
+    .off('click.ncBundleMainCustomBtns',
+         '#nh-custom-size-wrap .plus, #nh-custom-size-wrap .minus')
+    .on('click.ncBundleMainCustomBtns',
+        '#nh-custom-size-wrap .plus, #nh-custom-size-wrap .minus',
+      function () {
+        setTimeout(updateGrandTotal, 10);
+      }
+    );
 
   if ($variationForm.length) {
     $variationForm.on(
@@ -782,6 +886,10 @@ jQuery(function ($) {
       }
     );
   }
+
+  /* ------------------------------------------------------------------
+   * Init
+   * ------------------------------------------------------------------ */
 
   initVariableRows();
   observeMainPriceChanges();
