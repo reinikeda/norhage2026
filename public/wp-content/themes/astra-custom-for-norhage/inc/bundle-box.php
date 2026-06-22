@@ -20,9 +20,11 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 		$row = [
 			'product_id'  => 0,
 			'qty'         => 1,
+			'max'         => 0,
 			'label'       => '',
 			'description' => '',
 			'required'    => false,
+			'free'        => false,
 		];
 
 		if ( is_numeric( $raw ) ) {
@@ -48,6 +50,13 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 			}
 		}
 
+		foreach ( [ 'max', 'max_qty', 'maximum_quantity' ] as $k ) {
+			if ( isset( $raw[ $k ] ) && $raw[ $k ] !== '' ) {
+				$row['max'] = max( 0, absint( $raw[ $k ] ) );
+				break;
+			}
+		}
+
 		foreach ( [ 'label', 'title', 'name' ] as $k ) {
 			if ( ! empty( $raw[ $k ] ) ) {
 				$row['label'] = sanitize_text_field( $raw[ $k ] );
@@ -63,6 +72,7 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 		}
 
 		$row['required'] = ! empty( $raw['required'] );
+		$row['free']     = ! empty( $raw['free'] );
 
 		return $row;
 	}
@@ -71,7 +81,9 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 if ( ! function_exists( 'nh_bundle_get_items' ) ) {
 	function nh_bundle_get_items( $product_id ) {
 		$product_id = absint( $product_id );
-		if ( ! $product_id ) return [];
+		if ( ! $product_id ) {
+			return [];
+		}
 
 		$raw = get_post_meta( $product_id, NH_BUNDLE_META_KEY, true );
 		if ( ! is_array( $raw ) || empty( $raw ) ) {
@@ -115,7 +127,9 @@ if ( ! function_exists( 'nh_bundle_has_items' ) ) {
 if ( ! function_exists( 'nh_bundle_get_product_link' ) ) {
 	function nh_bundle_get_product_link( $product_id, $bundle_parent_id ) {
 		$url = get_permalink( $product_id );
-		if ( ! $url ) return '';
+		if ( ! $url ) {
+			return '';
+		}
 
 		$url = add_query_arg( 'bundle_parent', absint( $bundle_parent_id ), $url );
 		$url .= '#nc-complete-set';
@@ -127,7 +141,9 @@ if ( ! function_exists( 'nh_bundle_get_product_link' ) ) {
 if ( ! function_exists( 'nh_bundle_get_display_price' ) ) {
 	function nh_bundle_get_display_price( WC_Product $product ) {
 		$price = $product->get_price();
-		if ( $price === '' ) return 0.0;
+		if ( $price === '' ) {
+			return 0.0;
+		}
 
 		return (float) wc_get_price_to_display( $product, [ 'price' => (float) $price ] );
 	}
@@ -191,15 +207,31 @@ if ( ! function_exists( 'nh_bundle_get_variation_payload' ) ) {
 
 if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 	function nh_bundle_render_qty_control( WC_Product $product, array $row, $disabled = false ) {
-		$raw_max = $product->get_max_purchase_quantity();
+		// Row-level max takes priority; fall back to product's own max purchase quantity.
+		$row_max     = isset( $row['max'] ) ? absint( $row['max'] ) : 0;
+		$product_max = $product->get_max_purchase_quantity();
 
-		// Woo may return -1 for "unlimited"
-		$has_real_max  = is_numeric( $raw_max ) && (int) $raw_max > 0;
-		$effective_max = $has_real_max ? (int) $raw_max : '';
+		// Also factor in actual stock quantity when stock management is enabled.
+		$stock_qty = null;
+		if ( $product->managing_stock() ) {
+			$raw_stock = $product->get_stock_quantity();
+			if ( is_numeric( $raw_stock ) && (int) $raw_stock > 0 ) {
+				$stock_qty = (int) $raw_stock;
+			}
+		}
+
+		// Build list of all hard upper limits; ignore 0 / -1 / null = "no limit".
+		$limits = [];
+		if ( $row_max > 0 )                                              $limits[] = $row_max;
+		if ( is_numeric( $product_max ) && (int) $product_max > 0 )     $limits[] = (int) $product_max;
+		if ( $stock_qty !== null )                                       $limits[] = $stock_qty;
+
+		// Effective max = lowest of all limits; empty string = no limit.
+		$effective_max = ! empty( $limits ) ? min( $limits ) : '';
 
 		$qty_disabled = $disabled ? ' disabled' : '';
-		$max_attr     = $has_real_max ? ' max="' . esc_attr( $effective_max ) . '"' : '';
-		$data_max     = $has_real_max ? ' data-maxqty="' . esc_attr( $effective_max ) . '"' : '';
+		$max_attr     = $effective_max !== '' ? ' max="' . esc_attr( $effective_max ) . '"' : '';
+		$data_max     = $effective_max !== '' ? ' data-maxqty="' . esc_attr( $effective_max ) . '"' : '';
 		$step_attr    = ' step="1"';
 		$input_id     = 'bundle-qty-' . esc_attr( $product->get_id() );
 
@@ -229,17 +261,30 @@ if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 
 if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 	function nh_bundle_render_row( WC_Product $product, array $row, $bundle_parent_id ) {
-		$product_id   = $product->get_id();
-		$is_variable  = $product->is_type( 'variable' );
-		$is_in_stock  = $product->is_in_stock();
-		$link         = nh_bundle_get_product_link( $product_id, $bundle_parent_id );
-		$price_html   = $product->get_price_html();
-		$price_html   = $price_html !== '' ? $price_html : '—';
-		$price_attr   = $is_variable ? 0 : nh_bundle_get_display_price( $product );
+		$product_id  = $product->get_id();
+		$is_variable = $product->is_type( 'variable' );
+		$is_in_stock = $product->is_in_stock();
+		$is_free     = ! empty( $row['free'] );
+		$link        = nh_bundle_get_product_link( $product_id, $bundle_parent_id );
+
+		// Free items always display wc_price(0); variable items show price after variation selection.
+		if ( $is_free ) {
+			$price_html = wc_price( 0 );
+		} else {
+			$price_html = $product->get_price_html();
+			$price_html = $price_html !== '' ? $price_html : '—';
+		}
+
+		// JS uses data-base-price to compute the running total.
+		// Free = 0, variable = 0 until a variation is chosen, otherwise display price.
+		$price_attr = $is_variable ? 0 : ( $is_free ? 0.0 : nh_bundle_get_display_price( $product ) );
 
 		$row_classes = [ 'nc-bundle-row' ];
 		if ( $is_variable ) {
 			$row_classes[] = 'is-variable';
+		}
+		if ( $is_free ) {
+			$row_classes[] = 'is-free';
 		}
 
 		$variations_json_attr = '';
@@ -247,7 +292,12 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 			$variations_json_attr = ' data-variations="' . esc_attr( wp_json_encode( nh_bundle_get_variation_payload( $product ) ) ) . '"';
 		}
 
-		echo '<div class="' . esc_attr( implode( ' ', $row_classes ) ) . '" role="row" data-product-id="' . esc_attr( $product_id ) . '" data-base-price="' . esc_attr( $price_attr ) . '" data-initial-price-html="' . esc_attr( $price_html ) . '"' . $variations_json_attr . '>';
+		echo '<div class="' . esc_attr( implode( ' ', $row_classes ) ) . '" role="row"'
+			. ' data-product-id="' . esc_attr( $product_id ) . '"'
+			. ' data-base-price="' . esc_attr( $price_attr ) . '"'
+			. ' data-initial-price-html="' . esc_attr( $price_html ) . '"'
+			. ' data-free="' . esc_attr( $is_free ? '1' : '0' ) . '"'
+			. $variations_json_attr . '>';
 
 		echo '  <div class="nc-col nc-col-image" role="cell">';
 		if ( $link ) {
@@ -305,23 +355,28 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		echo '  </div>';
 
 		echo '  <div class="nc-col nc-col-price" role="cell"><span class="nc-price-desktop">' . wp_kses_post( $price_html ) . '</span></div>';
-
 		echo '</div>';
 	}
 }
 
 if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 	function nh_render_bundle_box() {
-		if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return;
+		}
 
 		global $product;
 		if ( ! $product instanceof WC_Product ) {
 			$product = wc_get_product( get_the_ID() );
 		}
-		if ( ! $product instanceof WC_Product ) return;
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
 
 		$rows = nh_bundle_get_items( $product->get_id() );
-		if ( empty( $rows ) ) return;
+		if ( empty( $rows ) ) {
+			return;
+		}
 
 		$currency_symbol = get_woocommerce_currency_symbol();
 		$price_pos       = get_option( 'woocommerce_currency_pos', 'right_space' );
@@ -348,7 +403,9 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 
 		foreach ( $rows as $r ) {
 			$p = wc_get_product( $r['product_id'] );
-			if ( ! $p instanceof WC_Product ) continue;
+			if ( ! $p instanceof WC_Product ) {
+				continue;
+			}
 
 			nh_bundle_render_row( $p, $r, $product->get_id() );
 		}
@@ -383,7 +440,9 @@ if ( ! function_exists( 'nh_bundle_normalize_attributes' ) ) {
 			$key = sanitize_text_field( (string) $k );
 			$val = wc_clean( wp_unslash( $v ) );
 
-			if ( $key === '' || $val === '' ) continue;
+			if ( $key === '' || $val === '' ) {
+				continue;
+			}
 
 			if ( strpos( $key, 'attribute_' ) !== 0 ) {
 				$key = 'attribute_' . ltrim( $key, '_' );
@@ -421,6 +480,7 @@ if ( ! function_exists( 'nh_bundle_prepare_request_data' ) ) {
 		$quantity     = isset( $line['quantity'] ) ? max( 1, absint( $line['quantity'] ) ) : 1;
 		$variation_id = ! empty( $line['variation_id'] ) ? absint( $line['variation_id'] ) : 0;
 		$attributes   = nh_bundle_normalize_attributes( $line['attributes'] ?? [] );
+		$is_free      = ! empty( $line['free'] );
 
 		if ( ! $product_id ) {
 			return new WP_Error( 'invalid_product', __( 'Invalid bundle product.', 'nh-theme' ) );
@@ -453,9 +513,15 @@ if ( ! function_exists( 'nh_bundle_prepare_request_data' ) ) {
 			foreach ( $line['form_data'] as $k => $v ) {
 				$key = sanitize_text_field( (string) $k );
 
-				if ( $key === '' ) continue;
-				if ( in_array( $key, [ 'action', 'security', '_wpnonce', '_wp_http_referer' ], true ) ) continue;
-				if ( is_array( $v ) ) continue;
+				if ( $key === '' ) {
+					continue;
+				}
+				if ( in_array( $key, [ 'action', 'security', '_wpnonce', '_wp_http_referer' ], true ) ) {
+					continue;
+				}
+				if ( is_array( $v ) ) {
+					continue;
+				}
 
 				$request_data[ $key ] = wc_clean( wp_unslash( $v ) );
 			}
@@ -469,6 +535,7 @@ if ( ! function_exists( 'nh_bundle_prepare_request_data' ) ) {
 			'attributes'   => $attributes,
 			'request_data' => $request_data,
 			'name'         => $product->get_name(),
+			'free'         => $is_free,
 		];
 	}
 }
@@ -478,8 +545,8 @@ if ( ! function_exists( 'nh_bundle_build_success_notice_text' ) ) {
 		$parts = [];
 
 		foreach ( $prepared_lines as $line ) {
-			$name = isset( $line['name'] ) ? $line['name'] : __( 'Item', 'nh-theme' );
-			$qty  = isset( $line['quantity'] ) ? max( 1, absint( $line['quantity'] ) ) : 1;
+			$name    = isset( $line['name'] ) ? $line['name'] : __( 'Item', 'nh-theme' );
+			$qty     = isset( $line['quantity'] ) ? max( 1, absint( $line['quantity'] ) ) : 1;
 			$parts[] = sprintf( '%s × %d', $name, $qty );
 		}
 
@@ -494,7 +561,6 @@ if ( ! function_exists( 'nh_bundle_build_success_notice_text' ) ) {
 if ( ! function_exists( 'nh_bundle_build_success_notice_html' ) ) {
 	function nh_bundle_build_success_notice_html( array $prepared_lines ) {
 		$text = nh_bundle_build_success_notice_text( $prepared_lines );
-
 		return '<div class="woocommerce-message" role="alert">' . esc_html( $text ) . '</div>';
 	}
 }
@@ -544,16 +610,14 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 	function nh_ajax_add_bundle_to_cart() {
 		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 			wp_send_json_error(
-				[
-					'message' => __( 'Cart is not available.', 'nh-theme' ),
-				],
+				[ 'message' => __( 'Cart is not available.', 'nh-theme' ) ],
 				500
 			);
 		}
 
 		check_ajax_referer( 'nh_bundle_add_to_cart', 'security' );
 
-		$main_raw   = isset( $_POST['main'] ) ? json_decode( wp_unslash( $_POST['main'] ), true ) : [];
+		$main_raw   = isset( $_POST['main'] )   ? json_decode( wp_unslash( $_POST['main'] ),   true ) : [];
 		$addons_raw = isset( $_POST['addons'] ) ? json_decode( wp_unslash( $_POST['addons'] ), true ) : [];
 
 		if ( ! is_array( $main_raw ) || empty( $main_raw ) ) {
@@ -573,7 +637,9 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 		$prepared_lines[] = $main_prepared;
 
 		foreach ( $addons_raw as $addon_raw ) {
-			if ( ! is_array( $addon_raw ) ) continue;
+			if ( ! is_array( $addon_raw ) ) {
+				continue;
+			}
 
 			$prepared = nh_bundle_prepare_request_data( $addon_raw, false );
 			if ( is_wp_error( $prepared ) ) {
@@ -583,9 +649,9 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 			$prepared_lines[] = $prepared;
 		}
 
-		$added_keys        = [];
-		$original_post     = $_POST;
-		$original_request  = $_REQUEST;
+		$added_keys       = [];
+		$original_post    = $_POST;
+		$original_request = $_REQUEST;
 
 		wc_clear_notices();
 
@@ -594,12 +660,18 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 				$_POST    = $line['request_data'];
 				$_REQUEST = array_merge( $original_request, $line['request_data'] );
 
+				// Pass free flag as cart item data so the price hook can zero it out.
+				$cart_item_data = [];
+				if ( ! empty( $line['free'] ) ) {
+					$cart_item_data['nh_bundle_free'] = 1;
+				}
+
 				$cart_item_key = WC()->cart->add_to_cart(
 					$line['product_id'],
 					$line['quantity'],
 					$line['variation_id'],
 					$line['attributes'],
-					[]
+					$cart_item_data
 				);
 
 				if ( ! $cart_item_key ) {
@@ -618,8 +690,6 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 				}
 
 				$added_keys[] = $cart_item_key;
-
-				// Remove per-line notices so we only show one final bundle notice.
 				wc_clear_notices();
 			}
 		} finally {
@@ -644,14 +714,45 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 }
 
 /* ============================================================================
+ * Cart price override — set free bundle items to 0
+ * ========================================================================== */
+
+if ( ! function_exists( 'nh_bundle_zero_free_cart_items' ) ) {
+	function nh_bundle_zero_free_cart_items( $cart ) {
+		if ( ! $cart ) {
+			return;
+		}
+
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+			return;
+		}
+
+		foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
+			if ( empty( $cart_item['nh_bundle_free'] ) ) {
+				continue;
+			}
+
+			if ( isset( $cart_item['data'] ) && is_object( $cart_item['data'] ) ) {
+				$cart_item['data']->set_price( 0 );
+			}
+		}
+	}
+}
+add_action( 'woocommerce_before_calculate_totals', 'nh_bundle_zero_free_cart_items', 100 );
+
+/* ============================================================================
  * Assets
  * ========================================================================== */
 
 add_action( 'wp_enqueue_scripts', function () {
-	if ( ! is_product() ) return;
+	if ( ! is_product() ) {
+		return;
+	}
 
 	$product_id = get_queried_object_id();
-	if ( ! $product_id || ! nh_bundle_has_items( $product_id ) ) return;
+	if ( ! $product_id || ! nh_bundle_has_items( $product_id ) ) {
+		return;
+	}
 
 	$path = get_stylesheet_directory() . '/assets/js/bundle-add-to-cart.js';
 	$ver  = file_exists( $path ) ? filemtime( $path ) : '1.0.0';
