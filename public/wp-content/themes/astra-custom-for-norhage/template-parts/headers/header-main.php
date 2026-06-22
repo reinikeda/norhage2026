@@ -146,38 +146,46 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
       ?>
     </nav>
 
-    <!-- Mobile actions: cart + burger -->
-    <div class="nhhb-mobile-actions">
+  <!-- Mobile actions: account + cart + burger -->
+      <div class="nhhb-mobile-actions">
 
-      <a class="nh-cart nh-cart--mobile" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>">
-        <span class="nh-cart-icon">
+        <a class="nh-account nh-account--mobile" href="<?php echo esc_url( $account_url ); ?>" aria-label="<?php echo esc_attr( $account_label ); ?>">
           <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="9" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>
-            <circle cx="19" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>
-            <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>
+            <circle cx="12" cy="8" r="4" stroke-width="2" fill="none" stroke="currentColor"></circle>
+            <path d="M4 20a8 8 0 0 1 16 0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>
           </svg>
-          <span class="nh-cart-badge" aria-hidden="true" data-count="<?php echo esc_attr( (string) $cart_count ); ?>"><?php echo (int) $cart_count; ?></span>
-        </span>
-        <span class="screen-reader-text"><?php esc_html_e( 'View cart', 'nh-theme' ); ?></span>
-      </a>
+          <span class="screen-reader-text"><?php echo esc_html( $account_label ); ?></span>
+        </a>
 
-      <button
-        class="nh-burger"
-        type="button"
-        aria-label="<?php esc_attr_e( 'Open menu', 'nh-theme' ); ?>"
-        aria-controls="nh-mobile-drawer"
-        aria-expanded="false">
-        <img
-          class="nh-burger__icon"
-          src="<?php echo esc_url( $theme_uri . '/assets/icons/hamburger-menu.svg' ); ?>"
-          width="24"
-          height="24"
-          alt=""
-          aria-hidden="true" />
-      </button>
+        <a class="nh-cart nh-cart--mobile" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>">
+          <span class="nh-cart-icon">
+            <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="9" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>
+              <circle cx="19" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>
+              <path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>
+            </svg>
+            <span class="nh-cart-badge" aria-hidden="true" data-count="<?php echo esc_attr( (string) $cart_count ); ?>"><?php echo (int) $cart_count; ?></span>
+          </span>
+          <span class="screen-reader-text"><?php esc_html_e( 'View cart', 'nh-theme' ); ?></span>
+        </a>
 
-    </div>
-  </div><!-- /.nhhb-row--brand -->
+        <button
+          class="nh-burger"
+          type="button"
+          aria-label="<?php esc_attr_e( 'Open menu', 'nh-theme' ); ?>"
+          aria-controls="nh-mobile-drawer"
+          aria-expanded="false">
+          <img
+            class="nh-burger__icon"
+            src="<?php echo esc_url( $theme_uri . '/assets/icons/hamburger-menu.svg' ); ?>"
+            width="24"
+            height="24"
+            alt=""
+            aria-hidden="true" />
+        </button>
+
+      </div>
+    </div><!-- /.nhhb-row--brand -->
 
   <!-- =====================================================
        MOBILE DRAWER

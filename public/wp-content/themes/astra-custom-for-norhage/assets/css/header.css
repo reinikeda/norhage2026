@@ -1090,6 +1090,7 @@ body.drawer-open { overflow: hidden; }
 
   .nhhb-mobile-actions { display: flex; }
   .nh-cart--mobile { display: inline-flex; }
+  .nh-account--mobile { display: inline-flex; }
 
   /* Drawer slides in from left */
   #nh-mobile-drawer .nh-drawer__panel {
