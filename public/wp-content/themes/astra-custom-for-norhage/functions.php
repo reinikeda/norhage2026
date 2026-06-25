@@ -751,7 +751,7 @@ function nh_get_help_form_id_by_host() : int {
 		'norhage.no' => 3625,
 		'norhage.se' => 3613,
 		'norhage.de' => 3837,
-		'norhage.de' => 103,
+		'norhage.eu' => 103,
 	);
 
 	return isset( $form_map[ $host ] ) ? (int) $form_map[ $host ] : 1151;
