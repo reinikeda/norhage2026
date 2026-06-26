@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-19 16:06+0300\n"
+"PO-Revision-Date: 2026-06-26 14:55+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -110,7 +110,7 @@ msgstr "Produktbilder dienen nur als Referenz. Tatsächliche Produktfarbe, Form 
 
 #: inc/basket-customize.php:75 inc/basket-customize.php:84 inc/order-attributes.php:96 inc/order-attributes.php:311 inc/product-customize.php:540 inc/product-customize.php:589
 msgid "Length"
-msgstr ""
+msgstr "Länge"
 
 #: inc/blog.php:12
 msgid "All"
@@ -259,7 +259,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:159 inc/order-attributes.php:111 inc/order-attributes.php:312 inc/product-customize.php:231 inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
-msgstr ""
+msgstr "Zuschnittgebühr pro Platte"
 
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
@@ -371,7 +371,7 @@ msgstr ""
 
 #: inc/order-attributes.php:92 inc/order-attributes.php:310 inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
-msgstr ""
+msgstr "Breite"
 
 #: inc/product-customize.php:36 inc/product-customize.php:37 inc/product-customize.php:59
 msgid "Back to bundle"
