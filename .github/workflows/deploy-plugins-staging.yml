@@ -24,8 +24,6 @@ jobs:
             user: norhage-staging-se
           - domain: staging.norhage.fi
             user: norhage-staging
-          - domain: staging.norhage.eu
-            user: norhage-staging-eu
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
