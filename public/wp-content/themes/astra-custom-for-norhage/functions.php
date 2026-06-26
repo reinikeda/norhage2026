@@ -760,6 +760,7 @@ function nh_get_help_form_id_by_host() : int {
 /**
  * 1) CTA under Add to basket (inside cart form) — OK
  */
+
 add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;

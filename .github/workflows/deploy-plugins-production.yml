@@ -24,9 +24,6 @@ jobs:
             user: norhage-no
           - domain: norhage.se
             user: norhage-se
-          # - domain: norhage.eu
-          #   user: norhage-eu
-
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_PROD }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_PROD }}
