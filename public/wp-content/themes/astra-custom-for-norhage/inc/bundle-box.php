@@ -771,3 +771,49 @@ add_action( 'wp_enqueue_scripts', function () {
 		'nonce'          => wp_create_nonce( 'nh_bundle_add_to_cart' ),
 	] );
 }, 50 );
+
+/* ============================================================================
+ * Free bundle items — lock quantity in cart
+ * ========================================================================== */
+
+// Store the locked qty in cart item data when added.
+add_filter( 'woocommerce_add_cart_item_data', function ( $cart_item_data, $product_id, $variation_id, $quantity ) {
+	if ( ! empty( $cart_item_data['nh_bundle_free'] ) ) {
+		$cart_item_data['nh_bundle_free_qty'] = $quantity;
+	}
+	return $cart_item_data;
+}, 10, 4 );
+
+// Replace the qty input with plain text in the cart table.
+add_filter( 'woocommerce_cart_item_quantity', function ( $product_quantity, $cart_item_key, $cart_item ) {
+	if ( ! empty( $cart_item['nh_bundle_free'] ) ) {
+		$qty = isset( $cart_item['nh_bundle_free_qty'] ) ? (int) $cart_item['nh_bundle_free_qty'] : (int) $cart_item['quantity'];
+		return '<span class="nh-bundle-free-qty">' . esc_html( $qty ) . '</span>';
+	}
+	return $product_quantity;
+}, 10, 3 );
+
+// Restore locked qty if someone bypasses the UI and submits the cart update form.
+add_action( 'woocommerce_before_cart_item_quantity_zero', function ( $cart_item_key ) {
+	$cart = WC()->cart;
+	if ( ! $cart ) return;
+	$item = $cart->get_cart_item( $cart_item_key );
+	if ( $item && ! empty( $item['nh_bundle_free'] ) ) {
+		$locked = isset( $item['nh_bundle_free_qty'] ) ? (int) $item['nh_bundle_free_qty'] : 1;
+		$cart->cart_contents[ $cart_item_key ]['quantity'] = $locked;
+	}
+}, 10, 1 );
+
+add_action( 'woocommerce_cart_item_restored', function ( $cart_item_key, $cart ) {}, 10, 2 );
+
+// Intercept cart update and restore locked qty for free items.
+add_action( 'woocommerce_before_calculate_totals', function ( $cart ) {
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
+	foreach ( $cart->get_cart() as $key => $item ) {
+		if ( empty( $item['nh_bundle_free'] ) ) continue;
+		$locked = isset( $item['nh_bundle_free_qty'] ) ? (int) $item['nh_bundle_free_qty'] : 1;
+		if ( (int) $item['quantity'] !== $locked ) {
+			$cart->cart_contents[ $key ]['quantity'] = $locked;
+		}
+	}
+}, 5 ); // priority 5 = before the price-zero hook at 100
