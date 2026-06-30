@@ -163,11 +163,12 @@ body.dark-mode{
   
   /* CUSTOM SIZE badge responsive */
   .nhg-badge--custom{
-    font-size:9px;
-    padding:3px 8px;
-    min-width:50px;
-    bottom:6px;
-    right:6px;
+      left:50%;
+      right:auto;
+      transform:translateX(-50%);
+      bottom:8px;
+      width:max-content;
+      max-width:85%;
   }
 }
 
