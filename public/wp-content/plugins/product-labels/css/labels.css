@@ -1,14 +1,9 @@
 /* =========================================================
    PRODUCT LABELS — Norhage 2026
-   SALE ribbon (top-left, flush to image)
-   NEW burst (top-right, can hang outside)
-   CUSTOM SIZE badge (bottom-right)
-   Low-stock pill (bottom-left)
-   Inline "New Product" text (single product)
    ========================================================= */
 
 /* ---------- Brand palette ---------- */
-:root{
+:root {
   --nh-forest:  #1E3932;
   --nh-green:   #00704A;
   --nh-mint:    #2EA26F;
@@ -21,208 +16,179 @@
   --nh-burst-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon fill='%23fff' points='50,2 58,12 72,6 76,20 90,18 88,32 100,40 90,50 100,60 88,68 90,82 76,80 72,94 58,88 50,98 42,88 28,94 24,80 10,82 12,68 2,60 10,50 2,40 12,32 10,18 24,20 28,6 42,12'/%3E%3C/svg%3E");
 }
 
-body.dark-mode{
+body.dark-mode {
   --nh-forest: #0F2019;
   --nh-new:    #2FC07E;
 }
 
 /* ---------- Base wrappers ---------- */
-.woocommerce ul.products li.product{ position:relative; overflow:visible; z-index:0; }
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap{ position:relative; overflow:visible !important; }
+.woocommerce ul.products li.product { position: relative; overflow: visible; z-index: 0; }
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap { position: relative; overflow: visible !important; }
 .single-product .woocommerce-product-gallery,
-.woocommerce div.product div.images .woocommerce-product-gallery{ position:relative; }
+.woocommerce div.product div.images .woocommerce-product-gallery { position: relative; }
 
 .woocommerce .nhg-labels.nhg-labels--loop,
-.single-product .nhg-labels.nhg-labels--single{
-  position:absolute; inset:0; pointer-events:none; overflow:visible !important; z-index:30;
+.single-product .nhg-labels.nhg-labels--single {
+  position: absolute; inset: 0; pointer-events: none; overflow: visible !important; z-index: 30;
 }
 
-.woocommerce .nhg-labels.nhg-labels--thumb{
-  position:absolute; inset:0; pointer-events:none; z-index:31;
+.woocommerce .nhg-labels.nhg-labels--thumb {
+  position: absolute; inset: 0; pointer-events: none; z-index: 31;
 }
 
 /* =========================================================
-   BADGES
+   BADGE BASE
    ========================================================= */
 
-/* Base badge (clean — NO filters here) */
-.nhg-badge{
-  position:absolute; top:-8px;
-  width:56px; height:56px;
-  display:grid; place-items:center;
-  font:800 10px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  text-transform:uppercase; letter-spacing:.03em;
-  color:#fff; pointer-events:none;
-  border-radius:999px;
-  filter:none; /* important — avoid glowing borders */
+.nhg-badge {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  font: 800 10px/1.1 system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: #fff;
+  pointer-events: none;
+  z-index: 32;
 }
 
-.nhg-badge--new{ right:-8px; left:auto; }
-.nhg-badge--sale{ left:0; right:auto; top:0; }
-.nhg-badge--custom{ right:8px; bottom:8px; top:auto; left:auto; }
-
-/* ---------- NEW burst ---------- */
-.nhg-badge--new{
+/* =========================================================
+   1. NEW BURST (Top Right)
+   ========================================================= */
+.nhg-badge--new {
+  top: -8px;
+  right: -8px;
+  width: 56px;
+  height: 56px;
   background-color: color-mix(in srgb, var(--nh-green) 60%, white 40%);
-  -webkit-mask-image: var(--nh-burst-mask);
-          mask-image: var(--nh-burst-mask);
-  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-  -webkit-mask-position:center; mask-position:center;
-  -webkit-mask-size:contain;    mask-size:contain;
-  -webkit-mask-mode:alpha;      mask-mode:alpha;
-
-  /* NEW keeps glow */
+  -webkit-mask: var(--nh-burst-mask) no-repeat center / contain;
+          mask: var(--nh-burst-mask) no-repeat center / contain;
   filter: drop-shadow(0 0 0 2px #fff) drop-shadow(0 6px 16px rgba(0,0,0,.15));
 }
 
-.nhg-badge--new::after{
+.nhg-badge--new::after {
   content: attr(data-text);
-  position:relative; z-index:2; text-align:center; color:#fff;
+  position: relative; z-index: 2; text-align: center;
 }
 
-/* ---------- SALE ribbon ---------- */
-.nhg-badge--sale{
-  width:68px; height:68px;
-  background:transparent;
-  -webkit-mask:none; mask:none;
-
-  /* IMPORTANT: no glow, no border */
-  filter:none !important;
-  z-index:32;
+/* =========================================================
+   2. SALE RIBBON (Top Left)
+   ========================================================= */
+.nhg-badge--sale {
+  top: 0;
+  left: 0;
+  width: 68px;
+  height: 68px;
+  background: transparent;
 }
 
-.nhg-badge--sale::before{
-  content:""; position:absolute; top:0; left:0;
-  border-top:68px solid var(--nh-sale);
-  border-right:68px solid transparent;
+.nhg-badge--sale::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  border-top: 68px solid var(--nh-sale);
+  border-right: 68px solid transparent;
 }
 
-.nhg-badge--sale::after{
+.nhg-badge--sale::after {
   content: attr(data-l1) "\A" attr(data-l2);
   white-space: pre;
-  position:absolute;
-  top:30px; /* change position */
-  left:4px; /* change position */
+  position: absolute;
+  top: 30px; left: 4px;
   transform: rotate(-45deg); transform-origin: top left;
-  color:#fff; font-weight:700; text-transform:uppercase;
-  line-height:1.05; font-size:10.5px; letter-spacing:.3px; text-align:center;
+  font-weight: 700; font-size: 10.5px; text-align: center;
 }
 
-/* ---------- CUSTOM SIZE badge ---------- */
-.nhg-badge--custom{
-  position:absolute;
-  width:auto;
-  height:auto;
-  min-width:60px;
-  padding:4px 10px;
+/* =========================================================
+   3. CUSTOM SIZE PILL (Bottom Centered)
+   ========================================================= */
+.nhg-badge--custom {
+  top: auto;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: fit-content;
+  height: auto;
+  min-width: unset;
+  max-width: 90%;
+  padding: 5px 12px;
+  
   background-color: var(--nh-custom);
-  border-radius: 12px;
-  font: 700 11px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  text-align: center;
+  border-radius: 999px; /* True pill shape */
+  
+  font-size: 11px;
+  line-height: 1;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  top:auto;
-  bottom:8px;
-  right:8px;
-  left:auto;
-  transform: none;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width:480px){
-  .nhg-badge{
-    width:50px;
-    height:50px;
-    /* no top here – keep default */
-  }
-
-  /* NEW burst can sit a bit higher */
-  .nhg-badge--new{
-    top:-6px;
-    right:-6px;
-  }
-
-  /* SALE ribbon stays flush to image corner */
-  .nhg-badge--sale{
-    top:0;
-    width:58px;
-    height:58px;
-  }
-
-  .nhg-badge--sale::before{
-    border-top-width:58px;
-    border-right-width:58px;
-  }
-  .nhg-badge--sale::after{
-    top:19px;
-    left:4px;
-    font-size:9.8px;
-  }
-  
-  /* CUSTOM SIZE badge responsive */
-  .nhg-badge--custom{
-    font-size:9px;
-    padding:3px 8px;
-    min-width:50px;
-    bottom:6px;
-    right:6px;
-  }
 }
 
 /* =========================================================
-   Inline NEW tag (single product)
+   4. LOW STOCK BANNED (Bottom Left)
    ========================================================= */
-.nhg-new-inline{
-  display:inline-flex; align-items:center; gap:8px;
-  margin:.25rem 0 .5rem;
-  font-weight:700; font-size:.95rem;
-  letter-spacing:.04em; text-transform:uppercase;
-  color:var(--nh-forest);
-}
-.nhg-new-inline .nhg-new-icon{
-  width:18px; height:18px; flex:0 0 18px;
-  filter: invert(12%) sepia(20%) saturate(900%) hue-rotate(115deg)
-          brightness(90%) contrast(92%);
-  opacity:.95; transform: translateY(1px);
-}
-
-/* =========================================================
-   LOW STOCK
-   ========================================================= */
-.nhg-low-stock-banner{
-  position:absolute; left:8px; bottom:8px;
-  padding:6px 12px; border-radius:18px;
-  font:700 11.5px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  text-transform:uppercase; letter-spacing:.35px;
-  pointer-events:none;
+.nhg-low-stock-banner {
+  position: absolute; left: 8px; bottom: 8px;
+  padding: 6px 12px; border-radius: 18px;
+  font: 700 11.5px/1 system-ui, -apple-system, sans-serif;
+  text-transform: uppercase; letter-spacing: .35px;
   background-color: color-mix(in srgb, var(--nh-gold), transparent 78%);
   color: var(--nh-brown);
-  border:1.5px solid color-mix(in srgb, var(--nh-gold), #fff 55%);
+  border: 1.5px solid color-mix(in srgb, var(--nh-gold), #fff 55%);
   backdrop-filter: blur(2px);
-  z-index:33; /* Above custom badge */
-}
-
-body.dark-mode .nhg-low-stock-banner{
-  background-color: color-mix(in srgb, var(--nh-gold) 26%, transparent);
-  color:#5A3E2B;
-  border-color: color-mix(in srgb, var(--nh-gold) 70%, #fff 10%);
+  z-index: 34;
 }
 
 /* =========================================================
-   Dark mode badge refinements
+   SINGLE PRODUCT INLINE
    ========================================================= */
-body.dark-mode .nhg-badge--new{
-  filter: drop-shadow(0 0 0 1px rgba(255,255,255,.6))
-          drop-shadow(0 8px 18px rgba(0,0,0,.35));
+.nhg-new-inline {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: .25rem 0 .5rem;
+  font-weight: 700; font-size: .95rem;
+  text-transform: uppercase; color: var(--nh-forest);
+}
+.nhg-new-inline .nhg-new-icon {
+  width: 18px; height: 18px;
+  filter: invert(12%) sepia(20%) saturate(900%) hue-rotate(115deg) brightness(90%) contrast(92%);
 }
 
-body.dark-mode .nhg-new-inline{
-  color:#E9F1EC;
+/* =========================================================
+   RESPONSIVE (MOBILE)
+   ========================================================= */
+@media (max-width: 480px) {
+  .nhg-badge--new {
+    top: -6px; right: -6px;
+    width: 50px; height: 50px;
+  }
+  
+  .nhg-badge--sale {
+    width: 58px; height: 58px;
+  }
+  .nhg-badge--sale::before {
+    border-top-width: 58px; border-right-width: 58px;
+  }
+  .nhg-badge--sale::after {
+    top: 19px; left: 4px; font-size: 9.8px;
+  }
+
+  .nhg-badge--custom {
+    bottom: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    max-width: 85%; /* Prevent touching edges */
+  }
 }
 
-body.dark-mode .nhg-badge--custom{
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+body.dark-mode .nhg-badge--new {
+  filter: drop-shadow(0 0 0 1px rgba(255,255,255,.6)) drop-shadow(0 8px 18px rgba(0,0,0,.35));
+}
+body.dark-mode .nhg-new-inline { color: #E9F1EC; }
+body.dark-mode .nhg-badge--custom {
   background-color: color-mix(in srgb, var(--nh-custom) 80%, #000 20%);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+body.dark-mode .nhg-low-stock-banner {
+  background-color: color-mix(in srgb, var(--nh-gold) 26%, transparent);
+  color: #5A3E2B;
+  border-color: color-mix(in srgb, var(--nh-gold) 70%, #fff 10%);
 }
