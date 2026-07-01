@@ -1,0 +1,235 @@
+.cse-wrap {
+    margin: 0 0 14px;
+    border: 1px solid #d9e1dc;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.cse-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 0;
+    background: #1f433a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.cse-toggle:hover,
+.cse-toggle:focus {
+    background: #18352e;
+    color: #fff;
+    outline: none;
+}
+
+.cse-toggle-text {
+    display: inline-block;
+}
+
+.cse-toggle-icon {
+    flex: 0 0 auto;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cse-body {
+    padding: 14px 16px 16px;
+    background: #fff;
+}
+
+.cse-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cse-field-row {
+    margin: 0;
+}
+
+.cse-field-row label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #22312d;
+}
+
+.cse-required {
+    color: #d63638;
+}
+
+.cse-field-row select,
+.cse-field-row input[type="text"] {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cfd8d3;
+    border-radius: 4px;
+    background: #fff;
+    color: #1f1f1f;
+    font-size: 15px;
+    box-sizing: border-box;
+    appearance: none;
+}
+
+.cse-field-row select:focus,
+.cse-field-row input[type="text"]:focus {
+    border-color: #1f433a;
+    box-shadow: 0 0 0 3px rgba(31, 67, 58, 0.12);
+    outline: none;
+}
+
+.cse-calculate-btn {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 4px;
+    background: #2f2f2f;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.cse-calculate-btn:hover,
+.cse-calculate-btn:focus {
+    background: #1f1f1f;
+    outline: none;
+}
+
+.cse-calculate-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.cse-results {
+    margin-top: 14px;
+}
+
+.cse-results-box {
+    border: 1px solid #e3e8e5;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.cse-rates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cse-rate {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #edf1ef;
+    font-size: 15px;
+}
+
+.cse-rate:last-child {
+    border-bottom: 0;
+}
+
+.cse-rate-label {
+    color: #1f1f1f;
+    font-weight: 600;
+}
+
+.cse-rate-cost {
+    color: #111;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cse-rate--free .cse-rate-cost {
+    color: #198754;
+}
+
+.cse-error,
+.cse-note {
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.cse-error {
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+}
+
+.cse-note {
+    color: #0f5132;
+    background: #ecfdf3;
+    border: 1px solid #abefc6;
+}
+
+@media (max-width: 767px) {
+    .cse-wrap {
+        margin-bottom: 12px;
+        border-radius: 4px;
+    }
+
+    .cse-toggle {
+        padding: 13px 14px;
+        font-size: 15px;
+    }
+
+    .cse-toggle-icon {
+        font-size: 22px;
+    }
+
+    .cse-body {
+        padding: 12px 14px 14px;
+    }
+
+    .cse-fields {
+        gap: 12px;
+    }
+
+    .cse-field-row label {
+        font-size: 11px;
+    }
+
+    .cse-field-row select,
+    .cse-field-row input[type="text"] {
+        min-height: 42px;
+        font-size: 14px;
+        padding: 10px 11px;
+    }
+
+    .cse-calculate-btn {
+        min-height: 44px;
+        font-size: 14px;
+    }
+
+    .cse-rate {
+        padding: 11px 12px;
+        font-size: 14px;
+    }
+
+    .cse-rate-label,
+    .cse-rate-cost {
+        font-size: 14px;
+    }
+}

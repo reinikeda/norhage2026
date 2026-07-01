@@ -971,3 +971,202 @@ add_filter( 'woocommerce_ajax_variation_threshold', 'custom_variation_threshold'
 function custom_variation_threshold( $threshold, $product ) {
     return 100; // Increase this to a number higher than your variation count
 }
+
+/**
+ * =============================================
+ * CUSTOM SHIPPING ESTIMATOR FOR SIDE CART
+ * =============================================
+ */
+
+// Inject estimator HTML into side cart footer
+add_action( 'xoo_wsc_footer_start', 'cse_render_estimator' );
+function cse_render_estimator() {
+    if ( ! WC()->cart || WC()->cart->is_empty() ) {
+        return;
+    }
+
+    $shipping_countries = WC()->countries->get_shipping_countries();
+    $multi_country      = count( $shipping_countries ) > 1;
+    $default_country    = WC()->customer->get_shipping_country();
+
+    if ( empty( $default_country ) ) {
+        $default_country = WC()->countries->get_base_country();
+    }
+
+    if ( ! $multi_country ) {
+        $country_keys     = array_keys( $shipping_countries );
+        $default_country  = ! empty( $country_keys ) ? $country_keys[0] : $default_country;
+    }
+    ?>
+    <div class="cse-wrap" id="cse-wrap">
+        <button class="cse-toggle" id="cse-toggle" type="button" aria-expanded="false">
+            <span class="cse-toggle-text"><?php esc_html_e( 'Estimate Shipping', 'nh-theme' ); ?></span>
+            <span class="cse-toggle-icon" aria-hidden="true">+</span>
+        </button>
+
+        <div class="cse-body" id="cse-body" style="display:none;">
+
+            <div class="cse-fields">
+                <?php if ( $multi_country ) : ?>
+                    <div class="cse-field-row">
+                        <label for="cse-country">
+                            <?php esc_html_e( 'Country', 'nh-theme' ); ?> <span class="cse-required">*</span>
+                        </label>
+                        <select id="cse-country" name="cse_country" required>
+                            <option value=""><?php esc_html_e( 'Select country…', 'nh-theme' ); ?></option>
+                            <?php foreach ( $shipping_countries as $code => $name ) : ?>
+                                <option value="<?php echo esc_attr( $code ); ?>" <?php selected( $code, $default_country ); ?>>
+                                    <?php echo esc_html( $name ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                <?php else : ?>
+                    <input type="hidden" id="cse-country" value="<?php echo esc_attr( $default_country ); ?>">
+                <?php endif; ?>
+
+                <div class="cse-field-row">
+                    <label for="cse-postcode">
+                        <?php esc_html_e( 'Postcode', 'nh-theme' ); ?> <span class="cse-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="cse-postcode"
+                        name="cse_postcode"
+                        placeholder="<?php esc_attr_e( 'Enter postcode…', 'nh-theme' ); ?>"
+                        required
+                    >
+                </div>
+
+                <button class="cse-calculate-btn" id="cse-calculate" type="button">
+                    <?php esc_html_e( 'Calculate', 'nh-theme' ); ?>
+                </button>
+            </div>
+
+            <div class="cse-results" id="cse-results" style="display:none;"></div>
+        </div>
+    </div>
+    <?php
+}
+
+// Enqueue JS + CSS
+add_action( 'wp_enqueue_scripts', 'cse_enqueue_assets' );
+function cse_enqueue_assets() {
+    if ( ! is_cart() && ! is_checkout() ) {
+        // Side cart can appear on any page, so enqueue everywhere on frontend
+    }
+    wp_enqueue_style(
+        'cse-style',
+        get_stylesheet_directory_uri() . '/assets/css/shipping-estimator.css',
+        array(),
+        '1.0.0'
+    );
+    wp_enqueue_script(
+        'cse-script',
+        get_stylesheet_directory_uri() . '/assets/js/shipping-estimator.js',
+        array( 'jquery' ),
+        '1.0.0',
+        true
+    );
+	wp_localize_script( 'cse-script', 'cse_params', array(
+		'ajax_url' => admin_url( 'admin-ajax.php' ),
+		'nonce'    => wp_create_nonce( 'cse_nonce' ),
+		'i18n'     => array(
+			'calculating'   => __( 'Calculating…', 'nh-theme' ),
+			'calculate'     => __( 'Calculate', 'nh-theme' ),
+			'free'          => __( 'Free', 'nh-theme' ),
+			'no_methods'    => __( 'No shipping methods available for this postcode.', 'nh-theme' ),
+			'error'         => __( 'Something went wrong. Please try again.', 'nh-theme' ),
+			'fill_postcode' => __( 'Please enter a postcode.', 'nh-theme' ),
+			'fill_country'  => __( 'Please select a country.', 'nh-theme' ),
+		),
+	) );
+}
+
+// AJAX handler — logged in + guests
+add_action( 'wp_ajax_cse_calculate_shipping',        'cse_calculate_shipping_ajax' );
+add_action( 'wp_ajax_nopriv_cse_calculate_shipping', 'cse_calculate_shipping_ajax' );
+
+function cse_calculate_shipping_ajax() {
+    // 1. Basic security and validation
+    if ( ! check_ajax_referer( 'cse_nonce', 'nonce', false ) ) {
+        wp_send_json_error( array( 'message' => 'Security check failed.' ) );
+    }
+
+    $country  = isset( $_POST['country'] )  ? wc_clean( wp_unslash( $_POST['country'] ) )  : '';
+    $postcode = isset( $_POST['postcode'] ) ? wc_clean( wp_unslash( $_POST['postcode'] ) ) : '';
+
+    if ( empty( $postcode ) ) {
+        wp_send_json_error( array( 'message' => 'Postcode is required.' ) );
+    }
+    if ( empty( $country ) ) {
+        wp_send_json_error( array( 'message' => 'Country is required.' ) );
+    }
+
+    // 2. Ensure WooCommerce session and customer exist
+    if ( is_null( WC()->cart ) ) {
+        wc_load_cart();
+    }
+    if ( is_null( WC()->customer ) ) {
+        wp_send_json_error( array( 'message' => 'Customer session not found.' ) );
+    }
+
+    // 3. Backup original address
+    $backup = array(
+        'country'  => WC()->customer->get_shipping_country(),
+        'postcode' => WC()->customer->get_shipping_postcode(),
+        'state'    => WC()->customer->get_shipping_state(),
+    );
+
+    // 4. Set temporary address for calculation
+    WC()->customer->set_shipping_country( $country );
+    WC()->customer->set_shipping_postcode( $postcode );
+    WC()->customer->set_shipping_state( '' );
+    WC()->customer->save();
+
+    // 5. Force recalculation
+    WC()->session->set( 'shipping_for_package_0', false );
+    WC()->cart->calculate_shipping();
+    WC()->cart->calculate_totals();
+
+    $packages = WC()->shipping()->get_packages();
+    $rates    = array();
+
+    if ( ! empty( $packages ) ) {
+        foreach ( $packages as $package ) {
+            if ( ! empty( $package['rates'] ) ) {
+                foreach ( $package['rates'] as $rate_id => $rate ) {
+                    // Calculate total cost including taxes
+                    $total_cost = (float) $rate->get_cost();
+                    foreach ( $rate->get_taxes() as $tax ) {
+                        $total_cost += $tax;
+                    }
+
+                    $rates[] = array(
+                        'id'    => $rate_id,
+                        'label' => $rate->get_label(),
+                        'cost'  => wc_price( $total_cost ),
+                        'free'  => $total_cost === 0.0,
+                    );
+                }
+            }
+        }
+    }
+
+    // 6. Restore original address so we don't accidentally change their checkout country
+    WC()->customer->set_shipping_country( $backup['country'] );
+    WC()->customer->set_shipping_postcode( $backup['postcode'] );
+    WC()->customer->set_shipping_state( $backup['state'] );
+    WC()->customer->save();
+    
+    // Final clear to keep checkout clean
+    WC()->session->set( 'shipping_for_package_0', false );
+    WC()->cart->calculate_shipping();
+    WC()->cart->calculate_totals();
+
+    if ( empty( $rates ) ) {
+        wp_send_json_success( array( 'rates' => array(), 'empty' => true ) );
+    }
+
+    wp_send_json_success( array( 'rates' => $rates, 'empty' => false ) );
+}

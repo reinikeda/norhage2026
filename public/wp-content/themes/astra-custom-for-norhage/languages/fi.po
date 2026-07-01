@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-19 16:06+0300\n"
+"PO-Revision-Date: 2026-07-01 14:03+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -108,7 +108,9 @@ msgstr "Kysy asiantuntijalta"
 msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
 msgstr "Tuotekuvat ovat vain viitteellisiä. Tuotteen todellinen väri, muoto tai muut ominaisuudet voivat poiketa."
 
-#: inc/basket-customize.php:75 inc/basket-customize.php:84 inc/order-attributes.php:96 inc/order-attributes.php:311 inc/product-customize.php:540 inc/product-customize.php:589
+#: inc/basket-customize.php:75 inc/basket-customize.php:84
+#: inc/order-attributes.php:96 inc/order-attributes.php:311
+#: inc/product-customize.php:540 inc/product-customize.php:589
 msgid "Length"
 msgstr "Pituus"
 
@@ -120,7 +122,8 @@ msgstr "Kaikki"
 msgid "Blog"
 msgstr "Blogi"
 
-#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29 inc/blog.php:30 inc/blog.php:31
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
+#: inc/blog.php:30 inc/blog.php:31
 msgid "Blog: %s"
 msgstr "Blogi: %s"
 
@@ -257,7 +260,9 @@ msgstr "YouTube-/Vimeo-URL"
 msgid "Enable custom cutting"
 msgstr "Ota mittatilausleikkaus käyttöön"
 
-#: inc/meta-boxes.php:159 inc/order-attributes.php:111 inc/order-attributes.php:312 inc/product-customize.php:231 inc/product-customize.php:551 inc/product-customize.php:593
+#: inc/meta-boxes.php:159 inc/order-attributes.php:111
+#: inc/order-attributes.php:312 inc/product-customize.php:231
+#: inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
 msgstr "Leikkausmaksu / levy"
 
@@ -369,11 +374,13 @@ msgstr "Hae tuotteita & variaatioita…"
 msgid "Remove row"
 msgstr "Poista rivi"
 
-#: inc/order-attributes.php:92 inc/order-attributes.php:310 inc/product-customize.php:539 inc/product-customize.php:588
+#: inc/order-attributes.php:92 inc/order-attributes.php:310
+#: inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
 msgstr "Leveys"
 
-#: inc/product-customize.php:36 inc/product-customize.php:37 inc/product-customize.php:59
+#: inc/product-customize.php:36 inc/product-customize.php:37
+#: inc/product-customize.php:59
 msgid "Back to bundle"
 msgstr "Takaisin pakettiin"
 
@@ -473,11 +480,13 @@ msgstr "Pituuden tulee noudattaa %1$d mm askelia alkaen arvosta %2$d mm."
 msgid "Sale"
 msgstr "Alennusmyynti"
 
-#: inc/search.php:14 template-parts/headers/header-main.php:98 template-parts/headers/header-main.php:203
+#: inc/search.php:14 template-parts/headers/header-main.php:98
+#: template-parts/headers/header-main.php:203
 msgid "Search products…"
 msgstr "Hae tuotteita…"
 
-#: inc/search.php:15 template-parts/headers/header-main.php:93 template-parts/headers/header-main.php:198
+#: inc/search.php:15 template-parts/headers/header-main.php:93
+#: template-parts/headers/header-main.php:198
 msgid "Search products"
 msgstr "Hae tuotteita"
 
@@ -531,7 +540,8 @@ msgstr "Norhage Oy"
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
 msgstr "Koskitie 8, 32700 Huittinen, Suomi"
 
-#: template-parts/footer/footer.php:13 template-parts/headers/header-main.php:15
+#: template-parts/footer/footer.php:13
+#: template-parts/headers/header-main.php:15
 msgid "+49 176 65 10 6609"
 msgstr "+358 44 927 4784"
 
@@ -663,11 +673,13 @@ msgstr "Kirjaudu sisään"
 msgid "+4917665106609"
 msgstr "+358449274784"
 
-#: template-parts/headers/header-main.php:48 template-parts/headers/header-main.php:151
+#: template-parts/headers/header-main.php:48
+#: template-parts/headers/header-main.php:151
 msgid "Cart"
 msgstr "Ostoskori"
 
-#: template-parts/headers/header-main.php:57 template-parts/headers/header-main.php:160
+#: template-parts/headers/header-main.php:57
+#: template-parts/headers/header-main.php:160
 msgid "View cart"
 msgstr "Näytä ostoskori"
 
@@ -679,11 +691,13 @@ msgstr "Vaihda teema"
 msgid "FAQ"
 msgstr "UKK"
 
-#: template-parts/headers/header-main.php:106 template-parts/headers/header-main.php:211
+#: template-parts/headers/header-main.php:106
+#: template-parts/headers/header-main.php:211
 msgid "Search"
 msgstr "Hae"
 
-#: template-parts/headers/header-main.php:113 template-parts/headers/header-main.php:218
+#: template-parts/headers/header-main.php:113
+#: template-parts/headers/header-main.php:218
 msgid "Search suggestions"
 msgstr "Hakuehdotukset"
 
@@ -750,14 +764,25 @@ msgstr "Olemme yhteydessä ilmoittaaksemme, että tilauksesi #%1$s on peruttu."
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37
-#: woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38
-#: woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
+#: woocommerce/emails/customer-completed-order.php:37
+#: woocommerce/emails/customer-failed-order.php:40
+#: woocommerce/emails/customer-new-account.php:35
+#: woocommerce/emails/customer-note.php:37
+#: woocommerce/emails/customer-on-hold-order.php:35
+#: woocommerce/emails/customer-pos-completed-order.php:40
+#: woocommerce/emails/customer-pos-refunded-order.php:38
+#: woocommerce/emails/customer-processing-order.php:37
+#: woocommerce/emails/customer-refunded-order.php:35
+#: woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Hei %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39
-#: woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41
+#: woocommerce/emails/customer-failed-order.php:44
+#: woocommerce/emails/customer-note.php:41
+#: woocommerce/emails/customer-on-hold-order.php:39
+#: woocommerce/emails/customer-processing-order.php:41
+#: woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Hei,"
 
@@ -765,7 +790,10 @@ msgstr "Hei,"
 msgid "We have finished processing your order."
 msgstr "Tilauksesi käsittely on valmistunut."
 
-#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47 woocommerce/emails/customer-refunded-order.php:55
+#: woocommerce/emails/customer-completed-order.php:47
+#: woocommerce/emails/customer-on-hold-order.php:45
+#: woocommerce/emails/customer-processing-order.php:47
+#: woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Tässä vielä yhteenveto tilauksestasi:"
 
@@ -788,7 +816,8 @@ msgid "Thanks for creating an account on %s. Here’s a copy of your user detail
 msgstr "Kiitos tilin luomisesta sivustolla %s. Tässä kopio käyttäjätiedoistasi."
 
 #. translators: %s: Username
-#: woocommerce/emails/customer-new-account.php:41 woocommerce/emails/customer-reset-password.php:38
+#: woocommerce/emails/customer-new-account.php:41
+#: woocommerce/emails/customer-reset-password.php:38
 msgid "Username: <b>%s</b>"
 msgstr "Käyttäjätunnus: <b>%s</b>"
 
@@ -829,25 +858,30 @@ msgstr "Kiitos tilauksestasi! Ilmoitamme, että tilauksesi käsitellään heti m
 msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
 msgstr "Kiitos tilauksestasi. Se on odotustilassa, kunnes maksusuoritus on vahvistettu."
 
-#: woocommerce/emails/customer-pos-completed-order.php:44 woocommerce/emails/customer-pos-refunded-order.php:42
+#: woocommerce/emails/customer-pos-completed-order.php:44
+#: woocommerce/emails/customer-pos-refunded-order.php:42
 msgid "Hi there,"
 msgstr "Hei,"
 
-#: woocommerce/emails/customer-pos-completed-order.php:48 woocommerce/emails/customer-pos-refunded-order.php:57
+#: woocommerce/emails/customer-pos-completed-order.php:48
+#: woocommerce/emails/customer-pos-refunded-order.php:57
 msgid "Here’s a reminder of what you’ve bought:"
 msgstr "Tässä vielä yhteenveto ostoksestasi:"
 
-#: woocommerce/emails/customer-pos-completed-order.php:113 woocommerce/emails/customer-pos-refunded-order.php:124
+#: woocommerce/emails/customer-pos-completed-order.php:113
+#: woocommerce/emails/customer-pos-refunded-order.php:124
 msgid "Refund & Returns Policy"
 msgstr "Palautus- ja hyvityskäytäntö"
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:51 woocommerce/emails/customer-refunded-order.php:49
+#: woocommerce/emails/customer-pos-refunded-order.php:51
+#: woocommerce/emails/customer-refunded-order.php:49
 msgid "Your order from %s has been partially refunded."
 msgstr "Tilauksesi sivustolta %s on osittain hyvitetty."
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:54 woocommerce/emails/customer-refunded-order.php:52
+#: woocommerce/emails/customer-pos-refunded-order.php:54
+#: woocommerce/emails/customer-refunded-order.php:52
 msgid "Your order from %s has been refunded."
 msgstr "Tilauksesi sivustolta %s on hyvitetty."
 
@@ -900,7 +934,8 @@ msgstr "Vaihda salasanasi"
 msgid "Click here to reset your password"
 msgstr "Klikkaa tästä vaihtaaksesi salasanasi"
 
-#: woocommerce/pdf/norhage/invoice.php:17 woocommerce/pdf/norhage/invoice.php:44
+#: woocommerce/pdf/norhage/invoice.php:17
+#: woocommerce/pdf/norhage/invoice.php:44
 msgid "Invoice"
 msgstr "Lasku"
 
@@ -972,6 +1007,54 @@ msgstr "Olemme hiljattain uudistaneet verkkosivumme ja teemme parhaamme korjatak
 
 msgid "Back to Homepage"
 msgstr "Takaisin etusivulle"
+
+#: inc/functions.php
+msgid "Estimate Shipping"
+msgstr "Laske toimitus"
+
+#: inc/functions.php
+msgid "Country"
+msgstr "Maa"
+
+#: inc/functions.php
+msgid "Select country…"
+msgstr "Valitse maa…"
+
+#: inc/functions.php
+msgid "Postcode"
+msgstr "Postinumero"
+
+#: inc/functions.php
+msgid "Enter postcode…"
+msgstr "Syötä postinumero…"
+
+#: inc/functions.php
+msgid "Calculate"
+msgstr "Laske"
+
+#: inc/functions.php
+msgid "Calculating…"
+msgstr "Lasketaan…"
+
+#: inc/functions.php
+msgid "Free"
+msgstr "Ilmainen"
+
+#: inc/functions.php
+msgid "No shipping methods available for this postcode."
+msgstr "Tälle postinumerolle ei ole saatavilla toimitustapoja."
+
+#: inc/functions.php
+msgid "Something went wrong. Please try again."
+msgstr "Jotain meni vikaan. Yritä uudelleen."
+
+#: inc/functions.php
+msgid "Please enter a postcode."
+msgstr "Ole hyvä ja syötä postinumero."
+
+#: inc/functions.php
+msgid "Please select a country."
+msgstr "Ole hyvä ja valitse maa."
 
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-26 14:55+0300\n"
+"PO-Revision-Date: 2026-07-01 14:03+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -977,6 +977,54 @@ msgstr "Wir haben unsere Website vor Kurzem aktualisiert und tun alles, um fehle
 
 msgid "Back to Homepage"
 msgstr "Zurück zur Startseite"
+
+#: inc/functions.php
+msgid "Estimate Shipping"
+msgstr "Versand berechnen"
+
+#: inc/functions.php
+msgid "Country"
+msgstr "Land"
+
+#: inc/functions.php
+msgid "Select country…"
+msgstr "Land auswählen…"
+
+#: inc/functions.php
+msgid "Postcode"
+msgstr "PLZ"
+
+#: inc/functions.php
+msgid "Enter postcode…"
+msgstr "PLZ eingeben…"
+
+#: inc/functions.php
+msgid "Calculate"
+msgstr "Berechnen"
+
+#: inc/functions.php
+msgid "Calculating…"
+msgstr "Berechnung…"
+
+#: inc/functions.php
+msgid "Free"
+msgstr "Kostenlos"
+
+#: inc/functions.php
+msgid "No shipping methods available for this postcode."
+msgstr "Kein Versand an diese PLZ möglich."
+
+#: inc/functions.php
+msgid "Something went wrong. Please try again."
+msgstr "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+
+#: inc/functions.php
+msgid "Please enter a postcode."
+msgstr "Bitte gib eine PLZ ein."
+
+#: inc/functions.php
+msgid "Please select a country."
+msgstr "Bitte wähle ein Land aus."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
