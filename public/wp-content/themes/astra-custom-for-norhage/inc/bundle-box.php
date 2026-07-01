@@ -14,6 +14,46 @@ if ( ! defined( 'NH_BUNDLE_META_KEY_COMPAT' ) ) {
 if ( ! defined( 'NH_BUNDLE_IDS_LEGACY' ) ) {
 	define( 'NH_BUNDLE_IDS_LEGACY', '_nc_bundle_item_ids' );
 }
+if ( ! defined( 'NH_BUNDLE_NAME_META_KEY' ) ) {
+	define( 'NH_BUNDLE_NAME_META_KEY', '_bundle_box_name' );
+}
+
+/* ----------------------------------------------------------------------------
+ * Bundle name helpers
+ * -------------------------------------------------------------------------- */
+
+if ( ! function_exists( 'nh_bundle_get_bundle_name' ) ) {
+	/**
+	 * Returns the custom Bundle Box Name meta value for a product/variation,
+	 * or an empty string if not set.
+	 */
+	function nh_bundle_get_bundle_name( WC_Product $product ) {
+		$name = get_post_meta( $product->get_id(), NH_BUNDLE_NAME_META_KEY, true );
+		$name = is_string( $name ) ? trim( $name ) : '';
+		return $name;
+	}
+}
+
+if ( ! function_exists( 'nh_bundle_get_display_name' ) ) {
+	/**
+	 * Resolves the display name for a product using this priority:
+	 *   1. Custom _bundle_box_name meta (if set)
+	 *   2. $fallback string (if provided and non-empty)
+	 *   3. WooCommerce native product name
+	 */
+	function nh_bundle_get_display_name( WC_Product $product, $fallback = '' ) {
+		$bundle_name = nh_bundle_get_bundle_name( $product );
+		if ( $bundle_name !== '' ) {
+			return $bundle_name;
+		}
+		$fallback = is_string( $fallback ) ? trim( $fallback ) : '';
+		return $fallback !== '' ? $fallback : $product->get_name();
+	}
+}
+
+/* ----------------------------------------------------------------------------
+ * Row normalisation
+ * -------------------------------------------------------------------------- */
 
 if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 	function nh_bundle_normalize_row( $raw ) {
@@ -78,6 +118,10 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 	}
 }
 
+/* ----------------------------------------------------------------------------
+ * Item retrieval
+ * -------------------------------------------------------------------------- */
+
 if ( ! function_exists( 'nh_bundle_get_items' ) ) {
 	function nh_bundle_get_items( $product_id ) {
 		$product_id = absint( $product_id );
@@ -123,6 +167,10 @@ if ( ! function_exists( 'nh_bundle_has_items' ) ) {
 		return ! empty( nh_bundle_get_items( $product_id ) );
 	}
 }
+
+/* ----------------------------------------------------------------------------
+ * Misc helpers
+ * -------------------------------------------------------------------------- */
 
 if ( ! function_exists( 'nh_bundle_get_product_link' ) ) {
 	function nh_bundle_get_product_link( $product_id, $bundle_parent_id ) {
@@ -184,14 +232,27 @@ if ( ! function_exists( 'nh_bundle_format_attribute_option_label' ) ) {
 	}
 }
 
+/* ----------------------------------------------------------------------------
+ * Variation payload — includes custom bundle name (Option A)
+ * -------------------------------------------------------------------------- */
+
 if ( ! function_exists( 'nh_bundle_get_variation_payload' ) ) {
 	function nh_bundle_get_variation_payload( WC_Product_Variable $product ) {
 		$available = $product->get_available_variations();
-		$out = [];
+		$out       = [];
 
 		foreach ( $available as $var ) {
+			$var_obj        = wc_get_product( $var['variation_id'] );
+			$variation_name = '';
+
+			if ( $var_obj instanceof WC_Product ) {
+				// Option A: use _bundle_box_name if set, otherwise fall back to WooCommerce native variation title.
+				$variation_name = nh_bundle_get_display_name( $var_obj, $var_obj->get_title() );
+			}
+
 			$out[] = [
 				'variation_id'          => isset( $var['variation_id'] ) ? (int) $var['variation_id'] : 0,
+				'variation_name'        => $variation_name,
 				'attributes'            => isset( $var['attributes'] ) && is_array( $var['attributes'] ) ? array_map( 'strval', $var['attributes'] ) : [],
 				'display_price'         => isset( $var['display_price'] ) ? (float) $var['display_price'] : 0.0,
 				'display_regular_price' => isset( $var['display_regular_price'] ) ? (float) $var['display_regular_price'] : 0.0,
@@ -205,13 +266,15 @@ if ( ! function_exists( 'nh_bundle_get_variation_payload' ) ) {
 	}
 }
 
+/* ----------------------------------------------------------------------------
+ * Qty control
+ * -------------------------------------------------------------------------- */
+
 if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 	function nh_bundle_render_qty_control( WC_Product $product, array $row, $disabled = false ) {
-		// Row-level max takes priority; fall back to product's own max purchase quantity.
 		$row_max     = isset( $row['max'] ) ? absint( $row['max'] ) : 0;
 		$product_max = $product->get_max_purchase_quantity();
 
-		// Also factor in actual stock quantity when stock management is enabled.
 		$stock_qty = null;
 		if ( $product->managing_stock() ) {
 			$raw_stock = $product->get_stock_quantity();
@@ -220,13 +283,11 @@ if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 			}
 		}
 
-		// Build list of all hard upper limits; ignore 0 / -1 / null = "no limit".
 		$limits = [];
 		if ( $row_max > 0 )                                              $limits[] = $row_max;
 		if ( is_numeric( $product_max ) && (int) $product_max > 0 )     $limits[] = (int) $product_max;
 		if ( $stock_qty !== null )                                       $limits[] = $stock_qty;
 
-		// Effective max = lowest of all limits; empty string = no limit.
 		$effective_max = ! empty( $limits ) ? min( $limits ) : '';
 
 		$qty_disabled = $disabled ? ' disabled' : '';
@@ -259,6 +320,10 @@ if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 	}
 }
 
+/* ----------------------------------------------------------------------------
+ * Row renderer — uses custom bundle name (Option A)
+ * -------------------------------------------------------------------------- */
+
 if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 	function nh_bundle_render_row( WC_Product $product, array $row, $bundle_parent_id ) {
 		$product_id  = $product->get_id();
@@ -267,7 +332,6 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		$is_free     = ! empty( $row['free'] );
 		$link        = nh_bundle_get_product_link( $product_id, $bundle_parent_id );
 
-		// Free items always display wc_price(0); variable items show price after variation selection.
 		if ( $is_free ) {
 			$price_html = wc_price( 0 );
 		} else {
@@ -275,8 +339,6 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 			$price_html = $price_html !== '' ? $price_html : '—';
 		}
 
-		// JS uses data-base-price to compute the running total.
-		// Free = 0, variable = 0 until a variation is chosen, otherwise display price.
 		$price_attr = $is_variable ? 0 : ( $is_free ? 0.0 : nh_bundle_get_display_price( $product ) );
 
 		$row_classes = [ 'nc-bundle-row' ];
@@ -308,10 +370,14 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		echo '  </div>';
 
 		echo '  <div class="nc-col nc-col-title" role="cell">';
+
+		// Priority: 1. explicit row label from bundle config, 2. _bundle_box_name meta, 3. native WC product name.
+		$display_title = ! empty( $row['label'] ) ? $row['label'] : nh_bundle_get_display_name( $product );
+
 		if ( $link ) {
-			echo '    <a class="nc-title" href="' . esc_url( $link ) . '">' . esc_html( $row['label'] ? $row['label'] : $product->get_name() ) . '</a>';
+			echo '    <a class="nc-title" href="' . esc_url( $link ) . '"><span class="nc-title-text">' . esc_html( $display_title ) . '</span></a>';
 		} else {
-			echo '    <span class="nc-title">' . esc_html( $row['label'] ? $row['label'] : $product->get_name() ) . '</span>';
+			echo '    <span class="nc-title"><span class="nc-title-text">' . esc_html( $display_title ) . '</span></span>';
 		}
 
 		echo $is_in_stock
@@ -358,6 +424,10 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		echo '</div>';
 	}
 }
+
+/* ----------------------------------------------------------------------------
+ * Main bundle box renderer
+ * -------------------------------------------------------------------------- */
 
 if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 	function nh_render_bundle_box() {
@@ -660,7 +730,6 @@ if ( ! function_exists( 'nh_ajax_add_bundle_to_cart' ) ) {
 				$_POST    = $line['request_data'];
 				$_REQUEST = array_merge( $original_request, $line['request_data'] );
 
-				// Pass free flag as cart item data so the price hook can zero it out.
 				$cart_item_data = [];
 				if ( ! empty( $line['free'] ) ) {
 					$cart_item_data['nh_bundle_free'] = 1;
@@ -776,7 +845,6 @@ add_action( 'wp_enqueue_scripts', function () {
  * Free bundle items — lock quantity in cart
  * ========================================================================== */
 
-// Store the locked qty in cart item data when added.
 add_filter( 'woocommerce_add_cart_item_data', function ( $cart_item_data, $product_id, $variation_id, $quantity ) {
 	if ( ! empty( $cart_item_data['nh_bundle_free'] ) ) {
 		$cart_item_data['nh_bundle_free_qty'] = $quantity;
@@ -784,7 +852,6 @@ add_filter( 'woocommerce_add_cart_item_data', function ( $cart_item_data, $produ
 	return $cart_item_data;
 }, 10, 4 );
 
-// Replace the qty input with plain text in the cart table.
 add_filter( 'woocommerce_cart_item_quantity', function ( $product_quantity, $cart_item_key, $cart_item ) {
 	if ( ! empty( $cart_item['nh_bundle_free'] ) ) {
 		$qty = isset( $cart_item['nh_bundle_free_qty'] ) ? (int) $cart_item['nh_bundle_free_qty'] : (int) $cart_item['quantity'];
@@ -793,7 +860,6 @@ add_filter( 'woocommerce_cart_item_quantity', function ( $product_quantity, $car
 	return $product_quantity;
 }, 10, 3 );
 
-// Restore locked qty if someone bypasses the UI and submits the cart update form.
 add_action( 'woocommerce_before_cart_item_quantity_zero', function ( $cart_item_key ) {
 	$cart = WC()->cart;
 	if ( ! $cart ) return;
@@ -806,7 +872,6 @@ add_action( 'woocommerce_before_cart_item_quantity_zero', function ( $cart_item_
 
 add_action( 'woocommerce_cart_item_restored', function ( $cart_item_key, $cart ) {}, 10, 2 );
 
-// Intercept cart update and restore locked qty for free items.
 add_action( 'woocommerce_before_calculate_totals', function ( $cart ) {
 	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
 	foreach ( $cart->get_cart() as $key => $item ) {
@@ -816,4 +881,4 @@ add_action( 'woocommerce_before_calculate_totals', function ( $cart ) {
 			$cart->cart_contents[ $key ]['quantity'] = $locked;
 		}
 	}
-}, 5 ); // priority 5 = before the price-zero hook at 100
+}, 5 );

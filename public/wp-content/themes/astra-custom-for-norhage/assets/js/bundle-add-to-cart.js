@@ -153,8 +153,8 @@ jQuery(function ($) {
   function isMainAddToCartActive() {
     const $btn = $mainForm.find('.single_add_to_cart_button').first();
     if (!$btn.length) return false;
-    if ($btn.prop('disabled'))  return false;
-    if ($btn.is(':disabled'))   return false;
+    if ($btn.prop('disabled'))     return false;
+    if ($btn.is(':disabled'))      return false;
     if ($btn.hasClass('disabled')) return false;
 
     const ariaDisabled = String($btn.attr('aria-disabled') || '').toLowerCase();
@@ -262,9 +262,6 @@ jQuery(function ($) {
       const pid  = String($row.data('product-id') || '');
       const qty  = getRowPerSetQty($row);
       const free = isRowFree($row);
-
-      // unit for AJAX payload: always use actual data-base-price
-      // (PHP already stores 0 for free rows, but we read it explicitly)
       const unit = free ? 0 : getRowUnitPrice($row);
 
       if (!pid || !qty) return;
@@ -282,8 +279,8 @@ jQuery(function ($) {
           quantity:     qty,
           variation_id: vid,
           attributes:   attrs,
-          unit:         unit,   // used locally for total calc only
-          free:         free    // sent to PHP AJAX handler
+          unit:         unit,
+          free:         free
         });
       }
     });
@@ -478,10 +475,20 @@ jQuery(function ($) {
     return Array.isArray(data) ? data : [];
   }
 
+  /* ------------------------------------------------------------------
+   * Variable row state
+   * ------------------------------------------------------------------ */
+
   function clearVariableRow($row) {
     $row.find('.selected-variation-id').val('0');
     $row.attr('data-base-price', '0');
     setRowPriceHtml($row, getRowInitialPriceHtml($row));
+
+    // Reset title to the original bundle display name stored on the row element.
+    const originalTitle = $row.attr('data-row-title') || '';
+    if (originalTitle) {
+      $row.find('.nc-title-text').text(originalTitle);
+    }
 
     const $qty = getRowQtyInput($row);
     if ($qty.length) {
@@ -499,14 +506,18 @@ jQuery(function ($) {
    */
   function enableVariableRow($row, variation) {
     const free = isRowFree($row);
-    const sale = Number(variation.display_price          || 0);
-    const reg  = Number(variation.display_regular_price  || sale || 0);
+    const sale = Number(variation.display_price         || 0);
+    const reg  = Number(variation.display_regular_price || sale || 0);
+
+    // Update title to variation's bundle name (set via _bundle_box_name or WC native title).
+    if (variation.variation_name) {
+      $row.find('.nc-title-text').text(variation.variation_name);
+    }
 
     let html;
     let basePrice;
 
     if (free) {
-      // Free item: always show 0 price, contribute 0 to total
       html      = fmtHtml(0);
       basePrice = 0;
     } else if (sale > 0 || reg > 0) {
@@ -567,7 +578,7 @@ jQuery(function ($) {
     }
 
     if (
-      !match.variation_id          ||
+      !match.variation_id           ||
       match.is_in_stock         === false ||
       match.is_purchasable      === false ||
       match.variation_is_visible === false
@@ -598,9 +609,9 @@ jQuery(function ($) {
     const $btn = $('#add-bundle-to-cart');
     if (!$btn.length) return;
 
-    const items       = collectDesiredAddons();
-    const anyAddonQty = items.length > 0;
-    const mainActive  = isMainAddToCartActive();
+    const items        = collectDesiredAddons();
+    const anyAddonQty  = items.length > 0;
+    const mainActive   = isMainAddToCartActive();
     const shouldEnable = !posting && mainActive && anyAddonQty;
 
     $btn
@@ -612,8 +623,6 @@ jQuery(function ($) {
   function updateGrandTotal() {
     const items = collectDesiredAddons();
 
-    // Free items have unit = 0 (set in collectDesiredAddons), so they
-    // contribute nothing to the add-on subtotal automatically.
     const addOns = items.reduce(function (sum, it) {
       return sum + (Number(it.unit || 0) * Number(it.quantity || 0));
     }, 0);

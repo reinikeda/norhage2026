@@ -1170,3 +1170,45 @@ function cse_calculate_shipping_ajax() {
 
     wp_send_json_success( array( 'rates' => $rates, 'empty' => false ) );
 }
+
+/**
+ * Add "Bundle Name" field to Simple Products and Variations
+ */
+
+// 1. Simple Product Field
+add_action( 'woocommerce_product_options_general_product_data', 'nh_add_bundle_name_field' );
+function nh_add_bundle_name_field() {
+    woocommerce_wp_text_input( array(
+        'id'          => '_bundle_box_name',
+        'label'       => __( 'Bundle Box Name', 'astra-child' ),
+        'placeholder' => 'Custom name for bundle display',
+        'desc_tip'    => 'true',
+        'description' => __( 'If set, this name will be used in the bundle box instead of the product title.', 'astra-child' ),
+    ) );
+}
+
+// 2. Variation Field
+add_action( 'woocommerce_product_after_variable_attributes', 'nh_add_variation_bundle_name_field', 10, 3 );
+function nh_add_variation_bundle_name_field( $loop, $variation_data, $variation ) {
+    woocommerce_wp_text_input( array(
+        'id'            => '_bundle_box_name[' . $loop . ']',
+        'label'         => __( 'Bundle Box Name', 'astra-child' ),
+        'placeholder'   => 'Custom name for variation in bundle',
+        'value'         => get_post_meta( $variation->ID, '_bundle_box_name', true ),
+        'wrapper_class' => 'form-row form-row-full',
+    ) );
+}
+
+// 3. Save Fields
+add_action( 'woocommerce_process_product_meta', 'nh_save_bundle_name_fields' );
+add_action( 'woocommerce_save_product_variation', 'nh_save_variation_bundle_name_fields', 10, 2 );
+
+function nh_save_bundle_name_fields( $post_id ) {
+    $bundle_name = isset( $_POST['_bundle_box_name'] ) ? sanitize_text_field( $_POST['_bundle_box_name'] ) : '';
+    update_post_meta( $post_id, '_bundle_box_name', $bundle_name );
+}
+
+function nh_save_variation_bundle_name_fields( $variation_id, $i ) {
+    $bundle_name = isset( $_POST['_bundle_box_name'][$i] ) ? sanitize_text_field( $_POST['_bundle_box_name'][$i] ) : '';
+    update_post_meta( $variation_id, '_bundle_box_name', $bundle_name );
+}
