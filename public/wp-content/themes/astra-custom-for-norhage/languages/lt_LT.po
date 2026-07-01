@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-19 16:06+0300\n"
+"PO-Revision-Date: 2026-07-01 14:03+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -975,6 +975,54 @@ msgstr "Neseniai atnaujinome savo svetainę ir darome viską, kad sutvarkytume n
 
 msgid "Back to Homepage"
 msgstr "Į pradinį puslapį"
+
+#: inc/functions.php
+msgid "Estimate Shipping"
+msgstr "Apskaičiuoti pristatymą"
+
+#: inc/functions.php
+msgid "Country"
+msgstr "Šalis"
+
+#: inc/functions.php
+msgid "Select country…"
+msgstr "Pasirinkite šalį…"
+
+#: inc/functions.php
+msgid "Postcode"
+msgstr "Pašto kodas"
+
+#: inc/functions.php
+msgid "Enter postcode…"
+msgstr "Įveskite pašto kodą…"
+
+#: inc/functions.php
+msgid "Calculate"
+msgstr "Skaičiuoti"
+
+#: inc/functions.php
+msgid "Calculating…"
+msgstr "Skaičiuojama…"
+
+#: inc/functions.php
+msgid "Free"
+msgstr "Nemokamas"
+
+#: inc/functions.php
+msgid "No shipping methods available for this postcode."
+msgstr "Šiam pašto kodui pristatymo būdų nerasta."
+
+#: inc/functions.php
+msgid "Something went wrong. Please try again."
+msgstr "Kažkas nepavyko. Bandykite dar kartą."
+
+#: inc/functions.php
+msgid "Please enter a postcode."
+msgstr "Prašome įvesti pašto kodą."
+
+#: inc/functions.php
+msgid "Please select a country."
+msgstr "Prašome pasirinkti šalį."
 
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"

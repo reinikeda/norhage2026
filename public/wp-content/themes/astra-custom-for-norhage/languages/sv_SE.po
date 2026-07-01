@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-06-19 16:06+0300\n"
+"PO-Revision-Date: 2026-07-01 14:03+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -977,6 +977,54 @@ msgstr "Vi har nylig oppdaterat vår webbplats og gjør allt vi kan for å åtg�
 
 msgid "Back to Homepage"
 msgstr "Tillbaka till startsidan"
+
+#: inc/functions.php
+msgid "Estimate Shipping"
+msgstr "Beräkna frakt"
+
+#: inc/functions.php
+msgid "Country"
+msgstr "Land"
+
+#: inc/functions.php
+msgid "Select country…"
+msgstr "Välj land…"
+
+#: inc/functions.php
+msgid "Postcode"
+msgstr "Postnummer"
+
+#: inc/functions.php
+msgid "Enter postcode…"
+msgstr "Ange postnr…"
+
+#: inc/functions.php
+msgid "Calculate"
+msgstr "Beräkna"
+
+#: inc/functions.php
+msgid "Calculating…"
+msgstr "Beräknar…"
+
+#: inc/functions.php
+msgid "Free"
+msgstr "Gratis"
+
+#: inc/functions.php
+msgid "No shipping methods available for this postcode."
+msgstr "Inga fraktalternativ tillgängliga för detta postnummer."
+
+#: inc/functions.php
+msgid "Something went wrong. Please try again."
+msgstr "Något gick fel. Försök igen."
+
+#: inc/functions.php
+msgid "Please enter a postcode."
+msgstr "Vänligen ange ett postnummer."
+
+#: inc/functions.php
+msgid "Please select a country."
+msgstr "Vänligen välg ett land."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
