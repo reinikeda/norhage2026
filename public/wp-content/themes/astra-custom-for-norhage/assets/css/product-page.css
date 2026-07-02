@@ -1098,3 +1098,24 @@
   .nh-mb-product-extra { padding: 20px; }
   .nh-mb-product-extra > h2 { font-size: 16px !important; }
 }
+
+/* Ensure the gallery container clears properly */
+.woocommerce-product-gallery--with-images .flex-control-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+/* Force 4 images per row (roughly 25% each minus spacing) */
+.woocommerce-product-gallery--with-images .flex-control-nav li {
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+/* Optional: Hide scrollbar but allow scrolling if more than 4 images exist */
+.woocommerce-product-gallery--with-images .flex-control-nav::-webkit-scrollbar {
+    display: none;
+}
