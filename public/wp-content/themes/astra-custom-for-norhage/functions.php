@@ -1235,23 +1235,3 @@ function nh_save_variation_bundle_name_fields( $variation_id, $i ) {
     $bundle_name = isset( $_POST['_bundle_box_name'][$i] ) ? sanitize_text_field( $_POST['_bundle_box_name'][$i] ) : '';
     update_post_meta( $variation_id, '_bundle_box_name', $bundle_name );
 }
-
-/**
- * =============================================
- * ROUND SEK AND NOK, remove decimals if 00
- * =============================================
- */
-
-add_filter( 'woocommerce_get_price_including_tax', 'norhage_force_whole_number_nordics', 10, 3 );
-function norhage_force_whole_number_nordics( $price, $qty, $product ) {
-    $currency = get_woocommerce_currency();
-    if ( in_array( $currency, array( 'NOK', 'SEK' ) ) ) {
-        return round( $price );
-    }
-    return $price;
-}
-
-/**
-  * Trim zeros in price decimals
-  */
-add_filter( 'woocommerce_price_trim_zeros', '__return_true' );
