@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 09:57+0300\n"
+"PO-Revision-Date: 2026-07-08 10:01+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -108,7 +108,9 @@ msgstr "Klausti eksperto"
 msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
 msgstr "Prekės nuotraukos yra tik informacinio pobūdžio. Faktinė prekės spalva, forma ar kitos savybės gali skirtis."
 
-#: inc/basket-customize.php:75 inc/basket-customize.php:84 inc/order-attributes.php:96 inc/order-attributes.php:311 inc/product-customize.php:540 inc/product-customize.php:589
+#: inc/basket-customize.php:75 inc/basket-customize.php:84
+#: inc/order-attributes.php:96 inc/order-attributes.php:311
+#: inc/product-customize.php:540 inc/product-customize.php:589
 msgid "Length"
 msgstr "Ilgis"
 
@@ -120,7 +122,8 @@ msgstr "Visi"
 msgid "Blog"
 msgstr "Tinklaraštis"
 
-#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29 inc/blog.php:30 inc/blog.php:31
+#: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
+#: inc/blog.php:30 inc/blog.php:31
 msgid "Blog: %s"
 msgstr "Tinklaraštis: %s"
 
@@ -257,7 +260,9 @@ msgstr "„YouTube“ / „Vimeo“ nuoroda"
 msgid "Enable custom cutting"
 msgstr "Įjungti pjovimą pagal išmatavimus"
 
-#: inc/meta-boxes.php:159 inc/order-attributes.php:111 inc/order-attributes.php:312 inc/product-customize.php:231 inc/product-customize.php:551 inc/product-customize.php:593
+#: inc/meta-boxes.php:159 inc/order-attributes.php:111
+#: inc/order-attributes.php:312 inc/product-customize.php:231
+#: inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
 msgstr "Pjovimo mokestis už lakštą"
 
@@ -369,11 +374,13 @@ msgstr "Ieškoti prekių & variacijų…"
 msgid "Remove row"
 msgstr "Pašalinti eilutę"
 
-#: inc/order-attributes.php:92 inc/order-attributes.php:310 inc/product-customize.php:539 inc/product-customize.php:588
+#: inc/order-attributes.php:92 inc/order-attributes.php:310
+#: inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
 msgstr "Plotis"
 
-#: inc/product-customize.php:36 inc/product-customize.php:37 inc/product-customize.php:59
+#: inc/product-customize.php:36 inc/product-customize.php:37
+#: inc/product-customize.php:59
 msgid "Back to bundle"
 msgstr "Grįžti į produktų rinkinį"
 
@@ -473,11 +480,13 @@ msgstr "Ilgis turi atitikti %1$d mm žingsnį, pradedant nuo %2$d mm."
 msgid "Sale"
 msgstr "Išpardavimas"
 
-#: inc/search.php:14 template-parts/headers/header-main.php:98 template-parts/headers/header-main.php:203
+#: inc/search.php:14 template-parts/headers/header-main.php:98
+#: template-parts/headers/header-main.php:203
 msgid "Search products…"
 msgstr "Ieškoti prekių…"
 
-#: inc/search.php:15 template-parts/headers/header-main.php:93 template-parts/headers/header-main.php:198
+#: inc/search.php:15 template-parts/headers/header-main.php:93
+#: template-parts/headers/header-main.php:198
 msgid "Search products"
 msgstr "Ieškoti prekių"
 
@@ -531,7 +540,8 @@ msgstr "UAB Tehis"
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
 msgstr "Tiekėjų g. 19E, 97123 Kretinga, Lietuva"
 
-#: template-parts/footer/footer.php:13 template-parts/headers/header-main.php:15
+#: template-parts/footer/footer.php:13
+#: template-parts/headers/header-main.php:15
 msgid "+49 176 65 10 6609"
 msgstr "+370 687 89 950"
 
@@ -663,11 +673,13 @@ msgstr "Prisijungti"
 msgid "+4917665106609"
 msgstr "+37068789950"
 
-#: template-parts/headers/header-main.php:48 template-parts/headers/header-main.php:151
+#: template-parts/headers/header-main.php:48
+#: template-parts/headers/header-main.php:151
 msgid "Cart"
 msgstr "Krepšelis"
 
-#: template-parts/headers/header-main.php:57 template-parts/headers/header-main.php:160
+#: template-parts/headers/header-main.php:57
+#: template-parts/headers/header-main.php:160
 msgid "View cart"
 msgstr "Peržiūrėti krepšelį"
 
@@ -679,11 +691,13 @@ msgstr "Pakeisti temą"
 msgid "FAQ"
 msgstr "DUK"
 
-#: template-parts/headers/header-main.php:106 template-parts/headers/header-main.php:211
+#: template-parts/headers/header-main.php:106
+#: template-parts/headers/header-main.php:211
 msgid "Search"
 msgstr "Paieška"
 
-#: template-parts/headers/header-main.php:113 template-parts/headers/header-main.php:218
+#: template-parts/headers/header-main.php:113
+#: template-parts/headers/header-main.php:218
 msgid "Search suggestions"
 msgstr "Paieškos pasiūlymai"
 
@@ -750,12 +764,25 @@ msgstr "Susisiekiame su jumis norėdami pranešti, kad jūsų užsakymas Nr. %1$
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38
-#: woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
+#: woocommerce/emails/customer-completed-order.php:37
+#: woocommerce/emails/customer-failed-order.php:40
+#: woocommerce/emails/customer-new-account.php:35
+#: woocommerce/emails/customer-note.php:37
+#: woocommerce/emails/customer-on-hold-order.php:35
+#: woocommerce/emails/customer-pos-completed-order.php:40
+#: woocommerce/emails/customer-pos-refunded-order.php:38
+#: woocommerce/emails/customer-processing-order.php:37
+#: woocommerce/emails/customer-refunded-order.php:35
+#: woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Labas, %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41
+#: woocommerce/emails/customer-failed-order.php:44
+#: woocommerce/emails/customer-note.php:41
+#: woocommerce/emails/customer-on-hold-order.php:39
+#: woocommerce/emails/customer-processing-order.php:41
+#: woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Labas,"
 
@@ -763,7 +790,10 @@ msgstr "Labas,"
 msgid "We have finished processing your order."
 msgstr "Jūsų užsakymą apdorojome."
 
-#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47 woocommerce/emails/customer-refunded-order.php:55
+#: woocommerce/emails/customer-completed-order.php:47
+#: woocommerce/emails/customer-on-hold-order.php:45
+#: woocommerce/emails/customer-processing-order.php:47
+#: woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Štai priminimas apie tai, ką užsisakėte:"
 
@@ -786,7 +816,8 @@ msgid "Thanks for creating an account on %s. Here’s a copy of your user detail
 msgstr "Dėkojame, kad sukūrėte paskyrą %s. Pateikiame jūsų naudotojo duomenų kopiją."
 
 #. translators: %s: Username
-#: woocommerce/emails/customer-new-account.php:41 woocommerce/emails/customer-reset-password.php:38
+#: woocommerce/emails/customer-new-account.php:41
+#: woocommerce/emails/customer-reset-password.php:38
 msgid "Username: <b>%s</b>"
 msgstr "Vartotojo vardas: <b>%s</b>"
 
@@ -827,25 +858,30 @@ msgstr "Dėkojame už užsakymą! Informuojame, kad jūsų užsakymas bus pradė
 msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
 msgstr "Dėkojame už jūsų užsakymą. Jis sulaikytas, kol patvirtinsime, kad mokėjimas gautas."
 
-#: woocommerce/emails/customer-pos-completed-order.php:44 woocommerce/emails/customer-pos-refunded-order.php:42
+#: woocommerce/emails/customer-pos-completed-order.php:44
+#: woocommerce/emails/customer-pos-refunded-order.php:42
 msgid "Hi there,"
 msgstr "Sveiki,"
 
-#: woocommerce/emails/customer-pos-completed-order.php:48 woocommerce/emails/customer-pos-refunded-order.php:57
+#: woocommerce/emails/customer-pos-completed-order.php:48
+#: woocommerce/emails/customer-pos-refunded-order.php:57
 msgid "Here’s a reminder of what you’ve bought:"
 msgstr "Štai priminimas, ką įsigijote:"
 
-#: woocommerce/emails/customer-pos-completed-order.php:113 woocommerce/emails/customer-pos-refunded-order.php:124
+#: woocommerce/emails/customer-pos-completed-order.php:113
+#: woocommerce/emails/customer-pos-refunded-order.php:124
 msgid "Refund & Returns Policy"
 msgstr "Grąžinimo politika"
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:51 woocommerce/emails/customer-refunded-order.php:49
+#: woocommerce/emails/customer-pos-refunded-order.php:51
+#: woocommerce/emails/customer-refunded-order.php:49
 msgid "Your order from %s has been partially refunded."
 msgstr "Jūsų užsakymas iš %s buvo iš dalies grąžintas."
 
 #. translators: %s: Site title
-#: woocommerce/emails/customer-pos-refunded-order.php:54 woocommerce/emails/customer-refunded-order.php:52
+#: woocommerce/emails/customer-pos-refunded-order.php:54
+#: woocommerce/emails/customer-refunded-order.php:52
 msgid "Your order from %s has been refunded."
 msgstr "Jūsų užsakymas iš %s buvo grąžintas."
 
@@ -898,7 +934,8 @@ msgstr "Atkurti slaptažodį"
 msgid "Click here to reset your password"
 msgstr "Spustelėkite čia, kad iš naujo nustatytumėte slaptažodį"
 
-#: woocommerce/pdf/norhage/invoice.php:17 woocommerce/pdf/norhage/invoice.php:44
+#: woocommerce/pdf/norhage/invoice.php:17
+#: woocommerce/pdf/norhage/invoice.php:44
 msgid "Invoice"
 msgstr "Sąskaita faktūra"
 
@@ -1114,6 +1151,10 @@ msgstr "Matmenys ir montavimas"
 #: inc/important-notes.php
 msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
 msgstr "Atkreipkite dėmesį, kad polikarbonato lakštai gali būti pristatomi standartinių matmenų, neapkarpyti. Kadangi galutiniai šiltnamio matmenys po surinkimo gali šiek tiek skirtis, mes tiekiame pilno dydžio lakštus, kad garantuotume idealų pritaikymą jūsų konstrukcijai. Todėl montavimo metu gali prireikti lakštus papildomai apipjauti ar pakoreguoti."
+
+#: inc/important-notes.php
+msgid "Important information"
+msgstr "Svarbi informacija"
 
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 09:58+0300\n"
+"PO-Revision-Date: 2026-07-08 10:01+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1151,6 +1151,10 @@ msgstr "Koko ja asennus"
 #: inc/important-notes.php
 msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
 msgstr "Huomaa, että polykarbonaattilevyt voidaan toimittaa vakiomitoissa ilman valmista räätälöintiä. Koska kasvihuoneen lopulliset mitat voivat vaihdella hieman asennuksen jälkeen, toimitamme täysikokoiset levyt varmistaaksemme täydellisen sopivuuden rakenteeseesi. Tämän vuoksi asennuksen aikana saattaa olla tarpeen tehdä hieman ylimääräistä leikkausta tai hienosäätöä."
+
+#: inc/important-notes.php
+msgid "Important information"
+msgstr "Tärkeää tietoa"
 
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
