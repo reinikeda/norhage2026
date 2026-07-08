@@ -1320,3 +1320,173 @@ body.dark-mode .nh-in-txt {
 body.dark-mode .nh-in-txt strong {
   color: var(--dm-text, #ECEAE6);
 }
+
+/* =========================================================
+   Feature Box — Admin
+   ========================================================= */
+
+#nh_feature_box .inside {
+    padding-bottom: 10px;
+}
+
+.nhf-sortable {
+    margin: 10px 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    background: #fff;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.nhf-sortable .nhf-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f1;
+    background: #fff;
+    transition: background 0.1s ease-in-out;
+}
+
+.nhf-sortable .nhf-item:last-child {
+    border-bottom: none;
+}
+
+.nhf-sortable .nhf-item:hover {
+    background: #f6f7f7;
+}
+
+.nhf-sortable .nhf-item label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    flex-grow: 1;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Fix for large SVG logos */
+.nhf-sortable .nhf-admin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #50575e;
+    flex-shrink: 0;
+}
+
+.nhf-sortable .nhf-admin-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.nhf-sortable .nhf-grip {
+    cursor: move;
+    color: #a7aaad;
+    margin-left: 8px;
+    transition: color 0.1s ease;
+}
+
+.nhf-sortable .nhf-grip:hover {
+    color: #2271b1;
+}
+
+/* Checkbox alignment */
+.nhf-sortable .nhf-check {
+    margin-top: 0 !important;
+}
+
+/* =========================================================
+   Feature Box — Frontend
+   ========================================================= */
+
+.nhf-box.nhf--summary-card {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--nh-mint);
+    border-radius: 6px;
+    background: var(--ui-bg-content, #fff);
+    padding: 14px 16px;
+}
+
+/* Grid */
+.nhf-box .nhf-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Item */
+.nhf-box .nhf-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 28px;
+}
+
+/* Icon badge */
+.nhf-box .nhf-icon {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--nh-cream);
+    border: 1px solid var(--nh-mint);
+    color: var(--nh-green);
+    flex-shrink: 0;
+}
+
+.nhf-box .nhf-icon svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+    stroke-width: 2px;
+}
+
+/* Label */
+.nhf-box .nhf-label {
+    font-size: 13.5px;
+    line-height: 1.3;
+    color: var(--nh-charcoal);
+    font-weight: 500;
+}
+
+/* Mobile */
+@media (max-width: 575px) {
+    .nhf-box .nhf-list {
+        grid-template-columns: 1fr;
+    }
+
+    .nhf-box.nhf--summary-card {
+        padding: 12px 14px;
+    }
+}
+
+/* ── Dark mode ─────────────────────────────────────────────── */
+body.dark-mode .nhf-box.nhf--summary-card {
+    background: var(--dm-bg);
+    border-color: var(--dm-border);
+}
+
+body.dark-mode .nhf-box .nhf-label {
+    color: var(--dm-text);
+}
+
+body.dark-mode .nhf-box .nhf-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--dm-border);
+    color: var(--dm-primary, #36B47A);
+}

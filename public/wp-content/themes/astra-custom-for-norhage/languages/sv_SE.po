@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 10:01+0300\n"
+"PO-Revision-Date: 2026-07-08 14:35+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -1155,6 +1155,70 @@ msgstr "Observera att polykarbonatskivor kan levereras i standardmått utan anpa
 #: inc/important-notes.php
 msgid "Important information"
 msgstr "Viktig information"
+
+#: inc/feature-box.php
+msgid "Anti-Drip Tech"
+msgstr "Antidropp-teknologi"
+
+#: inc/feature-box.php
+msgid "Swedish Pine Frame"
+msgstr "Ram av svensk furu"
+
+#: inc/feature-box.php
+msgid "Premium Swedish Coating"
+msgstr "Premium svensk beläggning"
+
+#: inc/feature-box.php
+msgid "Weather & Storm Proof"
+msgstr "Väder- och stormsäker"
+
+#: inc/feature-box.php
+msgid "Scratch & Rust Resistant"
+msgstr "Rep- och rostbeständig"
+
+#: inc/feature-box.php
+msgid "Made in the EU"
+msgstr "Tillverkad i EU"
+
+#: inc/feature-box.php
+msgid "Built-in UV Protection"
+msgstr "Inbyggt UV-skydd"
+
+#: inc/feature-box.php
+msgid "Shatterproof & Flexible"
+msgstr "Slagtålig & flexibel"
+
+#: inc/feature-box.php
+msgid "Fast & Easy Installation"
+msgstr "Snabb & enkel installation"
+
+#: inc/feature-box.php
+msgid "Crystal Clear Clarity"
+msgstr "Kristallklar skärpa"
+
+#: inc/feature-box.php
+msgid "Long-Lasting Performance"
+msgstr "Långvarig prestanda"
+
+#: inc/feature-box.php
+msgid "Lightweight & Strong"
+msgstr "Lätt & stark"
+
+#: inc/feature-box.php
+msgid "Easy to Cut & Shape"
+msgstr "Enkel att kapa & forma"
+
+#: inc/feature-box.php
+msgid "Fire-Retardant Rated"
+msgstr "Brandskyddsklassad"
+
+#: inc/feature-box.php
+msgid "Zero Maintenance"
+msgstr "Underhållsfri"
+
+#: inc/feature-box.php
+msgid "Thermal Insulation"
+msgstr "Värmeisolering"
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"

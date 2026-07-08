@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 10:01+0300\n"
+"PO-Revision-Date: 2026-07-08 14:35+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1155,6 +1155,70 @@ msgstr "Huomaa, että polykarbonaattilevyt voidaan toimittaa vakiomitoissa ilman
 #: inc/important-notes.php
 msgid "Important information"
 msgstr "Tärkeää tietoa"
+
+#: inc/feature-box.php
+msgid "Anti-Drip Tech"
+msgstr "Antidrip-teknologia"
+
+#: inc/feature-box.php
+msgid "Swedish Pine Frame"
+msgstr "Ruotsalainen mäntyrunko"
+
+#: inc/feature-box.php
+msgid "Premium Swedish Coating"
+msgstr "Premium ruotsalainen pinnoite"
+
+#: inc/feature-box.php
+msgid "Weather & Storm Proof"
+msgstr "Sään- ja myrskynkestävä"
+
+#: inc/feature-box.php
+msgid "Scratch & Rust Resistant"
+msgstr "Naarmuuntumaton & ruostumaton"
+
+#: inc/feature-box.php
+msgid "Made in the EU"
+msgstr "Valmistettu EU:ssa"
+
+#: inc/feature-box.php
+msgid "Built-in UV Protection"
+msgstr "Sisäänrakennettu UV-suoja"
+
+#: inc/feature-box.php
+msgid "Shatterproof & Flexible"
+msgstr "Särkymätön & joustava"
+
+#: inc/feature-box.php
+msgid "Fast & Easy Installation"
+msgstr "Nopea & helppo asennus"
+
+#: inc/feature-box.php
+msgid "Crystal Clear Clarity"
+msgstr "Kristallinkirkas kirkkaus"
+
+#: inc/feature-box.php
+msgid "Long-Lasting Performance"
+msgstr "Pitkäikäinen suorituskyky"
+
+#: inc/feature-box.php
+msgid "Lightweight & Strong"
+msgstr "Kevyt & vahva"
+
+#: inc/feature-box.php
+msgid "Easy to Cut & Shape"
+msgstr "Helppo leikata & muotoilla"
+
+#: inc/feature-box.php
+msgid "Fire-Retardant Rated"
+msgstr "Palonsuojattu"
+
+#: inc/feature-box.php
+msgid "Zero Maintenance"
+msgstr "Huoltovapaa"
+
+#: inc/feature-box.php
+msgid "Thermal Insulation"
+msgstr "Lämmöneristys"
 
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
