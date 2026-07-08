@@ -354,6 +354,9 @@ require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
 require_once get_stylesheet_directory() . '/inc/services.php';
+require_once get_stylesheet_directory() . '/inc/important-notes.php';
+require_once get_stylesheet_directory() . '/inc/important-notes-admin.php';
+require_once get_stylesheet_directory() . '/inc/important-notes-output.php';
 
 /* --------------------------------------------------------------------------
  * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)

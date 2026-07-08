@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-01 14:03+0300\n"
+"PO-Revision-Date: 2026-07-08 10:01+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1055,6 +1055,106 @@ msgstr "Ole hyvä ja syötä postinumero."
 #: inc/functions.php
 msgid "Please select a country."
 msgstr "Ole hyvä ja valitse maa."
+
+#: inc/important-notes.php
+msgid "Color Variations"
+msgstr "Värisävyt"
+
+#: inc/important-notes.php
+msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
+msgstr "Kennolevyjen värisävyt voivat vaihdella jopa 8 % eri tuotantoerien välillä. Suosittelemme siksi tilaamaan kaikki saman projektin levyt kerralla mahdollisimman yhtenäisen värisävyn varmistamiseksi."
+
+#: inc/important-notes.php
+msgid "Internal Structure"
+msgstr "Sisäinen rakenne"
+
+#: inc/important-notes.php
+msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
+msgstr "Levyjen sisäinen rakenne (kennojen muoto) voi vaihdella varastotilanteen mukaan, mutta tekniset tiedot ovat täysin identtiset. Yhtenäisen ulkonäön varmistamiseksi emme koskaan sekoita eri rakennetyyppejä samassa tilauksessa."
+
+#: inc/important-notes.php
+msgid "30-Year Warranty"
+msgstr "30 vuoden takuu"
+
+#: inc/important-notes.php
+msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Sisältää 30 vuoden takuun kellastumista vastaan, mikä takaa korkean valonläpäisyn koko tämän ajan."
+
+#: inc/important-notes.php
+msgid "15-Year Warranty"
+msgstr "15 vuoden takuu"
+
+#: inc/important-notes.php
+msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Sisältää 15 vuoden takuun kellastumista vastaan, mikä takaa korkean valonläpäisyn koko tämän ajan."
+
+#: inc/important-notes.php
+msgid "10-Year Warranty"
+msgstr "10 vuoden takuu"
+
+#: inc/important-notes.php
+msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
+msgstr "Kattaa sään aiheuttamat värjäytymät sekä iskunkestävyyden ja valonläpäisykyvyn heikentymisen."
+
+#: inc/important-notes.php
+msgid "Standard Width"
+msgstr "Standardileveys"
+
+#: inc/important-notes.php
+msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
+msgstr "Levyn standardileveys on 2,1 m. Kun levy leikataan 1,05 m leveyteen, toinen reuna jää avoimeksi sisäisen kennorakenneen vuoksi."
+
+#: inc/important-notes.php
+msgid "UV Protection & Installation"
+msgstr "UV-suojaus ja asennus"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
+msgstr "Polykarbonaattilevyt on asennettava UV-suojattu puoli ylöspäin (ulospäin), jotta suoja toimii. UV-suojattu puoli on merkitty selkeästi suojakalvoon."
+
+#: inc/important-notes.php
+msgid "Cutting Tolerance"
+msgstr "Leikkaustoleranssi"
+
+#: inc/important-notes.php
+msgid "The maximum allowable cutting deviation on the edges is 4 mm."
+msgstr "Sallittu poikkeama reunoissa on enintään ±4 mm."
+
+#: inc/important-notes.php
+msgid "Handle with Care"
+msgstr "Käsiteltävä varoen"
+
+#: inc/important-notes.php
+msgid "Handle the sheets carefully to prevent scratches and damage."
+msgstr "Käsittele levyjä varovasti naarmujen ja vaurioiden välttämiseksi."
+
+#: inc/important-notes.php
+msgid "Storage"
+msgstr "Säilytys"
+
+#: inc/important-notes.php
+msgid "Store in a cool, dry place away from direct sunlight."
+msgstr "Säilytä viileässä ja kuivassa paikassa, suojattuna suoralta auringonvalolta."
+
+#: inc/important-notes.php
+msgid "Winter Care"
+msgstr "Talvihoito"
+
+#: inc/important-notes.php
+msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
+msgstr "Jos käytät automaattisia ikkunanavaajia (esim. kasvihuoneissa), irrota sylinteri lämpötilan laskessa alle 0 °C:een. Puhdista, voitele kevyesti ja säilytä lämpimässä, kuivassa paikassa jäätymisvaurioiden estämiseksi ja seuraavan kauden toiminnan varmistamiseksi."
+
+#: inc/important-notes.php
+msgid "Sizing & Installation"
+msgstr "Koko ja asennus"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
+msgstr "Huomaa, että polykarbonaattilevyt voidaan toimittaa vakiomitoissa ilman valmista räätälöintiä. Koska kasvihuoneen lopulliset mitat voivat vaihdella hieman asennuksen jälkeen, toimitamme täysikokoiset levyt varmistaaksemme täydellisen sopivuuden rakenteeseesi. Tämän vuoksi asennuksen aikana saattaa olla tarpeen tehdä hieman ylimääräistä leikkausta tai hienosäätöä."
+
+#: inc/important-notes.php
+msgid "Important information"
+msgstr "Tärkeää tietoa"
 
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"

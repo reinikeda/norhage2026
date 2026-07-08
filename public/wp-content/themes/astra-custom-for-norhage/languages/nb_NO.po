@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-01 14:03+0300\n"
+"PO-Revision-Date: 2026-07-08 10:01+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -1051,6 +1051,106 @@ msgstr "Vennligst oppgi et postnummer."
 #: inc/functions.php
 msgid "Please select a country."
 msgstr "Vennligst velg et land."
+
+#: inc/important-notes.php
+msgid "Color Variations"
+msgstr "Fargenyanser"
+
+#: inc/important-notes.php
+msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
+msgstr "Fargen på kanalplastplatene kan variere med opptil 8 % dersom platene kommer fra ulike produksjonspartier. Vi anbefaler derfor å bestille alle plater til samme prosjekt samtidig for å sikre likest mulig fargetone."
+
+#: inc/important-notes.php
+msgid "Internal Structure"
+msgstr "Innvendig struktur"
+
+#: inc/important-notes.php
+msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
+msgstr "Den innvendige strukturen i kanalplastplatene kan variere avhengig av lagerstatus, men de tekniske spesifikasjonene er helt identiske. For å sikre et ensartet utseende blander vi aldri ulike strukturtyper i én og samme ordre."
+
+#: inc/important-notes.php
+msgid "30-Year Warranty"
+msgstr "30 års garanti"
+
+#: inc/important-notes.php
+msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Det følger med 30 års garanti mot gulning, som opprettholder en høy lysgjennomgang gjennom hele denne perioden."
+
+#: inc/important-notes.php
+msgid "15-Year Warranty"
+msgstr "15 års garanti"
+
+#: inc/important-notes.php
+msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Det følger med 15 års garanti mot gulning, som opprettholder en høy lysgjennomgang gjennom hele denne perioden."
+
+#: inc/important-notes.php
+msgid "10-Year Warranty"
+msgstr "10 års garanti"
+
+#: inc/important-notes.php
+msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
+msgstr "Gjelder mot misfarging forårsaket av vær og vind, samt svekket slagfasthet og lysgjennomgang."
+
+#: inc/important-notes.php
+msgid "Standard Width"
+msgstr "Standardbredde"
+
+#: inc/important-notes.php
+msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
+msgstr "Platens standardbredde er 2,1 m. Når platen kuttes til en bredde på 1,05 m, vil den ene kanten forbli åpen på grunn av kanalstrukturen."
+
+#: inc/important-notes.php
+msgid "UV Protection & Installation"
+msgstr "UV-beskyttelse og montering"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
+msgstr "Polykarbonatplater må monteres med den UV-beskyttede siden vendt opp (mot utsiden) for at beskyttelsen skal fungere. UV-siden er tydelig merket på beskyttelsesfilmen."
+
+#: inc/important-notes.php
+msgid "Cutting Tolerance"
+msgstr "Kuttoleranse"
+
+#: inc/important-notes.php
+msgid "The maximum allowable cutting deviation on the edges is 4 mm."
+msgstr "Tillatt avvik på kantene er maksimalt ±4 mm."
+
+#: inc/important-notes.php
+msgid "Handle with Care"
+msgstr "Håndteres forsiktig"
+
+#: inc/important-notes.php
+msgid "Handle the sheets carefully to prevent scratches and damage."
+msgstr "Håndter platene forsiktig for å unngå riper og skader."
+
+#: inc/important-notes.php
+msgid "Storage"
+msgstr "Oppbevaring"
+
+#: inc/important-notes.php
+msgid "Store in a cool, dry place away from direct sunlight."
+msgstr "Oppbevares på et kjølig og tørt sted, beskyttet mot direkte sollys."
+
+#: inc/important-notes.php
+msgid "Winter Care"
+msgstr "Vinterpleie"
+
+#: inc/important-notes.php
+msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
+msgstr "Hvis du bruker automatiske vindusåpnere (f.eks. i drivhus), ta ut sylinderen når temperaturen faller under 0 °C. Rengjør og smør den lett, og oppbevar den deretter på et varmt, tørt sted for å unngå kuldeskader og sikre at den fungerer neste sesong."
+
+#: inc/important-notes.php
+msgid "Sizing & Installation"
+msgstr "Størrelse og montering"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
+msgstr "Vennligst merk at polykarbonatplater kan bli levert i standardmål uten tilpasning. Siden de endelige dimensjonene på et drivhus kan variere noe etter montering, leverer vi plater i full størrelse for å sikre en perfekt passform til din struktur. Det kan derfor være behov for litt ekstra kapping eller tilpasning under installasjonen."
+
+#: inc/important-notes.php
+msgid "Important information"
+msgstr "Viktig informasjon"
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
