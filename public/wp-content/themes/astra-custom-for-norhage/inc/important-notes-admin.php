@@ -44,7 +44,7 @@ function nh_render_important_notes_meta_box( $post ) {
         type="text"
         id="nh_important_notes_field"
         name="nh_important_notes"
-        value="<​?php echo esc_attr( $value ); ?>"
+        value="<?php echo esc_attr( $value ); ?>"
         style="width:100%;"
     />
     <p class="description">

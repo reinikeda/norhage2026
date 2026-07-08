@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 10:01+0300\n"
+"PO-Revision-Date: 2026-07-08 14:35+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -1155,6 +1155,70 @@ msgstr "Atkreipkite dėmesį, kad polikarbonato lakštai gali būti pristatomi s
 #: inc/important-notes.php
 msgid "Important information"
 msgstr "Svarbi informacija"
+
+#: inc/feature-box.php
+msgid "Anti-Drip Tech"
+msgstr "Antilašelinė technologija"
+
+#: inc/feature-box.php
+msgid "Swedish Pine Frame"
+msgstr "Švediškos pušies rėmas"
+
+#: inc/feature-box.php
+msgid "Premium Swedish Coating"
+msgstr "Premium švediška danga"
+
+#: inc/feature-box.php
+msgid "Weather & Storm Proof"
+msgstr "Atsparus orams ir audroms"
+
+#: inc/feature-box.php
+msgid "Scratch & Rust Resistant"
+msgstr "Atsparus įbrėžimams ir rūdims"
+
+#: inc/feature-box.php
+msgid "Made in the EU"
+msgstr "Pagaminta ES"
+
+#: inc/feature-box.php
+msgid "Built-in UV Protection"
+msgstr "Integruota UV apsauga"
+
+#: inc/feature-box.php
+msgid "Shatterproof & Flexible"
+msgstr "Dūžiams atsparus ir lankstus"
+
+#: inc/feature-box.php
+msgid "Fast & Easy Installation"
+msgstr "Greitas ir lengvas montavimas"
+
+#: inc/feature-box.php
+msgid "Crystal Clear Clarity"
+msgstr "Krištolinis skaidrumas"
+
+#: inc/feature-box.php
+msgid "Long-Lasting Performance"
+msgstr "Ilgalaikė kokybė"
+
+#: inc/feature-box.php
+msgid "Lightweight & Strong"
+msgstr "Lengvas ir tvirtas"
+
+#: inc/feature-box.php
+msgid "Easy to Cut & Shape"
+msgstr "Lengva pjauti ir formuoti"
+
+#: inc/feature-box.php
+msgid "Fire-Retardant Rated"
+msgstr "Atsparus ugniai"
+
+#: inc/feature-box.php
+msgid "Zero Maintenance"
+msgstr "Nereikalauja priežiūros"
+
+#: inc/feature-box.php
+msgid "Thermal Insulation"
+msgstr "Šilumos izoliacija"
 
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
