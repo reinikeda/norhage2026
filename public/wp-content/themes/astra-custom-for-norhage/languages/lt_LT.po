@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-01 14:03+0300\n"
+"PO-Revision-Date: 2026-07-08 09:57+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -750,14 +750,12 @@ msgstr "Susisiekiame su jumis norėdami pranešti, kad jūsų užsakymas Nr. %1$
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37
-#: woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38
+#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38
 #: woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Labas, %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39
-#: woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Labas,"
 
@@ -765,8 +763,7 @@ msgstr "Labas,"
 msgid "We have finished processing your order."
 msgstr "Jūsų užsakymą apdorojome."
 
-#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47
-#: woocommerce/emails/customer-refunded-order.php:55
+#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47 woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Štai priminimas apie tai, ką užsisakėte:"
 
@@ -808,9 +805,7 @@ msgstr "Mano paskyra"
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:51
 msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
-msgstr ""
-"Dėkojame, kad sukūrėte paskyrą %1$s. Jūsų vartotojo vardas yra %2$s. Galite pasiekti savo paskyros sritį, kad peržiūrėtumėte užsakymus, pakeistumėte slaptažodį ir atliktumėte kitus veiksmus adresu: "
-"%3$s"
+msgstr "Dėkojame, kad sukūrėte paskyrą %1$s. Jūsų vartotojo vardas yra %2$s. Galite pasiekti savo paskyros sritį, kad peržiūrėtumėte užsakymus, pakeistumėte slaptažodį ir atliktumėte kitus veiksmus adresu: %3$s"
 
 #: woocommerce/emails/customer-new-account.php:54
 msgid "Click here to set your new password."
@@ -1023,6 +1018,102 @@ msgstr "Prašome įvesti pašto kodą."
 #: inc/functions.php
 msgid "Please select a country."
 msgstr "Prašome pasirinkti šalį."
+
+#: inc/important-notes.php
+msgid "Color Variations"
+msgstr "Atspalvių skirtumai"
+
+#: inc/important-notes.php
+msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
+msgstr "Kanalinio polikarbonato lakštų atspalviai iš skirtingų gamybos partijų gali skirtis iki 8 %. Todėl rekomenduojame visus tam pačiam projektui reikalingus lakštus užsakyti vienu metu, kad būtų užtikrintas kuo vienodesnis atspalvis."
+
+#: inc/important-notes.php
+msgid "Internal Structure"
+msgstr "Vidinė struktūra"
+
+#: inc/important-notes.php
+msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
+msgstr "Lakštų vidinė struktūra (kanalų forma) gali skirtis priklausomai nuo likučio sandėlyje, tačiau techninės specifikacijos yra visiškai identiškos. Norėdami užtikrinti vienodą išvaizdą, tame pačiame užsakyme niekada nemaišome skirtingų struktūrų tipų."
+
+#: inc/important-notes.php
+msgid "30-Year Warranty"
+msgstr "30 metų garantija"
+
+#: inc/important-notes.php
+msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Suteikiama 30 metų garantija nuo pageltimo, užtikrinanti aukštą šviesos pralaidumą per visą šį laikotarpį."
+
+#: inc/important-notes.php
+msgid "15-Year Warranty"
+msgstr "15 metų garantija"
+
+#: inc/important-notes.php
+msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Suteikiama 15 metų garantija nuo pageltimo, užtikrinanti aukštą šviesos pralaidumą per visą šį laikotarpį."
+
+#: inc/important-notes.php
+msgid "10-Year Warranty"
+msgstr "10 metų garantija"
+
+#: inc/important-notes.php
+msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
+msgstr "Galioja nuo spalvos pakitimų dėl oro sąlygų, taip pat nuo atsparumo smūgiams ir šviesos pralaidumo sumažėjimo."
+
+#: inc/important-notes.php
+msgid "Standard Width"
+msgstr "Standartinis plotis"
+
+#: inc/important-notes.php
+msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
+msgstr "Standartinis lakšto plotis yra 2,1 m. Pjovus lakštą iki 1,05 m pločio, vienas kraštas liks atviras dėl vidinės kanalų struktūros."
+
+#: inc/important-notes.php
+msgid "UV Protection & Installation"
+msgstr "UV apsauga ir montavimas"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
+msgstr "Kad apsauga veiktų, polikarbonato lakštai turi būti montuojami UV spinduliams atsparia puse į viršų (į išorę). UV pusė yra aiškiai pažymėta ant apsauginės plėvelės."
+
+#: inc/important-notes.php
+msgid "Cutting Tolerance"
+msgstr "Pjovimo tolerancija"
+
+#: inc/important-notes.php
+msgid "The maximum allowable cutting deviation on the edges is 4 mm."
+msgstr "Maksimalus leidžiamas kraštų nuokrypis yra ±4 mm."
+
+#: inc/important-notes.php
+msgid "Handle with Care"
+msgstr "Elgtis atsargiai"
+
+#: inc/important-notes.php
+msgid "Handle the sheets carefully to prevent scratches and damage."
+msgstr "Su lakštais elkitės atsargiai, kad išvengtumėte įbrėžimų ir pažeidimų."
+
+#: inc/important-notes.php
+msgid "Storage"
+msgstr "Sandėliavimas"
+
+#: inc/important-notes.php
+msgid "Store in a cool, dry place away from direct sunlight."
+msgstr "Laikyti vėsioje, sausoje vietoje, apsaugotoje nuo tiesioginių saulės spindulių."
+
+#: inc/important-notes.php
+msgid "Winter Care"
+msgstr "Priežiūra žiemą"
+
+#: inc/important-notes.php
+msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
+msgstr "Jei naudojate automatinius langų pakėlėjus (pvz., šiltnamiuose), temperatūrai nukritus žemiau 0 °C, išimkite cilindrą. Nuvalykite jį, lengvai sutepkite ir laikykite šiltoje, sausoje vietoje, kad išvengtumėte šalčio žalos ir užtikrintumėte sklandų veikimą kitą sezoną."
+
+#: inc/important-notes.php
+msgid "Sizing & Installation"
+msgstr "Matmenys ir montavimas"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
+msgstr "Atkreipkite dėmesį, kad polikarbonato lakštai gali būti pristatomi standartinių matmenų, neapkarpyti. Kadangi galutiniai šiltnamio matmenys po surinkimo gali šiek tiek skirtis, mes tiekiame pilno dydžio lakštus, kad garantuotume idealų pritaikymą jūsų konstrukcijai. Todėl montavimo metu gali prireikti lakštus papildomai apipjauti ar pakoreguoti."
 
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"

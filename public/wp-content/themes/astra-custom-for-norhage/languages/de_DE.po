@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-01 14:03+0300\n"
+"PO-Revision-Date: 2026-07-08 09:58+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -750,14 +750,12 @@ msgstr "Wir möchten Sie darüber informieren, dass Ihre Bestellung mit der Numm
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37
-#: woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38
-#: woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
+#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40 woocommerce/emails/customer-pos-refunded-order.php:38 woocommerce/emails/customer-processing-order.php:37
+#: woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Hallo %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39
-#: woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Hallo,"
 
@@ -765,8 +763,7 @@ msgstr "Hallo,"
 msgid "We have finished processing your order."
 msgstr "Wir haben Ihre Bestellung bearbeitet."
 
-#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47
-#: woocommerce/emails/customer-refunded-order.php:55
+#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47 woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Hier noch einmal eine Übersicht über Ihre Bestellung:"
 
@@ -808,9 +805,7 @@ msgstr "Mein Konto"
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:51
 msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
-msgstr ""
-"Vielen Dank, dass Sie sich bei %1$s registriert haben. Ihr Benutzername lautet %2$s. Unter %3$s können Sie auf Ihren Kundenbereich zugreifen, um Bestellungen einzusehen, Ihr Passwort zu ändern und "
-"vieles mehr"
+msgstr "Vielen Dank, dass Sie sich bei %1$s registriert haben. Ihr Benutzername lautet %2$s. Unter %3$s können Sie auf Ihren Kundenbereich zugreifen, um Bestellungen einzusehen, Ihr Passwort zu ändern und vieles mehr"
 
 #: woocommerce/emails/customer-new-account.php:54
 msgid "Click here to set your new password."
@@ -826,9 +821,7 @@ msgstr "Zur Erinnerung, hier sind Ihre Bestelldaten:"
 
 #: woocommerce/emails/customer-on-hold-order.php:44
 msgid "We’ve received your order and it’s currently on hold until we can confirm your payment has been processed."
-msgstr ""
-"Vielen Dank für Ihre Bestellung! Wir informieren Sie, dass Ihre Bestellung sofort nach Zahlungseingang bearbeitet wird. Die Rechnung finden Sie im Anhang dieser E-Mail. Bitte führen Sie die Zahlung "
-"durch."
+msgstr "Vielen Dank für Ihre Bestellung! Wir informieren Sie, dass Ihre Bestellung sofort nach Zahlungseingang bearbeitet wird. Die Rechnung finden Sie im Anhang dieser E-Mail. Bitte führen Sie die Zahlung durch."
 
 #: woocommerce/emails/customer-on-hold-order.php:47
 msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
@@ -1025,6 +1018,102 @@ msgstr "Bitte gib eine PLZ ein."
 #: inc/functions.php
 msgid "Please select a country."
 msgstr "Bitte wähle ein Land aus."
+
+#: inc/important-notes.php
+msgid "Color Variations"
+msgstr "Farbabweichungen"
+
+#: inc/important-notes.php
+msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
+msgstr "Die Farbtöne von Stegplatten können zwischen verschiedenen Produktionschargen um bis zu 8 % variieren. Wir empfehlen daher, alle Platten für ein bestimmtes Projekt gleichzeitig zu bestellen, um einen möglichst einheitlichen Farbton zu gewährleisten."
+
+#: inc/important-notes.php
+msgid "Internal Structure"
+msgstr "Innenstruktur"
+
+#: inc/important-notes.php
+msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
+msgstr "Die Innenstruktur (Form der Hohlkammern) der Platten kann je nach Lagerbestand variieren, die technischen Spezifikationen sind jedoch absolut identisch. Um ein einheitliches Erscheinungsbild zu gewährleisten, mischen wir niemals verschiedene Strukturtypen in derselben Bestellung."
+
+#: inc/important-notes.php
+msgid "30-Year Warranty"
+msgstr "30 Jahre Garantie"
+
+#: inc/important-notes.php
+msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Beinhaltet eine 30-jährige Garantie gegen Vergilbung, wodurch über diesen gesamten Zeitraum eine hohe Lichtdurchlässigkeit gewährleistet wird."
+
+#: inc/important-notes.php
+msgid "15-Year Warranty"
+msgstr "15 Jahre Garantie"
+
+#: inc/important-notes.php
+msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Beinhaltet eine 15-jährige Garantie gegen Vergilbung, wodurch über diesen gesamten Zeitraum eine hohe Lichtdurchlässigkeit gewährleistet wird."
+
+#: inc/important-notes.php
+msgid "10-Year Warranty"
+msgstr "10 Jahre Garantie"
+
+#: inc/important-notes.php
+msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
+msgstr "Gilt für Verfärbungen durch Witterungseinflüsse sowie für den Verlust der Schlagzähigkeit und Lichtdurchlässigkeit."
+
+#: inc/important-notes.php
+msgid "Standard Width"
+msgstr "Standardbreite"
+
+#: inc/important-notes.php
+msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
+msgstr "Die Standardbreite der Platte beträgt 2,1 m. Wenn die Platte auf eine Breite von 1,05 m zugeschnitten wird, bleibt eine Kante aufgrund der inneren Hohlkammerstruktur offen."
+
+#: inc/important-notes.php
+msgid "UV Protection & Installation"
+msgstr "UV-Schutz & Montage"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
+msgstr "Polycarbonatplatten müssen mit der UV-geschützten Seite nach oben (nach außen gerichtet) montiert werden, damit der Schutz wirksam ist. Die UV-Seite ist auf der Schutzfolie deutlich gekennzeichnet."
+
+#: inc/important-notes.php
+msgid "Cutting Tolerance"
+msgstr "Zuschnittstoleranz"
+
+#: inc/important-notes.php
+msgid "The maximum allowable cutting deviation on the edges is 4 mm."
+msgstr "Die maximal zulässige Abweichung an den Kanten beträgt ±4 mm."
+
+#: inc/important-notes.php
+msgid "Handle with Care"
+msgstr "Vorsichtig handhaben"
+
+#: inc/important-notes.php
+msgid "Handle the sheets carefully to prevent scratches and damage."
+msgstr "Behandeln Sie die Platten vorsichtig, um Kratzer und Beschädigungen zu vermeiden."
+
+#: inc/important-notes.php
+msgid "Storage"
+msgstr "Lagerung"
+
+#: inc/important-notes.php
+msgid "Store in a cool, dry place away from direct sunlight."
+msgstr "An einem kühlen, trockenen Ort und vor direkter Sonneneinstrahlung geschützt lagern."
+
+#: inc/important-notes.php
+msgid "Winter Care"
+msgstr "Winterpflege"
+
+#: inc/important-notes.php
+msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
+msgstr "Wenn Sie automatische Fensteröffner verwenden (z. B. in Gewächshäusern), entfernen Sie den Zylinder, sobald die Temperatur unter 0 °C fällt. Reinigen Sie ihn, fetten Sie ihn leicht ein und lagern Sie ihn an einem warmen, trockenen Ort, um Frostschäden zu vermeiden und die Funktion für die nächste Saison zu gewährleisten."
+
+#: inc/important-notes.php
+msgid "Sizing & Installation"
+msgstr "Größe & Montage"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
+msgstr "Bitte beachten Sie, dass Polycarbonatplatten in Standardmaßen ohne individuellen Zuschnitt geliefert werden können. Da die endgültigen Abmessungen eines Gewächshauses nach der Montage leicht variieren können, liefern wir Platten in voller Größe, um eine perfekte Passform für Ihre Konstruktion zu gewährleisten. Daher kann während der Installation ein geringfügiger zusätzlicher Zuschnitt oder eine Anpassung erforderlich sein."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"

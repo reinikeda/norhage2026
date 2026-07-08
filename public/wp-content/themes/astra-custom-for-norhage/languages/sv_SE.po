@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-01 14:03+0300\n"
+"PO-Revision-Date: 2026-07-08 09:57+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -750,15 +750,12 @@ msgstr "Vi hör av oss för att meddela att din beställning nr %1$s har annulle
 #. translators: %s: Customer first name
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
-#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35
-#: woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40
-#: woocommerce/emails/customer-pos-refunded-order.php:38 woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35
-#: woocommerce/emails/customer-reset-password.php:32
+#: woocommerce/emails/customer-completed-order.php:37 woocommerce/emails/customer-failed-order.php:40 woocommerce/emails/customer-new-account.php:35 woocommerce/emails/customer-note.php:37 woocommerce/emails/customer-on-hold-order.php:35 woocommerce/emails/customer-pos-completed-order.php:40
+#: woocommerce/emails/customer-pos-refunded-order.php:38 woocommerce/emails/customer-processing-order.php:37 woocommerce/emails/customer-refunded-order.php:35 woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
 msgstr "Hej %s,"
 
-#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41
-#: woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
+#: woocommerce/emails/customer-completed-order.php:41 woocommerce/emails/customer-failed-order.php:44 woocommerce/emails/customer-note.php:41 woocommerce/emails/customer-on-hold-order.php:39 woocommerce/emails/customer-processing-order.php:41 woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
 msgstr "Hej,"
 
@@ -766,8 +763,7 @@ msgstr "Hej,"
 msgid "We have finished processing your order."
 msgstr "Vi har behandlat din beställning."
 
-#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47
-#: woocommerce/emails/customer-refunded-order.php:55
+#: woocommerce/emails/customer-completed-order.php:47 woocommerce/emails/customer-on-hold-order.php:45 woocommerce/emails/customer-processing-order.php:47 woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
 msgstr "Här är en sammanfattning av din beställning:"
 
@@ -809,8 +805,7 @@ msgstr "Mitt konto"
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:51
 msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
-msgstr ""
-"Tack för att du har skapat ett konto på %1$s. Ditt användarnamn är %2$s. Du kan logga in på ditt konto för att se dina beställningar, ändra lösenord och mycket mer på: %3$s"
+msgstr "Tack för att du har skapat ett konto på %1$s. Ditt användarnamn är %2$s. Du kan logga in på ditt konto för att se dina beställningar, ändra lösenord och mycket mer på: %3$s"
 
 #: woocommerce/emails/customer-new-account.php:54
 msgid "Click here to set your new password."
@@ -826,9 +821,7 @@ msgstr "Här är dina beställningsuppgifter som en påminnelse:"
 
 #: woocommerce/emails/customer-on-hold-order.php:44
 msgid "We’ve received your order and it’s currently on hold until we can confirm your payment has been processed."
-msgstr ""
-"Tack för din beställning! Vi informerar om att din order kommer att behandlas så snart betalningen har mottagits. Du hittar fakturan bifogad i detta e-postmeddelande. "
-"Vänligen genomför betalningen."
+msgstr "Tack för din beställning! Vi informerar om att din order kommer att behandlas så snart betalningen har mottagits. Du hittar fakturan bifogad i detta e-postmeddelande. Vänligen genomför betalningen."
 
 #: woocommerce/emails/customer-on-hold-order.php:47
 msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
@@ -1025,6 +1018,102 @@ msgstr "Vänligen ange ett postnummer."
 #: inc/functions.php
 msgid "Please select a country."
 msgstr "Vänligen välg ett land."
+
+#: inc/important-notes.php
+msgid "Color Variations"
+msgstr "Färgnyanser"
+
+#: inc/important-notes.php
+msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
+msgstr "Färgnyansen på kanalplastskivorna kan variera med upp till 8 % om skivorna kommer från olika produktionspartier. Vi rekommenderar därför att du beställer alla skivor till samma projekt samtidigt för att säkerställa enhetlig färg."
+
+#: inc/important-notes.php
+msgid "Internal Structure"
+msgstr "Inre struktur"
+
+#: inc/important-notes.php
+msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
+msgstr "Den inre strukturen (kanalernas form) på skivorna kan variera beroende på lagerstatus, men de tekniska specifikationerna är helt identiska. För att säkerställa ett enhetligt utseende blandar vi aldrig olika strukturtyper i samma order."
+
+#: inc/important-notes.php
+msgid "30-Year Warranty"
+msgstr "30 års garanti"
+
+#: inc/important-notes.php
+msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Innefattar en 30-årig garanti mot gulning, vilket säkerställer hög ljustransmission under hela denna period."
+
+#: inc/important-notes.php
+msgid "15-Year Warranty"
+msgstr "15 års garanti"
+
+#: inc/important-notes.php
+msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
+msgstr "Innefattar en 15-årig garanti mot gulning, vilket säkerställer hög ljustransmission under hela denna period."
+
+#: inc/important-notes.php
+msgid "10-Year Warranty"
+msgstr "10 års garanti"
+
+#: inc/important-notes.php
+msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
+msgstr "Gäller mot missfärgning orsakad av väder och vind, samt försämrad slagtålighet och ljustransmission."
+
+#: inc/important-notes.php
+msgid "Standard Width"
+msgstr "Standardbredd"
+
+#: inc/important-notes.php
+msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
+msgstr "Skivans standardbredd är 2,1 m. Om en skiva skärs ner till en bredd på 1,05 m förblir den ena kanten öppen på grund av den inre kanalstrukturen."
+
+#: inc/important-notes.php
+msgid "UV Protection & Installation"
+msgstr "UV-skydd & Installation"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
+msgstr "Polykarbonatskivor måste installeras med den UV-skyddade sidan vänd uppåt (mot utsidan) för att skyddet ska fungera. UV-sidan är tydligt markerad på skyddsfilmen."
+
+#: inc/important-notes.php
+msgid "Cutting Tolerance"
+msgstr "Kaptolerans"
+
+#: inc/important-notes.php
+msgid "The maximum allowable cutting deviation on the edges is 4 mm."
+msgstr "Högsta tillåtna avvikelse på kanterna är ±4 mm."
+
+#: inc/important-notes.php
+msgid "Handle with Care"
+msgstr "Hanteras varsamt"
+
+#: inc/important-notes.php
+msgid "Handle the sheets carefully to prevent scratches and damage."
+msgstr "Hantera skivorna försiktigt för att undvika repor och skador."
+
+#: inc/important-notes.php
+msgid "Storage"
+msgstr "Förvaring"
+
+#: inc/important-notes.php
+msgid "Store in a cool, dry place away from direct sunlight."
+msgstr "Förvaras på en sval och torr plats, skyddad från direkt solljus."
+
+#: inc/important-notes.php
+msgid "Winter Care"
+msgstr "Vintervård"
+
+#: inc/important-notes.php
+msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
+msgstr "Om du använder automatiska fönsteröppnare (t.ex. i växthus), ta bort cylindern när temperaturen sjunker under 0 °C. Rengör, smörj den lätt och förvara den sedan på en varm och torr plats för att undvika frostskador och säkerställa att den fungerar nästa säsong."
+
+#: inc/important-notes.php
+msgid "Sizing & Installation"
+msgstr "Storlek & Installation"
+
+#: inc/important-notes.php
+msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
+msgstr "Observera att polykarbonatskivor kan levereras i standardmått utan anpassning. Eftersom de slutliga måtten på ett växthus kan variera något efter montering, levererar vi skivor i full storlek för att garantera en perfekt passform till din struktur. Det kan därför krävas lite extra kapning eller justering under installationen."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
