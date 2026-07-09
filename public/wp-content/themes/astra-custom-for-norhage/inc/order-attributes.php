@@ -36,11 +36,13 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				break;
 
 			case 'cutting_height':
+			case 'cutting_length_m':
 				$length_val = (string) $val;
 				break;
 
 			case 'cutting_fee':
 			case 'cutting_fee_per_sheet':
+			case 'cutting_fee_per_unit':
 				$fee_val = $val;
 				break;
 
@@ -58,6 +60,7 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				break;
 
 			case 'Cutting fee per sheet':
+			case 'Cutting fee per unit':
 				if ( $fee_val === '' ) {
 					$fee_val = $val;
 				}
@@ -284,18 +287,32 @@ function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
  * - variation attributes (we show our own)  [frontend + emails only]
  * - our measured-sheet meta (Width, Length, Cutting fee per sheet)
  * - technical keys (cutting_width, cutting_height, unit_price, cutting_fee, cutting_fee_per_sheet)
+ *
+ * Improved matching: normalize display keys (lowercase, trim colon) so
+ * "length:", "Length" and "length" are all caught and hidden on frontend.
  */
 add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	$technical_keys = [ 'cutting_width', 'cutting_height', 'unit_price', 'cutting_fee', 'cutting_fee_per_sheet' ];
+	$technical_keys = [
+		'cutting_width',
+		'cutting_height',
+		'cutting_length_m',
+		'unit_price',
+		'cutting_fee',
+		'cutting_fee_per_sheet',
+		'cutting_fee_per_unit',
+		'nh_custom_unit_kg',
+		'nh_custom_total_kg',
+	];
 
+	// Admin: hide only the technical keys to keep admin debugging useful
 	if ( is_admin() ) {
 		$filtered = [];
 		foreach ( $formatted_meta as $fm ) {
-			if ( in_array( $fm->key, $technical_keys, true ) ) {
+			if ( in_array( (string) $fm->key, $technical_keys, true ) ) {
 				continue;
 			}
 			$filtered[] = $fm;
@@ -303,16 +320,43 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 		return $filtered;
 	}
 
+	/*
+	 * Frontend / emails: build a normalized list of display keys we want hidden.
+	 * We'll normalize both the incoming display_key and our hide labels:
+	 *  - lowercase
+	 *  - trim whitespace
+	 *  - trim trailing colon
+	 */
 	$hide_labels = [
 		'Width',
 		'Length',
 		'Cutting fee per sheet',
+		'Cutting fee per unit',
+		// Add common lowercase/alternate variants to be safe
+		'width',
+		'length',
+		'cutting fee',
+		'cutting fee per sheet',
+		'cutting fee per unit',
+	];
+
+	// Include translations (if any)
+	$translated = array_filter( [
 		__( 'Width', 'nh-theme' ),
 		__( 'Length', 'nh-theme' ),
 		__( 'Cutting fee per sheet', 'nh-theme' ),
-	];
+		__( 'Cutting fee per unit', 'nh-theme' ),
+	] );
+	$hide_labels = array_unique( array_merge( $hide_labels, $translated ) );
 
-	$hide_labels = array_unique( array_filter( $hide_labels ) );
+	// Normalized set for fast checks
+	$bad_display = array_map( function ( $s ) {
+		$s = (string) $s;
+		$s = trim( $s );
+		$s = rtrim( $s, ':' );
+		$s = mb_strtolower( $s );
+		return $s;
+	}, $hide_labels );
 
 	$attr_labels = [];
 	$product     = $item->get_product();
@@ -335,19 +379,30 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 		}
 	}
 
+	// Normalize attribute labels too
+	$attr_labels_normalized = array_map( function ( $s ) {
+		return mb_strtolower( trim( rtrim( (string) $s, ':' ) ) );
+	}, $attr_labels );
+
 	$filtered = [];
 
 	foreach ( $formatted_meta as $fm ) {
 
-		if ( in_array( $fm->key, $technical_keys, true ) ) {
+		// Hide technical meta by key
+		if ( in_array( (string) $fm->key, $technical_keys, true ) ) {
 			continue;
 		}
 
-		if ( in_array( $fm->display_key, $hide_labels, true ) ) {
+		// Normalize incoming display key for comparison
+		$display_key_norm = mb_strtolower( trim( rtrim( (string) $fm->display_key, ':' ) ) );
+
+		// Hide if it matches our bad display keys (covers 'length', 'Length:', 'length:' etc)
+		if ( in_array( $display_key_norm, $bad_display, true ) ) {
 			continue;
 		}
 
-		if ( ! empty( $attr_labels ) && in_array( $fm->display_key, $attr_labels, true ) ) {
+		// Hide if it's one of the parent's variation attribute labels (we render them ourselves)
+		if ( ! empty( $attr_labels_normalized ) && in_array( $display_key_norm, $attr_labels_normalized, true ) ) {
 			continue;
 		}
 
@@ -355,7 +410,7 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 	}
 
 	return $filtered;
-}, 10, 2 );
+}, 20, 2 );
 
 /**
  * FRONTEND + EMAILS:

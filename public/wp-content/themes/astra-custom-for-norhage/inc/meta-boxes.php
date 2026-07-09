@@ -145,62 +145,165 @@ if ( is_admin() ) {
 			'min_l'   => get_post_meta( $post->ID, $pfx . 'min_l', true ),
 			'max_l'   => get_post_meta( $post->ID, $pfx . 'max_l', true ),
 			'step_mm' => get_post_meta( $post->ID, $pfx . 'step_mm', true ),
+			'step_m'  => get_post_meta( $post->ID, $pfx . 'step_m', true ),
+			'unit'    => get_post_meta( $post->ID, $pfx . 'unit', true ) ?: 'mm',
+			'type'    => get_post_meta( $post->ID, $pfx . 'type', true ) ?: 'planar',
 		];
+
+		// Decide which step value to show in the single field
+		$display_step = '';
+		if ( $vals['unit'] === 'm' ) {
+			$display_step = $vals['step_m'] !== '' ? $vals['step_m'] : '';
+		} else {
+			$display_step = $vals['step_mm'] !== '' ? $vals['step_mm'] : '';
+		}
 
 		wp_nonce_field( 'nh_cc_save', 'nh_cc_nonce' );
 		?>
 		<style>
-			.nh-cc-grid{display:grid;grid-template-columns:220px 1fr;gap:8px 16px;align-items:center}
-			.nh-cc-grid label{font-weight:600}
-			.nh-cc-row{display:contents}
-			.nh-cc-desc{grid-column:1 / -1;color:#666}
+			/* simpler, robust two-column layout */
+			.nh-cc-grid {
+				display: grid;
+				grid-template-columns: 220px 1fr;
+				grid-gap: 8px 18px;
+				align-items: start;
+				row-gap: 12px;
+			}
+			.nh-cc-row { display: contents; }
+			.nh-cc-grid label {
+				font-weight: 600;
+				margin-top: 6px;
+				padding-right: 6px;
+				display: block;
+			}
+			.nh-cc-input-wrap { display:flex; flex-direction:column; gap:6px; }
+			.nh-cc-input { max-width: 360px; width:100%; box-sizing:border-box; }
+			.nh-cc-small { font-size:12px; color:#666; margin-top:4px; }
+			.nh-cc-desc { grid-column: 1 / -1; color:#666; margin-top:6px; font-size:13px; }
+			/* small responsive tweak for narrow admin screens */
+			@media (max-width: 780px) {
+				.nh-cc-grid { grid-template-columns: 1fr; }
+				.nh-cc-desc { margin-bottom:8px; }
+			}
 		</style>
 
 		<div class="nh-cc-grid">
+			<!-- enabled -->
 			<div class="nh-cc-row">
 				<label for="nh_cc_enabled"><?php esc_html_e( 'Enable custom cutting', 'nh-theme' ); ?></label>
-				<input type="checkbox" id="nh_cc_enabled" name="nh_cc_enabled" value="1" <?php checked( $vals['enabled'] ); ?> />
+				<div class="nh-cc-input-wrap">
+					<input type="checkbox" id="nh_cc_enabled" name="nh_cc_enabled" value="1" <?php checked( $vals['enabled'] ); ?> />
+					<span class="nh-cc-small"><?php esc_html_e( 'Tick to enable custom cutting on this product.', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
+			<!-- unit -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_cut_fee"><?php esc_html_e( 'Cutting fee per sheet', 'nh-theme' ); ?></label>
-				<input type="number" step="0.01" min="0" name="nh_cc_cut_fee" id="nh_cc_cut_fee" value="<?php echo esc_attr( $vals['cut_fee'] ); ?>" />
+				<label for="nh_cc_unit"><?php esc_html_e( 'Unit of measurement', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<select id="nh_cc_unit" name="nh_cc_unit" class="nh-cc-input">
+						<option value="mm" <?php selected( $vals['unit'], 'mm' ); ?>><?php esc_html_e( 'Millimetres (mm)', 'nh-theme' ); ?></option>
+						<option value="m"  <?php selected( $vals['unit'], 'm' );  ?>><?php esc_html_e( 'Metres (m)', 'nh-theme' ); ?></option>
+					</select>
+					<span class="nh-cc-small"><?php esc_html_e( 'Existing products default to mm (preserves current behaviour). Enter min/max/step in the selected unit.', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
+			<!-- product type -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_min_w"><?php esc_html_e( 'Min width (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_min_w" id="nh_cc_min_w" value="<?php echo esc_attr( $vals['min_w'] ); ?>" />
+				<label for="nh_cc_type"><?php esc_html_e( 'Product type', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<select id="nh_cc_type" name="nh_cc_type" class="nh-cc-input">
+						<option value="planar" <?php selected( $vals['type'], 'planar' ); ?>><?php esc_html_e( 'Planar — width × length (sheets)', 'nh-theme' ); ?></option>
+						<option value="linear" <?php selected( $vals['type'], 'linear' ); ?>><?php esc_html_e( 'Linear — length only (rolls/film)', 'nh-theme' ); ?></option>
+					</select>
+					<span class="nh-cc-small"><?php esc_html_e( 'Planar: width+length. Linear: length only (use metres).', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
+			<!-- cutting fee -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_max_w"><?php esc_html_e( 'Max width (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_max_w" id="nh_cc_max_w" value="<?php echo esc_attr( $vals['max_w'] ); ?>" />
+				<label for="nh_cc_cut_fee"><?php esc_html_e( 'Cutting fee per unit', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="number" step="0.01" min="0" name="nh_cc_cut_fee" id="nh_cc_cut_fee" class="nh-cc-input" value="<?php echo esc_attr( $vals['cut_fee'] ); ?>" />
+					<span class="nh-cc-small"><?php esc_html_e( 'Applied per sheet (planar) or per metre (linear), depending on Unit & Product type.', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
+			<!-- min width -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_min_l"><?php esc_html_e( 'Min length (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_min_l" id="nh_cc_min_l" value="<?php echo esc_attr( $vals['min_l'] ); ?>" />
+				<label for="nh_cc_min_w"><?php esc_html_e( 'Min width', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="number" step="1" min="0" name="nh_cc_min_w" id="nh_cc_min_w" class="nh-cc-input" value="<?php echo esc_attr( $vals['min_w'] ); ?>" />
+					<span class="nh-cc-small"><?php esc_html_e( 'For planar products; enter in selected unit (mm or m).', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
+			<!-- max width -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_max_l"><?php esc_html_e( 'Max length (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="0" name="nh_cc_max_l" id="nh_cc_max_l" value="<?php echo esc_attr( $vals['max_l'] ); ?>" />
+				<label for="nh_cc_max_w"><?php esc_html_e( 'Max width', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="number" step="1" min="0" name="nh_cc_max_w" id="nh_cc_max_w" class="nh-cc-input" value="<?php echo esc_attr( $vals['max_w'] ); ?>" />
+				</div>
 			</div>
 
+			<!-- min length -->
 			<div class="nh-cc-row">
-				<label for="nh_cc_step_mm"><?php esc_html_e( 'Cutting step (mm)', 'nh-theme' ); ?></label>
-				<input type="number" step="1" min="1" name="nh_cc_step_mm" id="nh_cc_step_mm" value="<?php echo esc_attr( $vals['step_mm'] ); ?>" />
+				<label for="nh_cc_min_l"><?php esc_html_e( 'Min length', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="number" step="1" min="0" name="nh_cc_min_l" id="nh_cc_min_l" class="nh-cc-input" value="<?php echo esc_attr( $vals['min_l'] ); ?>" />
+				</div>
+			</div>
+
+			<!-- max length -->
+			<div class="nh-cc-row">
+				<label for="nh_cc_max_l"><?php esc_html_e( 'Max length', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="number" step="1" min="0" name="nh_cc_max_l" id="nh_cc_max_l" class="nh-cc-input" value="<?php echo esc_attr( $vals['max_l'] ); ?>" />
+				</div>
+			</div>
+
+			<!-- cutting step (single field) -->
+			<div class="nh-cc-row">
+				<label for="nh_cc_step"><?php esc_html_e( 'Cutting step', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input
+						type="text"
+						name="nh_cc_step"
+						id="nh_cc_step"
+						class="nh-cc-input"
+						value="<?php echo esc_attr( $display_step ); ?>"
+						placeholder="<?php echo esc_attr( $vals['unit'] === 'm' ? esc_html__( 'e.g. 0.05 (metres)', 'nh-theme' ) : esc_html__( 'e.g. 5 (millimetres)', 'nh-theme' ) ); ?>"
+					/>
+					<span class="nh-cc-small"><?php esc_html_e( 'Single step value in the selected unit. For mm enter integer (e.g. 5), for m enter decimal (e.g. 0.05).', 'nh-theme' ); ?></span>
+				</div>
 			</div>
 
 			<div class="nh-cc-desc">
 				<?php
 				echo esc_html__(
-					'Weight is taken from the WooCommerce "Weight (kg)" field. For custom cutting, that weight is interpreted as kg per m2 (set per product or per variation).',
+					'Weight is taken from the WooCommerce "Weight (kg)" field. For planar custom cutting that weight is interpreted as kg per m² (set per product or per variation). For linear products weight is not automatically converted (leave blank or enter appropriate per-unit weight if you need it).',
 					'nh-theme'
 				);
 				?>
 			</div>
 		</div>
+
+		<script>
+		// Small admin JS: when unit changes, update the step placeholder and helper text
+		(function($){
+			$('#nh_cc_unit').on('change', function(){
+				var u = $(this).val();
+				var $step = $('#nh_cc_step');
+				if (u === 'm') {
+					$step.attr('placeholder', '<?php echo esc_js( esc_html__( 'e.g. 0.05 (metres)', 'nh-theme' ) ); ?>');
+					$('#nh_cc_min_w, #nh_cc_max_w').attr('placeholder','');
+				} else {
+					$step.attr('placeholder', '<?php echo esc_js( esc_html__( 'e.g. 5 (millimetres)', 'nh-theme' ) ); ?>');
+				}
+			});
+		})(jQuery);
+		</script>
 		<?php
 	}
 
@@ -395,7 +498,7 @@ if ( is_admin() ) {
 		<?php
 	}
 
-	// --- Render Product Extra metabox (admin) ---
+	// Render the Product Extra metabox
 	function nh_mb_render_product_extra_metabox( $post ) {
 		wp_nonce_field( 'nh_mb_product_extra_nonce', 'nh_mb_product_extra_nonce' );
 
@@ -524,19 +627,26 @@ if ( is_admin() ) {
 			current_user_can( 'edit_post', $post_id )
 		) {
 			$pfx    = '_nh_cc_';
+			// Read posted values safely
+			$post_unit = isset( $_POST['nh_cc_unit'] ) ? sanitize_text_field( wp_unslash( $_POST['nh_cc_unit'] ) ) : 'mm';
+			$post_type = isset( $_POST['nh_cc_type'] ) ? sanitize_text_field( wp_unslash( $_POST['nh_cc_type'] ) ) : 'planar';
+
+			$raw_step = isset( $_POST['nh_cc_step'] ) ? wp_unslash( $_POST['nh_cc_step'] ) : '';
+
 			$fields = [
 				'enabled' => isset( $_POST['nh_cc_enabled'] ) ? '1' : '',
 				'cut_fee' => wc_format_decimal( wp_unslash( $_POST['nh_cc_cut_fee'] ?? '' ) ),
 				'min_w'   => ( $v = wp_unslash( $_POST['nh_cc_min_w'] ?? '' ) ) === '' ? '' : absint( $v ),
 				'max_w'   => ( $v = wp_unslash( $_POST['nh_cc_max_w'] ?? '' ) ) === '' ? '' : absint( $v ),
-				'min_l'   => ( $v = wp_unslash( $_POST['nh_cc_min_l'] ?? '' ) ) === '' ? '' : absint( $v ),
-				'max_l'   => ( $v = wp_unslash( $_POST['nh_cc_max_l'] ?? '' ) ) === '' ? '' : absint( $v ),
-				'step_mm' => ( $v = wp_unslash( $_POST['nh_cc_step_mm'] ?? '' ) ) === '' ? '' : max( 1, absint( $v ) ),
+				'min_l'   => ( $v = wp_unslash( $_POST['nh_cc_min_l'] ?? '' ) ) === '' ? '' : wp_unslash( $v ),
+				'max_l'   => ( $v = wp_unslash( $_POST['nh_cc_max_l'] ?? '' ) ) === '' ? '' : wp_unslash( $v ),
+				'unit'    => $post_unit,
+				'type'    => $post_type,
 			];
 
+			// Save common fields
 			foreach ( $fields as $k => $v ) {
 				$meta_key = $pfx . $k;
-
 				if ( $v === '' || $v === null ) {
 					delete_post_meta( $post_id, $meta_key );
 				} else {
@@ -544,6 +654,39 @@ if ( is_admin() ) {
 				}
 			}
 
+			// Single step handling: save as _nh_cc_step_mm or _nh_cc_step_m depending on unit
+			if ( $raw_step === '' || $raw_step === null ) {
+				// delete both if empty
+				delete_post_meta( $post_id, $pfx . 'step_mm' );
+				delete_post_meta( $post_id, $pfx . 'step_m' );
+			} else {
+				if ( $post_unit === 'm' ) {
+					// sanitize float for metres
+					$clean_m = preg_replace( '/[^0-9\.\,]/', '', $raw_step );
+					$clean_m = str_replace( ',', '.', $clean_m );
+					$clean_m = $clean_m === '' ? '' : (string) floatval( $clean_m );
+					if ( $clean_m === '' ) {
+						delete_post_meta( $post_id, $pfx . 'step_m' );
+					} else {
+						update_post_meta( $post_id, $pfx . 'step_m', $clean_m );
+					}
+					// ensure mm key removed to avoid confusion
+					delete_post_meta( $post_id, $pfx . 'step_mm' );
+				} else {
+					// mm unit: store integer mm
+					$clean_mm = preg_replace( '/\D+/', '', $raw_step );
+					$clean_mm = $clean_mm === '' ? '' : absint( $clean_mm );
+					if ( $clean_mm === '' ) {
+						delete_post_meta( $post_id, $pfx . 'step_mm' );
+					} else {
+						update_post_meta( $post_id, $pfx . 'step_mm', $clean_mm );
+					}
+					// ensure metre key removed
+					delete_post_meta( $post_id, $pfx . 'step_m' );
+				}
+			}
+
+			// Keep compatibility: remove legacy explicit weight_per_m2 meta if present
 			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
 		}
 

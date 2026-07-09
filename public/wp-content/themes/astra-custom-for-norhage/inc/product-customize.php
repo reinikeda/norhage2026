@@ -188,7 +188,7 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 
 	echo '  <table class="variations" cellspacing="0"><tbody>';
 
-	// Width
+	// Width (mm)
 	echo '    <tr class="nh-row-width"><td class="label"><label for="nh_width_mm">' . esc_html__( 'Width (mm)', 'nh-theme' ) . '</label></td>';
 	echo '      <td class="value"><div class="quantity buttons_added nh-mm-qty" data-field="width">';
 	echo '        <a href="#" class="minus" aria-label="' . esc_attr__( 'Decrease width', 'nh-theme' ) . '">-</a>';
@@ -201,7 +201,7 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 	echo '        <a href="#" class="plus" aria-label="' . esc_attr__( 'Increase width', 'nh-theme' ) . '">+</a>';
 	echo '      </div></td></tr>';
 
-	// Length
+	// Length (mm)
 	echo '    <tr class="nh-row-length"><td class="label"><label for="nh_length_mm">' . esc_html__( 'Length (mm)', 'nh-theme' ) . '</label></td>';
 	echo '      <td class="value"><div class="quantity buttons_added nh-mm-qty" data-field="length">';
 	echo '        <a href="#" class="minus" aria-label="' . esc_attr__( 'Decrease length', 'nh-theme' ) . '">-</a>';
@@ -211,6 +211,24 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 		. ( ( $max_l !== '' ) ? ' max="' . esc_attr( (int) $max_l ) . '"' : '' )
 		. ' data-min="' . esc_attr( $min_l ) . '" data-max="' . esc_attr( $max_l ) . '"'
 		. ' placeholder="' . esc_attr( $ph_l ) . '" autocomplete="off">';
+	echo '        <a href="#" class="plus" aria-label="' . esc_attr__( 'Increase length', 'nh-theme' ) . '">+</a>';
+	echo '      </div></td></tr>';
+
+	// Length in metres (for linear products). Hidden by default; JS shows when product is configured as linear+m.
+	$min_l_m = get_post_meta( $pid, '_nh_cc_min_l', true );
+	$max_l_m = get_post_meta( $pid, '_nh_cc_max_l', true );
+	$step_m  = get_post_meta( $pid, '_nh_cc_step_m', true );
+	$step_m_attr = ( (string) $step_m !== '' && is_numeric( $step_m ) ) ? $step_m : '0.01';
+
+	echo '    <tr class="nh-row-length-m" style="display:none;"><td class="label"><label for="nh_length_m">' . esc_html__( 'Length (m)', 'nh-theme' ) . '</label></td>';
+	echo '      <td class="value"><div class="quantity buttons_added nh-m-qty" data-field="length_m">';
+	echo '        <a href="#" class="minus" aria-label="' . esc_attr__( 'Decrease length', 'nh-theme' ) . '">-</a>';
+	echo '        <input id="nh_length_m" name="nh_length_m" class="input-text nh-m-input text" type="number" inputmode="decimal"'
+		. ' step="' . esc_attr( $step_m_attr ) . '"'
+		. ( ( $min_l_m !== '' ) ? ' min="' . esc_attr( $min_l_m ) . '"' : '' )
+		. ( ( $max_l_m !== '' ) ? ' max="' . esc_attr( $max_l_m ) . '"' : '' )
+		. ' data-min="' . esc_attr( $min_l_m ) . '" data-max="' . esc_attr( $max_l_m ) . '"'
+		. ' placeholder="' . esc_attr( $min_l_m !== '' ? ( $min_l_m . '–' . $max_l_m . ' m' ) : '' ) . '" autocomplete="off">';
 	echo '        <a href="#" class="plus" aria-label="' . esc_attr__( 'Increase length', 'nh-theme' ) . '">+</a>';
 	echo '      </div></td></tr>';
 
@@ -254,8 +272,10 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 
 /* ============================================================================
  * VARIABLE SUPPORT — expose custom-cut pricing info per variation
- * The selected variation price is "price per m²"
- * Weight per m² comes from Woo weight field on the variation (fallback to parent)
+ * The selected variation price is "price per m²" or price per metre depending on admin config.
+ * Weight per m² comes from Woo weight:
+ * - For planar: kg per m² is used
+ * - For linear: JS/PHP expects product price to be price per metre
  * ========================================================================== */
 add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
 
@@ -270,11 +290,19 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 
 	$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $variation ); // UPDATED
 
+	// Also expose parent unit/type to variation data for JS
+	$parent_unit = get_post_meta( $product->get_id(), '_nh_cc_unit', true ) ?: 'mm';
+	$parent_type = get_post_meta( $product->get_id(), '_nh_cc_type', true ) ?: 'planar';
+	$step_m = get_post_meta( $product->get_id(), '_nh_cc_step_m', true ) ?: 0.01;
+
 	$data['nh_cc_enabled']         = true;
 	$data['nh_cc_perm2_reg_disp']  = (float) $perm2['reg'];
 	$data['nh_cc_perm2_sale_disp'] = (float) $perm2['sale'];
 	$data['nh_cc_cut_fee_disp']    = (float) $fee_disp;
 	$data['nh_cc_kg_per_m2']       = (float) $kg_per_m2;
+	$data['nh_cc_unit']            = sanitize_text_field( $parent_unit );
+	$data['nh_cc_type']            = sanitize_text_field( $parent_type );
+	$data['nh_cc_step_m']          = (float) $step_m;
 
 	return $data;
 }, 10, 3 );
@@ -377,11 +405,14 @@ add_action( 'wp_enqueue_scripts', function () {
 			'cut_fee'         => (float) $fee_disp,
 			'min_w'           => ( $v = get_post_meta( $pid, '_nh_cc_min_w', true ) ) === '' ? '' : (int) $v,
 			'max_w'           => ( $v = get_post_meta( $pid, '_nh_cc_max_w', true ) ) === '' ? '' : (int) $v,
-			'min_l'           => ( $v = get_post_meta( $pid, '_nh_cc_min_l', true ) ) === '' ? '' : (int) $v,
-			'max_l'           => ( $v = get_post_meta( $pid, '_nh_cc_max_l', true ) ) === '' ? '' : (int) $v,
+			'min_l'           => ( $v = get_post_meta( $pid, '_nh_cc_min_l', true ) ) === '' ? '' : $v,
+			'max_l'           => ( $v = get_post_meta( $pid, '_nh_cc_max_l', true ) ) === '' ? '' : $v,
 			'step'            => ( $v = get_post_meta( $pid, '_nh_cc_step_mm', true ) ) === '' ? 1 : (int) $v,
+			'step_m'          => ( $v = get_post_meta( $pid, '_nh_cc_step_m', true ) ) === '' ? 0.01 : (float) $v,
 			'kg_per_m2'       => (float) $kg_per_m2,
 			'weight_per_m2'   => (float) $kg_per_m2,
+			'unit'            => ( $v = get_post_meta( $pid, '_nh_cc_unit', true ) ) === '' ? 'mm' : sanitize_text_field( $v ),
+			'type'            => ( $v = get_post_meta( $pid, '_nh_cc_type', true ) ) === '' ? 'planar' : sanitize_text_field( $v ),
 		] );
 
 	} else {
@@ -426,11 +457,15 @@ function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_i
 	if ( ! ( $p->is_type( 'simple' ) || $p->is_type( 'variable' ) ) ) return $passed;
 	if ( ! nh_cc_is_enabled_product( $product_id ) ) return $passed;
 
+	$unit = get_post_meta( $product_id, '_nh_cc_unit', true ) ?: 'mm';
+	$type = get_post_meta( $product_id, '_nh_cc_type', true ) ?: 'planar';
+
 	$w_raw = isset( $_POST['nh_width_mm'] )  ? trim( wp_unslash( $_POST['nh_width_mm'] ) )  : '';
 	$l_raw = isset( $_POST['nh_length_mm'] ) ? trim( wp_unslash( $_POST['nh_length_mm'] ) ) : '';
+	$l_m_raw = isset( $_POST['nh_length_m'] ) ? trim( wp_unslash( $_POST['nh_length_m'] ) ) : '';
 	$flag  = isset( $_POST['nh_custom_cutting'] ) && $_POST['nh_custom_cutting'] === '1';
 
-	if ( ! $flag && $w_raw === '' && $l_raw === '' ) return $passed;
+	if ( ! $flag && $w_raw === '' && $l_raw === '' && $l_m_raw === '' ) return $passed;
 
 	// If variable: require a variation to be selected (Woo will also validate, but this improves messaging)
 	if ( $p->is_type( 'variable' ) && (int) $variation_id <= 0 ) {
@@ -438,40 +473,86 @@ function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_i
 		return false;
 	}
 
-	$w = absint( $w_raw );
-	$l = absint( $l_raw );
-	if ( $w <= 0 || $l <= 0 ) {
-		wc_add_notice( esc_html__( 'Please enter width and length (mm).', 'nh-theme' ), 'error' );
-		return false;
-	}
+	// Planar mm flow (backwards-compatible)
+	if ( $type === 'planar' && $unit === 'mm' ) {
 
-	$min_w = absint( get_post_meta( $product_id, '_nh_cc_min_w', true ) );
-	$max_w = absint( get_post_meta( $product_id, '_nh_cc_max_w', true ) );
-	$min_l = absint( get_post_meta( $product_id, '_nh_cc_min_l', true ) );
-	$max_l = absint( get_post_meta( $product_id, '_nh_cc_max_l', true ) );
-
-	if ( $min_w && $w < $min_w ) { wc_add_notice( sprintf( esc_html__( 'Minimum width is %d mm.', 'nh-theme' ),  $min_w ), 'error' ); return false; }
-	if ( $max_w && $w > $max_w ) { wc_add_notice( sprintf( esc_html__( 'Maximum width is %d mm.', 'nh-theme' ),  $max_w ), 'error' ); return false; }
-	if ( $min_l && $l < $min_l ) { wc_add_notice( sprintf( esc_html__( 'Minimum length is %d mm.', 'nh-theme' ), $min_l ), 'error' ); return false; }
-	if ( $max_l && $l > $max_l ) { wc_add_notice( sprintf( esc_html__( 'Maximum length is %d mm.', 'nh-theme' ), $max_l ), 'error' ); return false; }
-
-	$step = absint( get_post_meta( $product_id, '_nh_cc_step_mm', true ) );
-	if ( $step > 0 ) {
-		$origin_w = (int) get_post_meta( $product_id, '_nh_cc_step_origin_w', true );
-		$origin_l = (int) get_post_meta( $product_id, '_nh_cc_step_origin_l', true );
-		if ( ! $origin_w ) $origin_w = $min_w ?: 0;
-		if ( ! $origin_l ) $origin_l = $min_l ?: 0;
-
-		if ( ( ( $w - $origin_w ) % $step ) !== 0 ) {
-			wc_add_notice( sprintf( esc_html__( 'Width must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_w ), 'error' );
+		$w = absint( $w_raw );
+		$l = absint( $l_raw );
+		if ( $w <= 0 || $l <= 0 ) {
+			wc_add_notice( esc_html__( 'Please enter width and length (mm).', 'nh-theme' ), 'error' );
 			return false;
 		}
-		if ( ( ( $l - $origin_l ) % $step ) !== 0 ) {
-			wc_add_notice( sprintf( esc_html__( 'Length must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_l ), 'error' );
-			return false;
+
+		$min_w = absint( get_post_meta( $product_id, '_nh_cc_min_w', true ) );
+		$max_w = absint( get_post_meta( $product_id, '_nh_cc_max_w', true ) );
+		$min_l = absint( get_post_meta( $product_id, '_nh_cc_min_l', true ) );
+		$max_l = absint( get_post_meta( $product_id, '_nh_cc_max_l', true ) );
+
+		if ( $min_w && $w < $min_w ) { wc_add_notice( sprintf( esc_html__( 'Minimum width is %d mm.', 'nh-theme' ),  $min_w ), 'error' ); return false; }
+		if ( $max_w && $w > $max_w ) { wc_add_notice( sprintf( esc_html__( 'Maximum width is %d mm.', 'nh-theme' ),  $max_w ), 'error' ); return false; }
+		if ( $min_l && $l < $min_l ) { wc_add_notice( sprintf( esc_html__( 'Minimum length is %d mm.', 'nh-theme' ), $min_l ), 'error' ); return false; }
+		if ( $max_l && $l > $max_l ) { wc_add_notice( sprintf( esc_html__( 'Maximum length is %d mm.', 'nh-theme' ), $max_l ), 'error' ); return false; }
+
+		$step = absint( get_post_meta( $product_id, '_nh_cc_step_mm', true ) );
+		if ( $step > 0 ) {
+			$origin_w = (int) get_post_meta( $product_id, '_nh_cc_step_origin_w', true );
+			$origin_l = (int) get_post_meta( $product_id, '_nh_cc_step_origin_l', true );
+			if ( ! $origin_w ) $origin_w = $min_w ?: 0;
+			if ( ! $origin_l ) $origin_l = $min_l ?: 0;
+
+			if ( ( ( $w - $origin_w ) % $step ) !== 0 ) {
+				wc_add_notice( sprintf( esc_html__( 'Width must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_w ), 'error' );
+				return false;
+			}
+			if ( ( ( $l - $origin_l ) % $step ) !== 0 ) {
+				wc_add_notice( sprintf( esc_html__( 'Length must align to %1$d mm steps starting at %2$d mm.', 'nh-theme' ), $step, $origin_l ), 'error' );
+				return false;
+			}
 		}
+
+		return $passed;
 	}
 
+	// Linear metre flow (new)
+	if ( $type === 'linear' && $unit === 'm' ) {
+		// allow decimal metres
+		if ( $l_m_raw === '' ) {
+			wc_add_notice( esc_html__( 'Please enter length (m).', 'nh-theme' ), 'error' );
+			return false;
+		}
+		$l_m = floatval( str_replace( ',', '.', $l_m_raw ) );
+		if ( $l_m <= 0 ) {
+			wc_add_notice( esc_html__( 'Please enter a valid length in metres.', 'nh-theme' ), 'error' );
+			return false;
+		}
+
+		$min_l = get_post_meta( $product_id, '_nh_cc_min_l', true );
+		$max_l = get_post_meta( $product_id, '_nh_cc_max_l', true );
+		if ( $min_l !== '' && $min_l !== null ) {
+			$min_l_f = floatval( $min_l );
+			if ( $l_m < $min_l_f ) { wc_add_notice( sprintf( esc_html__( 'Minimum length is %s m.', 'nh-theme' ),  $min_l_f ), 'error' ); return false; }
+		}
+		if ( $max_l !== '' && $max_l !== null ) {
+			$max_l_f = floatval( $max_l );
+			if ( $l_m > $max_l_f ) { wc_add_notice( sprintf( esc_html__( 'Maximum length is %s m.', 'nh-theme' ),  $max_l_f ), 'error' ); return false; }
+		}
+
+		$step_m = get_post_meta( $product_id, '_nh_cc_step_m', true );
+		if ( $step_m !== '' && is_numeric( $step_m ) ) {
+			$origin_l = (float) get_post_meta( $product_id, '_nh_cc_step_origin_l', true );
+			if ( ! $origin_l ) $origin_l = ( $min_l !== '' ? (float) $min_l : 0.0 );
+			// Check alignment to float step: compute rounded ratio
+			$ratio = ( $l_m - $origin_l ) / (float) $step_m;
+			if ( abs( $ratio - round( $ratio ) ) > 0.0000001 ) {
+				wc_add_notice( sprintf( esc_html__( 'Length must align to %1$s m steps starting at %2$s m.', 'nh-theme' ), $step_m, $origin_l ), 'error' );
+				return false;
+			}
+		}
+
+		return $passed;
+	}
+
+	// Fallback: keep previous behavior if unknown config
 	return $passed;
 }
 
@@ -496,7 +577,7 @@ add_filter( 'woocommerce_add_to_cart_redirect', function ( $redirect_url = '', $
 
 /* ============================================================================
  * ADD CUSTOM DATA TO CART / ORDER (custom-cut simple OR variable parent)
- * Store base price-per-m² so cart totals are stable even after set_price()
+ * Store base price-per-m² or price-per-m (for linear) so cart totals are stable even after set_price()
  * Weight model updated: store kg per m² from Woo weight (variation or product)
  * ========================================================================== */
 add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $product_id ){
@@ -510,24 +591,32 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 	$chosen = $variation_id ? wc_get_product( $variation_id ) : $parent;
 	if ( ! $chosen instanceof WC_Product ) $chosen = $parent;
 
-	$w = (int) ( $_POST['nh_width_mm'] ?? 0 );
-	$l = (int) ( $_POST['nh_length_mm'] ?? 0 );
+	// Read unit/type from parent meta
+	$unit = get_post_meta( $product_id, '_nh_cc_unit', true ) ?: 'mm';
+	$type = get_post_meta( $product_id, '_nh_cc_type', true ) ?: 'planar';
+
+	$w_mm = isset( $_POST['nh_width_mm'] ) ? absint( $_POST['nh_width_mm'] ) : 0;
+	$l_mm = isset( $_POST['nh_length_mm'] ) ? absint( $_POST['nh_length_mm'] ) : 0;
+	$l_m  = isset( $_POST['nh_length_m'] )  ? floatval( str_replace( ',', '.', wp_unslash( $_POST['nh_length_m'] ) ) ) : 0.0;
 
 	$cart_item_data['nh_custom_size'] = [
-		'width_mm'  => $w,
-		'length_mm' => $l,
+		'unit'      => $unit,
+		'type'      => $type,
+		'width_mm'  => $w_mm,
+		'length_mm' => $l_mm,
+		'length_m'  => $l_m,
 	];
 
-	// Base per m² price (RAW) from the selected product/variation
-	$cart_item_data['nh_cc_base_price_per_m2'] = (float) $chosen->get_price();
+	// Base price from the selected product/variation (interpreted according to product type)
+	$cart_item_data['nh_cc_base_price'] = (float) $chosen->get_price();
 
 	// Fee from PARENT meta (shared across variations)
 	$cart_item_data['nh_cc_cut_fee_raw'] = (float) get_post_meta( $product_id, '_nh_cc_cut_fee', true );
 
-	// UPDATED: kg per m² comes from Woo "weight" on chosen (variation or simple), fallback handled in helper
+	// kg per m² from Woo "weight" on chosen (variation or simple)
 	$cart_item_data['nh_cc_kg_per_m2'] = (float) nh_cc_get_kg_per_m2_from_product( $chosen );
 
-	$cart_item_data['nh_unique'] = md5( $product_id . '|' . $variation_id . '|' . $w . 'x' . $l . '|' . microtime( true ) );
+	$cart_item_data['nh_unique'] = md5( $product_id . '|' . $variation_id . '|' . $w_mm . 'x' . $l_mm . '|' . $l_m . '|' . microtime( true ) );
 
 	if ( isset( $_POST['nh_custom_unit_kg'] ) ) {
 		$cart_item_data['nh_custom_unit_kg'] = (float) wc_clean( wp_unslash( $_POST['nh_custom_unit_kg'] ) );
@@ -540,11 +629,15 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 
 	if ( empty( $cart_item['nh_custom_size'] ) ) return $item_data;
 
-	$w = (int) $cart_item['nh_custom_size']['width_mm'];
-	$l = (int) $cart_item['nh_custom_size']['length_mm'];
+	$size = $cart_item['nh_custom_size'];
+
+	$w = isset( $size['width_mm'] ) ? (int) $size['width_mm'] : 0;
+	$lmm = isset( $size['length_mm'] ) ? (int) $size['length_mm'] : 0;
+	$lm = isset( $size['length_m'] ) ? floatval( $size['length_m'] ) : 0;
 
 	if ( $w ) $item_data[] = [ 'name' => __( 'Width', 'nh-theme' ),  'value' => $w . ' mm' ];
-	if ( $l ) $item_data[] = [ 'name' => __( 'Length', 'nh-theme' ), 'value' => $l . ' mm' ];
+	if ( $lmm ) $item_data[] = [ 'name' => __( 'Length', 'nh-theme' ), 'value' => $lmm . ' mm' ];
+	if ( $lm ) $item_data[] = [ 'name' => __( 'Length', 'nh-theme' ), 'value' => rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m' ];
 
 	$fee_raw = isset( $cart_item['nh_cc_cut_fee_raw'] ) ? (float) $cart_item['nh_cc_cut_fee_raw'] : 0;
 	if ( $fee_raw > 0 ) {
@@ -554,8 +647,17 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
 		}
 
+		// label depends on unit/type
+		$label = __( 'Cutting fee', 'nh-theme' );
+		$unit = isset( $cart_item['nh_custom_size']['unit'] ) ? $cart_item['nh_custom_size']['unit'] : 'mm';
+		if ( $unit === 'm' ) {
+			$label .= ' ' . __( 'per metre', 'nh-theme' );
+		} else {
+			$label .= ' ' . __( 'per sheet', 'nh-theme' );
+		}
+
 		$item_data[] = [
-			'name'  => __( 'Cutting fee per sheet', 'nh-theme' ),
+			'name'  => $label,
 			'value' => wc_price( $fee_disp ),
 		];
 	}
@@ -567,24 +669,35 @@ add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $car
 
 	if ( empty( $values['nh_custom_size'] ) ) return;
 
-	$wmm = (int) ( $values['nh_custom_size']['width_mm']  ?? 0 );
-	$lmm = (int) ( $values['nh_custom_size']['length_mm'] ?? 0 );
+	$size = $values['nh_custom_size'];
+	$wmm = (int) ( $size['width_mm'] ?? 0 );
+	$lmm = (int) ( $size['length_mm'] ?? 0 );
+	$lm  = isset( $size['length_m'] ) ? floatval( $size['length_m'] ) : 0.0;
+	$unit = isset( $size['unit'] ) ? $size['unit'] : 'mm';
 
 	/** @var WC_Product|null $product */
 	$product = $item->get_product();
 	if ( ! $product instanceof WC_Product ) return;
 
-	$price_per_m2 = isset( $values['nh_cc_base_price_per_m2'] ) ? (float) $values['nh_cc_base_price_per_m2'] : (float) $product->get_price();
-	$fee          = isset( $values['nh_cc_cut_fee_raw'] ) ? (float) $values['nh_cc_cut_fee_raw'] : 0;
+	$price_base = isset( $values['nh_cc_base_price'] ) ? (float) $values['nh_cc_base_price'] : (float) $product->get_price();
+	$fee        = isset( $values['nh_cc_cut_fee_raw'] ) ? (float) $values['nh_cc_cut_fee_raw'] : 0;
 
 	// Old shop meta keys (compat)
 	if ( $wmm ) $item->add_meta_data( 'cutting_width',  $wmm . ' mm', true );
 	if ( $lmm ) $item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
 
-	if ( $wmm && $lmm && $price_per_m2 > 0 ) {
+	// Planar mm flow (area × price_per_m²)
+	if ( $wmm && $lmm && $price_base > 0 && $unit === 'mm' ) {
 		$area      = ( $wmm / 1000 ) * ( $lmm / 1000 );
-		$unit_base = $area * $price_per_m2; // without fee
+		$unit_base = $area * $price_base; // without fee
 		$item->add_meta_data( 'unit_price', wc_format_decimal( $unit_base, wc_get_price_decimals() ), true );
+	}
+
+	// Linear metre flow
+	if ( $lm > 0 && $price_base > 0 && $unit === 'm' ) {
+		$unit_base = $lm * $price_base; // price_base interpreted as price per metre
+		$item->add_meta_data( 'unit_price', wc_format_decimal( $unit_base, wc_get_price_decimals() ), true );
+		$item->add_meta_data( 'length', rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m', true );
 	}
 
 	if ( $fee > 0 ) {
@@ -594,16 +707,17 @@ add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $car
 	// Human-readable Woo meta
 	if ( $wmm ) $item->add_meta_data( __( 'Width', 'nh-theme' ),  $wmm . ' mm', true );
 	if ( $lmm ) $item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
+	if ( $lm ) $item->add_meta_data( __( 'Length', 'nh-theme' ), rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m', true );
 
 	if ( $fee > 0 ) {
 		$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
-		$item->add_meta_data( __( 'Cutting fee per sheet', 'nh-theme' ), wc_price( $fee_disp ), true );
+		$item->add_meta_data( __( 'Cutting fee', 'nh-theme' ), wc_price( $fee_disp ), true );
 	}
 
 }, 10, 3 );
 
 /* ============================================================================
- * CUSTOM PRICING — area × price_per_m² + fee
+ * CUSTOM PRICING — area × price_per_m² + fee OR length × price_per_m + fee
  * Works for cart items that are variations too
  * Weight model updated: kg per m² from Woo weight stored per cart line
  * ========================================================================== */
@@ -624,42 +738,85 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 		$parent_id = (int) ( $item['product_id'] ?? 0 );
 		if ( $parent_id <= 0 || ! nh_cc_is_enabled_product( $parent_id ) ) continue;
 
-		$wmm = (int) ( $item['nh_custom_size']['width_mm'] ?? 0 );
-		$lmm = (int) ( $item['nh_custom_size']['length_mm'] ?? 0 );
-		if ( $wmm <= 0 || $lmm <= 0 ) continue;
+		$size = $item['nh_custom_size'];
+		$unit = $size['unit'] ?? 'mm';
 
-		$area = ( $wmm / 1000 ) * ( $lmm / 1000 );
+		// Planar mm flow
+		if ( $unit === 'mm' ) {
+			$wmm = (int) ( $size['width_mm'] ?? 0 );
+			$lmm = (int) ( $size['length_mm'] ?? 0 );
+			if ( $wmm <= 0 || $lmm <= 0 ) continue;
 
-		$price_per_m2 = isset( $item['nh_cc_base_price_per_m2'] )
-			? (float) $item['nh_cc_base_price_per_m2']
-			: (float) $product->get_price();
+			$area = ( $wmm / 1000 ) * ( $lmm / 1000 );
 
-		$fee = isset( $item['nh_cc_cut_fee_raw'] )
-			? (float) $item['nh_cc_cut_fee_raw']
-			: (float) get_post_meta( $parent_id, '_nh_cc_cut_fee', true );
+			$price_per_m2 = isset( $item['nh_cc_base_price'] )
+				? (float) $item['nh_cc_base_price']
+				: (float) $product->get_price();
 
-		if ( $price_per_m2 > 0 ) {
-			$unit_price = $area * $price_per_m2 + max( 0, $fee );
-			$product->set_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+			$fee = isset( $item['nh_cc_cut_fee_raw'] )
+				? (float) $item['nh_cc_cut_fee_raw']
+				: (float) get_post_meta( $parent_id, '_nh_cc_cut_fee', true );
+
+			// Planar (mm) price calculation — replace existing set_price() block with this
+			if ( $price_per_m2 > 0 ) {
+				$unit_price = $area * $price_per_m2 + max( 0, $fee );
+
+				// Prevent Woo showing a "You saved" value unless the product actually has a sale price.
+				$has_sale_price = $product->get_sale_price() !== '' && $product->get_sale_price() !== null;
+				if ( ! $has_sale_price && is_callable( array( $product, 'set_regular_price' ) ) ) {
+					// Set the in-memory regular price equal to the calculated price so Woo doesn't display a crossed-out price.
+					$product->set_regular_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+				}
+
+				$product->set_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+			}
+
+			// Weight (kg per m²)
+			$kg_per_m2 = isset( $item['nh_cc_kg_per_m2'] ) ? (float) $item['nh_cc_kg_per_m2'] : 0.0;
+			if ( $kg_per_m2 <= 0 ) {
+				$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $product );
+			}
+			if ( $kg_per_m2 > 0 ) {
+				$unit_kg = $area * $kg_per_m2;
+				$product->set_weight( wc_format_decimal( $unit_kg, 4 ) );
+			}
+
+			continue;
 		}
 
-		// UPDATED: Weight (kg per m²) from stored cart data (variation or simple)
-		$kg_per_m2 = isset( $item['nh_cc_kg_per_m2'] ) ? (float) $item['nh_cc_kg_per_m2'] : 0.0;
+		// Linear metre flow
+		if ( $unit === 'm' ) {
+			$lm = isset( $size['length_m'] ) ? floatval( $size['length_m'] ) : 0.0;
+			if ( $lm <= 0 ) continue;
 
-		// Fallback if missing for some reason: use current product object (variation) weight / parent fallback
-		if ( $kg_per_m2 <= 0 ) {
-			$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $product );
-		}
+			$price_per_m = isset( $item['nh_cc_base_price'] ) ? (float) $item['nh_cc_base_price'] : (float) $product->get_price();
 
-		if ( $kg_per_m2 > 0 ) {
-			$unit_kg = $area * $kg_per_m2;
-			$product->set_weight( wc_format_decimal( $unit_kg, 4 ) );
+			$fee = isset( $item['nh_cc_cut_fee_raw'] )
+				? (float) $item['nh_cc_cut_fee_raw']
+				: (float) get_post_meta( $parent_id, '_nh_cc_cut_fee', true );
+				
+			// Linear (m) price calculation — replace existing set_price() block with this
+			if ( $price_per_m > 0 ) {
+				$unit_price = $lm * $price_per_m + max( 0, $fee );
+
+				// Prevent Woo showing a "You saved" value unless the product actually has a sale price.
+				$has_sale_price = $product->get_sale_price() !== '' && $product->get_sale_price() !== null;
+				if ( ! $has_sale_price && is_callable( array( $product, 'set_regular_price' ) ) ) {
+					$product->set_regular_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+				}
+
+				$product->set_price( wc_format_decimal( $unit_price, wc_get_price_decimals() ) );
+			}
+
+			// Weight: we currently don't auto-convert kg/m² to linear weight.
+			// If you need weight per metre, set product/variation weight accordingly and store it in nh_cc_kg_per_m2 or a new meta.
+			continue;
 		}
 	}
 }, 20 );
 
 /* ============================================================================
- * PRICE DISPLAY — add "/ m²" for custom-cut products
+ * PRICE DISPLAY — add "/ m²" for custom-cut products (planar) and adjust labels
  * Applies on archives + single product pages.
  * Also supports variable products and selected variations.
  * ========================================================================== */
@@ -679,11 +836,11 @@ function nh_cc_is_price_per_m2_product( $product ) : bool {
 	// Variation: check parent setting
 	if ( $product->is_type( 'variation' ) ) {
 		$parent_id = $product->get_parent_id();
-		return $parent_id > 0 && nh_cc_is_enabled_product( $parent_id );
+		return $parent_id > 0 && nh_cc_is_enabled_product( $parent_id ) && ( get_post_meta( $parent_id, '_nh_cc_unit', true ) ?: 'mm' ) === 'mm';
 	}
 
-	// Simple or variable parent
-	return nh_cc_is_enabled_product( $product->get_id() );
+	// Simple or variable parent: only show /m² suffix by default for mm (planar) products
+	return nh_cc_is_enabled_product( $product->get_id() ) && ( get_post_meta( $product->get_id(), '_nh_cc_unit', true ) ?: 'mm' ) === 'mm';
 }
 
 /**
@@ -694,7 +851,7 @@ function nh_cc_get_price_per_m2_suffix_html() : string {
 }
 
 /**
- * Append "/ m²" to Woo price HTML for custom-cut products only.
+ * Append "/ m²" to Woo price HTML for custom-cut (planar/mm) products only.
  */
 add_filter( 'woocommerce_get_price_html', function ( $price_html, $product ) {
 
@@ -702,7 +859,7 @@ add_filter( 'woocommerce_get_price_html', function ( $price_html, $product ) {
 		return $price_html;
 	}
 
-	// Only for custom-cut products
+	// Only for custom-cut planar/mm products
 	if ( ! nh_cc_is_price_per_m2_product( $product ) ) {
 		return $price_html;
 	}

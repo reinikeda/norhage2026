@@ -165,17 +165,18 @@
 }
 
 /* ==========================================================================
-   3) Custom cutting UI (mm inputs)
+   3) Custom cutting UI (Dimensions Inputs)
    ========================================================================== */
 
-/* show custom W/L fields on custom-cutting products */
-#nh-custom-size-wrap{
-  display:block !important;
-  margin:12px 0;
+/* Show custom W/L fields */
+#nh-custom-size-wrap {
+  display: block !important;
+  margin: 12px 0;
 }
 
-/* --- custom width/length control (Woo-like qty UI) --- */
-.nh-size-ui .nh-mm-qty {
+/* --- Shared styles for both MM and M control groups --- */
+.nh-size-ui .nh-mm-qty,
+.nh-size-ui .nh-m-qty {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -186,8 +187,9 @@
   max-width: 320px;
 }
 
-.nh-size-ui .nh-mm-qty .minus,
-.nh-size-ui .nh-mm-qty .plus {
+/* Standardize +/- buttons for both types */
+.nh-size-ui .nh-mm-qty .minus, .nh-size-ui .nh-mm-qty .plus,
+.nh-size-ui .nh-m-qty .minus,  .nh-size-ui .nh-m-qty .plus {
   flex: 0 0 42px;
   display: flex;
   align-items: center;
@@ -203,10 +205,12 @@
   box-sizing: border-box;
 }
 
-.nh-size-ui .nh-mm-qty .minus { border-right: 1px solid var(--ui-border); }
-.nh-size-ui .nh-mm-qty .plus  { border-left: 1px solid var(--ui-border); }
+.nh-size-ui .nh-mm-qty .minus, .nh-size-ui .nh-m-qty .minus { border-right: 1px solid var(--ui-border); }
+.nh-size-ui .nh-mm-qty .plus,  .nh-size-ui .nh-m-qty .plus  { border-left: 1px solid var(--ui-border); }
 
-.nh-size-ui .nh-mm-qty .nh-mm-input {
+/* Standardize Input fields (MM & M) */
+.nh-size-ui .nh-mm-input,
+.nh-size-ui .nh-m-input {
   flex: 1 1 0;
   min-width: 220px;
   height: 100%;
@@ -220,10 +224,20 @@
   color: var(--ui-text);
   text-align: center !important;
   text-indent: 0 !important;
+  appearance: textfield; 
+  -moz-appearance: textfield;
 }
 
-/* placeholder fully visible & centered */
-.nh-size-ui .nh-mm-qty .nh-mm-input::placeholder {
+/* Remove ALL native number spinners (Chrome/Safari/Edge/Firefox) */
+.nh-size-ui input::-webkit-outer-spin-button,
+.nh-size-ui input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Placeholder styling */
+.nh-size-ui .nh-mm-input::placeholder,
+.nh-size-ui .nh-m-input::placeholder {
   color: var(--ui-muted);
   opacity: 1;
   white-space: nowrap;
@@ -232,38 +246,21 @@
   text-align: center;
 }
 
-/* remove native number spinners */
-.nh-size-ui .nh-mm-qty .nh-mm-input[type=number] {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
-.nh-size-ui .nh-mm-qty .nh-mm-input[type=number]::-webkit-outer-spin-button,
-.nh-size-ui .nh-mm-qty .nh-mm-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Remove the theme's bottom border/line under custom-cut size table */
+/* Clean up theme table styling */
 .nh-has-custom-cut .entry-summary form.cart table.variations {
   border: 0 !important;
   padding-bottom: 0 !important;
   margin-bottom: 0 !important;
 }
-
-/* If your theme adds a separator element after variations, hide it too */
 .nh-has-custom-cut .entry-summary form.cart .reset_variations { display: none !important; }
 
-/* Cutting step note */
-.nh-cc-hint-single {
-  margin: .25rem 0 0;
-  font-size: .875em;
-  color: #666;
-}
+/* Hint & mobile adjustments */
+.nh-cc-hint-single { margin: .25rem 0 0; font-size: .875em; color: #666; }
 
-/* Mobile: let control expand */
 @media (max-width: 600px) {
   .nh-size-ui .variations .value { display: block; }
-  .nh-size-ui .nh-mm-qty { max-width: 100%; width: 100%; }
+  .nh-size-ui .nh-mm-qty,
+  .nh-size-ui .nh-m-qty { max-width: 100%; width: 100%; }
 }
 
 /* ==========================================================================
