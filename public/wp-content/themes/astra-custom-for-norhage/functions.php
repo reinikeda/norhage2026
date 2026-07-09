@@ -503,9 +503,8 @@ function nh_get_order_number_country_settings() {
         'nb_NO' => [ 'prefix' => 'NO-', 'start' => 3000 ],
         'sv_SE' => [ 'prefix' => 'SE-', 'start' => 3000 ],
         'de_DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
-        'fi_FI' => [ 'prefix' => 'FI-', 'start' => 3000 ],
+        'fi' => [ 'prefix' => 'FI-', 'start' => 3000 ],
         'en_US' => [ 'prefix' => 'EU-', 'start' => 1000 ],
-        'en_GB' => [ 'prefix' => 'EU-', 'start' => 1000 ],
     ];
 
     return isset($language_settings[$language]) ? $language_settings[$language] : [];
