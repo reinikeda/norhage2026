@@ -690,36 +690,67 @@ add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $car
 	$price_base = isset( $values['nh_cc_base_price'] ) ? (float) $values['nh_cc_base_price'] : (float) $product->get_price();
 	$fee        = isset( $values['nh_cc_cut_fee_raw'] ) ? (float) $values['nh_cc_cut_fee_raw'] : 0;
 
-	// Old shop meta keys (compat)
-	if ( $wmm ) $item->add_meta_data( 'cutting_width',  $wmm . ' mm', true );
-	if ( $lmm ) $item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
+	// --- Technical meta (canonical keys) ----
+	if ( $wmm ) {
+		$item->add_meta_data( 'cutting_width',  $wmm . ' mm', true );
+	}
+	if ( $lmm ) {
+		$item->add_meta_data( 'cutting_height', $lmm . ' mm', true );
+	}
 
-	// Planar mm flow (area × price_per_m²)
+	// Planar mm price
 	if ( $wmm && $lmm && $price_base > 0 && $unit === 'mm' ) {
 		$area      = ( $wmm / 1000 ) * ( $lmm / 1000 );
 		$unit_base = $area * $price_base; // without fee
 		$item->add_meta_data( 'unit_price', wc_format_decimal( $unit_base, wc_get_price_decimals() ), true );
 	}
 
-	// Linear metre flow
+	// Linear metre price + technical length
 	if ( $lm > 0 && $price_base > 0 && $unit === 'm' ) {
 		$unit_base = $lm * $price_base; // price_base interpreted as price per metre
 		$item->add_meta_data( 'unit_price', wc_format_decimal( $unit_base, wc_get_price_decimals() ), true );
-		$item->add_meta_data( 'length', rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m', true );
+
+		// store canonical length meta for mapping/display
+		$lm_display = rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m';
+		$item->add_meta_data( 'cutting_length_m', $lm_display, true );
 	}
 
+	// Technical cutting fee (raw decimal)
 	if ( $fee > 0 ) {
 		$item->add_meta_data( 'cutting_fee', wc_format_decimal( $fee, wc_get_price_decimals() ), true );
 	}
 
-	// Human-readable Woo meta
-	if ( $wmm ) $item->add_meta_data( __( 'Width', 'nh-theme' ),  $wmm . ' mm', true );
-	if ( $lmm ) $item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
-	if ( $lm ) $item->add_meta_data( __( 'Length', 'nh-theme' ), rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m', true );
+	// ---- Add human-readable meta only if not already present ----
+	// This ensures order views/emails show friendly labels but avoids duplicates.
 
+	// Width (human)
+	if ( $wmm ) {
+		$existing_width = $item->get_meta( __( 'Width', 'nh-theme' ), true );
+		if ( empty( $existing_width ) ) {
+			$item->add_meta_data( __( 'Width', 'nh-theme' ), $wmm . ' mm', true );
+		}
+	}
+
+	// Length (human) — prefer metre display when unit === 'm'
+	if ( $unit === 'm' && $lm > 0 ) {
+		$existing_length = $item->get_meta( __( 'Length', 'nh-theme' ), true );
+		if ( empty( $existing_length ) ) {
+			$item->add_meta_data( __( 'Length', 'nh-theme' ), $lm_display, true );
+		}
+	} elseif ( $lmm ) {
+		$existing_length = $item->get_meta( __( 'Length', 'nh-theme' ), true );
+		if ( empty( $existing_length ) ) {
+			$item->add_meta_data( __( 'Length', 'nh-theme' ), $lmm . ' mm', true );
+		}
+	}
+
+	// Cutting fee (human)
 	if ( $fee > 0 ) {
-		$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
-		$item->add_meta_data( __( 'Cutting fee', 'nh-theme' ), wc_price( $fee_disp ), true );
+		$existing_fee = $item->get_meta( __( 'Cutting fee', 'nh-theme' ), true );
+		if ( empty( $existing_fee ) ) {
+			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
+			$item->add_meta_data( __( 'Cutting fee', 'nh-theme' ), wc_price( $fee_disp ), true );
+		}
 	}
 
 }, 10, 3 );

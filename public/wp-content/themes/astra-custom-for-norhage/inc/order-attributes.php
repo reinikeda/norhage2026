@@ -37,7 +37,13 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 
 			case 'cutting_height':
 			case 'cutting_length_m':
+			case 'nh_length_m': // Add this to capture the linear length
+			case '_nh_length_m': // And the hidden version
 				$length_val = (string) $val;
+				// If it's just a number, append " m" for display
+				if ( is_numeric($length_val) ) {
+					$length_val .= ' m';
+				}
 				break;
 
 			case 'cutting_fee':
@@ -46,7 +52,7 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				$fee_val = $val;
 				break;
 
-			// Backwards compatibility: human keys
+			// Backwards compatibility / Human keys
 			case 'Width':
 				if ( $width_val === '' ) {
 					$width_val = (string) $val;
@@ -54,6 +60,7 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				break;
 
 			case 'Length':
+				// If we already found a technical length, don't overwrite it with the same value
 				if ( $length_val === '' ) {
 					$length_val = (string) $val;
 				}
@@ -297,16 +304,18 @@ add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $format
 	}
 
 	$technical_keys = [
-		'cutting_width',
-		'cutting_height',
-		'cutting_length_m',
-		'unit_price',
-		'cutting_fee',
-		'cutting_fee_per_sheet',
-		'cutting_fee_per_unit',
-		'nh_custom_unit_kg',
-		'nh_custom_total_kg',
-	];
+			'cutting_width',
+			'cutting_height',
+			'cutting_length_m',
+			'nh_length_m',
+			'_nh_length_m',
+			'unit_price',
+			'cutting_fee',
+			'cutting_fee_per_sheet',
+			'cutting_fee_per_unit',
+			'nh_custom_unit_kg',
+			'nh_custom_total_kg',
+		];
 
 	// Admin: hide only the technical keys to keep admin debugging useful
 	if ( is_admin() ) {
