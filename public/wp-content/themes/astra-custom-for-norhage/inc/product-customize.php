@@ -252,10 +252,18 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 		  <span><?php esc_html_e( 'Price per m²', 'nh-theme' ); ?></span>
 		  <span class="nh-ps-val" data-ps="perm2">—</span>
 		</li>
+
+		<!-- Price per metre (for linear products). Hidden by default; JS will show it for linear products -->
+		<li class="nh-ps-row nh-ps-perm" style="display:none;">
+		  <span><?php esc_html_e( 'Price per m', 'nh-theme' ); ?></span>
+		  <span class="nh-ps-val" data-ps="perm">—</span>
+		</li>
+
 		<li class="nh-ps-row nh-ps-cutfee">
 		  <span><?php esc_html_e( 'Cutting fee per sheet', 'nh-theme' ); ?></span>
 		  <span class="nh-ps-val" data-ps="cutfee">—</span>
 		</li>
+
 		<li class="nh-ps-row">
 		  <span><?php esc_html_e( 'Unit price', 'nh-theme' ); ?></span>
 		  <span class="nh-ps-val" data-ps="unit">—</span>
@@ -816,56 +824,78 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 }, 20 );
 
 /* ============================================================================
- * PRICE DISPLAY — add "/ m²" for custom-cut products (planar) and adjust labels
+ * PRICE DISPLAY — add "/ m²" for custom-cut planar products and "/ m" for linear
  * Applies on archives + single product pages.
  * Also supports variable products and selected variations.
  * ========================================================================== */
 
 /**
- * Returns true when this product's displayed Woo price is a "price per m²".
- * Supports:
- * - simple custom-cut product
- * - variable custom-cut parent
- * - variation of a custom-cut parent
+ * Helper: read meta for product (variation first, then parent) with default.
  */
-function nh_cc_is_price_per_m2_product( $product ) : bool {
+function nh_cc_get_effective_meta( $product, $meta_key, $default = '' ) {
 	if ( ! $product instanceof WC_Product ) {
-		return false;
+		return $default;
 	}
 
-	// Variation: check parent setting
-	if ( $product->is_type( 'variation' ) ) {
+	$id = $product->get_id();
+	$val = get_post_meta( $id, $meta_key, true );
+
+	// If variation and meta not set on variation, fall back to parent product
+	if ( ( $val === '' || $val === false ) && $product->is_type( 'variation' ) ) {
 		$parent_id = $product->get_parent_id();
-		return $parent_id > 0 && nh_cc_is_enabled_product( $parent_id ) && ( get_post_meta( $parent_id, '_nh_cc_unit', true ) ?: 'mm' ) === 'mm';
+		if ( $parent_id ) {
+			$val = get_post_meta( $parent_id, $meta_key, true );
+		}
 	}
 
-	// Simple or variable parent: only show /m² suffix by default for mm (planar) products
-	return nh_cc_is_enabled_product( $product->get_id() ) && ( get_post_meta( $product->get_id(), '_nh_cc_unit', true ) ?: 'mm' ) === 'mm';
+	return ( $val === '' || $val === false ) ? $default : $val;
 }
 
 /**
- * Small reusable HTML suffix.
+ * Return the appropriate price unit suffix HTML for a product.
+ * - linear products -> " / m"
+ * - planar/mm products -> " / m²"
+ * Returns empty string if product is not a custom-cut product.
  */
-function nh_cc_get_price_per_m2_suffix_html() : string {
-	return '<span class="nh-price-unit"> / m²</span>';
+function nh_cc_get_price_unit_suffix_html_for_product( $product ) : string {
+	if ( ! $product instanceof WC_Product ) {
+		return '';
+	}
+
+	// Only handle when custom-cut is enabled (check variation then parent).
+	$enabled = nh_cc_get_effective_meta( $product, '_nh_cc_enabled', '' );
+	if ( empty( $enabled ) ) {
+		return '';
+	}
+
+	// Prefer explicit product type if present; fall back to unit.
+	$type = strtolower( (string) nh_cc_get_effective_meta( $product, '_nh_cc_type', '' ) );
+	$unit = strtolower( (string) nh_cc_get_effective_meta( $product, '_nh_cc_unit', 'mm' ) );
+
+	// Determine suffix: linear OR unit == 'm' => per-m; otherwise per-m²
+	if ( 'linear' === $type || 'm' === $unit ) {
+		// Translatable
+		$suffix = ' / m';
+		$suffix_html = '<span class="nh-price-unit">' . esc_html_x( $suffix, 'price unit', 'nh-theme' ) . '</span>';
+	} else {
+		$suffix = ' / m²';
+		$suffix_html = '<span class="nh-price-unit">' . esc_html_x( $suffix, 'price unit', 'nh-theme' ) . '</span>';
+	}
+
+	return $suffix_html;
 }
 
 /**
- * Append "/ m²" to Woo price HTML for custom-cut (planar/mm) products only.
+ * Append unit suffix to Woo price HTML for custom-cut products where applicable.
  */
 add_filter( 'woocommerce_get_price_html', function ( $price_html, $product ) {
 
+	// Don't change admin displays.
+	if ( is_admin() ) {
+		return $price_html;
+	}
+
 	if ( ! $product instanceof WC_Product ) {
-		return $price_html;
-	}
-
-	// Only for custom-cut planar/mm products
-	if ( ! nh_cc_is_price_per_m2_product( $product ) ) {
-		return $price_html;
-	}
-
-	// Avoid double suffix
-	if ( strpos( $price_html, 'nh-price-unit' ) !== false ) {
 		return $price_html;
 	}
 
@@ -874,13 +904,24 @@ add_filter( 'woocommerce_get_price_html', function ( $price_html, $product ) {
 		return $price_html;
 	}
 
-	return $price_html . nh_cc_get_price_per_m2_suffix_html();
+	// Get suffix for this product (if any)
+	$suffix_html = nh_cc_get_price_unit_suffix_html_for_product( $product );
+	if ( empty( $suffix_html ) ) {
+		return $price_html;
+	}
+
+	// Avoid double suffix
+	if ( strpos( $price_html, 'nh-price-unit' ) !== false ) {
+		return $price_html;
+	}
+
+	return $price_html . ' ' . $suffix_html;
 
 }, 20, 2 );
 
 /**
- * Ensure selected variation price on single product page also gets "/ m²".
- * Woo outputs variation price_html from variation data.
+ * Ensure selected variation price on single product page also gets the unit suffix.
+ * Woo outputs variation price_html from variation data (available_variation).
  */
 add_filter( 'woocommerce_available_variation', function ( $data, $product, $variation ) {
 
@@ -888,12 +929,20 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 		return $data;
 	}
 
-	if ( ! nh_cc_is_price_per_m2_product( $variation ) ) {
+	// Do not modify empty price html
+	if ( empty( $data['price_html'] ) || trim( wp_strip_all_tags( $data['price_html'] ) ) === '' ) {
 		return $data;
 	}
 
-	if ( ! empty( $data['price_html'] ) && strpos( $data['price_html'], 'nh-price-unit' ) === false ) {
-		$data['price_html'] .= nh_cc_get_price_per_m2_suffix_html();
+	// Determine suffix for this variation (uses variation meta first, then parent)
+	$suffix_html = nh_cc_get_price_unit_suffix_html_for_product( $variation );
+	if ( empty( $suffix_html ) ) {
+		return $data;
+	}
+
+	// Avoid double suffix
+	if ( strpos( $data['price_html'], 'nh-price-unit' ) === false ) {
+		$data['price_html'] .= ' ' . $suffix_html;
 	}
 
 	return $data;

@@ -112,22 +112,47 @@
     $f.find('input[name="nh_custom_total_kg"]').val(String(totalKg || 0));
   }
 
-  /* =================== Perm² + Cut fee (render) ================= */
+  /* =================== Perm² / Perm + Cut fee (render) ================= */
   function renderPerm2AndFee() {
-    var reg = Number(CC.perm2_reg_disp || 0);
-    var sale = Number(CC.perm2_sale_disp || 0);
+    // Determine product type (support CC.type or fallback to window.NH_CC.type)
+    var type = (typeof CC !== 'undefined' && CC.type) ? CC.type : (window.NH_CC && NH_CC.type) ? NH_CC.type : 'planar';
     var fee = Number(CC.cut_fee || 0);
 
+    // planar (m²) values (existing names)
+    var perm2_reg = Number(CC.perm2_reg_disp || 0);
+    var perm2_sale = Number(CC.perm2_sale_disp || 0);
+
+    // linear (per m) values — fall back to perm2 values when per-m values are absent
+    var perm_reg = Number(CC.perm_reg_disp || CC.perm2_reg_disp || 0);
+    var perm_sale = Number(CC.perm_sale_disp || CC.perm2_sale_disp || 0);
+
+    // build HTML for each pricing type (handles regular + sale display)
     var perm2HTML =
-      (reg > 0 && sale > 0 && sale < reg) ? ('<del>' + money(reg) + '</del> <ins>' + money(sale) + '</ins>') :
-      (sale > 0 ? ('<ins>' + money(sale) + '</ins>') :
-      (reg  > 0 ? ('<ins>' + money(reg)  + '</ins>') : '—'));
+      (perm2_reg > 0 && perm2_sale > 0 && perm2_sale < perm2_reg) ? ('<del>' + money(perm2_reg) + '</del> <ins>' + money(perm2_sale) + '</ins>') :
+      (perm2_sale > 0 ? ('<ins>' + money(perm2_sale) + '</ins>') :
+      (perm2_reg  > 0 ? ('<ins>' + money(perm2_reg)  + '</ins>') : '—'));
+
+    var permHTML =
+      (perm_reg > 0 && perm_sale > 0 && perm_sale < perm_reg) ? ('<del>' + money(perm_reg) + '</del> <ins>' + money(perm_sale) + '</ins>') :
+      (perm_sale > 0 ? ('<ins>' + money(perm_sale) + '</ins>') :
+      (perm_reg  > 0 ? ('<ins>' + money(perm_reg)  + '</ins>') : '—'));
 
     var cutHTML = fee > 0 ? money(fee) : '—';
 
-    // Show price row and value
-    $psBox().find('.nh-ps-perm2').css('display', 'flex');
-    $psBox().find('[data-ps="perm2"]').html(perm2HTML);
+    // Toggle which price row to show: per-m for linear, per-m² for planar
+    if (type === 'linear') {
+      $psBox().find('.nh-ps-perm2').css('display', 'none');
+      $psBox().find('[data-ps="perm2"]').html('—');
+
+      $psBox().find('.nh-ps-perm').css('display', 'flex');
+      $psBox().find('[data-ps="perm"]').html(permHTML);
+    } else {
+      $psBox().find('.nh-ps-perm').css('display', 'none');
+      $psBox().find('[data-ps="perm"]').html('—');
+
+      $psBox().find('.nh-ps-perm2').css('display', 'flex');
+      $psBox().find('[data-ps="perm2"]').html(perm2HTML);
+    }
 
     // Hide the cutting fee row entirely if fee is 0 or empty
     var $feeRow = $psBox().find('.nh-ps-cutfee');
@@ -138,9 +163,10 @@
       $feeRow.css('display', 'none');
     }
 
-    writeSummary({ perm2_html: perm2HTML, cutfee_html: cutHTML });
+    // Save summary (include both keys — JS that reads these can pick the right one)
+    writeSummary({ perm2_html: perm2HTML, perm_html: permHTML, cutfee_html: cutHTML });
   }
-
+  
   /* =================== Utils for step/limits ==================== */
   function getStep($el){ var n = parseFloat($el.attr('step')); return (isFinite(n) && n > 0) ? n : 1; }
   function snapToStep(val, step, min){

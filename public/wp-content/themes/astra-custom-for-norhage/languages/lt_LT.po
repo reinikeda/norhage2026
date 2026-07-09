@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 14:35+0300\n"
+"PO-Revision-Date: 2026-07-09 08:53+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -431,6 +431,10 @@ msgstr "Jūsų pasirinkimas"
 #: inc/product-customize.php:227
 msgid "Price per m²"
 msgstr "Kaina už m²"
+
+#: inc/product-customize.php
+msgid "Price per m"
+msgstr "Kaina už metrą"
 
 #: inc/product-customize.php:235
 msgid "Unit price"
