@@ -4,7 +4,10 @@
  *
  * Updated for WooCommerce Blocks (Cart & Checkout blocks).
  * Shipping calculator removed — not supported in Blocks.
- * Shipping is calculated at checkout after address is entered.
+ *
+ * Full updated version — improves detection of custom-cut products so we
+ * don't add duplicate "Length" rows and we consistently suppress duplicate
+ * variation rows when the product is custom-cut.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,6 +30,30 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 		}
 
 		/* --------------------------------------------------------------------
+		 * Helper: determine if a product (or its parent) is configured as custom-cut
+		 * ------------------------------------------------------------------ */
+		protected static function product_is_custom_cut( $product ) {
+			if ( empty( $product ) || ! ( $product instanceof WC_Product ) ) {
+				return false;
+			}
+
+			// Check variation then parent
+			$product_id = $product->get_id();
+			if ( $product->is_type( 'variation' ) ) {
+				$parent_id = $product->get_parent_id();
+				if ( $parent_id ) {
+					$product_id = $parent_id;
+				}
+			}
+
+			if ( ! $product_id ) {
+				return false;
+			}
+
+			return (bool) get_post_meta( $product_id, '_nh_cc_enabled', true );
+		}
+
+		/* --------------------------------------------------------------------
 		 * 1) Classic cart — cart item attribute display
 		 * ------------------------------------------------------------------ */
 
@@ -35,7 +62,7 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 		 *
 		 * - Variable products: do nothing — Blocks renders variation attributes natively.
 		 * - Custom-cut products: skip — separate plugin handles their meta.
-		 * - Simple products: add Length attribute if present (aluminium profiles etc.).
+		 * - Simple products: add Length if the product has that attribute.
 		 *
 		 * @param array $item_data Existing item meta rows.
 		 * @param array $cart_item The cart item array.
@@ -43,16 +70,22 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 		 */
 		public static function filter_cart_item_data( $item_data, $cart_item ) {
 
-			// Skip custom-cut products — they render their own meta.
-			if ( ! empty( $cart_item['nh_custom_size'] ) ) {
+			// If session/cart already contains our custom-cut marker or custom_cut_data, skip.
+			if ( ! empty( $cart_item['nh_custom_size'] ) || ! empty( $cart_item['custom_cut_data'] ) ) {
 				return $item_data;
 			}
 
+			// Ensure there's product object
 			if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product ) {
 				return $item_data;
 			}
 
 			$product = $cart_item['data'];
+
+			// If product (or parent for variations) is marked as custom-cut via meta, skip.
+			if ( self::product_is_custom_cut( $product ) ) {
+				return $item_data;
+			}
 
 			// Variable products: Blocks already shows variation attributes — do nothing.
 			if ( ! empty( $cart_item['variation'] ) && is_array( $cart_item['variation'] ) ) {
@@ -109,8 +142,18 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 		 */
 		public static function hide_variation_for_custom_cut( $cart_item, $values, $key ) {
 
-			if ( ! empty( $cart_item['nh_custom_size'] ) ) {
+			// If session/cart already contains our custom-cut marker or data -> treat as custom-cut
+			if ( ! empty( $cart_item['nh_custom_size'] ) || ! empty( $cart_item['custom_cut_data'] ) ) {
 				$cart_item['variation'] = array();
+				return $cart_item;
+			}
+
+			// Additionally, if the product (or its parent) has _nh_cc_enabled meta, treat as custom-cut
+			if ( ! empty( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
+				$product = $cart_item['data'];
+				if ( self::product_is_custom_cut( $product ) ) {
+					$cart_item['variation'] = array();
+				}
 			}
 
 			return $cart_item;

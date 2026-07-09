@@ -360,6 +360,7 @@ require_once get_stylesheet_directory() . '/inc/important-notes-output.php';
 require_once get_stylesheet_directory() . '/inc/feature-box.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-admin.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
+require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 
 /* --------------------------------------------------------------------------
  * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)

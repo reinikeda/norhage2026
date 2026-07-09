@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-08 14:35+0300\n"
+"PO-Revision-Date: 2026-07-09 12:15+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -431,6 +431,10 @@ msgstr "Valintasi"
 #: inc/product-customize.php:227
 msgid "Price per m²"
 msgstr "Hinta / m²"
+
+#: inc/product-customize.php:227
+msgid "Price per m"
+msgstr "Hinta per metri"
 
 #: inc/product-customize.php:235
 msgid "Unit price"
@@ -1219,6 +1223,10 @@ msgstr "Huoltovapaa"
 #: inc/feature-box.php
 msgid "Thermal Insulation"
 msgstr "Lämmöneristys"
+
+#: inc/delivery-time.php
+msgid "Estimated delivery:"
+msgstr "Arvioitu toimitusaika:"
 
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"

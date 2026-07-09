@@ -1,28 +1,8 @@
 <?php
-/**
- * Plugin Name: Delivery Time Under Price
- * Description: Shows delivery time (from a product attribute) directly under the main product price on single product pages.
- * Author: Daiva Reinike
- * Version: 1.5.2
- * Text Domain: nh-delivery-time
- * Domain Path: /languages
- */
-
+// inc/delivery-time.php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-/**
- * Load text domain for translations.
- */
-function nhdt_load_textdomain() {
-	load_plugin_textdomain(
-		'nh-delivery-time',
-		false,
-		dirname( plugin_basename( __FILE__ ) ) . '/languages'
-	);
-}
-add_action( 'plugins_loaded', 'nhdt_load_textdomain' );
 
 /**
  * Resolve current language / locale key.
@@ -106,7 +86,7 @@ function nhdt_get_delivery_text( $product ) {
  * JS will move it right after the actual .price element.
  */
 function nhdt_output_delivery_placeholder() {
-	if ( ! is_product() ) {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 		return;
 	}
 
@@ -125,14 +105,21 @@ function nhdt_output_delivery_placeholder() {
 	$style         = $delivery_text === '' ? ' style="display:none;"' : '';
 
 	echo '<div class="nh-delivery-time-under" data-nhdt="1"' . $style . '>';
-	echo '<span class="nh-delivery-time__label">' . esc_html__( 'Estimated delivery:', 'nh-delivery-time' ) . '</span> ';
+
+	// SVG icon (inherits color via CSS)
+	echo '<span class="nh-delivery-icon" aria-hidden="true">';
+	echo '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
+	echo '</span>';
+
+	echo '<span class="nh-delivery-time__label">' . esc_html__( 'Estimated delivery:', 'nh-theme' ) . '</span> ';
 	echo '<span class="nh-delivery-time__value">' . esc_html( $delivery_text ) . '</span>';
+
 	echo '</div>';
 }
 add_action( 'woocommerce_single_product_summary', 'nhdt_output_delivery_placeholder', 31 );
 
 /**
- * Add delivery text to variation data.
+ * Add delivery text to variation data so JS can update when variations change.
  */
 function nhdt_add_variation_delivery_data( $data, $product, $variation ) {
 	if ( ! $variation instanceof WC_Product_Variation ) {
@@ -155,22 +142,24 @@ add_filter( 'woocommerce_available_variation', 'nhdt_add_variation_delivery_data
  * Enqueue assets on single product pages only.
  */
 function nhdt_enqueue_assets() {
-	if ( ! is_product() ) {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 		return;
 	}
 
+	$ver = '1.5.2';
+
 	wp_enqueue_style(
 		'nh-delivery-time',
-		plugin_dir_url( __FILE__ ) . 'assets/css/nh-delivery-time.css',
+		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
 		array(),
-		'1.5.2'
+		$ver
 	);
 
 	wp_enqueue_script(
 		'nh-delivery-time',
-		plugin_dir_url( __FILE__ ) . 'assets/js/nh-delivery-time.js',
+		get_stylesheet_directory_uri() . '/assets/js/delivery-time.js',
 		array( 'jquery', 'wc-add-to-cart-variation' ),
-		'1.5.2',
+		$ver,
 		true
 	);
 }
