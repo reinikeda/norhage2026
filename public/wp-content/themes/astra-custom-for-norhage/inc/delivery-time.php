@@ -5,11 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Theme textdomain used for translations.
- */
-$nhdt_theme_textdomain = 'nh-theme';
-
-/**
  * Resolve current language / locale key.
  *
  * @return string|null
@@ -88,32 +83,43 @@ function nhdt_get_delivery_text( $product ) {
 
 /**
  * Output hidden/normal delivery block into summary.
+ * JS will move it right after the actual .price element.
  */
 function nhdt_output_delivery_placeholder() {
-	if ( ! is_product() ) return;
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
 	global $product;
-    if ( ! $product instanceof WC_Product ) return;
+
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+
+	$main_product_id = (int) get_queried_object_id();
+	if ( $main_product_id <= 0 || (int) $product->get_id() !== $main_product_id ) {
+		return;
+	}
 
 	$delivery_text = nhdt_get_delivery_text( $product );
-	$style = $delivery_text === '' ? ' style="display:none;"' : '';
-	global $nhdt_theme_textdomain;
+	$style         = $delivery_text === '' ? ' style="display:none;"' : '';
 
 	echo '<div class="nh-delivery-time-under" data-nhdt="1"' . $style . '>';
-    
-    // Clean SVG icon (inherits --nh-green from CSS)
-    echo '<span class="nh-delivery-icon">';
-    echo '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
-    echo '</span>';
 
-	echo '<span class="nh-delivery-time__label">' . esc_html__( 'Estimated delivery:', $nhdt_theme_textdomain ) . '</span>';
+	// SVG icon (inherits color via CSS)
+	echo '<span class="nh-delivery-icon" aria-hidden="true">';
+	echo '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>';
+	echo '</span>';
+
+	echo '<span class="nh-delivery-time__label">' . esc_html__( 'Estimated delivery:', 'nh-theme' ) . '</span> ';
 	echo '<span class="nh-delivery-time__value">' . esc_html( $delivery_text ) . '</span>';
-    
+
 	echo '</div>';
 }
 add_action( 'woocommerce_single_product_summary', 'nhdt_output_delivery_placeholder', 31 );
 
 /**
- * Add delivery text to variation data.
+ * Add delivery text to variation data so JS can update when variations change.
  */
 function nhdt_add_variation_delivery_data( $data, $product, $variation ) {
 	if ( ! $variation instanceof WC_Product_Variation ) {
