@@ -491,20 +491,24 @@ add_action( 'wp', function () {
 	}
 } );
 
-/**
- * SETTINGS: per-shop prefix + starting number
- * "start" = first number you want to use in that country.
- * Example: 'LT' => start 1 => LT-0001, LT-0002, ...
- */
+/* --------------------------------------------------------------------------
+ * Order number
+ * ----------------------------------------------------------------------- */
+
 function nh_get_order_number_country_settings() {
-    return [
-        'LT' => [ 'prefix' => 'LT-', 'start' => 1 ],
-        'NO' => [ 'prefix' => 'NO-', 'start' => 3000 ],
-        'SE' => [ 'prefix' => 'SE-', 'start' => 3000 ],
-        'DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
-        'FI' => [ 'prefix' => 'FI-', 'start' => 2000 ],
-        'EN' => [ 'prefix' => 'EU-', 'start' => 1 ],
-		];
+    $language = get_locale();
+
+    $language_settings = [
+        'lt_LT' => [ 'prefix' => 'LT-', 'start' => 1000 ],
+        'nb_NO' => [ 'prefix' => 'NO-', 'start' => 3000 ],
+        'sv_SE' => [ 'prefix' => 'SE-', 'start' => 3000 ],
+        'de_DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
+        'fi_FI' => [ 'prefix' => 'FI-', 'start' => 3000 ],
+        'en_US' => [ 'prefix' => 'EU-', 'start' => 1000 ],
+        'en_GB' => [ 'prefix' => 'EU-', 'start' => 1000 ],
+    ];
+
+    return isset($language_settings[$language]) ? $language_settings[$language] : [];
 }
 
 /**
@@ -532,34 +536,27 @@ function nh_assign_custom_seq_on_new_order( $order_id, $order = null ) {
         return;
     }
 
-    // If order already has a sequence, do nothing (don’t reassign).
     if ( $order->get_meta( '_nh_custom_seq_number', true ) ) {
         return;
     }
 
-    $country   = nh_get_shop_country_code();
-    $settings  = nh_get_order_number_country_settings();
+    $language = get_locale();
+    $settings = nh_get_order_number_country_settings();
 
-    // If this shop's country not configured – skip.
-    if ( ! isset( $settings[ $country ] ) ) {
+    // If this language is not configured – skip.
+    if ( empty( $settings ) ) {
         return;
     }
 
-    $prefix = $settings[ $country ]['prefix'];
-    $start  = (int) $settings[ $country ]['start'];
+    $prefix = $settings['prefix'];
+    $start  = (int) $settings['start'];
+    $option_key = 'nh_last_seq_' . $language;
 
-    // Option key that stores the LAST used number for this country.
-    $option_key = 'nh_last_seq_' . $country;
-
-    // If no value yet, start from "start - 1" so first order becomes "start".
     $last_used = (int) get_option( $option_key, $start - 1 );
-
     $next = $last_used + 1;
 
-    // Save back the last used number (per country) – persistent in DB.
     update_option( $option_key, $next, false );
 
-    // Store sequence + prefix in order meta (permanent).
     $order->update_meta_data( '_nh_custom_seq_number', $next );
     $order->update_meta_data( '_nh_custom_seq_prefix', $prefix );
     $order->save();
