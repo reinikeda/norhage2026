@@ -1487,3 +1487,52 @@ body.dark-mode .nhf-box .nhf-icon {
     border-color: var(--dm-border);
     color: var(--dm-primary, #36B47A);
 }
+
+/* =========================================================
+   Delivery time container
+   ========================================================= */
+
+.nh-delivery-time-under {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 20px 0;
+    padding: 6px 12px;
+    background-color: var(--ui-bg-site); /* Using your lighter Off-white background */
+    border: 1px solid var(--ui-border);    /* Using your Mint border */
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* The SVG Icon - Scaled perfectly */
+.nh-delivery-icon {
+    display: flex;
+    align-items: center;
+    color: var(--nh-green);
+    margin-right: 4px;
+}
+
+/* Label text - Now using your muted variable for better hierarchy */
+.nh-delivery-time__label {
+    font-weight: 500;
+    color: var(--ui-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+}
+
+/* The actual date/time value - The highlight of the box */
+.nh-delivery-time__value {
+    font-weight: 600;
+    color: var(--nh-charcoal); /* Contrast against the muted label */
+}
+
+/* Responsive adjustment */
+@media (max-width: 480px) {
+    .nh-delivery-time-under {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
