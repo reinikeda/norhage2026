@@ -39,8 +39,6 @@
 !/public/wp-content/plugins/product-labels/**
 !/public/wp-content/plugins/nh-faq/
 !/public/wp-content/plugins/nh-faq/**
-!/public/wp-content/plugins/nh-inactivity-popup-lite/
-!/public/wp-content/plugins/nh-inactivity-popup-lite/**
 !/public/wp-content/plugins/nh-cutting-toggle/
 !/public/wp-content/plugins/nh-cutting-toggle/**
 !/public/wp-content/plugins/nh-sale-slider/
@@ -51,14 +49,8 @@
 !/public/wp-content/plugins/nh-home-builder/**
 !/public/wp-content/plugins/nh-filters/
 !/public/wp-content/plugins/nh-filters/**
-!/public/wp-content/plugins/nh-feature-box/
-!/public/wp-content/plugins/nh-feature-box/**
 !/public/wp-content/plugins/nh-tax-switcher/
 !/public/wp-content/plugins/nh-tax-switcher/**
-!/public/wp-content/plugins/nh-delivery-time/
-!/public/wp-content/plugins/nh-delivery-time/**
-!/public/wp-content/plugins/nh-important-notes
-!/public/wp-content/plugins/nh-important-notes/**
 
 # Uploads
 /public/wp-content/uploads/
