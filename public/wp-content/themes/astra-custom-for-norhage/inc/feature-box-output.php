@@ -79,7 +79,7 @@ function nh_enqueue_feature_box_front_assets() {
     }
     wp_enqueue_style(
         'nh-feature-box-front',
-        get_stylesheet_directory_uri() . '/assets/css/feature-box-front.css',
+        get_stylesheet_directory_uri() . '/assets/css/product-page.css',
         array(),
         '2.0.0'
     );
