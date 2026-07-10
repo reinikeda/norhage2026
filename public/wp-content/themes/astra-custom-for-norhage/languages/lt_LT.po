@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-09 12:15+0300\n"
+"PO-Revision-Date: 2026-07-09 16:51+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -411,6 +411,10 @@ msgstr "Didinti plotį"
 #: inc/product-customize.php:198
 msgid "Length (mm)"
 msgstr "Ilgis (mm)"
+
+#: inc/product-customize.php:198
+msgid "Length (m)"
+msgstr "Ilgis (m)"
 
 #: inc/product-customize.php:200
 msgid "Decrease length"
