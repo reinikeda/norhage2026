@@ -1,194 +1,292 @@
-/* =========================================================
-   PRODUCT LABELS — Norhage 2026
-   ========================================================= */
+/* labels.css — Final harmonized product labels (conflict-resistant)
+   - New: pinned top-left (independent)
+   - Sale: pinned top-right
+   - Custom: pinned top-right, stacks below Sale when present
+   - Stock: bottom-center
+   - Hides legacy "custom-below" and theme out-of-stock nodes
+   - Non-destructive: avoids resetting product layout globally; only scopes summary ordering
+*/
 
-/* ---------- Brand palette ---------- */
-:root {
-  --nh-forest:  #1E3932;
-  --nh-green:   #00704A;
-  --nh-mint:    #2EA26F;
-  --nh-gold:    #C89F63;
-  --nh-brown:   #5A3E2B;
-  --nh-sale:    #C93C3C;
-  --nh-new:     #37B87C;
-  --nh-custom:  #4A90E2;
+/* -------------------------
+   Tokens
+   ------------------------- */
+:root{
+  --nh-green:    #00704A;
+  --nh-forest:   #1E3932;
+  --nh-brown:    #4B2C20;
+  --nh-cream:    #F1E6D6;
+  --nh-offwhite: #FAF7F2;
+  --nh-charcoal: #2C2A29;
+  --nh-mint:     #C3E8C6;
+  --nh-gold:     #C89F63;
 
-  --nh-burst-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon fill='%23fff' points='50,2 58,12 72,6 76,20 90,18 88,32 100,40 90,50 100,60 88,68 90,82 76,80 72,94 58,88 50,98 42,88 28,94 24,80 10,82 12,68 2,60 10,50 2,40 12,32 10,18 24,20 28,6 42,12'/%3E%3C/svg%3E");
+  --nh-sale:     #C63B3B;
+  --nh-new:      #2FA36A;
+  --nh-custom:   #3E79B8;
+
+  --nhg-inset-top: 10px;
+  --nhg-inset-right: 10px;
+  --nhg-inset-left: 10px;
+  --nhg-inset-bottom: 12px;
+
+  --nhg-badge-height: 26px;
+  --nhg-badge-radius: 6px;
+  --nhg-label-font-size: 10px;
+
+  --nhg-stock-padding-x: 12px;
+  --nhg-stock-min-width: 72px;
+
+  --nhg-stack-gap: 6px;
 }
 
-body.dark-mode {
-  --nh-forest: #0F2019;
-  --nh-new:    #2FC07E;
+/* -------------------------
+   Thumbnail positioning context
+   ------------------------- */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap,
+.woocommerce ul.products li.product .product-thumbnail,
+.woocommerce ul.products li.product .woocommerce-loop-product__link,
+.astra-shop-thumbnail-wrap {
+  position: relative; /* required so absolute badges sit on the image */
 }
 
-/* ---------- Base wrappers ---------- */
-.woocommerce ul.products li.product { position: relative; overflow: visible; z-index: 0; }
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap { position: relative; overflow: visible !important; }
-.single-product .woocommerce-product-gallery,
-.woocommerce div.product div.images .woocommerce-product-gallery { position: relative; }
-
-.woocommerce .nhg-labels.nhg-labels--loop,
-.single-product .nhg-labels.nhg-labels--single {
-  position: absolute; inset: 0; pointer-events: none; overflow: visible !important; z-index: 30;
+/* Overlay container that covers the thumbnail area (non-interactive) */
+.nhg-labels.nhg-labels--thumb,
+.nhg-labels.nhg-labels--single {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+  overflow: visible;
 }
 
-.woocommerce .nhg-labels.nhg-labels--thumb {
-  position: absolute; inset: 0; pointer-events: none; z-index: 31;
-}
-
-/* =========================================================
-   BADGE BASE
-   ========================================================= */
-
+/* -------------------------
+   Badge base
+   ------------------------- */
 .nhg-badge {
   position: absolute;
-  display: grid;
-  place-items: center;
-  font: 800 10px/1.1 system-ui, -apple-system, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: .03em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none; /* badges are non-interactive by default */
+  z-index: 45;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
   color: #fff;
-  pointer-events: none;
-  z-index: 32;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  -webkit-font-smoothing: antialiased;
+
+  height: var(--nhg-badge-height);
+  padding: 0 10px;
+  border-radius: var(--nhg-badge-radius);
+  font-size: var(--nhg-label-font-size);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+  border: 0;
+  line-height: 1;
 }
 
-/* =========================================================
-   1. NEW BURST (Top Right)
-   ========================================================= */
+/* ensure any inner wrapper text uses the same sizing */
+.nhg-badge > * { font-size: var(--nhg-label-font-size); line-height: 1; }
+
+/* -------------------------
+   NEW — always top-left
+   ------------------------- */
 .nhg-badge--new {
-  top: -8px;
-  right: -8px;
-  width: 56px;
-  height: 56px;
-  background-color: color-mix(in srgb, var(--nh-green) 60%, white 40%);
-  -webkit-mask: var(--nh-burst-mask) no-repeat center / contain;
-          mask: var(--nh-burst-mask) no-repeat center / contain;
-  filter: drop-shadow(0 0 0 2px #fff) drop-shadow(0 6px 16px rgba(0,0,0,.15));
+  top: var(--nhg-inset-top);
+  left: var(--nhg-inset-left);
+  z-index: 90; /* high so it's independent */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nh-new) 92%, #000 8%), var(--nh-new));
+  border-radius: 999px;
+  color: #fff;
 }
 
-.nhg-badge--new::after {
-  content: attr(data-text);
-  position: relative; z-index: 2; text-align: center;
-}
+/* inner text */
+.nhg-badge--new .nhg-new-text { color: #fff; font-weight: 800; }
 
-/* =========================================================
-   2. SALE RIBBON (Top Left)
-   ========================================================= */
+/* -------------------------
+   SALE — top-right (higher than custom)
+   ------------------------- */
 .nhg-badge--sale {
-  top: 0;
-  left: 0;
-  width: 68px;
-  height: 68px;
-  background: transparent;
+  top: var(--nhg-inset-top);
+  right: var(--nhg-inset-right);
+  z-index: 85;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nh-sale) 92%, #000 8%), var(--nh-sale));
+  padding: 0 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-.nhg-badge--sale::before {
-  content: ""; position: absolute; top: 0; left: 0;
-  border-top: 68px solid var(--nh-sale);
-  border-right: 68px solid transparent;
-}
-
-.nhg-badge--sale::after {
-  content: attr(data-l1) "\A" attr(data-l2);
-  white-space: pre;
-  position: absolute;
-  top: 30px; left: 4px;
-  transform: rotate(-45deg); transform-origin: top left;
-  font-weight: 700; font-size: 10.5px; text-align: center;
-}
-
-/* =========================================================
-   3. CUSTOM SIZE PILL (Bottom Centered)
-   ========================================================= */
+/* -------------------------
+   CUSTOM — top-right (stacks under Sale)
+   ------------------------- */
 .nhg-badge--custom {
-  top: auto;
-  bottom: 8px;
+  top: var(--nhg-inset-top);
+  right: var(--nhg-inset-right);
+  z-index: 80;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nh-custom) 75%, #000 5%), var(--nh-custom));
+  padding: 0 10px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* If Sale is present earlier in DOM, push Custom down (adjacent + general sibling fallbacks) */
+.nhg-badge--sale + .nhg-badge--custom,
+.nhg-badge--sale ~ .nhg-badge--custom,
+.nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
+  top: calc(var(--nhg-inset-top) + var(--nhg-badge-height) + var(--nhg-stack-gap));
+}
+
+/* -------------------------
+   STOCK — bottom center
+   ------------------------- */
+.nhg-badge--stock {
+  bottom: var(--nhg-inset-bottom);
   left: 50%;
   transform: translateX(-50%);
-  
-  width: fit-content;
-  height: auto;
-  min-width: unset;
-  max-width: 90%;
-  padding: 5px 12px;
-  
-  background-color: var(--nh-custom);
-  border-radius: 999px; /* True pill shape */
-  
-  font-size: 11px;
-  line-height: 1;
-  white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 70;
+  height: var(--nhg-badge-height);
+  min-width: var(--nhg-stock-min-width);
+  padding: 0 var(--nhg-stock-padding-x);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: .04em;
 }
 
-/* =========================================================
-   4. LOW STOCK BANNED (Bottom Left)
-   ========================================================= */
-.nhg-low-stock-banner {
-  position: absolute; left: 8px; bottom: 8px;
-  padding: 6px 12px; border-radius: 18px;
-  font: 700 11.5px/1 system-ui, -apple-system, sans-serif;
-  text-transform: uppercase; letter-spacing: .35px;
-  background-color: color-mix(in srgb, var(--nh-gold), transparent 78%);
+.nhg-badge--stock[data-stock="out"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nh-charcoal) 96%, #000 4%), var(--nh-charcoal));
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.nhg-badge--stock[data-stock="low"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--nh-gold) 86%, #fff 14%), var(--nh-gold));
   color: var(--nh-brown);
-  border: 1.5px solid color-mix(in srgb, var(--nh-gold), #fff 55%);
-  backdrop-filter: blur(2px);
-  z-index: 34;
 }
 
-/* =========================================================
-   SINGLE PRODUCT INLINE
-   ========================================================= */
-.nhg-new-inline {
-  display: inline-flex; align-items: center; gap: 8px;
-  margin: .25rem 0 .5rem;
-  font-weight: 700; font-size: .95rem;
-  text-transform: uppercase; color: var(--nh-forest);
-}
-.nhg-new-inline .nhg-new-icon {
-  width: 18px; height: 18px;
-  filter: invert(12%) sepia(20%) saturate(900%) hue-rotate(115deg) brightness(90%) contrast(92%);
+/* subtle inset for low stock */
+.nhg-badge--stock[data-stock="low"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  z-index: 0;
 }
 
-/* =========================================================
-   RESPONSIVE (MOBILE)
-   ========================================================= */
-@media (max-width: 480px) {
-  .nhg-badge--new {
-    top: -6px; right: -6px;
-    width: 50px; height: 50px;
-  }
-  
-  .nhg-badge--sale {
-    width: 58px; height: 58px;
-  }
-  .nhg-badge--sale::before {
-    border-top-width: 58px; border-right-width: 58px;
-  }
-  .nhg-badge--sale::after {
-    top: 19px; left: 4px; font-size: 9.8px;
-  }
+/* -------------------------
+   Hide legacy / theme duplicates
+   ------------------------- */
+/* Hide any older "custom below" container to avoid duplicates */
+.nhg-custom-below-container { display: none !important; }
 
-  .nhg-badge--custom {
-    bottom: 6px;
-    padding: 4px 10px;
-    font-size: 10px;
-    max-width: 85%; /* Prevent touching edges */
-  }
+/* Hide common Astra out-of-stock nodes (screenshot green text) */
+.woocommerce ul.products li.product .ast-shop-product-out-of-stock,
+.woocommerce ul.products li.product .astra-shop-product-out-of-stock,
+.astra-shop-thumbnail-wrap .ast-shop-product-out-of-stock {
+  display: none !important;
 }
 
-/* =========================================================
-   DARK MODE
-   ========================================================= */
-body.dark-mode .nhg-badge--new {
-  filter: drop-shadow(0 0 0 1px rgba(255,255,255,.6)) drop-shadow(0 8px 18px rgba(0,0,0,.35));
+/* Hide standard Woo out-of-stock labels in the loop */
+.woocommerce ul.products li.product .out-of-stock,
+.woocommerce ul.products li.product .stock.out-of-stock {
+  display: none !important;
 }
-body.dark-mode .nhg-new-inline { color: #E9F1EC; }
-body.dark-mode .nhg-badge--custom {
-  background-color: color-mix(in srgb, var(--nh-custom) 80%, #000 20%);
+
+/* -------------------------
+   Rating / Summary ordering (scoped, non-destructive)
+   Ensures Title -> Rating -> Price -> Button visually
+   ------------------------- */
+
+/* Scope to product list summary only so we don't affect other areas */
+.woocommerce ul.products li.product .astra-shop-summary-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.35rem;
 }
-body.dark-mode .nhg-low-stock-banner {
-  background-color: color-mix(in srgb, var(--nh-gold) 26%, transparent);
-  color: #5A3E2B;
-  border-color: color-mix(in srgb, var(--nh-gold) 70%, #fff 10%);
+
+/* Ensure visual order even if hooks place markup elsewhere */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .ast-loop-product__link { order: 1; } /* title (link wrapping h2) */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .review-rating  { order: 2; } /* rating container */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .star-rating    { order: 2; } /* fallback */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .price        { order: 3; } /* price */
+.woocommerce ul.products li.product .astra-shop-summary-wrap a.button,
+.woocommerce ul.products li.product .astra-shop-summary-wrap .button       { order: 4; margin-top: 0.5rem; } /* CTA */
+
+/* Force rating into normal flow and prevent floats/absolute positioning from moving it */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .review-rating,
+.woocommerce ul.products li.product .astra-shop-summary-wrap .star-rating,
+.woocommerce ul.products li.product .review-rating,
+.woocommerce ul.products li.product .star-rating {
+  display: block !important;
+  float: none !important;
+  clear: both !important;
+  position: relative !important;
+  transform: none !important;
+  margin: 0.2rem 0 0.45rem 0 !important;
 }
+
+/* Make sure price appears after rating */
+.woocommerce ul.products li.product .astra-shop-summary-wrap .price {
+  display: block;
+  margin-top: 0 !important;
+}
+
+/* CTA push: keep buttons at the bottom of the column */
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.nh-btn-customize {
+  margin-top: auto !important;
+}
+
+/* -------------------------
+   Accessibility: sr-only helper for badges
+   ------------------------- */
+.nhg-sr,
+.nhg-badge .nhg-sr,
+.nhg-badge--new .nhg-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* -------------------------
+   Responsive tweaks
+   ------------------------- */
+@media (max-width: 768px) {
+  :root {
+    --nhg-badge-height: 24px;
+    --nhg-label-font-size: 9px;
+    --nhg-stock-min-width: 64px;
+    --nhg-stack-gap: 4px;
+  }
+
+  .nhg-badge { padding: 0 8px; height: var(--nhg-badge-height); }
+  .nhg-badge--sale { padding: 0 10px; top: calc(var(--nhg-inset-top) - 2px); }
+  .nhg-badge--custom,
+  .nhg-badge--new { padding: 0 8px; }
+  .nhg-badge--stock { padding: 0 10px; min-width: var(--nhg-stock-min-width); }
+}
+
+/* -------------------------
+   Legacy safety (if old rules attempted to force product to block)
+   Do NOT reset the product tile display globally here. If you have a site-wide
+   rule in your theme to make products flex column, keep it in your theme CSS.
+   ------------------------- */
+   

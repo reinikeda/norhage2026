@@ -1,352 +1,222 @@
 <?php
 /**
- * Plugin Name: Product Labels
- * Description: Sale %, New (30 days), Low stock (<3), Custom Size. Shows on loop card and on the first image of single product.
- * Author: Daiva Reinike
- * Version: 1.0
- * License: GPL-2.0+
- * Text Domain: nhg-labels
- * Domain Path: /languages
+ * Plugin Name: NHG Product Labels (harmonized)
+ * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
+ * Version: 1.1.0
+ * Author: Your team
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-
-/**
- * Load plugin textdomain.
- */
-function nhg_labels_load_textdomain() {
-	load_plugin_textdomain(
-		'nhg-labels',
-		false,
-		dirname( plugin_basename( __FILE__ ) ) . '/languages'
-	);
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
-add_action( 'plugins_loaded', 'nhg_labels_load_textdomain' );
 
 class NHG_Product_Labels {
-	const NEW_DAYS      = 30;
-	const LOW_STOCK_QTY = 3;
 
+	/**
+	 * Constructor: register hooks
+	 */
 	public function __construct() {
+		// Render thumbnail overlays (inside the product image/link)
+		add_action( 'woocommerce_before_shop_loop_item_title', [ $this, 'render_thumbnail_badges' ], 5 );
 
-		/* ========= LOOP (archive/category/shop) =========
-		 * We print TWO containers:
-		 * 1) nhg-labels--loop  → anchored to <li.product>   (NEW + LOW + CUSTOM)
-		 * 2) nhg-labels--thumb → anchored inside image link (SALE)
-		 */
-		add_action( 'woocommerce_before_shop_loop_item',          [ $this, 'output_loop_non_sale' ], 9 ); // before <a>, sibling of thumbnail
-		add_action( 'woocommerce_before_shop_loop_item_title',    [ $this, 'output_loop_sale_inside_thumb' ], 1 ); // inside the image <a>
+		// Single product: render badges near gallery
+		add_action( 'woocommerce_before_single_product_summary', [ $this, 'render_single_badges' ], 20 );
 
-		/* ========= SINGLE PRODUCT =========
-		 * Inject badges into the first gallery image HTML (works with one or many images).
-		 */
-		add_filter( 'woocommerce_single_product_image_thumbnail_html', [ $this, 'inject_single_badges_into_image_html' ], 10, 2 );
+		// Hide core WooCommerce stock HTML on archives (we provide our own)
+		add_filter( 'woocommerce_get_stock_html', [ $this, 'filter_woocommerce_get_stock_html' ], 10, 2 );
 
-		// Plain "New" text flag above title (below breadcrumbs)
-		add_action( 'woocommerce_single_product_summary', [ $this, 'output_single_new_inline' ], 4 );
-
-		// Styles
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+		// Enqueue styles
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 	}
 
-	public function enqueue_styles() {
+	/**
+	 * Enqueue CSS file
+	 */
+	public function enqueue_assets() {
 		wp_enqueue_style(
 			'nhg-product-labels',
 			plugins_url( 'css/labels.css', __FILE__ ),
 			[],
-			'1.0'
+			'1.1.0'
 		);
 	}
 
-	/** ---------- Label logic ---------- */
-	private function get_labels( WC_Product $product ) : array {
+	/**
+	 * Hide Woo core stock HTML on non-single pages so our badges control UI
+	 */
+	public function filter_woocommerce_get_stock_html( $html, $product ) {
+		if ( is_product() ) {
+			return $html;
+		}
+		return '';
+	}
+
+	/**
+	 * Collect label data for a product
+	 *
+	 * @param WC_Product $product
+	 * @return array
+	 */
+	private function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
-		// SALE % (supports variable range)
+		// Sale
 		if ( $product->is_on_sale() ) {
-			if ( $product->is_type( 'variable' ) ) {
-
-				// ----- VARIABLE PRODUCTS -----
-				$discounts      = [];
-				$total_children = 0;
-				$sale_children  = 0;
-
-				foreach ( $product->get_children() as $vid ) {
-					$child = wc_get_product( $vid );
-					if ( ! $child ) {
-						continue;
-					}
-
-					$total_children++;
-
-					$reg  = (float) $child->get_regular_price();
-					$sale = (float) $child->get_sale_price();
-
-					if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
-						$sale_children++;
-
-						$pct = (int) round( ( ( $reg - $sale ) / $reg ) * 100 );
-						if ( $pct > 0 ) {
-							$discounts[] = $pct;
-						}
-					}
-				}
-
-				if ( ! empty( $discounts ) ) {
-					$min = min( $discounts );
-					$max = max( $discounts );
-
-					$all_discounted = ( $total_children > 0 && $sale_children === $total_children );
-
-					if ( $all_discounted ) {
-						// All variations on sale: show X–Y% (or single X%)
-						$range = ( $min === $max ) ? "{$max}%" : "{$min}–{$max}%";
-
-						$labels[] = [
-							'key'   => 'sale',
-							'text'  => sprintf( __( 'Sale %s', 'nhg-labels' ), $range ),
-							'line1' => __( 'Sale', 'nhg-labels' ),
-							'line2' => $range,
-						];
-					} else {
-						// Only some variations on sale: "Up to X%"
-						$range = sprintf( __( 'Up to %s', 'nhg-labels' ), "{$max}%" );
-
-						$labels[] = [
-							'key'   => 'sale',
-							'text'  => $range,
-							'line1' => __( 'Sale', 'nhg-labels' ),
-							'line2' => $range,
-						];
-					}
-				}
-
-			} else {
-				// ----- SIMPLE PRODUCTS -----
-				$reg  = (float) $product->get_regular_price();
-				$sale = (float) $product->get_sale_price();
-				if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
-					$pct = (int) round( ( ( $reg - $sale ) / $reg ) * 100 );
-					if ( $pct > 0 ) {
-						$range = "{$pct}%";
-						$labels[] = [
-							'key'   => 'sale',
-							'text'  => sprintf( __( 'Sale %s', 'nhg-labels' ), $range ),
-							'line1' => __( 'Sale', 'nhg-labels' ),
-							'line2' => $range,
-						];
-					}
-				}
-			}
-		}
-
-		// NEW (first 30 days)
-		$created = $product->get_date_created();
-		if ( $created ) {
-			$days = (int) floor( ( time() - $created->getTimestamp() ) / DAY_IN_SECONDS );
-			if ( $days >= 0 && $days < self::NEW_DAYS ) {
-				$labels[] = [ 'key' => 'new', 'text' => __( 'New', 'nhg-labels' ) ];
-			}
-		}
-
-		// CUSTOM SIZE
-		if ( $this->is_custom_cut_product( $product ) ) {
-			$labels[] = [ 
-				'key'  => 'custom', 
-				'text' => __( 'Custom size', 'nhg-labels' ) 
+			$labels['sale'] = [
+				'key'  => 'sale',
+				'text' => __( 'Sale', 'nhg-product-labels' ),
 			];
 		}
 
-		// LOW STOCK (<3, managed, no backorders)
-		// NOTE: Only show the global LOW label for SIMPLE products.
-		$low_any = false;
-		if ( $product->is_type( 'simple' ) ) {
-			if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
-				$qty = $product->get_stock_quantity();
-				if ( is_numeric( $qty ) && $qty > 0 && $qty < self::LOW_STOCK_QTY ) {
-					$low_any = true;
+		// New (30 days)
+		$created = $product->get_date_created();
+		if ( $created && ( time() - $created->getTimestamp() < 30 * DAY_IN_SECONDS ) ) {
+			$labels['new'] = [
+				'key'  => 'new',
+				'text' => __( 'New', 'nhg-product-labels' ),
+			];
+		}
+
+		// Custom cut / Custom size (integration point)
+		if ( $this->is_custom_cut_product( $product ) ) {
+			$labels['custom'] = [
+				'key'  => 'custom',
+				'text' => __( 'Custom size', 'nhg-product-labels' ),
+			];
+		}
+
+		// Stock: out / low
+		if ( ! $product->is_in_stock() ) {
+			$labels['stock'] = [
+				'key'        => 'stock',
+				'text'       => __( 'Out of stock', 'nhg-product-labels' ),
+				'stock_type' => 'out',
+			];
+		} else {
+			// Low stock if applicable
+			if ( method_exists( $product, 'get_low_stock_amount' ) ) {
+				$low_stock_amount = $product->get_low_stock_amount();
+				$stock_qty       = $product->get_stock_quantity();
+
+				if ( $stock_qty !== null && $low_stock_amount !== null && $stock_qty > 0 && $stock_qty <= $low_stock_amount ) {
+					$labels['stock'] = [
+						'key'        => 'stock',
+						'text'       => __( 'Low stock', 'nhg-product-labels' ),
+						'stock_type' => 'low',
+					];
 				}
 			}
-		} else {
-			// For variable products: do NOT output a global "Low stock" label here.
-			// Variation-level limited-stock notices should be handled by variation-specific code/JS.
-			$low_any = false;
 		}
-		if ( $low_any ) $labels[] = [ 'key' => 'low', 'text' => __( 'Low stock', 'nhg-labels' ) ];
-
-		usort( $labels, function( $a, $b ) {
-			$order = [ 'sale' => 1, 'new' => 2, 'custom' => 3, 'low' => 4 ];
-			return ( $order[ $a['key'] ] ?? 99 ) <=> ( $order[ $b['key'] ] ?? 99 );
-		});
 
 		return $labels;
 	}
 
 	/**
-	 * Check if product is custom cut
+	 * Detect whether product has custom cut enabled.
+	 * Replace the internal check with your real integration if different.
+	 *
+	 * @param WC_Product $product
+	 * @return bool
 	 */
 	private function is_custom_cut_product( WC_Product $product ) : bool {
-		// Check if the nh_cc_is_enabled_product function exists and if product has custom cut enabled
 		if ( function_exists( 'nh_cc_is_enabled_product' ) ) {
-			return nh_cc_is_enabled_product( $product->get_id() );
+			return (bool) nh_cc_is_enabled_product( $product->get_id() );
 		}
-		
-		// Fallback check for body class (in case we're on a product page)
-		if ( 
-			( is_product() && in_array( 'nh-has-custom-cut', get_body_class() ) ) ||
-			( ! is_admin() && ( is_product_category() || is_shop() ) && $this->has_custom_cut_term( $product ) )
-		) {
-			return true;
-		}
-		
 		return false;
 	}
-	
+
 	/**
-	 * Check if product has custom cut term
+	 * Render badges inside the thumbnail area (archive loop).
+	 * Desired order: sale (if any) -> custom (if any) -> new/stock
 	 */
-	private function has_custom_cut_term( WC_Product $product ) : bool {
-		// Check if product has a custom cut attribute or term
-		$terms = get_the_terms( $product->get_id(), 'product_tag' );
-		if ( $terms && ! is_wp_error( $terms ) ) {
-			foreach ( $terms as $term ) {
-				if ( strpos( strtolower( $term->name ), 'custom' ) !== false ) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private function has_label( array $labels, string $key ) : bool {
-		foreach ( $labels as $l ) if ( ( $l['key'] ?? '' ) === $key ) return true;
-		return false;
-	}
-
-	/** ---------- Output helpers ---------- */
-	private function render_labels( array $labels, string $context ) {
-		foreach ( $labels as $l ) {
-			$key  = $l['key']  ?? '';
-			$text = $l['text'] ?? '';
-
-			// Skip NEW on single gallery; we show it as inline text above title instead.
-			if ( 'single' === $context && 'new' === $key ) continue;
-
-			// Context-aware filtering
-			if ( 'loop-nonsale' === $context && 'sale' === $key ) continue; // handled in thumb
-			if ( 'loop-sale'    === $context && 'sale' !== $key ) continue; // only sale here
-
-			// SALE — ribbon (CSS draws triangle; we only output data)
-			if ( 'sale' === $key ) {
-				$line1 = $l['line1'] ?? __( 'Sale', 'nhg-labels' );
-				$line2 = $l['line2'] ?? '';
-				printf(
-					'<span class="nhg-badge nhg-badge--sale" data-l1="%s" data-l2="%s"></span>',
-					esc_attr( $l['text'] ?? $line1 . ' ' . $line2 ),
-					esc_attr( $line1 ),
-					esc_attr( $line2 )
-				);
-				continue;
-			}
-
-			// CUSTOM SIZE — badge
-			if ( 'custom' === $key ) {
-				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-					echo '<span class="nhg-badge nhg-badge--custom">' . esc_html( $text ) . '</span>';
-				} else if ( 'single' === $context ) {
-					echo '<span class="nhg-badge nhg-badge--custom">' . esc_html( $text ) . '</span>';
-				}
-				continue;
-			}
-
-			// LOW STOCK — small pill (loop only)
-			if ( 'low' === $key ) {
-				if ( 'loop-nonsale' === $context && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-					echo '<span class="ast-shop-product-out-of-stock nhg-low-stock-banner">' . esc_html__( 'Low stock', 'nhg-labels' ) . '</span>';
-				}
-				continue;
-			}
-
-			// NEW — burst
-			if ( 'new' === $key ) {
-				printf(
-					'<span class="nhg-badge nhg-badge--new" data-text="%s"></span>',
-					esc_attr( $text ),
-					esc_attr( $text )
-				);
-				continue;
-			}
-		}
-	}
-
-	/** ---------- Hooks (loop) ---------- */
-
-	// LOOP: output NON-SALE badges (NEW / LOW / CUSTOM) at the card level (<li.product>)
-	public function output_loop_non_sale() {
+	public function render_thumbnail_badges() {
 		global $product;
-		if ( empty( $product ) || ! $product instanceof WC_Product ) return;
 
-		$labels = $this->get_labels( $product );
-		if ( empty( $labels ) ) return;
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
 
-		echo '<div class="nhg-labels nhg-labels--loop">';
-		$this->render_labels( $labels, 'loop-nonsale' );
+		$labels = $this->collect_labels( $product );
+
+		// If no labels, bail
+		if ( empty( $labels ) ) {
+			return;
+		}
+
+		// Output container; CSS will absolutely position it over the image.
+		echo '<div class="nhg-labels nhg-labels--thumb" aria-hidden="true">';
+
+		// 1) Sale first (so it appears on top)
+		if ( isset( $labels['sale'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--sale">%s</span>',
+				esc_html( $labels['sale']['text'] )
+			);
+		}
+
+		// 2) Custom size directly after sale (so it sits below sale when stacked)
+		if ( isset( $labels['custom'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--custom">%s</span>',
+				esc_html( $labels['custom']['text'] )
+			);
+		}
+
+		// 3) New
+		if ( isset( $labels['new'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--new"><span class="nhg-new-text">%s</span></span>',
+				esc_html( $labels['new']['text'] )
+			);
+		}
+
+		// 4) Stock / Low stock
+		if ( isset( $labels['stock'] ) ) {
+			$stock_type = isset( $labels['stock']['stock_type'] ) ? $labels['stock']['stock_type'] : 'out';
+			printf(
+				'<span class="nhg-badge nhg-badge--stock" data-stock="%s">%s</span>',
+				esc_attr( $stock_type ),
+				esc_html( $labels['stock']['text'] )
+			);
+		}
+
 		echo '</div>';
 	}
 
-	// LOOP: output SALE badge INSIDE the thumbnail link (flush to image)
-	public function output_loop_sale_inside_thumb() {
+	/**
+	 * Render badges on single product near gallery
+	 */
+	public function render_single_badges() {
+		if ( ! is_product() ) {
+			return;
+		}
 		global $product;
-		if ( empty( $product ) || ! $product instanceof WC_Product ) return;
 
-		$labels = $this->get_labels( $product );
-		if ( ! $this->has_label( $labels, 'sale' ) ) return;
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
 
-		// This hook runs inside the image <a>, so we wrap a local container.
-		echo '<span class="nhg-labels nhg-labels--thumb">';
-		$this->render_labels( $labels, 'loop-sale' );
-		echo '</span>';
-	}
+		$labels = $this->collect_labels( $product );
+		if ( empty( $labels ) ) {
+			return;
+		}
 
-	/** ---------- Single product ---------- */
-
-	// Inject SALE/etc. badges into the first gallery image HTML.
-	public function inject_single_badges_into_image_html( $html, $post_id ) {
-		if ( ! is_product() ) return $html;
-		global $product;
-		if ( empty( $product ) || ! $product instanceof WC_Product ) return $html;
-
-		static $done = false;
-		if ( $done ) return $html; // only once, before the first image
-
-		$labels = $this->get_labels( $product );
-		if ( empty( $labels ) ) return $html;
-
-		ob_start();
 		echo '<div class="nhg-labels nhg-labels--single">';
-		$this->render_labels( $labels, 'single' );
+		// Reuse same order as thumbnail
+		if ( isset( $labels['sale'] ) ) {
+			printf( '<span class="nhg-badge nhg-badge--sale">%s</span>', esc_html( $labels['sale']['text'] ) );
+		}
+		if ( isset( $labels['custom'] ) ) {
+			printf( '<span class="nhg-badge nhg-badge--custom">%s</span>', esc_html( $labels['custom']['text'] ) );
+		}
+		if ( isset( $labels['new'] ) ) {
+			printf( '<span class="nhg-badge nhg-badge--new"><span class="nhg-new-text">%s</span></span>', esc_html( $labels['new']['text'] ) );
+		}
+		if ( isset( $labels['stock'] ) ) {
+			$stock_type = isset( $labels['stock']['stock_type'] ) ? $labels['stock']['stock_type'] : 'out';
+			printf( '<span class="nhg-badge nhg-badge--stock" data-stock="%s">%s</span>', esc_attr( $stock_type ), esc_html( $labels['stock']['text'] ) );
+		}
 		echo '</div>';
-		$badges = ob_get_clean();
-
-		$done = true;
-		return $html . $badges;
-	}
-
-	// Single product: "New" label with icon above title (below breadcrumbs)
-	public function output_single_new_inline() {
-		if ( ! is_product() ) return;
-		global $product;
-		if ( empty( $product ) || ! $product instanceof WC_Product ) return;
-
-		$labels = $this->get_labels( $product );
-		if ( ! $this->has_label( $labels, 'new' ) ) return;
-
-		$icon_url = get_stylesheet_directory_uri() . '/assets/icons/megaphone.svg';
-
-		echo '<div class="nhg-new-inline"' . esc_attr__( 'New product', 'nhg-labels' ) . '">'
-		. '<img src="' . esc_url( $icon_url ) . '" alt="' . esc_attr__( 'New', 'nhg-labels' ) . '" class="nhg-new-icon" loading="lazy" decoding="async" />'
-		. '<span class="nhg-new-text">' . esc_html__( 'New Product!', 'nhg-labels' ) . '</span>'
-		. '</div>';
 	}
 }
 
