@@ -24,40 +24,64 @@
   --nh-new:      #2FA36A;
   --nh-custom:   #3E79B8;
 
-  --nhg-inset-top: 10px;
-  --nhg-inset-right: 10px;
-  --nhg-inset-left: 10px;
-  --nhg-inset-bottom: 12px;
+  --nhg-inset-top: 12px;
+  --nhg-inset-right: 12px;
+  --nhg-inset-left: 12px;
+  --nhg-inset-bottom: 14px;
 
   --nhg-badge-height: 26px;
   --nhg-badge-radius: 6px;
   --nhg-label-font-size: 10px;
 
   --nhg-stock-padding-x: 12px;
-  --nhg-stock-min-width: 72px;
+  --nhg-stock-min-width: 76px;
 
-  --nhg-stack-gap: 6px;
+  --nhg-stack-gap: 8px;
+  --nhg-horizontal-gap: 8px;
+
+  /* small safe offset to avoid gallery controls (magnify/zoom icons) */
+  --nhg-control-offset-x: 8px;
+  --nhg-control-offset-y: 6px;
 }
 
 /* -------------------------
    Thumbnail positioning context
    ------------------------- */
+/* Make common thumbnail wrapper a positioning context so absolute badges sit on the image */
 .woocommerce ul.products li.product .astra-shop-thumbnail-wrap,
 .woocommerce ul.products li.product .product-thumbnail,
 .woocommerce ul.products li.product .woocommerce-loop-product__link,
-.astra-shop-thumbnail-wrap {
-  position: relative; /* required so absolute badges sit on the image */
+.astra-shop-thumbnail-wrap,
+.woocommerce ul.products li.product .woocommerce-product-gallery__image {
+  position: relative;
 }
 
-/* Overlay container that covers the thumbnail area (non-interactive) */
-.nhg-labels.nhg-labels--thumb,
-.nhg-labels.nhg-labels--single {
+/* Overlay container for thumbnails (full-overlay, non-interactive) */
+.nhg-labels.nhg-labels--thumb {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 40;
+  overflow: visible;
+  padding: calc(var(--nhg-inset-top) * 0.5) calc(var(--nhg-inset-right) * 0.5) calc(var(--nhg-inset-bottom) * 0.5) calc(var(--nhg-inset-left) * 0.5);
+}
+
+/* Compact overlay for single-product gallery — anchored top-left */
+.nhg-labels.nhg-labels--single {
+  position: absolute;
+  top: calc(var(--nhg-inset-top) + var(--nhg-control-offset-y));
+  left: calc(var(--nhg-inset-left) + var(--nhg-control-offset-x));
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  z-index: 120;
+  display: flex;
+  gap: var(--nhg-horizontal-gap);
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   overflow: visible;
 }
 
@@ -70,7 +94,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  pointer-events: none; /* badges are non-interactive by default */
+  pointer-events: none; /* badges non-interactive by default */
   z-index: 45;
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -90,13 +114,36 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.07);
   border: 0;
   line-height: 1;
+  transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
+  transform-origin: center;
 }
 
 /* ensure any inner wrapper text uses the same sizing */
 .nhg-badge > * { font-size: var(--nhg-label-font-size); line-height: 1; }
 
+/* When badges are inside the compact single container, use static-relative flow so they appear where expected */
+.nhg-labels--single .nhg-badge { position: relative; margin: 0; }
+
+/* For thumbnails keep absolute positioning per-badge (so they can stack) */
+.nhg-labels--thumb .nhg-badge { position: absolute; }
+
+/* Set default horizontal anchors */
+.nhg-badge--new { left: var(--nhg-inset-left); }
+.nhg-badge--sale,
+.nhg-badge--custom { right: var(--nhg-inset-right); }
+
+/* Add a subtle hover-like lift when JS enables interactions (non-destructive) */
+.nhg-badge.nhg-interactive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.nhg-badge.nhg-interactive:active,
+.nhg-badge.nhg-interactive:focus {
+  transform: translateY(1px) scale(.995);
+}
+
 /* -------------------------
-   NEW — always top-left
+   NEW — always top-left (thumbnail + single)
    ------------------------- */
 .nhg-badge--new {
   top: var(--nhg-inset-top);
@@ -105,13 +152,19 @@
   background: linear-gradient(180deg, color-mix(in srgb, var(--nh-new) 92%, #000 8%), var(--nh-new));
   border-radius: 999px;
   color: #fff;
+  padding: 0 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
 /* inner text */
 .nhg-badge--new .nhg-new-text { color: #fff; font-weight: 800; }
 
+/* Slight left/right offsets in compact single overlay so it doesn't touch gallery controls */
+.nhg-labels--thumb .nhg-badge--new { margin-left: 2px; }
+.nhg-labels--single .nhg-badge--new { margin-left: 0; margin-right: 6px; }
+
 /* -------------------------
-   SALE — top-right (higher than custom)
+   SALE — top-right (higher than custom) on thumbnails; in single it's inline left
    ------------------------- */
 .nhg-badge--sale {
   top: var(--nhg-inset-top);
@@ -124,7 +177,7 @@
 }
 
 /* -------------------------
-   CUSTOM — top-right (stacks under Sale)
+   CUSTOM — top-right (stacks under Sale for thumbnails); inline in single
    ------------------------- */
 .nhg-badge--custom {
   top: var(--nhg-inset-top);
@@ -136,12 +189,20 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
-/* If Sale is present earlier in DOM, push Custom down (adjacent + general sibling fallbacks) */
-.nhg-badge--sale + .nhg-badge--custom,
-.nhg-badge--sale ~ .nhg-badge--custom,
+/* For thumbnail overlay: push Custom down when Sale exists (stack) */
+.nhg-labels--thumb .nhg-badge--sale + .nhg-badge--custom,
 .nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
   top: calc(var(--nhg-inset-top) + var(--nhg-badge-height) + var(--nhg-stack-gap));
 }
+
+/* Fallback stacked offsets for extra badges in thumbnails */
+.nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge {
+  top: calc(var(--nhg-inset-top) + 2 * (var(--nhg-badge-height) + var(--nhg-stack-gap)));
+}
+
+/* When rendered inside compact single overlay we want inline flow, so provide small spacing */
+.nhg-labels--single .nhg-badge--sale,
+.nhg-labels--single .nhg-badge--custom { margin-left: 6px; }
 
 /* -------------------------
    STOCK — bottom center
@@ -160,14 +221,17 @@
   justify-content: center;
   font-weight: 800;
   letter-spacing: .04em;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.10);
 }
 
+/* Out of stock appearance */
 .nhg-badge--stock[data-stock="out"] {
   background: linear-gradient(180deg, color-mix(in srgb, var(--nh-charcoal) 96%, #000 4%), var(--nh-charcoal));
   color: #fff;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
 }
 
+/* Low stock appearance */
 .nhg-badge--stock[data-stock="low"] {
   background: linear-gradient(180deg, color-mix(in srgb, var(--nh-gold) 86%, #fff 14%), var(--nh-gold));
   color: var(--nh-brown);
@@ -190,7 +254,7 @@
 /* Hide any older "custom below" container to avoid duplicates */
 .nhg-custom-below-container { display: none !important; }
 
-/* Hide common Astra out-of-stock nodes (screenshot green text) */
+/* Hide common Astra out-of-stock nodes (avoid theme duplication) */
 .woocommerce ul.products li.product .ast-shop-product-out-of-stock,
 .woocommerce ul.products li.product .astra-shop-product-out-of-stock,
 .astra-shop-thumbnail-wrap .ast-shop-product-out-of-stock {
@@ -269,24 +333,124 @@
 /* -------------------------
    Responsive tweaks
    ------------------------- */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   :root {
     --nhg-badge-height: 24px;
+    --nhg-label-font-size: 10px;
+    --nhg-stock-min-width: 72px;
+    --nhg-stack-gap: 6px;
+    --nhg-horizontal-gap: 6px;
+  }
+  .nhg-badge { padding: 0 9px; }
+}
+
+/* Small screens: condense badges, avoid collisions with gallery controls */
+@media (max-width: 480px) {
+  :root {
+    --nhg-badge-height: 22px;
     --nhg-label-font-size: 9px;
-    --nhg-stock-min-width: 64px;
-    --nhg-stack-gap: 4px;
+    --nhg-stock-min-width: 60px;
+    --nhg-stack-gap: 5px;
+    --nhg-horizontal-gap: 5px;
+
+    /* move badges a bit further from the edges on tiny devices */
+    --nhg-inset-top: 8px;
+    --nhg-inset-right: 8px;
+    --nhg-inset-left: 8px;
+    --nhg-inset-bottom: 10px;
   }
 
-  .nhg-badge { padding: 0 8px; height: var(--nhg-badge-height); }
-  .nhg-badge--sale { padding: 0 10px; top: calc(var(--nhg-inset-top) - 2px); }
-  .nhg-badge--custom,
-  .nhg-badge--new { padding: 0 8px; }
-  .nhg-badge--stock { padding: 0 10px; min-width: var(--nhg-stock-min-width); }
+  .nhg-badge { padding: 0 8px; height: var(--nhg-badge-height); font-size: var(--nhg-label-font-size); }
+
+  /* Single product overlay: allow wrapping and keep them compact */
+  .nhg-labels--single {
+    top: 8px;
+    left: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  /* If space is very tight, stack the right-side badges vertically in the thumbnail overlay */
+  .nhg-labels--thumb .nhg-badge--sale,
+  .nhg-labels--thumb .nhg-badge--custom {
+    display: inline-flex;
+    margin-top: 6px;
+  }
+
+  /* Allow new to remain top-left but slightly smaller */
+  .nhg-badge--new { left: 10px; top: 8px; padding: 0 8px; }
+
+  /* Stock badge smaller */
+  .nhg-badge--stock { bottom: 10px; padding: 0 10px; min-width: 56px; }
+}
+
+/* Very small phones: collapse text to icons if you later add icons (kept here as a future hook) */
+@media (max-width: 360px) {
+  :root {
+    --nhg-badge-height: 20px;
+    --nhg-label-font-size: 8px;
+  }
+  .nhg-badge { font-size: var(--nhg-label-font-size); height: var(--nhg-badge-height); padding: 0 6px; }
+  .nhg-badge--sale { padding: 0 8px; }
 }
 
 /* -------------------------
-   Legacy safety (if old rules attempted to force product to block)
-   Do NOT reset the product tile display globally here. If you have a site-wide
-   rule in your theme to make products flex column, keep it in your theme CSS.
+   SINGLE PRODUCT PAGE LABELS (safety)
    ------------------------- */
-   
+/* Ensure gallery can be the positioning context (safety for many themes) */
+.woocommerce-product-gallery,
+.woocommerce-product-gallery .woocommerce-product-gallery__wrapper,
+.woocommerce-product-gallery__image,
+.woocommerce div.product .woocommerce-product-gallery {
+  position: relative !important;
+}
+
+/* If a theme forces a full-size .nhg-labels--single overlay (older rules), prefer the compact variant */
+.nhg-labels--single.inset-override {
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  top: calc(var(--nhg-inset-top) + var(--nhg-control-offset-y)) !important;
+  left: calc(var(--nhg-inset-left) + var(--nhg-control-offset-x)) !important;
+}
+
+/* Keep the badges above common gallery buttons/controls */
+.woocommerce div.product .woocommerce-product-gallery .nhg-labels--single,
+.woocommerce div.product .woocommerce-product-gallery .nhg-labels--thumb {
+  z-index: 120;
+}
+
+/* -------------------------
+   Re-anchor New badge (fix when labels are output inside the <a>)
+   This ensures New is always top-left of the thumbnail wrapper
+   ------------------------- */
+/* Ensure wrapper is a containing block */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
+  position: relative;
+}
+
+/* Re-anchor the new badge to wrapper */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--new {
+  position: absolute !important;
+  top: var(--nhg-inset-top);
+  left: var(--nhg-inset-left);
+  transform: none;
+  margin: 0;
+  z-index: 200;
+}
+
+/* Ensure sale/custom keep their thumbnail stacking at top-right */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--sale,
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--custom {
+  position: absolute !important;
+  top: var(--nhg-inset-top);
+  right: var(--nhg-inset-right);
+}
+
+/* stacked custom under sale */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--sale + .nhg-badge--custom,
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--sale ~ .nhg-badge--custom {
+  top: calc(var(--nhg-inset-top) + var(--nhg-badge-height) + var(--nhg-stack-gap));
+}
