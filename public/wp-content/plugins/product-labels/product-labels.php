@@ -4,6 +4,7 @@
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
  * Version: 1.1.0
  * Author: Your team
+ * Text Domain: nhg-product-labels
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -60,15 +61,63 @@ class NHG_Product_Labels {
 	private function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
-		// Sale
+		// -------- SALE (with percent or range) --------
 		if ( $product->is_on_sale() ) {
+			$sale_text  = __( 'Sale', 'nhg-product-labels' );
+			$sale_label = $sale_text; // fallback
+
+			// Simple product or single price products
+			if ( ! $product->is_type( 'variable' ) ) {
+				$regular = (float) $product->get_regular_price();
+				$sale    = (float) $product->get_sale_price();
+
+				if ( $regular > 0 && $sale >= 0 && $sale < $regular ) {
+					$pct       = round( ( ( $regular - $sale ) / $regular ) * 100 );
+					// translators: %s = percent number (e.g. "25")
+					$pct_label = sprintf( /* translators: percent */ _x( '%s %%', 'sale percent', 'nhg-product-labels' ), $pct );
+					$sale_label = $sale_text . ' ' . $pct_label;
+				}
+			} else {
+				// Variable product: compute percent for each variation that has a sale price
+				$variation_pcts = [];
+
+				$variation_ids = $product->get_children();
+				if ( is_array( $variation_ids ) && ! empty( $variation_ids ) ) {
+					foreach ( $variation_ids as $var_id ) {
+						$var = wc_get_product( $var_id );
+						if ( ! $var ) {
+							continue;
+						}
+						$reg = (float) $var->get_regular_price();
+						$sal = (float) $var->get_sale_price();
+						if ( $reg > 0 && $sal >= 0 && $sal < $reg ) {
+							$variation_pcts[] = (int) round( ( ( $reg - $sal ) / $reg ) * 100 );
+						}
+					}
+				}
+
+				if ( ! empty( $variation_pcts ) ) {
+					$min = min( $variation_pcts );
+					$max = max( $variation_pcts );
+
+					if ( $min === $max ) {
+						// translators: %s = percent number (e.g. "20")
+						$pct_label = sprintf( /* translators: percent */ _x( '%s %%', 'sale percent', 'nhg-product-labels' ), $min );
+					} else {
+						// translators: %s = min percent, %s = max percent (e.g. "10-25")
+						$pct_label = sprintf( /* translators: percent range */ _x( '%s-%s %%', 'sale percent range', 'nhg-product-labels' ), $min, $max );
+					}
+					$sale_label = $sale_text . ' ' . $pct_label;
+				}
+			}
+
 			$labels['sale'] = [
 				'key'  => 'sale',
-				'text' => __( 'Sale', 'nhg-product-labels' ),
+				'text' => $sale_label,
 			];
 		}
 
-		// New (30 days)
+		// -------- NEW (30 days) --------
 		$created = $product->get_date_created();
 		if ( $created && ( time() - $created->getTimestamp() < 30 * DAY_IN_SECONDS ) ) {
 			$labels['new'] = [
@@ -77,7 +126,7 @@ class NHG_Product_Labels {
 			];
 		}
 
-		// Custom cut / Custom size (integration point)
+		// -------- CUSTOM cut / Custom size (integration point) --------
 		if ( $this->is_custom_cut_product( $product ) ) {
 			$labels['custom'] = [
 				'key'  => 'custom',
@@ -85,7 +134,7 @@ class NHG_Product_Labels {
 			];
 		}
 
-		// Stock: out / low
+		// -------- STOCK: out / low --------
 		if ( ! $product->is_in_stock() ) {
 			$labels['stock'] = [
 				'key'        => 'stock',
