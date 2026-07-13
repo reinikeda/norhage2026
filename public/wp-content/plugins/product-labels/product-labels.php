@@ -4,7 +4,7 @@
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
  * Version: 1.1.1
  * Author: Your team
- * Text Domain: nhg-product-labels
+ * Text Domain: nhg-labels
  * Domain Path: /languages
  */
 
@@ -21,7 +21,7 @@ class NHG_Product_Labels {
 	 *
 	 * @var string
 	 */
-	protected $text_domain = 'nhg-product-labels';
+	protected $text_domain = 'nhg-labels';
 
 	/**
 	 * Constructor: register hooks
@@ -70,7 +70,7 @@ class NHG_Product_Labels {
 		$css_path = plugins_url( 'css/labels.css', __FILE__ );
 
 		wp_enqueue_style(
-			'nhg-product-labels',
+			'nhg-labels',
 			$css_path,
 			[],
 			'1.1.1'
