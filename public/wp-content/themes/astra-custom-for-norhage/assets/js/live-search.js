@@ -5,12 +5,15 @@ jQuery(function ($) {
   var $status  = $('#nrh-search-status');
   var typingTimer;
   var doneTypingInterval = 300;
+  var currentRequest = null;
 
   // helpers
   function openResults() {
     $wrap.addClass('is-open');
     $results.show().attr('aria-hidden', 'false');
     $input.attr('aria-expanded', 'true');
+    // add header state class to temporarily disable nav hover/dropdowns
+    $('.nhhb-header-main').addClass('search-active');
   }
 
   function closeResults() {
@@ -20,6 +23,14 @@ jQuery(function ($) {
     // clear visual selection
     $results.find('[role="option"][aria-selected="true"]').attr('aria-selected', 'false').removeClass('is-active');
     $status.text('');
+    // remove header state class
+    $('.nhhb-header-main').removeClass('search-active');
+
+    // abort any pending request
+    if (currentRequest && currentRequest.readyState && currentRequest.readyState !== 4) {
+      try { currentRequest.abort(); } catch (e) { /* ignore */ }
+    }
+    currentRequest = null;
   }
 
   function setActive($el) {
@@ -39,9 +50,15 @@ jQuery(function ($) {
     }
   }
 
+  // escape helper (basic)
+  function escHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function renderItems(items, more, url, total) {
     $results.empty();
     $input.removeAttr('aria-activedescendant');
+
     if (!items || !items.length) {
       $results.html('<li class="no-results" role="option">No results found</li>');
       announceCount(0);
@@ -49,32 +66,53 @@ jQuery(function ($) {
       return;
     }
 
-    var html = items.map(function (item, idx) {
+    var $frag = $(document.createDocumentFragment());
+
+    items.forEach(function (item, idx) {
       var id = 'nrh-result-' + idx;
-      // role="option" on li, links inside it
-      return (
-        '<li id="' + id + '" role="option" aria-selected="false" class="nh-live-item" tabindex="-1">' +
-          '<a class="nh-live-link" href="' + item.link + '">' +
-            '<img class="nh-thumb" src="' + item.img + '" alt="" loading="lazy" width="48" height="48" />' +
-            '<div class="info">' +
-              '<div class="title">' + item.title + '</div>' +
-              '<div class="nh-price">' + (item.price || '') + '</div>' +
-            '</div>' +
-          '</a>' +
-        '</li>'
-      );
-    }).join('');
+      var $li = $('<li>', {
+        id: id,
+        role: 'option',
+        'aria-selected': 'false',
+        class: 'nh-live-item',
+        tabindex: -1
+      });
+
+      var $a = $('<a>', { class: 'nh-live-link', href: item.link || '#' });
+
+      // thumbnail
+      var $img = $('<img>', {
+        class: 'nh-thumb',
+        src: item.img || '',
+        alt: '',
+        loading: 'lazy',
+        width: 48,
+        height: 48
+      });
+
+      var $info = $('<div>', { class: 'info' });
+      var $title = $('<div>', { class: 'title', text: item.title || '' });
+      var $price = $('<div>', { class: 'nh-price' });
+
+      // price contains markup from server (Woo). If you don't trust it, use text() instead.
+      if (item.price) {
+        $price.html(item.price);
+      }
+
+      $info.append($title).append($price);
+      $a.append($img).append($info);
+      $li.append($a);
+      $frag.append($li);
+    });
 
     if (more && url) {
-      html += '' +
-        '<li class="nh-live-footer" role="option">' +
-          '<a class="nh-live-more" href="' + url + '">' +
-            'View all results' + (total ? ' (' + total + ')' : '') +
-          '</a>' +
-        '</li>';
+      var $footer = $('<li>', { class: 'nh-live-footer', role: 'option' });
+      var $more = $('<a>', { class: 'nh-live-more', href: url, html: 'View all results' + (total ? ' (' + total + ')' : '') });
+      $footer.append($more);
+      $frag.append($footer);
     }
 
-    $results.html(html);
+    $results.append($frag);
     announceCount(total || items.length);
     openResults();
   }
@@ -91,11 +129,17 @@ jQuery(function ($) {
     }
 
     typingTimer = setTimeout(function () {
-      $.ajax({
+      // abort previous request if any
+      if (currentRequest && currentRequest.readyState && currentRequest.readyState !== 4) {
+        try { currentRequest.abort(); } catch (e) { /* ignore */ }
+      }
+
+      currentRequest = $.ajax({
         url: nrh_live_search.ajax_url,
         method: 'GET',
         data: { action: nrh_live_search.action, q: q },
         success: function (resp) {
+          currentRequest = null;
           var items = Array.isArray(resp) ? resp : (resp.items || []);
           var more  = !Array.isArray(resp) && !!resp.more;
           var url   = !Array.isArray(resp) ? resp.url : '';
@@ -103,6 +147,7 @@ jQuery(function ($) {
           renderItems(items, more, url, total);
         },
         error: function () {
+          currentRequest = null;
           $results.html('<li class="no-results" role="option">Search temporarily unavailable</li>');
           announceCount(0);
           openResults();
@@ -157,9 +202,13 @@ jQuery(function ($) {
     setActive($(this));
   });
 
+  // Prevent underlying nav hover from triggering before clicks inside results
+  $results.on('mousedown', function (e) {
+    e.stopPropagation();
+  });
+
   $results.on('click', 'a', function (e) {
-    // normal link navigation will occur; let it happen
-    // optionally close results
+    // let natural navigation occur; close results
     closeResults();
   });
 
