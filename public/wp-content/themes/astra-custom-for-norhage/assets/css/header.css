@@ -1,4 +1,12 @@
 /* =========================================================
+   Fixed & unified header.css for Astra child theme (nh / nrh)
+   - Standardized z-index scale
+   - Pointer-events based nav-inert behavior when search is active
+   - Corrected selector inconsistencies (#nrh-search-results)
+   - Added smoother touch scrolling for results
+   ========================================================= */
+
+/* =========================================================
    1) ASTRA HEADER OVERRIDES
    ========================================================= */
 
@@ -53,7 +61,7 @@ body.drawer-open { overflow: hidden; }
 
 .nhhb-header-main {
   position: relative;
-  z-index: 2000;
+  z-index: 2000; /* header stacking baseline */
   background: var(--ui-bg-dark);
   color: #fff;
   transition: box-shadow .18s ease;
@@ -246,9 +254,10 @@ body.drawer-open { overflow: hidden; }
 .nhhb-utility-right .nh-live-search {
   position: relative;
   width: clamp(160px, 18vw, 260px);
-  z-index: 10;
+  z-index: 2100; /* ensure above most header content but below modals/drawers */
 }
 
+/* utility search input styling */
 .nhhb-utility-right .nh-header-search--utility {
   display: flex;
   align-items: center;
@@ -301,6 +310,50 @@ body.drawer-open { overflow: hidden; }
 }
 
 /* =========================================================
+   Live search overlay: ensure it sits above primary nav & suppress nav hover while open
+   - Use modest z-index to avoid extreme values.
+   - The search-active class is toggled in JS; JS should also set aria-hidden on the nav for keyboard users.
+   ========================================================= */
+
+.nhhb-header-main .nh-live-search,
+.nhhb-header-main .nrh-live-search {
+  position: relative; /* stacking context root for children */
+  z-index: 2100;
+}
+
+/* results panel: position absolutely and above nav submenus */
+.nhhb-header-main .nh-live-search .nh-live-results,
+.nhhb-header-main .nrh-live-search #nrh-search-results,
+.nhhb-header-main .nrh-live-search .nh-live-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 3000; /* above nav dropdowns but below global modals/drawers */
+  pointer-events: auto; /* ensure it receives pointer events */
+  -webkit-overflow-scrolling: touch; /* smoother scroll on iOS */
+}
+
+/* Make primary nav inert while search is active (pointer-events approach) */
+.nhhb-header-main.search-active .nhhb-main-nav,
+.nhhb-header-main.search-active .nhhb-main-nav * {
+  pointer-events: none !important;
+}
+
+/* Re-enable events for the search area when header is in search-active mode */
+.nhhb-header-main.search-active .nh-live-search,
+.nhhb-header-main.search-active #nrh-search-results,
+.nhhb-header-main.search-active .nh-live-search * {
+  pointer-events: auto !important;
+}
+
+/* IMPORTANT: toggle aria-hidden on the nav in JS when opening/closing results:
+   $('.nhhb-main-nav').attr('aria-hidden','true')  // open
+   $('.nhhb-main-nav').removeAttr('aria-hidden')  // close
+   (ARIA attributes must be set via JS; CSS can't set them)
+*/
+
+/* =========================================================
    7) ROW 2 — BRAND ROW (logo + nav)
    ========================================================= */
 
@@ -344,7 +397,7 @@ body.drawer-open { overflow: hidden; }
 
 .nhhb-main-nav {
   position: relative;
-  z-index: 30;
+  z-index: 40; /* allow results to sit above while nav is below */
   display: flex;
   justify-content: flex-end;
   flex: 1 1 auto;
@@ -436,7 +489,7 @@ body.drawer-open { overflow: hidden; }
   border: 1px solid rgba(255,255,255,.10);
   border-radius: 10px;
   box-shadow: 0 12px 28px rgba(0,0,0,.24);
-  z-index: 40;
+  z-index: 45;
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
@@ -588,7 +641,7 @@ body.drawer-open { overflow: hidden; }
 :is(.nh-live-search, .nrh-live-search) {
   position: relative;
   max-width: 100%;
-  z-index: 10;
+  z-index: 2100;
 }
 
 .nh-header-search {
@@ -613,7 +666,7 @@ body.drawer-open { overflow: hidden; }
   outline: none;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -628,21 +681,22 @@ body.drawer-open { overflow: hidden; }
   box-shadow: 0 10px 24px rgba(0,0,0,.18);
   max-height: 360px;
   overflow: auto;
-  z-index: 50;
+  z-index: 3000;
+  -webkit-overflow-scrolling: touch;
 }
 
-:is(.nh-live-search, .nrh-live-search).is-open :is(.nh-live-results, .nrh-live-search-results) {
+:is(.nh-live-search, .nrh-live-search).is-open :is(.nh-live-results, .nrh-live-results, #nrh-search-results) {
   display: block;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) li {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) li {
   padding: 0;
   border-bottom: 1px solid #f1f2f3;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) li:last-child { border-bottom: 0; }
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) li:last-child { border-bottom: 0; }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-live-link {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-live-link {
   display: grid;
   grid-template-columns: 48px 1fr;
   gap: 12px;
@@ -653,25 +707,25 @@ body.drawer-open { overflow: hidden; }
   transition: background .15s ease;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-live-link:hover {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-live-link:hover {
   background: #f8f9f9;
   color: var(--nh-green);
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-thumb {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-thumb {
   width: 48px;
   height: 48px;
   object-fit: cover;
   border-radius: 6px;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .info {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .info {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .title {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .title {
   font-size: 14px;
   line-height: 1.3;
   white-space: nowrap;
@@ -687,18 +741,18 @@ body.drawer-open { overflow: hidden; }
   color: var(--nh-forest, #1E3932);
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .no-results {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .no-results {
   padding: 12px;
   color: #777;
   text-align: center;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-live-footer {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-live-footer {
   border-top: 1px solid #eef0f2;
   padding: 8px;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-live-more {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-live-more {
   display: block;
   text-align: center;
   padding: 8px 10px;
@@ -710,7 +764,7 @@ body.drawer-open { overflow: hidden; }
   transition: background .2s ease, color .2s ease;
 }
 
-:is(.nh-live-results, .nrh-live-search-results) .nh-live-more:hover {
+:is(.nh-live-results, .nrh-live-results, #nrh-search-results) .nh-live-more:hover {
   background: #eef1f3;
   color: var(--nh-green);
 }
