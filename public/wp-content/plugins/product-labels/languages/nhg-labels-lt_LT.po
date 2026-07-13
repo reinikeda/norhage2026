@@ -1,36 +1,33 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nhg-labels\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 00:00+0000\n"
-"PO-Revision-Date: 2026-06-19 09:46+0300\n"
+"Project-Id-Version: NHG Product Labels (harmonized) 1.1.0\n"
+"POT-Creation-Date: 2026-07-13 00:00+0000\n"
+"PO-Revision-Date: 2026-07-13 10:45+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
-"Language-Team: \n"
+"Language-Team: Lithuanian\n"
 "Language: lt_LT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : "
-"n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 3.8\n"
+"X-Domain: nhg-product-labels\n"
 
-msgid "Sale %s"
-msgstr "%s"
-
+#: product-labels.php:66
 msgid "Sale"
 msgstr "Akcija"
 
-msgid "Up to %s"
-msgstr "Iki %s"
-
+#: product-labels.php:75
 msgid "New"
 msgstr "Nauja"
 
-msgid "Low stock"
-msgstr "Liko nedaug"
-
-msgid "New Product!"
-msgstr "Nauja prekė!"
-
+#: product-labels.php:82
 msgid "Custom size"
-msgstr "Pagal Jūsų matmenis"
+msgstr "Pagal matmenis"
+
+#: product-labels.php:89
+msgid "Out of stock"
+msgstr "Nėra sandėlyje"
+
+#: product-labels.php:98
+msgid "Low stock"
+msgstr "Mažas likutis"

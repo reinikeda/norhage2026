@@ -654,48 +654,61 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 /* Catalog cleanups */
 span.ast-on-card-button.ast-onsale-card,
 a.ast-on-card-button.ast-select-options-trigger,
-.ast-on-card-button{
-  display:none !important;
+.ast-on-card-button {
+  display: none !important;
 }
 
 /* Hide title on homepage */
 .home .entry-title,
-.home h1.entry-title{
-  display:none !important;
+.home h1.entry-title {
+  display: none !important;
 }
 
 /* Make each product tile a flex column */
-.woocommerce ul.products li.product{
-  display:flex;
-  flex-direction:column;
+.woocommerce ul.products li.product {
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-/* Astra wraps title/price/button inside this summary container */
-.woocommerce ul.products li.product .astra-shop-summary-wrap{
-  display:flex;
-  flex-direction:column;
-  flex:1;
+/* Astra Summary Wrapper: Fix for Rating Placement */
+.woocommerce ul.products li.product .astra-shop-summary-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  gap: 4px !important; /* Control spacing between title, rating, and price */
 }
 
-/* Make "Customize" look like other archive buttons */
-.woocommerce ul.products li.product a.nh-btn-customize{
-  display:block;
-  width:100%;
-  text-align:center;
+/* Ensure DOM elements follow correct visual order */
+.woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Title */
+.woocommerce ul.products li.product .review-rating { order: 2; margin: 0; } /* Rating */
+.woocommerce ul.products li.product .price { order: 3; margin-top: 2px; } /* Price */
+.woocommerce ul.products li.product .button { order: 4; } /* CTA Button */
+
+/* Force rating block visibility and alignment */
+.review-rating, .star-rating {
+  display: block !important;
+  float: none !important;
+  clear: both !important;
+  margin: 2px 0 !important;
+}
+
+.review-rating .star-rating {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 /* Push CTA buttons to the bottom */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
-.woocommerce ul.products li.product .astra-shop-summary-wrap > a.nh-btn-customize{
-  margin-top:auto;
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.nh-btn-customize {
+  margin-top: auto !important;
 }
 
-/* Reserve up to ~2 lines for price */
-.woocommerce ul.products li.product .astra-shop-summary-wrap > .price{
-  min-height:2.4em;
+/* Reserve space for price lines */
+.woocommerce ul.products li.product .astra-shop-summary-wrap > .price {
+  min-height: 2.4em;
 }
 
-.nh-price-unit{
+.nh-price-unit {
   white-space: nowrap;
   font-size: 0.95em;
   font-weight: 400;
