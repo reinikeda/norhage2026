@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-09 16:51+0300\n"
+"PO-Revision-Date: 2026-07-20 14:55+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -254,7 +254,7 @@ msgstr "Lisää lataus"
 
 #: inc/meta-boxes.php:121
 msgid "YouTube / Vimeo URL"
-msgstr "YouTube-/Vimeo-URL"
+msgstr "YouTube / Vimeo URL"
 
 #: inc/meta-boxes.php:154
 msgid "Enable custom cutting"
@@ -1232,6 +1232,445 @@ msgstr "Lämmöneristys"
 msgid "Estimated delivery:"
 msgstr "Arvioitu toimitusaika:"
 
+#: inc/faq.php
+msgid "Expand all"
+msgstr "Laajenna kaikki"
+
+#: inc/faq.php
+msgid "Collapse all"
+msgstr "Tiivistä kaikki"
+
+# -----------------------------------------------
+# TOPIC LABELS
+# -----------------------------------------------
+#: inc/faq-data.php
+msgid "Ordering & Delivery"
+msgstr "Tilaaminen ja toimitus"
+
+#: inc/faq-data.php
+msgid "Returns & Warranty"
+msgstr "Palautukset ja takuu"
+
+#: inc/faq-data.php
+msgid "Greenhouses"
+msgstr "Kasvihuoneet"
+
+#: inc/faq-data.php
+msgid "Polycarbonate & Plastics"
+msgstr "Kennolevyt ja muovilevyt"
+
+#: inc/faq-data.php
+msgid "Installation & Assembly"
+msgstr "Asennus ja kokoaminen"
+
+#: inc/faq-data.php
+msgid "Garden & Accessories"
+msgstr "Puutarha ja lisävarusteet"
+
+# -----------------------------------------------
+# ORDERING & DELIVERY
+# -----------------------------------------------
+#. delivery-large-items
+#: inc/faq-data.php
+msgid "How are large items delivered?"
+msgstr "Miten suuret tuotteet toimitetaan?"
+
+#: inc/faq-data.php
+msgid "Greenhouse kits and large sheets are delivered via specialized heavy freight transport. Most orders arrive on a single oversized pallet."
+msgstr "Kasvihuonepaketin ja suuret levyt toimitetaan erikoistuneella raskaan rahdin kuljetuksella. Useimmat tilaukset saapuvat yhdellä suurikokoisella lavalla."
+
+#. delivery-forklift
+#: inc/faq-data.php
+msgid "Do I need a forklift to unload?"
+msgstr "Tarvitsenko trukkia kuorman purkamiseen?"
+
+#: inc/faq-data.php
+msgid "No. Our delivery trucks are equipped with lift-gates to lower the pallet to the ground. However, you should have space available near the curbside or driveway for the truck to operate."
+msgstr "Et tarvitse. Kuorma-automme on varustettu takalaitanostimella lavan laskemiseksi maahan. Sinulla tulee kuitenkin olla riittävästi tilaa tienvarressa tai ajotiellä, jotta kuorma-auto mahtuu purkamaan kuorman."
+
+#. delivery-curbside
+#: inc/faq-data.php
+msgid "What is \"Curbside Delivery\"?"
+msgstr "Mitä tarkoittaa ”Tienvarsitoimitus”?"
+
+#: inc/faq-data.php
+msgid "This means the driver will unload the pallet at the end of your driveway or the nearest accessible point for the truck. Drivers cannot move the materials into your backyard or garage."
+msgstr "Tämä tarkoittaa, että kuljettaja purkaa lavan ajotiesi päähän tai lähimpään paikkaan, johon kuorma-autolla pääsee. Kuljettajat eivät voi siirtää materiaaleja takapihalle tai autotalliin."
+
+#. delivery-driver-call
+#: inc/faq-data.php
+msgid "Will the driver call me before arrival?"
+msgstr "Soittaako kuljettaja minulle ennen saapumista?"
+
+#: inc/faq-data.php
+msgid "Yes. For heavy freight deliveries, the transport company will contact you at the phone number provided in your order to schedule a specific delivery window."
+msgstr "Kyllä. Raskaan rahdin toimituksissa kuljetusyhtiö ottaa sinuun yhteyttä tilauksessa ilmoitettuun puhelinnumeroon soppiakseen tarkemmasta toimitusajankohdasta."
+
+#. order-change
+#: inc/faq-data.php
+msgid "Can I change my order after it has been placed?"
+msgstr "Voinko muuttaa tilaustani sen tekemisen jälkeen?"
+
+#: inc/faq-data.php
+msgid "If the order has not yet been loaded for transport, we can make changes. Contact us as soon as possible if you need to adjust quantities or sizes."
+msgstr "Jos tilausta ei ole vielä lastattu kuljetukseen, voimme tehdä siihen muutoksia. Ota meihin yhteyttä mahdollisimman pitäen, jos sinun täytyy muuttaa määriä tai kokoja."
+
+# -----------------------------------------------
+# RETURNS & WARRANTY
+# -----------------------------------------------
+#. return-period
+#: inc/faq-data.php
+msgid "How long do I have to return an item?"
+msgstr "Kuinka pitkä palautusaika tuotteilla on?"
+
+#: inc/faq-data.php
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgstr "Palautusaikamme noudattaa paikallista kuluttajansuojalainsäädäntöä. Katso tarkemmat alueellasi voimassa olevat aikataulut <a href=\"https://norhage.fi/palautusehdot/\">Palautus- ja hyvityskäytännöt</a> -sivultamme."
+
+#. return-condition
+#: inc/faq-data.php
+msgid "What condition must the items be in for a return?"
+msgstr "Mille edellytyksille palautettavan tuotteen pitää täyttää?"
+
+#: inc/faq-data.php
+msgid "Items must be unused, in their original packaging, and in a condition suitable for resale. Custom-cut materials or specially ordered items may be subject to different conditions."
+msgstr "Tuotteiden tulee olla käyttämättömiä, alkuperäispakkauksessa ja jälleenmyyntikuntoisia. Määrämittaan leikatuille tai erikoistilatuille tuotteille voi olla poikkeavia ehtoja."
+
+#. return-shipping-cost
+#: inc/faq-data.php
+msgid "Who pays for return shipping?"
+msgstr "Kuka maksaa palautusrahdin?"
+
+#: inc/faq-data.php
+msgid "Unless the item is defective or the wrong product was sent, the customer is generally responsible for return transport costs, especially for large freight items."
+msgstr "Esimerkiksi silloin, kun tuote on virheetön ja oikea tuote on toimitettu, asiakas vastaa pääsääntöisesti palautuskustannuksista, erityisesti suurikokoisten rahtituotteiden kohdalla."
+
+#. warranty-coverage
+#: inc/faq-data.php
+msgid "What does the warranty cover?"
+msgstr "Mitä takuu kattaa?"
+
+#: inc/faq-data.php
+msgid "Warranty covers manufacturing defects in materials and workmanship. It does not cover damage caused by extreme weather events (storms, heavy snow loads beyond limits), improper assembly, or lack of maintenance."
+msgstr "Takuu kattaa materiaali- ja valmistusvirheet. Takuu ei kata ääriolosuhteiden (myrskyt, raja-arvot ylittävät lumikuormat), virheellisen asennuksen tai huollon laiminlyönnin aiheuttamia vaurioita."
+
+#. damage-on-arrival
+#: inc/faq-data.php
+msgid "What should I do if my order arrives damaged?"
+msgstr "Mitä teen, jos tilaus on vaurioitunut saapuessaan?"
+
+#: inc/faq-data.php
+msgid "It is critical to inspect the delivery before signing the courier documents. If damage is visible, note it on the transport document and contact our customer support immediately with photos."
+msgstr "On erittäin tärkeää tarkistaa toimitus ennen rahtikirjan allekirjoittamista. Jos vaurioita on havaittavissa, tee niistä merkintä rahtikirjaan ja ota välittömästi yhteyttä asiakaspalveluumme kuvien kera."
+
+# -----------------------------------------------
+# GREENHOUSES
+# -----------------------------------------------
+#. greenhouse-cold-climate
+#: inc/faq-data.php
+msgid "Which greenhouse material is best for a cold climate?"
+msgstr "Mikä kasvihuonemateriaali sopii parhaiten kylmään ilmastoon?"
+
+#: inc/faq-data.php
+msgid "For cold climates, polycarbonate glazing is often a practical choice because it provides better thermal insulation and higher impact resistance than single-pane glass. The best option still depends on the greenhouse model, local wind and snow conditions, and whether you plan to heat the greenhouse."
+msgstr "Kylmiin ilmasto-olosuhteisiin kennolevy (polykarbonaatti) on usein käytännöllinen valinta, sillä se eristää lämpöä paremmin ja kestää iskuja paremmin kuin yksinkertainen lasi. Paras vaihtoehto riippuu kuitenkin kasvihuonemallista, paikallisista tuuli- ja lumikuormista sekä siitä, lämmitetäänkö kasvihuonetta."
+
+#. greenhouse-maintenance
+#: inc/faq-data.php
+msgid "What maintenance does a greenhouse require?"
+msgstr "Mitä huoltoa kasvihuone vaatii?"
+
+#: inc/faq-data.php
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgstr "Säännöllinen huolto pidentää kasvihuoneen käyttöikää ja pitää sen turvallisena. Puhdista kate, tarkista runko, kiinnikkeet, tiivisteet ja ovet sekä varmista tuuletusluukkujen esteetön toiminta. Puhdista lehdett ja roskat ränneistä ja katolta ja noudata valmistajan ohjeita kausitarkastuksista ja lumikuorman hallinnasta."
+
+#. greenhouse-ventilation
+#: inc/faq-data.php
+msgid "What ventilation options are available for greenhouses?"
+msgstr "Mitä tuuletusvaihtoehtoja kasvihuoneisiin on saatavilla?"
+
+#: inc/faq-data.php
+msgid "Greenhouse ventilation may include roof vents, side vents, doors, louvre vents and automatic vent openers. A well-planned combination improves air circulation and helps manage temperature and humidity during warmer periods."
+msgstr "Kasvihuoneen tuuletukseen voidaan käyttää kattoluukkuja, tuuletusikkunoita, ovia, säleikköluukkuja ja automaattisia tuuletusluukun avaajia. Hyvin suunniteltu kokonaisuus parantaa ilmanvaihtoa ja auttaa hallitsemaan lämpötilaa sekä kosteutta lämpiminä kausina."
+
+#. greenhouse-professional-installation
+#: inc/faq-data.php
+msgid "Is professional greenhouse installation necessary?"
+msgstr "Onko kasvihuoneen ammattimainen asennus välttämätöntä?"
+
+#: inc/faq-data.php
+msgid "Professional installation is not always required, but it can be a good option for larger, permanent or more complex greenhouses. Careful assembly, correct anchoring and a level base are essential regardless of who installs the greenhouse. Always follow the supplied installation instructions."
+msgstr "Ammattiasennus ei ole aina välttämätöntä, mutta se voi olla hyvä ratkaisu suurempien, kiinteiden tai vaativampien kasvihuoneiden kohdalla. Huolellinen kokoaminen, oikea ankkurointi ja tasainen perustus ovat tärkeitä asentajasta riippumatta. Noudata aina mukana tulevia asennusohjeita."
+
+#. greenhouse-foundation
+#: inc/faq-data.php
+msgid "Does a greenhouse need a foundation?"
+msgstr "Tarvitseeko kasvihuone perustuksen?"
+
+#: inc/faq-data.php
+msgid "A stable, level and properly prepared base is important for the safe installation and long-term performance of most greenhouses. Suitable foundation options vary by model and site, and may include a concrete base, timber frame, foundation base or ground anchors. Check the product documentation before choosing a solution."
+msgstr "Vakaa, tasainen ja oikein valmisteltu perustus on tärkeä useimpien kasvihuoneiden turvalliselle asennukselle ja pitkälle käyttöiälle. Sopiva perustustapa riippuu mallista ja sijoituspaikasta, ja se voi olla esimerkiksi valettu betonipohja, puukehikko, sokkeli tai maa-ankkurit. Tarkista tuotteen tiedot ennen ratkaisun valintaa."
+
+#. greenhouse-expansion
+#: inc/faq-data.php
+msgid "Can I extend my greenhouse later?"
+msgstr "Voinko laajentaa kasvihuonetta myöhemmin?"
+
+#: inc/faq-data.php
+msgid "Some greenhouse models can be extended using compatible extension kits. Availability depends on the specific model, frame system and manufacturer. If future expansion is important, check this before purchasing and allow enough space when planning the installation area."
+msgstr "Joitakin kasvihuonemalleja voidaan pidentää yhteensopivilla jatkopaloilla. Saatavuus riippuu mallista, runkojärjestelmästä ja valmistajasta. Jos mielessäsi on tuleva laajennus, tarkista asia ennen ostopäätöstä ja varaa riittävästi tilaa asennuspaikkaa suunnitellessasi."
+
+#: inc/faq-data.php
+msgid "What does \"WOM exposure\" mean in the greenhouse plastic specifications?"
+msgstr "Mitä ”WOM-altistus” (WOM exposure) tarkoittaa kasvihuonemuovien teknisissä tiedoissa?"
+
+#: inc/faq-data.php
+msgid "WOM exposure refers to standardized testing conducted in a \"Weather-Ometer.\" This laboratory equipment simulates years of outdoor weather conditions in a short period by exposing the material to intense UV radiation, high heat, and moisture. This test ensures the plastic film or sheet meets durability standards and will maintain its structural integrity and light transmission over many years in a real-world environment."
+msgstr "WOM-altistuksella tarkoitetaan standardoitua testausta, joka suoritetaan ”Weather-Ometer”-laitteistossa. Tämä laboratorio-olosuhteisiin suunniteltu laite simuloi vuosien ulkoilmasäätä lyhyessä ajassa altistamalla materiaalin voimakkaalle UV-säteilylle, korkealle kuumuudelle ja kosteudelle. Testi varmistaa, että muovikalvo tai -levy täyttää kestävyysstandardit ja säilyttää rakenne lujuutensa sekä valonläpäisykykynsä useiden vuosien ajan aidoissa olosuhteissa."
+
+# -----------------------------------------------
+# POLYCARBONATE & PLASTICS
+# -----------------------------------------------
+#. plastic-sheets-pc-vs-pmma
+#: inc/faq-data.php
+msgid "What is the difference between polycarbonate and acrylic (PMMA) sheets?"
+msgstr "Mitä eroa on polykarbonaatti- ja akryylilevyillä (PMMA)?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate and acrylic are both strong, lightweight alternatives to glass, but they have different properties. Polycarbonate is known for its very high impact resistance and is often chosen for demanding applications. Acrylic (PMMA) offers excellent clarity and a smooth, glass-like appearance. The best material depends on the application, required strength, appearance and installation conditions."
+msgstr "Polykarbonaatti ja akryyli ovat molemmat kestäviä ja keveitä vaihtoehtoja lasille, mutta niillä on erilaiset ominaisuudet. Polykarbonaatti tunnetaan erittäin korkeasta iskunkestävyydestään ja sitä käytetään vaativissa kohteissa. Akryyli (PMMA) tarjoaa erinomaisen kirkkauden ja sileän, lasimaisen pinnan. Paras materiaali riippuu käyttötarkoituksesta, lujuusvaatimuksista, ulkonäöstä ja asennusolosuhteista."
+
+#. plastic-sheets-solid-vs-multiwall
+#: inc/faq-data.php
+msgid "What is the difference between solid and multiwall polycarbonate sheets?"
+msgstr "Mitä eroa on kirkkaalla (umpinaisella) ja kennopolykarbonaattilevyllä?"
+
+#: inc/faq-data.php
+msgid "Solid polycarbonate sheets are compact, transparent sheets with a smooth surface and a glass-like appearance. Multiwall polycarbonate sheets have internal channels that make them lighter and improve thermal insulation. Solid sheets are often selected for clear glazing and impact resistance, while multiwall sheets are commonly used for roofs, greenhouses and insulated structures."
+msgstr "Umpinaiset polykarbonaattilevyt ovat tiiviitä ja täysin läpinäkyviä levyjä, joiden pinta on sileä ja lasimainen. Kennolevyt sisältävät sisäisiä onteloita/kanavia, jotka tekevät niistä keveitä ja parantavat lämmöneristystä. Umpilevyjä käytetään usein kirkkaissa lasituksissa ja iskusuojausta vaativissa kohteissa, kun taas kennolevyjä käytetään yleisesti katossa, kasvihuoneissa ja eristetyissä rakenteissa."
+
+#. plastic-sheets-uv-protection
+#: inc/faq-data.php
+msgid "Do your polycarbonate and acrylic sheets have UV protection?"
+msgstr "Onko polykarbonaatti- ja akryylilevyissänne UV-suojaus?"
+
+#: inc/faq-data.php
+msgid "Yes. Our polycarbonate and acrylic (PMMA) sheets include UV protection for outdoor use. This helps protect the material from weathering and supports long-term performance when the sheets are installed correctly."
+msgstr "Kyllä. Polykarbonaatti- ja akryylilevymme (PMMA) sisältävät ulkokäyttöön tarkoitetun UV-suojauksen. Tämä suojaa materiaalia sään vaikutuksilta ja varmistaa pitkän käyttöiän, kun levyt asennetaan oikein."
+
+#. plastic-sheets-thickness
+#: inc/faq-data.php
+msgid "How do I choose the right sheet thickness?"
+msgstr "Miten valitsen oikean levynpaksuuden?"
+
+#: inc/faq-data.php
+msgid "The right thickness depends on the material, application, supporting frame, distance between supports, local wind and snow conditions, and the insulation or impact resistance required. For roofing and glazing projects, select the sheet thickness together with a suitable support and fixing system."
+msgstr "Oikea paksuus riippuu materiaalista, käyttötarkoituksesta, tukirakenteesta, jännevälistä, paikallisista lumikuormista ja tuuliolosuhteista sekä vaadittavasta lämmöneristyksestä tai iskunkestävyydestä. Katto- ja lasitusprojekteissa levynpaksuus tulee valita yhdessä sopivan profiili- ja kiinnitysjärjestelmän kanssa."
+
+#. plastic-sheets-cutting
+#: inc/faq-data.php
+msgid "Can plastic sheets be cut to size?"
+msgstr "Voiko muovilevyjä leikata sopivaan kokoon?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets can usually be cut to size using appropriate tools and a blade suitable for plastics. Measure carefully, support the sheet properly while cutting and follow the product-specific cutting guidance. Multiwall polycarbonate channels should be cleaned of cutting dust before the sheet ends are sealed."
+msgstr "Kyllä. Polykarbonaatti- ja akrylilevyjä voidaan yleensä leikata sopivaan kokoon asianmukaisilla työkaluilla ja muoville tarkoitetulla terällä. Mittaa huolellisesti, tue levy hyvin leikkaamisen aikana ja noudata tuotekohtaisia leikkuuohjeita. Kennolevyjen kanavat tulee puhdistaa leikkuupölystä ennen päätyjen tiivistämistä."
+
+#. plastic-sheets-thermal-expansion
+#: inc/faq-data.php
+msgid "Do plastic sheets expand and contract with temperature changes?"
+msgstr "Laajenevatko ja kutistuvatko muovilevyt lämpötilavaihteluiden mukaan?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets expand and contract when temperatures change. Always allow suitable expansion gaps during installation, use compatible profiles and fixings, and avoid overtightening screws. This helps prevent stress, distortion and damage over time."
+msgstr "Kyllä. Polykarbonaatti- ja akryylilevyt elävät lämpötilamuutosten mukaisesti. Jätä asennuksen yhteydessä aina riittävät elämisvarat (laajenemisraot), käytä yhteensopivia profiileja ja kiinnikkeitä äläkä kiristä ruuveja liikaa. Tämä ehkäisee jännitteitä, vääntymistä ja murtumia."
+
+#. plastic-sheets-multiwall-sealing
+#: inc/faq-data.php
+msgid "How should multiwall polycarbonate sheet ends be sealed?"
+msgstr "Miten kennolevyjen päädyt tulisi tiivistää?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate sheet channels should be protected from dust, insects and moisture with suitable sealing tape and end profiles. The upper edge is normally sealed with solid tape, while the lower edge commonly uses breathable tape to allow condensation to drain. Always install the channels in the correct direction and follow the instructions for the selected sheet system."
+msgstr "Kennolevyjen ontelot tulee suojata pölyltä, hyönteisiltä ja kosteudelta tarkoitukseen sopivalla tiivistysteipillä ja päätyprofiileilla. Yläreuna suljetaan yleensä umpiteipillä ja alareuna hengittävällä (suodatin)teipillä, jotta kondenssivesi pääsee poistumaan. Asenna kanavat aina oikeaan kallistussuuntaan ja noudata järjestelmän ohjeita."
+
+#. plastic-sheets-cleaning
+#: inc/faq-data.php
+msgid "How do I clean polycarbonate and acrylic sheets?"
+msgstr "Miten puhdistan polykarbonaatti- ja akryylilevyt?"
+
+#: inc/faq-data.php
+msgid "Use lukewarm water, mild soap and a soft cloth or sponge. Rinse the sheet thoroughly before wiping to remove dust and loose particles. Avoid abrasive pads, strong solvents and harsh cleaning products, as they can scratch or damage the surface."
+msgstr "Käytä kädenlämpöistä vettä, mietoa saippuaa ja pehmeää liinaa tai sientä. Huuhtele levy huolellisesti ennen pyyhkimistä poistaaksesi pölyn ja irtoroskat. Vältä hankaavia sieniä, voimakkaita liuottimia ja syövyttäviä puhdistusaineita, sillä ne voivat naarmuttaa tai vaurioittaa pintaa."
+
+#. plastic-sheets-outdoor-use
+#: inc/faq-data.php
+msgid "Are plastic sheets suitable for outdoor use?"
+msgstr "Sopivatko muovilevyt ulkokäyttöön?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets are widely used for outdoor glazing, roofing, shelters, greenhouses and similar projects. Choose the material, thickness, support spacing and installation system according to the intended application and local weather conditions."
+msgstr "Kyllä. Polykarbonaatti- ja akryylilevyjä käytetään laajasti ulkolasituksissa, katoksissa, suojaseinissä, kasvihuoneissa ja vastaavissa kohteissa. Valitse materiaali, paksuus, runkoväli ja asennusjärjestelmä käyttötarkoituksen ja paikallisten sääolosuhteiden mukaan."
+
+#. plastic-sheets-greenhouse-use
+#: inc/faq-data.php
+msgid "Which plastic sheet is best for a greenhouse?"
+msgstr "Mikä muovilevy on paras kasvihuoneeseen?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate is a popular greenhouse material because its internal structure improves thermal insulation while keeping the sheets lightweight. Solid polycarbonate or acrylic may also be suitable where a clearer appearance is preferred. Consider insulation, light transmission, structural requirements and the greenhouse design when choosing."
+msgstr "Kennopolykarbonaatti on erittäin suosittu kasvihuonemateriaali, koska sen ontelorakenne parantaa lämmöneristystä ja pitää levyt keveinä. Kirkas polykarbonaatti tai akryyli voi sopia kohteisiin, joissa halutaan mahdollisimman kirkas ja läpinäkyvä ilme. Ota valinnassa huomioon eristyskyky, valonläpäisy, rakenteelliset vaatimukset ja kasvihuoneen malli."
+
+# -----------------------------------------------
+# INSTALLATION & ASSEMBLY
+# -----------------------------------------------
+#. installation-read-instructions
+#: inc/faq-data.php
+msgid "Should I read the installation instructions before starting?"
+msgstr "Pitäisikö asennusohjeet lukea ennen aloittamista?"
+
+#: inc/faq-data.php
+msgid "Yes. Read the complete product-specific instructions before starting work and check that all components are present. Installation methods, required tools, fixing details and safety requirements may vary between products."
+msgstr "Kyllä. Lue tuotekohtaiset ohjeet kokonaan ennen työn aloittamista ja tarkista, että kaikki osat ovat tallessa. Asennustavat, tarvittavat työkalut, kiinnityskohdat ja turvallisuusvaatimukset voivat vaihdella tuotteittain."
+
+#. installation-diy-or-professional
+#: inc/faq-data.php
+msgid "Can I install the product myself?"
+msgstr "Voinko asentaa tuotteen itse?"
+
+#: inc/faq-data.php
+msgid "Many products can be installed by an experienced DIY customer when the supplied instructions are followed carefully. Larger, heavier or more complex structures may require more than one person. Professional installation can be a practical option where the project, site conditions or local requirements make it necessary."
+msgstr "Monet tuotteet voi asentaa itse, kunhan mukana tulevia ohjeita noudatetaan huolellisesti. Suuremmat, raskaammat tai monimutkaisemmat rakenteet saattavat vaatia useamman henkilön. Ammattiasennus voi olla hyvä vaihtoehto silloin, kun projektin laajuus tai olosuhteet sitä edellyttävät."
+
+#. installation-tools
+#: inc/faq-data.php
+msgid "What tools will I need for installation?"
+msgstr "Mitä työkaluja tarvitsen asennukseen?"
+
+#: inc/faq-data.php
+msgid "The required tools depend on the product and installation surface. Common tools may include a tape measure, spirit level, drill, screwdriver, suitable drill bits, saw and personal safety equipment. Check the product instructions before starting and use only tools and fixings suitable for the materials involved."
+msgstr "Tarvittavat työkalut riippuvat tuotteesta ja asennusalustasta. Yleensä tarvitaan rullamittaa, vesivaakaa, porakonetta, ruuvinväännintä, sopivia poranteriä, sahaa sekä henkilökohtaisia suojavarusteita. Tarkista vaatimukset tuotteen ohjeista ennen aloittamista."
+
+#. installation-level-base
+#: inc/faq-data.php
+msgid "Why is a level and stable base important?"
+msgstr "Miksi suora ja tasainen perustus on tärkeä?"
+
+#: inc/faq-data.php
+msgid "A level, stable and properly prepared base is essential for correct alignment, secure fixing and long-term performance. An uneven or unstable surface can cause frames, doors, panels, profiles and seals to fit incorrectly and may place unnecessary stress on the structure."
+msgstr "Suora, vakaa ja oikein valmisteltu pohja on edellytys oikealle linjaukselle, turvalliselle kiinnitykselle ja tuotteen kestävyydelle. Epätasainen pohja voi johtaa siihen, että rungot, ovet, levyt, profiilit ja tiivisteet eivät istu paikoilleen ja rakenteeseen kohdistuu ylimääräistä rasitusta."
+
+#. installation-weather
+#: inc/faq-data.php
+msgid "Can I install outdoor products in any weather?"
+msgstr "Voinko asentaa ulkotuotteita millä tahansa säällä?"
+
+#: inc/faq-data.php
+msgid "Avoid installation during strong winds, heavy rain, snow or icy conditions. Large sheets, panels and lightweight components can be difficult to handle safely in poor weather. Choose calm and dry conditions, and do not start work unless the installation area can be made safe."
+msgstr "Vältä asennusta kovalla tuulella, rankkasateessa, lumisateessa tai liukkaalla säällä. Suuria levyjä ja keveitä osia on vaikea ja turvatonta käsitellä huonossa säässä. Valitse tyyneen ja kuiva päivä, äläkä aloita työtä, ellei asennusalue ole turvallinen."
+
+#. installation-fixings
+#: inc/faq-data.php
+msgid "Can I use my own screws and fixings?"
+msgstr "Voinko käyttää omia ruuveja ja kiinnikkeitä?"
+
+#. installation-screw-length
+#: inc/faq-data.php
+msgid "How do I choose the correct screw length?"
+msgstr "Miten valitsen oikean ruuvin pituuden?"
+
+#: inc/faq-data.php
+msgid "A reliable rule of thumb for roofing and plastic sheets is to double the total thickness of the materials being fastened. Calculation: (Sheet Thickness + Profile Thickness) x 2. For example, a 10mm sheet and a 20mm profile equal 30mm total; multiplying by two results in a recommended 60mm screw length for a secure connection."
+msgstr "Hyvä nyrkkisääntö kate- ja muovilevyille on kiinnitettävien materiaalien yhteispaksuuden tuplaaminen. Laskukaava: (Levyn paksuus + Profiilin paksuus) x 2. Esimerkiksi 10 mm levy ja 20 mm profiili ovat yhteensä 30 mm; kahdella kerrottuna suositeltu ruuvin pituus pitävään kiinnitykseen on 60 mm."
+
+#: inc/faq-data.php
+msgid "Use the supplied fixings whenever they are included with the product. If additional or replacement fixings are needed, they must be compatible with the product, installation surface and local weather conditions. Incorrect screws, unsuitable sealants or overtightened fixings can damage the material and affect the installation."
+msgstr "Käytä aina tuotteen mukana toimitettuja kiinnikkeitä. Jos tarvitset lisäkiinnikkeitä tai korvaavia ruuveja, niiden on oltava yhteensopivia tuotteen, asennusalustan ja sääolosuhteiden kanssa. Väärät ruuvit, sopimattomat tiivistemassat tai liian tiukkaan kierretyt kiinnikkeet voivat vaurioittaa materiaalia."
+
+#. installation-expansion-gaps
+#: inc/faq-data.php
+msgid "Why do plastic sheets need expansion gaps?"
+msgstr "Miksi muovilevyt tarvitsevat elämisvaraa?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate, acrylic and other plastic sheets expand and contract as temperatures change. The recommended expansion gaps, profiles and fixing method must be used to help prevent stress, buckling, cracking and leaks. Follow the product-specific installation instructions for the selected sheet system."
+msgstr "Polykarbonaatti-, akryyli- ja muut muovilevyt laajenevat ja kutistuvat lämpötilavaihteluiden mukaan. Suositeltuja elämisrakoja, profiileja ja kiinnitystapoja on käytettävä jännitteiden, vääntymisen, halkeamisen ja vuotojen estämiseksi. Noudata valitun levyjärjestelmän asennusohjeita."
+
+#. installation-polycarbonate-roof-guide
+#: inc/faq-data.php
+msgid "Where can I find a step-by-step guide for installing a polycarbonate roof?"
+msgstr "Mistä löydän vaiheittaisen ohjeen kennolevykaton asennukseen?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
+msgstr "<a href=\"https://norhage.fi/valokatteen-kennolevy-asennusohje-helposti-ja-oikein/\">Kennolevykaton asennusoppaamme</a> selittää projektin tärkeimmät vaiheet runkotyön suunnittelusta levyjen valmisteluun, profiilien kiinnitykseen, päätyjen tiivistykseen ja katon viimeistelyyn. Käytä opasta yhdessä hankkimasi järjestelmän ohjeiden kanssa."
+
+#. installation-greenhouse-guide
+#: inc/faq-data.php
+msgid "Where can I find greenhouse assembly instructions?"
+msgstr "Mistä löydän kasvihuoneen kokoamisohjeet?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
+msgstr "<a href=\"https://norhage.fi/kasvihuoneen-asennusohjeet/\">Kasvihuoneen kokoamisohjeemme</a> neuvovat pohjatyön valmistelussa, perustuksen rakentamisessa, rungon kokoamisessa, levytys/lasitustyössä ja ankkuroinnissa. Noudata aina juuri sinun kasvihuonemallisi mukana toimitettuja ohjeita."
+
+#. installation-final-check
+#: inc/faq-data.php
+msgid "What should I check after installation?"
+msgstr "Mitä asennuksen jälkeen pitää tarkistaa?"
+
+#: inc/faq-data.php
+msgid "After installation, check that the structure is level, securely fixed and correctly aligned. Confirm that fasteners are secure without being overtightened, seals and end caps are fitted correctly, drainage paths are clear, and moving parts such as doors or vents operate freely."
+msgstr "Tarkista asennuksen jälkeen, että rakenne on suorassa, tukevasti kiinnitetty ja oikein linjassa. Varmista, että kiinnikkeet ovat kiinni ilman liikaa kiristämistä, tiivisteet ja päätytulpat ovat paikoillaan, veden poistoreitit ovat auki ja liikkuvat osat (kuten ovet ja luukut) toimivat moitteettomasti."
+
+# -----------------------------------------------
+# GARDEN & ACCESSORIES
+# -----------------------------------------------
+#. garden-terrace-roof-kits
+#: inc/faq-data.php
+msgid "Do you offer complete terrace roof covering kits?"
+msgstr "Tarjoatteko täydellisiä kattopaketteja terasseille?"
+
+#: inc/faq-data.php
+msgid "Yes. We provide complete covering solutions that include the polycarbonate or acrylic sheets along with all necessary aluminum profiles, gaskets, and sealing materials. These kits are designed to ensure a professional and weather-tight finish for your terrace structure."
+msgstr "Kyllä. Tarjoamme täydellisiä valmiita kattopaketteja, jotka sisältävät kennopolykarbonaatti- tai akryylilevyt sekä kaikki tarvittavat alumiiniprofiilit, tiivisteet ja muut asennustarvikkeet ammattimaiseen ja säänkestävään lopputulokseen."
+
+#. garden-accessories-compatibility
+#: inc/faq-data.php
+msgid "How do I know if the accessories are compatible with my greenhouse or roof?"
+msgstr "Mistä tiedän, sopivatko lisävarusteet kasvihuoneeseeni tai kattooni?"
+
+#: inc/faq-data.php
+msgid "Our accessories and mounting components are designed to work with standard greenhouse and roofing systems. Always check the product specifications for thickness compatibility (e.g., 6mm, 10mm, 16mm) and profile types to ensure a perfect fit with your existing or new structure."
+msgstr "Lisävarusteemme ja asennusosamme on suunniteltu sopimaan standardikokoisiin kasvihuone- ja kattojärjestelmiin. Tarkista aina tuotteen tiedoista yhteensopiva levynpaksuus (esim. 6 mm, 10 mm, 16 mm) ja profiilityyppi varmistaaksesi täydellisen sopivuuden."
+
+#. garden-sealing-materials
+#: inc/faq-data.php
+msgid "What sealing materials do I need for a terrace roof?"
+msgstr "Mitä tiivistemateriaaleja tarvitsen terassin kattoon?"
+
+#: inc/faq-data.php
+msgid "A durable terrace roof requires specialized sealing, including EPDM rubber gaskets, anti-dust tapes for multiwall sheet ends, and high-quality neutral silicone sealants. Using the correct professional-grade sealing materials prevents leaks, minimizes vibration, and extends the life of the plastic sheets."
+msgstr "Kestävä terassikatto vaatii asianmukaiset tiivisteet, kuten EPDM-kumitiivisteet, suodatin/kangasteipit kennolevyjen päätyihin sekä laadukkaan neutraalin silikonimassan. Oikeiden ammattitason materiaalien käyttö ehkäisee vuotoja, vaimentaa tärinää ja pidentää levyjen ikää."
+
+#. garden-hardware-maintenance
+#: inc/faq-data.php
+msgid "Are your mounting profiles and accessories corrosion-resistant?"
+msgstr "Ovatko asennusprofiilinne ja lisävarusteenne korroosionkestäviä?"
+
+#: inc/faq-data.php
+msgid "Yes. We primarily supply aluminum profiles and stainless steel or coated fasteners that are designed for permanent outdoor use. These materials offer excellent resistance to rust and weathering, requiring minimal maintenance after correct installation."
+msgstr "Kyllä. Toimitamme pääasiassa alumiiniprofiileja sekä ruostumattomasta teräksestä valmistettuja tai pinnoitettuja kiinnikkeitä, jotka on suunniteltu jatkuvaan ulkokäyttöön. Ne kestävät erinomaisesti ruostetta ja säänvaihteluita, ja vaativat vain vähän huoltoa asennuksen jälkeen."
+
+#. garden-additional-items
+#: inc/faq-data.php
+msgid "What other accessories can I find for my garden project?"
+msgstr "Mitä muita lisävarusteita löydän puutarhaprojektiini?"
+
+#: inc/faq-data.php
+msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
+msgstr "Kattotarvikkeiden lisäksi tarjoamme monia muita tuotteita ulkotilojen varusteluun, kuten hyllystöjä kasvihuoneisiin, automaattisia tuuletusluukun avaajia sekä muovipinnoille tarkoitettuja erikoispuhdistusaineita, joilla pidät rakenteet uudenveroisina."
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 
@@ -1292,449 +1731,3 @@ msgstr "Arvioitu toimitusaika:"
 
 #~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
 #~ msgstr "Käytä tätä, jos haluat ottaa mittatilausleikkauksen käyttöön yksinkertaisessa tuotteessa. Vakiokokoiset vaihtoehdot kannattaa pitää erillisessä muunnelmatuotteessa."
-
-#: inc/faq.php
-msgid "Expand all"
-msgstr "Laajenna kaikki"
-
-#: inc/faq.php
-msgid "Collapse all"
-msgstr "Tiivistä kaikki"
-
-# -----------------------------------------------
-# TOPIC LABELS
-# -----------------------------------------------
-
-#: inc/faq-data.php
-msgid "Ordering & Delivery"
-msgstr "Tilaaminen ja toimitus"
-
-#: inc/faq-data.php
-msgid "Returns & Warranty"
-msgstr "Palautukset ja takuu"
-
-#: inc/faq-data.php
-msgid "Greenhouses"
-msgstr "Kasvihuoneet"
-
-#: inc/faq-data.php
-msgid "Polycarbonate & Plastics"
-msgstr "Kennolevyt ja muovilevyt"
-
-#: inc/faq-data.php
-msgid "Installation & Assembly"
-msgstr "Asennus ja kokoaminen"
-
-#: inc/faq-data.php
-msgid "Garden & Accessories"
-msgstr "Puutarha ja lisävarusteet"
-
-# -----------------------------------------------
-# ORDERING & DELIVERY
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. delivery-large-items
-msgid "How are large items delivered?"
-msgstr "Miten suuret tuotteet toimitetaan?"
-
-#: inc/faq-data.php
-msgid "Greenhouse kits and large sheets are delivered via specialized heavy freight transport. Most orders arrive on a single oversized pallet."
-msgstr "Kasvihuonepaketin ja suuret levyt toimitetaan erikoistuneella raskaan rahdin kuljetuksella. Useimmat tilaukset saapuvat yhdellä suurikokoisella lavalla."
-
-#: inc/faq-data.php
-#. delivery-forklift
-msgid "Do I need a forklift to unload?"
-msgstr "Tarvitsenko trukkia kuorman purkamiseen?"
-
-#: inc/faq-data.php
-msgid "No. Our delivery trucks are equipped with lift-gates to lower the pallet to the ground. However, you should have space available near the curbside or driveway for the truck to operate."
-msgstr "Et tarvitse. Kuorma-automme on varustettu takalaitanostimella lavan laskemiseksi maahan. Sinulla tulee kuitenkin olla riittävästi tilaa tienvarressa tai ajotiellä, jotta kuorma-auto mahtuu purkamaan kuorman."
-
-#: inc/faq-data.php
-#. delivery-curbside
-msgid "What is \"Curbside Delivery\"?"
-msgstr "Mitä tarkoittaa ”Tienvarsitoimitus”?"
-
-#: inc/faq-data.php
-msgid "This means the driver will unload the pallet at the end of your driveway or the nearest accessible point for the truck. Drivers cannot move the materials into your backyard or garage."
-msgstr "Tämä tarkoittaa, että kuljettaja purkaa lavan ajotiesi päähän tai lähimpään paikkaan, johon kuorma-autolla pääsee. Kuljettajat eivät voi siirtää materiaaleja takapihalle tai autotalliin."
-
-#: inc/faq-data.php
-#. delivery-driver-call
-msgid "Will the driver call me before arrival?"
-msgstr "Soittaako kuljettaja minulle ennen saapumista?"
-
-#: inc/faq-data.php
-msgid "Yes. For heavy freight deliveries, the transport company will contact you at the phone number provided in your order to schedule a specific delivery window."
-msgstr "Kyllä. Raskaan rahdin toimituksissa kuljetusyhtiö ottaa sinuun yhteyttä tilauksessa ilmoitettuun puhelinnumeroon soppiakseen tarkemmasta toimitusajankohdasta."
-
-#: inc/faq-data.php
-#. order-change
-msgid "Can I change my order after it has been placed?"
-msgstr "Voinko muuttaa tilaustani sen tekemisen jälkeen?"
-
-#: inc/faq-data.php
-msgid "If the order has not yet been loaded for transport, we can make changes. Contact us as soon as possible if you need to adjust quantities or sizes."
-msgstr "Jos tilausta ei ole vielä lastattu kuljetukseen, voimme tehdä siihen muutoksia. Ota meihin yhteyttä mahdollisimman pitäen, jos sinun täytyy muuttaa määriä tai kokoja."
-
-# -----------------------------------------------
-# RETURNS & WARRANTY
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. return-period
-msgid "How long do I have to return an item?"
-msgstr "Kuinka pitkä palautusaika tuotteilla on?"
-
-#: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
-msgstr "Palautusaikamme noudattaa paikallista kuluttajansuojalainsäädäntöä. Katso tarkemmat alueellasi voimassa olevat aikataulut <a href=\"https://norhage.fi/palautusehdot/\">Palautus- ja hyvityskäytännöt</a> -sivultamme."
-
-#: inc/faq-data.php
-#. return-condition
-msgid "What condition must the items be in for a return?"
-msgstr "Mille edellytyksille palautettavan tuotteen pitää täyttää?"
-
-#: inc/faq-data.php
-msgid "Items must be unused, in their original packaging, and in a condition suitable for resale. Custom-cut materials or specially ordered items may be subject to different conditions."
-msgstr "Tuotteiden tulee olla käyttämättömiä, alkuperäispakkauksessa ja jälleenmyyntikuntoisia. Määrämittaan leikatuille tai erikoistilatuille tuotteille voi olla poikkeavia ehtoja."
-
-#: inc/faq-data.php
-#. return-shipping-cost
-msgid "Who pays for return shipping?"
-msgstr "Kuka maksaa palautusrahdin?"
-
-#: inc/faq-data.php
-msgid "Unless the item is defective or the wrong product was sent, the customer is generally responsible for return transport costs, especially for large freight items."
-msgstr "Esimerkiksi silloin, kun tuote on virheetön ja oikea tuote on toimitettu, asiakas vastaa pääsääntöisesti palautuskustannuksista, erityisesti suurikokoisten rahtituotteiden kohdalla."
-
-#: inc/faq-data.php
-#. warranty-coverage
-msgid "What does the warranty cover?"
-msgstr "Mitä takuu kattaa?"
-
-#: inc/faq-data.php
-msgid "Warranty covers manufacturing defects in materials and workmanship. It does not cover damage caused by extreme weather events (storms, heavy snow loads beyond limits), improper assembly, or lack of maintenance."
-msgstr "Takuu kattaa materiaali- ja valmistusvirheet. Takuu ei kata ääriolosuhteiden (myrskyt, raja-arvot ylittävät lumikuormat), virheellisen asennuksen tai huollon laiminlyönnin aiheuttamia vaurioita."
-
-#: inc/faq-data.php
-#. damage-on-arrival
-msgid "What should I do if my order arrives damaged?"
-msgstr "Mitä teen, jos tilaus on vaurioitunut saapuessaan?"
-
-#: inc/faq-data.php
-msgid "It is critical to inspect the delivery before signing the courier documents. If damage is visible, note it on the transport document and contact our customer support immediately with photos."
-msgstr "On erittäin tärkeää tarkistaa toimitus ennen rahtikirjan allekirjoittamista. Jos vaurioita on havaittavissa, tee niistä merkintä rahtikirjaan ja ota välittömästi yhteyttä asiakaspalveluumme kuvien kera."
-
-# -----------------------------------------------
-# GREENHOUSES
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. greenhouse-cold-climate
-msgid "Which greenhouse material is best for a cold climate?"
-msgstr "Mikä kasvihuonemateriaali sopii parhaiten kylmään ilmastoon?"
-
-#: inc/faq-data.php
-msgid "For cold climates, polycarbonate glazing is often a practical choice because it provides better thermal insulation and higher impact resistance than single-pane glass. The best option still depends on the greenhouse model, local wind and snow conditions, and whether you plan to heat the greenhouse."
-msgstr "Kylmiin ilmasto-olosuhteisiin kennolevy (polykarbonaatti) on usein käytännöllinen valinta, sillä se eristää lämpöä paremmin ja kestää iskuja paremmin kuin yksinkertainen lasi. Paras vaihtoehto riippuu kuitenkin kasvihuonemallista, paikallisista tuuli- ja lumikuormista sekä siitä, lämmitetäänkö kasvihuonetta."
-
-#: inc/faq-data.php
-#. greenhouse-maintenance
-msgid "What maintenance does a greenhouse require?"
-msgstr "Mitä huoltoa kasvihuone vaatii?"
-
-#: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\u2019s instructions for seasonal checks and snow management."
-msgstr "Säännöllinen huolto pidentää kasvihuoneen käyttöikää ja pitää sen turvallisena. Puhdista kate, tarkista runko, kiinnikkeet, tiivisteet ja ovet sekä varmista tuuletusluukkujen esteetön toiminta. Puhdista lehdett ja roskat ränneistä ja katolta ja noudata valmistajan ohjeita kausitarkastuksista ja lumikuorman hallinnasta."
-
-#: inc/faq-data.php
-#. greenhouse-ventilation
-msgid "What ventilation options are available for greenhouses?"
-msgstr "Mitä tuuletusvaihtoehtoja kasvihuoneisiin on saatavilla?"
-
-#: inc/faq-data.php
-msgid "Greenhouse ventilation may include roof vents, side vents, doors, louvre vents and automatic vent openers. A well-planned combination improves air circulation and helps manage temperature and humidity during warmer periods."
-msgstr "Kasvihuoneen tuuletukseen voidaan käyttää kattoluukkuja, tuuletusikkunoita, ovia, säleikköluukkuja ja automaattisia tuuletusluukun avaajia. Hyvin suunniteltu kokonaisuus parantaa ilmanvaihtoa ja auttaa hallitsemaan lämpötilaa sekä kosteutta lämpiminä kausina."
-
-#: inc/faq-data.php
-#. greenhouse-professional-installation
-msgid "Is professional greenhouse installation necessary?"
-msgstr "Onko kasvihuoneen ammattimainen asennus välttämätöntä?"
-
-#: inc/faq-data.php
-msgid "Professional installation is not always required, but it can be a good option for larger, permanent or more complex greenhouses. Careful assembly, correct anchoring and a level base are essential regardless of who installs the greenhouse. Always follow the supplied installation instructions."
-msgstr "Ammattiasennus ei ole aina välttämätöntä, mutta se voi olla hyvä ratkaisu suurempien, kiinteiden tai vaativampien kasvihuoneiden kohdalla. Huolellinen kokoaminen, oikea ankkurointi ja tasainen perustus ovat tärkeitä asentajasta riippumatta. Noudata aina mukana tulevia asennusohjeita."
-
-#: inc/faq-data.php
-#. greenhouse-foundation
-msgid "Does a greenhouse need a foundation?"
-msgstr "Tarvitseeko kasvihuone perustuksen?"
-
-#: inc/faq-data.php
-msgid "A stable, level and properly prepared base is important for the safe installation and long-term performance of most greenhouses. Suitable foundation options vary by model and site, and may include a concrete base, timber frame, foundation base or ground anchors. Check the product documentation before choosing a solution."
-msgstr "Vakaa, tasainen ja oikein valmisteltu perustus on tärkeä useimpien kasvihuoneiden turvalliselle asennukselle ja pitkälle käyttöiälle. Sopiva perustustapa riippuu mallista ja sijoituspaikasta, ja se voi olla esimerkiksi valettu betonipohja, puukehikko, sokkeli tai maa-ankkurit. Tarkista tuotteen tiedot ennen ratkaisun valintaa."
-
-#: inc/faq-data.php
-#. greenhouse-expansion
-msgid "Can I extend my greenhouse later?"
-msgstr "Voinko laajentaa kasvihuonetta myöhemmin?"
-
-#: inc/faq-data.php
-msgid "Some greenhouse models can be extended using compatible extension kits. Availability depends on the specific model, frame system and manufacturer. If future expansion is important, check this before purchasing and allow enough space when planning the installation area."
-msgstr "Joitakin kasvihuonemalleja voidaan pidentää yhteensopivilla jatkopaloilla. Saatavuus riippuu mallista, runkojärjestelmästä ja valmistajasta. Jos mielessäsi on tuleva laajennus, tarkista asia ennen ostopäätöstä ja varaa riittävästi tilaa asennuspaikkaa suunnitellessasi."
-
-#: inc/faq-data.php
-msgid "What does \"WOM exposure\" mean in the greenhouse plastic specifications?"
-msgstr "Mitä ”WOM-altistus” (WOM exposure) tarkoittaa kasvihuonemuovien teknisissä tiedoissa?"
-
-#: inc/faq-data.php
-msgid "WOM exposure refers to standardized testing conducted in a \"Weather-Ometer.\" This laboratory equipment simulates years of outdoor weather conditions in a short period by exposing the material to intense UV radiation, high heat, and moisture. This test ensures the plastic film or sheet meets durability standards and will maintain its structural integrity and light transmission over many years in a real-world environment."
-msgstr "WOM-altistuksella tarkoitetaan standardoitua testausta, joka suoritetaan ”Weather-Ometer”-laitteistossa. Tämä laboratorio-olosuhteisiin suunniteltu laite simuloi vuosien ulkoilmasäätä lyhyessä ajassa altistamalla materiaalin voimakkaalle UV-säteilylle, korkealle kuumuudelle ja kosteudelle. Testi varmistaa, että muovikalvo tai -levy täyttää kestävyysstandardit ja säilyttää rakenne lujuutensa sekä valonläpäisykykynsä useiden vuosien ajan aidoissa olosuhteissa."
-
-# -----------------------------------------------
-# POLYCARBONATE & PLASTICS
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. plastic-sheets-pc-vs-pmma
-msgid "What is the difference between polycarbonate and acrylic (PMMA) sheets?"
-msgstr "Mitä eroa on polykarbonaatti- ja akryylilevyillä (PMMA)?"
-
-#: inc/faq-data.php
-msgid "Polycarbonate and acrylic are both strong, lightweight alternatives to glass, but they have different properties. Polycarbonate is known for its very high impact resistance and is often chosen for demanding applications. Acrylic (PMMA) offers excellent clarity and a smooth, glass-like appearance. The best material depends on the application, required strength, appearance and installation conditions."
-msgstr "Polykarbonaatti ja akryyli ovat molemmat kestäviä ja keveitä vaihtoehtoja lasille, mutta niillä on erilaiset ominaisuudet. Polykarbonaatti tunnetaan erittäin korkeasta iskunkestävyydestään ja sitä käytetään vaativissa kohteissa. Akryyli (PMMA) tarjoaa erinomaisen kirkkauden ja sileän, lasimaisen pinnan. Paras materiaali riippuu käyttötarkoituksesta, lujuusvaatimuksista, ulkonäöstä ja asennusolosuhteista."
-
-#: inc/faq-data.php
-#. plastic-sheets-solid-vs-multiwall
-msgid "What is the difference between solid and multiwall polycarbonate sheets?"
-msgstr "Mitä eroa on kirkkaalla (umpinaisella) ja kennopolykarbonaattilevyllä?"
-
-#: inc/faq-data.php
-msgid "Solid polycarbonate sheets are compact, transparent sheets with a smooth surface and a glass-like appearance. Multiwall polycarbonate sheets have internal channels that make them lighter and improve thermal insulation. Solid sheets are often selected for clear glazing and impact resistance, while multiwall sheets are commonly used for roofs, greenhouses and insulated structures."
-msgstr "Umpinaiset polykarbonaattilevyt ovat tiiviitä ja täysin läpinäkyviä levyjä, joiden pinta on sileä ja lasimainen. Kennolevyt sisältävät sisäisiä onteloita/kanavia, jotka tekevät niistä keveitä ja parantavat lämmöneristystä. Umpilevyjä käytetään usein kirkkaissa lasituksissa ja iskusuojausta vaativissa kohteissa, kun taas kennolevyjä käytetään yleisesti katossa, kasvihuoneissa ja eristetyissä rakenteissa."
-
-#: inc/faq-data.php
-#. plastic-sheets-uv-protection
-msgid "Do your polycarbonate and acrylic sheets have UV protection?"
-msgstr "Onko polykarbonaatti- ja akryylilevyissänne UV-suojaus?"
-
-#: inc/faq-data.php
-msgid "Yes. Our polycarbonate and acrylic (PMMA) sheets include UV protection for outdoor use. This helps protect the material from weathering and supports long-term performance when the sheets are installed correctly."
-msgstr "Kyllä. Polykarbonaatti- ja akryylilevymme (PMMA) sisältävät ulkokäyttöön tarkoitetun UV-suojauksen. Tämä suojaa materiaalia sään vaikutuksilta ja varmistaa pitkän käyttöiän, kun levyt asennetaan oikein."
-
-#: inc/faq-data.php
-#. plastic-sheets-thickness
-msgid "How do I choose the right sheet thickness?"
-msgstr "Miten valitsen oikean levynpaksuuden?"
-
-#: inc/faq-data.php
-msgid "The right thickness depends on the material, application, supporting frame, distance between supports, local wind and snow conditions, and the insulation or impact resistance required. For roofing and glazing projects, select the sheet thickness together with a suitable support and fixing system."
-msgstr "Oikea paksuus riippuu materiaalista, käyttötarkoituksesta, tukirakenteesta, jännevälistä, paikallisista lumikuormista ja tuuliolosuhteista sekä vaadittavasta lämmöneristyksestä tai iskunkestävyydestä. Katto- ja lasitusprojekteissa levynpaksuus tulee valita yhdessä sopivan profiili- ja kiinnitysjärjestelmän kanssa."
-
-#: inc/faq-data.php
-#. plastic-sheets-cutting
-msgid "Can plastic sheets be cut to size?"
-msgstr "Voiko muovilevyjä leikata sopivaan kokoon?"
-
-#: inc/faq-data.php
-msgid "Yes. Polycarbonate and acrylic sheets can usually be cut to size using appropriate tools and a blade suitable for plastics. Measure carefully, support the sheet properly while cutting and follow the product-specific cutting guidance. Multiwall polycarbonate channels should be cleaned of cutting dust before the sheet ends are sealed."
-msgstr "Kyllä. Polykarbonaatti- ja akrylilevyjä voidaan yleensä leikata sopivaan kokoon asianmukaisilla työkaluilla ja muoville tarkoitetulla terällä. Mittaa huolellisesti, tue levy hyvin leikkaamisen aikana ja noudata tuotekohtaisia leikkuuohjeita. Kennolevyjen kanavat tulee puhdistaa leikkuupölystä ennen päätyjen tiivistämistä."
-
-#: inc/faq-data.php
-#. plastic-sheets-thermal-expansion
-msgid "Do plastic sheets expand and contract with temperature changes?"
-msgstr "Laajenevatko ja kutistuvatko muovilevyt lämpötilavaihteluiden mukaan?"
-
-#: inc/faq-data.php
-msgid "Yes. Polycarbonate and acrylic sheets expand and contract when temperatures change. Always allow suitable expansion gaps during installation, use compatible profiles and fixings, and avoid overtightening screws. This helps prevent stress, distortion and damage over time."
-msgstr "Kyllä. Polykarbonaatti- ja akryylilevyt elävät lämpötilamuutosten mukaisesti. Jätä asennuksen yhteydessä aina riittävät elämisvarat (laajenemisraot), käytä yhteensopivia profiileja ja kiinnikkeitä äläkä kiristä ruuveja liikaa. Tämä ehkäisee jännitteitä, vääntymistä ja murtumia."
-
-#: inc/faq-data.php
-#. plastic-sheets-multiwall-sealing
-msgid "How should multiwall polycarbonate sheet ends be sealed?"
-msgstr "Miten kennolevyjen päädyt tulisi tiivistää?"
-
-#: inc/faq-data.php
-msgid "Multiwall polycarbonate sheet channels should be protected from dust, insects and moisture with suitable sealing tape and end profiles. The upper edge is normally sealed with solid tape, while the lower edge commonly uses breathable tape to allow condensation to drain. Always install the channels in the correct direction and follow the instructions for the selected sheet system."
-msgstr "Kennolevyjen ontelot tulee suojata pölyltä, hyönteisiltä ja kosteudelta tarkoitukseen sopivalla tiivistysteipillä ja päätyprofiileilla. Yläreuna suljetaan yleensä umpiteipillä ja alareuna hengittävällä (suodatin)teipillä, jotta kondenssivesi pääsee poistumaan. Asenna kanavat aina oikeaan kallistussuuntaan ja noudata järjestelmän ohjeita."
-
-#: inc/faq-data.php
-#. plastic-sheets-cleaning
-msgid "How do I clean polycarbonate and acrylic sheets?"
-msgstr "Miten puhdistan polykarbonaatti- ja akryylilevyt?"
-
-#: inc/faq-data.php
-msgid "Use lukewarm water, mild soap and a soft cloth or sponge. Rinse the sheet thoroughly before wiping to remove dust and loose particles. Avoid abrasive pads, strong solvents and harsh cleaning products, as they can scratch or damage the surface."
-msgstr "Käytä kädenlämpöistä vettä, mietoa saippuaa ja pehmeää liinaa tai sientä. Huuhtele levy huolellisesti ennen pyyhkimistä poistaaksesi pölyn ja irtoroskat. Vältä hankaavia sieniä, voimakkaita liuottimia ja syövyttäviä puhdistusaineita, sillä ne voivat naarmuttaa tai vaurioittaa pintaa."
-
-#: inc/faq-data.php
-#. plastic-sheets-outdoor-use
-msgid "Are plastic sheets suitable for outdoor use?"
-msgstr "Sopivatko muovilevyt ulkokäyttöön?"
-
-#: inc/faq-data.php
-msgid "Yes. Polycarbonate and acrylic sheets are widely used for outdoor glazing, roofing, shelters, greenhouses and similar projects. Choose the material, thickness, support spacing and installation system according to the intended application and local weather conditions."
-msgstr "Kyllä. Polykarbonaatti- ja akryylilevyjä käytetään laajasti ulkolasituksissa, katoksissa, suojaseinissä, kasvihuoneissa ja vastaavissa kohteissa. Valitse materiaali, paksuus, runkoväli ja asennusjärjestelmä käyttötarkoituksen ja paikallisten sääolosuhteiden mukaan."
-
-#: inc/faq-data.php
-#. plastic-sheets-greenhouse-use
-msgid "Which plastic sheet is best for a greenhouse?"
-msgstr "Mikä muovilevy on paras kasvihuoneeseen?"
-
-#: inc/faq-data.php
-msgid "Multiwall polycarbonate is a popular greenhouse material because its internal structure improves thermal insulation while keeping the sheets lightweight. Solid polycarbonate or acrylic may also be suitable where a clearer appearance is preferred. Consider insulation, light transmission, structural requirements and the greenhouse design when choosing."
-msgstr "Kennopolykarbonaatti on erittäin suosittu kasvihuonemateriaali, koska sen ontelorakenne parantaa lämmöneristystä ja pitää levyt keveinä. Kirkas polykarbonaatti tai akryyli voi sopia kohteisiin, joissa halutaan mahdollisimman kirkas ja läpinäkyvä ilme. Ota valinnassa huomioon eristyskyky, valonläpäisy, rakenteelliset vaatimukset ja kasvihuoneen malli."
-
-# -----------------------------------------------
-# INSTALLATION & ASSEMBLY
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. installation-read-instructions
-msgid "Should I read the installation instructions before starting?"
-msgstr "Pitäisikö asennusohjeet lukea ennen aloittamista?"
-
-#: inc/faq-data.php
-msgid "Yes. Read the complete product-specific instructions before starting work and check that all components are present. Installation methods, required tools, fixing details and safety requirements may vary between products."
-msgstr "Kyllä. Lue tuotekohtaiset ohjeet kokonaan ennen työn aloittamista ja tarkista, että kaikki osat ovat tallessa. Asennustavat, tarvittavat työkalut, kiinnityskohdat ja turvallisuusvaatimukset voivat vaihdella tuotteittain."
-
-#: inc/faq-data.php
-#. installation-diy-or-professional
-msgid "Can I install the product myself?"
-msgstr "Voinko asentaa tuotteen itse?"
-
-#: inc/faq-data.php
-msgid "Many products can be installed by an experienced DIY customer when the supplied instructions are followed carefully. Larger, heavier or more complex structures may require more than one person. Professional installation can be a practical option where the project, site conditions or local requirements make it necessary."
-msgstr "Monet tuotteet voi asentaa itse, kunhan mukana tulevia ohjeita noudatetaan huolellisesti. Suuremmat, raskaammat tai monimutkaisemmat rakenteet saattavat vaatia useamman henkilön. Ammattiasennus voi olla hyvä vaihtoehto silloin, kun projektin laajuus tai olosuhteet sitä edellyttävät."
-
-#: inc/faq-data.php
-#. installation-tools
-msgid "What tools will I need for installation?"
-msgstr "Mitä työkaluja tarvitsen asennukseen?"
-
-#: inc/faq-data.php
-msgid "The required tools depend on the product and installation surface. Common tools may include a tape measure, spirit level, drill, screwdriver, suitable drill bits, saw and personal safety equipment. Check the product instructions before starting and use only tools and fixings suitable for the materials involved."
-msgstr "Tarvittavat työkalut riippuvat tuotteesta ja asennusalustasta. Yleensä tarvitaan rullamittaa, vesivaakaa, porakonetta, ruuvinväännintä, sopivia poranteriä, sahaa sekä henkilökohtaisia suojavarusteita. Tarkista vaatimukset tuotteen ohjeista ennen aloittamista."
-
-#: inc/faq-data.php
-#. installation-level-base
-msgid "Why is a level and stable base important?"
-msgstr "Miksi suora ja tasainen perustus on tärkeä?"
-
-#: inc/faq-data.php
-msgid "A level, stable and properly prepared base is essential for correct alignment, secure fixing and long-term performance. An uneven or unstable surface can cause frames, doors, panels, profiles and seals to fit incorrectly and may place unnecessary stress on the structure."
-msgstr "Suora, vakaa ja oikein valmisteltu pohja on edellytys oikealle linjaukselle, turvalliselle kiinnitykselle ja tuotteen kestävyydelle. Epätasainen pohja voi johtaa siihen, että rungot, ovet, levyt, profiilit ja tiivisteet eivät istu paikoilleen ja rakenteeseen kohdistuu ylimääräistä rasitusta."
-
-#: inc/faq-data.php
-#. installation-weather
-msgid "Can I install outdoor products in any weather?"
-msgstr "Voinko asentaa ulkotuotteita millä tahansa säällä?"
-
-#: inc/faq-data.php
-msgid "Avoid installation during strong winds, heavy rain, snow or icy conditions. Large sheets, panels and lightweight components can be difficult to handle safely in poor weather. Choose calm and dry conditions, and do not start work unless the installation area can be made safe."
-msgstr "Vältä asennusta kovalla tuulella, rankkasateessa, lumisateessa tai liukkaalla säällä. Suuria levyjä ja keveitä osia on vaikea ja turvatonta käsitellä huonossa säässä. Valitse tyyneen ja kuiva päivä, äläkä aloita työtä, ellei asennusalue ole turvallinen."
-
-#: inc/faq-data.php
-#. installation-fixings
-msgid "Can I use my own screws and fixings?"
-msgstr "Voinko käyttää omia ruuveja ja kiinnikkeitä?"
-
-#: inc/faq-data.php
-#. installation-screw-length
-msgid "How do I choose the correct screw length?"
-msgstr "Miten valitsen oikean ruuvin pituuden?"
-
-#: inc/faq-data.php
-msgid "A reliable rule of thumb for roofing and plastic sheets is to double the total thickness of the materials being fastened. Calculation: (Sheet Thickness + Profile Thickness) x 2. For example, a 10mm sheet and a 20mm profile equal 30mm total; multiplying by two results in a recommended 60mm screw length for a secure connection."
-msgstr "Hyvä nyrkkisääntö kate- ja muovilevyille on kiinnitettävien materiaalien yhteispaksuuden tuplaaminen. Laskukaava: (Levyn paksuus + Profiilin paksuus) x 2. Esimerkiksi 10 mm levy ja 20 mm profiili ovat yhteensä 30 mm; kahdella kerrottuna suositeltu ruuvin pituus pitävään kiinnitykseen on 60 mm."
-
-#: inc/faq-data.php
-msgid "Use the supplied fixings whenever they are included with the product. If additional or replacement fixings are needed, they must be compatible with the product, installation surface and local weather conditions. Incorrect screws, unsuitable sealants or overtightened fixings can damage the material and affect the installation."
-msgstr "Käytä aina tuotteen mukana toimitettuja kiinnikkeitä. Jos tarvitset lisäkiinnikkeitä tai korvaavia ruuveja, niiden on oltava yhteensopivia tuotteen, asennusalustan ja sääolosuhteiden kanssa. Väärät ruuvit, sopimattomat tiivistemassat tai liian tiukkaan kierretyt kiinnikkeet voivat vaurioittaa materiaalia."
-
-#: inc/faq-data.php
-#. installation-expansion-gaps
-msgid "Why do plastic sheets need expansion gaps?"
-msgstr "Miksi muovilevyt tarvitsevat elämisvaraa?"
-
-#: inc/faq-data.php
-msgid "Polycarbonate, acrylic and other plastic sheets expand and contract as temperatures change. The recommended expansion gaps, profiles and fixing method must be used to help prevent stress, buckling, cracking and leaks. Follow the product-specific installation instructions for the selected sheet system."
-msgstr "Polykarbonaatti-, akryyli- ja muut muovilevyt laajenevat ja kutistuvat lämpötilavaihteluiden mukaan. Suositeltuja elämisrakoja, profiileja ja kiinnitystapoja on käytettävä jännitteiden, vääntymisen, halkeamisen ja vuotojen estämiseksi. Noudata valitun levyjärjestelmän asennusohjeita."
-
-#: inc/faq-data.php
-#. installation-polycarbonate-roof-guide
-msgid "Where can I find a step-by-step guide for installing a polycarbonate roof?"
-msgstr "Mistä löydän vaiheittaisen ohjeen kennolevykaton asennukseen?"
-
-#: inc/faq-data.php
-msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
-msgstr "<a href=\"https://norhage.fi/valokatteen-kennolevy-asennusohje-helposti-ja-oikein/\">Kennolevykaton asennusoppaamme</a> selittää projektin tärkeimmät vaiheet runkotyön suunnittelusta levyjen valmisteluun, profiilien kiinnitykseen, päätyjen tiivistykseen ja katon viimeistelyyn. Käytä opasta yhdessä hankkimasi järjestelmän ohjeiden kanssa."
-
-#: inc/faq-data.php
-#. installation-greenhouse-guide
-msgid "Where can I find greenhouse assembly instructions?"
-msgstr "Mistä löydän kasvihuoneen kokoamisohjeet?"
-
-#: inc/faq-data.php
-msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
-msgstr "<a href=\"https://norhage.fi/kasvihuoneen-asennusohjeet/\">Kasvihuoneen kokoamisohjeemme</a> neuvovat pohjatyön valmistelussa, perustuksen rakentamisessa, rungon kokoamisessa, levytys/lasitustyössä ja ankkuroinnissa. Noudata aina juuri sinun kasvihuonemallisi mukana toimitettuja ohjeita."
-
-#: inc/faq-data.php
-#. installation-final-check
-msgid "What should I check after installation?"
-msgstr "Mitä asennuksen jälkeen pitää tarkistaa?"
-
-#: inc/faq-data.php
-msgid "After installation, check that the structure is level, securely fixed and correctly aligned. Confirm that fasteners are secure without being overtightened, seals and end caps are fitted correctly, drainage paths are clear, and moving parts such as doors or vents operate freely."
-msgstr "Tarkista asennuksen jälkeen, että rakenne on suorassa, tukevasti kiinnitetty ja oikein linjassa. Varmista, että kiinnikkeet ovat kiinni ilman liikaa kiristämistä, tiivisteet ja päätytulpat ovat paikoillaan, veden poistoreitit ovat auki ja liikkuvat osat (kuten ovet ja luukut) toimivat moitteettomasti."
-
-# -----------------------------------------------
-# GARDEN & ACCESSORIES
-# -----------------------------------------------
-
-#: inc/faq-data.php
-#. garden-terrace-roof-kits
-msgid "Do you offer complete terrace roof covering kits?"
-msgstr "Tarjoatteko täydellisiä kattopaketteja terasseille?"
-
-#: inc/faq-data.php
-msgid "Yes. We provide complete covering solutions that include the polycarbonate or acrylic sheets along with all necessary aluminum profiles, gaskets, and sealing materials. These kits are designed to ensure a professional and weather-tight finish for your terrace structure."
-msgstr "Kyllä. Tarjoamme täydellisiä valmiita kattopaketteja, jotka sisältävät kennopolykarbonaatti- tai akryylilevyt sekä kaikki tarvittavat alumiiniprofiilit, tiivisteet ja muut asennustarvikkeet ammattimaiseen ja säänkestävään lopputulokseen."
-
-#: inc/faq-data.php
-#. garden-accessories-compatibility
-msgid "How do I know if the accessories are compatible with my greenhouse or roof?"
-msgstr "Mistä tiedän, sopivatko lisävarusteet kasvihuoneeseeni tai kattooni?"
-
-#: inc/faq-data.php
-msgid "Our accessories and mounting components are designed to work with standard greenhouse and roofing systems. Always check the product specifications for thickness compatibility (e.g., 6mm, 10mm, 16mm) and profile types to ensure a perfect fit with your existing or new structure."
-msgstr "Lisävarusteemme ja asennusosamme on suunniteltu sopimaan standardikokoisiin kasvihuone- ja kattojärjestelmiin. Tarkista aina tuotteen tiedoista yhteensopiva levynpaksuus (esim. 6 mm, 10 mm, 16 mm) ja profiilityyppi varmistaaksesi täydellisen sopivuuden."
-
-#: inc/faq-data.php
-#. garden-sealing-materials
-msgid "What sealing materials do I need for a terrace roof?"
-msgstr "Mitä tiivistemateriaaleja tarvitsen terassin kattoon?"
-
-#: inc/faq-data.php
-msgid "A durable terrace roof requires specialized sealing, including EPDM rubber gaskets, anti-dust tapes for multiwall sheet ends, and high-quality neutral silicone sealants. Using the correct professional-grade sealing materials prevents leaks, minimizes vibration, and extends the life of the plastic sheets."
-msgstr "Kestävä terassikatto vaatii asianmukaiset tiivisteet, kuten EPDM-kumitiivisteet, suodatin/kangasteipit kennolevyjen päätyihin sekä laadukkaan neutraalin silikonimassan. Oikeiden ammattitason materiaalien käyttö ehkäisee vuotoja, vaimentaa tärinää ja pidentää levyjen ikää."
-
-#: inc/faq-data.php
-#. garden-hardware-maintenance
-msgid "Are your mounting profiles and accessories corrosion-resistant?"
-msgstr "Ovatko asennusprofiilinne ja lisävarusteenne korroosionkestäviä?"
-
-#: inc/faq-data.php
-msgid "Yes. We primarily supply aluminum profiles and stainless steel or coated fasteners that are designed for permanent outdoor use. These materials offer excellent resistance to rust and weathering, requiring minimal maintenance after correct installation."
-msgstr "Kyllä. Toimitamme pääasiassa alumiiniprofiileja sekä ruostumattomasta teräksestä valmistettuja tai pinnoitettuja kiinnikkeitä, jotka on suunniteltu jatkuvaan ulkokäyttöön. Ne kestävät erinomaisesti ruostetta ja säänvaihteluita, ja vaativat vain vähän huoltoa asennuksen jälkeen."
-
-#: inc/faq-data.php
-#. garden-additional-items
-msgid "What other accessories can I find for my garden project?"
-msgstr "Mitä muita lisävarusteita löydän puutarhaprojektiini?"
-
-#: inc/faq-data.php
-msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
-msgstr "Kattotarvikkeiden lisäksi tarjoamme monia muita tuotteita ulkotilojen varusteluun, kuten hyllystöjä kasvihuoneisiin, automaattisia tuuletusluukun avaajia sekä muovipinnoille tarkoitettuja erikoispuhdistusaineita, joilla pidät rakenteet uudenveroisina."
