@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-20 14:55+0300\n"
+"PO-Revision-Date: 2026-07-20 15:07+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1232,6 +1232,9 @@ msgstr "Lämmöneristys"
 msgid "Estimated delivery:"
 msgstr "Arvioitu toimitusaika:"
 
+# -----------------------------------------------
+# FAQ
+# -----------------------------------------------
 #: inc/faq.php
 msgid "Expand all"
 msgstr "Laajenna kaikki"
@@ -1239,6 +1242,10 @@ msgstr "Laajenna kaikki"
 #: inc/faq.php
 msgid "Collapse all"
 msgstr "Tiivistä kaikki"
+
+#: inc/faq.php
+msgid "Questions & Answers"
+msgstr "Kysymykset ja vastaukset"
 
 # -----------------------------------------------
 # TOPIC LABELS
