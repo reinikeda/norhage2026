@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-09 16:51+0300\n"
+"PO-Revision-Date: 2026-07-20 15:07+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -254,7 +254,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:121
 msgid "YouTube / Vimeo URL"
-msgstr ""
+msgstr "YouTube / Vimeo URL"
 
 #: inc/meta-boxes.php:154
 msgid "Enable custom cutting"
@@ -1231,6 +1231,452 @@ msgstr "Wärmedämmung"
 #: inc/delivery-time.php
 msgid "Estimated delivery:"
 msgstr "Voraussichtliche Lieferung:"
+
+# -----------------------------------------------
+# FAQ
+# -----------------------------------------------
+#: inc/faq.php
+msgid "Expand all"
+msgstr "Alle ausklappen"
+
+#: inc/faq.php
+msgid "Collapse all"
+msgstr "Alle einklappen"
+
+#: inc/faq.php
+msgid "Questions & Answers"
+msgstr "Fragen & Antworten"
+
+# -----------------------------------------------
+# TOPIC LABELS
+# -----------------------------------------------
+#: inc/faq-data.php
+msgid "Ordering & Delivery"
+msgstr "Bestellung & Lieferung"
+
+#: inc/faq-data.php
+msgid "Returns & Warranty"
+msgstr "Rückgabe & Garantie"
+
+#: inc/faq-data.php
+msgid "Greenhouses"
+msgstr "Gewächshäuser"
+
+#: inc/faq-data.php
+msgid "Polycarbonate & Plastics"
+msgstr "Stegplatten & Kunststoffe"
+
+#: inc/faq-data.php
+msgid "Installation & Assembly"
+msgstr "Montage & Installation"
+
+#: inc/faq-data.php
+msgid "Garden & Accessories"
+msgstr "Garten & Zubehör"
+
+# -----------------------------------------------
+# ORDERING & DELIVERY
+# -----------------------------------------------
+#. delivery-large-items
+#: inc/faq-data.php
+msgid "How are large items delivered?"
+msgstr "Wie werden große Artikel geliefert?"
+
+#: inc/faq-data.php
+msgid "Greenhouse kits and large sheets are delivered via specialized heavy freight transport. Most orders arrive on a single oversized pallet."
+msgstr "Gewächshaus-Bausätze und große Platten werden per spezialisiertem Speditionsversand geliefert. Die meisten Bestellungen kommen auf einer einzelnen Übergrößen-Palette an."
+
+#. delivery-forklift
+#: inc/faq-data.php
+msgid "Do I need a forklift to unload?"
+msgstr "Benötige ich einen Gabelstapler zum Entladen?"
+
+#: inc/faq-data.php
+msgid "No. Our delivery trucks are equipped with lift-gates to lower the pallet to the ground. However, you should have space available near the curbside or driveway for the truck to operate."
+msgstr "Nein. Unsere Lieferfahrzeuge sind mit einer Ladebordwand ausgestattet, um die Palette auf den Boden abzusenken. Sie sollten jedoch an der Bordsteinkante oder in der Einfahrt ausreichend Platz für den LKW bereitstellen."
+
+#. delivery-curbside
+#: inc/faq-data.php
+msgid "What is \"Curbside Delivery\"?"
+msgstr "Was bedeutet „Lieferung frei Bordsteinkante“?"
+
+#: inc/faq-data.php
+msgid "This means the driver will unload the pallet at the end of your driveway or the nearest accessible point for the truck. Drivers cannot move the materials into your backyard or garage."
+msgstr "Das bedeutet, dass der Fahrer die Palette am Ende Ihrer Einfahrt oder am nächsten für den LKW zugänglichen Punkt entlädt. Das Transportieren des Materials in den Garten oder die Garage ist dem Fahrer leider nicht möglich."
+
+#. delivery-driver-call
+#: inc/faq-data.php
+msgid "Will the driver call me before arrival?"
+msgstr "Ruft mich der Fahrer vor der Ankunft an?"
+
+#: inc/faq-data.php
+msgid "Yes. For heavy freight deliveries, the transport company will contact you at the phone number provided in your order to schedule a specific delivery window."
+msgstr "Ja. Bei Speditionslieferungen kontaktiert Sie das Transportunternehmen unter der bei der Bestellung angegebenen Telefonnummer, um ein genaues Lieferzeitfenster zu vereinbaren."
+
+#. order-change
+#: inc/faq-data.php
+msgid "Can I change my order after it has been placed?"
+msgstr "Kann ich meine Bestellung nach dem Absenden noch ändern?"
+
+#: inc/faq-data.php
+msgid "If the order has not yet been loaded for transport, we can make changes. Contact us as soon as possible if you need to adjust quantities or sizes."
+msgstr "Solange die Bestellung noch nicht für den Transport verladen wurde, können wir Änderungen vornehmen. Kontaktieren Sie uns bitte so schnell wie möglich, falls Sie Mengen oder Maße anpassen möchten."
+
+# -----------------------------------------------
+# RETURNS & WARRANTY
+# -----------------------------------------------
+#. return-period
+#: inc/faq-data.php
+msgid "How long do I have to return an item?"
+msgstr "Wie lange habe ich Zeit, um einen Artikel zurückzugeben?"
+
+#: inc/faq-data.php
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgstr "Unsere Rückgabefrist richtet sich nach den örtlichen Verbraucherschutzgesetzen. Bitte informieren Sie sich auf unserer Seite für <a href=\"https://norhage.de/rueckgabe-und-erstattungsrichtlinie/\">Rückgabe &amp; Erstattung</a> über die in Ihrer Region geltenden Fristen."
+
+#. return-condition
+#: inc/faq-data.php
+msgid "What condition must the items be in for a return?"
+msgstr "In welchem Zustand müssen die Artikel für eine Rückgabe sein?"
+
+#: inc/faq-data.php
+msgid "Items must be unused, in their original packaging, and in a condition suitable for resale. Custom-cut materials or specially ordered items may be subject to different conditions."
+msgstr "Die Artikel müssen unbenutzt, in der Originalverpackung und in einem wiederverkaufsfähigen Zustand sein. Für Maßanfertigungen oder Sonderbestellungen können abweichende Bedingungen gelten."
+
+#. return-shipping-cost
+#: inc/faq-data.php
+msgid "Who pays for return shipping?"
+msgstr "Wer übernimmt die Kosten für den Rückversand?"
+
+#: inc/faq-data.php
+msgid "Unless the item is defective or the wrong product was sent, the customer is generally responsible for return transport costs, especially for large freight items."
+msgstr "Sofern der Artikel nicht mangelhaft ist oder ein falsches Produkt geliefert wurde, trägt in der Regel der Kunde die Rücktransportkosten – insbesondere bei Sperrgut und Speditionsgut."
+
+#. warranty-coverage
+#: inc/faq-data.php
+msgid "What does the warranty cover?"
+msgstr "Was deckt die Garantie ab?"
+
+#: inc/faq-data.php
+msgid "Warranty covers manufacturing defects in materials and workmanship. It does not cover damage caused by extreme weather events (storms, heavy snow loads beyond limits), improper assembly, or lack of maintenance."
+msgstr "Die Garantie deckt Herstellungsfehler bei Material und Verarbeitung ab. Nicht abgedeckt sind Schäden durch extreme Wetterereignisse (Sturm, Schneelasten über den Grenzwerten), unsachgemäße Montage oder mangelnde Wartung."
+
+#. damage-on-arrival
+#: inc/faq-data.php
+msgid "What should I do if my order arrives damaged?"
+msgstr "Was soll ich tun, wenn meine Bestellung beschädigt ankommt?"
+
+#: inc/faq-data.php
+msgid "It is critical to inspect the delivery before signing the courier documents. If damage is visible, note it on the transport document and contact our customer support immediately with photos."
+msgstr "Es ist äußerst wichtig, die Lieferung vor der Unterschrift des Frachtbriefs zu überprüfen. Sollten sichtbare Schäden vorliegen, vermerken Sie diese auf dem Transportschein und kontaktieren Sie umgehend unseren Kundenservice mit Fotos."
+
+# -----------------------------------------------
+# GREENHOUSES
+# -----------------------------------------------
+#. greenhouse-cold-climate
+#: inc/faq-data.php
+msgid "Which greenhouse material is best for a cold climate?"
+msgstr "Welches Gewächshausmaterial eignet sich am besten für kaltes Klima?"
+
+#: inc/faq-data.php
+msgid "For cold climates, polycarbonate glazing is often a practical choice because it provides better thermal insulation and higher impact resistance than single-pane glass. The best option still depends on the greenhouse model, local wind and snow conditions, and whether you plan to heat the greenhouse."
+msgstr "Für kalte Regionen sind Stegplatten aus Polycarbonat oft die praktischste Wahl, da sie eine bessere Wärmedämmung und eine höhere Schlagfestigkeit als Einfachglas bieten. Die optimale Option hängt jedoch vom Gewächshausmodell, den lokalen Wind- und Schneeverhältnissen sowie einer eventuellen Beheizung ab."
+
+#. greenhouse-maintenance
+#: inc/faq-data.php
+msgid "What maintenance does a greenhouse require?"
+msgstr "Welche Pflege benötigt ein Gewächshaus?"
+
+#: inc/faq-data.php
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgstr "Regelmäßige Wartung sorgt für Sicherheit und eine lange Lebensdauer Ihres Gewächshauses. Reinigen Sie die Eindeckung, überprüfen Sie Rahmen, Schrauben, Dichtungen und Türen und stellen Sie sicher, dass sich die Lüftungsfenster einwandfrei öffnen lassen. Entfernen Sie Laub und Schmutz aus Dachrinnen und beachten Sie die Herstellerhinweise zur Schneeräumung."
+
+#. greenhouse-ventilation
+#: inc/faq-data.php
+msgid "What ventilation options are available for greenhouses?"
+msgstr "Welche Belüftungsmöglichkeiten gibt es für Gewächshäuser?"
+
+#: inc/faq-data.php
+msgid "Greenhouse ventilation may include roof vents, side vents, doors, louvre vents and automatic vent openers. A well-planned combination improves air circulation and helps manage temperature and humidity during warmer periods."
+msgstr "Zur Belüftung gehören Dachfenster, Seitenfenster, Türen, Lamellenfenster und automatische Fensteröffner. Eine gut durchdachte Kombination verbessert die Luftzirkulation und hilft, Temperatur sowie Luftfeuchtigkeit an warmen Tagen zu regulieren."
+
+#. greenhouse-professional-installation
+#: inc/faq-data.php
+msgid "Is professional greenhouse installation necessary?"
+msgstr "Ist eine professionelle Montage des Gewächshauses erforderlich?"
+
+#: inc/faq-data.php
+msgid "Professional installation is not always required, but it can be a good option for larger, permanent or more complex greenhouses. Careful assembly, correct anchoring and a level base are essential regardless of who installs the greenhouse. Always follow the supplied installation instructions."
+msgstr "Eine professionelle Montage ist nicht zwingend erforderlich, kann aber bei größeren, permanenten oder komplexen Gewächshäusern ratsam sein. Eine sorgfältige Montage, korrekte Verankerung und ein ebener Untergrund sind entscheidend – unabhängig davon, wer den Aufbau durchführt. Befolgen Sie stets die mitgelieferte Anleitung."
+
+#. greenhouse-foundation
+#: inc/faq-data.php
+msgid "Does a greenhouse need a foundation?"
+msgstr "Benötigt ein Gewächshaus ein Fundament?"
+
+#: inc/faq-data.php
+msgid "A stable, level and properly prepared base is important for the safe installation and long-term performance of most greenhouses. Suitable foundation options vary by model and site, and may include a concrete base, timber frame, foundation base or ground anchors. Check the product documentation before choosing a solution."
+msgstr "Ein stabiles, ebenes und gut vorbereitetes Fundament ist für den sicheren Aufbau und die Langlebigkeit der meisten Gewächshäuser unerlässlich. Je nach Modell und Standort eignen sich Betonfundamente, Holzrahmen, Stahlfundamente oder Bodenanker. Prüfen Sie vorab die Produktdokumentation."
+
+#. greenhouse-expansion
+#: inc/faq-data.php
+msgid "Can I extend my greenhouse later?"
+msgstr "Kann ich mein Gewächshaus später erweitern?"
+
+#: inc/faq-data.php
+msgid "Some greenhouse models can be extended using compatible extension kits. Availability depends on the specific model, frame system and manufacturer. If future expansion is important, check this before purchasing and allow enough space when planning the installation area."
+msgstr "Manche Gewächshausmodelle lassen sich durch passende Erweiterungs-Bausätze verlängern. Die Verfügbarkeit hängt vom jeweiligen Modell, Profilsystem und Hersteller ab. Wenn Sie eine spätere Erweiterung planen, prüfen Sie dies vor dem Kauf und planen Sie entsprechend Platz ein."
+
+#: inc/faq-data.php
+msgid "What does \"WOM exposure\" mean in the greenhouse plastic specifications?"
+msgstr "Was bedeutet „WOM-Exposition“ in den Spezifikationen für Gewächshauskunststoffe?"
+
+#: inc/faq-data.php
+msgid "WOM exposure refers to standardized testing conducted in a \"Weather-Ometer.\" This laboratory equipment simulates years of outdoor weather conditions in a short period by exposing the material to intense UV radiation, high heat, and moisture. This test ensures the plastic film or sheet meets durability standards and will maintain its structural integrity and light transmission over many years in a real-world environment."
+msgstr "WOM-Exposition bezieht sich auf standardisierte Tests, die in einem sogenannten „Weather-Ometer“ durchgeführt werden. Dieses Laborgerät simuliert in kurzer Zeit jahrelange Witterungseinflüsse im Freien, indem es das Material intensiver UV-Strahlung, hoher Hitze und Feuchtigkeit aussetzt. Dieser Test stellt sicher, dass die Kunststofffolie oder -platte die Haltbarkeitsstandards erfüllt und ihre strukturelle Festigkeit sowie Lichtdurchlässigkeit über viele Jahre in einer realen Umgebung beibehält."
+
+# -----------------------------------------------
+# POLYCARBONATE & PLASTICS
+# -----------------------------------------------
+#. plastic-sheets-pc-vs-pmma
+#: inc/faq-data.php
+msgid "What is the difference between polycarbonate and acrylic (PMMA) sheets?"
+msgstr "Was ist der Unterschied zwischen Polycarbonat- und Acrylglasplatten (PMMA/Plexiglas)?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate and acrylic are both strong, lightweight alternatives to glass, but they have different properties. Polycarbonate is known for its very high impact resistance and is often chosen for demanding applications. Acrylic (PMMA) offers excellent clarity and a smooth, glass-like appearance. The best material depends on the application, required strength, appearance and installation conditions."
+msgstr "Polycarbonat und Acrylglas sind beide robuste, leichte Alternativen zu Glas, weisen jedoch unterschiedliche Eigenschaften auf. Polycarbonat zeichnet sich durch extrem hohe Schlagfestigkeit aus und wird oft für anspruchsvolle Zwecke genutzt. Acrylglas (PMMA) bietet hervorragende optische Klarheit und eine glatte, glasähnliche Oberfläche. Welches Material besser geeignet ist, hängt vom Einsatzzweck, der benötigten Stabilität und der Optik ab."
+
+#. plastic-sheets-solid-vs-multiwall
+#: inc/faq-data.php
+msgid "What is the difference between solid and multiwall polycarbonate sheets?"
+msgstr "Was ist der Unterschied zwischen Massivplatten und Stegplatten aus Polycarbonat?"
+
+#: inc/faq-data.php
+msgid "Solid polycarbonate sheets are compact, transparent sheets with a smooth surface and a glass-like appearance. Multiwall polycarbonate sheets have internal channels that make them lighter and improve thermal insulation. Solid sheets are often selected for clear glazing and impact resistance, while multiwall sheets are commonly used for roofs, greenhouses and insulated structures."
+msgstr "Massive Polycarbonatplatten sind kompakte, vollkommen transparente Platten mit glatter Oberfläche. Stegplatten (Hohlkammerplatten) besitzen Innenkanäle, die das Gewicht reduzieren und die Wärmedämmung erheblich verbessern. Massivplatten werden meist für transparente Verglasungen eingesetzt, während Stegplatten ideal für Überdachungen, Gewächshäuser und isolierte Bauten sind."
+
+#. plastic-sheets-uv-protection
+#: inc/faq-data.php
+msgid "Do your polycarbonate and acrylic sheets have UV protection?"
+msgstr "Besitzen Ihre Polycarbonat- und Acrylglasplatten einen UV-Schutz?"
+
+#: inc/faq-data.php
+msgid "Yes. Our polycarbonate and acrylic (PMMA) sheets include UV protection for outdoor use. This helps protect the material from weathering and supports long-term performance when the sheets are installed correctly."
+msgstr "Ja. Unsere Polycarbonat- und Acrylglasplatten (PMMA) sind mit einem UV-Schutz für den Außeneinsatz ausgestattet. Dies schützt das Material vor Vergilbung sowie Witterungseinflüssen und garantiert bei fachgerechter Montage eine lange Lebensdauer."
+
+#. plastic-sheets-thickness
+#: inc/faq-data.php
+msgid "How do I choose the right sheet thickness?"
+msgstr "Wie wähle ich die richtige Plattenstärke aus?"
+
+#: inc/faq-data.php
+msgid "The right thickness depends on the material, application, supporting frame, distance between supports, local wind and snow conditions, and the insulation or impact resistance required. For roofing and glazing projects, select the sheet thickness together with a suitable support and fixing system."
+msgstr "Die passende Stärke hängt vom Material, dem Verwendungszweck, der Unterkonstruktion, dem Sparrenabstand sowie den lokalen Schnee- und Windlasten ab. Berücksichtigen Sie bei der Wahl der Plattenstärke für Dächer oder Verglasungen stets das dazugehörige Profil- und Befestigungssystem."
+
+#. plastic-sheets-cutting
+#: inc/faq-data.php
+msgid "Can plastic sheets be cut to size?"
+msgstr "Können die Kunststoffplatten zugeschnitten werden?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets can usually be cut to size using appropriate tools and a blade suitable for plastics. Measure carefully, support the sheet properly while cutting and follow the product-specific cutting guidance. Multiwall polycarbonate channels should be cleaned of cutting dust before the sheet ends are sealed."
+msgstr "Ja. Polycarbonat- und Acrylglasplatten lassen sich mit geeigneten Werkzeugen und Kunststoff-Sägeblättern problemlos zuschneiden. Messen Sie genau, stützen Sie die Platte gut ab und befreien Sie die Hohlkammern von Sägestaub, bevor Sie die Kanten verschließen."
+
+#. plastic-sheets-thermal-expansion
+#: inc/faq-data.php
+msgid "Do plastic sheets expand and contract with temperature changes?"
+msgstr "Dehnen sich Kunststoffplatten bei Temperaturschwankungen aus?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets expand and contract when temperatures change. Always allow suitable expansion gaps during installation, use compatible profiles and fixings, and avoid overtightening screws. This helps prevent stress, distortion and damage over time."
+msgstr "Ja. Polycarbonat und Acrylglas dehnen sich bei Wärme aus und ziehen sich bei Kälte zusammen. Achten Sie bei der Montage unbedingt auf das richtige Dehnungsspiel (Expansionsabstand), nutzen Sie passende Profile und ziehen Sie Schrauben nicht zu fest an, um Spannungen und Risse zu vermeiden."
+
+#. plastic-sheets-multiwall-sealing
+#: inc/faq-data.php
+msgid "How should multiwall polycarbonate sheet ends be sealed?"
+msgstr "Wie müssen die Stirnseiten von Stegplatten versiegelt werden?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate sheet channels should be protected from dust, insects and moisture with suitable sealing tape and end profiles. The upper edge is normally sealed with solid tape, while the lower edge commonly uses breathable tape to allow condensation to drain. Always install the channels in the correct direction and follow the instructions for the selected sheet system."
+msgstr "Die Hohlkammern von Stegplatten müssen mit speziellem Klebeband und Abschlussprofilen vor Staub, Insekten und Feuchtigkeit geschützt werden. Die obere Kante wird meist mit Alutape dicht verschlossen, die untere mit einem Anti-Dust-Tape (Filterband), damit Kondenswasser entweichen kann. Montieren Sie die Stege stets in Gefällerichtung."
+
+#. plastic-sheets-cleaning
+#: inc/faq-data.php
+msgid "How do I clean polycarbonate and acrylic sheets?"
+msgstr "Wie reinige ich Polycarbonat- und Acrylglasplatten?"
+
+#: inc/faq-data.php
+msgid "Use lukewarm water, mild soap and a soft cloth or sponge. Rinse the sheet thoroughly before wiping to remove dust and loose particles. Avoid abrasive pads, strong solvents and harsh cleaning products, as they can scratch or damage the surface."
+msgstr "Verwenden Sie lauwarmes Wasser, milde Seife und ein weiches Tuch oder einen Schwamm. Spülen Sie die Platten vorher mit reichlich Wasser ab, um Staubpartikel zu entfernen. Vermeiden Sie Scheuerschwämme, scharfe Reinigungsmittel und Lösungsmittel, da diese die Oberfläche zerkratzen können."
+
+#. plastic-sheets-outdoor-use
+#: inc/faq-data.php
+msgid "Are plastic sheets suitable for outdoor use?"
+msgstr "Sind Kunststoffplatten für den Außeneinsatz geeignet?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets are widely used for outdoor glazing, roofing, shelters, greenhouses and similar projects. Choose the material, thickness, support spacing and installation system according to the intended application and local weather conditions."
+msgstr "Ja. Polycarbonat und Acrylglas werden häufig für Terrassendächer, Überdachungen, Windschutzwände und Gewächshäuser eingesetzt. Wählen Sie Material, Stärke und Befestigungssystem passend zum Bauvorhaben und den örtlichen Witterungsverhältnissen."
+
+#. plastic-sheets-greenhouse-use
+#: inc/faq-data.php
+msgid "Which plastic sheet is best for a greenhouse?"
+msgstr "Welche Kunststoffplatte eignet sich am besten für ein Gewächshaus?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate is a popular greenhouse material because its internal structure improves thermal insulation while keeping the sheets lightweight. Solid polycarbonate or acrylic may also be suitable where a clearer appearance is preferred. Consider insulation, light transmission, structural requirements and the greenhouse design when choosing."
+msgstr "Polycarbonat-Stegplatten sind für Gewächshäuser sehr beliebt, da ihre Hohlkammerstruktur eine hervorragende Wärmedämmung bei geringem Gewicht bietet. Massivplatten oder Acrylglas sind ebenfalls geeignet, wenn eine glasklare Optik gewünscht wird. Berücksichtigen Sie Dämmwert, Lichtdurchlässigkeit und Stabilität bei der Auswahl."
+
+# -----------------------------------------------
+# INSTALLATION & ASSEMBLY
+# -----------------------------------------------
+#. installation-read-instructions
+#: inc/faq-data.php
+msgid "Should I read the installation instructions before starting?"
+msgstr "Sollte ich vor der Montage die Aufbauanleitung lesen?"
+
+#: inc/faq-data.php
+msgid "Yes. Read the complete product-specific instructions before starting work and check that all components are present. Installation methods, required tools, fixing details and safety requirements may vary between products."
+msgstr "Ja. Lesen Sie die produktspezifische Anleitung vor Montagebeginn vollständig durch und prüfen Sie den Lieferumfang auf Vollständigkeit. Montagemethoden, benötigte Werkzeuge und Sicherheitsvorschriften können je nach Produkt variieren."
+
+#. installation-diy-or-professional
+#: inc/faq-data.php
+msgid "Can I install the product myself?"
+msgstr "Kann ich das Produkt selbst montieren?"
+
+#: inc/faq-data.php
+msgid "Many products can be installed by an experienced DIY customer when the supplied instructions are followed carefully. Larger, heavier or more complex structures may require more than one person. Professional installation can be a practical option where the project, site conditions or local requirements make it necessary."
+msgstr "Viele Produkte können von geübten Heimwerkern unter genauer Befolgung der Anleitung selbst aufgebaut werden. Bei größeren oder schwereren Konstruktionen sollten Sie zu zweit arbeiten. Bei komplexen Objekten oder schwierigen Gegebenheiten kann eine professionelle Montage sinnvoll sein."
+
+#. installation-tools
+#: inc/faq-data.php
+msgid "What tools will I need for installation?"
+msgstr "Welche Werkzeuge benötige ich für die Montage?"
+
+#: inc/faq-data.php
+msgid "The required tools depend on the product and installation surface. Common tools may include a tape measure, spirit level, drill, screwdriver, suitable drill bits, saw and personal safety equipment. Check the product instructions before starting and use only tools and fixings suitable for the materials involved."
+msgstr "Das benötigte Werkzeug hängt vom Produkt und dem Untergrund ab. Zu den gängigen Werkzeugen gehören Maßband, Wasserwaage, Akkuschrauber, Bohrer, Säge und persönliche Schutzausrüstung. Details entnehmen Sie bitte der jeweiligen Anleitung."
+
+#. installation-level-base
+#: inc/faq-data.php
+msgid "Why is a level and stable base important?"
+msgstr "Warum ist ein ebener und stabiler Untergrund wichtig?"
+
+#: inc/faq-data.php
+msgid "A level, stable and properly prepared base is essential for correct alignment, secure fixing and long-term performance. An uneven or unstable surface can cause frames, doors, panels, profiles and seals to fit incorrectly and may place unnecessary stress on the structure."
+msgstr "Ein waagerechter, stabiler Untergrund ist die Voraussetzung für eine passgenaue Montage, sichere Verankerung und lange Lebensdauer. Ein unebenes Fundament führt dazu, dass Türen, Profile, Platten und Dichtungen nicht richtig schließen und Spannungen im Rahmen entstehen."
+
+#. installation-weather
+#: inc/faq-data.php
+msgid "Can I install outdoor products in any weather?"
+msgstr "Kann ich Produkte für den Außenbereich bei jedem Wetter montieren?"
+
+#: inc/faq-data.php
+msgid "Avoid installation during strong winds, heavy rain, snow or icy conditions. Large sheets, panels and lightweight components can be difficult to handle safely in poor weather. Choose calm and dry conditions, and do not start work unless the installation area can be made safe."
+msgstr "Vermeiden Sie die Montage bei starkem Wind, Regen, Schnee oder Glätte. Starke Windböen machen das Hantieren mit großen Platten gefährlich. Wählen Sie einen trockenen, windstillen Tag für die Montagearbeiten."
+
+#. installation-fixings
+#: inc/faq-data.php
+msgid "Can I use my own screws and fixings?"
+msgstr "Kann ich eigene Schrauben und Befestigungsmaterialien verwenden?"
+
+#. installation-screw-length
+#: inc/faq-data.php
+msgid "How do I choose the correct screw length?"
+msgstr "Wie wähle ich die richtige Schraubenlänge aus?"
+
+#: inc/faq-data.php
+msgid "A reliable rule of thumb for roofing and plastic sheets is to double the total thickness of the materials being fastened. Calculation: (Sheet Thickness + Profile Thickness) x 2. For example, a 10mm sheet and a 20mm profile equal 30mm total; multiplying by two results in a recommended 60mm screw length for a secure connection."
+msgstr "Eine bewährte Faustregel für Bedachungen und Kunststoffplatten besagt, dass die Gesamtdicke der zu befestigenden Materialien verdoppelt werden sollte. Berechnung: (Plattendicke + Profilstärke) x 2. Beispiel: Eine 10 mm dicke Platte und ein 20 mm starkes Profil ergeben zusammen 30 mm; verdoppelt ergibt das eine empfohlene Schraubenlänge von 60 mm für eine sichere Befestigung."
+
+#: inc/faq-data.php
+msgid "Use the supplied fixings whenever they are included with the product. If additional or replacement fixings are needed, they must be compatible with the product, installation surface and local weather conditions. Incorrect screws, unsuitable sealants or overtightened fixings can damage the material and affect the installation."
+msgstr "Verwenden Sie stets das mitgelieferte Befestigungsmaterial. Falls Sie zusätzliche Schrauben benötigen, müssen diese für das Material und den Untergrund geeignet sein. Falsche Schrauben, ungeeigneter Dichtstoff oder zu fest gezogene Verbindungen können das Material beschädigen."
+
+#. installation-expansion-gaps
+#: inc/faq-data.php
+msgid "Why do plastic sheets need expansion gaps?"
+msgstr "Warum benötigen Kunststoffplatten ein Dehnungsspiel?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate, acrylic and other plastic sheets expand and contract as temperatures change. The recommended expansion gaps, profiles and fixing method must be used to help prevent stress, buckling, cracking and leaks. Follow the product-specific installation instructions for the selected sheet system."
+msgstr "Kunststoffe wie Polycarbonat und Acrylglas dehnen sich bei Wärme aus. Wenn kein ausreichendes Dehnungsspiel eingeplant wird, kommt es zu Verformungen, Rissen oder Undichtigkeiten. Halten Sie sich daher strikt an die vorgegebenen Abstände und Profilsysteme."
+
+#. installation-polycarbonate-roof-guide
+#: inc/faq-data.php
+msgid "Where can I find a step-by-step guide for installing a polycarbonate roof?"
+msgstr "Wo finde ich eine Schritt-für-Schritt-Anleitung für die Montage eines Stegplattendachs?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
+msgstr "In unserem <a href=\"https://norhage.de/doppelstegplatten-verlegen-fuer-ihr-dachprojekt/\">Ratgeber zur Stegplatten-Montage</a> erklären wir die wichtigsten Schritte von der Planung der Unterkonstruktion über den Plattenzuschnitt bis zum Verlegen der Aluminiumprofile und dem Versiegeln der Kanten."
+
+#. installation-greenhouse-guide
+#: inc/faq-data.php
+msgid "Where can I find greenhouse assembly instructions?"
+msgstr "Wo finde ich Anleitungen zum Aufbau von Gewächshäusern?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
+msgstr "Unsere <a href=\"https://norhage.de/montageanleitung-fuer-gewaechshaeuser/\">Gewächshaus-Aufbauanleitungen</a> bieten Ihnen wertvolle Hinweise zur Fundamentvorbereitung, zum Rahmenaufbau, zum Einsetzen der Verglasung und zur Verankerung."
+
+#. installation-final-check
+#: inc/faq-data.php
+msgid "What should I check after installation?"
+msgstr "Was sollte ich nach der Montage überprüfen?"
+
+#: inc/faq-data.php
+msgid "After installation, check that the structure is level, securely fixed and correctly aligned. Confirm that fasteners are secure without being overtightened, seals and end caps are fitted correctly, drainage paths are clear, and moving parts such as doors or vents operate freely."
+msgstr "Prüfen Sie nach dem Aufbau, ob das Bauwerk waagerecht steht und fest verankert ist. Kontrollieren Sie, dass Schrauben nicht zu fest angezogen sind, Dichtungen und Endkappen korrekt sitzen und bewegliche Teile wie Türen und Fenster einwandfrei funktionieren."
+
+# -----------------------------------------------
+# GARDEN & ACCESSORIES
+# -----------------------------------------------
+#. garden-terrace-roof-kits
+#: inc/faq-data.php
+msgid "Do you offer complete terrace roof covering kits?"
+msgstr "Bieten Sie Komplettbausätze für Terrassenüberdachungen an?"
+
+#: inc/faq-data.php
+msgid "Yes. We provide complete covering solutions that include the polycarbonate or acrylic sheets along with all necessary aluminum profiles, gaskets, and sealing materials. These kits are designed to ensure a professional and weather-tight finish for your terrace structure."
+msgstr "Ja. Wir liefern komplette Verlegesets, die neben den Stegplatten oder Acrylglasplatten alle erforderlichen Aluminiumprofile, Gummidichtungen und Montagematerialien enthalten – für ein professionelles und dauerhaft dichtes Terrassendach."
+
+#. garden-accessories-compatibility
+#: inc/faq-data.php
+msgid "How do I know if the accessories are compatible with my greenhouse or roof?"
+msgstr "Woher weiß ich, ob das Zubehör zu meinem Gewächshaus oder Dach passt?"
+
+#: inc/faq-data.php
+msgid "Our accessories and mounting components are designed to work with standard greenhouse and roofing systems. Always check the product specifications for thickness compatibility (e.g., 6mm, 10mm, 16mm) and profile types to ensure a perfect fit with your existing or new structure."
+msgstr "Unser Zubehör ist auf gängige Gewächshaus- und Profilsysteme abgestimmt. Achten Sie in den Produktbeschreibungen auf die Angaben zur passenden Plattenstärke (z. B. 6 mm, 10 mm, 16 mm) und Profilausführung, um eine optimale Passgenauigkeit zu gewährleisten."
+
+#. garden-sealing-materials
+#: inc/faq-data.php
+msgid "What sealing materials do I need for a terrace roof?"
+msgstr "Welche Dichtstoffe benötige ich für ein Terrassendach?"
+
+#: inc/faq-data.php
+msgid "A durable terrace roof requires specialized sealing, including EPDM rubber gaskets, anti-dust tapes for multiwall sheet ends, and high-quality neutral silicone sealants. Using the correct professional-grade sealing materials prevents leaks, minimizes vibration, and extends the life of the plastic sheets."
+msgstr "Ein dauerhaft dichtes Terrassendach erfordert hochwertige EPDM-Lippendichtungen, Anti-Dust-Tapes für die Plattenenden und neutralvernetzendes Spezial-Silikon. Die Verwendung von Profi-Material verhindert Wassereintritt und schützt die Platten."
+
+#. garden-hardware-maintenance
+#: inc/faq-data.php
+msgid "Are your mounting profiles and accessories corrosion-resistant?"
+msgstr "Sind Ihre Montageprofile und Zubehörteile korrosionsbeständig?"
+
+#: inc/faq-data.php
+msgid "Yes. We primarily supply aluminum profiles and stainless steel or coated fasteners that are designed for permanent outdoor use. These materials offer excellent resistance to rust and weathering, requiring minimal maintenance after correct installation."
+msgstr "Ja. Wir liefern hauptsächlich Aluminiumprofile sowie Schrauben aus Edelstahl oder mit Spezialbeschichtung, die speziell für den dauerhaften Außeneinsatz entwickelt wurden. Sie bieten hervorragenden Rostschutz und sind extrem pflegeleicht."
+
+#. garden-additional-items
+#: inc/faq-data.php
+msgid "What other accessories can I find for my garden project?"
+msgstr "Welches weitere Zubehör finde ich für mein Gartenprojekt?"
+
+#: inc/faq-data.php
+msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
+msgstr "Neben Dachkomponenten bieten wir praktische Regalsysteme für Gewächshäuser, automatische Fensteröffner sowie Spezialreiniger für Kunststoffplatten an, damit Ihre Bauten jahrelang wie neu aussehen."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"

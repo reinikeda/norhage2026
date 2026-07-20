@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-07-13 13:49+0300\n"
+"PO-Revision-Date: 2026-07-20 15:07+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -254,7 +254,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:121
 msgid "YouTube / Vimeo URL"
-msgstr ""
+msgstr "YouTube / Vimeo URL"
 
 #: inc/meta-boxes.php:154
 msgid "Enable custom cutting"
@@ -1231,6 +1231,452 @@ msgstr "Värmeisolering"
 #: inc/delivery-time.php
 msgid "Estimated delivery:"
 msgstr "Beräknad leverans:"
+
+# -----------------------------------------------
+# FAQ
+# -----------------------------------------------
+#: inc/faq.php
+msgid "Expand all"
+msgstr "Fäll ut alla"
+
+#: inc/faq.php
+msgid "Collapse all"
+msgstr "Fäll ihop alla"
+
+#: inc/faq.php
+msgid "Questions & Answers"
+msgstr "Frågor & svar"
+
+# -----------------------------------------------
+# TOPIC LABELS
+# -----------------------------------------------
+#: inc/faq-data.php
+msgid "Ordering & Delivery"
+msgstr "Beställning & leverans"
+
+#: inc/faq-data.php
+msgid "Returns & Warranty"
+msgstr "Returer & garanti"
+
+#: inc/faq-data.php
+msgid "Greenhouses"
+msgstr "Växthus"
+
+#: inc/faq-data.php
+msgid "Polycarbonate & Plastics"
+msgstr "Kanalplast & plastskivor"
+
+#: inc/faq-data.php
+msgid "Installation & Assembly"
+msgstr "Montering & installation"
+
+#: inc/faq-data.php
+msgid "Garden & Accessories"
+msgstr "Trädgård & tillbehör"
+
+# -----------------------------------------------
+# ORDERING & DELIVERY
+# -----------------------------------------------
+#. delivery-large-items
+#: inc/faq-data.php
+msgid "How are large items delivered?"
+msgstr "Hur levereras stora produkter?"
+
+#: inc/faq-data.php
+msgid "Greenhouse kits and large sheets are delivered via specialized heavy freight transport. Most orders arrive on a single oversized pallet."
+msgstr "Växthuspaket och stora plastskivor levereras via specialiserad tungtransport. De flesta beställningar anländer på en stor specialpall."
+
+#. delivery-forklift
+#: inc/faq-data.php
+msgid "Do I need a forklift to unload?"
+msgstr "Behöver jag en gaffeltruck för att lossa?"
+
+#: inc/faq-data.php
+msgid "No. Our delivery trucks are equipped with lift-gates to lower the pallet to the ground. However, you should have space available near the curbside or driveway for the truck to operate."
+msgstr "Nej. Våra lastbilar är utrustade med bakstartslyft för att sänka ner pallen till marken. Du behöver dock ha tillräckligt med utrymme vid tomtgränsen eller i uppfarten så att lastbilen får plats."
+
+#. delivery-curbside
+#: inc/faq-data.php
+msgid "What is \"Curbside Delivery\"?"
+msgstr "Vad innebär ”Leverans till tomtgräns”?"
+
+#: inc/faq-data.php
+msgid "This means the driver will unload the pallet at the end of your driveway or the nearest accessible point for the truck. Drivers cannot move the materials into your backyard or garage."
+msgstr "Det innebär att chauffören lossar pallen i slutet av din uppfart eller vid närmaste framkomliga plats för lastbilen. Chauffören har tyvärr inte möjlighet att bära in materialet i trädgården eller garaget."
+
+#. delivery-driver-call
+#: inc/faq-data.php
+msgid "Will the driver call me before arrival?"
+msgstr "Ringer chauffören före ankomst?"
+
+#: inc/faq-data.php
+msgid "Yes. For heavy freight deliveries, the transport company will contact you at the phone number provided in your order to schedule a specific delivery window."
+msgstr "Ja. Vid tyngre godstransporter kontaktar speditören dig på det telefonnummer du angav vid beställningen för att komma överens om en leveranstid."
+
+#. order-change
+#: inc/faq-data.php
+msgid "Can I change my order after it has been placed?"
+msgstr "Kan jag ändra min beställning efter att den har lagts?"
+
+#: inc/faq-data.php
+msgid "If the order has not yet been loaded for transport, we can make changes. Contact us as soon as possible if you need to adjust quantities or sizes."
+msgstr "Om beställningen ännu inte har lastats för transport kan vi göra ändringar. Kontakta oss så snart som möjligt om du behöver justera antal eller storlekar."
+
+# -----------------------------------------------
+# RETURNS & WARRANTY
+# -----------------------------------------------
+#. return-period
+#: inc/faq-data.php
+msgid "How long do I have to return an item?"
+msgstr "Hur lång returrätt har jag?"
+
+#: inc/faq-data.php
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgstr "Vår returperiod följer gällande konsumentlagstiftning. Se vår sida för <a href=\"https://norhage.se/retur-och-aterbetalningspolicy/\">Returer &amp; återbetalningar</a> för exakta tidsfrister som gäller för din region."
+
+#. return-condition
+#: inc/faq-data.php
+msgid "What condition must the items be in for a return?"
+msgstr "I vilket skick måste produkterna vara vid en retur?"
+
+#: inc/faq-data.php
+msgid "Items must be unused, in their original packaging, and in a condition suitable for resale. Custom-cut materials or specially ordered items may be subject to different conditions."
+msgstr "Produkterna måste vara oanvända, i sin originalförpackning och i säljbart skick. Specialskurna material eller måttbeställda produkter kan omfattas av särskilda villkor."
+
+#. return-shipping-cost
+#: inc/faq-data.php
+msgid "Who pays for return shipping?"
+msgstr "Vem står för returfrakten?"
+
+#: inc/faq-data.php
+msgid "Unless the item is defective or the wrong product was sent, the customer is generally responsible for return transport costs, especially for large freight items."
+msgstr "Om produkten inte är defekt eller om fel vara har skickats, ansvarar kunden som regel för returfraktkostnaden, i synnerhet vid stora godstransporter."
+
+#. warranty-coverage
+#: inc/faq-data.php
+msgid "What does the warranty cover?"
+msgstr "Vad täcker garantin?"
+
+#: inc/faq-data.php
+msgid "Warranty covers manufacturing defects in materials and workmanship. It does not cover damage caused by extreme weather events (storms, heavy snow loads beyond limits), improper assembly, or lack of maintenance."
+msgstr "Garantin täcker tillverkningsfel i material och utförande. Den täcker inte skador orsakade av extremt väder (stormar, snöbelastning utöver angivna gränser), felaktig montering eller bristande underhåll."
+
+#. damage-on-arrival
+#: inc/faq-data.php
+msgid "What should I do if my order arrives damaged?"
+msgstr "Vad ska jag göra om min leverans är skadad vid ankomst?"
+
+#: inc/faq-data.php
+msgid "It is critical to inspect the delivery before signing the courier documents. If damage is visible, note it on the transport document and contact our customer support immediately with photos."
+msgstr "Det är mycket viktigt att du undersöker leveransen innan du signerar fraktsedeln. Om det finns synliga skador ska detta noteras på fraktdokumentet och du bör kontakta vår kundtjänst direkt med bilder på skadan."
+
+# -----------------------------------------------
+# GREENHOUSES
+# -----------------------------------------------
+#. greenhouse-cold-climate
+#: inc/faq-data.php
+msgid "Which greenhouse material is best for a cold climate?"
+msgstr "Vilket växthusmaterial passar bäst för ett kallt klimat?"
+
+#: inc/faq-data.php
+msgid "For cold climates, polycarbonate glazing is often a practical choice because it provides better thermal insulation and higher impact resistance than single-pane glass. The best option still depends on the greenhouse model, local wind and snow conditions, and whether you plan to heat the greenhouse."
+msgstr "För kalla klimat är kanalplast/polykarbonat ofta det mest praktiska valet eftersom det ger bättre värmeisolering och högre slagtålighet än enkelglas. Det bästa alternativet beror dock på växthusmodell, lokala vind- och snöförhållanden samt om du planerar att värma upp växthuset."
+
+#. greenhouse-maintenance
+#: inc/faq-data.php
+msgid "What maintenance does a greenhouse require?"
+msgstr "Vilket underhåll kräver ett växthus?"
+
+#: inc/faq-data.php
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgstr "Regelbundet underhåll hjälper till att hålla växthuset säkert och förlänger dess livslängd. Rengör skivorna, kontrollera stommen, skruvar, tätningslister och dörrar, samt se till att vädringsfönster öppnas smidigt. Ta bort löv och skräp från hängrännor och takytor, och följ tillverkarens anvisningar för säsongstillsyn och snöröjning."
+
+#. greenhouse-ventilation
+#: inc/faq-data.php
+msgid "What ventilation options are available for greenhouses?"
+msgstr "Vilka ventilationsalternativ finns för växthus?"
+
+#: inc/faq-data.php
+msgid "Greenhouse ventilation may include roof vents, side vents, doors, louvre vents and automatic vent openers. A well-planned combination improves air circulation and helps manage temperature and humidity during warmer periods."
+msgstr "Ventilation för växthus kan inkludera takfönster, sidofönster, dörrar, lamellfönster och automatiska fönsteröppnare. En välplanerad Kombination förbättrar luftcirkulationen och hjälper till att reglera temperatur och luftfuktighet under varma dagar."
+
+#. greenhouse-professional-installation
+#: inc/faq-data.php
+msgid "Is professional greenhouse installation necessary?"
+msgstr "Behöver jag anlita en fackman för att montera växthuset?"
+
+#: inc/faq-data.php
+msgid "Professional installation is not always required, but it can be a good option for larger, permanent or more complex greenhouses. Careful assembly, correct anchoring and a level base are essential regardless of who installs the greenhouse. Always follow the supplied installation instructions."
+msgstr "Professionell montering krävs inte alltid, men det kan vara ett bra alternativ för större, permanenta eller mer komplexa växthus. Noggrann montering, korrekt förankring och ett helt plant fundament är avgörande oavsett vem som monterar växthuset. Följ alltid medföljande monteringsanvisning."
+
+#. greenhouse-foundation
+#: inc/faq-data.php
+msgid "Does a greenhouse need a foundation?"
+msgstr "Behöver ett växthus en grund?"
+
+#: inc/faq-data.php
+msgid "A stable, level and properly prepared base is important for the safe installation and long-term performance of most greenhouses. Suitable foundation options vary by model and site, and may include a concrete base, timber frame, foundation base or ground anchors. Check the product documentation before choosing a solution."
+msgstr "Ett stabilt, plant och väl förberett fundament är avgörande för säker montering och lång livslängd för de flesta växthus. Lämpliga grundlösningar varierar beroende på modell och placering, och kan inkludera gjuten betonggrund, träregelram, sockel eller markankare. Kontrollera produktdokumentationen innan du väljer lösning."
+
+#. greenhouse-expansion
+#: inc/faq-data.php
+msgid "Can I extend my greenhouse later?"
+msgstr "Kan jag bygga ut mitt växthus i efterhand?"
+
+#: inc/faq-data.php
+msgid "Some greenhouse models can be extended using compatible extension kits. Availability depends on the specific model, frame system and manufacturer. If future expansion is important, check this before purchasing and allow enough space when planning the installation area."
+msgstr "Vissa växthusmodeller kan förlängas med hjälp av kompatibla utbyggnadssatser. Tillgängligheten beror på specifik modell, stomsystem och tillverkare. Om du planerar en framtida utbyggnad bör du kontrollera detta innan köp samt avsätta tillräckligt med utrymme på monteringsplatsen."
+
+#: inc/faq-data.php
+msgid "What does \"WOM exposure\" mean in the greenhouse plastic specifications?"
+msgstr "Vad innebär ”WOM-exponering” i specifikationerna för växthusplast?"
+
+#: inc/faq-data.php
+msgid "WOM exposure refers to standardized testing conducted in a \"Weather-Ometer.\" This laboratory equipment simulates years of outdoor weather conditions in a short period by exposing the material to intense UV radiation, high heat, and moisture. This test ensures the plastic film or sheet meets durability standards and will maintain its structural integrity and light transmission over many years in a real-world environment."
+msgstr "WOM-exponering syftar på standardiserade tester som utförs i en så kallad ”Weather-Ometer”. Denna laboratorieutrustning simulerar flera års utomhusväder på kort tid genom att utsätta materialet för intensiv UV-strålning, hög värme och fukt. Testet säkerställer att plastfilmen eller plattan uppfyller hållbarhetskraven samt behåller sin strukturella styrka och ljusgenomsläpplighet under många år i utomhusmiljö."
+
+# -----------------------------------------------
+# POLYCARBONATE & PLASTICS
+# -----------------------------------------------
+#. plastic-sheets-pc-vs-pmma
+#: inc/faq-data.php
+msgid "What is the difference between polycarbonate and acrylic (PMMA) sheets?"
+msgstr "Vad är skillnaden mellan polykarbonat och akrylskivor (plexiglas/PMMA)?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate and acrylic are both strong, lightweight alternatives to glass, but they have different properties. Polycarbonate is known for its very high impact resistance and is often chosen for demanding applications. Acrylic (PMMA) offers excellent clarity and a smooth, glass-like appearance. The best material depends on the application, required strength, appearance and installation conditions."
+msgstr "Polykarbonat och akryl är båda starka och lätta alternativ till glas, men har olika egenskaper. Polykarbonat är känt för sin extremt höga slagtålighet och väljs ofta för krävande miljöer. Akryl (PMMA) ger utmärkt optisk klarhet och en slät, glasliknande yta. Det bästa materialet beror på användningsområde, krav på hållfasthet, utseende och monteringsförhållanden."
+
+#. plastic-sheets-solid-vs-multiwall
+#: inc/faq-data.php
+msgid "What is the difference between solid and multiwall polycarbonate sheets?"
+msgstr "Vad är skillnaden mellan massiva polykarbonatskivor och kanalplastskivor?"
+
+#: inc/faq-data.php
+msgid "Solid polycarbonate sheets are compact, transparent sheets with a smooth surface and a glass-like appearance. Multiwall polycarbonate sheets have internal channels that make them lighter and improve thermal insulation. Solid sheets are often selected for clear glazing and impact resistance, while multiwall sheets are commonly used for roofs, greenhouses and insulated structures."
+msgstr "Massiva polykarbonatskivor är kompakta, helt klara skivor med en slät yta som liknar glas. Kanalplastskivor har invändiga kanaler som gör dem lättare och ger betydligt bättre värmeisolering. Massiva skivor används ofta som glasersättning där slagtålighet krävs, medan kanalplast är idealiskt för tak, växthus och isolerade konstruktioner."
+
+#. plastic-sheets-uv-protection
+#: inc/faq-data.php
+msgid "Do your polycarbonate and acrylic sheets have UV protection?"
+msgstr "Har era polykarbonat- och akrylskivor UV-skydd?"
+
+#: inc/faq-data.php
+msgid "Yes. Our polycarbonate and acrylic (PMMA) sheets include UV protection for outdoor use. This helps protect the material from weathering and supports long-term performance when the sheets are installed correctly."
+msgstr "Ja. Våra polykarbonat- och akrylskivor (PMMA) har inbyggt UV-skydd anpassat för utomhusbruk. Detta skyddar materialet från att gulna eller brytas ned av väder och vind samt säkerställer lång hållbarhet vid korrekt installation."
+
+#. plastic-sheets-thickness
+#: inc/faq-data.php
+msgid "How do I choose the right sheet thickness?"
+msgstr "Hur väljer jag rätt tjocklek på skivorna?"
+
+#: inc/faq-data.php
+msgid "The right thickness depends on the material, application, supporting frame, distance between supports, local wind and snow conditions, and the insulation or impact resistance required. For roofing and glazing projects, select the sheet thickness together with a suitable support and fixing system."
+msgstr "Rätt tjocklek beror på material, användningsområde, underliggande bärkonstruktion, regelavstånd, lokala snö- och vindförhållanden samt krav på isolering eller slagtålighet. För tak- och inglasningsprojekt bör skivtjockleken väljas tillsammans med ett lämpligt profil- och fästsystem."
+
+#. plastic-sheets-cutting
+#: inc/faq-data.php
+msgid "Can plastic sheets be cut to size?"
+msgstr "Kan plastskivorna kapas till önskad storlek?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets can usually be cut to size using appropriate tools and a blade suitable for plastics. Measure carefully, support the sheet properly while cutting and follow the product-specific cutting guidance. Multiwall polycarbonate channels should be cleaned of cutting dust before the sheet ends are sealed."
+msgstr "Ja. Polykarbonat- och akrylskivor kan vanligtvis kapas med lämpliga verktyg och ett sågblad avsett för plast. Mät noggrant, stötta skivan ordentligt under kapningen och följ de produktspecifika anvisningarna. Kanalerna i kanalplastskivor ska renblåsas/rengöras från sågdamm innan kanterna förseglas."
+
+#. plastic-sheets-thermal-expansion
+#: inc/faq-data.php
+msgid "Do plastic sheets expand and contract with temperature changes?"
+msgstr "Utvidgar sig och krymper plastskivor vid temperaturförändringar?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets expand and contract when temperatures change. Always allow suitable expansion gaps during installation, use compatible profiles and fixings, and avoid overtightening screws. This helps prevent stress, distortion and damage over time."
+msgstr "Ja. Polykarbonat- och akrylskivor utvidgas och krymper i takt med att temperaturen ändras. Se alltid till att lämna tillräcklig skivmarginal/expansionsmån vid montering, använd kompatibla profiler samt fästelement, och undvik att dra åt skruvarna för hårt. Detta förhindrar spänningar, skevhet och skador över tid."
+
+#. plastic-sheets-multiwall-sealing
+#: inc/faq-data.php
+msgid "How should multiwall polycarbonate sheet ends be sealed?"
+msgstr "Hur ska ändarna på kanalplastskivor förseglas?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate sheet channels should be protected from dust, insects and moisture with suitable sealing tape and end profiles. The upper edge is normally sealed with solid tape, while the lower edge commonly uses breathable tape to allow condensation to drain. Always install the channels in the correct direction and follow the instructions for the selected sheet system."
+msgstr "Kanalerna i kanalplastskivor ska skyddas mot damm, insekter och fukt med hjälp av lämplig tejp och kantprofiler. Den övre kanten förseglas i regel med en helt tät tejp, medan den nedre kanten har en dränerande/diffusionsöppen tejp som släpper ut kondens. Montera alltid kanalerna i rätt fallriktning och följ instruktionerna för det valda skivsystemet."
+
+#. plastic-sheets-cleaning
+#: inc/faq-data.php
+msgid "How do I clean polycarbonate and acrylic sheets?"
+msgstr "Hur rengör jag polykarbonat- och akrylskivor?"
+
+#: inc/faq-data.php
+msgid "Use lukewarm water, mild soap and a soft cloth or sponge. Rinse the sheet thoroughly before wiping to remove dust and loose particles. Avoid abrasive pads, strong solvents and harsh cleaning products, as they can scratch or damage the surface."
+msgstr "Använd ljummet vatten, mild tvål och en mjuk trasa eller svamp. Skölj skivan noggrant med vatten innan du torkar av för att avlägsna damm och lösa partiklar. Undvik skursvampar, starka lösningsmedel och frätande kemikalier då dessa kan repa eller skada ytan."
+
+#. plastic-sheets-outdoor-use
+#: inc/faq-data.php
+msgid "Are plastic sheets suitable for outdoor use?"
+msgstr "Är plastskivor lämpliga för utomhusbruk?"
+
+#: inc/faq-data.php
+msgid "Yes. Polycarbonate and acrylic sheets are widely used for outdoor glazing, roofing, shelters, greenhouses and similar projects. Choose the material, thickness, support spacing and installation system according to the intended application and local weather conditions."
+msgstr "Ja. Polykarbonat- och akrylskivor används i stor utsträckning för utomhusinglasning, taköverbyggnader, vindskydd, växthus och liknande projekt. Välj material, tjocklek, regelavstånd och monteringssystem utifrån det tänkta användningsområdet och lokala väderförhållanden."
+
+#. plastic-sheets-greenhouse-use
+#: inc/faq-data.php
+msgid "Which plastic sheet is best for a greenhouse?"
+msgstr "Vilken plastskiva är bäst lämpad för växthus?"
+
+#: inc/faq-data.php
+msgid "Multiwall polycarbonate is a popular greenhouse material because its internal structure improves thermal insulation while keeping the sheets lightweight. Solid polycarbonate or acrylic may also be suitable where a clearer appearance is preferred. Consider insulation, light transmission, structural requirements and the greenhouse design when choosing."
+msgstr "Kanalplast i polykarbonat är ett mycket populärt material för växthus eftersom dess kanalstruktur ger god värmeisolering samtidigt som skivorna har låg vikt. Massiv polykarbonat eller akryl kan också passa om ett helt glasklart utseende föredras. Överväg isoleringsförmåga, ljusgenomsläpp, bärighetskrav och växthusets design när du väljer."
+
+# -----------------------------------------------
+# INSTALLATION & ASSEMBLY
+# -----------------------------------------------
+#. installation-read-instructions
+#: inc/faq-data.php
+msgid "Should I read the installation instructions before starting?"
+msgstr "Bör jag läsa monteringsanvisningen innan jag börjar?"
+
+#: inc/faq-data.php
+msgid "Yes. Read the complete product-specific instructions before starting work and check that all components are present. Installation methods, required tools, fixing details and safety requirements may vary between products."
+msgstr "Ja. Läs hela den produktspecifika monteringsanvisningen innan du påbörjar arbetet och kontrollera att alla delar finns med. Monteringsmetoder, nödvändiga verktyg, infästningsdetaljer och säkerhetskrav skiljer sig åt mellan olika produkter."
+
+#. installation-diy-or-professional
+#: inc/faq-data.php
+msgid "Can I install the product myself?"
+msgstr "Kan jag montera produkten själv?"
+
+#: inc/faq-data.php
+msgid "Many products can be installed by an experienced DIY customer when the supplied instructions are followed carefully. Larger, heavier or more complex structures may require more than one person. Professional installation can be a practical option where the project, site conditions or local requirements make it necessary."
+msgstr "Många av våra produkter kan monteras av en händig person om de medföljande instruktionerna följs noggrant. Större, tyngre eller mer komplexa konstruktioner kan kräva att ni är flera som hjälps åt. Professionell monteringshjälp kan vara ett bra alternativ om projektets omfattning eller rådande förhållanden kräver det."
+
+#. installation-tools
+#: inc/faq-data.php
+msgid "What tools will I need for installation?"
+msgstr "Vilka verktyg behöver jag för monteringen?"
+
+#: inc/faq-data.php
+msgid "The required tools depend on the product and installation surface. Common tools may include a tape measure, spirit level, drill, screwdriver, suitable drill bits, saw and personal safety equipment. Check the product instructions before starting and use only tools and fixings suitable for the materials involved."
+msgstr "Nödvändiga verktyg beror på produkten och underlaget. Vanliga verktyg inkluderar måttband, vattenpass, borrmaskin, skruvdragare, lämpliga borrar, såg och personlig skyddsutrustning. Kontrollera produktens anvisningar innan du sätter i gång och använd endast verktyg och fästelement som passar för materialen."
+
+#. installation-level-base
+#: inc/faq-data.php
+msgid "Why is a level and stable base important?"
+msgstr "Varför är ett plant och stabilt underlag så viktigt?"
+
+#: inc/faq-data.php
+msgid "A level, stable and properly prepared base is essential for correct alignment, secure fixing and long-term performance. An uneven or unstable surface can cause frames, doors, panels, profiles and seals to fit incorrectly and may place unnecessary stress on the structure."
+msgstr "Ett helt plant, stabilt och väl förberett underlag är avgörande för att konstruktionen ska hamna i lod och våg, få säker infästning och uppnå lång livslängd. Ett ojämnt underlag kan göra att stommar, dörrar, skivor, profiler och tätningslister passar dåligt och skapar onödiga spänningar i konstruktionen."
+
+#. installation-weather
+#: inc/faq-data.php
+msgid "Can I install outdoor products in any weather?"
+msgstr "Kan jag montera utomhusprodukter i vilket väder som helst?"
+
+#: inc/faq-data.php
+msgid "Avoid installation during strong winds, heavy rain, snow or icy conditions. Large sheets, panels and lightweight components can be difficult to handle safely in poor weather. Choose calm and dry conditions, and do not start work unless the installation area can be made safe."
+msgstr "Undvik montering vid stark vind, kraftigt regn, snöfall eller halka. Stora skivor, paneler och lätta komponenter kan vara svåra och farliga att hantera i dåligt väder. Välj en lugn och torr dag och påbörja inte arbetet förrän monteringsplatsen kan säkras."
+
+#. installation-fixings
+#: inc/faq-data.php
+msgid "Can I use my own screws and fixings?"
+msgstr "Kan jag använda mina egna skruvar och fästelement?"
+
+#. installation-screw-length
+#: inc/faq-data.php
+msgid "How do I choose the correct screw length?"
+msgstr "Hur väljer jag rätt skruvlängd?"
+
+#: inc/faq-data.php
+msgid "A reliable rule of thumb for roofing and plastic sheets is to double the total thickness of the materials being fastened. Calculation: (Sheet Thickness + Profile Thickness) x 2. For example, a 10mm sheet and a 20mm profile equal 30mm total; multiplying by two results in a recommended 60mm screw length for a secure connection."
+msgstr "En tillförlitlig tumregel för tak- och plastskivor är att dubbla den totala tjockleken på de material som ska fästas. Beräkning: (Skivtjocklek + Profiltjocklek) x 2. Till exempel blir en 10 mm skiva och en 20 mm profil 30 mm totalt; att multiplicera med två ger en rekommenderad skruvlängd på 60 mm för en säker infästning."
+
+#: inc/faq-data.php
+msgid "Use the supplied fixings whenever they are included with the product. If additional or replacement fixings are needed, they must be compatible with the product, installation surface and local weather conditions. Incorrect screws, unsuitable sealants or overtightened fixings can damage the material and affect the installation."
+msgstr "Använd alltid medföljande fästelement när sådana ingår i produkten. Om du behöver komplettera eller ersätta skruvar måste de vara kompatibla med produkten, underlaget och klimatet. Felaktiga skruvar, olämpliga tätningsmedel eller för hårt åtdragna skruvar kan skada materialet och påverka monteringsresultatet."
+
+#. installation-expansion-gaps
+#: inc/faq-data.php
+msgid "Why do plastic sheets need expansion gaps?"
+msgstr "Varför behöver plastskivor expansionsmån?"
+
+#: inc/faq-data.php
+msgid "Polycarbonate, acrylic and other plastic sheets expand and contract as temperatures change. The recommended expansion gaps, profiles and fixing method must be used to help prevent stress, buckling, cracking and leaks. Follow the product-specific installation instructions for the selected sheet system."
+msgstr "Polykarbonat, akryl och andra plastmaterial utvidgar sig och krymper vid temperaturväxlingar. Rekommenderad expansionsmån, lämpliga profiler och rätt infästningsmetod måste användas för att förhindra spänningar, skevhet, sprickor och läckage. Följ den produktspecifika monteringsanvisningen för ditt valda skivsystem."
+
+#. installation-polycarbonate-roof-guide
+#: inc/faq-data.php
+msgid "Where can I find a step-by-step guide for installing a polycarbonate roof?"
+msgstr "Var hittar jag en steg-för-steg-guide för att montera ett kanalplasttak?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
+msgstr "Vår <a href=\"https://norhage.se/kanalplast-montering-steg-for-steg-for-ett-perfekt-tak/\">guide för montering av kanalplasttak</a> förklarar projektets viktigaste steg, såsom planering av stomme, förberedelse av skivor, montering av profiler, försegling av skivändar och färdigställande. Använd guiden tillsammans med de medföljande instruktionerna för ditt specifika skiv- och profilsystem."
+
+#. installation-greenhouse-guide
+#: inc/faq-data.php
+msgid "Where can I find greenhouse assembly instructions?"
+msgstr "Var hittar jag monteringsanvisningar för mitt växthus?"
+
+#: inc/faq-data.php
+msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
+msgstr "Våra <a href=\"https://norhage.se/monteringsanvisning-for-vaxthus/\">monteringsanvisningar för växthus</a> ger vägledning för att förbereda marken, bygga en lämplig grund, montera stommen, sätta in skivor/glas och förankra växthuset. Följ alltid de anvisningar som medföljer din specifika modell, eftersom komponenter och monteringssteg varierar."
+
+#. installation-final-check
+#: inc/faq-data.php
+msgid "What should I check after installation?"
+msgstr "Vad bör jag kontrollera efter avslutad montering?"
+
+#: inc/faq-data.php
+msgid "After installation, check that the structure is level, securely fixed and correctly aligned. Confirm that fasteners are secure without being overtightened, seals and end caps are fitted correctly, drainage paths are clear, and moving parts such as doors or vents operate freely."
+msgstr "Efter monteringen bör du kontrollera att konstruktionen står rakt, är ordentligt förankrad och korrekt inriktad. Kontrollera att alla skruvar sitter fast utan att vara för hårt åtdragna, att tätningslister och ändlock sitter rätt, att vattenavrinningsvägar är fria samt att rörliga delar som dörrar och fönster löper fritt."
+
+# -----------------------------------------------
+# GARDEN & ACCESSORIES
+# -----------------------------------------------
+#. garden-terrace-roof-kits
+#: inc/faq-data.php
+msgid "Do you offer complete terrace roof covering kits?"
+msgstr "Erbjuder ni kompletta takpaket för altaner och terrasser?"
+
+#: inc/faq-data.php
+msgid "Yes. We provide complete covering solutions that include the polycarbonate or acrylic sheets along with all necessary aluminum profiles, gaskets, and sealing materials. These kits are designed to ensure a professional and weather-tight finish for your terrace structure."
+msgstr "Ja. Vi erbjuder kompletta taklösningar som innehåller kanalplast- eller akrylskivor tillsammans med alla nödvändiga aluminiumprofiler, gummilister och tätningsmaterial. Dessa komplettsatser är utformade för att ge ett professionellt och helt vädertätt resultat för ditt altantak."
+
+#. garden-accessories-compatibility
+#: inc/faq-data.php
+msgid "How do I know if the accessories are compatible with my greenhouse or roof?"
+msgstr "Hur vet jag om tillbehören passar mitt växthus eller mitt tak?"
+
+#: inc/faq-data.php
+msgid "Our accessories and mounting components are designed to work with standard greenhouse and roofing systems. Always check the product specifications for thickness compatibility (e.g., 6mm, 10mm, 16mm) and profile types to ensure a perfect fit with your existing or new structure."
+msgstr "Våra tillbehör och monteringskomponenter är utformade för att passa standardiserade växthus- och taksystem. Kontrollera alltid produktens specifikationer avseende skivtjocklek (t.ex. 6 mm, 10 mm, 16 mm) och profiltyper för att säkerställa perfekt passform till din befintliga eller nya konstruktion."
+
+#. garden-sealing-materials
+#: inc/faq-data.php
+msgid "What sealing materials do I need for a terrace roof?"
+msgstr "Vilka tätningsmaterial behöver jag till ett altantak?"
+
+#: inc/faq-data.php
+msgid "A durable terrace roof requires specialized sealing, including EPDM rubber gaskets, anti-dust tapes for multiwall sheet ends, and high-quality neutral silicone sealants. Using the correct professional-grade sealing materials prevents leaks, minimizes vibration, and extends the life of the plastic sheets."
+msgstr "Ett hållbart altantak kräver anpassad tätning, såsom EPDM-gummitätningar, diffusionsöppen/tät tejp för kanalplastens ändar och neutral silikon av hög kvalitet. Genom att använda rätt tätningsmaterial av professionell kvalitet förhindras läckage, vibrationer dämpas och plastskivornas livslängd förlängs."
+
+#. garden-hardware-maintenance
+#: inc/faq-data.php
+msgid "Are your mounting profiles and accessories corrosion-resistant?"
+msgstr "Är era monteringsprofiler och tillbehör korrosionsbeständiga?"
+
+#: inc/faq-data.php
+msgid "Yes. We primarily supply aluminum profiles and stainless steel or coated fasteners that are designed for permanent outdoor use. These materials offer excellent resistance to rust and weathering, requiring minimal maintenance after correct installation."
+msgstr "Ja. Vi tillhandahåller i huvudsak aluminiumprofiler samt rostfria eller ytbehandlade fästelement som är konstruerade för permanent utomhusbruk. Materialen har mycket god motståndskraft mot rost och väderpåverkan samt kräver minimalt underhåll efter korrekt montering."
+
+#. garden-additional-items
+#: inc/faq-data.php
+msgid "What other accessories can I find for my garden project?"
+msgstr "Vilka andra tillbehör kan jag hitta för mitt trädgårdsprojekt?"
+
+#: inc/faq-data.php
+msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
+msgstr "Utöver takkomponenter erbjuder vi ett brett utbud av produkter som förhöjer din utemiljö, däribland hyllsystem för växthus, automatiska fönsteröppnare och specialanpassade rengöringsmedel för plastskivor som håller dina konstruktioner fräscha år efter år."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
