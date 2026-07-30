@@ -179,16 +179,21 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 		: ( $min_l !== '' ? sprintf( esc_html__( '≥ %d mm', 'nh-theme' ), (int) $min_l )
 		: ( $max_l !== '' ? sprintf( esc_html__( '≤ %d mm', 'nh-theme' ), (int) $max_l ) : '' ) );
 
-	// Dimension icons from theme assets
-	$icon_base = get_stylesheet_directory_uri() . '/assets/images/';
+	$icon_base  = get_stylesheet_directory_uri() . '/assets/images/';
+	$show_icons = get_post_meta( $pid, '_nh_cc_show_icons', true );
 
-	$svg_width = '<span class="nh-dim-icon nh-dim-icon--width" aria-hidden="true">'
-		. '<img src="' . esc_url( $icon_base . 'multiwall-width.svg' ) . '" alt="" width="48" height="48">'
-		. '</span>';
+	$svg_width  = '';
+	$svg_length = '';
 
-	$svg_length = '<span class="nh-dim-icon nh-dim-icon--length" aria-hidden="true">'
-		. '<img src="' . esc_url( $icon_base . 'multiwall-length.svg' ) . '" alt="" width="48" height="48">'
-		. '</span>';
+	if ( $show_icons === '1' ) {
+		$svg_width = '<span class="nh-dim-icon nh-dim-icon--width" aria-hidden="true">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-width.svg' ) . '" alt="" width="48" height="48">'
+			. '</span>';
+
+		$svg_length = '<span class="nh-dim-icon nh-dim-icon--length" aria-hidden="true">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-length.svg' ) . '" alt="" width="48" height="48">'
+			. '</span>';
+	}
 
 	echo '<input type="hidden" name="nh_custom_cutting" value="1">';
 

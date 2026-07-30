@@ -287,6 +287,16 @@ if ( is_admin() ) {
 				);
 				?>
 			</div>
+
+			<!-- show dimension icons -->
+			<div class="nh-cc-row">
+				<label for="nh_cc_show_icons"><?php esc_html_e( 'Show dimension icons', 'nh-theme' ); ?></label>
+				<div class="nh-cc-input-wrap">
+					<input type="checkbox" id="nh_cc_show_icons" name="nh_cc_show_icons" value="1" <?php checked( get_post_meta( $post->ID, '_nh_cc_show_icons', true ), '1' ); ?> />
+					<span class="nh-cc-small"><?php esc_html_e( 'Show width/length SVG icons next to the dimension labels on the product page.', 'nh-theme' ); ?></span>
+				</div>
+			</div>
+
 		</div>
 
 		<script>
@@ -688,6 +698,8 @@ if ( is_admin() ) {
 
 			// Keep compatibility: remove legacy explicit weight_per_m2 meta if present
 			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
+			// Icons toggle
+			update_post_meta( $post_id, '_nh_cc_show_icons', isset( $_POST['nh_cc_show_icons'] ) ? '1' : '0' );
 		}
 
 		// --- Save Product Extra meta ---
