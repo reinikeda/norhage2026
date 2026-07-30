@@ -1401,7 +1401,7 @@ body.dark-mode .nh-in-txt strong {
 }
 
 /* =========================================================
-   Feature Box — Frontend
+   Feature Box — Frontend (Updated)
    ========================================================= */
 
 .nhf-box.nhf--summary-card {
@@ -1417,7 +1417,7 @@ body.dark-mode .nh-in-txt strong {
 .nhf-box .nhf-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 14px;
+    gap: 12px 14px; /* Slightly more vertical gap for readability */
     margin: 0;
     padding: 0;
     list-style: none;
@@ -1427,7 +1427,7 @@ body.dark-mode .nh-in-txt strong {
 .nhf-box .nhf-item {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px; /* Even 10px spacing looks more balanced */
     min-height: 28px;
 }
 
@@ -1447,18 +1447,19 @@ body.dark-mode .nh-in-txt strong {
 }
 
 .nhf-box .nhf-icon svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;  /* Bumping to 15px fills the 28px circle better */
+    height: 15px;
     display: block;
-    stroke-width: 2px;
+    stroke-width: 1.8px; /* Slightly thinner than 2px for better clarity at small size */
 }
 
 /* Label */
 .nhf-box .nhf-label {
     font-size: 13.5px;
-    line-height: 1.3;
+    line-height: 1.2;
     color: var(--nh-charcoal);
     font-weight: 500;
+    margin-top: -1px; /* Optical adjustment to center text baseline with icon */
 }
 
 /* Mobile */
