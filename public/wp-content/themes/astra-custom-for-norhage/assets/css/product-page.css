@@ -257,6 +257,29 @@
 /* Hint & mobile adjustments */
 .nh-cc-hint-single { margin: .25rem 0 0; font-size: .875em; color: #666; }
 
+/* Dimension icons */
+.nh-dim-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.nh-dim-icon img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+/* Make label a flex row so icon + text sit on the same line */
+.nh-size-ui .variations td.label label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
 @media (max-width: 600px) {
   .nh-size-ui .variations .value { display: block; }
   .nh-size-ui .nh-mm-qty,

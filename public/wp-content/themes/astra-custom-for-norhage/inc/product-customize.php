@@ -179,6 +179,22 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 		: ( $min_l !== '' ? sprintf( esc_html__( '≥ %d mm', 'nh-theme' ), (int) $min_l )
 		: ( $max_l !== '' ? sprintf( esc_html__( '≤ %d mm', 'nh-theme' ), (int) $max_l ) : '' ) );
 
+	$icon_base  = get_stylesheet_directory_uri() . '/assets/images/';
+	$show_icons = get_post_meta( $pid, '_nh_cc_show_icons', true );
+
+	$svg_width  = '';
+	$svg_length = '';
+
+	if ( $show_icons === '1' ) {
+		$svg_width = '<span class="nh-dim-icon nh-dim-icon--width" aria-hidden="true">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-width.svg' ) . '" alt="" width="48" height="48">'
+			. '</span>';
+
+		$svg_length = '<span class="nh-dim-icon nh-dim-icon--length" aria-hidden="true">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-length.svg' ) . '" alt="" width="48" height="48">'
+			. '</span>';
+	}
+
 	echo '<input type="hidden" name="nh_custom_cutting" value="1">';
 
 	echo '<div id="nh-custom-size-wrap" class="nh-size-ui"'
@@ -189,7 +205,7 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 	echo '  <table class="variations" cellspacing="0"><tbody>';
 
 	// Width (mm)
-	echo '    <tr class="nh-row-width"><td class="label"><label for="nh_width_mm">' . esc_html__( 'Width (mm)', 'nh-theme' ) . '</label></td>';
+	echo '    <tr class="nh-row-width"><td class="label"><label for="nh_width_mm">' . $svg_width . esc_html__( 'Width (mm)', 'nh-theme' ) . '</label></td>';
 	echo '      <td class="value"><div class="quantity buttons_added nh-mm-qty" data-field="width">';
 	echo '        <a href="#" class="minus" aria-label="' . esc_attr__( 'Decrease width', 'nh-theme' ) . '">-</a>';
 	echo '        <input id="nh_width_mm" name="nh_width_mm" class="input-text nh-mm-input text" type="number" inputmode="numeric" pattern="[0-9]*"'
@@ -202,7 +218,7 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 	echo '      </div></td></tr>';
 
 	// Length (mm)
-	echo '    <tr class="nh-row-length"><td class="label"><label for="nh_length_mm">' . esc_html__( 'Length (mm)', 'nh-theme' ) . '</label></td>';
+	echo '    <tr class="nh-row-length"><td class="label"><label for="nh_length_mm">' . $svg_length . esc_html__( 'Length (mm)', 'nh-theme' ) . '</label></td>';
 	echo '      <td class="value"><div class="quantity buttons_added nh-mm-qty" data-field="length">';
 	echo '        <a href="#" class="minus" aria-label="' . esc_attr__( 'Decrease length', 'nh-theme' ) . '">-</a>';
 	echo '        <input id="nh_length_mm" name="nh_length_mm" class="input-text nh-mm-input text" type="number" inputmode="numeric" pattern="[0-9]*"'
