@@ -714,6 +714,11 @@ a.ast-on-card-button.ast-select-options-trigger,
   font-weight: 400;
 }
 
+li.outofstock .astra-shop-thumbnail-wrap img {
+    filter: grayscale(80%);
+    opacity: 0.6;
+}
+
 /* =========================================================
    6) PRODUCT PAGE TWEAKS
    ========================================================= */
