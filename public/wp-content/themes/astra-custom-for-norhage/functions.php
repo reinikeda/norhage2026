@@ -402,38 +402,115 @@ add_filter( 'woocommerce_loop_add_to_cart_link', function( $html ) {
 }, 9999 );
 
 /* --------------------------------------------------------------------------
- * Secondary product title (editor field + outputs)
+ * Secondary product title + optional logo
  * ----------------------------------------------------------------------- */
+
+// Enqueue WP media uploader on product edit screen
+add_action( 'admin_enqueue_scripts', function( $hook ) {
+    if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) return;
+    $screen = get_current_screen();
+    if ( ! $screen || $screen->post_type !== 'product' ) return;
+    wp_enqueue_media();
+} );
+
+// Editor field
 add_action( 'edit_form_after_title', function( $post ) {
-	if ( $post->post_type !== 'product' ) return;
+    if ( $post->post_type !== 'product' ) return;
 
-	$value = get_post_meta( $post->ID, '_secondary_product_title', true );
-	wp_nonce_field( 'secondary_product_title_nonce', 'secondary_product_title_nonce' );
+    $title = get_post_meta( $post->ID, '_secondary_product_title', true );
+    $logo  = get_post_meta( $post->ID, '_secondary_product_title_logo', true );
+    wp_nonce_field( 'secondary_product_title_nonce', 'secondary_product_title_nonce' );
 
-	echo '<div style="margin:12px 0;padding:10px 12px;border:1px solid #dcdcde;background:#fff;border-radius:4px;">';
-	echo '<label for="secondary_product_title" style="font-weight:600;display:block;margin-bottom:6px;">' . esc_html__( 'Secondary product title', 'nh-theme' ) . '</label>';
-	echo '<input type="text" id="secondary_product_title" name="secondary_product_title" value="' . esc_attr( $value ) . '" class="widefat" />';
-	echo '</div>';
+    echo '<div style="margin:12px 0;padding:10px 12px;border:1px solid #dcdcde;background:#fff;border-radius:4px;">';
+    echo '<label style="font-weight:600;display:block;margin-bottom:6px;">' . esc_html__( 'Secondary product title', 'nh-theme' ) . '</label>';
+
+    echo '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+
+    // Logo preview + upload
+    echo '<div style="display:flex;align-items:center;gap:8px;">';
+    $preview_style = $logo ? '' : 'display:none;';
+    echo '<img id="spt_logo_preview" src="' . esc_url( $logo ? wp_get_attachment_image_url( $logo, 'thumbnail' ) : '' ) . '" style="' . $preview_style . 'height:36px;width:auto;border:1px solid #dcdcde;border-radius:3px;padding:2px;" />';
+    echo '<input type="hidden" id="spt_logo_id" name="secondary_product_title_logo" value="' . esc_attr( $logo ) . '" />';
+    echo '<button type="button" id="spt_logo_upload" class="button">' . esc_html__( 'Logo', 'nh-theme' ) . '</button>';
+    if ( $logo ) {
+        echo '<button type="button" id="spt_logo_remove" class="button" style="color:#b32d2e;">✕</button>';
+    } else {
+        echo '<button type="button" id="spt_logo_remove" class="button" style="color:#b32d2e;display:none;">✕</button>';
+    }
+    echo '</div>';
+
+    // Title text input
+    echo '<input type="text" id="secondary_product_title" name="secondary_product_title" value="' . esc_attr( $title ) . '" class="widefat" style="flex:1;min-width:200px;" />';
+
+    echo '</div>'; // flex row
+    echo '</div>'; // wrapper
+
+    ?>
+    <script>
+    jQuery(function($){
+        var frame;
+        $('#spt_logo_upload').on('click', function(e){
+            e.preventDefault();
+            if ( frame ) { frame.open(); return; }
+            frame = wp.media({ title: '<?php echo esc_js( __( 'Select Logo', 'nh-theme' ) ); ?>', button: { text: '<?php echo esc_js( __( 'Use this logo', 'nh-theme' ) ); ?>' }, multiple: false, library: { type: 'image' } });
+            frame.on('select', function(){
+                var att = frame.state().get('selection').first().toJSON();
+                $('#spt_logo_id').val( att.id );
+                $('#spt_logo_preview').attr('src', att.sizes && att.sizes.thumbnail ? att.sizes.thumbnail.url : att.url ).show();
+                $('#spt_logo_remove').show();
+            });
+            frame.open();
+        });
+        $('#spt_logo_remove').on('click', function(e){
+            e.preventDefault();
+            $('#spt_logo_id').val('');
+            $('#spt_logo_preview').hide().attr('src','');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
 } );
 
+// Save
 add_action( 'save_post_product', function( $post_id ) {
-	if ( ! isset( $_POST['secondary_product_title_nonce'] ) || ! wp_verify_nonce( $_POST['secondary_product_title_nonce'], 'secondary_product_title_nonce' ) ) return;
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+    if ( ! isset( $_POST['secondary_product_title_nonce'] ) || ! wp_verify_nonce( $_POST['secondary_product_title_nonce'], 'secondary_product_title_nonce' ) ) return;
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-	$val = isset( $_POST['secondary_product_title'] ) ? sanitize_text_field( $_POST['secondary_product_title'] ) : '';
-	update_post_meta( $post_id, '_secondary_product_title', $val );
+    $val  = isset( $_POST['secondary_product_title'] ) ? sanitize_text_field( $_POST['secondary_product_title'] ) : '';
+    $logo = isset( $_POST['secondary_product_title_logo'] ) ? absint( $_POST['secondary_product_title_logo'] ) : 0;
+
+    update_post_meta( $post_id, '_secondary_product_title', $val );
+    if ( $logo ) {
+        update_post_meta( $post_id, '_secondary_product_title_logo', $logo );
+    } else {
+        delete_post_meta( $post_id, '_secondary_product_title_logo' );
+    }
 } );
 
-add_action( 'astra_woo_shop_title_after', function () {
-	$secondary = get_post_meta( get_the_ID(), '_secondary_product_title', true );
-	if ( $secondary ) echo '<h2 class="product-secondary-title">' . esc_html( $secondary ) . '</h2>';
-}, 10 );
+// Helper to render the title block
+function nh_secondary_title_html( $post_id ) {
+    $secondary = get_post_meta( $post_id, '_secondary_product_title', true );
+    if ( ! $secondary ) return;
 
-add_action( 'astra_woo_single_title_after', function () {
-	$secondary = get_post_meta( get_the_ID(), '_secondary_product_title', true );
-	if ( $secondary ) echo '<h2 class="product-secondary-title">' . esc_html( $secondary ) . '</h2>';
-}, 10 );
+    $logo_id = get_post_meta( $post_id, '_secondary_product_title_logo', true );
+    $logo_html = '';
+    if ( $logo_id ) {
+        $logo_html = wp_get_attachment_image( $logo_id, [ 999, 36 ], false, [
+            'class' => 'product-secondary-title__logo',
+            'alt'   => '',
+        ] );
+    }
+
+    echo '<h2 class="product-secondary-title' . ( $logo_html ? ' has-logo' : '' ) . '">'
+        . $logo_html
+        . '<span>' . esc_html( $secondary ) . '</span>'
+        . '</h2>';
+}
+
+add_action( 'astra_woo_shop_title_after',   function() { nh_secondary_title_html( get_the_ID() ); }, 10 );
+add_action( 'astra_woo_single_title_after', function() { nh_secondary_title_html( get_the_ID() ); }, 10 );
 
 /* --------------------------------------------------------------------------
  * Footer
