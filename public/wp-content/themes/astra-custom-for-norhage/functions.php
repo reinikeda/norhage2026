@@ -30,6 +30,13 @@ function norhage_register_menus() {
 }
 add_action( 'after_setup_theme', 'norhage_register_menus' );
 
+// reschedule cron
+add_action( 'init', function() {
+    if ( ! wp_next_scheduled( 'woocommerce_daily_cron' ) ) {
+        wp_schedule_event( time(), 'daily', 'woocommerce_daily_cron' );
+    }
+});
+
 /**
  * Locale-aware "Services" slug + URL helper.
  * Adjust the $map values to match the actual slugs you use per site.
