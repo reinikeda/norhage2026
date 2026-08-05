@@ -47,6 +47,16 @@ if ( is_admin() ) {
 			'normal',
 			'low'
 		);
+
+		add_meta_box(
+			'nh_related_article_box',
+			__( 'Related blog article', 'nh-theme' ),
+			'nh_related_article_box_html',
+			'product',
+			'side',
+			'default'
+		);
+
 	} );
 
 	// Render the Downloads metabox
@@ -588,6 +598,55 @@ if ( is_admin() ) {
 		<?php
 	}
 
+	// Renden blogpost injection into product description
+	function nh_related_article_box_html( $post ) {
+			wp_nonce_field( 'nh_save_related_article', 'nh_related_article_nonce' );
+
+			$selected_post_id = absint(
+				get_post_meta( $post->ID, '_nh_related_article_id', true )
+			);
+
+			$posts = get_posts(
+				[
+					'post_type'      => 'post',
+					'post_status'    => 'publish',
+					'posts_per_page' => 200,
+					'orderby'        => 'date',
+					'order'          => 'DESC',
+				]
+			);
+			?>
+			<p>
+				<label for="nh_related_article_id">
+					<?php esc_html_e( 'Choose an article to display inside the Description tab.', 'nh-theme' ); ?>
+				</label>
+			</p>
+
+			<select
+				id="nh_related_article_id"
+				name="nh_related_article_id"
+				style="width: 100%;"
+			>
+				<option value="">
+					<?php esc_html_e( '— No related article —', 'nh-theme' ); ?>
+				</option>
+
+				<?php foreach ( $posts as $article ) : ?>
+					<option
+						value="<?php echo esc_attr( $article->ID ); ?>"
+						<?php selected( $selected_post_id, $article->ID ); ?>
+					>
+						<?php echo esc_html( $article->post_title ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+
+			<p class="description">
+				<?php esc_html_e( 'The post featured image and title are taken automatically from the selected article.', 'nh-theme' ); ?>
+			</p>
+			<?php
+		}
+
 	// Save Downloads, Video, Custom Cutting, and Product Extra meta
 	add_action( 'save_post_product', function ( $post_id ) {
 		// Downloads
@@ -700,6 +759,26 @@ if ( is_admin() ) {
 			delete_post_meta( $post_id, $pfx . 'weight_per_m2' );
 			// Icons toggle
 			update_post_meta( $post_id, '_nh_cc_show_icons', isset( $_POST['nh_cc_show_icons'] ) ? '1' : '0' );
+		}
+
+		// Save Related Blog Article
+		if (
+			isset( $_POST['nh_related_article_nonce'] ) &&
+			wp_verify_nonce(
+				sanitize_text_field( wp_unslash( $_POST['nh_related_article_nonce'] ) ),
+				'nh_save_related_article'
+			) &&
+			current_user_can( 'edit_post', $post_id )
+		) {
+			$article_id = isset( $_POST['nh_related_article_id'] )
+				? absint( $_POST['nh_related_article_id'] )
+				: 0;
+
+			if ( $article_id && get_post_type( $article_id ) === 'post' ) {
+				update_post_meta( $post_id, '_nh_related_article_id', $article_id );
+			} else {
+				delete_post_meta( $post_id, '_nh_related_article_id' );
+			}
 		}
 
 		// --- Save Product Extra meta ---
@@ -1162,24 +1241,6 @@ add_action( 'save_post_product', function ( $post_id ) {
 // --- Inject the product extra block into the Description tab (frontend) ---
 add_filter( 'woocommerce_product_tabs', 'nh_mb_add_to_description_tab', 99 );
 function nh_mb_add_to_description_tab( $tabs ) {
-	$product_id = 0;
-	if ( function_exists( 'is_product' ) && is_product() ) {
-		$product_id = get_the_ID();
-	}
-	if ( ! $product_id ) {
-		global $product;
-		if ( $product instanceof WC_Product ) {
-			$product_id = $product->get_id();
-		}
-	}
-	if ( ! $product_id ) {
-		return $tabs;
-	}
-
-	if ( get_post_meta( $product_id, '_nh_mb_enabled', true ) !== '1' ) {
-		return $tabs;
-	}
-
 	if ( isset( $tabs['description'] ) ) {
 		$tabs['description']['callback'] = 'nh_mb_description_tab_wrapper';
 	}
@@ -1188,13 +1249,148 @@ function nh_mb_add_to_description_tab( $tabs ) {
 }
 
 function nh_mb_description_tab_wrapper() {
+	global $post, $product;
+
+	$product_id = 0;
+
+	if ( $product instanceof WC_Product ) {
+		$product_id = $product->get_id();
+	} elseif ( isset( $post->ID ) && get_post_type( $post->ID ) === 'product' ) {
+		$product_id = $post->ID;
+	}
+
+	/*
+	 * Get the normal WooCommerce product description first,
+	 * but hold it in memory so we can insert the article card
+	 * before the first H3.
+	 */
+	ob_start();
+
 	if ( function_exists( 'woocommerce_product_description_tab' ) ) {
 		woocommerce_product_description_tab();
 	} else {
 		the_content();
 	}
 
-	echo nh_mb_get_block_html();
+	$description_html = ob_get_clean();
+
+	$related_article_html = nh_get_related_article_html( $product_id );
+
+	preg_match_all( '/(<h3\b[^>]*>)/i', $description_html, $h3_matches );
+
+	if ( isset( $h3_matches[0][1] ) ) {
+		// There are at least 2 H3s — insert before the second one
+		$occurrence = 0;
+		$description_html = preg_replace_callback(
+			'/(<h3\b[^>]*>)/i',
+			function ( $match ) use ( $related_article_html, &$occurrence ) {
+				$occurrence++;
+				if ( $occurrence === 2 ) {
+					return $related_article_html . $match[0];
+				}
+				return $match[0];
+			},
+			$description_html
+		);
+		$count = 1;
+	} else {
+		// Fewer than 2 H3s — fall back to before the first H3 (or top)
+		$description_html = preg_replace(
+			'/(<h3\b[^>]*>)/i',
+			$related_article_html . '$1',
+			$description_html,
+			1,
+			$count
+		);
+	}
+
+	echo $description_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+	/*
+	 * Your existing “Product extra block”.
+	 * This remains below the normal product description.
+	 */
+	echo nh_mb_get_block_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+function nh_get_related_article_html( $product_id ) {
+	$product_id = absint( $product_id );
+
+	if ( ! $product_id ) {
+		return '';
+	}
+
+	$article_id = absint(
+		get_post_meta( $product_id, '_nh_related_article_id', true )
+	);
+
+	if ( ! $article_id || get_post_type( $article_id ) !== 'post' || get_post_status( $article_id ) !== 'publish' ) {
+		return '';
+	}
+
+	$title = get_the_title( $article_id );
+	$url   = get_permalink( $article_id );
+
+	if ( ! $title || ! $url ) {
+		return '';
+	}
+
+	$image = get_the_post_thumbnail(
+		$article_id,
+		'medium_large',
+		[
+			'class'   => 'nh-related-article__image',
+			'loading' => 'lazy',
+		]
+	);
+
+	$image_url = get_the_post_thumbnail_url( $article_id, 'medium_large' );
+	$excerpt   = get_the_excerpt( $article_id );
+	$excerpt   = $excerpt ? wp_trim_words( $excerpt, 18, '…' ) : '';
+
+	ob_start();
+	?>
+	<aside class="nh-related-article">
+		<?php if ( $image ) : ?>
+			<a
+				class="nh-related-article__image-link"
+				href="<?php echo esc_url( $url ); ?>"
+				aria-label="<?php echo esc_attr( $title ); ?>"
+			>
+				<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</a>
+		<?php endif; ?>
+
+		<div
+			class="nh-related-article__content"
+			<?php if ( $image_url ) : ?>
+				style="--nh-article-bg-img: url('<?php echo esc_url( $image_url ); ?>')"
+			<?php endif; ?>
+		>
+			<p class="nh-related-article__label">
+				<?php esc_html_e( 'Related article', 'nh-theme' ); ?>
+			</p>
+
+			<h4 class="nh-related-article__title">
+				<a href="<?php echo esc_url( $url ); ?>">
+					<?php echo esc_html( $title ); ?>
+				</a>
+			</h4>
+
+			<?php if ( $excerpt ) : ?>
+				<p class="nh-related-article__excerpt">
+					<?php echo esc_html( $excerpt ); ?>
+				</p>
+			<?php endif; ?>
+
+			<a class="nh-related-article__button" href="<?php echo esc_url( $url ); ?>">
+				<?php esc_html_e( 'Read more', 'nh-theme' ); ?>
+			</a>
+		</div>
+	</aside>
+	<?php
+
+	return ob_get_clean();
 }
 
 function nh_mb_get_block_html() {

@@ -1119,27 +1119,6 @@
   .nh-mb-product-extra > h2 { font-size: 16px !important; }
 }
 
-/* Ensure the gallery container clears properly */
-.woocommerce-product-gallery--with-images .flex-control-nav {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 10px 0;
-}
-
-/* Force 4 images per row (roughly 25% each minus spacing) */
-.woocommerce-product-gallery--with-images .flex-control-nav li {
-    flex: 0 0 25%;
-    max-width: 25%;
-    padding: 5px;
-    box-sizing: border-box;
-}
-
-/* Optional: Hide scrollbar but allow scrolling if more than 4 images exist */
-.woocommerce-product-gallery--with-images .flex-control-nav::-webkit-scrollbar {
-    display: none;
-}
-
 /* ============================================================
    Important Notes
    ============================================================ */
@@ -1559,4 +1538,152 @@ body.dark-mode .nhf-box .nhf-icon {
         width: 100%;
         justify-content: flex-start;
     }
+}
+
+/* BLOGPOST injection into product description */
+.nh-related-article {
+	display: grid;
+	grid-template-columns: 180px 1fr;
+	gap: 0;
+	align-items: stretch;
+	margin: 36px 0;
+	background: var(--nh-offwhite);
+	border: 1px solid var(--nh-mint);
+	border-radius: 12px;
+	overflow: hidden;
+	transition: box-shadow 0.25s ease;
+}
+
+.nh-related-article:hover {
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* This is the key fix — wrap the image link in a flex container */
+.nh-related-article__image-link {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	min-height: 140px;
+}
+
+.nh-related-article__image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	flex: 1;
+	border-radius: 0;
+	border: none;
+}
+
+.nh-related-article__content {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+	padding: 20px 24px;
+	border-left: 3px solid var(--nh-green);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.nh-related-article__content::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: var(--nh-article-bg-img);
+	background-size: cover;
+	background-position: center;
+	filter: blur(18px) brightness(1.15) saturate(0.4);
+	transform: scale(1.1);
+	opacity: 0.35;
+}
+
+.nh-related-article__content::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: rgba(241, 230, 214, 0.72);
+}
+
+.nh-related-article__label {
+	margin: 0;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--nh-green);
+}
+
+.nh-related-article .nh-related-article__title {
+	margin: 0 !important;
+	padding: 0;
+	font-size: 1rem;
+	line-height: 1.35;
+}
+
+.nh-related-article__title a {
+	color: var(--nh-forest);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.nh-related-article__title a:hover {
+	color: var(--nh-green);
+}
+
+.nh-related-article__excerpt {
+	margin: 0;
+	font-size: 0.82rem;
+	line-height: 1.55;
+	color: var(--nh-charcoal);
+	opacity: 0.85;
+}
+
+.nh-related-article__button {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 6px;
+	margin-top: 6px;
+	padding: 6px 14px;
+	background: transparent;
+	color: var(--nh-green);
+	border: 1.5px solid var(--nh-green);
+	border-radius: 6px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nh-related-article__button::after {
+	content: '→';
+	font-size: 0.9rem;
+	line-height: 1;
+}
+
+.nh-related-article__button:hover {
+	background: var(--nh-green);
+	color: #fff;
+}
+
+@media (max-width: 640px) {
+	.nh-related-article {
+		grid-template-columns: 1fr;
+	}
+
+	.nh-related-article__image-link {
+		min-height: 180px;
+	}
+
+	.nh-related-article__content {
+		border-left: none;
+		border-top: 3px solid var(--nh-green);
+		padding: 18px;
+	}
 }
