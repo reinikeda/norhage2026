@@ -132,6 +132,13 @@ function norhage_enqueue_assets() {
 	);
 
 	wp_enqueue_style(
+		'blog-custom-style',
+		get_stylesheet_directory_uri() . '/assets/css/blog-style.css',
+		array( 'astra-custom-for-norhage-theme-css' ),
+		norhage_asset_version( '/assets/css/blog-style.css' )
+	);
+
+	wp_enqueue_style(
 		'custom-basket-css',
 		get_stylesheet_directory_uri() . '/assets/css/basket.css',
 		array( 'astra-custom-for-norhage-theme-css' ),
