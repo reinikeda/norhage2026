@@ -1,0 +1,340 @@
+/* =========================================================
+   NORHAGE BLOG POST + SERVICE CPT — COMPLETE STYLE UPGRADE
+   ========================================================= */
+
+/* --- Base typography --- */
+body.single-post .entry-content,
+body.single-service .entry-content {
+  font-size: 1.05rem !important;
+  font-weight: 400 !important;
+  line-height: 1.8 !important;
+  color: var(--nh-charcoal) !important;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.single-post .entry-content p,
+body.single-post .entry-content li,
+body.single-service .entry-content p,
+body.single-service .entry-content li {
+  font-size: 1.05rem !important;
+  font-weight: 400 !important;
+  line-height: 1.8 !important;
+  color: var(--nh-charcoal) !important;
+}
+
+/* Clamp manual spacers */
+body.single-post .entry-content .wp-block-spacer,
+body.single-service .entry-content .wp-block-spacer {
+  height: 2.5rem !important;
+}
+
+/* --- Headings --- */
+body.single-post .entry-content h2.wp-block-heading,
+body.single-service .entry-content h2.wp-block-heading {
+  font-size: 1.8rem !important;
+  font-weight: 800 !important;
+  color: var(--nh-forest) !important;
+  line-height: 1.2 !important;
+  margin-top: 3rem !important;
+  margin-bottom: 1.25rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 2px solid var(--nh-mint) !important;
+}
+
+body.single-post .entry-content h3.wp-block-heading,
+body.single-service .entry-content h3.wp-block-heading {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: var(--nh-green) !important;
+  line-height: 1.3 !important;
+  margin-top: 2.25rem !important;
+  margin-bottom: 1rem !important;
+}
+
+body.single-post .entry-content h4.wp-block-heading,
+body.single-service .entry-content h4.wp-block-heading {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: var(--nh-brown) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.3 !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* --- Paragraphs --- */
+body.single-post .entry-content p,
+body.single-service .entry-content p {
+  margin-bottom: 1.25rem !important;
+}
+
+/* --- Links --- */
+body.single-post .entry-content a,
+body.single-service .entry-content a {
+  color: var(--nh-green) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  text-decoration-thickness: 1.5px !important;
+  transition: color 0.2s ease !important;
+}
+
+body.single-post .entry-content a:hover,
+body.single-service .entry-content a:hover {
+  color: var(--nh-forest) !important;
+}
+
+/* --- Lists --- */
+body.single-post .entry-content ul.wp-block-list,
+body.single-post .entry-content ol.wp-block-list,
+body.single-service .entry-content ul.wp-block-list,
+body.single-service .entry-content ol.wp-block-list {
+  margin-bottom: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+
+body.single-post .entry-content ul.wp-block-list,
+body.single-service .entry-content ul.wp-block-list {
+  list-style: none !important;
+}
+
+body.single-post .entry-content ul.wp-block-list li,
+body.single-service .entry-content ul.wp-block-list li {
+  position: relative !important;
+  margin-bottom: 0.5rem !important;
+  padding-left: 1.25rem !important;
+}
+
+body.single-post .entry-content ul.wp-block-list li::before,
+body.single-service .entry-content ul.wp-block-list li::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0.6em !important;
+  width: 7px !important;
+  height: 7px !important;
+  background-color: var(--nh-green) !important;
+  border-radius: 1px !important;
+  transform: rotate(45deg) !important;
+}
+
+body.single-post .entry-content ol.wp-block-list li,
+body.single-service .entry-content ol.wp-block-list li {
+  margin-bottom: 0.5rem !important;
+  padding-left: 0.25rem !important;
+}
+
+body.single-post .entry-content ol.wp-block-list li::marker,
+body.single-service .entry-content ol.wp-block-list li::marker {
+  color: var(--nh-green) !important;
+  font-weight: 600 !important;
+}
+
+/* --- Strong emphasis --- */
+body.single-post .entry-content strong,
+body.single-service .entry-content strong {
+  color: var(--nh-forest) !important;
+  font-weight: 700 !important;
+}
+
+/* --- Tables --- */
+body.single-post .entry-content .wp-block-table,
+body.single-post .entry-content figure.wp-block-table,
+body.single-service .entry-content .wp-block-table,
+body.single-service .entry-content figure.wp-block-table {
+  margin: 1.5rem 0 !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid var(--nh-mint) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 15px rgba(30, 57, 50, 0.08) !important;
+}
+
+/* Kill stray pseudo-elements from theme */
+body.single-post .entry-content .wp-block-table::before,
+body.single-post .entry-content .wp-block-table::after,
+body.single-post .entry-content figure.wp-block-table::before,
+body.single-post .entry-content figure.wp-block-table::after,
+body.single-service .entry-content .wp-block-table::before,
+body.single-service .entry-content .wp-block-table::after,
+body.single-service .entry-content figure.wp-block-table::before,
+body.single-service .entry-content figure.wp-block-table::after {
+  display: none !important;
+  content: none !important;
+}
+
+body.single-post .entry-content .wp-block-table table,
+body.single-post .entry-content .wp-block-table table.has-fixed-layout,
+body.single-service .entry-content .wp-block-table table,
+body.single-service .entry-content .wp-block-table table.has-fixed-layout {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 0.9rem !important;
+  table-layout: fixed !important;
+  border: none !important;
+  margin: 0 !important;
+  background: none !important;
+}
+
+/* Reset all cell borders */
+body.single-post .entry-content .wp-block-table th,
+body.single-post .entry-content .wp-block-table td,
+body.single-service .entry-content .wp-block-table th,
+body.single-service .entry-content .wp-block-table td {
+  border: none !important;
+}
+
+/* Header */
+body.single-post .entry-content .wp-block-table thead tr,
+body.single-service .entry-content .wp-block-table thead tr {
+  background-color: var(--nh-forest) !important;
+}
+
+body.single-post .entry-content .wp-block-table thead th,
+body.single-service .entry-content .wp-block-table thead th {
+  padding: 14px 18px !important;
+  text-align: left !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  color: var(--nh-offwhite) !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-right: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+body.single-post .entry-content .wp-block-table thead th:last-child,
+body.single-service .entry-content .wp-block-table thead th:last-child {
+  border-right: none !important;
+}
+
+/* Body rows */
+body.single-post .entry-content .wp-block-table tbody tr,
+body.single-service .entry-content .wp-block-table tbody tr {
+  border-bottom: 1px solid var(--nh-mint) !important;
+  transition: background-color 0.15s ease !important;
+  background: none !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody tr:nth-child(odd),
+body.single-service .entry-content .wp-block-table tbody tr:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody tr:nth-child(even),
+body.single-service .entry-content .wp-block-table tbody tr:nth-child(even) {
+  background-color: var(--nh-offwhite) !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody tr:hover,
+body.single-service .entry-content .wp-block-table tbody tr:hover {
+  background-color: var(--nh-cream) !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody tr:last-child,
+body.single-service .entry-content .wp-block-table tbody tr:last-child {
+  border-bottom: none !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody td,
+body.single-service .entry-content .wp-block-table tbody td {
+  padding: 12px 18px !important;
+  color: var(--nh-charcoal) !important;
+  vertical-align: middle !important;
+  background: none !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody td:first-child,
+body.single-service .entry-content .wp-block-table tbody td:first-child {
+  font-weight: 600 !important;
+  color: var(--nh-forest) !important;
+  width: 40% !important;
+}
+
+body.single-post .entry-content .wp-block-table tbody td:last-child,
+body.single-service .entry-content .wp-block-table tbody td:last-child {
+  color: var(--ui-muted) !important;
+}
+
+/* Caption */
+body.single-post .entry-content .wp-block-table figcaption,
+body.single-service .entry-content .wp-block-table figcaption {
+  font-size: 0.85rem !important;
+  color: var(--ui-muted) !important;
+  font-style: italic !important;
+  margin: 0.6rem 0 0 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* --- Blockquote --- */
+body.single-post .entry-content .wp-block-quote,
+body.single-service .entry-content .wp-block-quote {
+  background-color: var(--nh-cream) !important;
+  border-left: 4px solid var(--nh-gold) !important;
+  border-radius: 0 8px 8px 0 !important;
+  padding: 1.25rem 1.5rem !important;
+  margin: 1.75rem 0 !important;
+  color: var(--nh-forest) !important;
+}
+
+body.single-post .entry-content .wp-block-quote p,
+body.single-service .entry-content .wp-block-quote p {
+  margin-bottom: 0.75rem !important;
+  color: var(--nh-forest) !important;
+}
+
+body.single-post .entry-content .wp-block-quote p:last-child,
+body.single-service .entry-content .wp-block-quote p:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* --- Separator --- */
+body.single-post .entry-content .wp-block-separator,
+body.single-service .entry-content .wp-block-separator {
+  border: none !important;
+  border-top: 2px solid var(--nh-mint) !important;
+  margin: 2.5rem 0 !important;
+  opacity: 0.8 !important;
+}
+
+/* --- PDF download button --- */
+body.single-post .entry-content a[href$=".pdf"],
+body.single-service .entry-content a[href$=".pdf"] {
+  display: inline-block !important;
+  background-color: var(--nh-green) !important;
+  color: #ffffff !important;
+  padding: 10px 22px !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  margin: 0.5rem 0 !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
+}
+
+body.single-post .entry-content a[href$=".pdf"]:hover,
+body.single-service .entry-content a[href$=".pdf"]:hover {
+  background-color: var(--nh-forest) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* --- Mail / phone links --- */
+body.single-post .entry-content a[href^="mailto:"],
+body.single-post .entry-content a[href^="tel:"],
+body.single-service .entry-content a[href^="mailto:"],
+body.single-service .entry-content a[href^="tel:"] {
+  font-weight: 600 !important;
+  color: var(--nh-forest) !important;
+  text-decoration: none !important;
+  border-bottom: 2px solid var(--nh-mint) !important;
+  transition: border-color 0.2s ease !important;
+}
+
+body.single-post .entry-content a[href^="mailto:"]:hover,
+body.single-post .entry-content a[href^="tel:"]:hover,
+body.single-service .entry-content a[href^="mailto:"]:hover,
+body.single-service .entry-content a[href^="tel:"]:hover {
+  border-color: var(--nh-green) !important;
+}
