@@ -591,6 +591,7 @@ function nh_get_order_number_country_settings() {
         'de_DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
         'fi' => [ 'prefix' => 'FI-', 'start' => 3000 ],
         'en_US' => [ 'prefix' => 'EU-', 'start' => 1000 ],
+        'da-DK' => [ 'prefix' => 'DA-', 'start' => 1000 ],
     ];
 
     return isset($language_settings[$language]) ? $language_settings[$language] : [];
@@ -841,6 +842,7 @@ function nh_get_help_form_id_by_host() : int {
 		'norhage.se' => 3613,
 		'norhage.de' => 3837,
 		'norhage.eu' => 103,
+		'norhage.dk' => 3625,		
 	);
 
 	return isset( $form_map[ $host ] ) ? (int) $form_map[ $host ] : 1151;
