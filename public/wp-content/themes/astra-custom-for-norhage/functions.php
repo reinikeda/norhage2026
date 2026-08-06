@@ -594,7 +594,7 @@ function nh_get_order_number_country_settings() {
         'de_DE' => [ 'prefix' => 'DE-', 'start' => 3000 ],
         'fi' => [ 'prefix' => 'FI-', 'start' => 3000 ],
         'en_US' => [ 'prefix' => 'EU-', 'start' => 1000 ],
-        'da-DK' => [ 'prefix' => 'DA-', 'start' => 0001 ],
+        'da_DK' => [ 'prefix' => 'DK-', 'start' => 0001 ],
     ];
 
     return isset($language_settings[$language]) ? $language_settings[$language] : [];
