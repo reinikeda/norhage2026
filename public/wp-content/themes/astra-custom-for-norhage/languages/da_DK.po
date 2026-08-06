@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-06 13:49+0300\n"
+"PO-Revision-Date: 2026-08-06 14:02+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -17,44 +17,44 @@ msgstr ""
 
 #: functions.php:25
 msgid "Primary Menu"
-msgstr ""
+msgstr "Primær menu"
 
 #: functions.php:26
 msgid "Secondary Menu"
-msgstr ""
+msgstr "Sekundær menu"
 
 #: functions.php:27
 msgid "Footer — Explore"
-msgstr ""
+msgstr "Sidefod — Udforsk"
 
 #: functions.php:28
 msgid "Footer — Bottom Bar"
-msgstr ""
+msgstr "Sidefod — Bundlinje"
 
 #: functions.php:88 template-parts/headers/header-main.php:85
 msgctxt "Default FAQ page slug"
 msgid "frequently-asked-questions-faq"
-msgstr "ofte-stilte-sporsmal-faq"
+msgstr "ofte-stillede-spoergsmaal-faq"
 
 #: functions.php:251
 msgid "Shop by Category"
-msgstr "Handle etter kategori"
+msgstr "Køb efter kategori"
 
 #: functions.php:276 functions.php:288
 msgid "Long description"
-msgstr ""
+msgstr "Lang beskrivelse"
 
 #: functions.php:278 functions.php:305
 msgid "Shown after the product list and pagination on the category page."
-msgstr ""
+msgstr "Vises efter produktlisten og sideinddelingen på kategorisiden."
 
 #: functions.php:339
 msgid "Category long description"
-msgstr ""
+msgstr "Lang beskrivelse for kategori"
 
 #: functions.php:375
 msgid "Select options"
-msgstr "Velg alternativer"
+msgstr "Vælg muligheder"
 
 #: functions.php:376
 msgid "View product"
@@ -62,57 +62,57 @@ msgstr "Se produkt"
 
 #: functions.php:405
 msgid "Secondary product title"
-msgstr ""
+msgstr "Sekundær produkttitel"
 
 #: functions.php:434
 msgid "Footer — Shop Categories"
-msgstr ""
+msgstr "Sidefod — Produktkategorier"
 
 #: functions.php:435
 msgid "Footer — Secondary (Services, Blog, Contact)"
-msgstr ""
+msgstr "Sidefod — Sekundær (Tjenester, Blog, Kontakt)"
 
 #: functions.php:436
 msgid "Footer — Legal/Policies"
-msgstr ""
+msgstr "Sidefod — Juridisk/Politikker"
 
 #: functions.php:620
 msgid "Please enter a valid email address."
-msgstr "Vennligst skriv inn en gyldig e-postadresse."
+msgstr "Indtast venligst en gyldig e-mailadresse."
 
 #: functions.php:628
 msgid "Thank you!"
-msgstr "Takk!"
+msgstr "Tak!"
 
 #: functions.php:637
 msgid "Subscription is temporarily unavailable. Please contact site administrator."
-msgstr "Abonnementet er midlertidig utilgjengelig. Vennligst kontakt nettstedsadministratoren."
+msgstr "Abonnement er midlertidigt utilgængeligt. Kontakt venligst administratoren."
 
 #: functions.php:662
 msgid "Could not connect to email service. Please try again."
-msgstr "Kunne ikke koble til e-posttjenesten. Vennligst prøv igjen."
+msgstr "Kunne ikke forbinde til e-mailtjenesten. Prøv venligst igen."
 
 #: functions.php:672
 msgid "Thank you! You are subscribed."
-msgstr "Takk! Du er nå abonnent."
+msgstr "Tak! Du er nu tilmeldt."
 
 #: functions.php:777
 msgid "Need help choosing or sizing? We can help."
-msgstr "Trenger du hjelp? Vi hjelper deg."
+msgstr "Brug for hjælp til valg eller størrelse? Vi kan hjælpe."
 
 #: functions.php:788
 msgid "Ask an expert"
-msgstr "Spør en ekspert"
+msgstr "Spørg en ekspert"
 
 #: functions.php:881
 msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
-msgstr "Produktbilder er kun til referanse. Faktisk produktfarge, form eller andre egenskaper kan avvike."
+msgstr "Billeder er kun til illustration. Faktisk produktfarve, form eller andre egenskaber kan variere."
 
 #: inc/basket-customize.php:75 inc/basket-customize.php:84
 #: inc/order-attributes.php:96 inc/order-attributes.php:311
 #: inc/product-customize.php:540 inc/product-customize.php:589
 msgid "Length"
-msgstr "Lengde"
+msgstr "Længde"
 
 #: inc/blog.php:12
 msgid "All"
@@ -120,20 +120,20 @@ msgstr "Alle"
 
 #: inc/blog.php:25 inc/hero.php:22
 msgid "Blog"
-msgstr "Blogg"
+msgstr "Blog"
 
 #: inc/blog.php:26 inc/blog.php:27 inc/blog.php:28 inc/blog.php:29
 #: inc/blog.php:30 inc/blog.php:31
 msgid "Blog: %s"
-msgstr "Blogg: %s"
+msgstr "Blog: %s"
 
 #: inc/blog.php:62 inc/blog.php:70 inc/services.php:81 inc/services.php:89
 msgid "Read More »"
-msgstr "Les mer »"
+msgstr "Læs mere »"
 
 #: inc/blog.php:81
 msgid "Back to Blog"
-msgstr "Tilbake til bloggen"
+msgstr "Tilbage til bloggen"
 
 #: inc/blog.php:87
 msgid "Back to %s"
@@ -141,7 +141,7 @@ msgstr "Tilbake til %s"
 
 #: inc/blog.php:107
 msgid "Related posts"
-msgstr "Relaterte innlegg"
+msgstr "Relaterede indlæg"
 
 #: inc/bundle-box.php:268
 msgid "In stock"
@@ -149,23 +149,23 @@ msgstr "På lager"
 
 #: inc/bundle-box.php:269
 msgid "Out of stock"
-msgstr "Utsolgt"
+msgstr "Ikke på lager"
 
 #: inc/bundle-box.php:284
 msgid "Choose an option"
-msgstr "Velg et alternativ"
+msgstr "Vælg en mulighed"
 
 #: inc/bundle-box.php:333
 msgid "Complete set"
-msgstr "Komplett sett"
+msgstr "Komplet sæt"
 
 #: inc/bundle-box.php:335
 msgid "Complete set add-ons"
-msgstr "Tilleggsutstyr til komplette sett"
+msgstr "Tilbehør til komplet sæt"
 
 #: inc/bundle-box.php:343
 msgid "Image"
-msgstr "Bilde"
+msgstr "Billede"
 
 #: inc/bundle-box.php:344 woocommerce/pdf/norhage/invoice.php:137
 msgid "Product"
@@ -173,7 +173,7 @@ msgstr "Produkt"
 
 #: inc/bundle-box.php:345
 msgid "Qty"
-msgstr "Antall"
+msgstr "Antal"
 
 #: inc/bundle-box.php:346 woocommerce/pdf/norhage/invoice.php:143
 msgid "Price"
@@ -181,32 +181,32 @@ msgstr "Pris"
 
 #: inc/bundle-box.php:357
 msgid "Total:"
-msgstr "Totalt:"
+msgstr "I alt:"
 
 #: inc/bundle-box.php:359
 msgid "Add all to basket"
-msgstr "Legg alt i handlekurven"
+msgstr "Læg alt i kurven"
 
 #: inc/bundle-box.php:426
 msgid "Invalid bundle product."
-msgstr "Ugyldig pakkeprodukt."
+msgstr "Ugyldigt pakkeprodukt."
 
 #: inc/bundle-box.php:431
 msgid "Bundle product could not be loaded."
-msgstr "Pakkeproduktet kunne ikke lastes."
+msgstr "Pakkeproduktet kunne ikke indlæses."
 
 #: inc/bundle-box.php:481
 msgid "Item"
-msgstr "Produkt"
+msgstr "Vare"
 
 #. translators: %s = list of added items
 #: inc/bundle-box.php:488
 msgid "Bundle added to basket: %s"
-msgstr "Pakken er lagt i handlekurven: %s"
+msgstr "Pakke tilføjet til kurven: %s"
 
 #: inc/bundle-box.php:548
 msgid "Cart is not available."
-msgstr "Handlekurven er ikke tilgjengelig."
+msgstr "Indkøbskurven er ikke tilgængelig."
 
 #: inc/bundle-box.php:560
 msgid "Main product data is missing."
@@ -214,15 +214,15 @@ msgstr "Hovedproduktdata mangler."
 
 #: inc/bundle-box.php:610
 msgid "Unable to add one of the bundle items to the basket."
-msgstr "En av varene i pakken kunne ikke legges i handlekurven."
+msgstr "En af varerne i pakken kunne ikke føjes til kurven."
 
 #: inc/hero.php:31
 msgid "Search results for “%s”"
-msgstr "Søkeresultater for «%s»"
+msgstr "Søgeresultater for ”%s”"
 
 #: inc/meta-boxes.php:9 inc/meta-boxes.php:558
 msgid "Downloads"
-msgstr "Nedlastinger"
+msgstr "Downloads"
 
 #: inc/meta-boxes.php:18 inc/meta-boxes.php:574
 msgid "Video"
@@ -230,125 +230,125 @@ msgstr "Video"
 
 #: inc/meta-boxes.php:27
 msgid "Custom Cutting"
-msgstr "Skreddersydd skjæring"
+msgstr "Specialtilpasset skæring"
 
 #: inc/meta-boxes.php:36
 msgid "Homepage Hero Slider"
-msgstr ""
+msgstr "Forside Hero Slider"
 
 #: inc/meta-boxes.php:52 inc/meta-boxes.php:70
 msgid "Remove download row"
-msgstr ""
+msgstr "Fjern download-række"
 
 #: inc/meta-boxes.php:55
 msgid "Label"
-msgstr ""
+msgstr "Mærkat"
 
 #: inc/meta-boxes.php:56
 msgid "PDF URL"
-msgstr ""
+msgstr "PDF-URL"
 
 #: inc/meta-boxes.php:76
 msgid "Add Download"
-msgstr ""
+msgstr "Tilføj download"
 
 #: inc/meta-boxes.php:121
 msgid "YouTube / Vimeo URL"
-msgstr "YouTube / Vimeo URL"
+msgstr "YouTube / Vimeo-URL"
 
 #: inc/meta-boxes.php:154
 msgid "Enable custom cutting"
-msgstr ""
+msgstr "Aktivér tilpasset skæring"
 
 #: inc/meta-boxes.php:159 inc/order-attributes.php:111
 #: inc/order-attributes.php:312 inc/product-customize.php:231
 #: inc/product-customize.php:551 inc/product-customize.php:593
 msgid "Cutting fee per sheet"
-msgstr "Skjæreavgift per ark"
+msgstr "Skæregebyr pr. plade"
 
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
-msgstr ""
+msgstr "Min. bredde (mm)"
 
 #: inc/meta-boxes.php:169
 msgid "Max width (mm)"
-msgstr ""
+msgstr "Maks. bredde (mm)"
 
 #: inc/meta-boxes.php:174
 msgid "Min length (mm)"
-msgstr ""
+msgstr "Min. længde (mm)"
 
 #: inc/meta-boxes.php:179
 msgid "Max length (mm)"
-msgstr ""
+msgstr "Maks. længde (mm)"
 
 #: inc/meta-boxes.php:184
 msgid "Cutting step (mm)"
-msgstr ""
+msgstr "Skæretrin (mm)"
 
 #: inc/meta-boxes.php:190
 msgid "Weight is taken from the WooCommerce \"Weight (kg)\" field. For custom cutting, that weight is interpreted as kg per m2 (set per product or per variation)."
-msgstr ""
+msgstr "Vægt hentes fra WooCommerce-feltet \"Vægt (kg)\". Ved tilpasset skæring fortolkes denne vægt som kg pr. m² (angives pr. produkt eller pr. variation)."
 
 #: inc/meta-boxes.php:205
 msgid "Set a static homepage first in Settings > Reading."
-msgstr ""
+msgstr "Indstil først en statisk forside under Indstillinger > Læsning."
 
 #: inc/meta-boxes.php:210
 msgid "This slider is editable only on the page currently assigned as the homepage."
-msgstr ""
+msgstr "Denne slider kan kun redigeres på den side, der aktuelt er angivet som forside."
 
 #: inc/meta-boxes.php:232
 msgid "Select slide image"
-msgstr ""
+msgstr "Vælg slide-billede"
 
 #: inc/meta-boxes.php:233
 msgid "Use image"
-msgstr ""
+msgstr "Brug billede"
 
 #: inc/meta-boxes.php:234 inc/meta-boxes.php:290
 msgid "No image selected"
-msgstr ""
+msgstr "Intet billede valgt"
 
 #: inc/meta-boxes.php:269
 msgid "Add up to 5 homepage slides. Each slide has an image, H2 heading, and paragraph text."
-msgstr ""
+msgstr "Tilføj op til 5 forside-slides. Hvert slide har et billede, en H2-overskrift og afsnitstekst."
 
 #: inc/meta-boxes.php:281
 msgid "Slide %d"
-msgstr ""
+msgstr "Slide %d"
 
 #: inc/meta-boxes.php:303
 msgid "Choose image"
-msgstr ""
+msgstr "Vælg billede"
 
 #: inc/meta-boxes.php:307
 msgid "Remove image"
-msgstr ""
+msgstr "Fjern billede"
 
 #: inc/meta-boxes.php:315
 msgid "Heading (H2)"
-msgstr ""
+msgstr "Overskrift (H2)"
 
 #: inc/meta-boxes.php:328
 msgid "Paragraph"
-msgstr ""
+msgstr "Afsnit"
 
 #: inc/meta-boxes.php:642
 msgid "Watch video"
-msgstr ""
+msgstr "Se video"
 
 #: inc/meta-boxes.php:656
 msgid "Product extras"
-msgstr ""
+msgstr "Produkttilbehør"
 
 #: inc/meta-boxes.php:672
 msgid "Product extra's"
-msgstr ""
+msgstr "Produkttilbehør"
 
 #: inc/meta-boxes.php:673
 msgid "Select one or more products that can be added to this product as add-ons. Only simple products or product-variants are allowed."
-msgstr ""
+msgstr "Vælg et eller flere produkter, der kan tilføjes til dette produkt som tilvalg. Kun enkle produkter eller produktvarianter er tilladt."
 
 #: inc/meta-boxes.php:677
 msgid "Product "
@@ -356,31 +356,31 @@ msgstr "Produkt "
 
 #: inc/meta-boxes.php:678
 msgid "Maximum quantity"
-msgstr ""
+msgstr "Maksimalt antal"
 
 #: inc/meta-boxes.php:693
 msgid "Add product as add-on"
-msgstr ""
+msgstr "Tilføj produkt som tilvalg"
 
 #: inc/meta-boxes.php:740
 msgid "Drag to reorder"
-msgstr ""
+msgstr "Træk for at omarrangere"
 
 #: inc/meta-boxes.php:744
 msgid "Search products & variations..."
-msgstr "Sök produkter & varianter..."
+msgstr "Søg efter produkter og varianter..."
 
 #: inc/meta-boxes.php:760
 msgid "Remove row"
-msgstr ""
+msgstr "Fjern række"
 
 #: inc/meta-boxes.php
 msgid "Related article"
-msgstr "Relatert artikkel"
+msgstr "Relateret artikel"
 
 #: inc/meta-boxes.php
 msgid "Read more"
-msgstr "Les mer"
+msgstr "Læs mere"
 
 #: inc/order-attributes.php:92 inc/order-attributes.php:310
 #: inc/product-customize.php:539 inc/product-customize.php:588
@@ -390,19 +390,19 @@ msgstr "Bredde"
 #: inc/product-customize.php:36 inc/product-customize.php:37
 #: inc/product-customize.php:59
 msgid "Back to bundle"
-msgstr "Tilbake til pakken"
+msgstr "Tilbage til pakken"
 
 #: inc/product-customize.php:166 inc/product-customize.php:171
 msgid "%1$d–%2$d mm"
-msgstr ""
+msgstr "%1$d–%2$d mm"
 
 #: inc/product-customize.php:167 inc/product-customize.php:172
 msgid "≥ %d mm"
-msgstr ""
+msgstr "≥ %d mm"
 
 #: inc/product-customize.php:168 inc/product-customize.php:173
 msgid "≤ %d mm"
-msgstr ""
+msgstr "≤ %d mm"
 
 #: inc/product-customize.php:185
 msgid "Width (mm)"
@@ -410,67 +410,67 @@ msgstr "Bredde (mm)"
 
 #: inc/product-customize.php:187
 msgid "Decrease width"
-msgstr ""
+msgstr "Formindsk bredde"
 
 #: inc/product-customize.php:194
 msgid "Increase width"
-msgstr ""
+msgstr "Forøg bredde"
 
 #: inc/product-customize.php:198
 msgid "Length (mm)"
-msgstr "Lengde (mm)"
+msgstr "Længde (mm)"
 
 #: inc/product-customize.php
 msgid "Length (m)"
-msgstr "Lengde (m)"
+msgstr "Længde (m)"
 
 #: inc/product-customize.php:200
 msgid "Decrease length"
-msgstr ""
+msgstr "Formindsk længde"
 
 #: inc/product-customize.php:207
 msgid "Increase length"
-msgstr ""
+msgstr "Forøg længde"
 
 #: inc/product-customize.php:213
 msgid "Step: %d mm"
-msgstr ""
+msgstr "Trin: %d mm"
 
 #: inc/product-customize.php:224
 msgid "Your selection"
-msgstr "Ditt valg"
+msgstr "Dit valg"
 
 #: inc/product-customize.php:227
 msgid "Price per m²"
-msgstr "Pris per m²"
+msgstr "Pris pr. m²"
 
 #: inc/product-customize.php
 msgid "Price per m"
-msgstr "Pris per meter"
+msgstr "Pris pr. m"
 
 #: inc/product-customize.php:235
 msgid "Unit price"
-msgstr "Enhetspris"
+msgstr "Stykpris"
 
 #: inc/product-customize.php:241 woocommerce/pdf/norhage/invoice.php:223
 msgid "Total"
-msgstr "Totalt"
+msgstr "I alt"
 
 #: inc/product-customize.php:322
 msgid "Sorry, all combinations are unavailable."
-msgstr "Beklager, ingen av kombinasjonene er tilgjengelige."
+msgstr "Beklager, ingen af kombinationerne er tilgængelige."
 
 #: inc/product-customize.php:430
 msgid "Please choose product options (variation) before entering dimensions."
-msgstr "Vennligst velg produktalternativer (varianter) før du oppgir målene."
+msgstr "Vælg venligst produktindstillinger (variant), før du indtaster mål."
 
 #: inc/product-customize.php:437
 msgid "Please enter width and length (mm)."
-msgstr "Vennligst oppgi bredde og lengde (mm)."
+msgstr "Indtast venligst bredde og længde (mm)."
 
 #: inc/product-customize.php:446
 msgid "Minimum width is %d mm."
-msgstr "Minste bredde er %d mm."
+msgstr "Minimumsbredde er %d mm."
 
 #: inc/product-customize.php:447
 msgid "Maximum width is %d mm."
@@ -478,37 +478,37 @@ msgstr "Maksimal bredde er %d mm."
 
 #: inc/product-customize.php:448
 msgid "Minimum length is %d mm."
-msgstr "Minste lengde er %d mm."
+msgstr "Minimumslængde er %d mm."
 
 #: inc/product-customize.php:449
 msgid "Maximum length is %d mm."
-msgstr "Maksimal lengde er %d mm."
+msgstr "Maksimal længde er %d mm."
 
 #: inc/product-customize.php:459
 msgid "Width must align to %1$d mm steps starting at %2$d mm."
-msgstr "Bredden må justeres i trinn på %1$d mm, med start på %2$d mm."
+msgstr "Bredden skal tilpasses i trin på %1$d mm startende ved %2$d mm."
 
 #: inc/product-customize.php:463
 msgid "Length must align to %1$d mm steps starting at %2$d mm."
-msgstr "Lengden må være innstilt i trinn på %1$d mm, med start ved %2$d mm."
+msgstr "Længden skal tilpasses i trin på %1$d mm startende ved %2$d mm."
 
 #: inc/sale-category-sync.php:94
 msgid "Sale"
-msgstr "Salg"
+msgstr "Udsalg"
 
 #: inc/search.php:14 template-parts/headers/header-main.php:98
 #: template-parts/headers/header-main.php:203
 msgid "Search products…"
-msgstr "Søk etter produkter…"
+msgstr "Søg efter produkter…"
 
 #: inc/search.php:15 template-parts/headers/header-main.php:93
 #: template-parts/headers/header-main.php:198
 msgid "Search products"
-msgstr "Søk etter produkter"
+msgstr "Søg efter produkter"
 
 #: inc/search.php:38
 msgid "Search results"
-msgstr "Søk etter produkter"
+msgstr "Søgeresultater"
 
 #: inc/services.php:24
 msgctxt "Post Type General Name"
@@ -526,15 +526,15 @@ msgstr "Tjenester"
 
 #: inc/services.php:27
 msgid "Add New Service"
-msgstr ""
+msgstr "Tilføj ny tjeneste"
 
 #: inc/services.php:28
 msgid "Edit Service"
-msgstr ""
+msgstr "Rediger tjeneste"
 
 #: inc/services.php:29
 msgid "View Service"
-msgstr ""
+msgstr "Vis tjeneste"
 
 #: inc/services.php:30
 msgid "All Services"
@@ -542,7 +542,7 @@ msgstr "Alle tjenester"
 
 #: inc/services.php:98
 msgid "Back to Services"
-msgstr "Tilbake til tjenester"
+msgstr "Tilbage til tjenester"
 
 #: inc/services.php:111
 msgid "Other services"
@@ -550,7 +550,7 @@ msgstr "Andre tjenester"
 
 #: template-parts/footer/footer.php:11
 msgid "Tehi UG"
-msgstr "Tehi AS"
+msgstr "Tehi ApS"
 
 #: template-parts/footer/footer.php:12
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
@@ -563,7 +563,7 @@ msgstr "+47 940 99 084"
 
 #: template-parts/footer/footer.php:14
 msgid "info@norhage.de"
-msgstr "info@norhage.no"
+msgstr "info@norhage.dk"
 
 #: template-parts/footer/footer.php:18
 msgid "https://www.facebook.com/yourpage"
@@ -583,31 +583,31 @@ msgstr "https://www.linkedin.com/company/norhage-industri-norge/"
 
 #: template-parts/footer/footer.php:25
 msgid "https://norhageindustri.lt/"
-msgstr "https://norhageindustri.no/"
+msgstr "https://norhageindustri.dk/"
 
 #: template-parts/footer/footer.php:29
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #: template-parts/footer/footer.php:30
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: template-parts/footer/footer.php:31
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: template-parts/footer/footer.php:32
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: template-parts/footer/footer.php:70
 msgid "Company Info"
-msgstr "Firmainformasjon"
+msgstr "Virksomhedsinformation"
 
 #: template-parts/footer/footer.php:72
 msgid "Company:"
-msgstr "Selskap:"
+msgstr "Virksomhed:"
 
 #: template-parts/footer/footer.php:73
 msgid "Address:"
@@ -619,55 +619,55 @@ msgstr "Telefon:"
 
 #: template-parts/footer/footer.php:77
 msgid "Email:"
-msgstr "E-post:"
+msgstr "E-mail:"
 
 #: template-parts/footer/footer.php:84
 msgid "Follow us"
-msgstr "Følg oss"
+msgstr "Følg os"
 
 #: template-parts/footer/footer.php:85
 msgid "Social media"
-msgstr "Sosiale medier"
+msgstr "Sociale medier"
 
 #: template-parts/footer/footer.php:113
 msgid "Shop Categories"
-msgstr "Butikkategorier"
+msgstr "Butikskategorier"
 
 #: template-parts/footer/footer.php:116
 msgid "Explore & Support"
-msgstr "Utforsk & Kundestøtte"
+msgstr "Udforsk & Kundesupport"
 
 #: template-parts/footer/footer.php:119
 msgid "Legal & Information"
-msgstr "Juridisk & Informasjon"
+msgstr "Juridisk & Information"
 
 #: template-parts/footer/footer.php:123
 msgid "Stay in the Loop"
-msgstr "Hold deg oppdatert"
+msgstr "Hold dig opdateret"
 
 #: template-parts/footer/footer.php:124
 msgid "Get trends, offers and how-tos straight to your inbox."
-msgstr "Få trender, tilbud og guider rett i innboksen."
+msgstr "Få trends, tilbud og guider direkte i din indbakke."
 
 #: template-parts/footer/footer.php:127
 msgid "Email address"
-msgstr "E-postadresse"
+msgstr "E-mailadresse"
 
 #: template-parts/footer/footer.php:133
 msgid "Your email address"
-msgstr "Din e-postadresse"
+msgstr "Din e-mailadresse"
 
 #: template-parts/footer/footer.php:137
 msgid "Subscribe"
-msgstr "Abonner"
+msgstr "Tilmeld"
 
 #: template-parts/footer/footer.php:139
 msgid "By subscribing you agree to our"
-msgstr "Ved å abonnere godtar du vår"
+msgstr "Ved tilmelding accepterer du vores"
 
 #: template-parts/footer/footer.php:140
 msgid "Privacy Policy"
-msgstr "Personvernerklæring"
+msgstr "Privatlivspolitik"
 
 #: template-parts/footer/footer.php:152
 msgid "B2B Portal"
@@ -675,7 +675,7 @@ msgstr "B2B-portal"
 
 #: template-parts/footer/footer.php:155
 msgid "Legal bottom"
-msgstr ""
+msgstr "Juridisk bundlinje"
 
 #: template-parts/headers/header-main.php:13
 msgid "My Account"
@@ -683,7 +683,7 @@ msgstr "Min konto"
 
 #: template-parts/headers/header-main.php:13
 msgid "Sign in"
-msgstr "Logg inn"
+msgstr "Log ind"
 
 #: template-parts/headers/header-main.php:16
 msgid "+4917665106609"
@@ -692,16 +692,16 @@ msgstr "+4794099084"
 #: template-parts/headers/header-main.php:48
 #: template-parts/headers/header-main.php:151
 msgid "Cart"
-msgstr "Handlekurv"
+msgstr "Kurv"
 
 #: template-parts/headers/header-main.php:57
 #: template-parts/headers/header-main.php:160
 msgid "View cart"
-msgstr "Se handlekurv"
+msgstr "Se kurv"
 
 #: template-parts/headers/header-main.php:65
 msgid "Switch theme"
-msgstr ""
+msgstr "Skift tema"
 
 #: template-parts/headers/header-main.php:86
 msgid "FAQ"
@@ -710,66 +710,66 @@ msgstr "FAQ"
 #: template-parts/headers/header-main.php:106
 #: template-parts/headers/header-main.php:211
 msgid "Search"
-msgstr ""
+msgstr "Søg"
 
 #: template-parts/headers/header-main.php:113
 #: template-parts/headers/header-main.php:218
 msgid "Search suggestions"
-msgstr ""
+msgstr "Søgeforslag"
 
 #: template-parts/headers/header-main.php:137
 msgid "Primary menu"
-msgstr ""
+msgstr "Primær menu"
 
 #: template-parts/headers/header-main.php:166
 msgid "Open menu"
-msgstr ""
+msgstr "Åbn menu"
 
 #: template-parts/headers/header-main.php:188
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: template-parts/headers/header-main.php:189
 msgid "Close menu"
-msgstr ""
+msgstr "Luk menu"
 
 #: template-parts/headers/header-main.php:222
 msgid "Mobile navigation"
-msgstr ""
+msgstr "Mobilnavigation"
 
 #: template-parts/headers/header-main.php:232
 msgid "More"
-msgstr "Mer"
+msgstr "Mere"
 
 #: template-parts/headers/hero-home.php:11
 msgid "Homepage highlights"
-msgstr ""
+msgstr "Forsidehøjdepunkter"
 
 #: template-parts/headers/hero-home.php:41
 msgid "Previous slide"
-msgstr ""
+msgstr "Forrige slide"
 
 #: template-parts/headers/hero-home.php:49
 msgid "Hero slides"
-msgstr ""
+msgstr "Hero-slides"
 
 #: template-parts/headers/hero-home.php:58
 msgid "Go to slide %d"
-msgstr ""
+msgstr "Gå til slide %d"
 
 #: template-parts/headers/hero-home.php:67
 msgid "Next slide"
-msgstr ""
+msgstr "Næste slide"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
 msgid "We’re sorry to let you know that your order #%1$s has been cancelled."
-msgstr "Vi beklager å måtte meddele deg at bestillingen din #%1$s er blitt kansellert."
+msgstr "Vi er kede af at meddele dig, at din ordre #%1$s er blevet annulleret."
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:40
 msgid "We’re getting in touch to let you know that your order #%1$s has been cancelled."
-msgstr "Vi tar kontakt for å informere deg om at bestillingen din med nummer %1$s er blitt kansellert."
+msgstr "Vi kontakter dig for at oplyse, at din ordre #%1$s er blevet annulleret."
 
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
@@ -791,7 +791,7 @@ msgstr "Vi tar kontakt for å informere deg om at bestillingen din med nummer %1
 #: woocommerce/emails/customer-refunded-order.php:35
 #: woocommerce/emails/customer-reset-password.php:32
 msgid "Hi %s,"
-msgstr "Hei %s,"
+msgstr "Hej %s,"
 
 #: woocommerce/emails/customer-completed-order.php:41
 #: woocommerce/emails/customer-failed-order.php:44
@@ -800,50 +800,50 @@ msgstr "Hei %s,"
 #: woocommerce/emails/customer-processing-order.php:41
 #: woocommerce/emails/customer-refunded-order.php:39
 msgid "Hi,"
-msgstr "Hei,"
+msgstr "Hej,"
 
 #: woocommerce/emails/customer-completed-order.php:45
 msgid "We have finished processing your order."
-msgstr "Vi har fullført behandlingen av bestillingen din."
+msgstr "Vi har færdigbehandlet din ordre."
 
 #: woocommerce/emails/customer-completed-order.php:47
 #: woocommerce/emails/customer-on-hold-order.php:45
 #: woocommerce/emails/customer-processing-order.php:47
 #: woocommerce/emails/customer-refunded-order.php:55
 msgid "Here’s a reminder of what you’ve ordered:"
-msgstr "Her er en oversikt over det du har bestilt:"
+msgstr "Her er en påmindelse om, hvad du har bestilt:"
 
 #: woocommerce/emails/customer-failed-order.php:48
 msgid "Unfortunately, we couldn't complete your order due to an issue with your payment method."
-msgstr "Dessverre kunne vi ikke fullføre bestillingen din på grunn av et problem med betalingsmåten din."
+msgstr "Desværre kunne vi ikke gennemføre din ordre på grund af et problem med din betalingsmetode."
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-failed-order.php:50
 msgid "If you'd like to continue with your purchase, please return to %s and try a different method of payment."
-msgstr "Hvis du ønsker å fortsette med kjøpet, må du gå tilbake til %s og prøve en annen betalingsmåte."
+msgstr "Hvis du ønsker at fortsætte med dit køb, skal du gå tilbage til %s og prøve en anden betalingsmetode."
 
 #: woocommerce/emails/customer-failed-order.php:51
 msgid "Your order details are as follows:"
-msgstr "Bestillingsopplysningene dine er som følger:"
+msgstr "Dine ordreoplysninger er som følger:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
 msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
-msgstr "Takk for at du opprettet en konto på %s. Her er en kopi av brukeropplysningene dine."
+msgstr "Tak fordi du oprettede en konto på %s. Her er en kopi af dine brugeroplysninger."
 
 #. translators: %s: Username
 #: woocommerce/emails/customer-new-account.php:41
 #: woocommerce/emails/customer-reset-password.php:38
 msgid "Username: <b>%s</b>"
-msgstr "Brukernavn: <b>%s</b>"
+msgstr "Brugernavn: <b>%s</b>"
 
 #: woocommerce/emails/customer-new-account.php:44
 msgid "Set your new password."
-msgstr "Angi ditt nye passord."
+msgstr "Angiv din nye adgangskode."
 
 #: woocommerce/emails/customer-new-account.php:47
 msgid "You can access your account area to view orders, change your password, and more via the link below:"
-msgstr "Du kan gå inn på kontoområdet ditt for å se bestillinger, endre passord og mer via lenken nedenfor:"
+msgstr "Du kan få adgang til din konto for at se ordrer, ændre adgangskode og mere via linket nedenfor:"
 
 #: woocommerce/emails/customer-new-account.php:48
 msgid "My account"
@@ -852,99 +852,99 @@ msgstr "Min konto"
 #. translators: %1$s: Site title, %2$s: Username, %3$s: My account link
 #: woocommerce/emails/customer-new-account.php:51
 msgid "Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s"
-msgstr "Takk for at du opprettet en konto på %1$s. Brukernavnet ditt er %2$s. Du kan gå inn på kontoområdet ditt for å se bestillinger, endre passord og mer på: %3$s"
+msgstr "Tak fordi du oprettede en konto på %1$s. Dit brugernavn er %2$s. Du kan få adgang til dit kontoområde for at se ordrer, ændre din adgangskode og mere på: %3$s"
 
 #: woocommerce/emails/customer-new-account.php:54
 msgid "Click here to set your new password."
-msgstr "Klikk her for å angi et nytt passord."
+msgstr "Klik her for at angive din nye adgangskode."
 
 #: woocommerce/emails/customer-note.php:45
 msgid "The following note has been added to your order:"
-msgstr "Følgende merknad er lagt til i bestillingen din:"
+msgstr "Følgende bemærkning er tilføjet til din ordre:"
 
 #: woocommerce/emails/customer-note.php:54
 msgid "As a reminder, here are your order details:"
-msgstr "For ordens skyld, her er opplysningene om bestillingen din:"
+msgstr "Som en påmindelse er her dine ordreoplysninger:"
 
 #: woocommerce/emails/customer-on-hold-order.php:44
 msgid "We’ve received your order and it’s currently on hold until we can confirm your payment has been processed."
-msgstr "Takk for din bestilling! Vi informerer om at din ordre vil bli behandlet så snart betalingen er mottatt. Du finner fakturaen vedlagt i denne e-posten. Vennligst utfør betalingen."
+msgstr "Tak for din ordre! Vi informerer om, at din ordre vil blive behandlet, så snart betalingen er modtaget. Du finder fakturaen vedhæftet i denne e-mail. Venligst udfør betalingen."
 
 #: woocommerce/emails/customer-on-hold-order.php:47
 msgid "Thanks for your order. It’s on-hold until we confirm that payment has been received."
-msgstr "Takk for bestillingen. Den er satt på vent inntil vi har bekreftet at betalingen er mottatt."
+msgstr "Tak for din ordre. Den er sat på pause, indtil vi bekræfter, at betalingen er modtaget."
 
 #: woocommerce/emails/customer-pos-completed-order.php:44
 #: woocommerce/emails/customer-pos-refunded-order.php:42
 msgid "Hi there,"
-msgstr "Hei,"
+msgstr "Hej,"
 
 #: woocommerce/emails/customer-pos-completed-order.php:48
 #: woocommerce/emails/customer-pos-refunded-order.php:57
 msgid "Here’s a reminder of what you’ve bought:"
-msgstr "Her er en oversikt over hva du har kjøpt:"
+msgstr "Her er en påmindelse om, hvad du har købt:"
 
 #: woocommerce/emails/customer-pos-completed-order.php:113
 #: woocommerce/emails/customer-pos-refunded-order.php:124
 msgid "Refund & Returns Policy"
-msgstr "Retur- og refusjonsregler"
+msgstr "Retur- og refusionspolitik"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-pos-refunded-order.php:51
 #: woocommerce/emails/customer-refunded-order.php:49
 msgid "Your order from %s has been partially refunded."
-msgstr "Bestillingen din fra %s er delvis refundert."
+msgstr "Din ordre fra %s er blevet delvist refunderet."
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-pos-refunded-order.php:54
 #: woocommerce/emails/customer-refunded-order.php:52
 msgid "Your order from %s has been refunded."
-msgstr "Bestillingen din fra %s er blitt refundert."
+msgstr "Din ordre fra %s er blevet refunderet."
 
 #: woocommerce/emails/customer-processing-order.php:46
 msgid "Just to let you know &mdash; we’ve received your order, and it is now being processed."
-msgstr "Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er til behandling."
+msgstr "Blot til din orientering &mdash; vi har modtaget din ordre, og den behandles nu."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:50
 msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
-msgstr "Vi vil bare informere om at vi har mottatt bestillingen din, og at den nå er til behandling:"
+msgstr "Blot til din orientering &mdash; vi har modtaget din ordre #%s, og den behandles nu:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:59
 msgid "Your order on %s has been partially refunded. There are more details below for your reference:"
-msgstr "Bestillingen din på %s er delvis refundert. Nedenfor finner du mer informasjon:"
+msgstr "Din ordre hos %s er blevet delvist refunderet. Se flere oplysninger nedenfor:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:62
 msgid "Your order on %s has been refunded. There are more details below for your reference:"
-msgstr "Bestillingen din på %s er refundert. Nedenfor finner du mer informasjon:"
+msgstr "Din ordre hos %s er blevet refunderet. Se flere oplysninger nedenfor:"
 
 #. translators: %s: Store name
 #: woocommerce/emails/customer-reset-password.php:34
 msgid "Someone has requested a new password for the following account on %s:"
-msgstr "Noen har bedt om et nytt passord for følgende konto på %s:"
+msgstr "Nogen har anmodet om en ny adgangskode til følgende konto på %s:"
 
 #: woocommerce/emails/customer-reset-password.php:40
 msgid "If you didn’t make this request, just ignore this email. If you’d like to proceed, reset your password via the link below:"
-msgstr "Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du ønsker å fortsette, kan du tilbakestille passordet ditt via lenken nedenfor:"
+msgstr "Hvis du ikke har anmodet om dette, skal du blot ignorere denne e-mail. Hvis du ønsker at fortsætte, kan du nulstille din adgangskode via linket nedenfor:"
 
 #. translators: %s: Customer username
 #: woocommerce/emails/customer-reset-password.php:43
 msgid "Username: %s"
-msgstr "Brukernavn: %s"
+msgstr "Brugernavn: %s"
 
 #: woocommerce/emails/customer-reset-password.php:44
 msgid "If you didn't make this request, just ignore this email. If you'd like to proceed:"
-msgstr "Hvis du ikke har bedt om dette, kan du bare ignorere denne e-posten. Hvis du ønsker å fortsette:"
+msgstr "Hvis du ikke har anmodet om dette, skal du blot ignorere denne e-mail. Hvis du ønsker at fortsætte:"
 
 #: woocommerce/emails/customer-reset-password.php:50
 msgid "Reset your password"
-msgstr "Tilbakestill passordet ditt"
+msgstr "Nulstil din adgangskode"
 
 #: woocommerce/emails/customer-reset-password.php:52
 msgid "Click here to reset your password"
-msgstr "Klikk her for å tilbakestille passordet ditt"
+msgstr "Klik her for at nulstille din adgangskode"
 
 #: woocommerce/pdf/norhage/invoice.php:17
 #: woocommerce/pdf/norhage/invoice.php:44
@@ -961,68 +961,68 @@ msgstr "Ordrenummer"
 
 #: woocommerce/pdf/norhage/invoice.php:105
 msgid "Order Date"
-msgstr "Bestillingsdato"
+msgstr "Ordredato"
 
 #: woocommerce/pdf/norhage/invoice.php:111
 msgid "Payment Method"
-msgstr "Betalingsmåte"
+msgstr "Betalingsmetode"
 
 #: woocommerce/pdf/norhage/invoice.php:140
 msgid "Quantity"
-msgstr "Antall"
+msgstr "Antal"
 
 #: woocommerce/pdf/norhage/invoice.php:162
 msgid "Weight"
-msgstr "Vekt"
+msgstr "Vægt"
 
 #: woocommerce/pdf/norhage/invoice.php:214
 msgid "Subtotal"
-msgstr "Delsum"
+msgstr "Subtotal"
 
 #: woocommerce/pdf/norhage/invoice.php:218
 msgid "Shipping"
-msgstr "Frakt"
+msgstr "Fragt"
 
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
-msgstr ""
+msgstr "Astra Custom for Norhage"
 
 #. Description of the plugin/theme
 msgid "Child theme for Norhage site customizations"
-msgstr ""
+msgstr "Børnetema til Norhage-webstedstilpasninger"
 
 #. Author of the plugin/theme
 msgid "Daiva Reinike"
-msgstr ""
+msgstr "Daiva Reinike"
 
 #: inc/meta-boxes.php:123
 msgid "Use cases and compatibility"
-msgstr "Bruksområder og kompatibilitet"
+msgstr "Anvendelsesmuligheder og kompatibilitet"
 
 #: inc/meta-boxes.php:124
 msgid "Ideal for use"
-msgstr "Ideell til bruk"
+msgstr "Ideel til brug"
 
 #: inc/meta-boxes.php:125
 msgid "Consider alternatives"
-msgstr "Vurder alternativer"
+msgstr "Overvej alternativer"
 
 #: inc/meta-boxes.php:126
 msgid "Pay attention"
-msgstr "Vær oppmerksom"
+msgstr "Vær opmærksom"
 
 msgid "We couldn't find that page"
-msgstr "Vi fant ikke denne siden"
+msgstr "Vi kunne ikke finde den side"
 
 msgid "We've recently updated our website and are doing everything we can to fix broken links — but sometimes a 404 still slips through. Feel free to browse our updated site."
-msgstr "Vi har nylig oppdatert nettsiden vår og gjør alt vi kan for å fikse ødelagte lenker – men av og til dukker det likevel opp en 404-feil. Let gjerne videre på våre nye sider."
+msgstr "Vi har nyligt opdateret vores hjemmeside og gør alt, hvad vi kan, for at rette ødelagte links – men nogle gange smutter en 404-fejl alligevel igennem. Du er velkommen til at udforske vores opdaterede side."
 
 msgid "Back to Homepage"
-msgstr "Tilbake til forsiden"
+msgstr "Tilbage til forsiden"
 
 #: inc/functions.php
 msgid "Estimate Shipping"
-msgstr "Beregn frakt"
+msgstr "Beregn fragt"
 
 #: inc/functions.php
 msgid "Country"
@@ -1030,7 +1030,7 @@ msgstr "Land"
 
 #: inc/functions.php
 msgid "Select country…"
-msgstr "Velg land…"
+msgstr "Vælg land…"
 
 #: inc/functions.php
 msgid "Postcode"
@@ -1038,7 +1038,7 @@ msgstr "Postnummer"
 
 #: inc/functions.php
 msgid "Enter postcode…"
-msgstr "Skriv inn postnr…"
+msgstr "Indtast postnr…"
 
 #: inc/functions.php
 msgid "Calculate"
@@ -1054,35 +1054,35 @@ msgstr "Gratis"
 
 #: inc/functions.php
 msgid "No shipping methods available for this postcode."
-msgstr "Ingen fraktalternativer tilgjengelig for dette postnummeret."
+msgstr "Ingen leveringsmetoder tilgængelige for dette postnummer."
 
 #: inc/functions.php
 msgid "Something went wrong. Please try again."
-msgstr "Noe gikk galt. Prøv igjen."
+msgstr "Noget gik galt. Prøv venligst igen."
 
 #: inc/functions.php
 msgid "Please enter a postcode."
-msgstr "Vennligst oppgi et postnummer."
+msgstr "Indtast venligst et postnummer."
 
 #: inc/functions.php
 msgid "Please select a country."
-msgstr "Vennligst velg et land."
+msgstr "Vælg venligst et land."
 
 #: inc/important-notes.php
 msgid "Color Variations"
-msgstr "Fargenyanser"
+msgstr "Farvenuancer"
 
 #: inc/important-notes.php
 msgid "Color shades of multiwall sheets can vary by up to 8% between different production batches. We recommend ordering all sheets for a single project at the same time to ensure a consistent color."
-msgstr "Fargen på kanalplastplatene kan variere med opptil 8 % dersom platene kommer fra ulike produksjonspartier. Vi anbefaler derfor å bestille alle plater til samme prosjekt samtidig for å sikre likest mulig fargetone."
+msgstr "Farvenuancer på termoplader kan variere med op til 8 % mellem forskellige produktionspartier. Vi anbefaler at bestille alle plader til ét projekt samtidigt for at sikre en ensartet farve."
 
 #: inc/important-notes.php
 msgid "Internal Structure"
-msgstr "Innvendig struktur"
+msgstr "Indvendig struktur"
 
 #: inc/important-notes.php
 msgid "The internal design (channels shape) of the sheets may vary based on stock levels, but the technical specs are identical. We never mix different structures in the same order to ensure a uniform look."
-msgstr "Den innvendige strukturen i kanalplastplatene kan variere avhengig av lagerstatus, men de tekniske spesifikasjonene er helt identiske. For å sikre et ensartet utseende blander vi aldri ulike strukturtyper i én og samme ordre."
+msgstr "Pladernes indvendige opbygning (kanalform) kan variere afhængigt af lagerbeholdningen, men de tekniske specifikationer er identiske. Vi blander aldrig forskellige strukturer i samme ordre for at sikre et ensartet udseende."
 
 #: inc/important-notes.php
 msgid "30-Year Warranty"
@@ -1090,7 +1090,7 @@ msgstr "30 års garanti"
 
 #: inc/important-notes.php
 msgid "Includes a 30-year warranty against yellowing, ensuring high light transmission throughout this period."
-msgstr "Det følger med 30 års garanti mot gulning, som opprettholder en høy lysgjennomgang gjennom hele denne perioden."
+msgstr "Indeholder 30 års garanti mod gulning, hvilket sikrer et højt lysindfald i hele denne periode."
 
 #: inc/important-notes.php
 msgid "15-Year Warranty"
@@ -1098,7 +1098,7 @@ msgstr "15 års garanti"
 
 #: inc/important-notes.php
 msgid "Includes a 15-year warranty against yellowing, ensuring high light transmission throughout this period."
-msgstr "Det følger med 15 års garanti mot gulning, som opprettholder en høy lysgjennomgang gjennom hele denne perioden."
+msgstr "Indeholder 15 års garanti mod gulning, hvilket sikrer et højt lysindfald i hele denne periode."
 
 #: inc/important-notes.php
 msgid "10-Year Warranty"
@@ -1106,7 +1106,7 @@ msgstr "10 års garanti"
 
 #: inc/important-notes.php
 msgid "Covers discoloration caused by weather, as well as loss of impact resistance and light transmission."
-msgstr "Gjelder mot misfarging forårsaket av vær og vind, samt svekket slagfasthet og lysgjennomgang."
+msgstr "Dækker misfarvning forårsaget af vejret samt tab af slagfasthed og lysgennemgang."
 
 #: inc/important-notes.php
 msgid "Standard Width"
@@ -1114,7 +1114,7 @@ msgstr "Standardbredde"
 
 #: inc/important-notes.php
 msgid "The standard sheet width is 2.1 m. If a sheet is cut down to 1.05 m, one edge will remain open due to the internal channel structure."
-msgstr "Platens standardbredde er 2,1 m. Når platen kuttes til en bredde på 1,05 m, vil den ene kanten forbli åpen på grunn av kanalstrukturen."
+msgstr "Standardpladebredden er 2,1 m. Hvis en plade skæres ned til 1,05 m, vil den ene kant forblive åben på grund af den indvendige kanalstruktur."
 
 #: inc/important-notes.php
 msgid "UV Protection & Installation"
@@ -1122,39 +1122,39 @@ msgstr "UV-beskyttelse og montering"
 
 #: inc/important-notes.php
 msgid "Polycarbonate sheets must be installed with the UV-protected side facing up (facing the outside) for the protection to work. The UV side is clearly marked on the protective film."
-msgstr "Polykarbonatplater må monteres med den UV-beskyttede siden vendt opp (mot utsiden) for at beskyttelsen skal fungere. UV-siden er tydelig merket på beskyttelsesfilmen."
+msgstr "Polykarbonatplader skal monteres med den UV-beskyttede side opad (vende mod ydersiden), for at beskyttelsen fungerer. UV-siden er tydeligt markeret på beskyttelsesfilmen."
 
 #: inc/important-notes.php
 msgid "Cutting Tolerance"
-msgstr "Kuttoleranse"
+msgstr "Skæretolerance"
 
 #: inc/important-notes.php
 msgid "The maximum allowable cutting deviation on the edges is 4 mm."
-msgstr "Tillatt avvik på kantene er maksimalt ±4 mm."
+msgstr "Den maksimalt tilladte skæreafvigelse på kanterne er 4 mm."
 
 #: inc/important-notes.php
 msgid "Handle with Care"
-msgstr "Håndteres forsiktig"
+msgstr "Håndteres med forsigtighed"
 
 #: inc/important-notes.php
 msgid "Handle the sheets carefully to prevent scratches and damage."
-msgstr "Håndter platene forsiktig for å unngå riper og skader."
+msgstr "Håndter pladerne forsigtigt for at undgå ridser og skader."
 
 #: inc/important-notes.php
 msgid "Storage"
-msgstr "Oppbevaring"
+msgstr "Opbevaring"
 
 #: inc/important-notes.php
 msgid "Store in a cool, dry place away from direct sunlight."
-msgstr "Oppbevares på et kjølig og tørt sted, beskyttet mot direkte sollys."
+msgstr "Opbevares et køligt og tørt sted beskyttet mod direkte sollys."
 
 #: inc/important-notes.php
 msgid "Winter Care"
-msgstr "Vinterpleie"
+msgstr "Vintervedligeholdelse"
 
 #: inc/important-notes.php
 msgid "If using automatic window openers (e.g., in greenhouses), remove the cylinder when temperatures drop below 0°C. Clean, lightly lubricate, and store it in a warm, dry place to prevent frost damage and ensure it works next season."
-msgstr "Hvis du bruker automatiske vindusåpnere (f.eks. i drivhus), ta ut sylinderen når temperaturen faller under 0 °C. Rengjør og smør den lett, og oppbevar den deretter på et varmt, tørt sted for å unngå kuldeskader og sikre at den fungerer neste sesong."
+msgstr "Hvis du bruger automatiske vinduesåbnere (f.eks. i drivhuse), skal du afmontere cylinderen, når temperaturen falder til under 0 °C. Rengør, smør let og opbevar den et varmt, tørt sted for at forhindre frostskader og sikre, at den fungerer i næste sæson."
 
 #: inc/important-notes.php
 msgid "Sizing & Installation"
@@ -1162,23 +1162,23 @@ msgstr "Størrelse og montering"
 
 #: inc/important-notes.php
 msgid "Polycarbonate sheets may be delivered in standard, uncut sizes. Because final greenhouse dimensions can vary slightly after assembly, we provide full-size sheets to guarantee a perfect fit. Some extra cutting or trimming may be required during installation."
-msgstr "Vennligst merk at polykarbonatplater kan bli levert i standardmål uten tilpasning. Siden de endelige dimensjonene på et drivhus kan variere noe etter montering, leverer vi plater i full størrelse for å sikre en perfekt passform til din struktur. Det kan derfor være behov for litt ekstra kapping eller tilpasning under installasjonen."
+msgstr "Bemærk venligst, at polykarbonatplader kan blive leveret i standardmål uden tilpasning. Da de endelige drivhusdimensioner kan variere en smule efter samling, leverer vi plader i fuld størrelse for at garantere en perfekt pasform. Lidt ekstra tilskæring eller tilpasning kan derfor være nødvendig under monteringen."
 
 #: inc/important-notes.php
 msgid "Important information"
-msgstr "Viktig informasjon"
+msgstr "Vigtig information"
 
 #: inc/feature-box.php
 msgid "Anti-Drip Tech"
-msgstr "Antidrypp-teknologi"
+msgstr "Antidryp-teknologi"
 
 #: inc/feature-box.php
 msgid "Swedish Pine Frame"
-msgstr "Ramme av svensk furu"
+msgstr "Ramme af svensk fyrretræ"
 
 #: inc/feature-box.php
 msgid "Premium Swedish Coating"
-msgstr "Premium svensk belegg"
+msgstr "Premium svensk belægning"
 
 #: inc/feature-box.php
 msgid "Weather & Storm Proof"
@@ -1186,47 +1186,47 @@ msgstr "Vær- og stormsikker"
 
 #: inc/feature-box.php
 msgid "Scratch & Rust Resistant"
-msgstr "Ripe- og rustbestandig"
+msgstr "Rids- og rustbestandig"
 
 #: inc/feature-box.php
 msgid "Made in the EU"
-msgstr "Produsert i EU"
+msgstr "Fremstillet i EU"
 
 #: inc/feature-box.php
 msgid "Built-in UV Protection"
-msgstr "Innebygd UV-beskyttelse"
+msgstr "Indbygget UV-beskyttelse"
 
 #: inc/feature-box.php
 msgid "Shatterproof & Flexible"
-msgstr "Knusesikker og fleksibel"
+msgstr "Splintersikker og fleksibel"
 
 #: inc/feature-box.php
 msgid "Fast & Easy Installation"
-msgstr "Rask og enkel montering"
+msgstr "Hurtig og nem montering"
 
 #: inc/feature-box.php
 msgid "Crystal Clear Clarity"
-msgstr "Krystallklar optikk"
+msgstr "Krystalklar optik"
 
 #: inc/feature-box.php
 msgid "Long-Lasting Performance"
-msgstr "Langvarig ytelse"
+msgstr "Langvarig ydeevne"
 
 #: inc/feature-box.php
 msgid "Lightweight & Strong"
-msgstr "Lett og sterk"
+msgstr "Let og stærk"
 
 #: inc/feature-box.php
 msgid "Easy to Cut & Shape"
-msgstr "Enkel å kappe og forme"
+msgstr "Nem at skære og forme"
 
 #: inc/feature-box.php
 msgid "Fire-Retardant Rated"
-msgstr "Brannhemmende klassifisering"
+msgstr "Brændhæmmende klassificeret"
 
 #: inc/feature-box.php
 msgid "Zero Maintenance"
-msgstr "Vedlikeholdsfri"
+msgstr "Vedligeholdelsesfri"
 
 #: inc/feature-box.php
 msgid "Thermal Insulation"
@@ -1234,22 +1234,22 @@ msgstr "Varmeisolering"
 
 #: inc/delivery-time.php
 msgid "Estimated delivery:"
-msgstr "Estimert levering:"
+msgstr "Forventet levering:"
 
 # -----------------------------------------------
 # FAQ
 # -----------------------------------------------
 #: inc/faq.php
 msgid "Expand all"
-msgstr "Utvid alle"
+msgstr "Fold alle ud"
 
 #: inc/faq.php
 msgid "Collapse all"
-msgstr "Skjul alle"
+msgstr "Fold alle sammen"
 
 #: inc/faq.php
 msgid "Questions & Answers"
-msgstr "Spørsmål og svar"
+msgstr "Spørgsmål og svar"
 
 # -----------------------------------------------
 # TOPIC LABELS
@@ -1264,19 +1264,19 @@ msgstr "Retur og garanti"
 
 #: inc/faq-data.php
 msgid "Greenhouses"
-msgstr "Drivhus"
+msgstr "Drivhuse"
 
 #: inc/faq-data.php
 msgid "Polycarbonate & Plastics"
-msgstr "Kanalplast og plastplater"
+msgstr "Kanalplast og plastplader"
 
 #: inc/faq-data.php
 msgid "Installation & Assembly"
-msgstr "Montering og installasjon"
+msgstr "Montering og samling"
 
 #: inc/faq-data.php
 msgid "Garden & Accessories"
-msgstr "Hage og tilbehør"
+msgstr "Have og tilbehør"
 
 # -----------------------------------------------
 # ORDERING & DELIVERY
@@ -1288,43 +1288,43 @@ msgstr "Hvordan leveres store varer?"
 
 #: inc/faq-data.php
 msgid "Greenhouse kits and large sheets are delivered via specialized heavy freight transport. Most orders arrive on a single oversized pallet."
-msgstr "Drivhuspakker og store plater leveres via spesialiserMerc tungtransport. De fleste bestillinger ankommer på én ekstra stor pall."
+msgstr "Drivhussæt og store plader leveres via specialiseret tunggodstransport. De fleste ordrer ankommer på én ekstra stor palle."
 
 #. delivery-forklift
 #: inc/faq-data.php
 msgid "Do I need a forklift to unload?"
-msgstr "Trenger jeg gaffeltruck for å losse?"
+msgstr "Skal jeg bruge en gaffeltruck til aflæsning?"
 
 #: inc/faq-data.php
 msgid "No. Our delivery trucks are equipped with lift-gates to lower the pallet to the ground. However, you should have space available near the curbside or driveway for the truck to operate."
-msgstr "Nei. Våre lastebiler er utstyrt med bakløfter for å senke pallen ned til bakken. Du må imidlertid ha tilstrekkelig plass ved fortauskanten eller i innkjørselen slik at lastebilen kommer til."
+msgstr "Nej. Vores lastbiler er udstyret med læssebagsmæk til at sænke pallen ned til jorden. Du skal dog have plads tilgængelig nær kantstenen eller i indkørslen, så lastbilen kan arbejde."
 
 #. delivery-curbside
 #: inc/faq-data.php
 msgid "What is \"Curbside Delivery\"?"
-msgstr "Hva betyr «levering ved fortauskant»?"
+msgstr "Hvad betyder »levering ved kantsten«?"
 
 #: inc/faq-data.php
 msgid "This means the driver will unload the pallet at the end of your driveway or the nearest accessible point for the truck. Drivers cannot move the materials into your backyard or garage."
-msgstr "Dette betyr at sjåføren losser pallen ved enden av innkjørselen din eller på nærmeste tilgjengelige punkt for lastebilen. Sjåføren kan ikke bære eller flytte varene inn i hagen eller garasjen."
+msgstr "Dette betyder, at chaufføren læsser pallen af for enden af din indkørsel eller det nærmeste tilgængelige sted for lastbilen. Chauffører kan ikke flytte materialerne om i baghaven eller ind i garagen."
 
 #. delivery-driver-call
 #: inc/faq-data.php
 msgid "Will the driver call me before arrival?"
-msgstr "Vil sjåføren ringe meg før ankomst?"
+msgstr "Ringer chaufføren til mig før ankomst?"
 
 #: inc/faq-data.php
 msgid "Yes. For heavy freight deliveries, the transport company will contact you at the phone number provided in your order to schedule a specific delivery window."
-msgstr "Ja. Ved tungtransport vil transportselskapet kontakte deg på telefonnummeret du oppga i bestillingen for å avtale et leveringstidspunkt."
+msgstr "Ja. Ved tunggodstransport vil fragtfirmaet kontakte dig på det telefonnummer, du opgav i din ordre, for at aftale et specifikt leveringstidspunkt."
 
 #. order-change
 #: inc/faq-data.php
 msgid "Can I change my order after it has been placed?"
-msgstr "Kan jeg endre bestillingen min etter at den er lagt inn?"
+msgstr "Kan jeg ændre min ordre, efter den er afgivet?"
 
 #: inc/faq-data.php
 msgid "If the order has not yet been loaded for transport, we can make changes. Contact us as soon as possible if you need to adjust quantities or sizes."
-msgstr "Dersom ordren ennå ikke er lastet for transport, kan vi gjøre endringer. Kontakt oss så snart som mulig hvis du må justere antall eller størrelser."
+msgstr "Hvis ordren endnu ikke er læsset til transport, kan vi gøre ændringer. Kontakt os så hurtigt som muligt, hvis du har brug for at justere mængder eller størrelser."
 
 # -----------------------------------------------
 # RETURNS & WARRANTY
@@ -1332,47 +1332,47 @@ msgstr "Dersom ordren ennå ikke er lastet for transport, kan vi gjøre endringe
 #. return-period
 #: inc/faq-data.php
 msgid "How long do I have to return an item?"
-msgstr "Hvor lang frist har jeg på å returnere en vare?"
+msgstr "Hvor lang frist har jeg til at returnere en vare?"
 
 #: inc/faq-data.php
 msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
-msgstr "Vår returfrist følger gjeldende forbrukerkjøpslovgivning. Vennligst sjekk vår side for <a href=\"https://norhage.no/retur-og-refusjonspolicy/\">Retur og refundering</a> for de nøyaktige tidsfristene som gjelder for din region."
+msgstr "Vores returfrist følger lokal forbrugerlovgivning. Tjek venligst vores side for <a href=\"https://norhage.dk/retur-og-refusionspolitik/\">Retur og refundering</a> for de specifikke tidsfrister, der gælder for din region."
 
 #. return-condition
 #: inc/faq-data.php
 msgid "What condition must the items be in for a return?"
-msgstr "Hvilken tilstand må varene være i for å kunne returneres?"
+msgstr "Hvilken stand skal varerne være i ved returnering?"
 
 #: inc/faq-data.php
 msgid "Items must be unused, in their original packaging, and in a condition suitable for resale. Custom-cut materials or specially ordered items may be subject to different conditions."
-msgstr "Varene må være ubrukte, i originalemballasjen og i en tilstand som egner seg for videresalg. Spesialkuttede materialer eller spesialbestilte varer kan være underlagt egne betingelser."
+msgstr "Varerne skal være ubrugte, i original emballage og i en stand, der er egnet til videresalg. Specialskårne materialer eller specialbestilte varer kan være underlagt andre betingelser."
 
 #. return-shipping-cost
 #: inc/faq-data.php
 msgid "Who pays for return shipping?"
-msgstr "Hvem betaler for returfrakten?"
+msgstr "Hvem betaler for returfragten?"
 
 #: inc/faq-data.php
 msgid "Unless the item is defective or the wrong product was sent, the customer is generally responsible for return transport costs, especially for large freight items."
-msgstr "Med mindre varen har en mangel/feil eller feil produkt ble levert, er kunden som regel selv ansvarlig for kostnadene ved returtransport, spesielt for store fraktvarer."
+msgstr "Medmindre varen er defekt, eller der blev sendt et forkert produkt, er kunden generelt selv ansvarlig for returfragtomkostningerne, især for store fragtvarer."
 
 #. warranty-coverage
 #: inc/faq-data.php
 msgid "What does the warranty cover?"
-msgstr "Hva dekker garantien?"
+msgstr "Hvad dækker garantien?"
 
 #: inc/faq-data.php
 msgid "Warranty covers manufacturing defects in materials and workmanship. It does not cover damage caused by extreme weather events (storms, heavy snow loads beyond limits), improper assembly, or lack of maintenance."
-msgstr "Garantien dekker fabrikasjonsfeil i materialer og utførelse. Den dekker ikke skader forårsaket av ekstremvær (storm, snølaster utover tillatte grenser), feilmontering eller manglende vedlikehold."
+msgstr "Garantien dækker fabrikationsfejl i materialer og udførelse. Den dækker ikke skader forårsaget af ekstremvejr (storm, tung sne ud over grænseværdierne), forkert samling eller manglende vedligeholdelse."
 
 #. damage-on-arrival
 #: inc/faq-data.php
 msgid "What should I do if my order arrives damaged?"
-msgstr "Hva gjør jeg hvis bestillingen min er skadet ved ankomst?"
+msgstr "Hvad skal jeg gøre, hvis min ordre ankommer beskadiget?"
 
 #: inc/faq-data.php
 msgid "It is critical to inspect the delivery before signing the courier documents. If damage is visible, note it on the transport document and contact our customer support immediately with photos."
-msgstr "Det er svært viktig at du undersøker sendingen grundig før du signerer fraktbrevet. Hvis det er synlige skader, må dette anmerkes på fraktdokumentet, og du må kontakte vår kundeservice umiddelbart med bilder."
+msgstr "Det er afgørende, at du undersøger leverancen, før du underskriver fragtpapirerne. Hvis der er synlige skader, skal du notere det på fragtdokumentet og straks kontakte vores kundesupport med billeder."
 
 # -----------------------------------------------
 # GREENHOUSES
@@ -1380,64 +1380,64 @@ msgstr "Det er svært viktig at du undersøker sendingen grundig før du signere
 #. greenhouse-cold-climate
 #: inc/faq-data.php
 msgid "Which greenhouse material is best for a cold climate?"
-msgstr "Hvilket drivhusmateriale er best egnet for et kaldt klima?"
+msgstr "Hvilket drivhusmateriale er bedst til et koldt klima?"
 
 #: inc/faq-data.php
 msgid "For cold climates, polycarbonate glazing is often a practical choice because it provides better thermal insulation and higher impact resistance than single-pane glass. The best option still depends on the greenhouse model, local wind and snow conditions, and whether you plan to heat the greenhouse."
-msgstr "For kalde klimaer er polykarbonat/kanalplast ofte det mest praktiske valget, da det gir bedre varmeisolering og høyere slagfasthet enn vanlig glass. Det beste valget avhenger allikevel av drivhusmodellen, lokale vind- og snøforhold, samt om du planlegger å varme opp drivhuset."
+msgstr "Til kalde klimaer er polykarbonat/kanalplast ofte et praktisk valg, da det giver bedre varmeisolering og højere slagfasthed end enkeltlagsglas. Det bedste valg afhænger dog af drivhusmodellen, lokale vind- og sneforhold, samt om du planlægger at opvarme drivhuset."
 
 #. greenhouse-maintenance
 #: inc/faq-data.php
 msgid "What maintenance does a greenhouse require?"
-msgstr "Hvilket vedlikehold krever et drivhus?"
+msgstr "Hvilken vedligeholdelse kræver et drivhus?"
 
 #: inc/faq-data.php
 msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
-msgstr "Jevnlig vedlikehold bidrar til å holde drivhuset trygt og forlenger levetiden. Rengjør platene/glassene, sjekk rammen, festemidler, pakninger og dører, og pass på at luftelukiene fungerer som de skal. Fjern løv og rusk fra takrennene, og følg produsentens anvisninger for sesongsjekk og snørydding."
+msgstr "Regelmæssig vedligeholdelse hjælper med at holde dit drivhus sikkert og langtidsholdbart. Rengør pladerne/glassene, tjek rammen, fastgørelser, tætninger og døre, og sørg for, at ventilationsåbninger fungerer frit. Fjern blade og snavs fra tagrender eller tagområder, og følg producentens anvisninger for sæsonkontroller og snerydning."
 
 #. greenhouse-ventilation
 #: inc/faq-data.php
 msgid "What ventilation options are available for greenhouses?"
-msgstr "Hvilke ventilasjonsmuligheter finnes for drivhus?"
+msgstr "Hvilke ventilationsmuligheder findes der til drivhuse?"
 
 #: inc/faq-data.php
 msgid "Greenhouse ventilation may include roof vents, side vents, doors, louvre vents and automatic vent openers. A well-planned combination improves air circulation and helps manage temperature and humidity during warmer periods."
-msgstr "Ventilasjon i drivhus kan inkludere takluker, sidevinduer, dører, sjalusiluker og automatiske vindusåpnere. En godt planlagt kombinasjon forbedrer luftsirkulasjonen og bidrar til å regulere temperatur og luftfuktighet i varme perioder."
+msgstr "Drivhusventilation kan omfatte tagvinduer, sidevinduer, døre, jalousivinduer og automatiske vinduesåpnere. En godt planlagt kombination forbedrer luftcirkulationen og hjælper med at styre temperatur og luftfugtighed i varme perioder."
 
 #. greenhouse-professional-installation
 #: inc/faq-data.php
 msgid "Is professional greenhouse installation necessary?"
-msgstr "Er det nødvendig med profesjonell montering av drivhus?"
+msgstr "Er professionel drivhusmontering nødvendig?"
 
 #: inc/faq-data.php
 msgid "Professional installation is not always required, but it can be a good option for larger, permanent or more complex greenhouses. Careful assembly, correct anchoring and a level base are essential regardless of who installs the greenhouse. Always follow the supplied installation instructions."
-msgstr "Profesjonell montering er ikke alltid nødvendig, men det kan være en god løsning for større, permanente eller mer komplekse drivhus. Nøyaktig montering, korrekt forankring og et helt rett fundament er helt avgjørende uavhengig av hvem som setter det opp. Følg alltid medfølgende monteringsanvisning."
+msgstr "Professionel montering er ikke altid nødvendig, men det kan være en god løsning til større, permanente eller mere komplekse drivhuse. Omhyggelig samling, korrekt forankring og et helt lige fundament er afgørende uanset hvem, der monterer drivhuset. Følg altid den medfølgende monteringsvejledning."
 
 #. greenhouse-foundation
 #: inc/faq-data.php
 msgid "Does a greenhouse need a foundation?"
-msgstr "Trenger et drivhus fundament?"
+msgstr "Skal et drivhus have et fundament?"
 
 #: inc/faq-data.php
 msgid "A stable, level and properly prepared base is important for the safe installation and long-term performance of most greenhouses. Suitable foundation options vary by model and site, and may include a concrete base, timber frame, foundation base or ground anchors. Check the product documentation before choosing a solution."
-msgstr "Et stabilt, rett og korrekt klargjort fundament er avgjørende for sikker montering og lang levetid på de fleste drivhus. Egnede løsninger varierer ut fra modell og plassering, og kan bestå av betongfundament, trekarmer, stålfundament eller bakkeankere. Sjekk produktdokumentasjonen før du velger løsning."
+msgstr "Et stabilt, vandret og korrekt klargjort underlag er vigtigt for sikker montering og lang levetid for de fleste drivhuse. Egnede fundamentløsninger varierer efter model og placering og kan omfatte støbt betonfundament, træramme, stålfundament eller jordankre. Tjek produktdokumentationen, før du vælger en løsning."
 
 #. greenhouse-expansion
 #: inc/faq-data.php
 msgid "Can I extend my greenhouse later?"
-msgstr "Kan jeg bygge ut drivhuset mitt senere?"
+msgstr "Kan jeg udvide mit drivhus senere?"
 
 #: inc/faq-data.php
 msgid "Some greenhouse models can be extended using compatible extension kits. Availability depends on the specific model, frame system and manufacturer. If future expansion is important, check this before purchasing and allow enough space when planning the installation area."
-msgstr "Enkelte drivhusmodeller kan forlenges ved hjelp av kompatible utvidelsessett. Tilgjengeligheten avhenger av den spesifikke modellen, rammesystemet og produsenten. Hvis fremtidig utvidelse er viktig for deg, bør du sjekke dette før kjøp og avsette nok plass når du planlegger plasseringen."
+msgstr "Nogle drivhusmodeller kan udvides ved hjælp af kompatible udvidelsessæt. Tilgængeligheden afhænger af den specifikke model, rammesystem og producent. Hvis fremtidig udvidelse er vigtig, bør du tjekke dette før køb og afsætte nok plads ved planlægning af monteringsområdet."
 
 #: inc/faq-data.php
 msgid "What does \"WOM exposure\" mean in the greenhouse plastic specifications?"
-msgstr "Hva betyr «WOM-eksponering» i spesifikasjonene for drivhusplast?"
+msgstr "Hvad betyder »WOM-eksponering« i specifikationerne for drivhusplast?"
 
 #: inc/faq-data.php
 msgid "WOM exposure refers to standardized testing conducted in a \"Weather-Ometer.\" This laboratory equipment simulates years of outdoor weather conditions in a short period by exposing the material to intense UV radiation, high heat, and moisture. This test ensures the plastic film or sheet meets durability standards and will maintain its structural integrity and light transmission over many years in a real-world environment."
-msgstr "WOM-eksponering viser til standardiserte tester utført i et «Weather-Ometer». Dette laboratorieutstyret simulerer flere års utendørs værforhold på kort tid ved å utsette materialet for intens UV-stråling, høy varme og fuktighet. Testen sikrer at plastfolien eller platene oppfyller kravene til holdbarhet og bevarer sin strukturelle styrke og lysgjennomslipp gjennom mange år i et naturlig miljø."
+msgstr "WOM-eksponering henviser til standardiseret test udført i et »Weather-Ometer«. Dette laboratorieudstyr simulerer mange års udendørs vejrforhold på kort tid ved at udsætte materialet for intens UV-stråling, høj varme og fugt. Testen sikrer, at plastfolien eller pladen opfylder holdbarhedsstandarderne og bevarer sin strukturelle styrke og lysgennemgang over mange år i et reelt miljø."
 
 # -----------------------------------------------
 # POLYCARBONATE & PLASTICS
@@ -1445,92 +1445,92 @@ msgstr "WOM-eksponering viser til standardiserte tester utført i et «Weather-O
 #. plastic-sheets-pc-vs-pmma
 #: inc/faq-data.php
 msgid "What is the difference between polycarbonate and acrylic (PMMA) sheets?"
-msgstr "Hva er forskjellen på polykarbonat og akrylplater (pleksiglass/PMMA)?"
+msgstr "Hvad er forskellen på polykarbonat- og akrylplader (Plexiglas/PMMA)?"
 
 #: inc/faq-data.php
 msgid "Polycarbonate and acrylic are both strong, lightweight alternatives to glass, but they have different properties. Polycarbonate is known for its very high impact resistance and is often chosen for demanding applications. Acrylic (PMMA) offers excellent clarity and a smooth, glass-like appearance. The best material depends on the application, required strength, appearance and installation conditions."
-msgstr "Polykarbonat og akryl er begge sterke og lette alternativer til glass, men de har ulike egenskaper. Polykarbonat er kjent for sin ekstremt høye slagfasthet og velges ofte til krevende formål. Akryl (PMMA) gir fantastisk klarhet og en glatt, glasslignende overflate. Det beste materialet avhenger av bruksområde, krav til styrke, utseende og monteringsforhold."
+msgstr "Polykarbonat og akryl er begge stærke, lette alternativer til glas, men de har forskellige egenskaber. Polykarbonat er kendt for sin meget høje slagfasthed og vælges ofte til krævende opgaver. Akryl (PMMA) giver fremragende klarhed og en glat, glaslignende overflade. Det bedste materiale afhænger af anvendelsen, den krævede styrke, udseendet og monteringsforholdene."
 
 #. plastic-sheets-solid-vs-multiwall
 #: inc/faq-data.php
 msgid "What is the difference between solid and multiwall polycarbonate sheets?"
-msgstr "Hva er forskjellen på massive polykarbonatplater og kanalplastplater?"
+msgstr "Hvad er forskellen på massive polykarbonatplader og kanalplastplader?"
 
 #: inc/faq-data.php
 msgid "Solid polycarbonate sheets are compact, transparent sheets with a smooth surface and a glass-like appearance. Multiwall polycarbonate sheets have internal channels that make them lighter and improve thermal insulation. Solid sheets are often selected for clear glazing and impact resistance, while multiwall sheets are commonly used for roofs, greenhouses and insulated structures."
-msgstr "Massive polykarbonatplater er kompakte, klare plater med en glatt overflate som ligner på glass. Kanalplastplater har innvendige kanaler som gjør dem lettere og gir betydelig bedre isolasjonsevne. Massive plater brukes ofte til glass erstatning og der det kreves slagfasthet, mens kanalplast er ideelt for tak, drivhus og isolerte bygg."
+msgstr "Massive polykarbonatplader er kompakte, gennemsigtige plader med en glat overflade og et glaslignende udseende. Kanalplastplader har indvendige kanaler, der gør dem lettere og forbedrer varmeisoleringen. Massive plader vælges ofte til klar ruder og slagfasthed, mens kanalplastplader anvendes til tag, drivhuse og isolerede konstruktioner."
 
 #. plastic-sheets-uv-protection
 #: inc/faq-data.php
 msgid "Do your polycarbonate and acrylic sheets have UV protection?"
-msgstr "Har polykarbonat- og akrylplatene deres UV-beskyttelse?"
+msgstr "Har jeres polykarbonat- og akrylplader UV-beskyttelse?"
 
 #: inc/faq-data.php
 msgid "Yes. Our polycarbonate and acrylic (PMMA) sheets include UV protection for outdoor use. This helps protect the material from weathering and supports long-term performance when the sheets are installed correctly."
-msgstr "Ja. Våre polykarbonat- og akrylplater (PMMA) leveres med UV-beskyttelse tilpasset utendørs bruk. Dette beskytter materialet mot gulning og værpåvirkning, og sikrer lang levetid når platene monteres riktig."
+msgstr "Ja. Vores polykarbonat- og akrylplader (PMMA) indeholder UV-beskyttelse til udendørs brug. Dette hjælper med at beskytte materialet mod vejrpåvirkninger og understøtter langvarig ydeevne, når pladerne monteres korrekt."
 
 #. plastic-sheets-thickness
 #: inc/faq-data.php
 msgid "How do I choose the right sheet thickness?"
-msgstr "Hvordan velger jeg riktig tykkelse på platene?"
+msgstr "Hvordan vælger jeg den rigtige pladetykkelse?"
 
 #: inc/faq-data.php
 msgid "The right thickness depends on the material, application, supporting frame, distance between supports, local wind and snow conditions, and the insulation or impact resistance required. For roofing and glazing projects, select the sheet thickness together with a suitable support and fixing system."
-msgstr "Riktig tykkelse avhenger av materiale, bruksområde, underliggende rammeverk, avstand mellom lekter/sperrer, lokale snø- og vindforhold, samt krav til isolasjon og slagfasthet. For tak- og innglassingsprosjekter bør du velge platetykkelse sammen med et tilpasset profilsystem."
+msgstr "Den rigtige tykkelse afhænger af materiale, anvendelse, bærende ramme, afstand mellem støttepunkter, lokale vind- og sneforhold samt den krævede isolering eller slagfasthed. Til tag- og afdækningsprojekter skal pladetykkelsen vælges sammen med et passende støtte- og fastgørelsessystem."
 
 #. plastic-sheets-cutting
 #: inc/faq-data.php
 msgid "Can plastic sheets be cut to size?"
-msgstr "Kan plastplatene kapping eller tilpasses i størrelse?"
+msgstr "Kan plastplader skæres i tilpassede mål?"
 
 #: inc/faq-data.php
 msgid "Yes. Polycarbonate and acrylic sheets can usually be cut to size using appropriate tools and a blade suitable for plastics. Measure carefully, support the sheet properly while cutting and follow the product-specific cutting guidance. Multiwall polycarbonate channels should be cleaned of cutting dust before the sheet ends are sealed."
-msgstr "Ja. Polykarbonat- og akrylplater kan kappinges med egnet verktøy og et sagblad ment for plast. Mål nøyaktig, støtt opp platen ordentlig under kappingen, og følg veiledningen for produktet. Kanalene i kanalplast måblåses/rengjøres for sagstøv før kantene forsegles."
+msgstr "Ja. Polykarbonat- og akrylplader kan normalt skæres til med egnet værktøj og en klinge, der er beregnet til plast. Mål omhyggeligt, støt pladen ordentligt under skæring, og følg den produktspecifikke skærevejledning. Kanalerne i kanalplast skal rengøres for skærestøv, før pladeenderne forsegles."
 
 #. plastic-sheets-thermal-expansion
 #: inc/faq-data.php
 msgid "Do plastic sheets expand and contract with temperature changes?"
-msgstr "Utvider og krymper plastplater ved temperaturendringer?"
+msgstr "Udvider og sammentrækker plastplader sig ved temperaturændringer?"
 
 #: inc/faq-data.php
 msgid "Yes. Polycarbonate and acrylic sheets expand and contract when temperatures change. Always allow suitable expansion gaps during installation, use compatible profiles and fixings, and avoid overtightening screws. This helps prevent stress, distortion and damage over time."
-msgstr "Ja. Polykarbonat- og akrylplater utvider seg og krymper i takt med temperaturendringer. Sørg alltid for tilstrekkelig ekspansjonsrom under monteringen, bruk tilpassede profiler og festemidler, og unngå å stramme skruene for hardt. Dette forhindrer spenninger, buing og skader over tid."
+msgstr "Ja. Polykarbonat- og akrylplader udvider sig og trækker sig sammen ved temperaturændringer. Sørg altid for passende ekspansionsfuger under monteringen, brug kompatible profiler og fastgørelser, og undgå at overspænde skruerne. Dette hjælper med at forhindre spændinger, deformering og skader over tid."
 
 #. plastic-sheets-multiwall-sealing
 #: inc/faq-data.php
 msgid "How should multiwall polycarbonate sheet ends be sealed?"
-msgstr "Hvordan bør endene på kanalplastplater forsegles?"
+msgstr "Hvordan skal enderne på kanalplastplader forsegles?"
 
 #: inc/faq-data.php
 msgid "Multiwall polycarbonate sheet channels should be protected from dust, insects and moisture with suitable sealing tape and end profiles. The upper edge is normally sealed with solid tape, while the lower edge commonly uses breathable tape to allow condensation to drain. Always install the channels in the correct direction and follow the instructions for the selected sheet system."
-msgstr "Kanalene i kanalplastplater må beskyttes mot støv, insekter og fuktighet ved hjelp av egnet teip og avslutningsprofiler. Den øvre kanten forsegles normalt med en tett teip, mens den nedre kanten har en diffusjonsåpen teip som slipper ut kondens. Monter alltid kanalene i riktig fallretning og følg veiledningen for det valgte platesystemet."
+msgstr "Kanalerne i kanalplastplader skal beskyttes mod støv, insekter og fugt med egnet tætningstape og endeprofiler. Den øverste kant forsegles normalt med tæt tape, mens den nederste kant typisk bruger diffusionsåben tape, så kondens kan dræne ud. Monter altid kanalerne i den rigtige retning, og følg instruktionerne for det valgte pladesystem."
 
 #. plastic-sheets-cleaning
 #: inc/faq-data.php
 msgid "How do I clean polycarbonate and acrylic sheets?"
-msgstr "Hvordan rengjør jeg polykarbonat- og akrylplater?"
+msgstr "Hvordan rengør jeg polykarbonat- og akrylplader?"
 
 #: inc/faq-data.php
 msgid "Use lukewarm water, mild soap and a soft cloth or sponge. Rinse the sheet thoroughly before wiping to remove dust and loose particles. Avoid abrasive pads, strong solvents and harsh cleaning products, as they can scratch or damage the surface."
-msgstr "Bruk lunkent vann, mildt såpevann og en myk klut eller svamp. Skyll platen grundig med rent vann før du tørker av, slik at du fjerner støv og løse partikler. Unngå skureputi, sterke løsemidler og kjemikalier, da disse kan ripe opp eller skade overflaten."
+msgstr "Brug lunkent vand, mild sæbe og en blød klud eller svamp. Skyl pladen grundigt før aftørring for at fjerne støv og løse partikler. Undgå skuresvampe, stærke opløsningsmidler og krasse rengøringsmidler, da de kan ridse eller beskadige overfladen."
 
 #. plastic-sheets-outdoor-use
 #: inc/faq-data.php
 msgid "Are plastic sheets suitable for outdoor use?"
-msgstr "Egner plastplater seg for utendørs bruk?"
+msgstr "Er plastplader egnede til udendørs brug?"
 
 #: inc/faq-data.php
 msgid "Yes. Polycarbonate and acrylic sheets are widely used for outdoor glazing, roofing, shelters, greenhouses and similar projects. Choose the material, thickness, support spacing and installation system according to the intended application and local weather conditions."
-msgstr "Ja. Polykarbonat og akryl brukes mye til utendørs innglassing, takoverbygg, lysthus, drivhus og lignende prosjekter. Velg materiale, tykkelse, lekteavstand og festesystem tilpasset formålet og lokale værforhold."
+msgstr "Ja. Polykarbonat- og akrylplader anvendes i vid udstrækning til udendørs ruder, overdækning, skure, drivhuse og lignende projekter. Vælg materiale, tykkelse, lekteafstand og monteringssystem i henhold til det tilsigtede formål og de lokale vejrforhold."
 
 #. plastic-sheets-greenhouse-use
 #: inc/faq-data.php
 msgid "Which plastic sheet is best for a greenhouse?"
-msgstr "Hvilke plastplater er best egnet for drivhus?"
+msgstr "Hvilken plastplade er bedst til et drivhus?"
 
 #: inc/faq-data.php
 msgid "Multiwall polycarbonate is a popular greenhouse material because its internal structure improves thermal insulation while keeping the sheets lightweight. Solid polycarbonate or acrylic may also be suitable where a clearer appearance is preferred. Consider insulation, light transmission, structural requirements and the greenhouse design when choosing."
-msgstr "Kanalplast i polykarbonat er et svært populært valg for drivhus fordi den innvendige kanalstrukturen gir god varmeisolering samtidig som platene har lav vekt. Massive polykarbonat- eller akrylplater kan også passe dersom du ønsker et helt klart og glasslignende utseende. Vurder isolasjonsevne, lysgjennomgang, avstivning og drivhusets design før du bestemmer deg."
+msgstr "Kanalplast i polykarbonat er et populært drivhusmateriale, fordi den indvendige opbygning forbedrer varmeisoleringen, samtidig med at pladerne holdes lette. Massiv polykarbonat eller akryl kan også være egnet, hvis et klarere udseende foretrækkes. Overvej isolering, lysgennemgang, konstruktionskrav og drivhusets design ved valg."
 
 # -----------------------------------------------
 # INSTALLATION & ASSEMBLY
@@ -1538,11 +1538,11 @@ msgstr "Kanalplast i polykarbonat er et svært populært valg for drivhus fordi 
 #. installation-read-instructions
 #: inc/faq-data.php
 msgid "Should I read the installation instructions before starting?"
-msgstr "Bør jeg lese monteringsanvisningen før jeg starter?"
+msgstr "Bør jeg læse monteringsvejledningen, før jeg starter?"
 
 #: inc/faq-data.php
 msgid "Yes. Read the complete product-specific instructions before starting work and check that all components are present. Installation methods, required tools, fixing details and safety requirements may vary between products."
-msgstr "Ja. Les hele den produktspesifikke monteringsanvisningen før du setter i gang, og kontrollér at alle deler er med i pakken. Monteringsmetoder, nødvendig verktøy, festedetaljer og sikkerhetskrav varierer fra produkt til produkt."
+msgstr "Ja. Læs den komplette produktspecifikke vejledning, før arbejdet påbegyndes, og kontrollér, at alle komponenter er til stede. Monteringsmetoder, nødvendigt værktøj, fastgørelsesdetaljer og sikkerhedskrav kan variere fra produkt til produkt."
 
 #. installation-diy-or-professional
 #: inc/faq-data.php
@@ -1551,88 +1551,88 @@ msgstr "Kan jeg montere produktet selv?"
 
 #: inc/faq-data.php
 msgid "Many products can be installed by an experienced DIY customer when the supplied instructions are followed carefully. Larger, heavier or more complex structures may require more than one person. Professional installation can be a practical option where the project, site conditions or local requirements make it necessary."
-msgstr "Mange av våre produkter kan monteres selv av en praktisk anlagt person ved å følge medfølgende instruksjoner nøyaktig. Større, tyngre eller mer komplekse byggverk kan kreve at man er flere personer. Profesjonell monteringshjelp kan være en god løsning dersom prosjektets omfang eller monteringsforholdene tilsier det."
+msgstr "Mange produkter kan monteres af en erfaren gør-det-selv-person, når den medfølgende vejledning følges nøje. Større, tungere eller mere komplekse konstruktioner kan kræve mere end én person. Professionel montering kan være en praktisk løsning, hvor projektet, forholdene på stedet eller lokale krav gør det nødvendigt."
 
 #. installation-tools
 #: inc/faq-data.php
 msgid "What tools will I need for installation?"
-msgstr "Hvilke verktøy trenger jeg for montering?"
+msgstr "Hvilke værktøjer skal jeg bruge til monteringen?"
 
 #: inc/faq-data.php
 msgid "The required tools depend on the product and installation surface. Common tools may include a tape measure, spirit level, drill, screwdriver, suitable drill bits, saw and personal safety equipment. Check the product instructions before starting and use only tools and fixings suitable for the materials involved."
-msgstr "Nødvendig verktøy avhenger av produktet og underlaget. Vanlige verktøy inkluderer målebånd, vater, drill, skrutrekker, egnede bor, sag og personlig verneutstyr. Sjekk produktinstruksjonene før du starter, og bruk kun verktøy og festemidler som egner seg for de aktuelle materialene."
+msgstr "Det nødvendige værktøj afhænger af produktet og monteringsfladen. Almindeligt værktøj omfatter målebånd, vaterpas, boremaskine, skruetrækker, egnede bor, sav og personligt sikkerhedsudstyr. Tjek produktvejledningen før start, og brug kun værktøj og fastgørelser, der er egnede til de pågældende materialer."
 
 #. installation-level-base
 #: inc/faq-data.php
 msgid "Why is a level and stable base important?"
-msgstr "Hvorfor er et rett og stabilt underlag så viktig?"
+msgstr "Hvorfor er et vandret og stabilt underlag vigtigt?"
 
 #: inc/faq-data.php
 msgid "A level, stable and properly prepared base is essential for correct alignment, secure fixing and long-term performance. An uneven or unstable surface can cause frames, doors, panels, profiles and seals to fit incorrectly and may place unnecessary stress on the structure."
-msgstr "Et rett, stabilt og riktig klargjort underlag er helt avgjørende for at konstruksjonen skal bli bein, for god innfesting og for lang levetid. Et ujevnt underlag kan føre til at rammer, dører, plater, profiler og pakninger passer dårlig sammen, og kan påføre konstruksjonen unødige spenninger."
+msgstr "Et lige, stabilt og korrekt klargjort underlag er afgørende for korrekt tilpasning, sikker fastgørelse og langvarig ydeevne. Et ujævnt eller ustabilt underlag kan bevirke, at rammer, døre, paneler, profiler og tætninger ikke passer korrekt, og det kan påføre konstruktionen unødvendige spændinger."
 
 #. installation-weather
 #: inc/faq-data.php
 msgid "Can I install outdoor products in any weather?"
-msgstr "Kan jeg montere utendørsprodukter i alt slags vær?"
+msgstr "Kan jeg montere udendørsprodukter i alt slags vejr?"
 
 #: inc/faq-data.php
 msgid "Avoid installation during strong winds, heavy rain, snow or icy conditions. Large sheets, panels and lightweight components can be difficult to handle safely in poor weather. Choose calm and dry conditions, and do not start work unless the installation area can be made safe."
-msgstr "Unngå montering i sterk vind, pøsregn, snø eller under glatte forhold. Større plater, paneler og lette deler kan være krevende og utrygge å håndtere i dårlig vær. Velg en oppholdsdag med lite vind, og start aldri arbeidet uten at monteringsområdet er trygt."
+msgstr "Undgå montering i stærk vind, kraftig regn, sne eller glatte forhold. Store plader, paneler og lette komponenter kan være svære at håndtere sikkert i dårligt vejr. Vælg vindstille og tørre forhold, og start ikke arbejdet, medmindre monteringsområdet kan gøres sikkert."
 
 #. installation-fixings
 #: inc/faq-data.php
 msgid "Can I use my own screws and fixings?"
-msgstr "Kan jeg bruke mine egne skruer og festemidler?"
+msgstr "Kan jeg bruge mine egne skruer og fastgørelser?"
 
 #. installation-screw-length
 #: inc/faq-data.php
 msgid "How do I choose the correct screw length?"
-msgstr "Hvordan velger jeg riktig skruelengde?"
+msgstr "Hvordan vælger jeg den rigtige skruelængde?"
 
 #: inc/faq-data.php
 msgid "A reliable rule of thumb for roofing and plastic sheets is to double the total thickness of the materials being fastened. Calculation: (Sheet Thickness + Profile Thickness) x 2. For example, a 10mm sheet and a 20mm profile equal 30mm total; multiplying by two results in a recommended 60mm screw length for a secure connection."
-msgstr "En pålitelig tommelfingerregel for tak- og plastplater er å doble den totale tykkelsen på materialene som skal festes. Beregning: (Platetykkelse + Profiltykkelse) x 2. For eksempel gir en 10 mm plate og en 20 mm profil 30 mm totalt; multiplisert med to gir dette en anbefalt skruelengde på 60 mm for et sikkert feste."
+msgstr "En pålidelig tommelfingerregel for tag- og plastplader er at fordoble den samlede tykkelse af de materialer, der fastgøres. Beregning: (Pladetykkelse + Profiltykkelse) x 2. For eksempel giver en 10 mm plade og en 20 mm profil 30 mm i alt; ganget med to giver det en anbefalet skruelængde på 60 mm for en sikker fastgørelse."
 
 #: inc/faq-data.php
 msgid "Use the supplied fixings whenever they are included with the product. If additional or replacement fixings are needed, they must be compatible with the product, installation surface and local weather conditions. Incorrect screws, unsuitable sealants or overtightened fixings can damage the material and affect the installation."
-msgstr "Bruk alltid de medfølgende festemidlene dersom disse følger med produktet. Hvis du trenger supplerende eller nye festemidler, må disse være kompatible med produktet, underlaget og værforholdene der du bor. Feil skruer, uegnede tetningsmidler eller for hardt strammede skruer kan skade materialet og forringe monteringen."
+msgstr "Brug de medfølgende fastgørelser, når de følger med produktet. Hvis der er brug for supplerende eller erstatningsfastgørelser, skal de være kompatible med produktet, monteringsfladen og de lokale vejrforhold. Forkerte skruer, uegnede tætningsmidler eller overspændte fastgørelser kan beskadige materialet og påvirke monteringen."
 
 #. installation-expansion-gaps
 #: inc/faq-data.php
 msgid "Why do plastic sheets need expansion gaps?"
-msgstr "Hvorfor trenger plastplater ekspansjonsrom?"
+msgstr "Hvorfor har plastplader brug for ekspansionsfuger?"
 
 #: inc/faq-data.php
 msgid "Polycarbonate, acrylic and other plastic sheets expand and contract as temperatures change. The recommended expansion gaps, profiles and fixing method must be used to help prevent stress, buckling, cracking and leaks. Follow the product-specific installation instructions for the selected sheet system."
-msgstr "Polykarbonat, akryl og andre plastmaterialer utvider seg og krymper i takt med endringer i temperaturen. Anbefalt ekspansjonsrom, riktige profiler og korrekt festemetode må benyttes for å unngå spenninger, buing, sprekker og lekkasjer. Følg den spesifikke monteringsanvisningen for ditt platesystem."
+msgstr "Polykarbonat, akryl og andre plastplader udvider sig og trækker sig sammen ved temperaturændringer. De anbefalede ekspansionsfuger, profiler og fastgørelsesmetoder skal anvendes for at forhindre spændinger, buler, revner og lækager. Følg den produktspecifikke monteringsvejledning for det valgte pladesystem."
 
 #. installation-polycarbonate-roof-guide
 #: inc/faq-data.php
 msgid "Where can I find a step-by-step guide for installing a polycarbonate roof?"
-msgstr "Hvor finner jeg en trinn-for-trinn-guide for montering av kanalplasttak?"
+msgstr "Hvor finder jeg en trin-for-trin-guide til montering af et kanalplasttag?"
 
 #: inc/faq-data.php
 msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
-msgstr "Vår <a href=\"https://norhage.no/kanalplast-montering-trinn-for-trinn-for-perfekt-tak/\">guide for montering av kanalplasttak</a> forklarer prosjektets viktigste faser, inkludert planlegging av bærekonstruksjon, klargjøring av plater, montering av profiler, forsegling av kanaler og ferdigstilling. Bruk guiden sammen med instruksjonene som følger med ditt valgte platesystem."
+msgstr "Vores <a href=\"https://norhage.dk/montering-af-kanalplasttag-trin-for-trin/\">guide til montering af kanalplasttag</a> forklarer projektets hovedfaser, herunder planlægning af konstruktionen, klargøring af plader, montering af profiler, forsegling af pladeender og færdiggørelse af taget. Brug guiden sammen med den vejledning, der følger med dit specifikke plade- og monteringssystem."
 
 #. installation-greenhouse-guide
 #: inc/faq-data.php
 msgid "Where can I find greenhouse assembly instructions?"
-msgstr "Hvor finner jeg monteringsanvisninger for drivhus?"
+msgstr "Hvor finder jeg monteringsvejledninger til drivhuse?"
 
 #: inc/faq-data.php
 msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
-msgstr "Våre <a href=\"https://norhage.no/monteringsanvisning-for-drivhus/\">monteringsanvisninger for drivhus</a> gir trinnvis veiledning for klargjøring av tomten, oppføring av fundament, montering av rammeverk, setting av plater/glass og forankring. Følg alltid instruksjonene som følger med din spesifikke drivhusmodell, da komponenter og fremgangsmåte varierer."
+msgstr "Vores <a href=\"https://norhage.dk/monteringsvejledning-til-drivhus/\">monteringsvejledning til drivhuse</a> giver vejledning i klargøring af stedet, opbygning af et egnet fundament, samling af rammen, montering af plader/glas og forankring af konstruktionen. Følg altid den vejledning, der følger med din specifikke drivhusmodel, da komponenter og samlingstrin kan variere."
 
 #. installation-final-check
 #: inc/faq-data.php
 msgid "What should I check after installation?"
-msgstr "Hva bør jeg kontrollere etter at monteringen er ferdig?"
+msgstr "Hvad bør jeg kontrollere efter monteringen?"
 
 #: inc/faq-data.php
 msgid "After installation, check that the structure is level, securely fixed and correctly aligned. Confirm that fasteners are secure without being overtightened, seals and end caps are fitted correctly, drainage paths are clear, and moving parts such as doors or vents operate freely."
-msgstr "Etter monteringen bør du kontrollere at konstruksjonen er rett, godt forankret og riktig aligned. Pass på at skruer sitter godt uten å være overstrammet, at pakninger og endelokk er riktig montert, at vannavrenning ikke er blokkert, og at bevegelige deler som dører og luker fungerer lett."
+msgstr "Efter monteringen skal du kontrollere, at konstruktionen er i vater, forsvarligt fastgjort og korrekt tilpasset. Bekræft, at fastgørelser sidder fast uden at være overspændte, at tætninger og endekapper er monteret korrekt, at afløbsveje er frie, og at bevægelige dele som døre eller vinduer fungerer frit."
 
 # -----------------------------------------------
 # GARDEN & ACCESSORIES
@@ -1640,76 +1640,76 @@ msgstr "Etter monteringen bør du kontrollere at konstruksjonen er rett, godt fo
 #. garden-terrace-roof-kits
 #: inc/faq-data.php
 msgid "Do you offer complete terrace roof covering kits?"
-msgstr "Tilbyr dere komplette takpakker for terrasser?"
+msgstr "Tilbyder I komplette takpakker til terrassetag?"
 
 #: inc/faq-data.php
 msgid "Yes. We provide complete covering solutions that include the polycarbonate or acrylic sheets along with all necessary aluminum profiles, gaskets, and sealing materials. These kits are designed to ensure a professional and weather-tight finish for your terrace structure."
-msgstr "Ja. Vi leverer komplette takløsninger som inneholder kanalplast- eller akrylplater sammen med alt du trenger av aluminiumsprofiler, gummipakninger og tetningsmaterialer. Disse pakkene er sammensatt for å gi terrassetaket ditt en profesjonell og helt værtett finish."
+msgstr "Ja. Vi leverer komplette afdækningsløsninger, der indeholder polykarbonat- eller akrylplader sammen med alle nødvendige aluminiumsprofiler, gummipakninger og tætningsmaterialer. Disse sæt er designet til at sikre en professionel og tæt finish på din terrassekonstruktion."
 
 #. garden-accessories-compatibility
 #: inc/faq-data.php
 msgid "How do I know if the accessories are compatible with my greenhouse or roof?"
-msgstr "Hvordan vet jeg om tilbehøret passer til mitt drivhus eller tak?"
+msgstr "Hvordan ved jeg, om tilbehøret passer til mit drivhus eller tag?"
 
 #: inc/faq-data.php
 msgid "Our accessories and mounting components are designed to work with standard greenhouse and roofing systems. Always check the product specifications for thickness compatibility (e.g., 6mm, 10mm, 16mm) and profile types to ensure a perfect fit with your existing or new structure."
-msgstr "Vårt tilbehør og våre monteringsdeler er utformet for å passe til standard drivhus- og taksystemer. Sjekk alltid produktspesifikasjonene for kompatibel tykkelse (f.eks. 6 mm, 10 mm, 16 mm) og profiltyper for å sikre at det passer perfekt til ditt eksisterende eller nye bygg."
+msgstr "Vores tilbehør og monteringskomponenter er designet til at fungere med standard drivhus- og tagsystemer. Tjek altid produkttspecifikationerne for tykkelseskompatibilitet (f.eks. 6 mm, 10 mm, 16 mm) og profiltyper for at sikre en perfekt pasform til din eksisterende eller nye konstruktion."
 
 #. garden-sealing-materials
 #: inc/faq-data.php
 msgid "What sealing materials do I need for a terrace roof?"
-msgstr "Hvilke tetningsmaterialer trenger jeg til et terrassetak?"
+msgstr "Hvilke tætningsmaterialer skal jeg bruge til et terrassetag?"
 
 #: inc/faq-data.php
 msgid "A durable terrace roof requires specialized sealing, including EPDM rubber gaskets, anti-dust tapes for multiwall sheet ends, and high-quality neutral silicone sealants. Using the correct professional-grade sealing materials prevents leaks, minimizes vibration, and extends the life of the plastic sheets."
-msgstr "Et holdbart terrassetak krever tilpasset tetning, som EPDM-gummipakninger, pustende/tette teiper for plateendene og nøytral silikon av god kvalitet. Bruk av profesjonelle tetningsmaterialer forhindrer lekkasjer, demper vibrasjoner og forlenger plastplatenes levetid."
+msgstr "Et holdbart terrassetag kræver specialiseret tætning, herunder EPDM-gummipakninger, støvtæt tape til pladeender på kanalplast og neutral silikonefugemasse af høj kvalitet. Brug af de korrekte professionelle tætningsmaterialer forhindrer lækager, minimerer vibrationer og forlænger plastpladernes levetid."
 
 #. garden-hardware-maintenance
 #: inc/faq-data.php
 msgid "Are your mounting profiles and accessories corrosion-resistant?"
-msgstr "Er monteringsprofilene og tilbehøret deres rustbestandige?"
+msgstr "Er jeres monteringsprofiler og tilbehør korrosionsbestandige?"
 
 #: inc/faq-data.php
 msgid "Yes. We primarily supply aluminum profiles and stainless steel or coated fasteners that are designed for permanent outdoor use. These materials offer excellent resistance to rust and weathering, requiring minimal maintenance after correct installation."
-msgstr "Ja. Vi leverer hovedsakelig aluminiumsprofiler samt festemidler i rustfritt stål eller med beskyttelsesbelegg, laget for varig utendørs bruk. Materialene har svært god motstandskraft mot rust og slitasje fra vær og vind, og krever minimalt med vedlikehold etter montering."
+msgstr "Ja. Vi leverer primært aluminiumsprofiler samt fastgørelser i rustfrit stål eller med belægning, som er designet til permanent udendørs brug. Disse materialer giver fremragende modstandsdygtighed over for rust og vejrpåvirkninger og kræver minimal vedligeholdelse efter korrekt montering."
 
 #. garden-additional-items
 #: inc/faq-data.php
 msgid "What other accessories can I find for my garden project?"
-msgstr "Hvilket annet tilbehør finner jeg til hageprosjektet mitt?"
+msgstr "Hvilket andet tilbehør kan jeg finde til mit haveprojekt?"
 
 #: inc/faq-data.php
 msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
-msgstr "I tillegg til takkomponenter tilbyr vi et bredt utvalg av produkter som oppgraderer uterommet ditt, blant annet hylleinnredning til drivhus, automatiske vindusåpnere og spesialtilpassede rengjøringsmidler for plastplater som holder byggverket ditt pent år etter år."
+msgstr "Ud over tagkomponenter tilbyder vi et udvalg af produkter til at forbedre dit uderum, herunder hyldesystemer til drivhuse, automatiske vinduesåpnere og specialiserede rengøringsprodukter til plastplader, så dine konstruktioner ser nye ud."
 
 #~ msgid "Contact Us"
-#~ msgstr "Kontakt"
+#~ msgstr "Kontakt os"
 
 #~ msgid "Customize"
-#~ msgstr "Tilpass"
+#~ msgstr "Tilpas"
 
 #~ msgid "Customize “%s”"
-#~ msgstr "Tilpass “%s”"
+#~ msgstr "Tilpas ”%s”"
 
 #~ msgid "%d item has been added to your basket"
 #~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "%d vare er lagt til i handlekurven"
-#~ msgstr[1] "%d varer er lagt til i handlekurven"
+#~ msgstr[0] "%d vare er tilføjet til din kurv"
+#~ msgstr[1] "%d varer er tilføjet til din kurv"
 
 #~ msgid "View basket"
-#~ msgstr "Se handlekurv"
+#~ msgstr "Se kurv"
 
 #~ msgid "Buy a complete set"
-#~ msgstr "Kjøp et komplett sett"
+#~ msgstr "Køb et komplet sæt"
 
 #~ msgid "Only %d left in stock"
-#~ msgstr "Bare %d igjen på lager"
+#~ msgstr "Kun %d tilbage på lager"
 
 #~ msgid "Max per bundle: %d"
-#~ msgstr "Maks. per pakke: %d"
+#~ msgstr "Maks. pr. pakke: %d"
 
 #~ msgid "Minus Quantity"
-#~ msgstr "Trekk antall"
+#~ msgstr "Træk antal fra"
 
 #~ msgid "Plus Quantity"
-#~ msgstr "Pluss Antall"
+#~ msgstr "Læg antal til"

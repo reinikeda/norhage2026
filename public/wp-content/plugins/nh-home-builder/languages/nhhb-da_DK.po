@@ -1,0 +1,88 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-home-builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-19 00:00+0000\n"
+"PO-Revision-Date: 2026-08-06 13:54+0300\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Danish\n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+# browse-cats.php
+msgid "Browse by Category"
+msgstr "Gennemse efter kategori"
+
+msgid "Scroll left"
+msgstr "Rul til venstre"
+
+msgid "Scroll right"
+msgstr "Rul til højre"
+
+msgid "No categories to display. Check your settings."
+msgstr "Ingen kategorier at vise. Tjek dine indstillinger."
+
+# new-arrivals.php
+msgid "New Arrivals"
+msgstr "Nyheder"
+
+msgid "View All"
+msgstr "Se alle"
+
+msgid "Explore"
+msgstr "Udforsk"
+
+msgid "No products yet. Add a few to WooCommerce."
+msgstr "Endnu ingen produkter. Tilføj nogle i WooCommerce."
+
+# newsletter.php
+msgid "✉ Stay in the loop"
+msgstr "✉ Hold dig opdateret"
+
+msgid "Don’t Miss Out Latest Trends & Offers"
+msgstr "Gå ikke glip af de seneste trends og tilbud"
+
+msgid "Register to receive news about the latest offers & discount codes"
+msgstr "Tilmeld dig for at modtage nyheder om de seneste tilbud og rabatkoder"
+
+msgid "Enter your email"
+msgstr "Indtast din e-mailadresse"
+
+msgid "Subscribe"
+msgstr "Tilmeld"
+
+msgid "Email address"
+msgstr "E-mailadresse"
+
+# services-slider.php
+msgid "Our Services"
+msgstr "Vores ydelser"
+
+msgid "Read More"
+msgstr "Læs mere"
+
+msgid "Previous slide"
+msgstr "Forrige dias"
+
+msgid "Next slide"
+msgstr "Næste dias"
+
+msgid "No services to display. Add Services or enable “Include in slider”."
+msgstr "Ingen ydelser at vise. Tilføj ydelser eller aktiver \"Inkluder i slider\"."
+
+# bb-banner.php
+msgid "🤝 Business Solutions"
+msgstr "🤝 Erhvervsløsninger"
+
+msgid "For Business Customers"
+msgstr "Til erhvervskunder"
+
+msgid "Exclusive pricing and services for B2B partners."
+msgstr "Eksklusive priser og ydelser til B2B-partnere."
+
+msgid "Learn more"
+msgstr "Læs mere"
