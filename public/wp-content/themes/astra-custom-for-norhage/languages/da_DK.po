@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-06 14:02+0300\n"
+"PO-Revision-Date: 2026-08-06 15:33+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -550,16 +550,16 @@ msgstr "Andre tjenester"
 
 #: template-parts/footer/footer.php:11
 msgid "Tehi UG"
-msgstr "Tehi ApS"
+msgstr "Tehi filial"
 
 #: template-parts/footer/footer.php:12
 msgid "Adolfstraße 1, Wiesbaden, 65185 HE, Germany"
-msgstr "Vardheivegen 68, 4340 Bryne, Norge"
+msgstr "Tvärdalen, 67291 Årjäng, Sverige"
 
 #: template-parts/footer/footer.php:13
 #: template-parts/headers/header-main.php:15
 msgid "+49 176 65 10 6609"
-msgstr "+47 940 99 084"
+msgstr "+46 728 380 058"
 
 #: template-parts/footer/footer.php:14
 msgid "info@norhage.de"
@@ -567,15 +567,15 @@ msgstr "info@norhage.dk"
 
 #: template-parts/footer/footer.php:18
 msgid "https://www.facebook.com/yourpage"
-msgstr "https://www.facebook.com/norhage.no/"
+msgstr "https://www.facebook.com/norhage.se/"
 
 #: template-parts/footer/footer.php:19
 msgid "https://www.instagram.com/yourpage"
-msgstr "https://www.instagram.com/norhage.no/"
+msgstr "https://www.instagram.com/norhage.se/"
 
 #: template-parts/footer/footer.php:20
 msgid "https://www.youtube.com/@yourchannel"
-msgstr "https://www.youtube.com/@NorhageNorge"
+msgstr "https://www.youtube.com/@NorhageDanmark"
 
 #: template-parts/footer/footer.php:21
 msgid "https://www.linkedin.com/company/yourcompany"
@@ -687,7 +687,7 @@ msgstr "Log ind"
 
 #: template-parts/headers/header-main.php:16
 msgid "+4917665106609"
-msgstr "+4794099084"
+msgstr "+46728380058"
 
 #: template-parts/headers/header-main.php:48
 #: template-parts/headers/header-main.php:151
@@ -1623,7 +1623,7 @@ msgstr "Hvor finder jeg monteringsvejledninger til drivhuse?"
 
 #: inc/faq-data.php
 msgid "Our <a href=\"https://norhage.eu/greenhouse-assembly-instructions/\">greenhouse assembly instructions</a> provide guidance for preparing the site, building a suitable base, assembling the frame, fitting glazing and securing the structure. Always follow the instructions supplied with your specific greenhouse model, as components and assembly steps may differ."
-msgstr "Vores <a href=\"https://norhage.dk/monteringsvejledning-til-drivhus/\">monteringsvejledning til drivhuse</a> giver vejledning i klargøring af stedet, opbygning af et egnet fundament, samling af rammen, montering af plader/glas og forankring af konstruktionen. Følg altid den vejledning, der følger med din specifikke drivhusmodel, da komponenter og samlingstrin kan variere."
+msgstr "Vores <a href=\"https://norhage.dk/monteringsvejledning-til-drivhuse/\">monteringsvejledning til drivhuse</a> giver vejledning i klargøring af stedet, opbygning af et egnet fundament, samling af rammen, montering af plader/glas og forankring af konstruktionen. Følg altid den vejledning, der følger med din specifikke drivhusmodel, da komponenter og samlingstrin kan variere."
 
 #. installation-final-check
 #: inc/faq-data.php
