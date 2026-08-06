@@ -14,6 +14,7 @@ if ( ! function_exists( 'nh_get_services_slug' ) ) {
 			case 'sv_SE': return 'tjanster';
 			case 'de_DE': return 'leistungen';
 			case 'fi': return 'palvelut';
+			case 'da_DK': return 'tjenester';
 			default:      return 'services';
 		}
 	}
