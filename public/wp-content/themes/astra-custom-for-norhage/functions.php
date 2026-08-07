@@ -675,6 +675,9 @@ function nh_display_custom_order_number( $order_number, $order ) {
     return $prefix . $formatted;
 }
 
+// Force country to always display
+add_filter( 'woocommerce_formatted_address_force_country_display', '__return_true' );
+
 /* --------------------------------------------------------------------------
  * Newsletters connection to sender.net
  * ----------------------------------------------------------------------- */
