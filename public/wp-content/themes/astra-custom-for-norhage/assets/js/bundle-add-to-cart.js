@@ -504,12 +504,33 @@ jQuery(function ($) {
    * Enable a variable row once a matching variation is found.
    * Free rows always display wc_price(0) regardless of variation price.
    */
+  function clearVariableRow($row) {
+    $row.find('.selected-variation-id').val('0');
+    $row.attr('data-base-price', '0');
+    setRowPriceHtml($row, getRowInitialPriceHtml($row));
+
+    const originalTitle = $row.attr('data-row-title') || '';
+    if (originalTitle) {
+      $row.find('.nc-title-text').text(originalTitle);
+    }
+
+    const $qty = getRowQtyInput($row);
+    if ($qty.length) {
+      $qty.prop('disabled', true).val('0');
+    }
+
+    $row.find('.quantity .minus, .quantity .plus').attr('aria-disabled', 'true');
+
+    $row
+      .addClass('is-needs-variation')
+      .removeClass('is-variation-ready is-unavailable');
+  }
+
   function enableVariableRow($row, variation) {
     const free = isRowFree($row);
     const sale = Number(variation.display_price         || 0);
     const reg  = Number(variation.display_regular_price || sale || 0);
 
-    // Update title to variation's bundle name (set via _bundle_box_name or WC native title).
     if (variation.variation_name) {
       $row.find('.nc-title-text').text(variation.variation_name);
     }
@@ -539,6 +560,8 @@ jQuery(function ($) {
       const current = clamp($qty.val(), 0, Number($qty.attr('max') || 0));
       $qty.prop('disabled', false).val(current > 0 ? current : 0);
     }
+
+    $row.find('.quantity .minus, .quantity .plus').removeAttr('aria-disabled');
 
     $row
       .removeClass('is-needs-variation is-unavailable')
