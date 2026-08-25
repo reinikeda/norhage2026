@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -73,7 +73,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.1.1'
+			'1.1.2'
 		);
 	}
 
@@ -103,7 +103,7 @@ class NHG_Product_Labels {
 	private function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
-		// -------- SALE (with percent or range) --------
+		// -------- SALE (with percent, range, or "up to") --------
 		if ( $product->is_on_sale() ) {
 			$sale_text  = __( 'Sale', $this->text_domain );
 			$sale_label = $sale_text;
@@ -121,16 +121,28 @@ class NHG_Product_Labels {
 					}
 				}
 			} else {
-				// Variable: compute percent range across variations
-				$variation_pcts = [];
-				$variation_ids  = $product->get_children();
+				// Variable: compute percent range across variations, and detect
+				// whether ALL variations have a discount or only SOME of them.
+				$variation_pcts   = [];
+				$total_variations = 0;
+				$discounted_count = 0;
+				$variation_ids    = $product->get_children();
 
 				if ( is_array( $variation_ids ) && ! empty( $variation_ids ) ) {
 					foreach ( $variation_ids as $var_id ) {
 						$var = wc_get_product( $var_id );
-						if ( ! $var || ! $var->is_on_sale() ) {
+
+						// Skip variations that don't exist / aren't valid products
+						if ( ! $var || ! $var->exists() ) {
 							continue;
 						}
+
+						$total_variations++;
+
+						if ( ! $var->is_on_sale() ) {
+							continue;
+						}
+
 						$reg = (float) $var->get_regular_price();
 						$sal = (float) $var->get_sale_price();
 
@@ -138,6 +150,7 @@ class NHG_Product_Labels {
 							$p = (int) round( ( ( $reg - $sal ) / $reg ) * 100 );
 							if ( $p > 0 && $p < 100 ) {
 								$variation_pcts[] = $p;
+								$discounted_count++;
 							}
 						}
 					}
@@ -148,9 +161,16 @@ class NHG_Product_Labels {
 					$min = min( $variation_pcts );
 					$max = max( $variation_pcts );
 
-					if ( $min === $max ) {
-						$pct_label  = sprintf( _x( '%s %%', 'sale percent', $this->text_domain ), $min );
+					$all_discounted = ( $total_variations > 0 && $discounted_count === $total_variations );
+
+					if ( ! $all_discounted ) {
+						// Not every variation has a discount -> show "Sale up to X%"
+						$pct_label = sprintf( _x( 'up to %s %%', 'sale percent up to', $this->text_domain ), $max );
+					} elseif ( $min === $max ) {
+						// All variations discounted by the same amount
+						$pct_label = sprintf( _x( '%s %%', 'sale percent', $this->text_domain ), $min );
 					} else {
+						// All variations discounted, but by different amounts
 						$pct_label = sprintf( _x( '%s-%s %%', 'sale percent range', $this->text_domain ), $min, $max );
 					}
 					$sale_label = $sale_text . ' ' . $pct_label;
