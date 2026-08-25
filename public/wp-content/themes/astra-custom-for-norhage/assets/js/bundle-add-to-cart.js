@@ -479,36 +479,16 @@ jQuery(function ($) {
    * Variable row state
    * ------------------------------------------------------------------ */
 
-  function clearVariableRow($row) {
-    $row.find('.selected-variation-id').val('0');
-    $row.attr('data-base-price', '0');
-    setRowPriceHtml($row, getRowInitialPriceHtml($row));
-
-    // Reset title to the original bundle display name stored on the row element.
-    const originalTitle = $row.attr('data-row-title') || '';
-    if (originalTitle) {
-      $row.find('.nc-title-text').text(originalTitle);
-    }
-
-    const $qty = getRowQtyInput($row);
-    if ($qty.length) {
-      $qty.prop('disabled', true).val('0');
-    }
-
-    $row
-      .addClass('is-needs-variation')
-      .removeClass('is-variation-ready is-unavailable');
-  }
-
   /**
-   * Enable a variable row once a matching variation is found.
-   * Free rows always display wc_price(0) regardless of variation price.
+   * Reset a variable row to its "please choose an option" state.
+   * Also resets the +/- buttons so they are visually disabled.
    */
   function clearVariableRow($row) {
     $row.find('.selected-variation-id').val('0');
     $row.attr('data-base-price', '0');
     setRowPriceHtml($row, getRowInitialPriceHtml($row));
 
+    // Reset title to the original bundle display name stored on the row element.
     const originalTitle = $row.attr('data-row-title') || '';
     if (originalTitle) {
       $row.find('.nc-title-text').text(originalTitle);
@@ -526,6 +506,10 @@ jQuery(function ($) {
       .removeClass('is-variation-ready is-unavailable');
   }
 
+  /**
+   * Enable a variable row once a matching variation is found.
+   * Free rows always display wc_price(0) regardless of variation price.
+   */
   function enableVariableRow($row, variation) {
     const free = isRowFree($row);
     const sale = Number(variation.display_price         || 0);
@@ -621,6 +605,13 @@ jQuery(function ($) {
   function initVariableRows() {
     $('#nc-complete-set .nc-bundle-row.is-variable').each(function () {
       clearVariableRow($(this));
+
+      // If the row has no customer-selectable attributes (all locked),
+      // resolve the matching variation immediately on load.
+      const $selectable = $(this).find('select.bundle-variation');
+      if (!$selectable.length) {
+        updateVariableRow($(this));
+      }
     });
   }
 

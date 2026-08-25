@@ -828,6 +828,46 @@
 }
 
 /* --------------------------------------------------------------------------
+   Fixed variation attributes
+   -------------------------------------------------------------------------- */
+
+.nc-bundle-variation-field--locked {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 120px;
+  min-width: 100px;
+  max-width: 180px;
+}
+
+.nc-bundle-variation-field--locked .nc-bundle-variation-label {
+  display: block;
+  margin: 0;
+  color: var(--ui-muted);
+  font-size: .68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.nc-bundle-variation-field--locked .nc-bundle-variation-value {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--nc-radius, 0.25rem);
+  background: var(--nh-cream, #f7f5f0);
+  color: var(--ui-text);
+  font-size: .82rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
 

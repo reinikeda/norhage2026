@@ -58,13 +58,14 @@ if ( ! function_exists( 'nh_bundle_get_display_name' ) ) {
 if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 	function nh_bundle_normalize_row( $raw ) {
 		$row = [
-			'product_id'  => 0,
-			'qty'         => 1,
-			'max'         => 0,
-			'label'       => '',
-			'description' => '',
-			'required'    => false,
-			'free'        => false,
+			'product_id'   => 0,
+			'qty'          => 1,
+			'max'          => 0,
+			'label'        => '',
+			'description'  => '',
+			'required'     => false,
+			'free'         => false,
+			'locked_attrs' => [],
 		];
 
 		if ( is_numeric( $raw ) ) {
@@ -113,6 +114,25 @@ if ( ! function_exists( 'nh_bundle_normalize_row' ) ) {
 
 		$row['required'] = ! empty( $raw['required'] );
 		$row['free']     = ! empty( $raw['free'] );
+
+		$raw_locked_attrs = [];
+
+		if ( isset( $raw['locked_attrs'] ) && is_array( $raw['locked_attrs'] ) ) {
+			$raw_locked_attrs = $raw['locked_attrs'];
+		} elseif ( isset( $raw['locked'] ) && is_array( $raw['locked'] ) ) {
+			$raw_locked_attrs = $raw['locked'];
+		}
+
+		foreach ( $raw_locked_attrs as $taxonomy => $value ) {
+			$taxonomy = sanitize_key( $taxonomy );
+			$value    = wc_clean( wp_unslash( $value ) );
+
+			if ( $taxonomy === '' || $value === '' ) {
+				continue;
+			}
+
+			$row['locked_attrs'][ $taxonomy ] = $value;
+		}
 
 		return $row;
 	}
@@ -332,6 +352,9 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		$is_free     = ! empty( $row['free'] );
 		$link        = nh_bundle_get_product_link( $product_id, $bundle_parent_id );
 
+		/* ---- Display title (needed early for the data-row-title attribute) ---- */
+		$display_title = ! empty( $row['label'] ) ? $row['label'] : nh_bundle_get_display_name( $product );
+
 		if ( $is_free ) {
 			$price_html = wc_price( 0 );
 		} else {
@@ -358,12 +381,11 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 			. ' data-product-id="' . esc_attr( $product_id ) . '"'
 			. ' data-base-price="' . esc_attr( $price_attr ) . '"'
 			. ' data-initial-price-html="' . esc_attr( $price_html ) . '"'
+			. ' data-row-title="' . esc_attr( $display_title ) . '"'
 			. ' data-free="' . esc_attr( $is_free ? '1' : '0' ) . '"'
 			. $variations_json_attr . '>';
 
 		/* ---- Name row (full width) ---- */
-		$display_title = ! empty( $row['label'] ) ? $row['label'] : nh_bundle_get_display_name( $product );
-
 		echo '  <div class="nc-row-name">';
 		if ( $link ) {
 			echo '    <a class="nc-title" href="' . esc_url( $link ) . '"><span class="nc-title-text">' . esc_html( $display_title ) . '</span></a>';
@@ -394,8 +416,48 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		if ( $is_variable && $product instanceof WC_Product_Variable ) {
 			$variation_attributes = $product->get_variation_attributes();
 
+			$locked_attrs = ( isset( $row['locked_attrs'] ) && is_array( $row['locked_attrs'] ) )
+				? $row['locked_attrs']
+				: [];
+
 			echo '      <div class="nc-bundle-variations">';
 			foreach ( $variation_attributes as $taxonomy => $options ) {
+				$locked_value = isset( $locked_attrs[ $taxonomy ] ) ? (string) $locked_attrs[ $taxonomy ] : '';
+
+				if ( $locked_value !== '' ) {
+					$locked_label = nh_bundle_format_attribute_option_label(
+						$taxonomy,
+						$locked_value
+					);
+
+					/*
+					* Keep a hidden .bundle-variation input so JavaScript and WooCommerce
+					* still receive this value when resolving and adding the variation.
+					*/
+					echo '        <input'
+						. ' type="hidden"'
+						. ' class="bundle-variation"'
+						. ' name="bundle_attr[' . esc_attr( $taxonomy ) . ']"'
+						. ' value="' . esc_attr( $locked_value ) . '"'
+						. ' data-locked="1"'
+						. '>';
+
+					/*
+					* Show the locked value to the customer, without allowing changes.
+					*/
+					echo '        <div class="nc-bundle-variation-field nc-bundle-variation-field--locked">';
+					echo '          <span class="nc-bundle-variation-label">'
+						. esc_html( wc_attribute_label( $taxonomy ) )
+						. '</span>';
+					echo '          <span class="nc-bundle-variation-value">'
+						. esc_html( $locked_label )
+						. '</span>';
+					echo '        </div>';
+
+					continue;
+				}
+
+				// Customer-selectable attribute.
 				echo '        <div class="nc-bundle-variation-field">';
 				echo '          <label>' . esc_html( wc_attribute_label( $taxonomy ) ) . '</label>';
 				echo '          <select class="bundle-variation" name="bundle_attr[' . esc_attr( $taxonomy ) . ']">';
