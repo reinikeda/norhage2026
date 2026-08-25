@@ -155,6 +155,13 @@ function norhage_sample_assets() {
     wp_localize_script( 'norhage-sample-order', 'norhageSample', array(
         'ajax_url' => admin_url( 'admin-ajax.php' ),
         'nonce'    => wp_create_nonce( 'norhage_add_sample' ),
+        'i18n'     => array(
+            'adding'         => __( 'Adding...', 'nh-theme' ),
+            'added'          => __( 'Added', 'nh-theme' ),
+            'add_sample'     => __( 'Add sample', 'nh-theme' ),
+            'error_generic'  => __( 'Could not add sample to cart.', 'nh-theme' ),
+            'error_connect'  => __( 'Could not connect to WooCommerce. Please try again.', 'nh-theme' ),
+        ),
     ) );
 }
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-25 10:26+0300\n"
+"PO-Revision-Date: 2026-08-25 10:37+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -1725,6 +1725,18 @@ msgstr "Mått"
 
 msgid "Qty: 1"
 msgstr "Antal: 1"
+
+msgid "Adding..."
+msgstr "Lägger till..."
+
+msgid "Added"
+msgstr "Tillagd"
+
+msgid "Could not add sample to cart."
+msgstr "Kunde inte lägga till prov i varukorgen."
+
+msgid "Could not connect to WooCommerce. Please try again."
+msgstr "Kunde inte ansluta till WooCommerce. Försök igen."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
