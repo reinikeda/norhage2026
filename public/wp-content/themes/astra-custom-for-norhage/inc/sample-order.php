@@ -1,21 +1,22 @@
 <?php
 /**
+ * inc/sample-order.php
+ *
  * Sample ordering feature for sheet products.
  * Adds meta fields, front-end strip, and cart/price override logic.
  *
- * ARCHITECTURE NOTE (simplified):
- * A sample never gets variation attribute data attached to the cart item
- * or the order line item in the first place (we pass an empty attributes
- * array to WC()->cart->add_to_cart()). Because there is nothing to strip,
- * we no longer need separate "hide variation data" filters scattered
- * across cart/session/order-meta code paths — Width/Length/etc. simply
- * never appear anywhere: cart, mini-cart, checkout, order-received,
- * My Account, admin order edit, emails, or PDF invoices.
+ * OWNERSHIP NOTE:
+ * This file is the single source of truth for:
+ * - detecting samples (nh_is_sample_cart_item / nh_is_sample_order_item)
+ * - sample price, quantity, shipping class
+ * - saving sample order-item meta at checkout
+ * - stripping weight from samples (cart, order, PDF)
  *
- * Two tiny helpers (nh_is_sample_cart_item / nh_is_sample_order_item)
- * are the single source of truth for "is this a sample?" and should be
- * reused by any other theme code (see basket-customize.php,
- * order-attributes.php) instead of re-implementing detection logic.
+ * It does NOT touch woocommerce_get_item_data (cart display) or
+ * woocommerce_order_item_get_formatted_meta_data (order display).
+ * Those are owned exclusively by basket-customize.php and
+ * order-attributes.php respectively, to avoid two files fighting
+ * over the same filter.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -108,7 +109,6 @@ function norhage_render_sample_strip() {
         'qty'   => 1,
     ) );
 
-    // Load the swatch-book icon markup once per request and cache it.
     static $swatch_icon = null;
 
     if ( null === $swatch_icon ) {
@@ -156,11 +156,11 @@ function norhage_sample_assets() {
         'ajax_url' => admin_url( 'admin-ajax.php' ),
         'nonce'    => wp_create_nonce( 'norhage_add_sample' ),
         'i18n'     => array(
-            'adding'         => __( 'Adding...', 'nh-theme' ),
-            'added'          => __( 'Added', 'nh-theme' ),
-            'add_sample'     => __( 'Add sample', 'nh-theme' ),
-            'error_generic'  => __( 'Could not add sample to cart.', 'nh-theme' ),
-            'error_connect'  => __( 'Could not connect to WooCommerce. Please try again.', 'nh-theme' ),
+            'adding'        => __( 'Adding...', 'nh-theme' ),
+            'added'         => __( 'Added', 'nh-theme' ),
+            'add_sample'    => __( 'Add sample', 'nh-theme' ),
+            'error_generic' => __( 'Could not add sample to cart.', 'nh-theme' ),
+            'error_connect' => __( 'Could not connect to WooCommerce. Please try again.', 'nh-theme' ),
         ),
     ) );
 }
@@ -178,7 +178,6 @@ function norhage_get_default_variation_id( $product ) {
     $default_attributes = $product->get_default_attributes();
     $children            = $product->get_children();
 
-    // 1. Try to match the product's configured default attributes first.
     if ( ! empty( $default_attributes ) ) {
         foreach ( $children as $child_id ) {
             $variation = wc_get_product( $child_id );
@@ -187,7 +186,7 @@ function norhage_get_default_variation_id( $product ) {
                 continue;
             }
 
-            $variation_attrs = $variation->get_variation_attributes(); // keys already prefixed "attribute_"
+            $variation_attrs = $variation->get_variation_attributes();
             $is_match         = true;
 
             foreach ( $default_attributes as $attr_name => $attr_value ) {
@@ -205,7 +204,6 @@ function norhage_get_default_variation_id( $product ) {
         }
     }
 
-    // 2. Otherwise fall back to the first purchasable, in-stock variation.
     foreach ( $children as $child_id ) {
         $variation = wc_get_product( $child_id );
 
@@ -214,7 +212,6 @@ function norhage_get_default_variation_id( $product ) {
         }
     }
 
-    // 3. Last resort: first purchasable variation regardless of stock status.
     foreach ( $children as $child_id ) {
         $variation = wc_get_product( $child_id );
 
@@ -228,16 +225,8 @@ function norhage_get_default_variation_id( $product ) {
 
 /** ------------------------------------------------------------------
  * 6. AJAX handler: add the REAL product (or a real variation) to cart
- *    as a sample.
- *
- *    IMPORTANT: we intentionally pass an EMPTY attributes array to
- *    add_to_cart(). $variation_id alone is enough for WooCommerce to
- *    resolve correct price/stock/SKU. Passing the real attributes was
- *    what caused Width/Length to leak back into the cart/session/order
- *    ('variation' array being non-empty makes several core + theme
- *    code paths render it). With an empty array, nothing downstream
- *    (cart, mini-cart, checkout, order line item meta, emails, PDF
- *    invoices) ever receives variation attribute data for samples.
+ *    as a sample. Empty variation attributes array is intentional —
+ *    see the file header note.
  * ------------------------------------------------------------------ */
 add_action( 'wp_ajax_norhage_add_sample', 'norhage_add_sample_to_cart' );
 add_action( 'wp_ajax_nopriv_norhage_add_sample', 'norhage_add_sample_to_cart' );
@@ -254,7 +243,6 @@ function norhage_add_sample_to_cart() {
         ) );
     }
 
-    // Sample settings are always read from the parent product meta.
     $enabled = get_post_meta( $product_id, '_sample_enabled', true );
     $width   = get_post_meta( $product_id, '_sample_width_mm', true );
     $length  = get_post_meta( $product_id, '_sample_length_mm', true );
@@ -299,7 +287,6 @@ function norhage_add_sample_to_cart() {
         'sample_price'     => (float) wc_format_decimal( $price ),
     );
 
-    // NOTE: empty array() for variation attributes on purpose — see comment above.
     $cart_item_key = WC()->cart->add_to_cart(
         $product_id,
         1,
@@ -309,11 +296,6 @@ function norhage_add_sample_to_cart() {
     );
 
     if ( $cart_item_key ) {
-        /*
-        * Some custom sheet-price/minimum-quantity logic may modify the
-        * quantity during add-to-cart. Reset the sample line to exactly
-        * one immediately.
-        */
         WC()->cart->set_quantity( $cart_item_key, 1, false );
         WC()->cart->calculate_totals();
     }
@@ -357,12 +339,7 @@ function norhage_set_sample_price( $cart ) {
         if ( nh_is_sample_cart_item( $cart_item ) && isset( $cart_item['sample_price'] ) ) {
             $sample_price = (float) $cart_item['sample_price'];
 
-            // Set the active price used for totals.
             $cart_item['data']->set_price( $sample_price );
-
-            // Also override regular price and clear sale price so
-            // WooCommerce no longer treats this line as "on sale".
-            // This removes the crossed-out price and "Save: X" text.
             $cart_item['data']->set_regular_price( $sample_price );
             $cart_item['data']->set_sale_price( '' );
         }
@@ -370,28 +347,13 @@ function norhage_set_sample_price( $cart ) {
 }
 
 /** ------------------------------------------------------------------
- * 8. Show sample metadata in cart, and save clean order item data
+ * 8. Save clean order item meta at checkout.
  *
- *    Because add_to_cart() was called with empty variation attributes
- *    (section 6), WC_Checkout::create_order_line_item() never copies
- *    any pa_width / pa_length / etc. meta onto the order item — there
- *    is nothing to delete or hide afterwards.
+ *    NOTE: This is the ONLY place that writes order-item meta for
+ *    samples. Display (what's actually visible) is controlled
+ *    separately by order-attributes.php's formatted-meta filter —
+ *    this just writes the two allowed rows plus the internal marker.
  * ------------------------------------------------------------------ */
-add_filter( 'woocommerce_get_item_data', 'norhage_display_sample_item_data', 10, 2 );
-function norhage_display_sample_item_data( $item_data, $cart_item ) {
-    if ( nh_is_sample_cart_item( $cart_item ) ) {
-        $item_data[] = array(
-            'name'  => __( 'Cutting type', 'nh-theme' ),
-            'value' => __( 'Sample', 'nh-theme' ),
-        );
-        $item_data[] = array(
-            'name'  => __( 'Dimensions', 'nh-theme' ),
-            'value' => $cart_item['custom_width_mm'] . ' × ' . $cart_item['custom_length_mm'] . ' mm',
-        );
-    }
-    return $item_data;
-}
-
 add_action( 'woocommerce_checkout_create_order_line_item', 'norhage_save_sample_order_item_meta', 100, 4 );
 
 function norhage_save_sample_order_item_meta( $item, $cart_item_key, $values, $order ) {
@@ -399,17 +361,8 @@ function norhage_save_sample_order_item_meta( $item, $cart_item_key, $values, $o
         return;
     }
 
-    /*
-     * Internal marker so theme code can reliably identify sample order
-     * items (used by nh_is_sample_order_item(), section 12 below, and
-     * order-attributes.php).
-     */
     $item->add_meta_data( '_nh_sample', 'yes', true );
 
-    /*
-     * Store the clean parent product name. For a variation sample,
-     * this removes the automatic "- 1.05 m, 2 m" suffix.
-     */
     $product = $item->get_product();
 
     if ( $product ) {
@@ -421,9 +374,6 @@ function norhage_save_sample_order_item_meta( $item, $cart_item_key, $values, $o
         }
     }
 
-    /*
-     * These are the only visible sample-specific details.
-     */
     $item->add_meta_data(
         __( 'Cutting type', 'nh-theme' ),
         __( 'Sample', 'nh-theme' ),
@@ -440,10 +390,6 @@ function norhage_save_sample_order_item_meta( $item, $cart_item_key, $values, $o
 /** ------------------------------------------------------------------
  * 9. Sample quantity: always 1 and not editable
  * ------------------------------------------------------------------ */
-
-/**
- * Enforce a quantity of 1 during all cart recalculations.
- */
 add_action( 'woocommerce_before_calculate_totals', 'norhage_force_sample_quantity_one', 5 );
 
 function norhage_force_sample_quantity_one( $cart ) {
@@ -462,11 +408,6 @@ function norhage_force_sample_quantity_one( $cart ) {
     }
 }
 
-/**
- * Replace the normal +/- quantity field in the cart with a non-editable
- * visual quantity. The hidden input ensures WooCommerce receives qty = 1
- * if the cart form is submitted.
- */
 add_filter( 'woocommerce_cart_item_quantity', 'norhage_sample_cart_item_quantity', 999, 3 );
 
 function norhage_sample_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ) {
@@ -482,9 +423,6 @@ function norhage_sample_cart_item_quantity( $product_quantity, $cart_item_key, $
     );
 }
 
-/**
- * Add a reliable CSS class to standard WooCommerce cart rows for samples.
- */
 add_filter( 'woocommerce_cart_item_class', 'norhage_add_sample_cart_item_class', 20, 3 );
 
 function norhage_add_sample_cart_item_class( $class, $cart_item, $cart_item_key ) {
@@ -498,11 +436,6 @@ function norhage_add_sample_cart_item_class( $class, $cart_item, $cart_item_key 
 /** ------------------------------------------------------------------
  * 10. Force "xs" shipping class on sample cart items
  * ------------------------------------------------------------------ */
-
-/**
- * Look up the term ID for the "xs" shipping class once per request.
- * Change the slug below if your shipping class uses a different slug.
- */
 function norhage_get_xs_shipping_class_id() {
     static $term_id = null;
 
@@ -517,14 +450,6 @@ function norhage_get_xs_shipping_class_id() {
     return $term_id;
 }
 
-/**
- * Override the shipping class on the cart item's product object so
- * shipping calculations (cart, checkout, shipping calculator) use the
- * "xs" shipping class instead of the real product/variation's class.
- *
- * This does not change the actual product/variation shipping class in
- * the database — only the in-cart clone used for this session's totals.
- */
 add_action( 'woocommerce_before_calculate_totals', 'norhage_set_sample_shipping_class', 999 );
 
 function norhage_set_sample_shipping_class( $cart ) {
@@ -539,7 +464,7 @@ function norhage_set_sample_shipping_class( $cart ) {
     $xs_term_id = norhage_get_xs_shipping_class_id();
 
     if ( ! $xs_term_id ) {
-        return; // "xs" shipping class term not found — nothing to apply.
+        return;
     }
 
     foreach ( $cart->get_cart() as $cart_item ) {
@@ -549,11 +474,6 @@ function norhage_set_sample_shipping_class( $cart ) {
     }
 }
 
-/**
- * Some shipping methods/plugins read the shipping class directly via
- * get_shipping_class() (slug) rather than the class ID. This filter
- * ensures that call also returns "xs" for sample cart items.
- */
 add_filter( 'woocommerce_cart_item_shipping_class', 'norhage_filter_sample_shipping_class_slug', 999, 3 );
 
 function norhage_filter_sample_shipping_class_slug( $shipping_class, $cart_item, $cart_item_key ) {
@@ -565,7 +485,39 @@ function norhage_filter_sample_shipping_class_slug( $shipping_class, $cart_item,
 }
 
 /** ------------------------------------------------------------------
- * 11. Hide the internal "_nh_sample" marker in WooCommerce Admin
+ * 11. Weight: zero out for samples (cart, order, PDF)
+ * ------------------------------------------------------------------ */
+add_action( 'woocommerce_before_calculate_totals', 'nh_zero_weight_for_sample_cart_item', 20 );
+
+function nh_zero_weight_for_sample_cart_item( $cart ) {
+    if ( ! $cart instanceof WC_Cart ) {
+        return;
+    }
+
+    foreach ( $cart->get_cart() as $cart_item ) {
+        if ( nh_is_sample_cart_item( $cart_item ) && is_callable( array( $cart_item['data'], 'set_weight' ) ) ) {
+            $cart_item['data']->set_weight( '' );
+        }
+    }
+}
+
+add_filter( 'woocommerce_order_item_product', 'nh_strip_weight_for_sample_order_item', 999, 2 );
+function nh_strip_weight_for_sample_order_item( $product, $item ) {
+    if ( ! $product instanceof WC_Product || ! ( $item instanceof WC_Order_Item_Product ) ) {
+        return $product;
+    }
+
+    if ( nh_is_sample_order_item( $item ) ) {
+        $clone = clone $product;
+        $clone->set_weight( '' );
+        return $clone;
+    }
+
+    return $product;
+}
+
+/** ------------------------------------------------------------------
+ * 12. Hide the internal "_nh_sample" marker in WooCommerce Admin
  *     order-item meta table.
  * ------------------------------------------------------------------ */
 add_filter( 'woocommerce_hidden_order_itemmeta', 'norhage_hide_sample_internal_order_meta' );
@@ -577,48 +529,27 @@ function norhage_hide_sample_internal_order_meta( $hidden_meta ) {
 }
 
 /** ------------------------------------------------------------------
- * PDF Invoices & Packing Slips (WPO WCPDF):
- * Hide weight and/or custom meta for sample items in PDF documents.
+ * 13. PDF Invoices & Packing Slips (WPO WCPDF): hide weight for samples
  * ------------------------------------------------------------------ */
-
-// 1. If WPO PDF Invoices prints weight via its standard get_weight helper:
 add_filter( 'wpo_wcpdf_item_weight', 'nh_hide_pdf_invoice_sample_weight', 999, 3 );
 function nh_hide_pdf_invoice_sample_weight( $weight, $item, $document ) {
-    if ( function_exists( 'nh_is_sample_order_item' ) && nh_is_sample_order_item( $item ) ) {
+    if ( nh_is_sample_order_item( $item ) ) {
         return '';
     }
     return $weight;
 }
 
-// 2. If the template uses raw HTML output or custom template tags for weight:
 add_filter( 'wpo_wcpdf_order_item_data', 'nh_clean_sample_order_item_for_pdf', 999, 3 );
 function nh_clean_sample_order_item_for_pdf( $data, $order, $document_type ) {
     if ( empty( $data['item'] ) || ! ( $data['item'] instanceof WC_Order_Item_Product ) ) {
         return $data;
     }
 
-    if ( function_exists( 'nh_is_sample_order_item' ) && nh_is_sample_order_item( $data['item'] ) ) {
-        // Clear the weight field on the PDF item data array
+    if ( nh_is_sample_order_item( $data['item'] ) ) {
         if ( isset( $data['weight'] ) ) {
             $data['weight'] = '';
         }
     }
 
     return $data;
-}
-
-// 3. Fallback for other PDF invoice plugins checking $product->has_weight() / get_weight()
-add_filter( 'woocommerce_order_item_product', 'nh_strip_weight_for_sample_order_item', 999, 2 );
-function nh_strip_weight_for_sample_order_item( $product, $item ) {
-    if ( ! $product instanceof WC_Product || ! ( $item instanceof WC_Order_Item_Product ) ) {
-        return $product;
-    }
-
-    if ( function_exists( 'nh_is_sample_order_item' ) && nh_is_sample_order_item( $item ) ) {
-        $clone = clone $product;
-        $clone->set_weight( '' );
-        return $clone;
-    }
-
-    return $product;
 }

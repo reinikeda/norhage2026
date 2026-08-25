@@ -1,27 +1,25 @@
 <?php
 /**
+ * inc/order-attributes.php
+ *
  * Order / email attributes display for Norhage.
  *
- * Handles:
- * - Normal variation attributes.
- * - Custom-cut Width, Length and Cutting fee rows for normal products.
- * - Sample order items: display only Cutting type and Dimensions.
+ * OWNERSHIP NOTE: This file is the SOLE owner of
+ * woocommerce_order_item_get_formatted_meta_data (what's shown in order
+ * details, emails, thank-you page, admin order edit, and any PDF plugin
+ * that reads via WC_Order_Item::get_formatted_meta_data()).
+ *
+ * De-duplication strategy changed: instead of only matching translated
+ * display labels against a hardcoded English list (which breaks on
+ * non-English sites/translated meta keys), we now ALSO match against the
+ * raw, untranslated meta key. This is more reliable because translations
+ * can change the display label, but the underlying key does not.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Extract measured-sheet info (Width / Length / Fee) from order item meta.
- *
- * @param WC_Order_Item_Product $item Order item.
- * @return array{
- *     width: string,
- *     length: string,
- *     fee: mixed
- * }
- */
 function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	$meta_data = $item->get_meta_data();
 
@@ -38,9 +36,6 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 		}
 
 		switch ( $key ) {
-			/*
-			 * Technical keys.
-			 */
 			case 'cutting_width':
 				$width_val = (string) $val;
 				break;
@@ -62,9 +57,6 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				$fee_val = $val;
 				break;
 
-			/*
-			 * Older human-readable keys.
-			 */
 			case 'Width':
 				if ( '' === $width_val ) {
 					$width_val = (string) $val;
@@ -93,21 +85,8 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	);
 }
 
-/**
- * Add custom-cut Width, Length and Cutting fee rows to an attribute pair array.
- *
- * Samples must never receive these rows.
- *
- * @param array                 $pairs Existing label/value pairs.
- * @param WC_Order_Item_Product $item  Order item.
- * @return array
- */
 function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $item ): array {
 
-	/*
-	 * Samples are intentionally plain. Their visible meta is controlled by
-	 * nh_filter_order_item_formatted_meta() below.
-	 */
 	if ( nh_is_sample_order_item( $item ) ) {
 		return $pairs;
 	}
@@ -118,11 +97,7 @@ function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $ite
 	$length_val = $measured_meta['length'] ?? '';
 	$fee_val    = $measured_meta['fee'] ?? '';
 
-	$is_measured_sheet = (
-		'' !== $width_val ||
-		'' !== $length_val ||
-		'' !== $fee_val
-	);
+	$is_measured_sheet = ( '' !== $width_val || '' !== $length_val || '' !== $fee_val );
 
 	if ( ! $is_measured_sheet ) {
 		return $pairs;
@@ -139,19 +114,11 @@ function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $ite
 	if ( '' !== $fee_val ) {
 		$product = $item->get_product();
 
-		/*
-		 * Fee can be a raw numeric amount or an already formatted string.
-		 */
 		if ( is_numeric( $fee_val ) ) {
 			$amount = (float) $fee_val;
 
 			if ( $product ) {
-				$amount = wc_get_price_to_display(
-					$product,
-					array(
-						'price' => $amount,
-					)
-				);
+				$amount = wc_get_price_to_display( $product, array( 'price' => $amount ) );
 			}
 
 			$fee_val = wp_strip_all_tags( wc_price( $amount ) );
@@ -163,20 +130,9 @@ function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $ite
 	return $pairs;
 }
 
-/**
- * Build label => value attribute pairs to print below an order item name.
- *
- * @param WC_Order_Item_Product $item Order item.
- * @return array
- */
 function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	$pairs = array();
 
-	/*
-	 * Samples must not receive duplicate variation attributes or custom-cut
-	 * rows here. Their only permitted visible fields are Cutting type and
-	 * Dimensions from the WooCommerce formatted item meta.
-	 */
 	if ( nh_is_sample_order_item( $item ) ) {
 		return $pairs;
 	}
@@ -187,10 +143,6 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		return $pairs;
 	}
 
-	/*
-	 * Variation product:
-	 * Show only parent attributes that are enabled for variations.
-	 */
 	if ( $product->is_type( 'variation' ) ) {
 		$variation_attributes = $product->get_attributes();
 		$parent_product       = wc_get_product( $product->get_parent_id() );
@@ -241,20 +193,9 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 		return nh_order_apply_measured_pairs( $pairs, $item );
 	}
 
-	/*
-	 * Simple products:
-	 * Only custom-cut data is shown. Normal simple-product attributes are
-	 * intentionally not shown in the extra custom block.
-	 */
 	return nh_order_apply_measured_pairs( $pairs, $item );
 }
 
-/**
- * Render label/value pairs as WooCommerce-style variation HTML.
- *
- * @param array $pairs Label/value pairs.
- * @return string
- */
 function nh_order_render_dl_variation( array $pairs ): string {
 	if ( empty( $pairs ) ) {
 		return '';
@@ -263,11 +204,7 @@ function nh_order_render_dl_variation( array $pairs ): string {
 	$html = '<dl class="variation">';
 
 	foreach ( $pairs as $label => $value ) {
-		$class = 'variation-' . preg_replace(
-			'/\s+/',
-			'',
-			ucwords( wp_strip_all_tags( $label ) )
-		);
+		$class = 'variation-' . preg_replace( '/\s+/', '', ucwords( wp_strip_all_tags( $label ) ) );
 
 		$html .= '<dt class="' . esc_attr( $class ) . '">';
 		$html .= esc_html( $label ) . ':';
@@ -283,12 +220,6 @@ function nh_order_render_dl_variation( array $pairs ): string {
 	return $html;
 }
 
-/**
- * Print the custom attribute block below an order item name.
- *
- * @param WC_Order_Item_Product $item Order item.
- * @return void
- */
 function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
 	$pairs = nh_order_item_attribute_pairs( $item );
 
@@ -299,12 +230,6 @@ function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
 	echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
-/**
- * Normalize an order-meta display label for comparisons.
- *
- * @param string $label Label to normalize.
- * @return string
- */
 function nh_normalize_order_meta_label( $label ): string {
 	$label = wp_strip_all_tags( (string) $label );
 	$label = trim( $label );
@@ -314,36 +239,42 @@ function nh_normalize_order_meta_label( $label ): string {
 }
 
 /**
- * Filter formatted order-item meta.
+ * Raw meta KEYS (not translated display labels) that are always
+ * considered "technical" or "duplicated by our custom render block" and
+ * must never appear a second time via WooCommerce's default meta table.
  *
- * Samples:
- * - Keep only Cutting type and Dimensions.
- * - Hide all variation attributes, Weight, Cutting fee, Width, Length,
- *   technical meta, and internal sample markers.
- *
- * Normal products:
- * - Hide duplicated variation attributes and technical custom-cut meta,
- *   because the custom display block prints the relevant data itself.
- *
- * This affects frontend order details, thank-you pages, emails, WooCommerce
- * admin order item output, and PDF invoice plugins that use
- * WC_Order_Item::get_formatted_meta_data().
- *
- * @param array                 $formatted_meta Formatted meta objects.
- * @param WC_Order_Item_Product $item           Order item.
- * @return array
+ * IMPORTANT: If your custom-cut save code (the file that writes Width /
+ * Length / Cutting fee meta for NORMAL, non-sample custom-cut order
+ * items) uses different raw keys than 'Width' / 'Length', add them here.
  */
+function nh_order_duplicate_meta_keys(): array {
+	return array(
+		'cutting_width',
+		'cutting_height',
+		'cutting_length_m',
+		'nh_length_m',
+		'_nh_length_m',
+		'unit_price',
+		'cutting_fee',
+		'cutting_fee_per_sheet',
+		'cutting_fee_per_unit',
+		'nh_custom_unit_kg',
+		'nh_custom_total_kg',
+		'_nh_sample',
+		'Width',
+		'Length',
+		'Cutting fee',
+		'Cutting fee per sheet',
+		'Cutting fee per unit',
+	);
+}
+
 function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	/*
-	 * Sample order items: only these exact visible labels are allowed.
-	 *
-	 * This is deliberately before the admin/non-admin logic so samples are
-	 * clean in WooCommerce Admin too, not only on the frontend and emails.
-	 */
+	// Samples: allow-list only, everywhere (admin, frontend, emails, PDF).
 	if ( nh_is_sample_order_item( $item ) ) {
 		$allowed_labels = array(
 			nh_normalize_order_meta_label( __( 'Cutting type', 'nh-theme' ) ),
@@ -366,47 +297,9 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 		return $filtered;
 	}
 
-	$technical_keys = array(
-		'cutting_width',
-		'cutting_height',
-		'cutting_length_m',
-		'nh_length_m',
-		'_nh_length_m',
-		'unit_price',
-		'cutting_fee',
-		'cutting_fee_per_sheet',
-		'cutting_fee_per_unit',
-		'nh_custom_unit_kg',
-		'nh_custom_total_kg',
-		'_nh_sample',
-	);
+	$duplicate_keys      = nh_order_duplicate_meta_keys();
+	$duplicate_key_lower = array_map( 'mb_strtolower', $duplicate_keys );
 
-	/*
-	 * Admin for normal products:
-	 * Hide technical implementation values while allowing normal visible
-	 * product meta to remain available for order management.
-	 */
-	if ( is_admin() ) {
-		$filtered = array();
-
-		foreach ( $formatted_meta as $meta_id => $meta ) {
-			$meta_key = isset( $meta->key ) ? (string) $meta->key : '';
-
-			if ( in_array( $meta_key, $technical_keys, true ) ) {
-				continue;
-			}
-
-			$filtered[ $meta_id ] = $meta;
-		}
-
-		return $filtered;
-	}
-
-	/*
-	 * Frontend and emails for normal products:
-	 * Hide duplicate variation / custom-cut rows because the custom block
-	 * below the product name renders them in a consistent format.
-	 */
 	$hidden_labels = array(
 		'Width',
 		'Length',
@@ -415,13 +308,17 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 		'Cutting fee per unit',
 	);
 
-	$hidden_label_keys = array_map(
-		'nh_normalize_order_meta_label',
-		$hidden_labels
-	);
+	// Also hide the currently active-language translations of the same labels,
+	// so this works regardless of site language.
+	$hidden_labels[] = __( 'Width', 'nh-theme' );
+	$hidden_labels[] = __( 'Length', 'nh-theme' );
+	$hidden_labels[] = __( 'Cutting fee per sheet', 'nh-theme' );
+	$hidden_labels[] = __( 'Cutting fee per unit', 'nh-theme' );
 
-	$product                = $item->get_product();
-	$variation_label_keys   = array();
+	$hidden_label_keys = array_unique( array_map( 'nh_normalize_order_meta_label', $hidden_labels ) );
+
+	$product              = $item->get_product();
+	$variation_label_keys = array();
 
 	if ( $product && $product->is_type( 'variation' ) ) {
 		$parent_product = wc_get_product( $product->get_parent_id() );
@@ -450,14 +347,35 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	$filtered = array();
 
 	foreach ( $formatted_meta as $meta_id => $meta ) {
-		$meta_key     = isset( $meta->key ) ? (string) $meta->key : '';
-		$display_key  = isset( $meta->display_key ) ? $meta->display_key : '';
-		$normalized   = nh_normalize_order_meta_label( $display_key );
+		$meta_key    = isset( $meta->key ) ? (string) $meta->key : '';
+		$display_key = isset( $meta->display_key ) ? $meta->display_key : '';
+		$normalized  = nh_normalize_order_meta_label( $display_key );
+		$key_lower   = mb_strtolower( $meta_key );
 
-		if ( in_array( $meta_key, $technical_keys, true ) ) {
+		// Always strip technical keys, both in admin and frontend, by RAW key.
+		if ( in_array( $key_lower, $duplicate_key_lower, true ) ) {
+			// In admin we still want to SEE Width/Length/Fee once (no custom
+			// block runs there), so only drop the truly technical ones here.
+			$purely_technical = array(
+				'cutting_width', 'cutting_height', 'cutting_length_m', 'nh_length_m',
+				'_nh_length_m', 'unit_price', 'cutting_fee', 'cutting_fee_per_sheet',
+				'cutting_fee_per_unit', 'nh_custom_unit_kg', 'nh_custom_total_kg', '_nh_sample',
+			);
+
+			if ( is_admin() && ! in_array( $key_lower, array_map( 'mb_strtolower', $purely_technical ), true ) ) {
+				// Human-readable raw key (e.g. "Width") on admin: keep it, fall through.
+			} else {
+				continue;
+			}
+		}
+
+		if ( is_admin() ) {
+			$filtered[ $meta_id ] = $meta;
 			continue;
 		}
 
+		// Frontend/emails: drop anything matching our hidden labels or
+		// variation attribute labels — the custom block already renders these.
 		if ( in_array( $normalized, $hidden_label_keys, true ) ) {
 			continue;
 		}
@@ -479,12 +397,6 @@ add_filter(
 	2
 );
 
-/**
- * Print the custom attribute list below product names on:
- * - Thank-you page
- * - My Account > Order details
- * - HTML emails
- */
 add_action(
 	'woocommerce_order_item_meta_start',
 	function ( $item_id, $item, $order, $plain_text ) {
