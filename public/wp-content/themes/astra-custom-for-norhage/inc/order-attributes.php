@@ -278,9 +278,11 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	if ( nh_is_sample_order_item( $item ) ) {
 		$allowed_labels = array(
 			nh_normalize_order_meta_label( __( 'Cutting type', 'nh-theme' ) ),
-			nh_normalize_order_meta_label( __( 'Dimensions', 'nh-theme' ) ),
+			nh_normalize_order_meta_label( __( 'Width', 'nh-theme' ) ),
+			nh_normalize_order_meta_label( __( 'Length', 'nh-theme' ) ),
 			nh_normalize_order_meta_label( 'Cutting type' ),
-			nh_normalize_order_meta_label( 'Dimensions' ),
+			nh_normalize_order_meta_label( 'Width' ),
+			nh_normalize_order_meta_label( 'Length' ),
 		);
 
 		$filtered = array();

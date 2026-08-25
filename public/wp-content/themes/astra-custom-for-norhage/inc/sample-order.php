@@ -381,8 +381,14 @@ function norhage_save_sample_order_item_meta( $item, $cart_item_key, $values, $o
     );
 
     $item->add_meta_data(
-        __( 'Dimensions', 'nh-theme' ),
-        $values['custom_width_mm'] . ' × ' . $values['custom_length_mm'] . ' mm',
+        __( 'Width', 'nh-theme' ),
+        $values['custom_width_mm'] . ' mm',
+        true
+    );
+
+    $item->add_meta_data(
+        __( 'Length', 'nh-theme' ),
+        $values['custom_length_mm'] . ' mm',
         true
     );
 }

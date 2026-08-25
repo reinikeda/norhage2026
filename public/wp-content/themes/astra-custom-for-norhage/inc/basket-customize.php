@@ -78,13 +78,19 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 			$width  = isset( $cart_item['custom_width_mm'] ) ? $cart_item['custom_width_mm'] : '';
 			$length = isset( $cart_item['custom_length_mm'] ) ? $cart_item['custom_length_mm'] : '';
 
-			if ( '' !== $width && '' !== $length ) {
-				$dimensions = $width . ' × ' . $length . ' mm';
-
+			if ( '' !== $width ) {
 				$item_data[] = array(
-					'key'     => __( 'Dimensions', 'nh-theme' ),
-					'value'   => $dimensions,
-					'display' => $dimensions,
+					'key'     => __( 'Width', 'nh-theme' ),
+					'value'   => $width . ' mm',
+					'display' => $width . ' mm',
+				);
+			}
+
+			if ( '' !== $length ) {
+				$item_data[] = array(
+					'key'     => __( 'Length', 'nh-theme' ),
+					'value'   => $length . ' mm',
+					'display' => $length . ' mm',
 				);
 			}
 
