@@ -9,11 +9,18 @@
  * details, emails, thank-you page, admin order edit, and any PDF plugin
  * that reads via WC_Order_Item::get_formatted_meta_data()).
  *
- * De-duplication strategy changed: instead of only matching translated
- * display labels against a hardcoded English list (which breaks on
- * non-English sites/translated meta keys), we now ALSO match against the
- * raw, untranslated meta key. This is more reliable because translations
- * can change the display label, but the underlying key does not.
+ * SAMPLE RULE: a sample order item is ALWAYS allow-listed to show only
+ * Cutting type / Width / Length on the frontend, emails, and PDF —
+ * regardless of what any other file (e.g. the custom-cut checkout-save
+ * code) may have written to that item's meta. This is enforced by
+ * stripping everything else, not by trusting other files to skip samples.
+ *
+ * De-duplication strategy for NON-sample items: instead of only matching
+ * translated display labels against a hardcoded English list (which
+ * breaks on non-English sites/translated meta keys), we ALSO match
+ * against the raw, untranslated meta key. This is more reliable because
+ * translations can change the display label, but the underlying key
+ * does not.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -134,6 +141,26 @@ function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
 	$pairs = array();
 
 	if ( nh_is_sample_order_item( $item ) ) {
+		$pairs[ __( 'Cutting type', 'nh-theme' ) ] = __( 'Sample', 'nh-theme' );
+
+		$width = $item->get_meta( __( 'Width', 'nh-theme' ) );
+		if ( '' === $width ) {
+			$width = $item->get_meta( 'Width' );
+		}
+
+		$length = $item->get_meta( __( 'Length', 'nh-theme' ) );
+		if ( '' === $length ) {
+			$length = $item->get_meta( 'Length' );
+		}
+
+		if ( '' !== $width ) {
+			$pairs[ __( 'Width', 'nh-theme' ) ] = $width;
+		}
+
+		if ( '' !== $length ) {
+			$pairs[ __( 'Length', 'nh-theme' ) ] = $length;
+		}
+
 		return $pairs;
 	}
 
@@ -269,36 +296,52 @@ function nh_order_duplicate_meta_keys(): array {
 	);
 }
 
+/**
+ * For samples, ANY meta whose raw key or display label looks like a fee
+ * or weight (regardless of which file wrote it) must never be shown.
+ * This is a safety net in case another file (e.g. custom-cut save logic)
+ * doesn't check nh_is_sample_cart_item() before adding its own meta.
+ */
+function nh_sample_meta_is_forbidden( string $meta_key, string $display_label ): bool {
+	$needles = array( 'fee', 'weight', 'kg' );
+
+	$key_lower   = mb_strtolower( $meta_key );
+	$label_lower = mb_strtolower( $display_label );
+
+	foreach ( $needles as $needle ) {
+		if ( false !== strpos( $key_lower, $needle ) || false !== strpos( $label_lower, $needle ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	// Samples: allow-list only, everywhere (admin, frontend, emails, PDF).
 	if ( nh_is_sample_order_item( $item ) ) {
-		$allowed_labels = array(
-			nh_normalize_order_meta_label( __( 'Cutting type', 'nh-theme' ) ),
-			nh_normalize_order_meta_label( __( 'Width', 'nh-theme' ) ),
-			nh_normalize_order_meta_label( __( 'Length', 'nh-theme' ) ),
-			nh_normalize_order_meta_label( 'Cutting type' ),
-			nh_normalize_order_meta_label( 'Width' ),
-			nh_normalize_order_meta_label( 'Length' ),
-		);
-
 		$filtered = array();
 
 		foreach ( $formatted_meta as $meta_id => $meta ) {
+			$meta_key    = isset( $meta->key ) ? (string) $meta->key : '';
 			$display_key = isset( $meta->display_key ) ? $meta->display_key : '';
-			$normalized  = nh_normalize_order_meta_label( $display_key );
 
-			if ( in_array( $normalized, $allowed_labels, true ) ) {
-				$filtered[ $meta_id ] = $meta;
+			if ( nh_sample_meta_is_forbidden( $meta_key, (string) $display_key ) ) {
+				continue;
 			}
+
+			$filtered[ $meta_id ] = $meta;
 		}
 
-		return $filtered;
-	}
+		if ( is_admin() ) {
+			return $filtered;
+		}
 
+		return array();
+	}
 	$duplicate_keys      = nh_order_duplicate_meta_keys();
 	$duplicate_key_lower = array_map( 'mb_strtolower', $duplicate_keys );
 
