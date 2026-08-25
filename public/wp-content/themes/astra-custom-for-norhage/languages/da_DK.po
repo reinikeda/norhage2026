@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-06 15:33+0300\n"
+"PO-Revision-Date: 2026-08-25 10:26+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -1681,6 +1681,46 @@ msgstr "Hvilket andet tilbehør kan jeg finde til mit haveprojekt?"
 #: inc/faq-data.php
 msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
 msgstr "Ud over tagkomponenter tilbyder vi et udvalg af produkter til at forbedre dit uderum, herunder hyldesystemer til drivhuse, automatiske vinduesåpnere og specialiserede rengøringsprodukter til plastplader, så dine konstruktioner ser nye ud."
+
+#: inc/sample-order.php
+msgid "Order a sample"
+msgstr "Bestil vareprøve"
+
+msgid "Add sample"
+msgstr "Tilføj vareprøve"
+
+msgid "The selected product could not be found."
+msgstr "Det valgte produkt blev ikke fundet."
+
+msgid "Sample ordering is not enabled for this product."
+msgstr "Bestilling af vareprøver er ikke slået til for dette produkt."
+
+msgid "Sample width, length, or price has not been configured."
+msgstr "Vareprøvens bredde, længde eller pris er ikke konfigureret."
+
+msgid "The sample settings are not valid."
+msgstr "Vareprøveindstillingerne er ikke gyldige."
+
+msgid "No purchasable variation was found for this product."
+msgstr "Der blev ikke fundet nogen købbar variant for dette produkt."
+
+msgid "WooCommerce rejected this sample item."
+msgstr "WooCommerce afviste denne vareprøve."
+
+msgid "Sample added to cart."
+msgstr "Vareprøve tilføjet til kurven."
+
+msgid "Cutting type"
+msgstr "Skæringstype"
+
+msgid "Sample"
+msgstr "Vareprøve"
+
+msgid "Dimensions"
+msgstr "Mål"
+
+msgid "Qty: 1"
+msgstr "Antal: 1"
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"

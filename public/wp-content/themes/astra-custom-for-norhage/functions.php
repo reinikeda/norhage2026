@@ -373,6 +373,7 @@ require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
+require_once get_stylesheet_directory() . '/inc/sample-order.php';
 
 /* --------------------------------------------------------------------------
  * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)

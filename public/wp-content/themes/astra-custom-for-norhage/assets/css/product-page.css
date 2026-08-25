@@ -1687,3 +1687,106 @@ body.dark-mode .nhf-box .nhf-icon {
 		padding: 18px;
 	}
 }
+
+/* ==========================================================================
+   Order a sample strip
+   ========================================================================== */
+
+.single-product .norhage-sample-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #eaf7f0;
+  border: 1.5px solid var(--nh-green, #00704a);
+  border-left: 4px solid var(--nh-green, #00704a);
+  border-radius: 5px;
+  margin: 16px 0;
+  box-shadow: 0 1px 4px rgba(0, 112, 74, .08);
+  flex-wrap: nowrap;
+}
+
+.single-product .norhage-sample-strip .norhage-sample-info {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--ui-text, #2c2a29);
+  white-space: nowrap;
+}
+
+.single-product .norhage-sample-strip .norhage-sample-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+}
+
+.single-product .norhage-sample-strip .norhage-sample-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--nh-green, #00704a);
+}
+
+.single-product .norhage-sample-strip .norhage-sample-price {
+  color: var(--nh-green, #00704a);
+  font-weight: 700;
+}
+
+.single-product .norhage-sample-strip .norhage-add-sample,
+.single-product .norhage-sample-strip .norhage-add-sample.button {
+  flex: 0 0 auto;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px !important;
+  margin: 0 !important;
+  background: var(--nh-green, #00704a) !important;
+  border: 1.5px solid var(--nh-green, #00704a) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, transform .12s;
+}
+
+.single-product .norhage-sample-strip .norhage-add-sample:hover,
+.single-product .norhage-sample-strip .norhage-add-sample.button:hover {
+  background: #005c3c !important;
+  border-color: #005c3c !important;
+  transform: translateY(-1px);
+}
+
+.single-product .norhage-sample-strip .norhage-add-sample:focus,
+.single-product .norhage-sample-strip .norhage-add-sample:active {
+  background: #005c3c !important;
+  border-color: #005c3c !important;
+  outline: 2px solid rgba(0, 112, 74, .35);
+  outline-offset: 2px;
+}
+
+.single-product .norhage-sample-strip .norhage-add-sample:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .single-product .norhage-sample-strip {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .single-product .norhage-sample-strip .norhage-sample-info {
+    white-space: normal;
+  }
+}
