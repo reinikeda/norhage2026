@@ -1,19 +1,32 @@
 <?php
 /**
- * Order / email attributes display
- * - Show product attributes under the product name (same idea as cart).
- * - Works for simple + variable products.
- * - NEW: Also shows custom-cut Width/Length/Fee for variations (previously missing).
+ * inc/order-attributes.php
+ *
+ * Order / email attributes display for Norhage.
+ *
+ * OWNERSHIP NOTE: This file is the SOLE owner of
+ * woocommerce_order_item_get_formatted_meta_data (what's shown in order
+ * details, emails, thank-you page, admin order edit, and any PDF plugin
+ * that reads via WC_Order_Item::get_formatted_meta_data()).
+ *
+ * SAMPLE RULE: a sample order item is ALWAYS allow-listed to show only
+ * Cutting type / Width / Length on the frontend, emails, and PDF —
+ * regardless of what any other file (e.g. the custom-cut checkout-save
+ * code) may have written to that item's meta. This is enforced by
+ * stripping everything else, not by trusting other files to skip samples.
+ *
+ * De-duplication strategy for NON-sample items: instead of only matching
+ * translated display labels against a hardcoded English list (which
+ * breaks on non-English sites/translated meta keys), we ALSO match
+ * against the raw, untranslated meta key. This is more reliable because
+ * translations can change the display label, but the underlying key
+ * does not.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Extract measured-sheet info (Width/Length/Fee) from order item meta.
- * Returns array [ 'width' => string, 'length' => string, 'fee' => mixed ]
- */
 function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	$meta_data = $item->get_meta_data();
 
@@ -25,23 +38,22 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 		$key = (string) ( $meta->key ?? '' );
 		$val = $meta->value ?? '';
 
-		if ( $val === '' ) {
+		if ( '' === $val ) {
 			continue;
 		}
 
 		switch ( $key ) {
-			// Technical keys (preferred)
 			case 'cutting_width':
 				$width_val = (string) $val;
 				break;
 
 			case 'cutting_height':
 			case 'cutting_length_m':
-			case 'nh_length_m': // Add this to capture the linear length
-			case '_nh_length_m': // And the hidden version
+			case 'nh_length_m':
+			case '_nh_length_m':
 				$length_val = (string) $val;
-				// If it's just a number, append " m" for display
-				if ( is_numeric($length_val) ) {
+
+				if ( is_numeric( $length_val ) ) {
 					$length_val .= ' m';
 				}
 				break;
@@ -52,69 +64,70 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				$fee_val = $val;
 				break;
 
-			// Backwards compatibility / Human keys
 			case 'Width':
-				if ( $width_val === '' ) {
+				if ( '' === $width_val ) {
 					$width_val = (string) $val;
 				}
 				break;
 
 			case 'Length':
-				// If we already found a technical length, don't overwrite it with the same value
-				if ( $length_val === '' ) {
+				if ( '' === $length_val ) {
 					$length_val = (string) $val;
 				}
 				break;
 
 			case 'Cutting fee per sheet':
 			case 'Cutting fee per unit':
-				if ( $fee_val === '' ) {
+				if ( '' === $fee_val ) {
 					$fee_val = $val;
 				}
 				break;
 		}
 	}
 
-	return [
+	return array(
 		'width'  => $width_val,
 		'length' => $length_val,
 		'fee'    => $fee_val,
-	];
+	);
 }
 
-/**
- * Apply measured-sheet meta to pairs array (Width/Length/Fee) if present.
- */
 function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $item ): array {
-	$m = nh_order_item_measured_meta( $item );
 
-	$width_val  = $m['width'] ?? '';
-	$length_val = $m['length'] ?? '';
-	$fee_val    = $m['fee'] ?? '';
+	if ( nh_is_sample_order_item( $item ) ) {
+		return $pairs;
+	}
 
-	$is_measured_sheet = ( $width_val !== '' || $length_val !== '' || $fee_val !== '' );
+	$measured_meta = nh_order_item_measured_meta( $item );
+
+	$width_val  = $measured_meta['width'] ?? '';
+	$length_val = $measured_meta['length'] ?? '';
+	$fee_val    = $measured_meta['fee'] ?? '';
+
+	$is_measured_sheet = ( '' !== $width_val || '' !== $length_val || '' !== $fee_val );
 
 	if ( ! $is_measured_sheet ) {
 		return $pairs;
 	}
 
-	if ( $width_val !== '' ) {
+	if ( '' !== $width_val ) {
 		$pairs[ __( 'Width', 'nh-theme' ) ] = $width_val;
 	}
 
-	if ( $length_val !== '' ) {
+	if ( '' !== $length_val ) {
 		$pairs[ __( 'Length', 'nh-theme' ) ] = $length_val;
 	}
 
-	if ( $fee_val !== '' ) {
+	if ( '' !== $fee_val ) {
 		$product = $item->get_product();
 
-		// Fee can be numeric (raw) or already formatted. If numeric, format as display price.
 		if ( is_numeric( $fee_val ) ) {
 			$amount = (float) $fee_val;
+
 			if ( $product ) {
-				$amount = wc_get_price_to_display( $product, [ 'price' => $amount ] );
+				$amount = wc_get_price_to_display( $product, array( 'price' => $amount ) );
 			}
+
 			$fee_val = wp_strip_all_tags( wc_price( $amount ) );
 		}
 
@@ -124,141 +137,92 @@ function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $ite
 	return $pairs;
 }
 
-/**
- * Build attribute label => value pairs for an order line item.
- */
 function nh_order_item_attribute_pairs( WC_Order_Item_Product $item ): array {
-	$pairs   = [];
+	$pairs = array();
+
+	if ( nh_is_sample_order_item( $item ) ) {
+		$pairs[ __( 'Cutting type', 'nh-theme' ) ] = __( 'Sample', 'nh-theme' );
+
+		$width = $item->get_meta( __( 'Width', 'nh-theme' ) );
+		if ( '' === $width ) {
+			$width = $item->get_meta( 'Width' );
+		}
+
+		$length = $item->get_meta( __( 'Length', 'nh-theme' ) );
+		if ( '' === $length ) {
+			$length = $item->get_meta( 'Length' );
+		}
+
+		if ( '' !== $width ) {
+			$pairs[ __( 'Width', 'nh-theme' ) ] = $width;
+		}
+
+		if ( '' !== $length ) {
+			$pairs[ __( 'Length', 'nh-theme' ) ] = $length;
+		}
+
+		return $pairs;
+	}
+
 	$product = $item->get_product();
 
 	if ( ! $product ) {
 		return $pairs;
 	}
 
-	/* ---------------------------------------------------------
-	 * CASE A: variation product → show ONLY attributes that are
-	 *         flagged "Used for variations" on the parent.
-	 *         PLUS measured-sheet meta (Width/Length/Fee) if present.
-	 * -------------------------------------------------------*/
 	if ( $product->is_type( 'variation' ) ) {
+		$variation_attributes = $product->get_attributes();
+		$parent_product       = wc_get_product( $product->get_parent_id() );
+		$parent_attributes    = $parent_product ? $parent_product->get_attributes() : array();
+		$label_product        = $parent_product ? $parent_product : $product;
 
-		$var_attrs = $product->get_attributes();
-		$parent         = wc_get_product( $product->get_parent_id() );
-		$parent_attrs   = $parent ? $parent->get_attributes() : [];
-		$product_for_lb = $parent ?: $product;
-
-		if ( ! empty( $var_attrs ) ) {
-			foreach ( $var_attrs as $attr_slug => $val ) {
-				if ( $val === '' ) {
-					continue;
-				}
-
-				$is_variation_attr = true;
-				if ( isset( $parent_attrs[ $attr_slug ] ) && $parent_attrs[ $attr_slug ] instanceof WC_Product_Attribute ) {
-					$is_variation_attr = (bool) $parent_attrs[ $attr_slug ]->get_variation();
-				}
-				if ( ! $is_variation_attr ) {
-					continue;
-				}
-
-				$label = wc_attribute_label( $attr_slug, $product_for_lb );
-				if ( $label === '' ) {
-					continue;
-				}
-
-				$val = wc_clean( $val );
-
-				if ( taxonomy_exists( $attr_slug ) ) {
-					$term = get_term_by( 'slug', $val, $attr_slug );
-					if ( $term && ! is_wp_error( $term ) ) {
-						$val = $term->name;
-					} else {
-						$val = wc_clean( str_replace( '-', ' ', $val ) );
-					}
-				}
-
-				if ( $val !== '' ) {
-					$pairs[ $label ] = $val;
-				}
+		foreach ( $variation_attributes as $attribute_slug => $value ) {
+			if ( '' === $value ) {
+				continue;
 			}
-		}
 
-		// NEW: also show measured-sheet meta for variations
-		$pairs = nh_order_apply_measured_pairs( $pairs, $item );
+			$is_variation_attribute = true;
 
-		return $pairs;
-	}
-
-	/* ---------------------------------------------------------
-	 * CASE B: simple product (custom-cut vs normal)
-	 * -------------------------------------------------------*/
-
-	// Measured sheet? If yes, show width/length/fee and return.
-	$pairs = nh_order_apply_measured_pairs( $pairs, $item );
-	if ( ! empty( $pairs ) ) {
-		return $pairs;
-	}
-
-	// Normal simple products → show nothing (attributes are informational only).
-	return $pairs;
-
-	if ( empty( $attributes ) ) {
-		return $pairs;
-	}
-
-	foreach ( $attributes as $attr_key => $attr ) {
-		$attr_name = '';
-		$options   = [];
-		$is_tax    = false;
-
-		if ( $attr instanceof WC_Product_Attribute ) {
-			$attr_name = $attr->get_name();
-			$options   = $attr->get_options();
-			$is_tax    = $attr->is_taxonomy();
-		} else {
-			$attr_name = is_string( $attr_key ) ? $attr_key : '';
-			if ( is_array( $attr ) && isset( $attr['options'] ) ) {
-				$options = (array) $attr['options'];
-			} else {
-				$options = is_array( $attr ) ? $attr : (array) $attr;
+			if (
+				isset( $parent_attributes[ $attribute_slug ] ) &&
+				$parent_attributes[ $attribute_slug ] instanceof WC_Product_Attribute
+			) {
+				$is_variation_attribute = (bool) $parent_attributes[ $attribute_slug ]->get_variation();
 			}
-			$is_tax = $attr_name && taxonomy_exists( $attr_name );
-		}
 
-		if ( ! $attr_name ) {
-			continue;
-		}
+			if ( ! $is_variation_attribute ) {
+				continue;
+			}
 
-		$label = wc_attribute_label( $attr_name, $product );
+			$label = wc_attribute_label( $attribute_slug, $label_product );
 
-		if ( $is_tax ) {
-			$names = [];
-			foreach ( $options as $term_id ) {
-				if ( is_numeric( $term_id ) ) {
-					$term = get_term( (int) $term_id );
-				} else {
-					$term = get_term_by( 'slug', $term_id, $attr_name );
-				}
+			if ( '' === $label ) {
+				continue;
+			}
+
+			$value = wc_clean( $value );
+
+			if ( taxonomy_exists( $attribute_slug ) ) {
+				$term = get_term_by( 'slug', $value, $attribute_slug );
+
 				if ( $term && ! is_wp_error( $term ) ) {
-					$names[] = $term->name;
+					$value = $term->name;
+				} else {
+					$value = wc_clean( str_replace( '-', ' ', $value ) );
 				}
 			}
-			$value = implode( ', ', $names );
-		} else {
-			$value = implode( ', ', array_map( 'wc_clean', $options ) );
+
+			if ( '' !== $value ) {
+				$pairs[ $label ] = $value;
+			}
 		}
 
-		if ( $label && $value !== '' ) {
-			$pairs[ $label ] = $value;
-		}
+		return nh_order_apply_measured_pairs( $pairs, $item );
 	}
 
-	return $pairs;
+	return nh_order_apply_measured_pairs( $pairs, $item );
 }
 
-/**
- * Render pairs as <dl class="variation">…</dl>.
- */
 function nh_order_render_dl_variation( array $pairs ): string {
 	if ( empty( $pairs ) ) {
 		return '';
@@ -266,10 +230,16 @@ function nh_order_render_dl_variation( array $pairs ): string {
 
 	$html = '<dl class="variation">';
 
-	foreach ( $pairs as $label => $val ) {
-		$cls   = 'variation-' . preg_replace( '/\s+/', '', ucwords( wp_strip_all_tags( $label ) ) );
-		$html .= '<dt class="' . esc_attr( $cls ) . '">' . esc_html( $label ) . ':</dt>';
-		$html .= '<dd class="' . esc_attr( $cls ) . '"><p>' . esc_html( $val ) . '</p></dd>';
+	foreach ( $pairs as $label => $value ) {
+		$class = 'variation-' . preg_replace( '/\s+/', '', ucwords( wp_strip_all_tags( $label ) ) );
+
+		$html .= '<dt class="' . esc_attr( $class ) . '">';
+		$html .= esc_html( $label ) . ':';
+		$html .= '</dt>';
+
+		$html .= '<dd class="' . esc_attr( $class ) . '">';
+		$html .= '<p>' . esc_html( $value ) . '</p>';
+		$html .= '</dd>';
 	}
 
 	$html .= '</dl>';
@@ -277,11 +247,9 @@ function nh_order_render_dl_variation( array $pairs ): string {
 	return $html;
 }
 
-/**
- * Small helper so we can reuse rendering.
- */
 function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
 	$pairs = nh_order_item_attribute_pairs( $item );
+
 	if ( empty( $pairs ) ) {
 		return;
 	}
@@ -289,153 +257,204 @@ function nh_order_print_item_attributes_block( WC_Order_Item_Product $item ) {
 	echo nh_order_render_dl_variation( $pairs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
+function nh_normalize_order_meta_label( $label ): string {
+	$label = wp_strip_all_tags( (string) $label );
+	$label = trim( $label );
+	$label = rtrim( $label, ':' );
+
+	return mb_strtolower( $label );
+}
+
 /**
- * Hide Woo's default formatted meta for:
- * - variation attributes (we show our own)  [frontend + emails only]
- * - our measured-sheet meta (Width, Length, Cutting fee per sheet)
- * - technical keys (cutting_width, cutting_height, unit_price, cutting_fee, cutting_fee_per_sheet)
+ * Raw meta KEYS (not translated display labels) that are always
+ * considered "technical" or "duplicated by our custom render block" and
+ * must never appear a second time via WooCommerce's default meta table.
  *
- * Improved matching: normalize display keys (lowercase, trim colon) so
- * "length:", "Length" and "length" are all caught and hidden on frontend.
+ * IMPORTANT: If your custom-cut save code (the file that writes Width /
+ * Length / Cutting fee meta for NORMAL, non-sample custom-cut order
+ * items) uses different raw keys than 'Width' / 'Length', add them here.
  */
-add_filter( 'woocommerce_order_item_get_formatted_meta_data', function ( $formatted_meta, $item ) {
+function nh_order_duplicate_meta_keys(): array {
+	return array(
+		'cutting_width',
+		'cutting_height',
+		'cutting_length_m',
+		'nh_length_m',
+		'_nh_length_m',
+		'unit_price',
+		'cutting_fee',
+		'cutting_fee_per_sheet',
+		'cutting_fee_per_unit',
+		'nh_custom_unit_kg',
+		'nh_custom_total_kg',
+		'_nh_sample',
+		'Width',
+		'Length',
+		'Cutting fee',
+		'Cutting fee per sheet',
+		'Cutting fee per unit',
+	);
+}
+
+/**
+ * For samples, ANY meta whose raw key or display label looks like a fee
+ * or weight (regardless of which file wrote it) must never be shown.
+ * This is a safety net in case another file (e.g. custom-cut save logic)
+ * doesn't check nh_is_sample_cart_item() before adding its own meta.
+ */
+function nh_sample_meta_is_forbidden( string $meta_key, string $display_label ): bool {
+	$needles = array( 'fee', 'weight', 'kg' );
+
+	$key_lower   = mb_strtolower( $meta_key );
+	$label_lower = mb_strtolower( $display_label );
+
+	foreach ( $needles as $needle ) {
+		if ( false !== strpos( $key_lower, $needle ) || false !== strpos( $label_lower, $needle ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
 		return $formatted_meta;
 	}
 
-	$technical_keys = [
-			'cutting_width',
-			'cutting_height',
-			'cutting_length_m',
-			'nh_length_m',
-			'_nh_length_m',
-			'unit_price',
-			'cutting_fee',
-			'cutting_fee_per_sheet',
-			'cutting_fee_per_unit',
-			'nh_custom_unit_kg',
-			'nh_custom_total_kg',
-		];
+	if ( nh_is_sample_order_item( $item ) ) {
+		$filtered = array();
 
-	// Admin: hide only the technical keys to keep admin debugging useful
-	if ( is_admin() ) {
-		$filtered = [];
-		foreach ( $formatted_meta as $fm ) {
-			if ( in_array( (string) $fm->key, $technical_keys, true ) ) {
+		foreach ( $formatted_meta as $meta_id => $meta ) {
+			$meta_key    = isset( $meta->key ) ? (string) $meta->key : '';
+			$display_key = isset( $meta->display_key ) ? $meta->display_key : '';
+
+			if ( nh_sample_meta_is_forbidden( $meta_key, (string) $display_key ) ) {
 				continue;
 			}
-			$filtered[] = $fm;
-		}
-		return $filtered;
-	}
 
-	/*
-	 * Frontend / emails: build a normalized list of display keys we want hidden.
-	 * We'll normalize both the incoming display_key and our hide labels:
-	 *  - lowercase
-	 *  - trim whitespace
-	 *  - trim trailing colon
-	 */
-	$hide_labels = [
+			$filtered[ $meta_id ] = $meta;
+		}
+
+		if ( is_admin() ) {
+			return $filtered;
+		}
+
+		return array();
+	}
+	$duplicate_keys      = nh_order_duplicate_meta_keys();
+	$duplicate_key_lower = array_map( 'mb_strtolower', $duplicate_keys );
+
+	$hidden_labels = array(
 		'Width',
 		'Length',
+		'Cutting fee',
 		'Cutting fee per sheet',
 		'Cutting fee per unit',
-		// Add common lowercase/alternate variants to be safe
-		'width',
-		'length',
-		'cutting fee',
-		'cutting fee per sheet',
-		'cutting fee per unit',
-	];
+	);
 
-	// Include translations (if any)
-	$translated = array_filter( [
-		__( 'Width', 'nh-theme' ),
-		__( 'Length', 'nh-theme' ),
-		__( 'Cutting fee per sheet', 'nh-theme' ),
-		__( 'Cutting fee per unit', 'nh-theme' ),
-	] );
-	$hide_labels = array_unique( array_merge( $hide_labels, $translated ) );
+	// Also hide the currently active-language translations of the same labels,
+	// so this works regardless of site language.
+	$hidden_labels[] = __( 'Width', 'nh-theme' );
+	$hidden_labels[] = __( 'Length', 'nh-theme' );
+	$hidden_labels[] = __( 'Cutting fee per sheet', 'nh-theme' );
+	$hidden_labels[] = __( 'Cutting fee per unit', 'nh-theme' );
 
-	// Normalized set for fast checks
-	$bad_display = array_map( function ( $s ) {
-		$s = (string) $s;
-		$s = trim( $s );
-		$s = rtrim( $s, ':' );
-		$s = mb_strtolower( $s );
-		return $s;
-	}, $hide_labels );
+	$hidden_label_keys = array_unique( array_map( 'nh_normalize_order_meta_label', $hidden_labels ) );
 
-	$attr_labels = [];
-	$product     = $item->get_product();
+	$product              = $item->get_product();
+	$variation_label_keys = array();
 
 	if ( $product && $product->is_type( 'variation' ) ) {
-		$parent = wc_get_product( $product->get_parent_id() );
+		$parent_product = wc_get_product( $product->get_parent_id() );
 
-		if ( $parent ) {
-			foreach ( $parent->get_attributes() as $key => $attr ) {
-				if ( $attr instanceof WC_Product_Attribute ) {
-					$name = $attr->get_name();
-				} else {
-					$name = is_string( $key ) ? $key : '';
+		if ( $parent_product ) {
+			foreach ( $parent_product->get_attributes() as $attribute_key => $attribute ) {
+				$attribute_name = '';
+
+				if ( $attribute instanceof WC_Product_Attribute ) {
+					$attribute_name = $attribute->get_name();
+				} elseif ( is_string( $attribute_key ) ) {
+					$attribute_name = $attribute_key;
 				}
-				if ( ! $name ) {
+
+				if ( '' === $attribute_name ) {
 					continue;
 				}
-				$attr_labels[] = wc_attribute_label( $name, $parent );
+
+				$variation_label_keys[] = nh_normalize_order_meta_label(
+					wc_attribute_label( $attribute_name, $parent_product )
+				);
 			}
 		}
 	}
 
-	// Normalize attribute labels too
-	$attr_labels_normalized = array_map( function ( $s ) {
-		return mb_strtolower( trim( rtrim( (string) $s, ':' ) ) );
-	}, $attr_labels );
+	$filtered = array();
 
-	$filtered = [];
+	foreach ( $formatted_meta as $meta_id => $meta ) {
+		$meta_key    = isset( $meta->key ) ? (string) $meta->key : '';
+		$display_key = isset( $meta->display_key ) ? $meta->display_key : '';
+		$normalized  = nh_normalize_order_meta_label( $display_key );
+		$key_lower   = mb_strtolower( $meta_key );
 
-	foreach ( $formatted_meta as $fm ) {
+		// Always strip technical keys, both in admin and frontend, by RAW key.
+		if ( in_array( $key_lower, $duplicate_key_lower, true ) ) {
+			// In admin we still want to SEE Width/Length/Fee once (no custom
+			// block runs there), so only drop the truly technical ones here.
+			$purely_technical = array(
+				'cutting_width', 'cutting_height', 'cutting_length_m', 'nh_length_m',
+				'_nh_length_m', 'unit_price', 'cutting_fee', 'cutting_fee_per_sheet',
+				'cutting_fee_per_unit', 'nh_custom_unit_kg', 'nh_custom_total_kg', '_nh_sample',
+			);
 
-		// Hide technical meta by key
-		if ( in_array( (string) $fm->key, $technical_keys, true ) ) {
+			if ( is_admin() && ! in_array( $key_lower, array_map( 'mb_strtolower', $purely_technical ), true ) ) {
+				// Human-readable raw key (e.g. "Width") on admin: keep it, fall through.
+			} else {
+				continue;
+			}
+		}
+
+		if ( is_admin() ) {
+			$filtered[ $meta_id ] = $meta;
 			continue;
 		}
 
-		// Normalize incoming display key for comparison
-		$display_key_norm = mb_strtolower( trim( rtrim( (string) $fm->display_key, ':' ) ) );
-
-		// Hide if it matches our bad display keys (covers 'length', 'Length:', 'length:' etc)
-		if ( in_array( $display_key_norm, $bad_display, true ) ) {
+		// Frontend/emails: drop anything matching our hidden labels or
+		// variation attribute labels — the custom block already renders these.
+		if ( in_array( $normalized, $hidden_label_keys, true ) ) {
 			continue;
 		}
 
-		// Hide if it's one of the parent's variation attribute labels (we render them ourselves)
-		if ( ! empty( $attr_labels_normalized ) && in_array( $display_key_norm, $attr_labels_normalized, true ) ) {
+		if ( in_array( $normalized, $variation_label_keys, true ) ) {
 			continue;
 		}
 
-		$filtered[] = $fm;
+		$filtered[ $meta_id ] = $meta;
 	}
 
 	return $filtered;
-}, 20, 2 );
+}
 
-/**
- * FRONTEND + EMAILS:
- * Print attribute list under product name in:
- * - thank-you page
- * - My Account → View order
- * - emails
- */
-add_action( 'woocommerce_order_item_meta_start', function ( $item_id, $item, $order, $plain_text ) {
-	if ( $plain_text ) {
-		return;
-	}
+add_filter(
+	'woocommerce_order_item_get_formatted_meta_data',
+	'nh_filter_order_item_formatted_meta',
+	999,
+	2
+);
 
-	if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
-		return;
-	}
+add_action(
+	'woocommerce_order_item_meta_start',
+	function ( $item_id, $item, $order, $plain_text ) {
+		if ( $plain_text ) {
+			return;
+		}
 
-	nh_order_print_item_attributes_block( $item );
-}, 10, 4 );
+		if ( ! ( $item instanceof WC_Order_Item_Product ) ) {
+			return;
+		}
+
+		nh_order_print_item_attributes_block( $item );
+	},
+	10,
+	4
+);

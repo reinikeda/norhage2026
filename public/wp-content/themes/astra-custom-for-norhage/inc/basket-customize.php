@@ -1,13 +1,18 @@
 <?php
 /**
+ * inc/basket-customize.php
+ *
  * Basket / cart customizations for Norhage.
  *
- * Updated for WooCommerce Blocks (Cart & Checkout blocks).
- * Shipping calculator removed — not supported in Blocks.
+ * OWNERSHIP NOTE: This file is the SOLE owner of woocommerce_get_item_data
+ * (what rows show in cart/mini-cart/checkout) and
+ * woocommerce_get_cart_item_from_session (Blocks variation rows).
+ * sample-order.php does NOT hook these — see its header note.
  *
- * Full updated version — improves detection of custom-cut products so we
- * don't add duplicate "Length" rows and we consistently suppress duplicate
- * variation rows when the product is custom-cut.
+ * Handles:
+ * - Sample cart items: show only Cutting type + Dimensions (full replace).
+ * - Custom-cut items: leave their own display logic untouched.
+ * - Normal simple products: show their Length attribute where needed.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,29 +23,35 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 
 	class NH_Basket_Customize {
 
+		const PRIORITY = 999;
+
 		public static function init() {
 
-			// Classic cart fallback: simple-product Length attribute.
-			// Variable product attributes are shown natively by Blocks — do NOT add manually.
-			add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'filter_cart_item_data' ), 20, 2 );
+			add_filter(
+				'woocommerce_get_item_data',
+				array( __CLASS__, 'filter_cart_item_data' ),
+				self::PRIORITY,
+				2
+			);
 
-			// Blocks fix: custom-cut products already show Width / Length / Cutting fee
-			// via their own plugin. Wipe variation array so Blocks doesn't add a duplicate row.
-			add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'hide_variation_for_custom_cut' ), 20, 3 );
+			add_filter(
+				'woocommerce_get_cart_item_from_session',
+				array( __CLASS__, 'hide_variation_for_custom_cut' ),
+				self::PRIORITY,
+				3
+			);
 		}
 
-		/* --------------------------------------------------------------------
-		 * Helper: determine if a product (or its parent) is configured as custom-cut
-		 * ------------------------------------------------------------------ */
 		protected static function product_is_custom_cut( $product ) {
 			if ( empty( $product ) || ! ( $product instanceof WC_Product ) ) {
 				return false;
 			}
 
-			// Check variation then parent
 			$product_id = $product->get_id();
+
 			if ( $product->is_type( 'variation' ) ) {
 				$parent_id = $product->get_parent_id();
+
 				if ( $parent_id ) {
 					$product_id = $parent_id;
 				}
@@ -53,105 +64,113 @@ if ( ! class_exists( 'NH_Basket_Customize' ) ) {
 			return (bool) get_post_meta( $product_id, '_nh_cc_enabled', true );
 		}
 
-		/* --------------------------------------------------------------------
-		 * 1) Classic cart — cart item attribute display
-		 * ------------------------------------------------------------------ */
-
 		/**
-		 * For classic (shortcode) cart only.
-		 *
-		 * - Variable products: do nothing — Blocks renders variation attributes natively.
-		 * - Custom-cut products: skip — separate plugin handles their meta.
-		 * - Simple products: add Length if the product has that attribute.
-		 *
-		 * @param array $item_data Existing item meta rows.
-		 * @param array $cart_item The cart item array.
-		 * @return array
+		 * The ONLY two rows a sample is ever allowed to show, anywhere.
 		 */
-		public static function filter_cart_item_data( $item_data, $cart_item ) {
+		protected static function get_sample_item_data( $cart_item ) {
+			$item_data = array(
+				array(
+					'key'   => __( 'Cutting type', 'nh-theme' ),
+					'value' => __( 'Sample', 'nh-theme' ),
+				),
+			);
 
-			// If session/cart already contains our custom-cut marker or custom_cut_data, skip.
-			if ( ! empty( $cart_item['nh_custom_size'] ) || ! empty( $cart_item['custom_cut_data'] ) ) {
-				return $item_data;
+			$width  = isset( $cart_item['custom_width_mm'] ) ? $cart_item['custom_width_mm'] : '';
+			$length = isset( $cart_item['custom_length_mm'] ) ? $cart_item['custom_length_mm'] : '';
+
+			if ( '' !== $width ) {
+				$item_data[] = array(
+					'key'     => __( 'Width', 'nh-theme' ),
+					'value'   => $width . ' mm',
+					'display' => $width . ' mm',
+				);
 			}
 
-			// Ensure there's product object
-			if ( empty( $cart_item['data'] ) || ! $cart_item['data'] instanceof WC_Product ) {
-				return $item_data;
-			}
-
-			$product = $cart_item['data'];
-
-			// If product (or parent for variations) is marked as custom-cut via meta, skip.
-			if ( self::product_is_custom_cut( $product ) ) {
-				return $item_data;
-			}
-
-			// Variable products: Blocks already shows variation attributes — do nothing.
-			if ( ! empty( $cart_item['variation'] ) && is_array( $cart_item['variation'] ) ) {
-				return $item_data;
-			}
-
-			// Simple products: add Length if the product has that attribute.
-			$length_value = $product->get_attribute( 'pa_length' );
-			if ( '' === $length_value ) {
-				$length_value = $product->get_attribute( 'length' );
-			}
-
-			if ( '' !== $length_value ) {
-
-				// Avoid duplicates.
-				$already = false;
-				foreach ( $item_data as $row ) {
-					if (
-						isset( $row['key'] ) &&
-						mb_strtolower( wp_strip_all_tags( $row['key'] ) ) === mb_strtolower( __( 'Length', 'astra-custom-for-norhage' ) )
-					) {
-						$already = true;
-						break;
-					}
-				}
-
-				if ( ! $already ) {
-					$item_data[] = array(
-						'key'     => __( 'Length', 'astra-custom-for-norhage' ),
-						'value'   => wp_kses_post( $length_value ),
-						'display' => wp_kses_post( $length_value ),
-					);
-				}
+			if ( '' !== $length ) {
+				$item_data[] = array(
+					'key'     => __( 'Length', 'nh-theme' ),
+					'value'   => $length . ' mm',
+					'display' => $length . ' mm',
+				);
 			}
 
 			return $item_data;
 		}
 
-		/* --------------------------------------------------------------------
-		 * 2) Blocks — suppress duplicate variation rows for custom-cut items
-		 * ------------------------------------------------------------------ */
+		public static function filter_cart_item_data( $item_data, $cart_item ) {
 
-		/**
-		 * Custom-cut products already display Width / Length / Cutting fee
-		 * from their own plugin. Clearing ['variation'] prevents Blocks from
-		 * also rendering the base variation attributes as a second row.
-		 *
-		 * Does NOT affect variation_id, order data, or anything in the database.
-		 *
-		 * @param array  $cart_item Cart item data.
-		 * @param array  $values    Raw session values.
-		 * @param string $key       Cart item key.
-		 * @return array
-		 */
+			// Samples: full replace, discard anything any other filter added.
+			if ( function_exists( 'nh_is_sample_cart_item' ) && nh_is_sample_cart_item( $cart_item ) ) {
+				return self::get_sample_item_data( $cart_item );
+			}
+
+			// Custom-cut items: leave their own logic untouched.
+			if ( ! empty( $cart_item['nh_custom_size'] ) || ! empty( $cart_item['custom_cut_data'] ) ) {
+				return $item_data;
+			}
+
+			if ( empty( $cart_item['data'] ) || ! ( $cart_item['data'] instanceof WC_Product ) ) {
+				return $item_data;
+			}
+
+			$product = $cart_item['data'];
+
+			if ( self::product_is_custom_cut( $product ) ) {
+				return $item_data;
+			}
+
+			if ( ! empty( $cart_item['variation'] ) && is_array( $cart_item['variation'] ) ) {
+				return $item_data;
+			}
+
+			$length_value = $product->get_attribute( 'pa_length' );
+
+			if ( '' === $length_value ) {
+				$length_value = $product->get_attribute( 'length' );
+			}
+
+			if ( '' === $length_value ) {
+				return $item_data;
+			}
+
+			$already_has_length = false;
+
+			foreach ( $item_data as $row ) {
+				if (
+					isset( $row['key'] ) &&
+					mb_strtolower( wp_strip_all_tags( $row['key'] ) ) ===
+					mb_strtolower( __( 'Length', 'nh-theme' ) )
+				) {
+					$already_has_length = true;
+					break;
+				}
+			}
+
+			if ( ! $already_has_length ) {
+				$item_data[] = array(
+					'key'     => __( 'Length', 'nh-theme' ),
+					'value'   => wp_kses_post( $length_value ),
+					'display' => wp_kses_post( $length_value ),
+				);
+			}
+
+			return $item_data;
+		}
+
 		public static function hide_variation_for_custom_cut( $cart_item, $values, $key ) {
 
-			// If session/cart already contains our custom-cut marker or data -> treat as custom-cut
+			if ( function_exists( 'nh_is_sample_cart_item' ) && nh_is_sample_cart_item( $cart_item ) ) {
+				$cart_item['variation'] = array();
+				return $cart_item;
+			}
+
 			if ( ! empty( $cart_item['nh_custom_size'] ) || ! empty( $cart_item['custom_cut_data'] ) ) {
 				$cart_item['variation'] = array();
 				return $cart_item;
 			}
 
-			// Additionally, if the product (or its parent) has _nh_cc_enabled meta, treat as custom-cut
 			if ( ! empty( $cart_item['data'] ) && $cart_item['data'] instanceof WC_Product ) {
-				$product = $cart_item['data'];
-				if ( self::product_is_custom_cut( $product ) ) {
+				if ( self::product_is_custom_cut( $cart_item['data'] ) ) {
 					$cart_item['variation'] = array();
 				}
 			}

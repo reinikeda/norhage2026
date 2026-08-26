@@ -1007,6 +1007,101 @@ if ( ! defined( 'NC_BUNDLE_META_KEY' ) ) {
 	define( 'NC_BUNDLE_META_KEY', '_nc_bundle_items_v2' );
 }
 
+if ( ! function_exists( 'nh_bundle_format_attribute_option_label' ) ) {
+	function nh_bundle_format_attribute_option_label( $taxonomy, $option ) {
+		if ( taxonomy_exists( $taxonomy ) ) {
+			$term = get_term_by( 'slug', $option, $taxonomy );
+
+			if ( $term && ! is_wp_error( $term ) ) {
+				return $term->name;
+			}
+		}
+
+		return (string) $option;
+	}
+}
+
+/**
+ * Renders the "Fixed attributes" control block for one bundle row.
+ * For each variation attribute of the selected variable product, shows either
+ * "Customer chooses" (default) or a fixed value that hides the selector on the frontend.
+ *
+ * @param int   $prod_id      Selected product ID (0 = none selected yet).
+ * @param int   $index        Row index, used for input name attributes.
+ * @param array $locked_attrs Currently saved locked attributes, e.g. [ 'pa_width' => '25mm' ].
+ */
+function nc_bundle_get_attribute_settings_html( $prod_id, $index, $locked_attrs = [] ) {
+	$prod_id      = absint( $prod_id );
+	$index        = absint( $index );
+	$locked_attrs = is_array( $locked_attrs ) ? $locked_attrs : [];
+
+	if ( ! $prod_id ) {
+		return '<div class="nc-bundle-attribute-settings"><em>'
+			. esc_html__( 'Select a variable product to configure attributes.', 'nh-theme' )
+			. '</em></div>';
+	}
+
+	$product = wc_get_product( $prod_id );
+
+	if ( ! $product || ! $product->is_type( 'variable' ) ) {
+		return '<div class="nc-bundle-attribute-settings"><em>'
+			. esc_html__( 'Select the variable parent product, not an individual variation.', 'nh-theme' )
+			. '</em></div>';
+	}
+
+	$attributes = $product->get_variation_attributes();
+
+	if ( empty( $attributes ) ) {
+		return '<div class="nc-bundle-attribute-settings"><em>'
+			. esc_html__( 'This product has no variation attributes.', 'nh-theme' )
+			. '</em></div>';
+	}
+
+	ob_start();
+
+	echo '<div class="nc-bundle-attribute-settings">';
+	echo '<strong>' . esc_html__( 'Fixed attributes', 'nh-theme' ) . '</strong>';
+	echo '<p class="description">'
+		. esc_html__( 'Leave an attribute as Customer chooses, or select a value to fix it in the bundle.', 'nh-theme' )
+		. '</p>';
+
+	foreach ( $attributes as $taxonomy => $options ) {
+		$current = isset( $locked_attrs[ $taxonomy ] )
+			? (string) $locked_attrs[ $taxonomy ]
+			: '';
+
+		echo '<label style="display:block;margin:6px 0;">';
+		echo '<span style="display:inline-block;min-width:110px;font-weight:600;">'
+			. esc_html( wc_attribute_label( $taxonomy ) )
+			. '</span>';
+
+		echo '<select'
+			. ' class="nc-bundle-locked-attr"'
+			. ' name="nc_bundle[locked][' . esc_attr( $index ) . '][' . esc_attr( $taxonomy ) . ']"'
+			. ' data-taxonomy="' . esc_attr( $taxonomy ) . '"'
+			. '>';
+
+		echo '<option value="">'
+			. esc_html__( 'Customer chooses', 'nh-theme' )
+			. '</option>';
+
+		foreach ( $options as $option ) {
+			echo '<option value="' . esc_attr( $option ) . '"'
+				. selected( $current, $option, false )
+				. '>'
+				. esc_html( nh_bundle_format_attribute_option_label( $taxonomy, $option ) )
+				. '</option>';
+		}
+
+		echo '</select>';
+		echo '</label>';
+	}
+
+	echo '</div>';
+
+	return ob_get_clean();
+}
+
 add_action( 'add_meta_boxes', function () {
 	add_meta_box(
 		'nc_bundle_items_box',
@@ -1027,26 +1122,35 @@ function nc_bundle_items_box_html( $post ) {
 	wp_nonce_field( 'nc_bundle_items_save', 'nc_bundle_items_nonce' );
 
 	echo '<p><strong>' . esc_html__( "Product extra's", 'nh-theme' ) . '</strong></p>';
-	echo '<p>' . esc_html__( 'Select one or more products that can be added to this product as add-ons. Only simple products or product-variants are allowed.', 'nh-theme' ) . '</p>';
+	echo '<p>' . esc_html__( 'Select one or more products that can be added to this product as add-ons. Only simple products or product-variants are allowed. For variable products, use "Fixed attributes" to pre-select an attribute (e.g. Width) so the customer only chooses the remaining one (e.g. Length).', 'nh-theme' ) . '</p>';
 
 	echo '<table class="widefat striped" id="nc-bundle-rows" style="margin-top:10px">';
 	echo '<thead><tr>';
-	echo '<th style="width:55%;">'  . esc_html__( 'Product', 'nh-theme' )           . '</th>';
-	echo '<th style="width:15%;">'  . esc_html__( 'Maximum quantity', 'nh-theme' )   . '</th>';
-	echo '<th style="width:10%;text-align:center;">' . esc_html__( 'Free', 'nh-theme' ) . '</th>';
-	echo '<th style="width:20%;"></th>';
+	echo '<th style="width:35%;">' . esc_html__( 'Product', 'nh-theme' )             . '</th>';
+	echo '<th style="width:35%;">' . esc_html__( 'Fixed attributes', 'nh-theme' )    . '</th>';
+	echo '<th style="width:12%;">' . esc_html__( 'Maximum quantity', 'nh-theme' )    . '</th>';
+	echo '<th style="width:8%;text-align:center;">' . esc_html__( 'Free', 'nh-theme' ) . '</th>';
+	echo '<th style="width:10%;"></th>';
 	echo '</tr></thead>';
 	echo '<tbody class="nc-sortable">';
 
 	if ( empty( $rows ) ) {
 		// Render one blank row with index 0
-		echo nc_bundle_row_template_wc( null, '', false, 0 );
+		echo nc_bundle_row_template_wc( null, '', false, 0, [] );
 	} else {
 		foreach ( $rows as $i => $r ) {
 			$id   = isset( $r['id'] )  ? (int) $r['id']  : 0;
 			$max  = ( isset( $r['max'] ) && $r['max'] !== '' ) ? (int) $r['max'] : '';
 			$free = ! empty( $r['free'] );
-			echo nc_bundle_row_template_wc( $id, $max, $free, $i );
+
+			$locked_attrs = [];
+			if ( isset( $r['locked_attrs'] ) && is_array( $r['locked_attrs'] ) ) {
+				$locked_attrs = $r['locked_attrs'];
+			} elseif ( isset( $r['locked'] ) && is_array( $r['locked'] ) ) {
+				$locked_attrs = $r['locked'];
+			}
+
+			echo nc_bundle_row_template_wc( $id, $max, $free, $i, $locked_attrs );
 		}
 	}
 
@@ -1059,8 +1163,16 @@ function nc_bundle_items_box_html( $post ) {
 		#nc-bundle-rows td { vertical-align: middle; }
 		.nc-handle { cursor: move; opacity:.7; margin-right:6px; }
 		.nc-remove { color:#a00; }
+		.nc-bundle-attribute-settings { font-size:13px; }
+		.nc-bundle-attribute-settings .description { margin:2px 0 6px; color:#666; }
+		.nc-bundle-attributes-cell { transition: opacity .15s ease; }
 	</style>
 	<script>
+	window.nhBundleAttributes = {
+		ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
+		nonce: <?php echo wp_json_encode( wp_create_nonce( 'nc_bundle_product_attributes' ) ); ?>
+	};
+
 	jQuery(function($){
 
 		// Called after every add / remove / sort to keep name indexes sequential
@@ -1074,13 +1186,18 @@ function nc_bundle_items_box_html( $post ) {
 				// Free hidden + checkbox — both must share the same name
 				$row.find('input.nc-bundle-free-hidden, input.nc-bundle-free-cb')
 					.attr('name', 'nc_bundle[free][' + i + ']');
+				// Fixed attribute selects
+				$row.find('.nc-bundle-locked-attr').each(function(){
+					var taxonomy = $(this).data('taxonomy');
+					$(this).attr('name', 'nc_bundle[locked][' + i + '][' + taxonomy + ']');
+				});
 			});
 		}
 
 		// Add row
 		$('#nc-add-bundle-row').on('click', function(){
 			var nextIdx = $('#nc-bundle-rows tbody tr').length;
-			var html    = <?php echo wp_json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '', false, 0 ) ) ); ?>;
+			var html    = <?php echo wp_json_encode( preg_replace( '/\s+/', ' ', nc_bundle_row_template_wc( null, '', false, 0, [] ) ) ); ?>;
 			$('#nc-bundle-rows tbody').append(html);
 			ncBundleReindex();
 			$(document.body).trigger('wc-enhanced-select-init');
@@ -1090,6 +1207,39 @@ function nc_bundle_items_box_html( $post ) {
 		$(document).on('click', '.nc-remove', function(){
 			$(this).closest('tr').remove();
 			ncBundleReindex();
+		});
+
+		// Refresh the "Fixed attributes" cell whenever the product select changes
+		$(document).on('change', '#nc-bundle-rows select.wc-product-search', function(){
+			var $select    = $(this);
+			var $row       = $select.closest('tr');
+			var index      = $row.index();
+			var productId  = $select.val();
+			var $settings  = $row.find('.nc-bundle-attributes-cell');
+
+			if (!productId) {
+				$settings.html(
+					'<div class="nc-bundle-attribute-settings"><em>' +
+					'<?php echo esc_js( esc_html__( 'Select a variable product to configure attributes.', 'nh-theme' ) ); ?>' +
+					'</em></div>'
+				);
+				return;
+			}
+
+			$settings.css('opacity', '0.5');
+
+			$.post(window.nhBundleAttributes.ajaxUrl, {
+				action: 'nc_bundle_get_product_attributes',
+				nonce: window.nhBundleAttributes.nonce,
+				product_id: productId,
+				index: index
+			}).done(function(response){
+				if (response && response.success && response.data && response.data.html) {
+					$settings.html(response.data.html);
+				}
+			}).always(function(){
+				$settings.css('opacity', '');
+			});
 		});
 
 		// Sortable
@@ -1110,14 +1260,16 @@ function nc_bundle_items_box_html( $post ) {
 /**
  * Render one bundle row.
  *
- * @param int|null   $prod_id  Product ID (0 / null = blank row).
- * @param int|string $max      Max qty value ('' = no limit).
- * @param bool       $free     Whether the "Free" checkbox should be checked.
- * @param int        $index    Row index used for input name attributes.
+ * @param int|null   $prod_id      Product ID (0 / null = blank row).
+ * @param int|string $max          Max qty value ('' = no limit).
+ * @param bool       $free         Whether the "Free" checkbox should be checked.
+ * @param int        $index        Row index used for input name attributes.
+ * @param array      $locked_attrs Saved fixed attributes for this row.
  */
-function nc_bundle_row_template_wc( $prod_id = null, $max = '', $free = false, $index = 0 ) {
-	$prod_id = $prod_id ? (int) $prod_id : 0;
-	$index   = (int) $index;
+function nc_bundle_row_template_wc( $prod_id = null, $max = '', $free = false, $index = 0, $locked_attrs = [] ) {
+	$prod_id      = $prod_id ? (int) $prod_id : 0;
+	$index        = (int) $index;
+	$locked_attrs = is_array( $locked_attrs ) ? $locked_attrs : [];
 
 	$option_html = '';
 	if ( $prod_id ) {
@@ -1143,6 +1295,9 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '', $free = false, $
 				style="width:92%">
 				<?php echo $option_html; ?>
 			</select>
+		</td>
+		<td class="nc-bundle-attributes-cell">
+			<?php echo nc_bundle_get_attribute_settings_html( $prod_id, $index, $locked_attrs ); ?>
 		</td>
 		<td>
 			<input
@@ -1186,6 +1341,37 @@ function nc_bundle_row_template_wc( $prod_id = null, $max = '', $free = false, $
 	return ob_get_clean();
 }
 
+// AJAX: refresh the "Fixed attributes" cell when the admin changes the product select
+add_action( 'wp_ajax_nc_bundle_get_product_attributes', 'nc_bundle_get_product_attributes_ajax' );
+function nc_bundle_get_product_attributes_ajax() {
+	if ( ! current_user_can( 'edit_products' ) ) {
+		wp_send_json_error(
+			[ 'message' => __( 'Permission denied.', 'nh-theme' ) ],
+			403
+		);
+	}
+
+	check_ajax_referer( 'nc_bundle_product_attributes', 'nonce' );
+
+	$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
+	$index      = isset( $_POST['index'] )      ? absint( $_POST['index'] )      : 0;
+
+	$product = wc_get_product( $product_id );
+
+	if ( ! $product ) {
+		wp_send_json_error(
+			[ 'message' => __( 'Product could not be loaded.', 'nh-theme' ) ],
+			400
+		);
+	}
+
+	wp_send_json_success(
+		[
+			'html' => nc_bundle_get_attribute_settings_html( $product_id, $index, [] ),
+		]
+	);
+}
+
 // Save bundle items
 add_action( 'save_post_product', function ( $post_id ) {
 	if (
@@ -1203,9 +1389,10 @@ add_action( 'save_post_product', function ( $post_id ) {
 		return;
 	}
 
-	$ids  = isset( $_POST['nc_bundle']['id'] )   ? (array) wp_unslash( $_POST['nc_bundle']['id'] )   : [];
-	$mxs  = isset( $_POST['nc_bundle']['max'] )  ? (array) wp_unslash( $_POST['nc_bundle']['max'] )  : [];
-	$frs  = isset( $_POST['nc_bundle']['free'] ) ? (array) wp_unslash( $_POST['nc_bundle']['free'] ) : [];
+	$ids           = isset( $_POST['nc_bundle']['id'] )     ? (array) wp_unslash( $_POST['nc_bundle']['id'] )     : [];
+	$mxs           = isset( $_POST['nc_bundle']['max'] )    ? (array) wp_unslash( $_POST['nc_bundle']['max'] )    : [];
+	$frs           = isset( $_POST['nc_bundle']['free'] )   ? (array) wp_unslash( $_POST['nc_bundle']['free'] )   : [];
+	$locked_posted = isset( $_POST['nc_bundle']['locked'] ) ? (array) wp_unslash( $_POST['nc_bundle']['locked'] ) : [];
 
 	$out = [];
 
@@ -1225,6 +1412,24 @@ add_action( 'save_post_product', function ( $post_id ) {
 
 		// Free flag — hidden input guarantees index $i always exists in $frs
 		$row['free'] = ! empty( $frs[ $i ] ) ? 1 : 0;
+
+		// Fixed attributes for variable products
+		$locked_attrs = [];
+
+		if ( isset( $locked_posted[ $i ] ) && is_array( $locked_posted[ $i ] ) ) {
+			foreach ( $locked_posted[ $i ] as $taxonomy => $value ) {
+				$taxonomy = sanitize_key( $taxonomy );
+				$value    = wc_clean( $value );
+
+				if ( $taxonomy !== '' && $value !== '' ) {
+					$locked_attrs[ $taxonomy ] = $value;
+				}
+			}
+		}
+
+		if ( ! empty( $locked_attrs ) ) {
+			$row['locked_attrs'] = $locked_attrs;
+		}
 
 		$out[] = $row;
 	}

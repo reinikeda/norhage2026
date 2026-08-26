@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-05 06:47+0300\n"
+"PO-Revision-Date: 2026-08-25 10:37+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -1685,6 +1685,58 @@ msgstr "Kokių kitų priedų galiu rasti savo sodo projektui?"
 #: inc/faq-data.php
 msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
 msgstr "Be stogo dangos elementų, siūlome lentynų sistemas šiltnamiams, automatinius langų atidarytuvus, specialias valymo priemones plastikams bei kitus priedus, padedančius puoselėti jūsų sodą."
+
+#: inc/sample-order.php
+msgid "Order a sample"
+msgstr "Užsisakyti pavyzdį"
+
+msgid "Add sample"
+msgstr "Pridėti pavyzdį"
+
+msgid "The selected product could not be found."
+msgstr "Pasirinktas produktas nerastas."
+
+msgid "Sample ordering is not enabled for this product."
+msgstr "Šio produkto pavyzdžio užsakymas neįjungtas."
+
+msgid "Sample width, length, or price has not been configured."
+msgstr "Pavyzdžio plotis, ilgis arba kaina nesukonfigūruoti."
+
+msgid "The sample settings are not valid."
+msgstr "Pavyzdžio nustatymai netinkami."
+
+msgid "No purchasable variation was found for this product."
+msgstr "Neradama jokia galima įsigyti šio produkto variacija."
+
+msgid "WooCommerce rejected this sample item."
+msgstr "„WooCommerce“ atmetė šią pavyzdžio prekę."
+
+msgid "Sample added to cart."
+msgstr "Pavyzdys pridėtas į krepšelį."
+
+msgid "Cutting type"
+msgstr "Pjovimo tipas"
+
+msgid "Sample"
+msgstr "Pavyzdys"
+
+msgid "Dimensions"
+msgstr "Matmenys"
+
+msgid "Qty: 1"
+msgstr "Kiekis: 1"
+
+msgid "Adding..."
+msgstr "Pridedama..."
+
+msgid "Added"
+msgstr "Pridėta"
+
+msgid "Could not add sample to cart."
+msgstr "Nepavyko pridėti pavyzdžio į krepšelį."
+
+msgid "Could not connect to WooCommerce. Please try again."
+msgstr "Nepavyko prisijungti prie „WooCommerce“. Bandykite vėl."
 
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"

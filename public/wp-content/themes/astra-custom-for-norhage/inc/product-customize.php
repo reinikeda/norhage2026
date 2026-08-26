@@ -12,63 +12,6 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* ============================================================================
- * BUNDLE BACK LINK (shown only when arriving from bundle)
- * Expects URL format from bundle-box.php:
- *   /bundle-item/?bundle_parent=123#nc-complete-set
- * ========================================================================== */
-add_action( 'woocommerce_single_product_summary', function () {
-
-	// Only on product pages
-	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
-
-	// Show only when coming from a bundle click
-	if ( empty( $_GET['bundle_parent'] ) ) return;
-
-	$parent_id = absint( wp_unslash( $_GET['bundle_parent'] ) );
-	if ( ! $parent_id ) return;
-
-	// Ensure parent exists and is a product
-	$parent = wc_get_product( $parent_id );
-	if ( ! $parent instanceof WC_Product ) return;
-
-	$back_url = get_permalink( $parent_id ) . '#nc-complete-set';
-
-	echo '<a class="nh-bundle-back-link" href="' . esc_url( $back_url ) . '" aria-label="' . esc_attr__( 'Back to bundle', 'nh-theme' ) . '">';
-	echo '← ' . esc_html__( 'Back to bundle', 'nh-theme' );
-	echo '</a>';
-
-}, 1 );
-
-/* ============================================================================
- * BUNDLE BACK LINK (secondary) — below the entire add-to-cart form (new line)
- * ========================================================================== */
-add_action( 'woocommerce_after_add_to_cart_form', function () {
-
-	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
-	if ( empty( $_GET['bundle_parent'] ) ) return;
-
-	$parent_id = absint( wp_unslash( $_GET['bundle_parent'] ) );
-	if ( ! $parent_id ) return;
-
-	$parent = wc_get_product( $parent_id );
-	if ( ! $parent instanceof WC_Product ) return;
-
-	$back_url = get_permalink( $parent_id ) . '#nc-complete-set';
-
-	echo '<div class="nh-bundle-back-link--after-form">';
-	echo '<a class="nh-bundle-back-link" href="' . esc_url( $back_url ) . '">← ' . esc_html__( 'Back to bundle', 'nh-theme' ) . '</a>';
-	echo '</div>';
-
-}, 5 );
-
-add_filter( 'wpseo_canonical', function( $canonical ) {
-    if ( isset( $_GET['bundle_parent'] ) ) {
-        return strtok( $canonical, '?' ); // remove parameters
-    }
-    return $canonical;
-});
-
-/* ============================================================================
  * HELPERS
  * ========================================================================== */
 function nh_cc_is_enabled_product( $product_id ) : bool {

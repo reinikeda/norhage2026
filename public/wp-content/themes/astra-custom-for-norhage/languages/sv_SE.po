@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-05 06:47+0300\n"
+"PO-Revision-Date: 2026-08-25 10:37+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -1685,6 +1685,58 @@ msgstr "Vilka andra tillbehör kan jag hitta för mitt trädgårdsprojekt?"
 #: inc/faq-data.php
 msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
 msgstr "Utöver takkomponenter erbjuder vi ett brett utbud av produkter som förhöjer din utemiljö, däribland hyllsystem för växthus, automatiska fönsteröppnare och specialanpassade rengöringsmedel för plastskivor som håller dina konstruktioner fräscha år efter år."
+
+#: inc/sample-order.php
+msgid "Order a sample"
+msgstr "Beställ prov"
+
+msgid "Add sample"
+msgstr "Lägg till prov"
+
+msgid "The selected product could not be found."
+msgstr "Den valda produkten kunde inte hittas."
+
+msgid "Sample ordering is not enabled for this product."
+msgstr "Provbeställning är inte aktiverad för denna produkt."
+
+msgid "Sample width, length, or price has not been configured."
+msgstr "Provets bredd, längd eller pris har inte ställts in."
+
+msgid "The sample settings are not valid."
+msgstr "Inställningarna för provet är inte giltiga."
+
+msgid "No purchasable variation was found for this product."
+msgstr "Ingen köpbar variant hittades för denna produkt."
+
+msgid "WooCommerce rejected this sample item."
+msgstr "WooCommerce nekade denna provartikel."
+
+msgid "Sample added to cart."
+msgstr "Prov tillagt i varukorgen."
+
+msgid "Cutting type"
+msgstr "Skärningstyp"
+
+msgid "Sample"
+msgstr "Prov"
+
+msgid "Dimensions"
+msgstr "Mått"
+
+msgid "Qty: 1"
+msgstr "Antal: 1"
+
+msgid "Adding..."
+msgstr "Lägger till..."
+
+msgid "Added"
+msgstr "Tillagd"
+
+msgid "Could not add sample to cart."
+msgstr "Kunde inte lägga till prov i varukorgen."
+
+msgid "Could not connect to WooCommerce. Please try again."
+msgstr "Kunde inte ansluta till WooCommerce. Försök igen."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"

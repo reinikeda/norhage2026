@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-05 06:47+0300\n"
+"PO-Revision-Date: 2026-08-25 10:38+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -1685,6 +1685,58 @@ msgstr "Welches weitere Zubehör finde ich für mein Gartenprojekt?"
 #: inc/faq-data.php
 msgid "In addition to roofing components, we offer a range of products to enhance your outdoor space, including shelving systems for greenhouses, automatic vent openers, and specialized cleaning products for plastic glazing to keep your structures looking new."
 msgstr "Neben Dachkomponenten bieten wir praktische Regalsysteme für Gewächshäuser, automatische Fensteröffner sowie Spezialreiniger für Kunststoffplatten an, damit Ihre Bauten jahrelang wie neu aussehen."
+
+#: inc/sample-order.php
+msgid "Order a sample"
+msgstr "Muster bestellen"
+
+msgid "Add sample"
+msgstr "Muster hinzufügen"
+
+msgid "The selected product could not be found."
+msgstr "Das ausgewählte Produkt wurde nicht gefunden."
+
+msgid "Sample ordering is not enabled for this product."
+msgstr "Musterbestellung ist für dieses Produkt nicht aktiviert."
+
+msgid "Sample width, length, or price has not been configured."
+msgstr "Breite, Länge oder Preis des Musters wurden nicht konfiguriert."
+
+msgid "The sample settings are not valid."
+msgstr "Die Mustereinstellungen sind ungültig."
+
+msgid "No purchasable variation was found for this product."
+msgstr "Keine kaufbare Variante für dieses Produkt gefunden."
+
+msgid "WooCommerce rejected this sample item."
+msgstr "WooCommerce hat dieses Muster abgelehnt."
+
+msgid "Sample added to cart."
+msgstr "Muster zum Warenkorb hinzugefügt."
+
+msgid "Cutting type"
+msgstr "Schnittart"
+
+msgid "Sample"
+msgstr "Muster"
+
+msgid "Dimensions"
+msgstr "Abmessungen"
+
+msgid "Qty: 1"
+msgstr "Menge: 1"
+
+msgid "Adding..."
+msgstr "Wird hinzugefügt..."
+
+msgid "Added"
+msgstr "Hinzugefügt"
+
+msgid "Could not add sample to cart."
+msgstr "Muster konnte nicht zum Warenkorb hinzugefügt werden."
+
+msgid "Could not connect to WooCommerce. Please try again."
+msgstr "Verbindung zu WooCommerce fehlgeschlagen. Bitte versuchen Sie es erneut."
 
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
