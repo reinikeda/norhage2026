@@ -199,9 +199,8 @@ if ( ! function_exists( 'nh_bundle_get_product_link' ) ) {
 			return '';
 		}
 
-		$url = add_query_arg( 'bundle_parent', absint( $bundle_parent_id ), $url );
-		$url .= '#nc-complete-set';
-
+		// Back-to-bundle query param and hash removed to keep child product URLs clean.
+		// $bundle_parent_id is kept for backward compatibility with existing callers.
 		return $url;
 	}
 }
