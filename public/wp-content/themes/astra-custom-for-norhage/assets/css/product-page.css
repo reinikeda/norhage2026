@@ -1961,3 +1961,11 @@ body.dark-mode .nhf-box .nhf-icon {
     white-space: normal;
   }
 }
+
+#nc-complete-set::after {
+  content: "BUNDLE CSS TEST 2026";
+  display: block;
+  padding: 4px;
+  color: red;
+  font-size: 10px;
+}
