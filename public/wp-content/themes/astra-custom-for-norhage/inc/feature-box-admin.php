@@ -157,13 +157,6 @@ function nh_enqueue_feature_box_admin_assets() {
         return;
     }
 
-    wp_enqueue_style(
-        'nh-feature-box-admin',
-        get_stylesheet_directory_uri() . '/assets/css/product-page.css',
-        array(),
-        '2.0.0'
-    );
-
     wp_enqueue_script( 'jquery-ui-sortable' );
 
     wp_enqueue_script(

@@ -68,19 +68,3 @@ function nh_append_feature_box_to_short_desc( $desc ) {
     $nh_feature_box_rendered = true;
     return $desc . $html . wp_kses_post( ob_get_clean() . do_action( 'nh_after_feature_box', $product->get_id() ) );
 }
-
-/**
- * Enqueue frontend CSS on product pages only.
- */
-add_action( 'wp_enqueue_scripts', 'nh_enqueue_feature_box_front_assets' );
-function nh_enqueue_feature_box_front_assets() {
-    if ( ! is_product() ) {
-        return;
-    }
-    wp_enqueue_style(
-        'nh-feature-box-front',
-        get_stylesheet_directory_uri() . '/assets/css/product-page.css',
-        array(),
-        '2.0.0'
-    );
-}
