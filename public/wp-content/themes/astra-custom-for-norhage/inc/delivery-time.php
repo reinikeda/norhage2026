@@ -146,14 +146,7 @@ function nhdt_enqueue_assets() {
 		return;
 	}
 
-	$ver = '1.5.2';
-
-	wp_enqueue_style(
-		'nh-delivery-time',
-		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
-		array(),
-		$ver
-	);
+	$ver = norhage_asset_version( '/assets/js/delivery-time.js' );
 
 	wp_enqueue_script(
 		'nh-delivery-time',
@@ -163,4 +156,5 @@ function nhdt_enqueue_assets() {
 		true
 	);
 }
+
 add_action( 'wp_enqueue_scripts', 'nhdt_enqueue_assets' );

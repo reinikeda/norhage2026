@@ -467,7 +467,7 @@
 /* Body row: image | variations | side — same grid for is-simple & is-variable */
 .nc-row-body {
   display: grid;
-  grid-template-columns: var(--nc-img-col) minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
+  grid-template-columns: var(--nc-img-col) minmax(140px, 1fr) minmax(var(--nc-qty-width), max-content);
   column-gap: var(--nc-gap);
   align-items: center;
 }
