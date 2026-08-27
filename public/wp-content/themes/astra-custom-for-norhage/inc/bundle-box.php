@@ -29,8 +29,7 @@ if ( ! function_exists( 'nh_bundle_get_bundle_name' ) ) {
 	 */
 	function nh_bundle_get_bundle_name( WC_Product $product ) {
 		$name = get_post_meta( $product->get_id(), NH_BUNDLE_NAME_META_KEY, true );
-		$name = is_string( $name ) ? trim( $name ) : '';
-		return $name;
+		return is_string( $name ) ? trim( $name ) : '';
 	}
 }
 
@@ -46,7 +45,9 @@ if ( ! function_exists( 'nh_bundle_get_display_name' ) ) {
 		if ( $bundle_name !== '' ) {
 			return $bundle_name;
 		}
+
 		$fallback = is_string( $fallback ) ? trim( $fallback ) : '';
+
 		return $fallback !== '' ? $fallback : $product->get_name();
 	}
 }
@@ -195,13 +196,7 @@ if ( ! function_exists( 'nh_bundle_has_items' ) ) {
 if ( ! function_exists( 'nh_bundle_get_product_link' ) ) {
 	function nh_bundle_get_product_link( $product_id, $bundle_parent_id ) {
 		$url = get_permalink( $product_id );
-		if ( ! $url ) {
-			return '';
-		}
-
-		// Back-to-bundle query param and hash removed to keep child product URLs clean.
-		// $bundle_parent_id is kept for backward compatibility with existing callers.
-		return $url;
+		return $url ?: '';
 	}
 }
 
@@ -252,7 +247,7 @@ if ( ! function_exists( 'nh_bundle_format_attribute_option_label' ) ) {
 }
 
 /* ----------------------------------------------------------------------------
- * Variation payload — includes custom bundle name (Option A)
+ * Variation payload
  * -------------------------------------------------------------------------- */
 
 if ( ! function_exists( 'nh_bundle_get_variation_payload' ) ) {
@@ -265,7 +260,6 @@ if ( ! function_exists( 'nh_bundle_get_variation_payload' ) ) {
 			$variation_name = '';
 
 			if ( $var_obj instanceof WC_Product ) {
-				// Option A: use _bundle_box_name if set, otherwise fall back to WooCommerce native variation title.
 				$variation_name = nh_bundle_get_display_name( $var_obj, $var_obj->get_title() );
 			}
 
@@ -340,7 +334,7 @@ if ( ! function_exists( 'nh_bundle_render_qty_control' ) ) {
 }
 
 /* ----------------------------------------------------------------------------
- * Row renderer — uses custom bundle name (Option A)
+ * Row renderer
  * -------------------------------------------------------------------------- */
 
 if ( ! function_exists( 'nh_bundle_render_row' ) ) {
@@ -351,7 +345,6 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		$is_free     = ! empty( $row['free'] );
 		$link        = nh_bundle_get_product_link( $product_id, $bundle_parent_id );
 
-		/* ---- Display title (needed early for the data-row-title attribute) ---- */
 		$display_title = ! empty( $row['label'] ) ? $row['label'] : nh_bundle_get_display_name( $product );
 
 		if ( $is_free ) {
@@ -364,9 +357,13 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		$price_attr = $is_variable ? 0 : ( $is_free ? 0.0 : nh_bundle_get_display_price( $product ) );
 
 		$row_classes = [ 'nc-bundle-row' ];
+
 		if ( $is_variable ) {
 			$row_classes[] = 'is-variable';
+		} else {
+			$row_classes[] = 'is-simple';
 		}
+
 		if ( $is_free ) {
 			$row_classes[] = 'is-free';
 		}
@@ -378,13 +375,14 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 
 		echo '<div class="' . esc_attr( implode( ' ', $row_classes ) ) . '" role="row"'
 			. ' data-product-id="' . esc_attr( $product_id ) . '"'
+			. ' data-product-type="' . esc_attr( $is_variable ? 'variable' : 'simple' ) . '"'
 			. ' data-base-price="' . esc_attr( $price_attr ) . '"'
 			. ' data-initial-price-html="' . esc_attr( $price_html ) . '"'
 			. ' data-row-title="' . esc_attr( $display_title ) . '"'
 			. ' data-free="' . esc_attr( $is_free ? '1' : '0' ) . '"'
 			. $variations_json_attr . '>';
 
-		/* ---- Name row (full width) ---- */
+		/* ---- Title row (full width) ---- */
 		echo '  <div class="nc-row-name">';
 		if ( $link ) {
 			echo '    <a class="nc-title" href="' . esc_url( $link ) . '"><span class="nc-title-text">' . esc_html( $display_title ) . '</span></a>';
@@ -400,9 +398,10 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 			echo '  <div class="nc-bundle-desc">' . wp_kses_post( $row['description'] ) . '</div>';
 		}
 
-		/* ---- Body row: image | variations | qty | price ---- */
+		/* ---- Body row: image | variations | qty+price ---- */
 		echo '  <div class="nc-row-body">';
 
+		/* Image */
 		echo '    <div class="nc-col nc-col-image" role="cell">';
 		if ( $link ) {
 			echo '      <a href="' . esc_url( $link ) . '" class="nc-thumb" aria-label="' . esc_attr( $product->get_name() ) . '">' . $product->get_image( 'woocommerce_thumbnail' ) . '</a>';
@@ -411,28 +410,19 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		}
 		echo '    </div>';
 
+		/* Variations (empty for simple products) */
 		echo '    <div class="nc-col nc-col-variations" role="cell">';
 		if ( $is_variable && $product instanceof WC_Product_Variable ) {
 			$variation_attributes = $product->get_variation_attributes();
-
-			$locked_attrs = ( isset( $row['locked_attrs'] ) && is_array( $row['locked_attrs'] ) )
-				? $row['locked_attrs']
-				: [];
+			$locked_attrs         = ( isset( $row['locked_attrs'] ) && is_array( $row['locked_attrs'] ) ) ? $row['locked_attrs'] : [];
 
 			echo '      <div class="nc-bundle-variations">';
 			foreach ( $variation_attributes as $taxonomy => $options ) {
 				$locked_value = isset( $locked_attrs[ $taxonomy ] ) ? (string) $locked_attrs[ $taxonomy ] : '';
 
 				if ( $locked_value !== '' ) {
-					$locked_label = nh_bundle_format_attribute_option_label(
-						$taxonomy,
-						$locked_value
-					);
+					$locked_label = nh_bundle_format_attribute_option_label( $taxonomy, $locked_value );
 
-					/*
-					* Keep a hidden .bundle-variation input so JavaScript and WooCommerce
-					* still receive this value when resolving and adding the variation.
-					*/
 					echo '        <input'
 						. ' type="hidden"'
 						. ' class="bundle-variation"'
@@ -441,22 +431,14 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 						. ' data-locked="1"'
 						. '>';
 
-					/*
-					* Show the locked value to the customer, without allowing changes.
-					*/
 					echo '        <div class="nc-bundle-variation-field nc-bundle-variation-field--locked">';
-					echo '          <span class="nc-bundle-variation-label">'
-						. esc_html( wc_attribute_label( $taxonomy ) )
-						. '</span>';
-					echo '          <span class="nc-bundle-variation-value">'
-						. esc_html( $locked_label )
-						. '</span>';
+					echo '          <span class="nc-bundle-variation-label">' . esc_html( wc_attribute_label( $taxonomy ) ) . '</span>';
+					echo '          <span class="nc-bundle-variation-value">' . esc_html( $locked_label ) . '</span>';
 					echo '        </div>';
 
 					continue;
 				}
 
-				// Customer-selectable attribute.
 				echo '        <div class="nc-bundle-variation-field">';
 				echo '          <label>' . esc_html( wc_attribute_label( $taxonomy ) ) . '</label>';
 				echo '          <select class="bundle-variation" name="bundle_attr[' . esc_attr( $taxonomy ) . ']">';
@@ -474,14 +456,16 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		}
 		echo '    </div>';
 
+		/* Side: qty + price */
 		echo '    <div class="nc-col nc-col-side" role="cell">';
 		echo '      <div class="nc-col nc-col-qty">';
 		nh_bundle_render_qty_control( $product, $row, $is_variable || ! $is_in_stock || ! $product->is_purchasable() );
 		echo '      </div>';
-		echo '      <div class="nc-col nc-col-price"><span class="nc-price-desktop">' . wp_kses_post( $price_html ) . '</span></div>';
+		echo '      <div class="nc-col nc-col-price">' . wp_kses_post( $price_html ) . '</div>';
 		echo '    </div>';
-		echo '    </div>';
-		echo '</div>';
+
+		echo '  </div>'; // .nc-row-body
+		echo '</div>';   // .nc-bundle-row
 	}
 }
 
@@ -515,23 +499,25 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 		$decimal_sep     = wc_get_price_decimal_separator();
 
 		echo '<section id="nc-complete-set" class="nc-bundle card" aria-labelledby="nc-bundle-title">';
-		echo '<div class="nc-bundle-head"><h3 id="nc-bundle-title">' . esc_html__( 'Complete set', 'nh-theme' ) . '</h3></div>';
+		echo '  <div class="nc-bundle-head">';
+		echo '    <h3 id="nc-bundle-title">' . esc_html__( 'Complete set', 'nh-theme' ) . '</h3>';
+		echo '  </div>';
 
-		echo '<form id="nc-bundle-form" class="nc-bundle-form" role="group" aria-label="' . esc_attr__( 'Complete set add-ons', 'nh-theme' ) . '"'
+		echo '  <form id="nc-bundle-form" class="nc-bundle-form" role="group" aria-label="' . esc_attr__( 'Complete set add-ons', 'nh-theme' ) . '"'
 			. ' data-currency-symbol="' . esc_attr( $currency_symbol ) . '"'
 			. ' data-currency-pos="' . esc_attr( $price_pos ) . '"'
 			. ' data-decimals="' . esc_attr( $decimals ) . '"'
 			. ' data-thousand="' . esc_attr( $thousand_sep ) . '"'
 			. ' data-decimal="' . esc_attr( $decimal_sep ) . '">';
 
-		echo '<div class="nc-bundle-row nc-bundle-header" role="row">';
-		echo '  <div class="nc-col nc-col-image" aria-hidden="true"></div>';
-		echo '  <div class="nc-col nc-col-variations" aria-hidden="true"></div>';
-		echo '  <div class="nc-col nc-col-side">';
-		echo '    <span class="nc-col-qty">' . esc_html__( 'Qty', 'nh-theme' ) . '</span>';
-		echo '    <span class="nc-col-price">' . esc_html__( 'Price', 'nh-theme' ) . '</span>';
-		echo '  </div>';
-		echo '</div>';
+		echo '    <div class="nc-bundle-row nc-bundle-header" role="row">';
+		echo '      <div class="nc-col nc-col-image" aria-hidden="true"></div>';
+		echo '      <div class="nc-col nc-col-variations" aria-hidden="true"></div>';
+		echo '      <div class="nc-col nc-col-side">';
+		echo '        <span class="nc-col-qty">' . esc_html__( 'Qty', 'nh-theme' ) . '</span>';
+		echo '        <span class="nc-col-price">' . esc_html__( 'Price', 'nh-theme' ) . '</span>';
+		echo '      </div>';
+		echo '    </div>';
 
 		foreach ( $rows as $r ) {
 			$p = wc_get_product( $r['product_id'] );
@@ -542,14 +528,14 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 			nh_bundle_render_row( $p, $r, $product->get_id() );
 		}
 
-		echo '<div class="nc-bundle-footer">';
-		echo '  <div class="nc-total">' . esc_html__( 'Total:', 'nh-theme' ) . ' <strong id="bundle-total-amount">' . wp_kses_post( wc_price( 0 ) ) . '</strong></div>';
-		echo '  <button type="button" id="add-bundle-to-cart" class="button alt nc-bundle-btn nh-bundle-add-all is-disabled" disabled aria-disabled="true">'
+		echo '    <div class="nc-bundle-footer">';
+		echo '      <div class="nc-total">' . esc_html__( 'Total:', 'nh-theme' ) . ' <strong id="bundle-total-amount">' . wp_kses_post( wc_price( 0 ) ) . '</strong></div>';
+		echo '      <button type="button" id="add-bundle-to-cart" class="button alt nc-bundle-btn nh-bundle-add-all is-disabled" disabled aria-disabled="true">'
 			. esc_html__( 'Add all to basket', 'nh-theme' ) .
 			'</button>';
-		echo '</div>';
+		echo '    </div>';
 
-		echo '</form>';
+		echo '  </form>';
 		echo '</section>';
 	}
 }
@@ -677,13 +663,12 @@ if ( ! function_exists( 'nh_bundle_build_success_notice_text' ) ) {
 		$parts = [];
 
 		foreach ( $prepared_lines as $line ) {
-			$name    = isset( $line['name'] ) ? $line['name'] : __( 'Item', 'nh-theme' );
-			$qty     = isset( $line['quantity'] ) ? max( 1, absint( $line['quantity'] ) ) : 1;
+			$name = isset( $line['name'] ) ? $line['name'] : __( 'Item', 'nh-theme' );
+			$qty  = isset( $line['quantity'] ) ? max( 1, absint( $line['quantity'] ) ) : 1;
 			$parts[] = sprintf( '%s × %d', $name, $qty );
 		}
 
 		return sprintf(
-			/* translators: %s = list of added items */
 			__( 'Bundle added to basket: %s', 'nh-theme' ),
 			implode( ', ', $parts )
 		);
@@ -944,4 +929,3 @@ add_action( 'woocommerce_before_calculate_totals', function ( $cart ) {
 		}
 	}
 }, 5 );
-

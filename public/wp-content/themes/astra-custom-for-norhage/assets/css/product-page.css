@@ -367,6 +367,7 @@
   --nc-muted: var(--ui-muted);
   --nc-head: var(--ui-text);
   --nc-qty-width: 88px;
+  --nc-img-col: 56px;
 
   border: var(--nc-border);
   border-radius: var(--nc-radius);
@@ -421,7 +422,7 @@
 /* Header row */
 .nc-bundle-row.nc-bundle-header {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
+  grid-template-columns: var(--nc-img-col) minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
   column-gap: var(--nc-gap);
   padding: 6px 4px 8px;
   border-bottom: var(--nc-border);
@@ -450,7 +451,7 @@
   font-weight: 700;
 }
 
-/* Name row */
+/* Name row (title + stock pill) — full width, always on top */
 .nc-row-name {
   display: flex;
   align-items: center;
@@ -463,16 +464,22 @@
   margin-top: 0;
 }
 
-/* Body row */
+/* Body row: image | variations | side — same grid for is-simple & is-variable */
 .nc-row-body {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
+  grid-template-columns: var(--nc-img-col) minmax(0, 1fr) minmax(var(--nc-qty-width), max-content);
   column-gap: var(--nc-gap);
   align-items: center;
 }
 
+/* Variations column: empty on simple products, but keeps the grid identical */
 .nc-col-variations {
   min-width: 0;
+  min-height: 1px;
+}
+
+.nc-bundle-row.is-simple .nc-col-variations {
+  display: block;
 }
 
 /* Side column (qty + price stacked) */
@@ -495,6 +502,8 @@
   text-align: right;
   white-space: nowrap;
   font-size: .9rem;
+  font-weight: 600;
+  color: var(--ui-text);
 }
 
 /* Image */
@@ -556,36 +565,15 @@
 }
 
 /* --------------------------------------------------------------------------
-   Price display
+   Price display (single unified price block, shown in .nc-col-price)
    -------------------------------------------------------------------------- */
 
-.nc-price-desktop,
-.nc-price-mobile {
-  font-weight: 600;
-  font-size: .9rem;
-  color: var(--ui-text);
-}
-
-.nc-price-desktop {
-  white-space: normal;
-  line-height: 1.25;
-}
-
-.nc-price-mobile {
-  display: none;
-  margin-top: 4px;
-  line-height: 1.25;
-}
-
-.nc-price-desktop del,
-.nc-price-desktop ins,
-.nc-price-mobile del,
-.nc-price-mobile ins {
+.nc-col-price del,
+.nc-col-price ins {
   display: block;
 }
 
-.nc-price-desktop del,
-.nc-price-mobile del {
+.nc-col-price del {
   color: var(--ui-muted);
   font-weight: 400;
   font-size: .82rem;
@@ -593,23 +581,15 @@
   margin: 0 0 1px;
 }
 
-.nc-price-desktop ins,
-.nc-price-mobile ins {
+.nc-col-price ins {
   color: var(--ui-text);
   font-weight: 600;
   text-decoration: none;
   margin: 0;
 }
 
-.nc-price-desktop ins .amount,
-.nc-price-mobile ins .amount {
+.nc-col-price .amount {
   font-weight: inherit;
-}
-
-.nc-price-desktop > .woocommerce-Price-amount,
-.nc-price-mobile > .woocommerce-Price-amount,
-.nc-price-desktop .amount,
-.nc-price-mobile .amount {
   line-height: inherit;
 }
 
@@ -831,7 +811,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Fixed variation attributes
+   Fixed (locked) variation attributes
    -------------------------------------------------------------------------- */
 
 .nc-bundle-variation-field--locked {
@@ -890,13 +870,34 @@
 
   .nc-col-variations {
     grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Simple products have no variations content, so let side column
+     sit right after image on the same row instead of leaving empty space */
+  .nc-bundle-row.is-simple .nc-row-body {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .nc-bundle-row.is-simple .nc-col-variations {
+    grid-row: 1;
+    grid-column: 2;
+    min-height: 0;
   }
 
   .nc-col-side {
     grid-column: 1 / -1;
+    grid-row: 2;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .nc-bundle-row.is-simple .nc-col-side {
+    grid-column: 2;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .nc-col-image img {
@@ -947,7 +948,6 @@
     text-align: center;
   }
 }
-
 
 /* ==========================================================================
    Ask an expert (Accordion version – light style)
