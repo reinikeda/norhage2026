@@ -944,3 +944,4 @@ add_action( 'woocommerce_before_calculate_totals', function ( $cart ) {
 		}
 	}
 }, 5 );
+
