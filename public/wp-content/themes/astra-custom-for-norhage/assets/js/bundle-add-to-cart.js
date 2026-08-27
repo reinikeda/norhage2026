@@ -227,7 +227,15 @@ jQuery(function ($) {
       const m    = name.match(/\[([^\]]+)\]$/);
 
       if (m && this.value) {
-        attrs['attribute_' + m[1]] = this.value;
+        let attrKey = m[1];
+
+        // The input name is already bundle_attr[attribute_pa_xxx].
+        // Make sure we end up with attribute_pa_xxx, not attribute_attribute_pa_xxx.
+        if (attrKey.indexOf('attribute_') !== 0) {
+          attrKey = 'attribute_' + attrKey;
+        }
+
+        attrs[attrKey] = this.value;
       }
     });
 
@@ -454,7 +462,8 @@ jQuery(function ($) {
 
   function setRowPriceHtml($row, html) {
     const finalHtml = html || '—';
-    $row.find('.nc-price-desktop, .nc-price-mobile').html(finalHtml);
+    // Price now lives directly inside .nc-col-price (no .nc-price-desktop/.nc-price-mobile split).
+    $row.find('.nc-col-price').html(finalHtml);
   }
 
   function getRowInitialPriceHtml($row) {
