@@ -1962,3 +1962,49 @@ body.dark-mode .nhf-box .nhf-icon {
     white-space: normal;
   }
 }
+
+
+/* ==========================================================================
+   Brand icon above product title
+   ========================================================================== */
+
+.norhage-product-brand-logo {
+    display: block;
+    margin: 0 0 10px;
+    line-height: 0;
+}
+
+.norhage-product-brand-logo-link {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    text-decoration: none;
+}
+
+.norhage-product-brand-logo-image {
+    width: 52px;
+    height: 52px;
+    padding: 2px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid #dedede;
+    border-radius: 6px;
+}
+
+.norhage-product-brand-logo-link:hover .norhage-product-brand-logo-image {
+    border-color: #bdbdbd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.09);
+}
+
+@media (max-width: 767px) {
+    .norhage-product-brand-logo {
+        margin-bottom: 8px;
+    }
+
+    .norhage-product-brand-logo-image {
+        width: 46px;
+        height: 46px;
+        padding: 4px;
+    }
+}

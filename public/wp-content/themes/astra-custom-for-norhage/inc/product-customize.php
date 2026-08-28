@@ -938,3 +938,73 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 	return $data;
 
 }, 20, 3 );
+
+/**
+ * Brand icon above product title.
+ */
+
+add_action( 'woocommerce_single_product_summary', 'norhage_output_product_brand_logo', 4 );
+
+function norhage_output_product_brand_logo() {
+    global $product;
+
+    if ( ! $product instanceof WC_Product ) {
+        return;
+    }
+
+    $product_id  = $product->get_id();
+    $brand_terms = wp_get_post_terms( $product_id, 'product_brand' );
+
+    if ( is_wp_error( $brand_terms ) || empty( $brand_terms ) ) {
+        return;
+    }
+
+    foreach ( $brand_terms as $brand_term ) {
+        $thumbnail_id = get_term_meta( $brand_term->term_id, 'thumbnail_id', true );
+
+        if ( ! $thumbnail_id ) {
+            $thumbnail_id = get_term_meta( $brand_term->term_id, 'pwb_brand_image', true );
+        }
+
+        if ( ! $thumbnail_id ) {
+            continue;
+        }
+
+        $logo_image = wp_get_attachment_image(
+            $thumbnail_id,
+            'medium',
+            false,
+            array(
+                'class'   => 'norhage-product-brand-logo-image',
+                'loading' => 'lazy',
+                'alt'     => $brand_term->name,
+            )
+        );
+
+        if ( ! $logo_image ) {
+            continue;
+        }
+
+        $brand_name = $brand_term->name;
+        $brand_url  = get_term_link( $brand_term );
+
+        if ( is_wp_error( $brand_url ) ) {
+            $brand_url = '';
+        }
+
+        if ( $brand_url ) {
+            $output = sprintf(
+                '<a href="%1$s" class="norhage-product-brand-logo-link" aria-label="%2$s">%3$s</a>',
+                esc_url( $brand_url ),
+                esc_attr( sprintf( __( 'View products by %s', 'astra-child' ), $brand_name ) ),
+                $logo_image
+            );
+        } else {
+            $output = '<span class="norhage-product-brand-logo-link">' . $logo_image . '</span>';
+        }
+
+        echo '<div class="norhage-product-brand-logo">' . $output . '</div>';
+
+        break;
+    }
+}

@@ -2,7 +2,6 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // ── Background image ──────────────────────────────────────────
-// Priority: 1) nhhb_hero query var  2) featured image  3) fallback
 $hero        = get_query_var( 'nhhb_hero', [] );
 $fallback_bg = get_stylesheet_directory_uri() . '/assets/images/hero-fallback.webp';
 
@@ -15,7 +14,8 @@ if ( ! empty( $hero['bg'] ) ) {
 }
 
 // ── Title ─────────────────────────────────────────────────────
-$title = ! empty( $hero['title'] ) ? $hero['title'] : get_the_title();
+$raw_title = ! empty( $hero['title'] ) ? $hero['title'] : get_the_title();
+$title     = wp_strip_all_tags( $raw_title );
 ?>
 <section
   class="nhhb-hero nhhb-hero--page"
