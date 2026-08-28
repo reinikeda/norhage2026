@@ -1113,16 +1113,17 @@ function nh_save_variation_bundle_name_fields( $variation_id, $i ) {
 }
 
 /**
- * Remove add-to-cart / select-options buttons from product loops on single product pages.
- * This affects Related Products (and Upsells) only.
+ * Temporarily remove Related Products from single product pages.
  */
-function norhage_disable_loop_cart_on_single_product() {
+function norhage_remove_related_products_for_test() {
     if ( ! is_product() ) {
         return;
     }
 
-    remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
-
-    add_filter( 'woocommerce_loop_add_to_cart_link', '__return_empty_string', 9999 );
+    remove_action(
+        'woocommerce_after_single_product_summary',
+        'woocommerce_output_related_products',
+        20
+    );
 }
-add_action( 'wp', 'norhage_disable_loop_cart_on_single_product', 20 );
+add_action( 'wp', 'norhage_remove_related_products_for_test', 20 );
