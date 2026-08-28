@@ -1111,3 +1111,19 @@ function nh_save_variation_bundle_name_fields( $variation_id, $i ) {
     $bundle_name = isset( $_POST['_bundle_box_name'][$i] ) ? sanitize_text_field( $_POST['_bundle_box_name'][$i] ) : '';
     update_post_meta( $variation_id, '_bundle_box_name', $bundle_name );
 }
+
+/**
+ * Temporarily remove Related Products from single product pages.
+ */
+function norhage_remove_related_products_for_test() {
+    if ( ! is_product() ) {
+        return;
+    }
+
+    remove_action(
+        'woocommerce_after_single_product_summary',
+        'woocommerce_output_related_products',
+        20
+    );
+}
+add_action( 'wp', 'norhage_remove_related_products_for_test', 20 );
