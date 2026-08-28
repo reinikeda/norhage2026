@@ -1111,3 +1111,18 @@ function nh_save_variation_bundle_name_fields( $variation_id, $i ) {
     $bundle_name = isset( $_POST['_bundle_box_name'][$i] ) ? sanitize_text_field( $_POST['_bundle_box_name'][$i] ) : '';
     update_post_meta( $variation_id, '_bundle_box_name', $bundle_name );
 }
+
+/**
+ * Remove add-to-cart / select-options buttons from product loops on single product pages.
+ * This affects Related Products (and Upsells) only.
+ */
+function norhage_disable_loop_cart_on_single_product() {
+    if ( ! is_product() ) {
+        return;
+    }
+
+    remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+
+    add_filter( 'woocommerce_loop_add_to_cart_link', '__return_empty_string', 9999 );
+}
+add_action( 'wp', 'norhage_disable_loop_cart_on_single_product', 20 );
