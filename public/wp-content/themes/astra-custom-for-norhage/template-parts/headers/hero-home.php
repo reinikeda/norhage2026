@@ -38,9 +38,8 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 				type="button"
 				class="nhhb-hero-slider__arrow nhhb-hero-slider__arrow--prev"
 				data-nh-hero-prev
-				aria-label="<?php esc_attr_e( 'Previous slide', 'nh-theme' ); ?>"
-			>
-				<span aria-hidden="true">‹</span>
+				aria-label="<?php esc_attr_e( 'Previous slide', 'nh-theme' ); ?>">
+				<span aria-hidden="true"></span>
 			</button>
 
 			<div
@@ -66,7 +65,7 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 				data-nh-hero-next
 				aria-label="<?php esc_attr_e( 'Next slide', 'nh-theme' ); ?>"
 			>
-				<span aria-hidden="true">›</span>
+				<span aria-hidden="true"></span>
 			</button>
 		</div>
 	<?php endif; ?>

@@ -1045,6 +1045,13 @@ function norhage_strip_author_links( $html ) {
 // Remove Astra's page/archive title when our hero is active
 add_filter( 'astra_the_title_enabled', '__return_false' );
 
+add_filter( 'woocommerce_show_page_title', function( $show ) {
+    if ( is_tax( 'product_brand' ) ) {
+        return false;
+    }
+    return $show;
+} );
+
 /**
  * Sort WooCommerce products to show out-of-stock items at the end of the catalog.
  */
