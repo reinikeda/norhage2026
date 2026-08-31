@@ -11,18 +11,18 @@ $site_name = get_bloginfo('name');
 $company = __('Tehi UG', 'nh-theme');
 $address = __('Adolfstraße 1, Wiesbaden, 65185 HE, Germany', 'nh-theme');
 $phone   = __('+49 176 65 10 6609', 'nh-theme');
-$email   = __('info@norhage.de', 'nh-theme');
+$email   = __('info@norhage.eu', 'nh-theme');
 
 // Social URLs (leave empty string to hide an icon)
 $social = [
-  'facebook'  => __('https://www.facebook.com/yourpage', 'nh-theme'),
-  'instagram' => __('https://www.instagram.com/yourpage', 'nh-theme'),
-  'youtube'   => __('https://www.youtube.com/@yourchannel', 'nh-theme'),
-  'linkedin'  => __('https://www.linkedin.com/company/yourcompany', 'nh-theme'),
+  'facebook'  => __('https://www.facebook.com/norhage.de', 'nh-theme'),
+  'instagram' => __('https://www.instagram.com/norhage.de', 'nh-theme'),
+  'youtube'   => __('https://www.youtube.com/@NorhageEU', 'nh-theme'),
+  'linkedin'  => __('https://www.linkedin.com/company/norhage-industri-norge', 'nh-theme'),
 ];
 
 // Optional: translatable B2B portal URL
-$b2b_url = __('https://norhageindustri.lt/', 'nh-theme');
+$b2b_url = __('https://norhageindustri.com/', 'nh-theme');
 
 // Social label map (for aria-label)
 $social_labels = [
