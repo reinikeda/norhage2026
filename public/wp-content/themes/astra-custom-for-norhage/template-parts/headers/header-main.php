@@ -19,7 +19,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
 
   <!-- =====================================================
        ROW 1 — Utility bar (desktop only)
-       Left: nav links | Right: account · cart · dark | phone | faq | search
+       Left: nav links | Right: account · cart · phone | faq | search
   ====================================================== -->
   <div class="nhhb-row nhhb-row--utility">
 
