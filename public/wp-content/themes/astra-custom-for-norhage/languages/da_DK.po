@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-08-25 10:38+0300\n"
+"PO-Revision-Date: 2026-08-31 11:28+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -562,28 +562,28 @@ msgid "+49 176 65 10 6609"
 msgstr "+46 728 380 058"
 
 #: template-parts/footer/footer.php:14
-msgid "info@norhage.de"
+msgid "info@norhage.eu"
 msgstr "info@norhage.dk"
 
 #: template-parts/footer/footer.php:18
-msgid "https://www.facebook.com/yourpage"
-msgstr "https://www.facebook.com/norhage.se/"
+msgid "https://www.facebook.com/norhage.de"
+msgstr "https://www.facebook.com/norhage.se"
 
 #: template-parts/footer/footer.php:19
-msgid "https://www.instagram.com/yourpage"
-msgstr "https://www.instagram.com/norhage.se/"
+msgid "https://www.instagram.com/norhage.de"
+msgstr "https://www.instagram.com/norhage.se"
 
 #: template-parts/footer/footer.php:20
-msgid "https://www.youtube.com/@yourchannel"
+msgid "https://www.youtube.com/@NorhageEU"
 msgstr "https://www.youtube.com/@NorhageDanmark"
 
 #: template-parts/footer/footer.php:21
-msgid "https://www.linkedin.com/company/yourcompany"
-msgstr "https://www.linkedin.com/company/norhage-industri-norge/"
+msgid "https://www.linkedin.com/company/norhage-industri-norge"
+msgstr "https://www.linkedin.com/company/norhage-industri-norge"
 
 #: template-parts/footer/footer.php:25
-msgid "https://norhageindustri.lt/"
-msgstr "https://norhageindustri.dk/"
+msgid "https://norhageindustri.com"
+msgstr "https://norhageindustri.dk"
 
 #: template-parts/footer/footer.php:29
 msgid "Facebook"
