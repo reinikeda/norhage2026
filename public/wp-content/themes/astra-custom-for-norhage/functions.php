@@ -149,14 +149,6 @@ function norhage_enqueue_assets() {
 	);
 
 	wp_enqueue_script(
-		'theme-toggle',
-		get_stylesheet_directory_uri() . '/assets/js/theme-toggle.js',
-		array(),
-		norhage_asset_version( '/assets/js/theme-toggle.js' ),
-		true
-	);
-
-	wp_enqueue_script(
 		'norhage-custom-js',
 		get_stylesheet_directory_uri() . '/assets/js/script.js',
 		array(),
@@ -981,38 +973,6 @@ function nh_single_product_image_note() {
 	echo '<div class="nh-product-image-note" role="note" aria-label="Product image note">';
 	echo '<p>' . esc_html__( 'Image is for illustrative purposes only. Actual product color, shape, or other features may vary.', 'nh-theme' ) . '</p>';	echo '</div>';
 }
-
-// dark mode
-add_action('wp_head', function () {
-	$css_url = get_stylesheet_directory_uri() . '/assets/css/dark-mode.css';
-	?>
-	<script>
-	(function () {
-		var KEY = 'theme';
-		var cssId = 'norhage-dark-mode-css';
-		var cssHref = <?php echo wp_json_encode($css_url); ?>;
-
-		window.loadDarkModeCSS = function () {
-			if (document.getElementById(cssId)) return;
-
-			var link = document.createElement('link');
-			link.id = cssId;
-			link.rel = 'stylesheet';
-			link.href = cssHref;
-			document.head.appendChild(link);
-		};
-
-		try {
-			if (localStorage.getItem(KEY) === 'dark') {
-				window.loadDarkModeCSS();
-				document.documentElement.setAttribute('data-theme', 'dark');
-				document.documentElement.classList.add('dark-mode-preload');
-			}
-		} catch (e) {}
-	})();
-	</script>
-	<?php
-}, 1);
 
 /**
  * Remove Dashicons from the frontend for non-logged-in users

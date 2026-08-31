@@ -19,7 +19,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
 
   <!-- =====================================================
        ROW 1 — Utility bar (desktop only)
-       Left: nav links | Right: account · cart · dark | phone | faq | search
+       Left: nav links | Right: account · cart · phone | faq | search
   ====================================================== -->
   <div class="nhhb-row nhhb-row--utility">
 
@@ -57,20 +57,6 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
         </span>
         <span class="screen-reader-text"><?php esc_html_e( 'View cart', 'nh-theme' ); ?></span>
       </a>
-
-      <!-- Dark mode toggle -->
-      <button
-        id="theme-toggle"
-        class="theme-toggle"
-        type="button"
-        aria-label="<?php esc_attr_e( 'Switch theme', 'nh-theme' ); ?>"
-        data-sun-icon="<?php echo esc_url( $theme_uri . '/assets/icons/sun.svg' ); ?>"
-        data-moon-icon="<?php echo esc_url( $theme_uri . '/assets/icons/moon.svg' ); ?>"
-        aria-pressed="false">
-        <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" data-icon="moon">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>
-        </svg>
-      </button>
 
       <span class="nhhb-utility-sep" aria-hidden="true"></span>
 
