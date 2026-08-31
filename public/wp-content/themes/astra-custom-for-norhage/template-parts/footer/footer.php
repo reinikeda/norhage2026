@@ -22,7 +22,7 @@ $social = [
 ];
 
 // Optional: translatable B2B portal URL
-$b2b_url = __('https://norhageindustri.com/', 'nh-theme');
+$b2b_url = __('https://norhageindustri.com', 'nh-theme');
 
 // Social label map (for aria-label)
 $social_labels = [
