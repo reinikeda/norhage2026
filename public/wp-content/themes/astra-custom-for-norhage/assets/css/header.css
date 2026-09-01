@@ -90,7 +90,15 @@ body.drawer-open { overflow: hidden; }
 
 /* =========================================================
    6) ROW 1 — UTILITY BAR (desktop only)
+   Full-width cream strip + edge-to-edge rule, inner row is max-width content.
    ========================================================= */
+
+.nhhb-utility-wrap {
+  width: 100%;
+  background: var(--nh-cream, #F1E6D6);
+  border-bottom: 1px solid rgba(30, 57, 50, 0.14);
+  box-sizing: border-box;
+}
 
 .nhhb-row--utility {
   justify-content: space-between;
@@ -98,33 +106,33 @@ body.drawer-open { overflow: hidden; }
   min-height: 36px;
   padding-top: 0;
   padding-bottom: 0;
-  background: var(--nh-cream, #EDE2CE);
-  border-bottom: 1px solid rgba(0,0,0,.08);
+  background: transparent;
+  border-bottom: 0;
   position: relative;
-}
-
-.nhhb-row--utility::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  left: -9999px;
-  right: -9999px;
-  background: var(--nh-cream, #EDE2CE);
-  z-index: -1;
+  overflow: visible;
 }
 
 .nhhb-utility-left {
   display: flex;
   align-items: center;
+  align-self: stretch;
   flex-shrink: 0;
+  min-height: 36px;
 }
 
 .nhhb-utility-menu {
   display: flex;
+  align-items: center;
   gap: 18px;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.nhhb-utility-menu li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .nhhb-utility-menu > li > a {
@@ -135,7 +143,9 @@ body.drawer-open { overflow: hidden; }
   letter-spacing: .05em;
   font-weight: 500;
   line-height: 36px;
-  display: block;
+  height: 36px;
+  display: flex;
+  align-items: center;
   transition: color .15s ease;
 }
 
@@ -1129,6 +1139,7 @@ body.drawer-open { overflow: hidden; }
 
 @media (max-width: 1023px) {
 
+  .nhhb-utility-wrap,
   .nhhb-row--utility { display: none !important; }
 
   .nhhb-row--brand {

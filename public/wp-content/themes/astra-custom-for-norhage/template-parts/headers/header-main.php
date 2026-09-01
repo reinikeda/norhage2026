@@ -21,6 +21,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
        ROW 1 — Utility bar (desktop only)
        Left: nav links | Right: account · cart · phone | faq | search
   ====================================================== -->
+  <div class="nhhb-utility-wrap">
   <div class="nhhb-row nhhb-row--utility">
 
     <div class="nhhb-utility-left">
@@ -103,6 +104,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
 
     </div>
   </div><!-- /.nhhb-row--utility -->
+  </div><!-- /.nhhb-utility-wrap -->
 
   <!-- =====================================================
        ROW 2 — Logo (left) + Primary Nav (right)
