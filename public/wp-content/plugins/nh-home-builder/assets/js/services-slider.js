@@ -1,7 +1,8 @@
-// NH Home Builder – Services Slider JS (refined)
+// NH Home Builder – Services Slider JS
+// Load Swiper only when the section is about to enter the viewport.
 (function () {
-  var SWIPER_CSS = 'https://unpkg.com/swiper@11/swiper-bundle.min.css';
-  var SWIPER_JS  = 'https://unpkg.com/swiper@11/swiper-bundle.min.js';
+  var SWIPER_CSS = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+  var SWIPER_JS  = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
 
   function ensureSwiper(cb) {
     if (window.Swiper) { cb(); return; }
@@ -56,7 +57,6 @@
       loop: !single,
       speed: reduceMotion ? 0 : 550,
       spaceBetween: 0,
-      // Swiper reads RTL from CSS automatically, no 'rtl' key needed
       navigation: single ? undefined : (next && prev ? { nextEl: next, prevEl: prev } : undefined),
       pagination: single ? undefined : (pag ? { el: pag, clickable: true } : undefined),
       autoplay: autoplayCfg,
@@ -77,23 +77,25 @@
     var el = section.querySelector('.nhhb-services-swiper');
     if (!el || el.__nhhbInit) return;
 
-    var cfg = makeConfig(section);
-    el.__nhhbInit = true;
-    el.__nhhbSwiper = new Swiper(el, cfg);
+    ensureSwiper(function () {
+      if (el.__nhhbInit || !window.Swiper) return;
+      var cfg = makeConfig(section);
+      el.__nhhbInit = true;
+      el.__nhhbSwiper = new Swiper(el, cfg);
 
-    // Pause/resume autoplay when offscreen
-    if ('IntersectionObserver' in window && el.__nhhbSwiper && el.__nhhbSwiper.params.autoplay) {
-      var io = new IntersectionObserver(function (ents) {
-        ents.forEach(function (e) {
-          var sw = el.__nhhbSwiper;
-          if (!sw || !sw.autoplay) return;
-          if (e.isIntersecting) { try { sw.autoplay.start(); } catch(_){} }
-          else { try { sw.autoplay.stop(); } catch(_){} }
-        });
-      }, { root: null, threshold: 0.2 });
-      io.observe(el);
-      el.__nhhbIO = io;
-    }
+      if ('IntersectionObserver' in window && el.__nhhbSwiper && el.__nhhbSwiper.params.autoplay) {
+        var io = new IntersectionObserver(function (ents) {
+          ents.forEach(function (e) {
+            var sw = el.__nhhbSwiper;
+            if (!sw || !sw.autoplay) return;
+            if (e.isIntersecting) { try { sw.autoplay.start(); } catch(_){} }
+            else { try { sw.autoplay.stop(); } catch(_){} }
+          });
+        }, { root: null, threshold: 0.2 });
+        io.observe(el);
+        el.__nhhbIO = io;
+      }
+    });
   }
 
   function maybeInitOnView(section) {
@@ -107,35 +109,29 @@
           initOne(section);
         }
       });
-    }, { root: null, threshold: 0.15 });
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
     io.observe(section);
   }
 
-  function initAll() {
-    document.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
-  }
-
   function boot() {
-    ensureSwiper(function () {
-      initAll();
-      if ('MutationObserver' in window) {
-        var mo = new MutationObserver(function (muts) {
-          for (var i = 0; i < muts.length; i++) {
-            var nodes = muts[i].addedNodes;
-            for (var j = 0; j < nodes.length; j++) {
-              var n = nodes[j];
-              if (!(n instanceof HTMLElement)) continue;
-              if (n.matches && n.matches('[data-nhhb-services-slider]')) {
-                maybeInitOnView(n);
-              } else if (n.querySelectorAll) {
-                n.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
-              }
+    document.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
+    if ('MutationObserver' in window) {
+      var mo = new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var nodes = muts[i].addedNodes;
+          for (var j = 0; j < nodes.length; j++) {
+            var n = nodes[j];
+            if (!(n instanceof HTMLElement)) continue;
+            if (n.matches && n.matches('[data-nhhb-services-slider]')) {
+              maybeInitOnView(n);
+            } else if (n.querySelectorAll) {
+              n.querySelectorAll('[data-nhhb-services-slider]').forEach(maybeInitOnView);
             }
           }
-        });
-        mo.observe(document.documentElement, { childList: true, subtree: true });
-      }
-    });
+        }
+      });
+      mo.observe(document.documentElement, { childList: true, subtree: true });
+    }
   }
 
   if (document.readyState === 'loading') {
