@@ -1185,17 +1185,35 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(140px, 20vh, 220px); /* Slightly taller for better scale */
+  min-height: clamp(180px, 28vw, 280px);
   background-color: var(--nh-forest, #1E3932);
   text-align: center;
   overflow: hidden;
+  isolation: isolate;
 }
 
+.nhhb-hero--page .nhhb-hero__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Darker Overlay */
 .nhhb-hero--page .nhhb-hero__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55); /* Increased from 0.45 to 0.55 for better contrast */
+  background: linear-gradient(
+    180deg,
+    rgba(30, 57, 50, 0.35) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
   z-index: 1;
+  pointer-events: none;
 }
 
 .nhhb-hero--page .nhhb-hero__inner {
@@ -1204,19 +1222,19 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  /* Reduced bottom padding (64px -> 32px) to push the H1 "a bit higher" */
-  padding: clamp(40px, 5vw, 64px) 24px clamp(20px, 3vw, 32px); 
+  padding: clamp(36px, 5vw, 56px) 24px;
   text-align: center;
 }
 
 .nhhb-hero--page .nhhb-hero__title {
-  margin: 0;
-  font-size: clamp(24px, 4vw, 42px);
-  line-height: 1.1;
+  margin: 0 auto;
+  max-width: 22ch;
+  font-size: clamp(22px, 3.6vw, 40px);
+  line-height: 1.15;
   color: #fff;
   font-weight: 700;
-  /* Stronger shadow to help white text pop */
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); 
+  text-wrap: balance;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .nhhb-hero--page .nhhb-hero__breadcrumbs {
@@ -1240,10 +1258,14 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
 
 @media (max-width: 1023px) {
   .nhhb-hero--page {
-    min-height: 120px;
+    min-height: 160px;
   }
   .nhhb-hero--page .nhhb-hero__inner {
-    padding-top: 40px;
-    padding-bottom: 20px;
+    padding-top: 32px;
+    padding-bottom: 28px;
+  }
+  .nhhb-hero--page .nhhb-hero__title {
+    max-width: none;
+    font-size: clamp(20px, 6vw, 28px);
   }
 }
