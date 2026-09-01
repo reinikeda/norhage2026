@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Home Builder
- * Description: One section type: "Offers Hero (slider + 2 promos)". Manage in wp-admin → Home Builder. Render with [nh_section id="123"].
- * Version: 0.1.1
+ * Description: Homepage sections for Norhage shops. Manage in wp-admin → Home Builder. Render with [nh_section id="123"].
+ * Version: 0.2.1
  * Author: Daiva Reinike
  * Text Domain: nhhb
  */
@@ -10,12 +10,11 @@ if (!defined('ABSPATH')) exit;
 
 define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
-define('NHHB_VER', '0.1.1');
+define('NHHB_VER', '0.2.0');
 
 /**
- * Shared photo helper. Do not name this nhhb_img — several section
- * templates previously defined competing nhhb_img() helpers, so feature
- * icons were rendered as 1×1 <img> tags instead of inline SVG.
+ * Shared photo helper. Named separately from older per-file nhhb_img()
+ * helpers so feature icons can stay inline SVG.
  */
 function nhhb_attachment_image($id, $size = 'woocommerce_thumbnail', $attrs = []) {
     if (!$id) {
@@ -70,6 +69,19 @@ function nhhb_inline_svg($id) {
 }
 
 /**
+ * Chevron used by carousel / scroller controls.
+ *
+ * @param string $dir prev|next
+ */
+function nhhb_chevron_svg($dir = 'next') {
+    $d = $dir === 'prev'
+        ? 'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z'
+        : 'M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z';
+
+    return '<svg class="nhhb-chevron" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="' . $d . '"/></svg>';
+}
+
+/**
  * Load plugin textdomain.
  */
 function nhhb_load_textdomain() {
@@ -85,6 +97,19 @@ require_once NHHB_PATH . 'includes/class-admin.php';
 
 function nhhb_render($section, $data = []) {
     if ($section === 'offers-hero') { $section = 'top-offers'; } // back-compat
+    $allowed = [
+        'top-offers',
+        'top-features',
+        'browse-cats',
+        'new-arrivals',
+        'promo-trio',
+        'newsletter',
+        'services-slider',
+        'b2b-banner',
+    ];
+    if (!in_array($section, $allowed, true)) {
+        return '';
+    }
     $file = NHHB_PATH . 'includes/render/' . $section . '.php';
     if (!file_exists($file)) return '';
     ob_start(); include $file; return ob_get_clean();
