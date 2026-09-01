@@ -425,8 +425,7 @@ class NHHB_Admin {
                             <input type="hidden" name="data[logo]" id="b2b_logo_single" value="<?php echo esc_attr($bb['logo']); ?>">
                         </div>
                         <p class="description" style="margin:0 0 0 10px;">
-                            Upload a <strong>single transparent PNG/SVG</strong> in your <em>dark blue</em> brand color.
-                            It will be shown as-is on light backgrounds and automatically converted to white in dark mode via CSS.
+                            Upload a <strong>single transparent PNG/SVG</strong> in your brand color. It is inverted to white on the blue banner.
                         </p>
                     </div>
                 </div>

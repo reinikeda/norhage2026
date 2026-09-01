@@ -68,7 +68,6 @@
   transform: scale(1.04);
 }
 
-/* Dark gradient overlay for text legibility */
 .nhhb-pt-hero::after{
   content: "";
   position: absolute;
@@ -223,40 +222,6 @@
 .nhhb-pt-btn:focus-visible{
   outline: 3px solid rgba(255,255,255,.60);
   outline-offset: 3px;
-}
-
-/* ===== Dark mode ===== */
-body.dark-mode .nhhb-promo-trio{
-  --nh-border: rgba(255,255,255,.08);
-  --nh-card-shadow: 0 6px 24px rgba(0,0,0,.35);
-}
-
-body.dark-mode .nhhb-pt-hero::after{
-  background: linear-gradient(
-    to right,
-    rgba(10, 20, 16, 0.82) 0%,
-    rgba(10, 20, 16, 0.48) 55%,
-    rgba(10, 20, 16, 0.08) 100%
-  );
-}
-
-body.dark-mode .nhhb-pt-small::after{
-  background: linear-gradient(
-    to right,
-    rgba(10, 20, 16, 0.85) 0%,
-    rgba(10, 20, 16, 0.52) 50%,
-    rgba(10, 20, 16, 0.08) 100%
-  );
-}
-
-body.dark-mode .nhhb-pt-btn{
-  background: rgba(255,255,255,.92);
-  color: #1e3932 !important;
-}
-
-body.dark-mode .nhhb-pt-btn:hover{
-  background: #2EA26F;
-  color: #fff !important;
 }
 
 /* ===== Responsive – tablet ===== */

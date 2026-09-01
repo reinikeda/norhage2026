@@ -309,43 +309,6 @@
   display: block;
 }
 
-/* ---- Dark mode ---- */
-body.dark-mode .nhhb-svc-section-title{
-  color: var(--nh-svc-mint);
-}
-
-body.dark-mode .nhhb-services .nhhb-services-swiper{
-  background: #1a1f1c;
-  box-shadow: 0 10px 32px rgba(0,0,0,.40);
-  border: 1px solid rgba(255,255,255,.06);
-}
-
-body.dark-mode .nhhb-services .swiper-slide::before{
-  background:
-    linear-gradient(
-      to right,
-      rgba(5, 12, 9, 0.92) 0%,
-      rgba(5, 12, 9, 0.65) 40%,
-      rgba(5, 12, 9, 0.18) 75%,
-      rgba(5, 12, 9, 0.00) 100%
-    ),
-    linear-gradient(
-      to top,
-      rgba(5, 12, 9, 0.65) 0%,
-      rgba(5, 12, 9, 0.00) 45%
-    );
-}
-
-body.dark-mode .nhhb-svc-btn{
-  background: rgba(255,255,255,.90);
-  color: #1E3932 !important;
-}
-
-body.dark-mode .nhhb-svc-btn:hover{
-  background: var(--nh-svc-mint);
-  color: #fff !important;
-}
-
 /* ---- Responsive: tablet ---- */
 @media (max-width: 980px){
   .nhhb-svc-nav{ display: none; }

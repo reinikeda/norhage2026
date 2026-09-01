@@ -15,8 +15,7 @@
   --nhhb-surface-2:          #222222;
   --nhhb-surface-border:     rgba(255, 255, 255, 0.10);
 
-  /* Promo text colors (white on dark) */
-  --nhhb-promo-ink:          #ffffff;
+--nhhb-promo-ink:          #ffffff;
   --nhhb-promo-ink-sub:      rgba(255, 255, 255, 0.72);
   --nhhb-promo-title-hover:  #2EA26F;
 
@@ -350,7 +349,6 @@
   box-shadow: none;
 }
 
-/* Gradient overlay for text legibility — dark left fade */
 .nhhb-promo::after{
   content: "";
   position: absolute;
@@ -444,10 +442,6 @@
   outline-offset: 2px;
 }
 
-/* =========================
-   Dark mode overrides
-   ========================= */
-/* ... keep your dark-mode rules unchanged ... (same as before) */
 /* I'll re-include only the important additions below for mobile stability */
 
 /* =========================

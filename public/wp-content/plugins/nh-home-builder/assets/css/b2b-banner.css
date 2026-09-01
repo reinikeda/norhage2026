@@ -175,32 +175,6 @@
   outline-offset: 3px;
 }
 
-/* ---- Dark mode ---- */
-body.dark-mode .nhhb-b2b {
-  background:
-    radial-gradient(ellipse 55% 130% at 0% 50%, rgba(26,143,193,.13) 0%, transparent 65%),
-    linear-gradient(120deg, var(--b2b-bg-dm) 0%, var(--b2b-bg-dm-2) 100%);
-  box-shadow: 0 14px 40px rgba(0,0,0,.38);
-  border: 1px solid rgba(255,255,255,.06);
-}
-
-body.dark-mode .nhhb-b2b-title  { color: #fff !important; }
-body.dark-mode .nhhb-b2b-text   { color: rgba(236,234,230,.82); }
-
-body.dark-mode .nhhb-b2b-logo img.nhhb-b2b-logo-img {
-  filter: brightness(0) invert(1) opacity(.88);
-}
-
-body.dark-mode .nhhb-b2b-cta {
-  background: rgba(255,255,255,.92) !important;
-  color: var(--b2b-bg-dm) !important;
-}
-
-body.dark-mode .nhhb-b2b-cta:hover {
-  background: var(--b2b-accent) !important;
-  color: #fff !important;
-}
-
 /* ---- Tablet ---- */
 @media (max-width: 900px) {
   :root { --b2b-logo-col: 110px; }

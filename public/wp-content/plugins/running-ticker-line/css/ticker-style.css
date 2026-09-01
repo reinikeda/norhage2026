@@ -1,18 +1,18 @@
 #rtl-ticker-wrapper {
     width: 100%;
-    background: var(--nh-forest, #1E3932);   /* deep forest green background */
-    color: var(--nh-cream, #F1E6D6);         /* warm cream text */
+    background: var(--nh-forest, #1E3932);
+    color: var(--nh-cream, #F1E6D6);
     overflow: hidden;
-    height: 34px;
-    font-size: 16px;
+    height: var(--nh-ticker-h, 32px);
+    font-size: 14px;
     font-weight: 500;
     display: block;
-    line-height: 34px;
+    line-height: var(--nh-ticker-h, 32px);
 }
 
 #rtl-ticker {
     width: 100%;
-    height: 34px;
+    height: var(--nh-ticker-h, 32px);
     white-space: nowrap;
     overflow: hidden;
     position: relative;
@@ -26,33 +26,42 @@
 
 .rtl-ticker-item {
     display: inline-block;
-    padding: 0 60px;
+    padding: 0 48px;
     color: var(--nh-cream, #F1E6D6);
 }
 
-/* Links inside the ticker */
 .rtl-ticker-item a {
-    color: var(--nh-mint, #C3E8C6);          /* soft mint link accent */
+    color: var(--nh-mint, #C3E8C6);
     text-decoration: underline;
-    transition: color .2s ease;
+    text-underline-offset: 2px;
 }
 
 .rtl-ticker-item a:hover {
-    color: var(--nh-green, #00704A);         /* main Starbucks green on hover */
+    color: #fff;
 }
 
-/* Smooth marquee animation */
 @keyframes rtl-scroll {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
 
-/* Dark mode version – slightly brighter and cooler for visibility */
-body.dark-mode #rtl-ticker-wrapper {
-    background: var(--nh-green, #00704A);
-    color: var(--nh-offwhite, #FAF7F2);
+@media (max-width: 1023px) {
+    #rtl-ticker-wrapper,
+    #rtl-ticker {
+        height: var(--nh-ticker-h, 32px);
+        line-height: var(--nh-ticker-h, 32px);
+        font-size: 13px;
+    }
+
+    .rtl-ticker-item {
+        padding: 0 28px;
+    }
 }
 
-body.dark-mode .rtl-ticker-item a {
-    color: var(--nh-cream, #F1E6D6);
+@media (prefers-reduced-motion: reduce) {
+    .rtl-ticker-content {
+        animation: none;
+        padding-left: 16px;
+        white-space: nowrap;
+    }
 }
