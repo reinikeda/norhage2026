@@ -875,10 +875,12 @@ if ( is_admin() ) {
 	} );
 }
 
-// Enqueue Dashicons on the frontend
+// Enqueue Dashicons on single product pages only (used by extra-block icons).
 add_action( 'wp_enqueue_scripts', 'nh_mb_enqueue_dashicons' );
 function nh_mb_enqueue_dashicons() {
-	wp_enqueue_style( 'dashicons' );
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		wp_enqueue_style( 'dashicons' );
+	}
 }
 
 // 2) ALWAYS (admin & front): register product tabs only when there is content

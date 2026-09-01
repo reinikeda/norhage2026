@@ -46,11 +46,6 @@ jQuery(function ($) {
                   'Sorry, subscription failed. Please try again.',
                 'error'
               );
-
-              // 🔥 Console debug output
-              if (resp && resp.data && resp.data.debug) {
-                console.warn("Sender debug:", resp.data.debug);
-              }
           }
         })
         .fail(function () {

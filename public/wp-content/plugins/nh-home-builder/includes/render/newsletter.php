@@ -2,7 +2,10 @@
 // Newsletter / Subscribe section
 if (!defined('ABSPATH')) exit;
 
-wp_enqueue_style('nhhb-newsletter'); // registered in front_assets()
+wp_enqueue_style('nhhb-newsletter');
+if (function_exists('wp_enqueue_script')) {
+    wp_enqueue_script('nh-sender-newsletter');
+}
 
 // Visible texts: ALWAYS from translations (PO), not from saved data.
 $kicker      = __('✉ Stay in the loop', 'nhhb');

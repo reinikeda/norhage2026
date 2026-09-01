@@ -16,9 +16,33 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 		<?php foreach ( $slides as $index => $slide ) : ?>
 			<article
 				class="nhhb-hero-slide<?php echo 0 === $index ? ' is-active' : ''; ?>"
-				style="--nhhb-hero-bg:url(<?php echo esc_url( $slide['image'] ); ?>)"
 				aria-hidden="<?php echo 0 === $index ? 'false' : 'true'; ?>"
 			>
+				<?php
+				$img_attrs = array(
+					'class'    => 'nhhb-hero-slide__img',
+					'alt'      => '',
+					'decoding' => 'async',
+					'sizes'    => '100vw',
+				);
+				if ( 0 === $index ) {
+					$img_attrs['fetchpriority'] = 'high';
+					$img_attrs['loading']       = 'eager';
+				} else {
+					$img_attrs['loading'] = 'lazy';
+				}
+
+				if ( ! empty( $slide['image_id'] ) ) {
+					echo wp_get_attachment_image( (int) $slide['image_id'], '1536x1536', false, $img_attrs );
+				} elseif ( ! empty( $slide['image'] ) ) {
+					printf(
+						'<img class="nhhb-hero-slide__img" src="%s" alt="" decoding="async" %s sizes="100vw"%s>',
+						esc_url( $slide['image'] ),
+						0 === $index ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"',
+						! empty( $slide['srcset'] ) ? ' srcset="' . esc_attr( $slide['srcset'] ) . '"' : ''
+					);
+				}
+				?>
 				<div class="nhhb-hero__inner">
 					<?php if ( ! empty( $slide['title'] ) ) : ?>
 						<h2 class="nhhb-hero__title"><?php echo esc_html( $slide['title'] ); ?></h2>

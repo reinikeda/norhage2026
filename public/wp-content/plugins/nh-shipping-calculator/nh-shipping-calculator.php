@@ -66,7 +66,7 @@ add_action(
 /* -------------------------------------------------------------------------
  * Ensure Norhage size-based shipping classes exist
  * ---------------------------------------------------------------------- */
-add_action( 'init', 'nhgp_register_size_shipping_classes' );
+add_action( 'admin_init', 'nhgp_register_size_shipping_classes' );
 
 function nhgp_register_size_shipping_classes() {
 	// Make sure WooCommerce + taxonomy are available.

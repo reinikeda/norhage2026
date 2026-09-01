@@ -567,11 +567,11 @@ msgstr "info@norhage.dk"
 
 #: template-parts/footer/footer.php:18
 msgid "https://www.facebook.com/norhage.de"
-msgstr "https://www.facebook.com/norhage.se"
+msgstr "https://www.facebook.com/norhage.dk"
 
 #: template-parts/footer/footer.php:19
 msgid "https://www.instagram.com/norhage.de"
-msgstr "https://www.instagram.com/norhage.se"
+msgstr "https://www.instagram.com/norhage.dk"
 
 #: template-parts/footer/footer.php:20
 msgid "https://www.youtube.com/@NorhageEU"

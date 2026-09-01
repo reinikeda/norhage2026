@@ -2,14 +2,6 @@
 // NH Home Builder – New Arrivals (latest Woo products)
 if (!defined('ABSPATH')) exit;
 
-if (!function_exists('nhhb_img')) {
-    function nhhb_img($id, $size = 'woocommerce_thumbnail', $attrs = []) {
-        if (!$id) return '<div class="nhhb-na-ph"></div>';
-        $attrs = array_merge(['loading' => 'lazy', 'alt' => ''], $attrs);
-        return wp_get_attachment_image((int)$id, $size, false, $attrs);
-    }
-}
-
 wp_enqueue_style('nhhb-new-arrivals');
 
 // Read saved settings (with sane defaults)
@@ -54,7 +46,7 @@ $q = new WP_Query([
     ?>
       <article class="nhhb-na-card">
         <a class="nhhb-na-media" href="<?php the_permalink(); ?>">
-          <span class="nhhb-na-img"><?php echo nhhb_img($thumb_id); ?></span>
+          <span class="nhhb-na-img"><?php echo nhhb_attachment_image($thumb_id, 'woocommerce_thumbnail', ['alt' => get_the_title()]); ?></span>
           <span class="nhhb-na-hover">
             <span class="nhhb-na-cta"><?php esc_html_e('Explore','nhhb'); ?></span>
           </span>

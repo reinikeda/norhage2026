@@ -44,7 +44,10 @@ if ( ! function_exists( 'nhhb_get_hero_image_url' ) ) {
 	function nhhb_get_hero_image_url() {
 		if ( is_singular() ) {
 			$id  = get_queried_object_id();
-			$url = get_the_post_thumbnail_url( $id, 'full' );
+			$url = get_the_post_thumbnail_url( $id, '1536x1536' );
+			if ( ! $url ) {
+				$url = get_the_post_thumbnail_url( $id, 'large' );
+			}
 
 			if ( $url ) {
 				return $url;
@@ -59,33 +62,49 @@ if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 	function nhhb_get_home_hero_slides() {
 		$fallback      = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/images/header-1920.jpg';
 		$front_page_id = (int) get_option( 'page_on_front' );
-		$rows          = $front_page_id ? get_post_meta( $front_page_id, '_nh_home_hero_slides', true ) : [];
-		$slides        = [];
+		$rows   = $front_page_id ? get_post_meta( $front_page_id, '_nh_home_hero_slides', true ) : [];
+		$slides = [];
 
 		if ( is_array( $rows ) ) {
 			foreach ( $rows as $row ) {
+				if ( ! is_array( $row ) ) {
+					continue;
+				}
+
 				$image_id = isset( $row['image_id'] ) ? absint( $row['image_id'] ) : 0;
-				$image    = $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
-				$title    = isset( $row['title'] ) ? trim( (string) $row['title'] ) : '';
-				$text     = isset( $row['text'] ) ? trim( (string) $row['text'] ) : '';
+				$image    = '';
+				$srcset   = '';
+				if ( $image_id ) {
+					$image = wp_get_attachment_image_url( $image_id, '1536x1536' );
+					if ( ! $image ) {
+						$image = wp_get_attachment_image_url( $image_id, 'large' );
+					}
+					$srcset = (string) wp_get_attachment_image_srcset( $image_id, '1536x1536' );
+				}
+				$title = isset( $row['title'] ) ? trim( (string) $row['title'] ) : '';
+				$text  = isset( $row['text'] ) ? trim( (string) $row['text'] ) : '';
 
 				if ( $image === '' && $title === '' && $text === '' ) {
 					continue;
 				}
 
 				$slides[] = [
-					'image' => $image ? $image : $fallback,
-					'title' => $title,
-					'text'  => $text,
+					'image_id' => $image_id,
+					'image'    => $image ? $image : $fallback,
+					'srcset'   => $srcset,
+					'title'    => $title,
+					'text'     => $text,
 				];
 			}
 		}
 
 		if ( empty( $slides ) ) {
 			$slides[] = [
-				'image' => $fallback,
-				'title' => nhhb_get_hero_title(),
-				'text'  => '',
+				'image_id' => 0,
+				'image'    => $fallback,
+				'srcset'   => '',
+				'title'    => nhhb_get_hero_title(),
+				'text'     => '',
 			];
 		}
 

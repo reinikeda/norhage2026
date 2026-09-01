@@ -56,7 +56,8 @@ class NHG_Sale_Category_Sync {
 			'lt_LT' => 'ispardavimas',
 			'nb_NO' => 'salg',
 			'sv_SE' => 'rea',
-			'fi' => 'alennusmyynti',
+			'fi'    => 'alennusmyynti',
+			'fi_FI' => 'alennusmyynti',
 			'de_DE' => 'verkauf',
 			'da_DK' => 'udsalg',
 		];

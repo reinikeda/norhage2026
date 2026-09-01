@@ -12,10 +12,16 @@ defined('ABSPATH') or die('No script kiddies please.');
 require_once plugin_dir_path(__FILE__) . 'includes/admin-page.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ticker-functions.php';
 
-// Enqueue frontend styles and scripts
+// Enqueue frontend styles and scripts only when the ticker has messages.
 add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style('rtl-ticker-style', plugin_dir_url(__FILE__) . 'css/ticker-style.css');
-    wp_enqueue_script('rtl-ticker-script', plugin_dir_url(__FILE__) . 'js/ticker-script.js', [], null, true);
+    if (is_admin()) {
+        return;
+    }
+    if (!function_exists('rtl_get_active_messages') || empty(rtl_get_active_messages())) {
+        return;
+    }
+    wp_enqueue_style('rtl-ticker-style', plugin_dir_url(__FILE__) . 'css/ticker-style.css', [], '1.0.1');
+    wp_enqueue_script('rtl-ticker-script', plugin_dir_url(__FILE__) . 'js/ticker-script.js', [], '1.0.1', true);
 });
 
 // Display ticker on frontend

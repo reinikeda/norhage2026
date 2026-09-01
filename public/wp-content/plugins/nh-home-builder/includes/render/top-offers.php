@@ -3,14 +3,6 @@
 wp_enqueue_style('nhhb-top-offers');
 wp_enqueue_script('nhhb-top-offers');
 
-if (!function_exists('nhhb_img')) {
-    function nhhb_img($id, $size = 'large', $attrs = []) {
-        if (!$id) return '<div class="nhhb-ph-img"></div>';
-        $attrs = array_merge(['loading' => 'lazy', 'alt' => ''], $attrs);
-        return wp_get_attachment_image((int)$id, $size, false, $attrs);
-    }
-}
-
 $slides_raw = (isset($data['slides']) && is_array($data['slides'])) ? $data['slides'] : [];
 $promos_raw = (isset($data['promos']) && is_array($data['promos'])) ? $data['promos'] : [];
 
@@ -37,10 +29,15 @@ if (empty($slides)) {
   <div class="nhhb-hero-col">
     <div class="nhhb-slider" role="region" aria-roledescription="carousel" aria-label="<?php echo esc_attr__('Featured offers', 'nhhb'); ?>">
       <div class="nhhb-slides" aria-live="polite">
-        <?php foreach ($slides as $s): ?>
+        <?php foreach ($slides as $i => $s):
+            $img_attrs = ['class' => 'nhhb-bg', 'decoding' => 'async'];
+            if ($i === 0) {
+                $img_attrs['loading'] = 'eager';
+            }
+            ?>
           <div class="nhhb-slide">
             <div class="nhhb-slide-bg">
-              <?php echo nhhb_img((int)($s['img'] ?? 0), 'full', ['class' => 'nhhb-bg']); ?>
+              <?php echo nhhb_attachment_image((int)($s['img'] ?? 0), '1536x1536', $img_attrs); ?>
             </div>
             <div class="nhhb-slide-copy">
               <?php if (!empty($s['h1'])): ?><h2 class="nhhb-h1"><?php echo esc_html($s['h1']); ?></h2><?php endif; ?>
@@ -68,7 +65,7 @@ if (empty($slides)) {
     <?php foreach ([0,1] as $i): $p = $promos[$i]; ?>
       <div class="nhhb-promo">
         <div class="nhhb-promo-media">
-          <?php echo nhhb_img((int)($p['img'] ?? 0), 'large'); ?>
+          <?php echo nhhb_attachment_image((int)($p['img'] ?? 0), 'large'); ?>
         </div>
         <div class="nhhb-promo-body">
           <?php if (!empty($p['h1'])): ?>

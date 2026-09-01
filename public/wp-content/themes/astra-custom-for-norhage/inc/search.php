@@ -11,15 +11,21 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // 1) Shortcode: form + results container
 add_shortcode( 'live_product_search', 'nrh_live_search_form' );
 function nrh_live_search_form() {
+	static $instance = 0;
+	$instance++;
+
 	$placeholder = esc_attr__( 'Search products…', 'nh-theme' );
 	$label_text  = esc_html__( 'Search products', 'nh-theme' );
+	$input_id    = 'nrh-search-input-' . $instance;
+	$results_id  = 'nrh-search-results-' . $instance;
+	$status_id   = 'nrh-search-status-' . $instance;
 
 	return '
 	<div class="nh-live-search">
-		<label for="nrh-search-input" class="screen-reader-text">' . $label_text . '</label>
+		<label for="' . esc_attr( $input_id ) . '" class="screen-reader-text">' . $label_text . '</label>
 		<input
 			type="search"
-			id="nrh-search-input"
+			id="' . esc_attr( $input_id ) . '"
 			name="s"
 			placeholder="' . $placeholder . '"
 			autocomplete="off"
@@ -28,19 +34,16 @@ function nrh_live_search_form() {
 			aria-haspopup="listbox"
 			aria-expanded="false"
 			aria-autocomplete="list"
-			aria-controls="nrh-search-results"
-			aria-owns="nrh-search-results"
+			aria-controls="' . esc_attr( $results_id ) . '"
 		/>
 		<ul
-			id="nrh-search-results"
+			id="' . esc_attr( $results_id ) . '"
 			class="nh-live-results"
 			role="listbox"
 			aria-label="' . esc_attr__( 'Search results', 'nh-theme' ) . '"
 			aria-hidden="true"
 		></ul>
-
-		<!-- polite status region for announcing counts/changes -->
-		<div id="nrh-search-status" class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true"></div>
+		<div id="' . esc_attr( $status_id ) . '" class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true"></div>
 	</div>
 	';
 }
@@ -56,6 +59,12 @@ function nrh_live_search_callback() {
 	$term = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 	if ( mb_strlen( $term ) < 2 ) {
 		wp_send_json( [ 'items' => [], 'more' => false, 'total' => 0, 'url' => '' ] );
+	}
+
+	$cache_key = 'nrh_ls_' . md5( strtolower( $term ) . '|' . get_locale() );
+	$cached    = get_transient( $cache_key );
+	if ( is_array( $cached ) ) {
+		wp_send_json( $cached );
 	}
 
 	// Optional: mild HTTP caching guard for AJAX endpoints
@@ -204,23 +213,26 @@ function nrh_live_search_callback() {
 		home_url( '/' )
 	);
 
-	wp_send_json( [
+	$payload = [
 		'items' => $items,
 		'more'  => $has_more,
 		'total' => $total,
 		'url'   => esc_url_raw( $search_url ),
-	] );
+	];
+
+	set_transient( $cache_key, $payload, 5 * MINUTE_IN_SECONDS );
+
+	wp_send_json( $payload );
 }
 
 // 3) Enqueue JS & localize
 add_action( 'wp_enqueue_scripts', function () {
-	// Load on every front-end page
 	wp_enqueue_script(
 		'nrh-live-search',
 		get_stylesheet_directory_uri() . '/assets/js/live-search.js',
 		[ 'jquery' ],
-		'1.2',
-		true
+		norhage_asset_version( '/assets/js/live-search.js' ),
+		function_exists( 'norhage_script_args' ) ? norhage_script_args() : true
 	);
 
 	wp_localize_script( 'nrh-live-search', 'nrh_live_search', [

@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.7.0
+ * Version: 1.7.1
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -33,7 +33,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.7.0'
+		'1.7.1'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,7 +41,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.7.0',
+		'1.7.1',
 		true
 	);
 
@@ -151,6 +151,20 @@ function nhf_get_selected_attr_slugs( string $tax ): array {
  * Soft-limited for performance.
  */
 function nhf_get_archive_parent_ids( int $max = 2000 ): array {
+	$term_key = 'shop';
+	if ( is_product_taxonomy() ) {
+		$obj = get_queried_object();
+		if ( isset( $obj->term_id ) ) {
+			$term_key = (int) $obj->term_id;
+		}
+	}
+
+	$cache_key = 'nhf_archive_ids_' . $term_key . '_' . $max;
+	$cached    = get_transient( $cache_key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
 	$args = [
 		'post_type'              => 'product',
 		'post_status'            => 'publish',
@@ -161,7 +175,6 @@ function nhf_get_archive_parent_ids( int $max = 2000 ): array {
 		'update_post_term_cache' => false,
 	];
 
-	// Constrain to current taxonomy archive if present.
 	if ( is_product_taxonomy() ) {
 		$obj = get_queried_object();
 
@@ -174,8 +187,11 @@ function nhf_get_archive_parent_ids( int $max = 2000 ): array {
 		}
 	}
 
-	$q = new WP_Query( $args );
-	return $q->posts ? array_map( 'absint', $q->posts ) : [];
+	$q    = new WP_Query( $args );
+	$ids  = $q->posts ? array_map( 'absint', $q->posts ) : [];
+	set_transient( $cache_key, $ids, 15 * MINUTE_IN_SECONDS );
+
+	return $ids;
 }
 
 /**
@@ -185,23 +201,22 @@ function nhf_get_archive_parent_ids( int $max = 2000 ): array {
 function nhf_expand_with_variations( array $parent_ids ): array {
 	if ( empty( $parent_ids ) ) return [];
 
-	$all = $parent_ids;
+	global $wpdb;
 
-	foreach ( $parent_ids as $pid ) {
-		$product = wc_get_product( $pid );
+	$all  = array_map( 'absint', $parent_ids );
+	$all  = array_values( array_filter( $all ) );
+	$chunks = array_chunk( $all, 500 );
 
-		if ( $product && $product->is_type( 'variable' ) ) {
-			$children = $product->get_children();
-
-			if ( $children ) {
-				foreach ( $children as $vid ) {
-					$all[] = (int) $vid;
-				}
-			}
+	foreach ( $chunks as $chunk ) {
+		$placeholders = implode( ',', array_fill( 0, count( $chunk ), '%d' ) );
+		$sql          = "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'product_variation' AND post_status IN ('publish','private') AND post_parent IN ($placeholders)";
+		$children     = $wpdb->get_col( $wpdb->prepare( $sql, $chunk ) );
+		if ( $children ) {
+			$all = array_merge( $all, array_map( 'absint', $children ) );
 		}
 	}
 
-	return array_values( array_unique( array_map( 'absint', $all ) ) );
+	return array_values( array_unique( $all ) );
 }
 
 /**
@@ -214,8 +229,10 @@ function nhf_get_sale_slug(): string {
 		'lt_LT' => 'ispardavimas',
 		'nb_NO' => 'salg',
 		'sv_SE' => 'rea',
-		'fi_FI' => 'ale',
-		'de_DE' => 'sale',
+		'fi'    => 'alennusmyynti',
+		'fi_FI' => 'alennusmyynti',
+		'de_DE' => 'verkauf',
+		'da_DK' => 'udsalg',
 	];
 
 	if ( isset( $map[ $locale ] ) ) {
@@ -307,18 +324,23 @@ function nhf_render_categories() {
 		}
 	}
 
-	$categories = get_terms([
+	$all = get_terms([
 		'taxonomy'   => 'product_cat',
 		'hide_empty' => true,
-		'parent'     => 0,
 	]);
 
-	if ( empty( $categories ) || is_wp_error( $categories ) ) {
+	if ( empty( $all ) || is_wp_error( $all ) ) {
 		echo '<p>' . esc_html__( 'No categories found.', 'nhf' ) . '</p>';
 		return;
 	}
 
-	$sale_slug = nhf_get_sale_slug();
+	$by_parent = [];
+	foreach ( $all as $term ) {
+		$by_parent[ (int) $term->parent ][] = $term;
+	}
+
+	$categories = $by_parent[0] ?? [];
+	$sale_slug  = nhf_get_sale_slug();
 
 	echo '<ul class="nhf-cat-list">';
 
@@ -331,18 +353,12 @@ function nhf_render_categories() {
 		$is_ancestor = ( $current_term_id && term_is_ancestor_of( $cat->term_id, $current_term_id, 'product_cat' ) );
 		$is_open     = ( $is_current || $is_ancestor );
 
-		$children = get_terms([
-			'taxonomy'   => 'product_cat',
-			'hide_empty' => true,
-			'parent'     => $cat->term_id,
-		]);
-
-		$has_children = ( ! empty( $children ) && ! is_wp_error( $children ) );
+		$children     = $by_parent[ (int) $cat->term_id ] ?? [];
+		$has_children = ! empty( $children );
 		$open_class   = ( $has_children && $is_open ) ? ' is-open' : '';
 
 		echo '<li class="nhf-cat-item' . esc_attr( $open_class ) . '">';
 
-		// If no children: normal link
 		if ( ! $has_children ) {
 			echo '<a class="nhf-cat-link" href="' . esc_url( get_term_link( $cat ) ) . '">';
 			echo '<span class="nhf-cat-name">' . esc_html( $cat->name ) . '</span>';

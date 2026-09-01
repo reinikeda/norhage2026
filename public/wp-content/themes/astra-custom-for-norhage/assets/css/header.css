@@ -616,13 +616,13 @@ body.drawer-open { overflow: hidden; }
   background: transparent;
   border: 0;
   cursor: pointer;
+  color: #fff;
 }
 
 .nh-burger__icon {
   width: 24px;
   height: 24px;
   display: block;
-  filter: invert(1) brightness(1.25) contrast(1.05);
   opacity: .95;
 }
 
@@ -1202,12 +1202,19 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
   align-items: center;
   justify-content: center;
   min-height: clamp(140px, 20vh, 220px); /* Slightly taller for better scale */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   background-color: var(--nh-forest, #1E3932);
   text-align: center;
   overflow: hidden;
+}
+
+.nhhb-hero--page__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
 }
 
 /* Darker Overlay */

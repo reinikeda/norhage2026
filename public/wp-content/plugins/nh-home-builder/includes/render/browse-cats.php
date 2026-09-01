@@ -5,14 +5,6 @@ if (!defined('ABSPATH')) exit;
 wp_enqueue_style('nhhb-browse-cats');
 wp_enqueue_script('nhhb-browse-cats');
 
-if (!function_exists('nhhb_img')) {
-    function nhhb_img($id, $size = 'thumbnail', $attrs = []) {
-        if (!$id) return '<div class="nhhb-cat-ph"></div>';
-        $attrs = array_merge(['loading' => 'lazy', 'alt' => ''], $attrs);
-        return wp_get_attachment_image((int)$id, $size, false, $attrs);
-    }
-}
-
 // Settings (saved in meta)
 $title      = isset($data['title'])      ? sanitize_text_field($data['title'])   : __('Browse by Category','nhhb');
 $parent_id  = isset($data['parent'])     ? absint($data['parent'])               : 0; // 0 = top level
@@ -67,7 +59,10 @@ if (!is_wp_error($terms) && $terms) {
           ?>
           <a class="nhhb-cat" href="<?php echo esc_url($link); ?>" role="listitem">
             <span class="nhhb-cat-figure">
-              <?php echo nhhb_img($thumb_id, 'medium'); ?>
+              <?php echo nhhb_attachment_image($thumb_id, 'woocommerce_thumbnail', [
+                  'sizes' => '(max-width: 768px) 40vw, 160px',
+                  'alt'   => $t->name,
+              ]); ?>
             </span>
             <span class="nhhb-cat-name"><?php echo esc_html($t->name); ?></span>
           </a>

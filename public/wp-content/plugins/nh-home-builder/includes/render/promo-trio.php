@@ -4,14 +4,6 @@ if (!defined('ABSPATH')) exit;
 
 wp_enqueue_style('nhhb-promo-trio');
 
-if (!function_exists('nhhb_img')) {
-    function nhhb_img($id, $size = 'large', $attrs = []) {
-        if (!$id) return '<div class="nhhb-pt-ph"></div>';
-        $attrs = array_merge(['loading' => 'lazy', 'alt' => ''], $attrs);
-        return wp_get_attachment_image((int)$id, $size, false, $attrs);
-    }
-}
-
 $cards = (isset($data['cards']) && is_array($data['cards'])) ? $data['cards'] : [];
 
 /* Safe defaults so the section never breaks */
@@ -32,7 +24,7 @@ for ($i = 0; $i < 3; $i++) {
     <?php /* Hero (full width) */ $c = $cards[0]; ?>
     <div class="nhhb-pt-card nhhb-pt-hero">
       <div class="nhhb-pt-media">
-        <?php echo nhhb_img((int)$c['img'], 'full', ['class'=>'nhhb-pt-img']); ?>
+        <?php echo nhhb_attachment_image((int)$c['img'], '1536x1536', ['class'=>'nhhb-pt-img']); ?>
       </div>
       <div class="nhhb-pt-copy">
         <?php if(!empty($c['h3'])): ?><div class="nhhb-pt-kicker"><?php echo esc_html($c['h3']); ?></div><?php endif; ?>
@@ -48,7 +40,7 @@ for ($i = 0; $i < 3; $i++) {
     <?php for ($i = 1; $i <= 2; $i++): $c = $cards[$i]; ?>
       <div class="nhhb-pt-card nhhb-pt-small">
         <div class="nhhb-pt-media">
-          <?php echo nhhb_img((int)$c['img'], 'large', ['class'=>'nhhb-pt-img']); ?>
+          <?php echo nhhb_attachment_image((int)$c['img'], 'large', ['class'=>'nhhb-pt-img']); ?>
         </div>
         <div class="nhhb-pt-copy">
           <?php if(!empty($c['h3'])): ?><div class="nhhb-pt-kicker"><?php echo esc_html($c['h3']); ?></div><?php endif; ?>
