@@ -16,7 +16,7 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 		<?php foreach ( $slides as $index => $slide ) : ?>
 			<article
 				class="nhhb-hero-slide<?php echo 0 === $index ? ' is-active' : ''; ?>"
-				style="--nhhb-hero-bg:url(<?php echo esc_url( $slide['image'] ); ?>)"
+				style="--nhhb-hero-bg: url('<?php echo esc_url( $slide['image'] ); ?>')"
 				aria-hidden="<?php echo 0 === $index ? 'false' : 'true'; ?>"
 			>
 				<div class="nhhb-hero__inner">

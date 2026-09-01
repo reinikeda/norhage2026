@@ -55,6 +55,31 @@ if ( ! function_exists( 'nhhb_get_hero_image_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nhhb_get_hero_fallback_image_url' ) ) {
+	/**
+	 * Theme-bundled page-hero image when the page has no featured image.
+	 *
+	 * @return string
+	 */
+	function nhhb_get_hero_fallback_image_url() {
+		$dir = get_stylesheet_directory();
+		$uri = trailingslashit( get_stylesheet_directory_uri() );
+		$rel = array(
+			'assets/images/hero-fallback.webp',
+			'assets/images/hero-fallback.jpg',
+			'assets/images/header-1920.jpg',
+		);
+
+		foreach ( $rel as $path ) {
+			if ( file_exists( $dir . '/' . $path ) ) {
+				return $uri . $path;
+			}
+		}
+
+		return '';
+	}
+}
+
 if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 	function nhhb_get_home_hero_slides() {
 		$fallback      = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/images/header-1920.jpg';
@@ -92,3 +117,18 @@ if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 		return array_slice( $slides, 0, 5 );
 	}
 }
+
+/**
+ * Autoptimize on .eu turns CSS background-image into an empty SVG + data-bg.
+ * Exclude hero media so the page header image and title stay visible.
+ *
+ * @param string $exclude Comma-separated class/filename excludes.
+ * @return string
+ */
+function nhhb_autoptimize_skip_hero_lazyload( $exclude ) {
+	$exclude = is_string( $exclude ) ? $exclude : '';
+	$skip    = 'nhhb-hero, nhhb-hero__media, nhhb-hero-slide, skip-lazy, no-lazyload';
+	return $exclude === '' ? $skip : $exclude . ', ' . $skip;
+}
+add_filter( 'autoptimize_filter_imgopt_lazyload_exclude', 'nhhb_autoptimize_skip_hero_lazyload' );
+add_filter( 'autoptimize_extra_filter_imagelazyload_exclude', 'nhhb_autoptimize_skip_hero_lazyload' );
