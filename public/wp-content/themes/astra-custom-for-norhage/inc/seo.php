@@ -627,17 +627,18 @@ function nh_seo_rest_product_by_sku( $request ) {
 	}
 
 	$url  = nh_seo_local_url_for_sku( $sku );
-	$shop = nh_seo_current_shop();
-	if ( $url === '' || ! $shop ) {
+	if ( $url === '' ) {
 		return new WP_Error( 'nh_seo_not_found', 'Product not found.', array( 'status' => 404 ) );
 	}
+
+	$shop = nh_seo_current_shop();
 
 	return new WP_REST_Response(
 		array(
 			'sku'      => $sku,
 			'url'      => $url,
-			'host'     => $shop['host'],
-			'hreflang' => $shop['hreflang'],
+			'host'     => $shop ? $shop['host'] : nh_seo_current_host(),
+			'hreflang' => $shop ? $shop['hreflang'] : '',
 		),
 		200
 	);
