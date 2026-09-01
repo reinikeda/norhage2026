@@ -109,12 +109,6 @@
     border-right: none;
   }
 
-  .nhhb-top-features .nhhb-icon {
-    width: 48px;
-    height: 48px;
-    flex-basis: 48px;
-  }
-
-  .nhhb-top-features h3.nhhb-feature-title { font-size: 0.9375rem; }
-  .nhhb-top-features .nhhb-feature-sub { font-size: 0.8125rem; }
+  .nhhb-top-features h3.nhhb-feature-title{ font-size: 13px; }
+  .nhhb-top-features .nhhb-feature-sub{ font-size: 11px; }
 }

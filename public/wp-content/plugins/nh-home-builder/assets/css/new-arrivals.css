@@ -19,8 +19,23 @@
   z-index: 1;
 }
 
-.nhhb-na-viewall {
-  padding: 0 14px;
+.nhhb-na-title{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--nh-forest);
+  letter-spacing: -.01em;
+}
+
+/* "View All" pill */
+.nhhb-na-viewall{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
   background: transparent;
   color: var(--nhhb-forest, #1E3932);
   border: 1.5px solid var(--nhhb-forest, #1E3932);
@@ -121,7 +136,30 @@
 
 @media (hover: hover) and (pointer: fine) {
   .nhhb-na-card:hover {
-    box-shadow: var(--nhhb-shadow, 0 8px 24px rgba(30, 57, 50, 0.10));
-    border-color: rgba(0, 112, 74, 0.28);
+    transform: none;
+    box-shadow: 0 6px 18px rgba(30,57,50,0.10);
+  }
+}
+
+/* Extra-tight for very small phones: slightly smaller squares & fonts */
+@media (max-width: 440px) {
+  .nhhb-na-grid { gap: 8px; }
+  .nhhb-na-card { padding: 8px; }
+  .nhhb-na-media { aspect-ratio: 1 / 1; margin-bottom: 6px; border-radius: 6px; }
+  .nhhb-new-arrivals .nhhb-na-card h3.nhhb-na-name { font-size: 12.5px; }
+  .nhhb-na-price { font-size: 12px; }
+}
+
+@media (max-width: 350px){
+  .nhhb-na-grid{ grid-template-columns: 1fr; }
+  .nhhb-na-media{ height: 150px; }
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce){
+  .nhhb-na-card,
+  .nhhb-na-img img,
+  .nhhb-na-viewall{
+    transition: none;
   }
 }

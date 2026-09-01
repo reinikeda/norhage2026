@@ -130,10 +130,13 @@
   .nhhb-cat-figure { width: 120px; height: 120px; }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .nhhb-cat:hover .nhhb-cat-figure {
-    border-color: rgba(0, 112, 74, 0.35);
-    box-shadow: 0 10px 28px rgba(30, 57, 50, 0.16);
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce){
+  .nhhb-cat-figure,
+  .nhhb-cat-figure img,
+  .nhhb-cat-name,
+  .nhhb-cat-prev,
+  .nhhb-cat-next{
+    transition: none;
   }
-  .nhhb-cat:hover .nhhb-cat-name { color: var(--nhhb-green, #00704A); }
 }

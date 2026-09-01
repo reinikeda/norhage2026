@@ -74,8 +74,19 @@
 }
 
 .nhhb-b2b-cta:hover {
-  background: #1a8fc1 !important;
+  background: var(--b2b-accent) !important;
   color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,143,193,.45);
+}
+
+.nhhb-b2b-cta:hover::after {
+  transform: translateX(3px);
+}
+
+.nhhb-b2b-cta:focus-visible {
+  outline: 3px solid rgba(255,255,255,.40);
+  outline-offset: 3px;
 }
 
 @media (min-width: 768px) {
