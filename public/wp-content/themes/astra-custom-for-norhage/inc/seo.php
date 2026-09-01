@@ -25,8 +25,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Shop network used for homepage hreflang.
  *
- * Inner URLs are translated per locale (a .eu product slug 404s on .de), so we
- * only emit hreflang on the front page. Host-swapping inner paths would be wrong.
+ * Homepage hreflang is host-based. Product hreflang is SKU-based: each shop
+ * looks up the same SKU on sibling domains (separate DBs) and uses that
+ * shop's real permalink. Missing SKUs are omitted (never host-swap slugs).
  *
  * @return array<string, array{host:string, hreflang:string, x_default:bool, area:string, country:string}>
  */
@@ -134,24 +135,538 @@ function nh_seo_jsonld( $data ) {
 }
 
 /**
- * Front-page hreflang cluster + llms.txt discovery link.
+ * Print llms.txt discovery link and hreflang cluster (homepage or product SKU).
  */
 function nh_seo_print_head_links() {
 	echo '<link rel="alternate" type="text/plain" title="llms.txt" href="' . esc_url( home_url( '/llms.txt' ) ) . '" />' . "\n";
 
-	if ( ! is_front_page() ) {
+	$cluster = nh_seo_hreflang_cluster();
+	if ( empty( $cluster ) ) {
 		return;
 	}
 
-	foreach ( nh_seo_shop_network() as $shop ) {
-		$url = 'https://' . $shop['host'] . '/';
-		echo '<link rel="alternate" hreflang="' . esc_attr( $shop['hreflang'] ) . '" href="' . esc_url( $url ) . '" />' . "\n";
-		if ( ! empty( $shop['x_default'] ) ) {
-			echo '<link rel="alternate" hreflang="x-default" href="' . esc_url( $url ) . '" />' . "\n";
+	$x_default = '';
+	foreach ( $cluster as $row ) {
+		if ( empty( $row['hreflang'] ) || empty( $row['url'] ) ) {
+			continue;
 		}
+		echo '<link rel="alternate" hreflang="' . esc_attr( $row['hreflang'] ) . '" href="' . esc_url( $row['url'] ) . '" />' . "\n";
+		if ( ! empty( $row['x_default'] ) ) {
+			$x_default = $row['url'];
+		}
+	}
+
+	if ( $x_default !== '' ) {
+		echo '<link rel="alternate" hreflang="x-default" href="' . esc_url( $x_default ) . '" />' . "\n";
 	}
 }
 add_action( 'wp_head', 'nh_seo_print_head_links', 2 );
+
+/**
+ * Hreflang rows for the current request.
+ *
+ * @return array<int, array{hreflang:string, url:string, x_default:bool}>
+ */
+function nh_seo_hreflang_cluster() {
+	if ( is_front_page() ) {
+		$rows = array();
+		foreach ( nh_seo_shop_network() as $shop ) {
+			$rows[] = array(
+				'hreflang'  => $shop['hreflang'],
+				'url'       => 'https://' . $shop['host'] . '/',
+				'x_default' => ! empty( $shop['x_default'] ),
+			);
+		}
+		return $rows;
+	}
+
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		return nh_seo_product_hreflang_cluster();
+	}
+
+	return array();
+}
+
+/**
+ * Whether a SKU is safe to put in a query string / cache key.
+ *
+ * @param string $sku SKU.
+ * @return bool
+ */
+function nh_seo_is_usable_sku( $sku ) {
+	$sku = trim( (string) $sku );
+	if ( $sku === '' || strlen( $sku ) > 80 ) {
+		return false;
+	}
+	return (bool) preg_match( '/^[A-Za-z0-9._\-\/%]+$/', $sku );
+}
+
+/**
+ * SKU used to cluster this product page across shops.
+ *
+ * @return string
+ */
+function nh_seo_current_product_sku() {
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return '';
+	}
+
+	$product = wc_get_product( get_queried_object_id() );
+	if ( ! $product ) {
+		return '';
+	}
+
+	$sku = (string) $product->get_sku();
+	if ( $sku === '' && $product->get_parent_id() ) {
+		$parent = wc_get_product( $product->get_parent_id() );
+		$sku    = $parent ? (string) $parent->get_sku() : '';
+	}
+
+	return nh_seo_is_usable_sku( $sku ) ? $sku : '';
+}
+
+/**
+ * Local catalog URL for a SKU, if the product is published and visible.
+ *
+ * @param string $sku SKU.
+ * @return string
+ */
+function nh_seo_local_url_for_sku( $sku ) {
+	if ( ! function_exists( 'wc_get_product_id_by_sku' ) ) {
+		return '';
+	}
+
+	$id = (int) wc_get_product_id_by_sku( $sku );
+	if ( $id <= 0 ) {
+		return '';
+	}
+
+	$product = wc_get_product( $id );
+	if ( ! $product ) {
+		return '';
+	}
+
+	if ( $product->is_type( 'variation' ) && $product->get_parent_id() ) {
+		$parent = wc_get_product( $product->get_parent_id() );
+		if ( $parent ) {
+			$product = $parent;
+		}
+	}
+
+	if ( $product->get_status() !== 'publish' || ! $product->is_visible() ) {
+		return '';
+	}
+
+	$url = get_permalink( $product->get_id() );
+	return is_string( $url ) && $url !== '' ? $url : '';
+}
+
+/**
+ * Product hreflang cluster: local permalink + sibling shops resolved by SKU.
+ *
+ * Sibling lookups are cached (12h). Separate DBs mean slugs differ; we never
+ * rewrite the path onto another host. Shops that lack the SKU are omitted.
+ *
+ * @return array<int, array{hreflang:string, url:string, x_default:bool}>
+ */
+function nh_seo_product_hreflang_cluster() {
+	$sku = nh_seo_current_product_sku();
+	if ( $sku === '' ) {
+		return array();
+	}
+
+	$local_url = get_permalink();
+	if ( ! is_string( $local_url ) || $local_url === '' ) {
+		$local_url = nh_seo_local_url_for_sku( $sku );
+	}
+	if ( $local_url === '' ) {
+		return array();
+	}
+
+	$map = nh_seo_sku_hreflang_map( $sku, $local_url );
+
+	/**
+	 * Filter the SKU → shop URL map before hreflang is printed.
+	 *
+	 * @param array<string, string> $map host => url.
+	 * @param string                $sku SKU.
+	 */
+	$map = apply_filters( 'nh_seo_hreflang_map', $map, $sku );
+	if ( ! is_array( $map ) ) {
+		return array();
+	}
+
+	$rows = array();
+	foreach ( nh_seo_shop_network() as $shop ) {
+		$host = $shop['host'];
+		if ( empty( $map[ $host ] ) ) {
+			continue;
+		}
+		$url = nh_seo_normalize_shop_url( $map[ $host ], $host );
+		if ( $url === '' ) {
+			continue;
+		}
+		$rows[] = array(
+			'hreflang'  => $shop['hreflang'],
+			'url'       => $url,
+			'x_default' => ! empty( $shop['x_default'] ),
+		);
+	}
+
+	return $rows;
+}
+
+/**
+ * Keep only https URLs whose host matches the expected shop.
+ *
+ * @param string $url  Candidate permalink.
+ * @param string $host Expected host (no www).
+ * @return string
+ */
+function nh_seo_normalize_shop_url( $url, $host ) {
+	$parts = wp_parse_url( (string) $url );
+	if ( ! is_array( $parts ) || empty( $parts['host'] ) || empty( $parts['scheme'] ) ) {
+		return '';
+	}
+	if ( strtolower( $parts['scheme'] ) !== 'https' ) {
+		return '';
+	}
+
+	$got = strtolower( (string) $parts['host'] );
+	$got = (string) preg_replace( '/^www\./', '', $got );
+	if ( $got !== strtolower( $host ) ) {
+		return '';
+	}
+
+	$path  = isset( $parts['path'] ) ? $parts['path'] : '/';
+	$query = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
+
+	return 'https://' . $host . $path . $query;
+}
+
+/**
+ * host => url for a SKU. Always includes the current shop's local URL.
+ *
+ * @param string $sku       SKU.
+ * @param string $local_url Current shop permalink.
+ * @return array<string, string>
+ */
+function nh_seo_sku_hreflang_map( $sku, $local_url ) {
+	$current_host = nh_seo_current_host();
+	$cache_key    = 'nh_seo_hl_' . md5( strtolower( $sku ) );
+	$cached       = get_transient( $cache_key );
+
+	$map = array();
+	if ( is_array( $cached ) ) {
+		$map = $cached;
+	}
+
+	if ( $current_host !== '' ) {
+		$map[ $current_host ] = $local_url;
+	}
+
+	$missing = array();
+	foreach ( nh_seo_shop_network() as $shop ) {
+		$host = $shop['host'];
+		if ( $host === $current_host ) {
+			continue;
+		}
+		if ( ! array_key_exists( $host, $map ) ) {
+			$missing[] = $host;
+		}
+	}
+
+	if ( ! empty( $missing ) ) {
+		$fetched = nh_seo_fetch_remote_sku_urls( $sku, $missing );
+		foreach ( $fetched['found'] as $host => $url ) {
+			$clean = nh_seo_normalize_shop_url( $url, $host );
+			if ( $clean !== '' ) {
+				$map[ $host ] = $clean;
+			}
+		}
+		foreach ( $fetched['absent'] as $host ) {
+			if ( ! isset( $map[ $host ] ) ) {
+				$map[ $host ] = '';
+			}
+		}
+
+		$ttl = (int) apply_filters( 'nh_seo_hreflang_cache_ttl', 12 * HOUR_IN_SECONDS, $sku );
+		set_transient( $cache_key, $map, max( 300, $ttl ) );
+	}
+
+	return $map;
+}
+
+/**
+ * Resolve permalinks for a SKU on sibling shops.
+ *
+ * Prefers this theme's tiny REST route; falls back to the public Woo Store API
+ * so lookups work before every shop has deployed the new endpoint.
+ *
+ * @param string        $sku   SKU.
+ * @param array<string> $hosts Sibling hosts.
+ * @return array{found: array<string, string>, absent: array<int, string>}
+ */
+function nh_seo_fetch_remote_sku_urls( $sku, $hosts ) {
+	$found  = array();
+	$absent = array();
+	if ( empty( $hosts ) ) {
+		return array(
+			'found'  => $found,
+			'absent' => $absent,
+		);
+	}
+
+	$sku_q = rawurlencode( $sku );
+	$urls  = array();
+	foreach ( $hosts as $host ) {
+		$urls[ $host ] = 'https://' . $host . '/wp-json/nh-seo/v1/product-by-sku?sku=' . $sku_q;
+	}
+
+	$responses = nh_seo_parallel_get( $urls );
+	$retry     = array();
+	foreach ( $hosts as $host ) {
+		$body = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
+		$url  = nh_seo_parse_remote_sku_body( $body, $sku, $host );
+		if ( $url !== '' ) {
+			$found[ $host ] = $url;
+		} else {
+			$retry[ $host ] = 'https://' . $host . '/wp-json/wc/store/v1/products?sku=' . $sku_q;
+		}
+	}
+
+	$use_store = apply_filters( 'nh_seo_hreflang_use_store_api', true, $sku );
+	if ( $use_store && ! empty( $retry ) ) {
+		$responses = nh_seo_parallel_get( $retry );
+		foreach ( $retry as $host => $ignored ) {
+			$code = isset( $responses[ $host ]['code'] ) ? (int) $responses[ $host ]['code'] : 0;
+			$body = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
+			$url  = nh_seo_parse_remote_sku_body( $body, $sku, $host );
+			if ( $url !== '' ) {
+				$found[ $host ] = $url;
+			} elseif ( 200 === $code && is_string( $body ) ) {
+				$absent[] = $host;
+			}
+		}
+	}
+
+	return array(
+		'found'  => $found,
+		'absent' => $absent,
+	);
+}
+
+/**
+ * Parse either our REST object or the Woo Store API list.
+ *
+ * @param string|null $body          Response body.
+ * @param string      $sku           Expected SKU.
+ * @param string      $expected_host Expected host.
+ * @return string
+ */
+function nh_seo_parse_remote_sku_body( $body, $sku, $expected_host ) {
+	if ( ! is_string( $body ) || $body === '' ) {
+		return '';
+	}
+
+	$data = json_decode( $body, true );
+	if ( ! is_array( $data ) ) {
+		return '';
+	}
+
+	$candidates = array();
+	if ( isset( $data['url'] ) ) {
+		$candidates[] = $data;
+	} elseif ( array_keys( $data ) === range( 0, count( $data ) - 1 ) ) {
+		$candidates = $data;
+	}
+
+	$sku_l = strtolower( $sku );
+	foreach ( $candidates as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$item_sku = isset( $item['sku'] ) ? strtolower( (string) $item['sku'] ) : '';
+		if ( $item_sku !== '' && $item_sku !== $sku_l ) {
+			continue;
+		}
+		if ( isset( $item['type'] ) && $item['type'] === 'variation' ) {
+			continue;
+		}
+		$permalink = '';
+		if ( ! empty( $item['url'] ) && is_string( $item['url'] ) ) {
+			$permalink = $item['url'];
+		} elseif ( ! empty( $item['permalink'] ) && is_string( $item['permalink'] ) ) {
+			$permalink = $item['permalink'];
+		}
+		$clean = nh_seo_normalize_shop_url( $permalink, $expected_host );
+		if ( $clean !== '' ) {
+			return $clean;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Parallel GET. Falls back to sequential wp_remote_get when curl_multi is missing.
+ *
+ * @param array<string, string> $urls key => url.
+ * @return array<string, array{code:int, body:?string}>
+ */
+function nh_seo_parallel_get( $urls ) {
+	$out     = array();
+	foreach ( array_keys( $urls ) as $key ) {
+		$out[ $key ] = array(
+			'code' => 0,
+			'body' => null,
+		);
+	}
+	$timeout = (float) apply_filters( 'nh_seo_hreflang_http_timeout', 1.5 );
+
+	if ( function_exists( 'curl_multi_init' ) && function_exists( 'curl_init' ) ) {
+		$mh  = curl_multi_init();
+		$chs = array();
+		foreach ( $urls as $key => $url ) {
+			$ch = curl_init( $url );
+			if ( ! $ch ) {
+				continue;
+			}
+			curl_setopt_array(
+				$ch,
+				array(
+					CURLOPT_RETURNTRANSFER    => true,
+					CURLOPT_FOLLOWLOCATION    => true,
+					CURLOPT_MAXREDIRS         => 2,
+					CURLOPT_TIMEOUT_MS        => (int) round( $timeout * 1000 ),
+					CURLOPT_CONNECTTIMEOUT_MS => 800,
+					CURLOPT_HTTPHEADER        => array( 'Accept: application/json' ),
+					CURLOPT_USERAGENT         => 'NorhageHreflang/1.0',
+					CURLOPT_SSL_VERIFYPEER    => true,
+				)
+			);
+			curl_multi_add_handle( $mh, $ch );
+			$chs[ $key ] = $ch;
+		}
+
+		$running = 0;
+		do {
+			$status = curl_multi_exec( $mh, $running );
+			if ( $running ) {
+				curl_multi_select( $mh, 0.2 );
+			}
+		} while ( $running && CURLM_OK === $status );
+
+		foreach ( $chs as $key => $ch ) {
+			$out[ $key ] = array(
+				'code' => (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
+				'body' => curl_multi_getcontent( $ch ),
+			);
+			curl_multi_remove_handle( $mh, $ch );
+			curl_close( $ch );
+		}
+		curl_multi_close( $mh );
+
+		return $out;
+	}
+
+	foreach ( $urls as $key => $url ) {
+		$res = wp_remote_get(
+			$url,
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 2,
+				'headers'     => array( 'Accept' => 'application/json' ),
+				'user-agent'  => 'NorhageHreflang/1.0',
+			)
+		);
+		if ( ! is_wp_error( $res ) ) {
+			$out[ $key ] = array(
+				'code' => (int) wp_remote_retrieve_response_code( $res ),
+				'body' => wp_remote_retrieve_body( $res ),
+			);
+		}
+	}
+
+	return $out;
+}
+
+/**
+ * Public SKU → permalink endpoint for sibling shops (no prices or stock).
+ */
+function nh_seo_register_rest_routes() {
+	register_rest_route(
+		'nh-seo/v1',
+		'/product-by-sku',
+		array(
+			'methods'             => 'GET',
+			'callback'            => 'nh_seo_rest_product_by_sku',
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'sku' => array(
+					'required'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+				),
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'nh_seo_register_rest_routes' );
+
+/**
+ * REST: published, visible product URL for one SKU.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function nh_seo_rest_product_by_sku( $request ) {
+	$sku = $request->get_param( 'sku' );
+	if ( ! nh_seo_is_usable_sku( $sku ) ) {
+		return new WP_Error( 'nh_seo_bad_sku', 'Invalid SKU.', array( 'status' => 400 ) );
+	}
+
+	$url  = nh_seo_local_url_for_sku( $sku );
+	$shop = nh_seo_current_shop();
+	if ( $url === '' || ! $shop ) {
+		return new WP_Error( 'nh_seo_not_found', 'Product not found.', array( 'status' => 404 ) );
+	}
+
+	return new WP_REST_Response(
+		array(
+			'sku'      => $sku,
+			'url'      => $url,
+			'host'     => $shop['host'],
+			'hreflang' => $shop['hreflang'],
+		),
+		200
+	);
+}
+
+/**
+ * Drop cached sibling URLs when a product SKU or slug changes.
+ *
+ * @param int $product_id Product ID.
+ */
+function nh_seo_bust_sku_hreflang_cache( $product_id ) {
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return;
+	}
+	$product = wc_get_product( $product_id );
+	if ( ! $product ) {
+		return;
+	}
+	$sku = (string) $product->get_sku();
+	if ( $sku === '' && $product->get_parent_id() ) {
+		$parent = wc_get_product( $product->get_parent_id() );
+		$sku    = $parent ? (string) $parent->get_sku() : '';
+	}
+	if ( nh_seo_is_usable_sku( $sku ) ) {
+		delete_transient( 'nh_seo_hl_' . md5( strtolower( $sku ) ) );
+	}
+}
+add_action( 'woocommerce_update_product', 'nh_seo_bust_sku_hreflang_cache' );
+add_action( 'woocommerce_new_product', 'nh_seo_bust_sku_hreflang_cache' );
 
 /**
  * Organization details shared with JSON-LD.
