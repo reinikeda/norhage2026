@@ -12,6 +12,17 @@ class NHGP_Overrides {
 		$heavy  = NHGP_Defaults::heavy_get();
 		$custom = NHGP_Defaults::custom_get();
 
+
+		$logger = function_exists( 'wc_get_logger' ) ? wc_get_logger() : null;
+		$log_context = array( 'source' => 'nhgp-debug' );
+
+		if ( $logger ) {
+			$logger->info(
+				'NHGP apply() started',
+				$log_context
+			);
+		}
+
 		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 			return $rates;
 		}
@@ -31,6 +42,55 @@ class NHGP_Overrides {
 
 		$cart_items   = WC()->cart->get_cart();
 		$has_oversize = self::cart_has_oversize_item( $cart_items );
+
+		if ( $logger ) {
+		foreach ( $cart_items as $cart_item_key => $item ) {
+			$product = isset( $item['data'] ) ? $item['data'] : null;
+
+			if ( ! $product || ! $product instanceof WC_Product ) {
+				$logger->warning(
+					'NHGP item has no valid WC_Product',
+					$log_context
+				);
+				continue;
+			}
+
+			$is_custom = NHGP_Custom_Cut::is_custom_item( $item, $product, $custom );
+			list( $debug_w, $debug_h ) = NHGP_Custom_Cut::get_dims( $item, $product, $custom );
+
+			$mapped_class = '';
+
+			if ( $debug_w > 0 || $debug_h > 0 ) {
+				$mapped_class = NHGP_Custom_Cut::map_to_class_slug(
+					$debug_w,
+					$debug_h,
+					$custom
+				);
+			}
+
+			$logger->info(
+				'NHGP item data: ' . wp_json_encode(
+					array(
+						'cart_item_key'       => $cart_item_key,
+						'product_id'          => $product->get_id(),
+						'product_name'        => $product->get_name(),
+						'is_custom_item'     => $is_custom ? 'YES' : 'NO',
+						'width_mm'           => $debug_w,
+						'height_mm'          => $debug_h,
+						'mapped_class_slug'  => $mapped_class,
+						'cart_item_keys'     => array_keys( $item ),
+						'nh_custom_size'    => $item['nh_custom_size'] ?? null,
+						'nh_width_mm'       => $item['nh_width_mm'] ?? null,
+						'nh_length_mm'      => $item['nh_length_mm'] ?? null,
+						'nh_height_mm'      => $item['nh_height_mm'] ?? null,
+						'nh_custom_cutting' => $item['nh_custom_cutting'] ?? null,
+						'nh_custom_mode'    => $item['nh_custom_mode'] ?? null,
+					)
+				),
+				$log_context
+			);
+		}
+	}
 
 		// Only affect Lithuania – other countries keep normal behaviour
 		if ( $destination_country === 'LT' && $has_oversize ) {
