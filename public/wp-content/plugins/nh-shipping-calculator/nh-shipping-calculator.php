@@ -3,7 +3,7 @@
  * Plugin Name: Universal Shipping Calculator (Heavy + Custom Cutting)
  * Description: One Flat rate in the zone. Tiered heavy override (5 levels) + Custom Cutting rules that map width/height to size shipping classes (XS–XXXL). Label shows "(Heavy Lx)" or "(Class)" accordingly.
  * Author: Daiva Reinike
- * Version: 7.3.5
+ * Version: 7.3.6
  * Text Domain: nh-heavy-parcel
  * Domain Path: /languages
  */
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* -------------------------------------------------------------------------
  * Constants
  * ---------------------------------------------------------------------- */
-define( 'NHGP_VERSION',    '7.3.5' );
+define( 'NHGP_VERSION',    '7.3.6' );
 define( 'NHGP_TEXTDOMAIN', 'nh-heavy-parcel' );
 define( 'NHGP_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'NHGP_URL',        plugin_dir_url( __FILE__ ) );
