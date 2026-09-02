@@ -1048,13 +1048,33 @@ function push_out_of_stock_to_end( $posts_clauses, $query ) {
     }
 
     global $wpdb;
-    $lookup = $wpdb->prefix . 'wc_product_meta_lookup';
+    return norhage_append_outofstock_sort_clauses( $posts_clauses, $wpdb );
+}
 
-    if ( false === strpos( $posts_clauses['join'], $lookup ) ) {
-        $posts_clauses['join'] .= " LEFT JOIN {$lookup} nh_stock ON ({$wpdb->posts}.ID = nh_stock.product_id) ";
+/**
+ * Ensure ORDER BY uses alias nh_stock even when Woo already joined
+ * wc_product_meta_lookup (popularity / price / rating sorts).
+ *
+ * Skipping our JOIN just because the table name is present left
+ * `ORDER BY nh_stock.stock_status` invalid, so category archives
+ * returned zero products on shops that sort by popularity.
+ *
+ * @param array  $posts_clauses Query clauses.
+ * @param object $wpdb         WordPress DB.
+ * @return array
+ */
+function norhage_append_outofstock_sort_clauses( $posts_clauses, $wpdb ) {
+    $lookup = $wpdb->prefix . 'wc_product_meta_lookup';
+    $join   = isset( $posts_clauses['join'] ) ? (string) $posts_clauses['join'] : '';
+
+    if ( ! preg_match( '/\bnh_stock\b/', $join ) ) {
+        $posts_clauses['join'] = $join . " LEFT JOIN {$lookup} AS nh_stock ON ({$wpdb->posts}.ID = nh_stock.product_id) ";
     }
 
-    $posts_clauses['orderby'] = " CASE nh_stock.stock_status WHEN 'outofstock' THEN 1 ELSE 0 END ASC, " . $posts_clauses['orderby'];
+    $orderby = isset( $posts_clauses['orderby'] ) ? (string) $posts_clauses['orderby'] : '';
+    if ( ! preg_match( '/nh_stock\.stock_status/', $orderby ) ) {
+        $posts_clauses['orderby'] = " CASE nh_stock.stock_status WHEN 'outofstock' THEN 1 ELSE 0 END ASC, " . $orderby;
+    }
 
     return $posts_clauses;
 }
