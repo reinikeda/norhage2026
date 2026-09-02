@@ -1,0 +1,13 @@
+{
+  "name": "Norhage 2026 (WordPress + WooCommerce)",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "wp-dev-server",
+      "command": "cd /workspace/public && php -d display_errors=1 -S 0.0.0.0:8080 -t /workspace/public"
+    }
+  ],
+  "ports": [8080]
+}
