@@ -32,6 +32,9 @@ class NHGP_Custom_Cut {
 			if ( $w > 0 && $h > 0 ) {
 				return true;
 			}
+			if ( ! empty( $item['nh_custom_size']['length_m'] ) && (float) $item['nh_custom_size']['length_m'] > 0 ) {
+				return true;
+			}
 		}
 
 		// 2) Flat dimension keys on cart item (nh_width_mm / nh_length_mm OR nh_height_mm)
@@ -78,6 +81,9 @@ class NHGP_Custom_Cut {
 			$h = (float) ( $item['nh_custom_size']['length_mm'] ?? ( $item['nh_custom_size']['height_mm'] ?? 0 ) );
 			if ( $w > 0 || $h > 0 ) {
 				return array( $w, $h );
+			}
+			if ( ! empty( $item['nh_custom_size']['length_m'] ) && (float) $item['nh_custom_size']['length_m'] > 0 ) {
+				return array( $w, (float) $item['nh_custom_size']['length_m'] * 1000 );
 			}
 		}
 
@@ -165,5 +171,81 @@ class NHGP_Custom_Cut {
 
 		// Fallback: default class from settings.
 		return ! empty( $cs['default_class'] ) ? (string) $cs['default_class'] : '';
+	}
+
+	/**
+	 * Shipping class slug this cart line should use (custom-cut rules, else empty).
+	 *
+	 * @param array            $item    Cart item.
+	 * @param WC_Product|null  $product Line product.
+	 * @param array            $cs      Custom-cut settings.
+	 * @return string
+	 */
+	public static function mapped_class_slug_for_item( $item, $product, $cs ) {
+		if ( ! self::is_custom_item( $item, $product, $cs ) ) {
+			return '';
+		}
+
+		list( $w, $h ) = self::get_dims( $item, $product, $cs );
+
+		$slug = '';
+		if ( $w > 0 || $h > 0 ) {
+			$slug = self::map_to_class_slug( $w, $h, $cs );
+		}
+
+		if ( $slug === '' && ! empty( $cs['default_class'] ) ) {
+			$slug = (string) $cs['default_class'];
+		}
+
+		return self::normalize_class_slug( $slug );
+	}
+
+	/**
+	 * Turn a stored class value (slug or term ID) into a shipping-class slug.
+	 *
+	 * @param string|int $value Raw setting / map result.
+	 * @return string
+	 */
+	public static function normalize_class_slug( $value ) {
+		$value = trim( (string) $value );
+		if ( $value === '' ) {
+			return '';
+		}
+
+		if ( ctype_digit( $value ) ) {
+			$term = get_term( (int) $value, 'product_shipping_class' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				return (string) $term->slug;
+			}
+			return '';
+		}
+
+		$slug = sanitize_title( $value );
+		$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return (string) $term->slug;
+		}
+
+		return $slug;
+	}
+
+	/**
+	 * Term ID for a shipping-class slug.
+	 *
+	 * @param string $slug Class slug.
+	 * @return int
+	 */
+	public static function term_id_from_slug( $slug ) {
+		$slug = self::normalize_class_slug( $slug );
+		if ( $slug === '' ) {
+			return 0;
+		}
+
+		$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return (int) $term->term_id;
+		}
+
+		return 0;
 	}
 }

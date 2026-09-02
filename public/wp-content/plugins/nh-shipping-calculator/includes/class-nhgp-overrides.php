@@ -4,7 +4,251 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class NHGP_Overrides {
 
 	public static function init() {
+		add_action( 'woocommerce_before_calculate_totals', array( __CLASS__, 'assign_cart_shipping_classes' ), 30, 1 );
+		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'stamp_packages' ), 20 );
+		add_filter( 'woocommerce_cart_item_shipping_class', array( __CLASS__, 'filter_cart_item_shipping_class' ), 30, 3 );
+		add_filter( 'woocommerce_find_shipping_classes', array( __CLASS__, 'remap_found_shipping_classes' ), 20, 2 );
 		add_filter( 'woocommerce_package_rates', array( __CLASS__, 'apply' ), PHP_INT_MAX, 2 );
+	}
+
+	/**
+	 * Put the calculator's shipping class on the in-memory cart product
+	 * BEFORE WooCommerce evaluates flat-rate "class cost" vs "no class cost".
+	 *
+	 * Custom-cut products have no class in the catalog. Without this, live
+	 * shops charge the zone's "No shipping class cost".
+	 *
+	 * @param WC_Cart $cart Cart.
+	 */
+	public static function assign_cart_shipping_classes( $cart ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
+			return;
+		}
+		if ( ! $cart || ! is_a( $cart, 'WC_Cart' ) ) {
+			return;
+		}
+
+		$custom = NHGP_Defaults::custom_get();
+		$custom['enabled'] = true;
+
+		foreach ( $cart->get_cart() as $item ) {
+			if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
+				continue;
+			}
+			if ( ! is_callable( array( $item['data'], 'set_shipping_class_id' ) ) ) {
+				continue;
+			}
+
+			$slug = NHGP_Custom_Cut::mapped_class_slug_for_item( $item, $item['data'], $custom );
+			if ( $slug === '' ) {
+				continue;
+			}
+
+			$term_id = NHGP_Custom_Cut::term_id_from_slug( $slug );
+			if ( $term_id > 0 ) {
+				$item['data']->set_shipping_class_id( $term_id );
+			}
+		}
+	}
+
+	/**
+	 * Include mapped classes in the package hash so session/object-cache
+	 * cannot reuse a previous "no class" rate for the same cart.
+	 *
+	 * @param array $packages Packages.
+	 * @return array
+	 */
+	public static function stamp_packages( $packages ) {
+		if ( ! is_array( $packages ) ) {
+			return $packages;
+		}
+
+		$custom = NHGP_Defaults::custom_get();
+		$custom['enabled'] = true;
+		$ver = (string) get_option( 'nhgp_rates_version', '' );
+
+		foreach ( $packages as $i => $package ) {
+			$map = array();
+			$contents = isset( $package['contents'] ) && is_array( $package['contents'] ) ? $package['contents'] : array();
+
+			foreach ( $contents as $key => $item ) {
+				$product = isset( $item['data'] ) ? $item['data'] : null;
+				if ( ! $product instanceof WC_Product ) {
+					continue;
+				}
+
+				$slug = NHGP_Custom_Cut::mapped_class_slug_for_item( $item, $product, $custom );
+				if ( $slug === '' ) {
+					continue;
+				}
+
+				$map[ $key ] = $slug;
+
+				$term_id = NHGP_Custom_Cut::term_id_from_slug( $slug );
+				if ( $term_id > 0 && is_callable( array( $product, 'set_shipping_class_id' ) ) ) {
+					$product->set_shipping_class_id( $term_id );
+					$packages[ $i ]['contents'][ $key ]['data'] = $product;
+				}
+			}
+
+			$packages[ $i ]['nhgp_rates_version'] = $ver;
+			$packages[ $i ]['nhgp_cut_classes']   = $map;
+		}
+
+		return $packages;
+	}
+
+	/**
+	 * @param string $shipping_class Current class slug.
+	 * @param array  $cart_item      Cart item.
+	 * @param string $cart_item_key  Key.
+	 * @return string
+	 */
+	public static function filter_cart_item_shipping_class( $shipping_class, $cart_item, $cart_item_key ) {
+		unset( $cart_item_key );
+		$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
+		$custom  = NHGP_Defaults::custom_get();
+		$custom['enabled'] = true;
+		$mapped  = NHGP_Custom_Cut::mapped_class_slug_for_item( $cart_item, $product, $custom );
+		return $mapped !== '' ? $mapped : $shipping_class;
+	}
+
+	/**
+	 * Woo Flat Rate groups package lines by product->get_shipping_class().
+	 * Custom-cut catalog products have no class, so they land in the empty
+	 * bucket and get "No shipping class cost". Re-bucket from cut rules.
+	 *
+	 * @param array $found   slug => items.
+	 * @param array $package Shipping package.
+	 * @return array
+	 */
+	public static function remap_found_shipping_classes( $found, $package ) {
+		if ( ! is_array( $found ) ) {
+			$found = array();
+		}
+
+		$contents = ( isset( $package['contents'] ) && is_array( $package['contents'] ) )
+			? $package['contents']
+			: array();
+
+		if ( empty( $contents ) ) {
+			return $found;
+		}
+
+		$custom = NHGP_Defaults::custom_get();
+		$custom['enabled'] = true;
+
+		foreach ( $contents as $item_id => $item ) {
+			$product = isset( $item['data'] ) ? $item['data'] : null;
+			$slug    = NHGP_Custom_Cut::mapped_class_slug_for_item( $item, $product, $custom );
+			if ( $slug === '' ) {
+				continue;
+			}
+
+			foreach ( $found as $class => $items ) {
+				if ( isset( $items[ $item_id ] ) ) {
+					unset( $found[ $class ][ $item_id ] );
+					if ( empty( $found[ $class ] ) ) {
+						unset( $found[ $class ] );
+					}
+				}
+			}
+
+			if ( ! isset( $found[ $slug ] ) ) {
+				$found[ $slug ] = array();
+			}
+			$found[ $slug ][ $item_id ] = $item;
+		}
+
+		return $found;
+	}
+
+	/**
+	 * Flat-rate class costs keyed by slug. Woo stores keys as class_cost_{term_id}
+	 * and/or class_cost_{slug}; (int) "xs" === 0 and must not be treated as no-class.
+	 *
+	 * @param array $settings Instance settings.
+	 * @return array<string, float>
+	 */
+	protected static function class_costs_by_slug( $settings ) {
+		$costs = array();
+
+		foreach ( (array) $settings as $k => $v ) {
+			$kind = self::class_cost_key_kind( $k );
+			if ( $kind === '' ) {
+				continue;
+			}
+
+			$suffix = substr( $k, strlen( 'class_cost_' ) );
+			$cost   = self::parse_amount( $v );
+
+			if ( $kind === 'term_id' ) {
+				$term = get_term( (int) $suffix, 'product_shipping_class' );
+				if ( $term && ! is_wp_error( $term ) ) {
+					$costs[ $term->slug ] = $cost;
+				}
+				continue;
+			}
+
+			$slug = NHGP_Custom_Cut::normalize_class_slug( $suffix );
+			if ( $slug !== '' ) {
+				$costs[ $slug ] = $cost;
+			}
+		}
+
+		return $costs;
+	}
+
+	/**
+	 * Classify a flat-rate settings key.
+	 *
+	 * Live Woo often stores class_cost_xs (slug). Casting that suffix to int
+	 * yields 0 and must NOT be treated as "no class".
+	 *
+	 * @param string $key Settings key.
+	 * @return string '' | 'term_id' | 'slug'
+	 */
+	public static function class_cost_key_kind( $key ) {
+		$key = (string) $key;
+		if ( strpos( $key, 'class_cost_' ) !== 0 ) {
+			return '';
+		}
+
+		$suffix = substr( $key, strlen( 'class_cost_' ) );
+		if ( $suffix === '' || $suffix === '0' ) {
+			return '';
+		}
+
+		return ctype_digit( $suffix ) ? 'term_id' : 'slug';
+	}
+
+	/**
+	 * @param mixed $value Raw setting.
+	 * @return float
+	 */
+	protected static function parse_amount( $value ) {
+		return (float) str_replace( ',', '.', (string) $value );
+	}
+
+	/**
+	 * True when Woo's already-calculated flat rate matches "No shipping class cost"
+	 * (optionally plus the method's base cost).
+	 *
+	 * @param float $current_cost Current rate cost.
+	 * @param array $settings     Instance settings.
+	 * @return bool
+	 */
+	protected static function cost_matches_no_class( $current_cost, $settings ) {
+		$no_class = self::parse_amount( $settings['no_class_cost'] ?? '' );
+		$base     = self::parse_amount( $settings['cost'] ?? '' );
+
+		foreach ( array( $no_class, $no_class + $base ) as $candidate ) {
+			if ( abs( (float) $current_cost - (float) $candidate ) < 0.009 ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static function apply( $rates, $package ) {
@@ -129,39 +373,27 @@ class NHGP_Overrides {
 			$best_slug = null;
 			$best_cost = -1;
 
+			$settings          = array();
+			$looks_like_no_class = false;
+
 			if ( $instance_id > 0 ) {
 
 				$settings = get_option( 'woocommerce_flat_rate_' . $instance_id . '_settings', array() );
-
-				// Build slug => class cost map (ID-independent).
-				$class_costs = array();
-				foreach ( (array) $settings as $k => $v ) {
-					if ( strpos( $k, 'class_cost_' ) !== 0 ) {
-						continue;
-					}
-
-					$tid = (int) str_replace( 'class_cost_', '', $k );
-
-					// Skip "no class" key.
-					if ( $tid === 0 ) {
-						continue;
-					}
-
-					$term = get_term( $tid, 'product_shipping_class' );
-					if ( ! $term || is_wp_error( $term ) ) {
-						continue;
-					}
-
-					$slug = $term->slug;
-					$cost = (float) str_replace( ',', '.', (string) $v );
-
-					$class_costs[ $slug ] = $cost;
+				if ( ! is_array( $settings ) ) {
+					$settings = array();
 				}
+
+				// Build slug => class cost map (term ID keys and slug keys).
+				$class_costs = self::class_costs_by_slug( $settings );
+
+				$line_items = ( ! empty( $package['contents'] ) && is_array( $package['contents'] ) )
+					? $package['contents']
+					: WC()->cart->get_cart();
 
 				// Gather present class slugs from NON custom-cut items
 				$present = array();
 
-				foreach ( WC()->cart->get_cart() as $item ) {
+				foreach ( $line_items as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
 					}
@@ -179,30 +411,14 @@ class NHGP_Overrides {
 				}
 
 				// Add mapped classes from custom-cut items
-				foreach ( WC()->cart->get_cart() as $item ) {
+				foreach ( $line_items as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
 					}
 
 					$p = $item['data'];
 
-					if ( ! NHGP_Custom_Cut::is_custom_item( $item, $p, $custom ) ) {
-						continue;
-					}
-
-					list( $w, $h ) = NHGP_Custom_Cut::get_dims( $item, $p, $custom );
-
-					$slug = '';
-
-					if ( $w > 0 || $h > 0 ) {
-						$slug = NHGP_Custom_Cut::map_to_class_slug( $w, $h, $custom );
-					}
-
-					// If no dimensions / no match, fall back to default class
-					if ( ! $slug && ! empty( $custom['default_class'] ) ) {
-						$slug = $custom['default_class'];
-					}
-
+					$slug = NHGP_Custom_Cut::mapped_class_slug_for_item( $item, $p, $custom );
 					if ( $slug ) {
 						$present[ $slug ] = true;
 					}
@@ -215,9 +431,11 @@ class NHGP_Overrides {
 						$best_slug = $slug;
 					}
 				}
+
+				$looks_like_no_class = self::cost_matches_no_class( $current_cost, $settings );
 			}
 
-			/* ------------ DECIDE FINAL COST: max(base, heavy, class) ------------ */
+			/* ------------ DECIDE FINAL COST ------------ */
 
 			$target_cost = $current_cost;
 			$use_heavy   = false;
@@ -230,15 +448,21 @@ class NHGP_Overrides {
 				$use_class   = false;
 			}
 
-			// Compare class dominance
-			if ( $best_slug && $best_cost > $target_cost ) {
-				$target_cost = $best_cost;
-				$use_heavy   = false;
-				$use_class   = true;
+			if ( $best_slug && $best_cost >= 0 ) {
+				// Live shops often have a real "No shipping class cost". Woo bills
+				// that first; we must replace it with the calculator class even
+				// when the class amount is lower.
+				$replace_no_class = $looks_like_no_class
+					&& ! ( $heavy_enabled && $heavy_amount > $best_cost );
+
+				if ( $replace_no_class || $best_cost > $target_cost ) {
+					$target_cost = $best_cost;
+					$use_heavy   = false;
+					$use_class   = true;
+				}
 			}
 
-			// Apply new cost if it is higher than the original flat rate
-			if ( $target_cost > $current_cost ) {
+			if ( abs( $target_cost - $current_cost ) > 0.001 ) {
 
 				if ( method_exists( $rate, 'set_cost' ) ) {
 					$rate->set_cost( $target_cost );
@@ -269,7 +493,7 @@ class NHGP_Overrides {
 
 					$label .= ' (' . $suffix . ')';
 
-				} elseif ( $use_class && $best_slug ) {
+				} elseif ( $best_slug && ! $use_heavy ) {
 					$term = get_term_by( 'slug', $best_slug, 'product_shipping_class' );
 
 					if ( $term && ! is_wp_error( $term ) ) {
