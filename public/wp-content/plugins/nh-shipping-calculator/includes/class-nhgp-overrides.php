@@ -12,17 +12,6 @@ class NHGP_Overrides {
 		$heavy  = NHGP_Defaults::heavy_get();
 		$custom = NHGP_Defaults::custom_get();
 
-
-		$logger = function_exists( 'wc_get_logger' ) ? wc_get_logger() : null;
-		$log_context = array( 'source' => 'nhgp-debug' );
-
-		if ( $logger ) {
-			$logger->info(
-				'NHGP apply() started',
-				$log_context
-			);
-		}
-
 		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 			return $rates;
 		}
@@ -42,55 +31,6 @@ class NHGP_Overrides {
 
 		$cart_items   = WC()->cart->get_cart();
 		$has_oversize = self::cart_has_oversize_item( $cart_items );
-
-		if ( $logger ) {
-		foreach ( $cart_items as $cart_item_key => $item ) {
-			$product = isset( $item['data'] ) ? $item['data'] : null;
-
-			if ( ! $product || ! $product instanceof WC_Product ) {
-				$logger->warning(
-					'NHGP item has no valid WC_Product',
-					$log_context
-				);
-				continue;
-			}
-
-			$is_custom = NHGP_Custom_Cut::is_custom_item( $item, $product, $custom );
-			list( $debug_w, $debug_h ) = NHGP_Custom_Cut::get_dims( $item, $product, $custom );
-
-			$mapped_class = '';
-
-			if ( $debug_w > 0 || $debug_h > 0 ) {
-				$mapped_class = NHGP_Custom_Cut::map_to_class_slug(
-					$debug_w,
-					$debug_h,
-					$custom
-				);
-			}
-
-			$logger->info(
-				'NHGP item data: ' . wp_json_encode(
-					array(
-						'cart_item_key'       => $cart_item_key,
-						'product_id'          => $product->get_id(),
-						'product_name'        => $product->get_name(),
-						'is_custom_item'     => $is_custom ? 'YES' : 'NO',
-						'width_mm'           => $debug_w,
-						'height_mm'          => $debug_h,
-						'mapped_class_slug'  => $mapped_class,
-						'cart_item_keys'     => array_keys( $item ),
-						'nh_custom_size'    => $item['nh_custom_size'] ?? null,
-						'nh_width_mm'       => $item['nh_width_mm'] ?? null,
-						'nh_length_mm'      => $item['nh_length_mm'] ?? null,
-						'nh_height_mm'      => $item['nh_height_mm'] ?? null,
-						'nh_custom_cutting' => $item['nh_custom_cutting'] ?? null,
-						'nh_custom_mode'    => $item['nh_custom_mode'] ?? null,
-					)
-				),
-				$log_context
-			);
-		}
-	}
 
 		// Only affect Lithuania – other countries keep normal behaviour
 		if ( $destination_country === 'LT' && $has_oversize ) {
@@ -186,23 +126,39 @@ class NHGP_Overrides {
 
 			$instance_id = method_exists( $rate, 'get_instance_id' ) ? (int) $rate->get_instance_id() : 0;
 
-			$best_tid  = null;
-			$best_cost = -1; // stays -1 if no class dominance
+			$best_slug = null;
+			$best_cost = -1;
 
 			if ( $instance_id > 0 ) {
 
 				$settings = get_option( 'woocommerce_flat_rate_' . $instance_id . '_settings', array() );
 
-				// Build term_id => class cost map
+				// Build slug => class cost map (ID-independent).
 				$class_costs = array();
 				foreach ( (array) $settings as $k => $v ) {
-					if ( strpos( $k, 'class_cost_' ) === 0 ) {
-						$tid = (int) str_replace( 'class_cost_', '', $k );
-						$class_costs[ $tid ] = (float) str_replace( ',', '.', (string) $v );
+					if ( strpos( $k, 'class_cost_' ) !== 0 ) {
+						continue;
 					}
+
+					$tid = (int) str_replace( 'class_cost_', '', $k );
+
+					// Skip "no class" key.
+					if ( $tid === 0 ) {
+						continue;
+					}
+
+					$term = get_term( $tid, 'product_shipping_class' );
+					if ( ! $term || is_wp_error( $term ) ) {
+						continue;
+					}
+
+					$slug = $term->slug;
+					$cost = (float) str_replace( ',', '.', (string) $v );
+
+					$class_costs[ $slug ] = $cost;
 				}
 
-				// Gather present classes from NON custom-cut items
+				// Gather present class slugs from NON custom-cut items
 				$present = array();
 
 				foreach ( WC()->cart->get_cart() as $item ) {
@@ -216,10 +172,9 @@ class NHGP_Overrides {
 						continue;
 					}
 
-					$tid = (int) $p->get_shipping_class_id();
-
-					if ( $tid > 0 ) {
-						$present[ $tid ] = true;
+					$slug = $p->get_shipping_class();
+					if ( $slug ) {
+						$present[ $slug ] = true;
 					}
 				}
 
@@ -249,19 +204,15 @@ class NHGP_Overrides {
 					}
 
 					if ( $slug ) {
-						$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
-
-						if ( $term && ! is_wp_error( $term ) ) {
-							$present[ (int) $term->term_id ] = true;
-						}
+						$present[ $slug ] = true;
 					}
 				}
 
 				// Pick the present class with the highest configured cost
-				foreach ( $present as $tid => $_ ) {
-					if ( isset( $class_costs[ $tid ] ) && $class_costs[ $tid ] > $best_cost ) {
-						$best_cost = $class_costs[ $tid ];
-						$best_tid  = (int) $tid;
+				foreach ( $present as $slug => $_ ) {
+					if ( isset( $class_costs[ $slug ] ) && $class_costs[ $slug ] > $best_cost ) {
+						$best_cost = $class_costs[ $slug ];
+						$best_slug = $slug;
 					}
 				}
 			}
@@ -280,7 +231,7 @@ class NHGP_Overrides {
 			}
 
 			// Compare class dominance
-			if ( $best_tid && $best_cost > $target_cost ) {
+			if ( $best_slug && $best_cost > $target_cost ) {
 				$target_cost = $best_cost;
 				$use_heavy   = false;
 				$use_class   = true;
@@ -318,8 +269,8 @@ class NHGP_Overrides {
 
 					$label .= ' (' . $suffix . ')';
 
-				} elseif ( $use_class && $best_tid ) {
-					$term = get_term( $best_tid, 'product_shipping_class' );
+				} elseif ( $use_class && $best_slug ) {
+					$term = get_term_by( 'slug', $best_slug, 'product_shipping_class' );
 
 					if ( $term && ! is_wp_error( $term ) ) {
 						$label .= ' (' . $term->name . ')';
@@ -405,7 +356,7 @@ class NHGP_Overrides {
 			$h_mm = 0;
 
 			if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
-				$w_mm = (float) ( $item['nh_custom_size']['width_mm'] ?? 0 );
+				$w_mm = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
 				$h_mm = (float) (
 					$item['nh_custom_size']['length_mm']
 					?? ( $item['nh_custom_size']['height_mm'] ?? 0 )
