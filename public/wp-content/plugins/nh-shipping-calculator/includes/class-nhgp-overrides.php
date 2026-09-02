@@ -16,6 +16,9 @@ class NHGP_Overrides {
 			return $rates;
 		}
 
+		// Heavy parcels are disabled by default unless explicitly enabled.
+		$heavy_enabled = ! empty( $heavy['enabled'] );
+
 		// Always treat custom feature as enabled internally (keys are hard-coded now)
 		$custom['enabled'] = true;
 
@@ -51,44 +54,52 @@ class NHGP_Overrides {
 
 		$total_weight = (float) WC()->cart->get_cart_contents_weight();
 
-		// Build up to 12 tiers from settings (Weight ≥)
-		$tiers = array();
-		for ( $i = 1; $i <= 12; $i++ ) {
-			$w = isset( $heavy[ "t{$i}_weight" ] ) ? (float) $heavy[ "t{$i}_weight" ] : 0;
-			$a = isset( $heavy[ "t{$i}_amount" ] ) ? (float) $heavy[ "t{$i}_amount" ] : 0;
-
-			// Ignore empty / invalid levels
-			if ( $w <= 0 || $a <= 0 ) {
-				continue;
-			}
-
-			$tiers[] = array(
-				'w'     => $w,
-				'a'     => $a,
-				'label' => 'L' . $i,
-			);
-		}
-
-		// Sort ascending by weight (safety – admin already sorts)
-		if ( ! empty( $tiers ) ) {
-			usort(
-				$tiers,
-				static function( $A, $B ) {
-					return $A['w'] <=> $B['w'];
-				}
-			);
-		}
-
+		$tiers        = array();
 		$chosen_heavy = null;
 
-		// Behaviour: last tier with weight ≤ cart weight wins
-		foreach ( $tiers as $t ) {
-			if ( $total_weight >= $t['w'] ) {
-				$chosen_heavy = $t;
+		/*
+		 * Build and apply heavy tiers only when the feature is enabled.
+		 * When disabled, $tiers remains empty and no heavy amount is applied.
+		 */
+		if ( $heavy_enabled ) {
+
+			// Build up to 12 tiers from settings (Weight ≥)
+			for ( $i = 1; $i <= 12; $i++ ) {
+				$w = isset( $heavy[ "t{$i}_weight" ] ) ? (float) $heavy[ "t{$i}_weight" ] : 0;
+				$a = isset( $heavy[ "t{$i}_amount" ] ) ? (float) $heavy[ "t{$i}_amount" ] : 0;
+
+				// Ignore empty / invalid levels
+				if ( $w <= 0 || $a <= 0 ) {
+					continue;
+				}
+
+				$tiers[] = array(
+					'w'     => $w,
+					'a'     => $a,
+					'label' => 'L' . $i,
+				);
+			}
+
+			// Sort ascending by weight (safety – admin already sorts)
+			if ( ! empty( $tiers ) ) {
+				usort(
+					$tiers,
+					static function( $A, $B ) {
+						return $A['w'] <=> $B['w'];
+					}
+				);
+			}
+
+			// Behaviour: last tier with weight ≤ cart weight wins
+			foreach ( $tiers as $t ) {
+				if ( $total_weight >= $t['w'] ) {
+					$chosen_heavy = $t;
+				}
 			}
 		}
 
 		/* ================= APPLY PER RATE ================= */
+
 		foreach ( $rates as $key => $rate ) {
 
 			if ( ! is_object( $rate ) || ! method_exists( $rate, 'get_method_id' ) ) {
@@ -108,10 +119,11 @@ class NHGP_Overrides {
 			// Current base cost of this flat rate
 			$current_cost = method_exists( $rate, 'get_cost' ) ? (float) $rate->get_cost() : (float) $rate->cost;
 
-			// Heavy tier amount for this cart (if any)
-			$heavy_amount = $chosen_heavy ? (float) $chosen_heavy['a'] : 0.0;
+			// Heavy tier amount for this cart, only when Heavy parcels is enabled
+			$heavy_amount = ( $heavy_enabled && $chosen_heavy ) ? (float) $chosen_heavy['a'] : 0.0;
 
 			/* ------------ CLASS DOMINANCE (build best class cost) ------------ */
+
 			$instance_id = method_exists( $rate, 'get_instance_id' ) ? (int) $rate->get_instance_id() : 0;
 
 			$best_tid  = null;
@@ -137,6 +149,7 @@ class NHGP_Overrides {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
 					}
+
 					$p = $item['data'];
 
 					if ( NHGP_Custom_Cut::is_custom_item( $item, $p, $custom ) ) {
@@ -144,16 +157,18 @@ class NHGP_Overrides {
 					}
 
 					$tid = (int) $p->get_shipping_class_id();
+
 					if ( $tid > 0 ) {
 						$present[ $tid ] = true;
 					}
 				}
 
-				// Add mapped classes from custom-cut items (always contribute something if item is custom)
+				// Add mapped classes from custom-cut items
 				foreach ( WC()->cart->get_cart() as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
 					}
+
 					$p = $item['data'];
 
 					if ( ! NHGP_Custom_Cut::is_custom_item( $item, $p, $custom ) ) {
@@ -163,17 +178,19 @@ class NHGP_Overrides {
 					list( $w, $h ) = NHGP_Custom_Cut::get_dims( $item, $p, $custom );
 
 					$slug = '';
+
 					if ( $w > 0 || $h > 0 ) {
 						$slug = NHGP_Custom_Cut::map_to_class_slug( $w, $h, $custom );
 					}
 
-					// If no dims / no match, fall back to default class (if set)
+					// If no dimensions / no match, fall back to default class
 					if ( ! $slug && ! empty( $custom['default_class'] ) ) {
 						$slug = $custom['default_class'];
 					}
 
 					if ( $slug ) {
 						$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+
 						if ( $term && ! is_wp_error( $term ) ) {
 							$present[ (int) $term->term_id ] = true;
 						}
@@ -195,8 +212,8 @@ class NHGP_Overrides {
 			$use_heavy   = false;
 			$use_class   = false;
 
-			// Compare heavy
-			if ( $heavy_amount > $target_cost ) {
+			// Compare heavy only when enabled
+			if ( $heavy_enabled && $heavy_amount > $target_cost ) {
 				$target_cost = $heavy_amount;
 				$use_heavy   = true;
 				$use_class   = false;
@@ -219,7 +236,12 @@ class NHGP_Overrides {
 				}
 
 				if ( method_exists( $rate, 'set_taxes' ) ) {
-					$rate->set_taxes( WC_Tax::calc_shipping_tax( $target_cost, WC_Tax::get_shipping_tax_rates() ) );
+					$rate->set_taxes(
+						WC_Tax::calc_shipping_tax(
+							$target_cost,
+							WC_Tax::get_shipping_tax_rates()
+						)
+					);
 				}
 			}
 
@@ -229,10 +251,16 @@ class NHGP_Overrides {
 				$label = $rate->get_label();
 
 				if ( $use_heavy && $chosen_heavy ) {
-					$suffix = sprintf( __( 'Heavy %s', NHGP_TEXTDOMAIN ), $chosen_heavy['label'] );
+					$suffix = sprintf(
+						__( 'Heavy %s', NHGP_TEXTDOMAIN ),
+						$chosen_heavy['label']
+					);
+
 					$label .= ' (' . $suffix . ')';
+
 				} elseif ( $use_class && $best_tid ) {
 					$term = get_term( $best_tid, 'product_shipping_class' );
+
 					if ( $term && ! is_wp_error( $term ) ) {
 						$label .= ' (' . $term->name . ')';
 					}
@@ -276,22 +304,27 @@ class NHGP_Overrides {
 				$th_w = $base_width_m * 1000;
 				$th_l = $base_length_m * 1000;
 				break;
+
 			case 'cm':
 				$th_w = $base_width_m * 100;
 				$th_l = $base_length_m * 100;
 				break;
+
 			case 'm':
 				$th_w = $base_width_m;
 				$th_l = $base_length_m;
 				break;
+
 			case 'in':
 				$th_w = $base_width_m  * 39.3701;
 				$th_l = $base_length_m * 39.3701;
 				break;
+
 			case 'yd':
 				$th_w = $base_width_m  * 1.09361;
 				$th_l = $base_length_m * 1.09361;
 				break;
+
 			default:
 				$th_w = $base_width_m * 100;
 				$th_l = $base_length_m * 100;
@@ -312,16 +345,21 @@ class NHGP_Overrides {
 			$h_mm = 0;
 
 			if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
-				$w_mm = (float) ( $item['nh_custom_size']['width_mm']  ?? 0 );
-				$h_mm = (float) ( $item['nh_custom_size']['length_mm'] ?? ( $item['nh_custom_size']['height_mm'] ?? 0 ) );
+				$w_mm = (float) ( $item['nh_custom_size']['width_mm'] ?? 0 );
+				$h_mm = (float) (
+					$item['nh_custom_size']['length_mm']
+					?? ( $item['nh_custom_size']['height_mm'] ?? 0 )
+				);
 			}
 
 			if ( $w_mm <= 0 && isset( $item[ NHGP_Custom_Cut::WIDTH_KEY ] ) ) {
 				$w_mm = (float) $item[ NHGP_Custom_Cut::WIDTH_KEY ];
 			}
+
 			if ( $h_mm <= 0 && isset( $item[ NHGP_Custom_Cut::HEIGHT_KEY ] ) ) {
 				$h_mm = (float) $item[ NHGP_Custom_Cut::HEIGHT_KEY ];
 			}
+
 			// ALT height key support: nh_height_mm
 			if ( $h_mm <= 0 && isset( $item['nh_height_mm'] ) ) {
 				$h_mm = (float) $item['nh_height_mm'];
@@ -331,6 +369,7 @@ class NHGP_Overrides {
 				if ( $w_mm > $threshold_width_mm || $h_mm > $threshold_length_mm ) {
 					return true;
 				}
+
 				continue;
 			}
 
