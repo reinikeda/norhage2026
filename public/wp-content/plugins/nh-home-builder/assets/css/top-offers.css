@@ -15,8 +15,7 @@
   --nhhb-surface-2:          #222222;
   --nhhb-surface-border:     rgba(255, 255, 255, 0.10);
 
-  /* Promo text colors (white on dark) */
-  --nhhb-promo-ink:          #ffffff;
+--nhhb-promo-ink:          #ffffff;
   --nhhb-promo-ink-sub:      rgba(255, 255, 255, 0.72);
   --nhhb-promo-title-hover:  #2EA26F;
 
@@ -42,233 +41,122 @@
    ========================= */
 .nhhb-offers-hero{
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
-  gap: 22px;
-  align-items: stretch;
-  margin: 26px 0;
+  grid-template-columns: 1fr;
+  gap: 12px;
   min-width: 0;
 }
 
-.nhhb-hero-col{
+.nhhb-hero-col { min-width: 0; }
+
+.nhhb-slider {
   position: relative;
-  min-width: 0;
+  min-height: 280px;
 }
 
-.nhhb-offers-hero > .nhhb-hero-col:first-child{
-  min-height: 480px;
-}
-
-.nhhb-hero-side{
-  display: grid;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  min-width: 0;
-}
-
-/* =========================
-   Slider: slides & background
-   ========================= */
-.nhhb-slider{
-  position: relative;
-  height: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  /* allow explicit min-height on mobile via token */
-}
-
-.nhhb-slides{
+.nhhb-slides {
   display: flex;
-  height: 100%;
-  overflow: hidden;
-  scroll-behavior: smooth;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
-  border-radius: var(--nhhb-radius-lg);
-  box-sizing: border-box;
+  scroll-behavior: smooth;
+  border-radius: var(--nhhb-radius, 12px);
+  min-height: 280px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.nhhb-slides > .nhhb-slide {
-  /* ensure each slide occupies full viewport-width of the slider */
+.nhhb-slides::-webkit-scrollbar { display: none; }
+
+.nhhb-slide {
   flex: 0 0 100%;
   width: 100%;
-  box-sizing: border-box;
-}
-
-.nhhb-slide{
-  min-width: 100%;
-  height: 100%;
+  min-height: 280px;
   position: relative;
   overflow: hidden;
-  isolation: isolate;
   scroll-snap-align: start;
-  border-radius: var(--nhhb-radius-lg);
   background: #f4f1ea;
-  box-shadow: var(--nhhb-hero-shadow);
-  box-sizing: border-box;
 }
 
-.nhhb-slide-bg{
-  position: absolute;
-  inset: 0;
-}
-
-.nhhb-slide-bg .nhhb-bg{
+.nhhb-slide-bg,
+.nhhb-slide-bg .nhhb-bg,
+.nhhb-slide-bg .nhhb-ph-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
-  transform: scale(1.01);
-  filter: saturate(1.01) contrast(1.02) brightness(.95);
 }
 
-/* Brand-tinted overlay for hero */
-.nhhb-slide::after{
+.nhhb-slide::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(
-      90deg,
-      rgba(30, 57, 50, .46) 0%,
-      rgba(30, 57, 50, .30) 34%,
-      rgba(30, 57, 50, .12) 58%,
-      rgba(30, 57, 50, 0) 80%
-    ),
-    linear-gradient(
-      0deg,
-      rgba(34, 34, 34, .26) 0%,
-      rgba(34, 34, 34, .10) 30%,
-      rgba(34, 34, 34, 0) 60%
-    );
+    linear-gradient(to top, rgba(30, 57, 50, 0.72) 0%, rgba(30, 57, 50, 0.22) 48%, rgba(30, 57, 50, 0.06) 100%);
 }
 
-.nhhb-slide img{
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-/* =========================
-   Hero copy block (CTA)
-   ========================= */
-.nhhb-slide-copy{
+.nhhb-slide-copy {
   position: absolute;
   z-index: 2;
-  left: 38px;
-  right: 32px;
-  bottom: 34px;
-  max-width: min(620px, 78%);
+  left: 16px;
+  right: 16px;
+  bottom: 52px;
   color: #fff;
-  font-family: var(--nh-font-main, inherit);
-  text-shadow: 0 2px 10px rgba(0,0,0,.20);
-  min-width: 0;
+  max-width: 36rem;
 }
 
-.nhhb-h1{
+.nhhb-h1 {
   display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  margin: 0;
+  margin: 0 0 10px;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.24);
-  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.14);
   color: #fff;
-  font-size: 12px;
-  line-height: 1;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
 }
 
-.nhhb-h2{
-  margin: 14px 0 10px;
-  font-size: clamp(32px, 4vw, 42px);
-  line-height: 1.05;
+.nhhb-h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  line-height: 1.1;
   font-weight: 800;
-  letter-spacing: -.02em;
   color: #fff;
-  overflow-wrap: anywhere;
 }
 
-.nhhb-h3{
-  margin: 0 0 20px;
-  max-width: 34ch;
-  font-size: 16px;
+.nhhb-h3 {
+  margin: 0 0 14px;
+  font-size: 0.9375rem;
   line-height: 1.45;
-  color: rgba(255,255,255,.90);
-  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* =========================
-   CTA button
-   ========================= */
-.nhhb-btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 12px 20px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: var(--nhhb-primary-dark);
-  box-shadow: 0 6px 16px rgba(17, 32, 28, .14);
-  font-weight: 700;
-  line-height: 1;
-  text-decoration: none;
-  touch-action: manipulation;
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    background-color .18s ease,
-    border-color .18s ease;
+.nhhb-offers-hero .nhhb-btn {
+  background: var(--nhhb-forest, #1E3932);
   color: #fff !important;
 }
 
-.nhhb-btn:hover{
-  transform: translateY(-1px);
-  background: var(--nhhb-primary);
-  box-shadow: 0 10px 20px rgba(17, 32, 28, .16);
+.nhhb-offers-hero .nhhb-btn:hover {
+  background: var(--nhhb-green, #00704A);
 }
 
-.nhhb-btn:active{
-  transform: translateY(0);
-}
-
-/* =========================
-   Dots (carousel controller)
-   ========================= */
-.nhhb-dots{
+.nhhb-dots {
   position: absolute;
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
   display: flex;
-  align-items: center;
   gap: 4px;
   padding: 4px 6px;
   border-radius: 999px;
-  background: rgba(30, 57, 50, .12);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
-  /* Ensure dots sit above hero copy and CTAs and accept touch */
-  z-index: 140;
-  pointer-events: auto;
-  touch-action: manipulation;
+  background: rgba(30, 57, 50, 0.28);
 }
 
-.nhhb-dot{
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.nhhb-dot {
   width: 28px;
   height: 28px;
   padding: 0;
@@ -276,149 +164,83 @@
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
-  touch-action: manipulation;
 }
 
-.nhhb-dot::before{
+.nhhb-dot::before {
   content: "";
   display: block;
-  width: 16px;
+  width: 10px;
   height: 4px;
+  margin: 0 auto;
   border-radius: 999px;
-  background: var(--nhhb-dot-bg);
-  transition:
-    width .2s ease,
-    background-color .2s ease,
-    box-shadow .2s ease;
+  background: rgba(255, 255, 255, 0.5);
 }
 
-.nhhb-dot.is-active::before{
-  width: 22px;
-  background: var(--nhhb-dot-active);
-  box-shadow: 0 0 8px rgba(46, 162, 111, .25);
+.nhhb-dot.is-active::before {
+  width: 18px;
+  background: #fff;
 }
 
-/* =========================
-   Promo cards (right column)
-   ========================= */
-.nhhb-promo{
+.nhhb-hero-side {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.nhhb-promo {
   display: block;
-  min-height: 154px;
   position: relative;
   overflow: hidden;
-  padding: 20px;
-  border-radius: var(--nhhb-radius-md);
-  background: var(--nhhb-surface-1);
-  border: 1px solid var(--nhhb-surface-border);
-  box-shadow: var(--nhhb-card-shadow);
+  min-height: 148px;
+  border-radius: var(--nhhb-radius, 12px);
+  text-decoration: none;
   color: inherit;
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    border-color .18s ease,
-    background-color .18s ease;
 }
 
-.nhhb-hero-side .nhhb-promo:nth-child(2){
-  background: var(--nhhb-surface-2);
-}
-
-.nhhb-promo:hover{
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: var(--nhhb-card-shadow-hover);
-}
-
-/* Promo media — full bleed background image (desktop & mobile) */
-.nhhb-promo-media{
+.nhhb-promo-media,
+.nhhb-promo-media img,
+.nhhb-promo-media .nhhb-ph-img {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.nhhb-promo-media img{
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
 }
 
-/* Gradient overlay for text legibility — dark left fade */
 .nhhb-promo::after{
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgba(30, 57, 50, .92) 0%,
-    rgba(30, 57, 50, .65) 50%,
-    rgba(30, 57, 50, .10) 100%
-  );
+  background: linear-gradient(90deg, rgba(30, 57, 50, 0.86) 0%, rgba(30, 57, 50, 0.4) 55%, rgba(30, 57, 50, 0.08) 100%);
 }
 
-.nhhb-hero-side .nhhb-promo:nth-child(2)::after{
-  background: linear-gradient(
-    90deg,
-    rgba(22, 22, 22, .92) 0%,
-    rgba(22, 22, 22, .65) 50%,
-    rgba(22, 22, 22, .10) 100%
-  );
-}
-
-/* Promo text — sits above image and overlay (left-overlay layout) */
-.nhhb-promo-body{
+.nhhb-promo-body {
   position: relative;
   z-index: 2;
-  min-width: 0;
-  max-width: 60%;
-  font-family: var(--nh-font-main, inherit);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 148px;
+  padding: 16px;
+  max-width: 78%;
+  color: #fff;
 }
 
-.nhhb-p1{
-  margin: 0 0 6px;
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--nhhb-promo-ink-sub);
-  opacity: 1;
-}
-
-.nhhb-p2{
+.nhhb-p2 {
   margin: 0;
-  font-size: clamp(18px, 1.6vw, 22px);
-  line-height: 1.15;
+  font-size: 1.0625rem;
   font-weight: 800;
-  color: var(--nhhb-promo-ink);
-  overflow-wrap: anywhere;
+  line-height: 1.15;
+  color: #fff;
 }
 
-.nhhb-p3{
-  margin: 10px 0 0;
-  font-size: 15px;
-  line-height: 1.45;
-  color: var(--nhhb-promo-ink-sub);
-  overflow-wrap: anywhere;
-}
-
-.nhhb-link-title{
-  display: inline-block;
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: .06em;
-  text-underline-offset: 2px;
-  text-decoration-color: rgba(255,255,255,.40);
-  transition: color .18s ease, text-decoration-color .18s ease;
+.nhhb-p3 {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .nhhb-link-title:hover{
@@ -444,10 +266,6 @@
   outline-offset: 2px;
 }
 
-/* =========================
-   Dark mode overrides
-   ========================= */
-/* ... keep your dark-mode rules unchanged ... (same as before) */
 /* I'll re-include only the important additions below for mobile stability */
 
 /* =========================
@@ -473,250 +291,42 @@
     min-height: 400px;
   }
 
-  .nhhb-hero-side{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: none;
-    gap: 16px;
+  .nhhb-hero-side {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .nhhb-slide-copy{
+  .nhhb-slide-copy {
     left: 28px;
-    right: 24px;
-    bottom: 28px;
-    max-width: min(560px, 86%);
+    right: 28px;
+    bottom: 36px;
   }
 
-  .nhhb-h2{ font-size: 34px; }
-  .nhhb-h3{ font-size: 15px; max-width: 32ch; }
-
-  .nhhb-promo{ min-height: 140px; padding: 16px 18px; }
-  .nhhb-promo-body{ max-width: 65%; }
-  .nhhb-p2{ font-size: 19px; }
-  .nhhb-p3{ font-size: 14px; }
+  .nhhb-h2 { font-size: 2.125rem; }
+  .nhhb-dots { left: 50%; right: auto; transform: translateX(-50%); }
 }
 
-/* =========================
-   Responsive — mobile (single-column)
-   - Ensure hero is first row and promos stack beneath as full-width cards
-   - Promos use full-bleed background with left-overlay copy
-   - BUG FIX: enforce slider min-height + flex sizing and per-slide flex basis
-   ========================= */
-@media (max-width: 640px) {
-  /* Main container becomes single column; ensure row flow */
+@media (min-width: 980px) {
   .nhhb-offers-hero {
-    grid-template-columns: 1fr;
-    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
     gap: 18px;
-    align-items: start;
+    align-items: stretch;
   }
 
-  /* Force hero as first row and hero-side promos as second row */
-  .nhhb-offers-hero > .nhhb-hero-col:first-child {
-    grid-row: 1;
-    min-height: 340px;
-  }
+  .nhhb-hero-col:first-child,
+  .nhhb-slider,
+  .nhhb-slides,
+  .nhhb-slide { min-height: 460px; height: 100%; }
 
   .nhhb-hero-side {
-    grid-row: 2;
-    display: block;               /* stack promos vertically */
-    gap: 12px;
-    margin: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
   }
 
-  /* ----------------------------
-     SLIDER STABILITY FIX (mobile)
-     - Ensure slider container & slides keep visible min-height
-     - Ensure each slide uses flex: 0 0 100% (many carousels expect this)
-     - Avoid visibility collapse by enforcing visible/opacity if JS toggled styles
-     ---------------------------- */
+  .nhhb-promo,
+  .nhhb-promo-body { min-height: 0; height: 100%; }
 
-  /* keep a solid min-height for the hero area so slider JS has room */
-  .nhhb-slider {
-    min-height: var(--nhhb-hero-min-h);
-    height: auto;
-    box-sizing: border-box;
+  .nhhb-slide::after {
+    background:
+      linear-gradient(90deg, rgba(30, 57, 50, 0.5) 0%, rgba(30, 57, 50, 0.18) 48%, rgba(30, 57, 50, 0) 78%);
   }
-
-  /* keep slides flex layout and a minimum height */
-  .nhhb-slides {
-    display: flex !important;
-    min-height: var(--nhhb-hero-min-h) !important;
-    height: auto !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-  }
-
-  /* ensure individual slide sizing is explicit */
-  .nhhb-slides > .nhhb-slide {
-    flex: 0 0 100% !important;
-    width: 100% !important;
-    min-height: var(--nhhb-hero-min-h) !important;
-    height: auto !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    box-sizing: border-box;
-  }
-
-  .nhhb-slide-bg,
-  .nhhb-slide-bg .nhhb-bg {
-    min-height: var(--nhhb-hero-min-h) !important;
-    height: 100% !important;
-    width: 100% !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  /* End slider stability fix */
-
-  /* Each promo becomes a full-width stacked card */
-  .nhhb-hero-side .nhhb-promo {
-    display: block;
-    width: 100%;
-    padding: 0;                    /* overlay copy will be positioned inside */
-    border-radius: 12px;
-    border: 0;
-    overflow: hidden;
-    min-height: 160px;             /* adjust 140-180 as needed */
-    background: var(--nhhb-surface-1);
-    position: relative;
-    box-shadow: var(--nhhb-card-shadow);
-    margin: 0 0 12px;              /* vertical spacing between stacked promos */
-  }
-
-  /* remove extra margin on the last card */
-  .nhhb-hero-side .nhhb-promo:last-child {
-    margin-bottom: 0;
-  }
-
-  /* Promo image fills the card as absolute background */
-  .nhhb-hero-side .nhhb-promo-media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .nhhb-hero-side .nhhb-promo-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    border-radius: 0;
-  }
-
-  /* Stronger left gradient for overlay legibility on small screens */
-  .nhhb-hero-side .nhhb-promo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(
-      90deg,
-      rgba(30,57,50,0.82) 0%,
-      rgba(30,57,50,0.46) 35%,
-      rgba(30,57,50,0.16) 65%,
-      rgba(30,57,50,0) 100%
-    );
-  }
-
-  .nhhb-hero-side .nhhb-promo:nth-child(2)::after {
-    background: linear-gradient(
-      90deg,
-      rgba(18,18,18,0.82) 0%,
-      rgba(18,18,18,0.46) 35%,
-      rgba(18,18,18,0.16) 65%,
-      rgba(18,18,18,0) 100%
-    );
-  }
-
-  /* Promo copy overlays the image, left-aligned and vertically centered */
-  .nhhb-hero-side .nhhb-promo-body {
-    position: relative;
-    z-index: 2;
-    max-width: 70%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 18px;
-    box-sizing: border-box;
-    gap: 6px;
-    color: var(--nhhb-promo-ink);
-  }
-
-  .nhhb-p2 { font-size: 18px; line-height: 1.08; color: var(--nhhb-promo-ink); }
-  .nhhb-p3 { font-size: 14px; line-height: 1.4; margin-top: 6px; color: var(--nhhb-promo-ink-sub); }
-
-  /* Hero copy: leave room for dots and maintain readable width */
-  .nhhb-slide-copy {
-    left: 20px;
-    right: 20px;
-    bottom: 96px;
-    max-width: 100%;
-  }
-
-  /* Dots: bottom-right compact */
-  .nhhb-dots{
-    top: auto;
-    bottom: 12px;
-    left: auto;
-    right: 16px;
-    transform: none;
-    display: flex;
-    justify-content: flex-end;
-    gap: 6px;
-    padding: 6px 8px;
-    max-width: calc(100% - 32px);
-    background: rgba(30,57,50,0.08);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-    border-radius: 999px;
-    z-index: 160;
-  }
-
-  .nhhb-dot{ width: 20px; height: 20px; margin: 0 4px; }
-  .nhhb-dot::before{ width: 10px; height: 4px; }
-  .nhhb-dot.is-active::before{ width: 16px; box-shadow: 0 0 6px rgba(46,162,111,0.18); }
-}
-
-/* Extra small screens */
-@media (max-width: 420px){
-  .nhhb-offers-hero > .nhhb-hero-col:first-child{
-    min-height: 300px;
-  }
-
-  .nhhb-h2{ font-size: 24px; }
-  .nhhb-promo-body{ max-width: 78%; }
-  .nhhb-dots { bottom: 18px; right: 12px; }
-}
-
-/* =========================
-   Touch device safety: disable hover transforms that push dots
-   ========================= */
-@media (hover: none), (pointer: coarse) {
-  .nhhb-btn,
-  .nhhb-btn:hover,
-  .nhhb-btn:active {
-    transform: none !important;
-    transition: none !important;
-    box-shadow: 0 6px 16px rgba(17,32,28,.14) !important;
-  }
-
-  .nhhb-promo:hover {
-    transform: none !important;
-    box-shadow: var(--nhhb-card-shadow) !important;
-  }
-}
-
-/* =========================
-   Reduced motion
-   ========================= */
-@media (prefers-reduced-motion: reduce){
-  .nhhb-slides{ scroll-behavior: auto; }
-  .nhhb-btn, .nhhb-dot::before, .nhhb-promo, .nhhb-link-title{ transition: none; }
 }

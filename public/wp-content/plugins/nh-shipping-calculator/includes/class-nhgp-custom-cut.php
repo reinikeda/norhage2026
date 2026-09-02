@@ -32,6 +32,9 @@ class NHGP_Custom_Cut {
 			if ( $w > 0 && $h > 0 ) {
 				return true;
 			}
+			if ( ! empty( $item['nh_custom_size']['length_m'] ) && (float) $item['nh_custom_size']['length_m'] > 0 ) {
+				return true;
+			}
 		}
 
 		// 2) Flat dimension keys on cart item (nh_width_mm / nh_length_mm OR nh_height_mm)
@@ -79,6 +82,9 @@ class NHGP_Custom_Cut {
 			if ( $w > 0 || $h > 0 ) {
 				return array( $w, $h );
 			}
+			if ( ! empty( $item['nh_custom_size']['length_m'] ) && (float) $item['nh_custom_size']['length_m'] > 0 ) {
+				return array( $w, (float) $item['nh_custom_size']['length_m'] * 1000 );
+			}
 		}
 
 		// 2) Fallback: flat keys on cart item
@@ -100,45 +106,146 @@ class NHGP_Custom_Cut {
 
 	/* ------------------------------------------------------------
 	 * Map width + height to a shipping class slug using rules
-	 *  - 0 (empty) limit means "no limit" for that dimension
+	 *
+	 *  - A 0 (empty) limit means "no limit" for that side.
+	 *  - Width and height are interchangeable for cut sheets.
+	 *  - Rules are sorted smallest-to-largest so the tightest fit wins.
 	 * ------------------------------------------------------------ */
 	public static function map_to_class_slug( $w, $h, $cs ) {
 
 		$w = (float) $w;
 		$h = (float) $h;
 
-		// Build rules from settings (r1…r7)
+		// Sort item sides ascending so orientation does not matter.
+		$item = array( $w, $h );
+		sort( $item, SORT_NUMERIC );
+
 		$rules = array();
 
 		for ( $i = 1; $i <= 7; $i++ ) {
-			$rw = isset( $cs["r{$i}_w"] )      ? (float) $cs["r{$i}_w"]      : 0;
-			$rh = isset( $cs["r{$i}_h"] )      ? (float) $cs["r{$i}_h"]      : 0;
-			$cl = isset( $cs["r{$i}_class"] )  ? (string) $cs["r{$i}_class"] : '';
+			$rw = isset( $cs["r{$i}_w"] )     ? (float) $cs["r{$i}_w"]     : 0;
+			$rh = isset( $cs["r{$i}_h"] )     ? (float) $cs["r{$i}_h"]     : 0;
+			$cl = isset( $cs["r{$i}_class"] ) ? (string) $cs["r{$i}_class"] : '';
 
-			// Valid row: has a class AND at least one limit set
-			if ( $cl !== '' && ( $rw > 0 || $rh > 0 ) ) {
-				$rules[] = array( $rw, $rh, $cl );
+			// Valid row: has a class AND at least one finite limit.
+			if ( $cl === '' || ( $rw <= 0 && $rh <= 0 ) ) {
+				continue;
 			}
+
+			// Sort rule sides ascending as well.
+			$r_dims = array( $rw, $rh );
+			sort( $r_dims, SORT_NUMERIC );
+
+			// For sorting, a 0 limit means "no limit" -> treat as very large.
+			$effective_max = max( $rw, $rh );
+			if ( $effective_max <= 0 ) {
+				$effective_max = PHP_FLOAT_MAX;
+			}
+
+			$rules[] = array(
+				'class' => $cl,
+				'dims'  => $r_dims,
+				'sort'  => $effective_max,
+			);
 		}
 
-		// Check each rule in order:
-		// - if rw > 0 then must satisfy w <= rw
-		// - if rh > 0 then must satisfy h <= rh
-		// - if rw/rh is 0 => ignore that dimension
+		// Sort from smallest bounding box to largest so the tightest match wins.
+		usort(
+			$rules,
+			static function( $a, $b ) {
+				return $a['sort'] <=> $b['sort'];
+			}
+		);
+
 		foreach ( $rules as $r ) {
-			$rw = (float) $r[0];
-			$rh = (float) $r[1];
-			$cl = (string) $r[2];
+			$rd = $r['dims'];
 
-			$ok_w = ( $rw <= 0 ) ? true : ( $w <= $rw );
-			$ok_h = ( $rh <= 0 ) ? true : ( $h <= $rh );
+			// 0 means no limit for that side.
+			$ok_side0 = ( $rd[0] <= 0 ) ? true : ( $item[0] <= $rd[0] );
+			$ok_side1 = ( $rd[1] <= 0 ) ? true : ( $item[1] <= $rd[1] );
 
-			if ( $ok_w && $ok_h ) {
-				return $cl;
+			if ( $ok_side0 && $ok_side1 ) {
+				return $r['class'];
 			}
 		}
 
-		// Fallback: default class from settings
+		// Fallback: default class from settings.
 		return ! empty( $cs['default_class'] ) ? (string) $cs['default_class'] : '';
+	}
+
+	/**
+	 * Shipping class slug this cart line should use (custom-cut rules, else empty).
+	 *
+	 * @param array            $item    Cart item.
+	 * @param WC_Product|null  $product Line product.
+	 * @param array            $cs      Custom-cut settings.
+	 * @return string
+	 */
+	public static function mapped_class_slug_for_item( $item, $product, $cs ) {
+		if ( ! self::is_custom_item( $item, $product, $cs ) ) {
+			return '';
+		}
+
+		list( $w, $h ) = self::get_dims( $item, $product, $cs );
+
+		$slug = '';
+		if ( $w > 0 || $h > 0 ) {
+			$slug = self::map_to_class_slug( $w, $h, $cs );
+		}
+
+		if ( $slug === '' && ! empty( $cs['default_class'] ) ) {
+			$slug = (string) $cs['default_class'];
+		}
+
+		return self::normalize_class_slug( $slug );
+	}
+
+	/**
+	 * Turn a stored class value (slug or term ID) into a shipping-class slug.
+	 *
+	 * @param string|int $value Raw setting / map result.
+	 * @return string
+	 */
+	public static function normalize_class_slug( $value ) {
+		$value = trim( (string) $value );
+		if ( $value === '' ) {
+			return '';
+		}
+
+		if ( ctype_digit( $value ) ) {
+			$term = get_term( (int) $value, 'product_shipping_class' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				return (string) $term->slug;
+			}
+			return '';
+		}
+
+		$slug = sanitize_title( $value );
+		$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return (string) $term->slug;
+		}
+
+		return $slug;
+	}
+
+	/**
+	 * Term ID for a shipping-class slug.
+	 *
+	 * @param string $slug Class slug.
+	 * @return int
+	 */
+	public static function term_id_from_slug( $slug ) {
+		$slug = self::normalize_class_slug( $slug );
+		if ( $slug === '' ) {
+			return 0;
+		}
+
+		$term = get_term_by( 'slug', $slug, 'product_shipping_class' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return (int) $term->term_id;
+		}
+
+		return 0;
 	}
 }

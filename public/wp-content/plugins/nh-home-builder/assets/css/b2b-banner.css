@@ -1,77 +1,26 @@
-/* =========================
-   NH Home Builder — B2B Banner
-   Blue palette kept (matches B2B site), modernized & polished
-   ========================= */
+/* NH Home Builder – B2B Banner (mobile first) */
 
-/* ---- Tokens ---- */
-:root {
-  --b2b-bg:         #0E3C58;
-  --b2b-bg-deep:    #0a2e45;
-  --b2b-bg-dm:      #0B3147;
-  --b2b-bg-dm-2:    #0d3d5a;
-  --b2b-accent:     #1a8fc1;   /* lighter blue for glows/accents */
-  --b2b-cta-bg:     #ffffff;
-  --b2b-radius:     10px;
-  --b2b-shadow:     0 10px 32px rgba(0,0,0,.16);
-  --b2b-gap:        32px;
-  --b2b-logo-col:   140px;
-  --b2b-padding:    36px clamp(20px, 3.5vw, 48px);
-  --b2b-cta-radius: 6px;
-  --b2b-transition: 180ms ease;
-}
-
-/* ---- Wrapper ---- */
 .nhhb-b2b-wrap {
-  margin-top: 12px;
-  margin-bottom: 60px; /* Give the bottom of the page room to breathe before the footer */
+  margin-bottom: 40px;
 }
 
-/* ---- Card ---- */
 .nhhb-b2b {
   position: relative;
   overflow: hidden;
   display: grid;
-  grid-template-columns: var(--b2b-logo-col) 1fr auto;
-  align-items: center;
-  gap: var(--b2b-gap);
-  padding: var(--b2b-padding);
-  border-radius: var(--b2b-radius);
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 24px 18px;
+  border-radius: var(--nhhb-radius, 12px);
   color: #fff;
-
   background:
-    radial-gradient(ellipse 55% 130% at 0% 50%, rgba(26,143,193,.18) 0%, transparent 65%),
-    radial-gradient(ellipse 35% 80% at 95% 15%, rgba(26,143,193,.10) 0%, transparent 60%),
-    linear-gradient(120deg, var(--b2b-bg) 0%, var(--b2b-bg-deep) 100%);
-
-  box-shadow: var(--b2b-shadow);
+    radial-gradient(ellipse 70% 120% at 0% 0%, rgba(26, 143, 193, 0.22) 0%, transparent 65%),
+    linear-gradient(160deg, #0E3C58 0%, #0a2e45 100%);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
 }
 
-/* Subtle dot texture */
-.nhhb-b2b::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px);
-  background-size: 22px 22px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Decorative ring — top right */
-.nhhb-b2b::after {
-  content: "";
-  position: absolute;
-  top: -55px;
-  right: -55px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 36px solid rgba(26,143,193,.12);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* All children above pseudo-elements */
 .nhhb-b2b-logo,
 .nhhb-b2b-content,
 .nhhb-b2b-cta-col {
@@ -79,84 +28,49 @@
   z-index: 1;
 }
 
-/* ---- Logo ---- */
-.nhhb-b2b-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .nhhb-b2b-logo img.nhhb-b2b-logo-img {
-  width: min(100%, 120px);
+  width: min(100%, 96px);
   height: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1) opacity(.90);
+  filter: brightness(0) invert(1) opacity(0.92);
   display: block;
 }
 
-/* ---- Content ---- */
 .nhhb-b2b-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
+}
+
+.nhhb-b2b-kicker {
+  color: #9ad4ee;
 }
 
 .nhhb-b2b-title {
   margin: 0;
   font-weight: 800;
-  font-size: clamp(20px, 2.2vw, 28px);
+  font-size: 1.375rem;
   line-height: 1.15;
-  letter-spacing: -.02em;
+  letter-spacing: -0.02em;
   color: #fff !important;
-  text-shadow: 0 1px 6px rgba(0,0,0,.22);
 }
 
 .nhhb-b2b-text {
   margin: 0;
-  font-size: clamp(13.5px, 1.3vw, 15px);
-  font-weight: 400;
-  line-height: 1.55;
-  color: rgba(255,255,255,.80);
-  max-width: 58ch;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
 }
 
-/* ---- CTA ---- */
 .nhhb-b2b-cta-col {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 140px;
+  width: 100%;
 }
 
 .nhhb-b2b-cta {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  white-space: nowrap;
-  padding: 11px 24px;
-  border-radius: var(--b2b-cta-radius);
+  width: 100%;
   background: #fff;
-  color: var(--b2b-bg) !important;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,.18);
-  transition: transform var(--b2b-transition), box-shadow var(--b2b-transition),
-              background var(--b2b-transition), color var(--b2b-transition);
-}
-
-.nhhb-b2b-cta::after {
-  content: "→";
-  font-size: 13px;
-  transition: transform var(--b2b-transition);
-}
-
-.nhhb-b2b-cta:link,
-.nhhb-b2b-cta:visited,
-.nhhb-b2b-cta:active,
-.nhhb-b2b-cta:focus {
-  color: var(--b2b-bg) !important;
+  color: #0E3C58 !important;
 }
 
 .nhhb-b2b-cta:hover {
@@ -175,70 +89,18 @@
   outline-offset: 3px;
 }
 
-/* ---- Dark mode ---- */
-body.dark-mode .nhhb-b2b {
-  background:
-    radial-gradient(ellipse 55% 130% at 0% 50%, rgba(26,143,193,.13) 0%, transparent 65%),
-    linear-gradient(120deg, var(--b2b-bg-dm) 0%, var(--b2b-bg-dm-2) 100%);
-  box-shadow: 0 14px 40px rgba(0,0,0,.38);
-  border: 1px solid rgba(255,255,255,.06);
-}
-
-body.dark-mode .nhhb-b2b-title  { color: #fff !important; }
-body.dark-mode .nhhb-b2b-text   { color: rgba(236,234,230,.82); }
-
-body.dark-mode .nhhb-b2b-logo img.nhhb-b2b-logo-img {
-  filter: brightness(0) invert(1) opacity(.88);
-}
-
-body.dark-mode .nhhb-b2b-cta {
-  background: rgba(255,255,255,.92) !important;
-  color: var(--b2b-bg-dm) !important;
-}
-
-body.dark-mode .nhhb-b2b-cta:hover {
-  background: var(--b2b-accent) !important;
-  color: #fff !important;
-}
-
-/* ---- Tablet ---- */
-@media (max-width: 900px) {
-  :root { --b2b-logo-col: 110px; }
-
+@media (min-width: 768px) {
   .nhhb-b2b {
-    gap: 20px;
-    padding: 28px clamp(16px, 3vw, 36px);
-    grid-template-columns: var(--b2b-logo-col) 1fr auto;
+    grid-template-columns: 120px 1fr auto;
+    text-align: left;
+    justify-items: stretch;
+    align-items: center;
+    gap: 28px;
+    padding: 36px clamp(20px, 3.5vw, 48px);
   }
 
-  .nhhb-b2b-title { font-size: clamp(18px, 2.6vw, 24px); }
-  .nhhb-b2b-text  { font-size: 14px; }
-}
-
-/* ---- Mobile: stacked ---- */
-@media (max-width: 680px) {
-  .nhhb-b2b {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding: 28px 20px;
-    gap: 14px;
-  }
-
-  .nhhb-b2b-logo img.nhhb-b2b-logo-img {
-    width: min(100%, 90px);
-  }
-
-  .nhhb-b2b-content       { align-items: center; }
-  .nhhb-b2b-content::before { align-self: center; }
-  .nhhb-b2b-cta-col       { justify-content: center; }
-
-  .nhhb-b2b-cta {
-    width: min(80%, 220px) !important;
-    justify-content: center;
-  }
-}
-
-/* ---- Reduced motion ---- */
-@media (prefers-reduced-motion: reduce) {
-  .nhhb-b2b-cta { transition: none !important; }
+  .nhhb-b2b-content { align-items: flex-start; }
+  .nhhb-b2b-cta { width: auto; min-width: 160px; }
+  .nhhb-b2b-title { font-size: clamp(1.35rem, 2.2vw, 1.75rem); }
+  .nhhb-b2b-logo img.nhhb-b2b-logo-img { width: min(100%, 120px); }
 }

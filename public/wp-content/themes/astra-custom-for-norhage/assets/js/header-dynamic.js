@@ -53,7 +53,7 @@
     if (burger) burger.setAttribute('aria-expanded', 'true');
     updateDrawerPosition();
     window.setTimeout(() => {
-      const firstFocus = drawer.querySelector('.nh-drawer__nav a, .nh-drawer__close');
+      const firstFocus = drawer.querySelector('#nrh-search-input-drawer, .nh-drawer__nav a, .nh-drawer__close');
       if (firstFocus) firstFocus.focus({ preventScroll: true });
       else if (panel) panel.focus({ preventScroll: true });
     }, 10);

@@ -3,7 +3,7 @@
  * Plugin Name: Universal Shipping Calculator (Heavy + Custom Cutting)
  * Description: One Flat rate in the zone. Tiered heavy override (5 levels) + Custom Cutting rules that map width/height to size shipping classes (XS–XXXL). Label shows "(Heavy Lx)" or "(Class)" accordingly.
  * Author: Daiva Reinike
- * Version: 7.3.4
+ * Version: 7.3.6
  * Text Domain: nh-heavy-parcel
  * Domain Path: /languages
  */
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* -------------------------------------------------------------------------
  * Constants
  * ---------------------------------------------------------------------- */
-define( 'NHGP_VERSION',    '7.3.4' );
+define( 'NHGP_VERSION',    '7.3.6' );
 define( 'NHGP_TEXTDOMAIN', 'nh-heavy-parcel' );
 define( 'NHGP_DIR',        plugin_dir_path( __FILE__ ) );
 define( 'NHGP_URL',        plugin_dir_url( __FILE__ ) );
@@ -50,7 +50,6 @@ add_action(
 add_action(
 	'plugins_loaded',
 	function () {
-		// Ensure Woo is loaded.
 		if ( class_exists( 'NHGP_Admin' ) ) {
 			NHGP_Admin::init();
 		}
@@ -60,13 +59,23 @@ add_action(
 		if ( class_exists( 'NHGP_Overrides' ) ) {
 			NHGP_Overrides::init();
 		}
+
+		// Invalidate Woo shipping session cache after this plugin version is deployed.
+		$stored = (string) get_option( 'nhgp_plugin_version', '' );
+		if ( $stored !== NHGP_VERSION ) {
+			update_option( 'nhgp_plugin_version', NHGP_VERSION );
+			update_option( 'nhgp_rates_version', (string) time() );
+			if ( class_exists( 'WC_Cache_Helper' ) && method_exists( 'WC_Cache_Helper', 'get_transient_version' ) ) {
+				WC_Cache_Helper::get_transient_version( 'shipping', true );
+			}
+		}
 	}
 );
 
 /* -------------------------------------------------------------------------
  * Ensure Norhage size-based shipping classes exist
  * ---------------------------------------------------------------------- */
-add_action( 'init', 'nhgp_register_size_shipping_classes' );
+add_action( 'admin_init', 'nhgp_register_size_shipping_classes' );
 
 function nhgp_register_size_shipping_classes() {
 	// Make sure WooCommerce + taxonomy are available.

@@ -4,7 +4,6 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$theme_uri   = get_stylesheet_directory_uri();
 $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : wp_login_url();
 $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/' );
 $cart_count  = ( function_exists( 'WC' ) && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
@@ -21,6 +20,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
        ROW 1 — Utility bar (desktop only)
        Left: nav links | Right: account · cart · phone | faq | search
   ====================================================== -->
+  <div class="nhhb-utility-wrap">
   <div class="nhhb-row nhhb-row--utility">
 
     <div class="nhhb-utility-left">
@@ -103,6 +103,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
 
     </div>
   </div><!-- /.nhhb-row--utility -->
+  </div><!-- /.nhhb-utility-wrap -->
 
   <!-- =====================================================
        ROW 2 — Logo (left) + Primary Nav (right)
@@ -161,13 +162,11 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
           aria-label="<?php esc_attr_e( 'Open menu', 'nh-theme' ); ?>"
           aria-controls="nh-mobile-drawer"
           aria-expanded="false">
-          <img
-            class="nh-burger__icon"
-            src="<?php echo esc_url( $theme_uri . '/assets/icons/hamburger-menu.svg' ); ?>"
-            width="24"
-            height="24"
-            alt=""
-            aria-hidden="true" />
+          <svg class="nh-burger__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 5h16"/>
+            <path d="M4 12h16"/>
+            <path d="M4 19h16"/>
+          </svg>
         </button>
 
       </div>

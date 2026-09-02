@@ -73,6 +73,22 @@ class NHGP_Admin {
 			<table class="form-table" role="presentation">
 
 				<tr>
+					<th scope="row"><?php esc_html_e( 'Enable Heavy parcels', NHGP_TEXTDOMAIN ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox"
+								name="<?php echo esc_attr( NHGP_Defaults::option_key_heavy() . '[enabled]' ); ?>"
+								value="1"
+								<?php checked( ! empty( $o['enabled'] ) ); ?> />
+							<?php esc_html_e( 'Enable the Heavy parcels shipping calculator', NHGP_TEXTDOMAIN ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'When disabled, the heavy-parcel tiered rates are ignored and normal WooCommerce shipping class costs apply.', NHGP_TEXTDOMAIN ); ?>
+						</p>
+					</td>
+				</tr>
+
+				<tr>
 					<th scope="row"><?php esc_html_e( 'Heavy tiers', NHGP_TEXTDOMAIN ); ?></th>
 					<td>
 						<p class="description">
@@ -124,8 +140,8 @@ class NHGP_Admin {
 	public static function sanitize_heavy( $in ){
 		$out = array();
 
-		// Always enabled now – no checkbox in UI and the flag is ignored in logic.
-		$out['enabled'] = 1;
+		// Toggle: enabled/disabled. Default to disabled (0) when not checked.
+		$out['enabled'] = ! empty( $in['enabled'] ) ? 1 : 0;
 
 		$norm = function( $v ){
 			if ( ! isset( $v ) ) {

@@ -949,7 +949,6 @@
   }
 }
 
-
 /* ==========================================================================
    Ask an expert (Accordion version – light style)
    ========================================================================== */
@@ -1451,47 +1450,6 @@ h2.nh-in-title::after,
   }
 }
 
-/* ── Dark mode ─────────────────────────────────────────────── */
-body.dark-mode .nh-important-notes {
-  background: var(--dm-surface, #2A2C29);
-  border-color: var(--dm-border, #3E5F50);
-  border-left-color: var(--dm-primary, #36B47A);
-}
-
-body.dark-mode .nh-in-head {
-  border-bottom-color: rgba(62, 95, 80, 0.5);
-}
-
-body.dark-mode .nh-in-head-ico {
-  color: var(--dm-primary, #36B47A);
-}
-
-body.dark-mode h2.nh-in-title,
-body.dark-mode .nh-in-title {
-  color: var(--dm-text, #ECEAE6) !important;
-}
-
-body.dark-mode .nh-in-item {
-  border-bottom-color: rgba(62, 95, 80, 0.35);
-}
-
-body.dark-mode .nh-in-ico-wrap {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(62, 95, 80, 0.5);
-}
-
-body.dark-mode .nh-in-ico {
-  color: var(--dm-primary, #36B47A);
-}
-
-body.dark-mode .nh-in-txt {
-  color: rgba(236, 234, 230, 0.7);
-}
-
-body.dark-mode .nh-in-txt strong {
-  color: var(--dm-text, #ECEAE6);
-}
-
 /* =========================================================
    Feature Box — Admin
    ========================================================= */
@@ -1645,22 +1603,6 @@ body.dark-mode .nh-in-txt strong {
     .nhf-box.nhf--summary-card {
         padding: 12px 14px;
     }
-}
-
-/* ── Dark mode ─────────────────────────────────────────────── */
-body.dark-mode .nhf-box.nhf--summary-card {
-    background: var(--dm-bg);
-    border-color: var(--dm-border);
-}
-
-body.dark-mode .nhf-box .nhf-label {
-    color: var(--dm-text);
-}
-
-body.dark-mode .nhf-box .nhf-icon {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--dm-border);
-    color: var(--dm-primary, #36B47A);
 }
 
 /* =========================================================
@@ -1962,7 +1904,6 @@ body.dark-mode .nhf-box .nhf-icon {
     white-space: normal;
   }
 }
-
 
 /* ==========================================================================
    Brand icon above product title

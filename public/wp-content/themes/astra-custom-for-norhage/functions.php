@@ -112,6 +112,8 @@ function norhage_asset_version( $relative_path ) {
 	return file_exists( $path ) ? filemtime( $path ) : wp_get_theme()->get( 'Version' );
 }
 
+require_once get_stylesheet_directory() . '/inc/performance.php';
+
 function norhage_enqueue_assets() {
 	wp_enqueue_style(
 		'astra-custom-for-norhage-theme-css',
@@ -127,57 +129,59 @@ function norhage_enqueue_assets() {
 		norhage_asset_version( '/assets/css/header.css' )
 	);
 
-	wp_enqueue_style(
-		'norhage-custom-style',
-		get_stylesheet_directory_uri() . '/assets/css/product-page.css',
-		array( 'astra-custom-for-norhage-theme-css' ),
-		norhage_asset_version( '/assets/css/product-page.css' )
-	);
+	$is_product = function_exists( 'is_product' ) && is_product();
+	$is_cartish = function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() );
+	$is_blog    = is_home() || is_singular( 'post' ) || ( is_archive() && ! is_post_type_archive( 'product' ) && ! ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() ) );
 
-	wp_enqueue_style(
-		'blog-custom-style',
-		get_stylesheet_directory_uri() . '/assets/css/blog-style.css',
-		array( 'astra-custom-for-norhage-theme-css' ),
-		norhage_asset_version( '/assets/css/blog-style.css' )
-	);
+	if ( $is_product ) {
+		wp_enqueue_style(
+			'norhage-custom-style',
+			get_stylesheet_directory_uri() . '/assets/css/product-page.css',
+			array( 'astra-custom-for-norhage-theme-css' ),
+			norhage_asset_version( '/assets/css/product-page.css' )
+		);
 
-	wp_enqueue_style(
-		'custom-basket-css',
-		get_stylesheet_directory_uri() . '/assets/css/basket.css',
-		array( 'astra-custom-for-norhage-theme-css' ),
-		norhage_asset_version( '/assets/css/basket.css' )
-	);
+		wp_enqueue_script(
+			'nh-product-help-modal',
+			get_stylesheet_directory_uri() . '/assets/js/nh-product-help-modal.js',
+			array(),
+			norhage_asset_version( '/assets/js/nh-product-help-modal.js' ),
+			norhage_script_args()
+		);
 
-	wp_enqueue_script(
-		'norhage-custom-js',
-		get_stylesheet_directory_uri() . '/assets/js/script.js',
-		array(),
-		norhage_asset_version( '/assets/js/script.js' ),
-		true
-	);
+		wp_enqueue_script(
+			'nh-product-gallery-note',
+			get_stylesheet_directory_uri() . '/assets/js/product-gallery-note.js',
+			array(),
+			norhage_asset_version( '/assets/js/product-gallery-note.js' ),
+			norhage_script_args()
+		);
+	}
+
+	if ( $is_blog ) {
+		wp_enqueue_style(
+			'blog-custom-style',
+			get_stylesheet_directory_uri() . '/assets/css/blog-style.css',
+			array( 'astra-custom-for-norhage-theme-css' ),
+			norhage_asset_version( '/assets/css/blog-style.css' )
+		);
+	}
+
+	if ( $is_cartish ) {
+		wp_enqueue_style(
+			'custom-basket-css',
+			get_stylesheet_directory_uri() . '/assets/css/basket.css',
+			array( 'astra-custom-for-norhage-theme-css' ),
+			norhage_asset_version( '/assets/css/basket.css' )
+		);
+	}
 
 	wp_enqueue_script(
 		'norhage-header-dynamic',
 		get_stylesheet_directory_uri() . '/assets/js/header-dynamic.js',
-		array( 'jquery' ),
+		array(),
 		norhage_asset_version( '/assets/js/header-dynamic.js' ),
-		true
-	);
-
-	wp_enqueue_script(
-		'nh-product-help-modal',
-		get_stylesheet_directory_uri() . '/assets/js/nh-product-help-modal.js',
-		array(),
-		norhage_asset_version( '/assets/js/nh-product-help-modal.js' ),
-		true
-	);
-
-	wp_enqueue_script(
-		'nh-product-gallery-note',
-		get_stylesheet_directory_uri() . '/assets/js/product-gallery-note.js',
-		array(),
-		norhage_asset_version( '/assets/js/product-gallery-note.js' ),
-		true
+		norhage_script_args()
 	);
 
 	if ( is_front_page() ) {
@@ -186,7 +190,7 @@ function norhage_enqueue_assets() {
 			get_stylesheet_directory_uri() . '/assets/js/home-hero-slider.js',
 			array(),
 			norhage_asset_version( '/assets/js/home-hero-slider.js' ),
-			true
+			norhage_script_args()
 		);
 	}
 }
@@ -255,11 +259,24 @@ function show_subcategories_grid() {
 
 		foreach ( $subcategories as $subcategory ) {
 			$thumbnail_id = get_term_meta( $subcategory->term_id, 'thumbnail_id', true );
-			$image_url    = $thumbnail_id ? wp_get_attachment_url( $thumbnail_id ) : wc_placeholder_img_src();
 
 			echo '<div class="subcategory-item">';
 			echo '<a href="' . esc_url( get_term_link( $subcategory ) ) . '">';
-			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $subcategory->name ) . '" />';
+			if ( $thumbnail_id ) {
+				echo wp_get_attachment_image(
+					(int) $thumbnail_id,
+					'woocommerce_thumbnail',
+					false,
+					array(
+						'alt'      => $subcategory->name,
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+						'sizes'    => '(max-width: 768px) 42vw, 180px',
+					)
+				);
+			} else {
+				echo '<img src="' . esc_url( wc_placeholder_img_src( 'woocommerce_thumbnail' ) ) . '" alt="' . esc_attr( $subcategory->name ) . '" loading="lazy" decoding="async" width="300" height="300" />';
+			}
 			echo '<span>' . esc_html( $subcategory->name ) . '</span>';
 			echo '</a></div>';
 		}
@@ -366,6 +383,7 @@ require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
 require_once get_stylesheet_directory() . '/inc/sample-order.php';
+require_once get_stylesheet_directory() . '/inc/seo.php';
 
 /* --------------------------------------------------------------------------
  * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)
@@ -537,12 +555,19 @@ add_action('astra_footer', function () {
  * Misc
  * ----------------------------------------------------------------------- */
 function astra_child_enqueue_scripts() {
+	if ( ! function_exists( 'is_shop' ) ) {
+		return;
+	}
+	if ( ! ( is_shop() || is_product_taxonomy() ) ) {
+		return;
+	}
+
 	wp_enqueue_script(
 		'category-toggle',
 		get_stylesheet_directory_uri() . '/assets/js/category-toggle.js',
-		array( 'jquery' ),
-		'1.0',
-		true
+		array(),
+		norhage_asset_version( '/assets/js/category-toggle.js' ),
+		norhage_script_args()
 	);
 }
 add_action( 'wp_enqueue_scripts', 'astra_child_enqueue_scripts' );
@@ -634,14 +659,31 @@ function nh_assign_custom_seq_on_new_order( $order_id, $order = null ) {
     $start  = (int) $settings['start'];
     $option_key = 'nh_last_seq_' . $language;
 
-    $last_used = (int) get_option( $option_key, $start - 1 );
-    $next = $last_used + 1;
+    global $wpdb;
+    $lock_name = 'nh_order_seq_' . preg_replace( '/[^a-zA-Z0-9_]/', '_', $language );
+    $got_lock  = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 10)', $lock_name ) );
 
-    update_option( $option_key, $next, false );
+    try {
+        // Another concurrent request may have written the meta while we waited.
+        $order = wc_get_order( $order_id );
+        if ( ! $order || $order->get_meta( '_nh_custom_seq_number', true ) ) {
+            return;
+        }
 
-    $order->update_meta_data( '_nh_custom_seq_number', $next );
-    $order->update_meta_data( '_nh_custom_seq_prefix', $prefix );
-    $order->save();
+        wp_cache_delete( $option_key, 'options' );
+        $last_used = (int) get_option( $option_key, $start - 1 );
+        $next      = $last_used + 1;
+
+        update_option( $option_key, $next, false );
+
+        $order->update_meta_data( '_nh_custom_seq_number', $next );
+        $order->update_meta_data( '_nh_custom_seq_prefix', $prefix );
+        $order->save();
+    } finally {
+        if ( $got_lock ) {
+            $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock_name ) );
+        }
+    }
 }
 
 /**
@@ -675,15 +717,14 @@ add_filter( 'woocommerce_formatted_address_force_country_display', '__return_tru
  * Newsletters connection to sender.net
  * ----------------------------------------------------------------------- */
 
-// === 1) Enqueue JS & pass AJAX URL + nonce ==========================
+// === 1) Register JS (enqueued only when a newsletter form is rendered) ===
 add_action( 'wp_enqueue_scripts', function () {
-	// Adjust path if you put the JS somewhere else.
-	wp_enqueue_script(
+	wp_register_script(
 		'nh-sender-newsletter',
 		get_stylesheet_directory_uri() . '/assets/js/nh-sender-newsletter.js',
 		[ 'jquery' ],
-		'1.0.0',
-		true
+		norhage_asset_version( '/assets/js/nh-sender-newsletter.js' ),
+		norhage_script_args()
 	);
 
 	wp_localize_script(
@@ -783,11 +824,7 @@ function nh_sender_subscribe() {
 	}
 
 	wp_send_json_error( [
-		'message'   => 'Subscription failed: ' . $public_error,
-		'debug'     => [
-			'status' => $status,
-			'body'   => $resp_body,   // safe, contains no API key
-		],
+		'message' => 'Subscription failed: ' . $public_error,
 	] );
 
 }
@@ -800,27 +837,22 @@ add_action( 'wp_head', function() {
     }
 });
 
-// Shorten WooCommerce "Lisää ostoskoriin" to "Lisää koriin" for Finnish locale.
-add_filter( 'gettext', function( $translated, $text, $domain ) {
-
-	if ( $domain !== 'woocommerce' ) {
-		return $translated;
-	}
-
-	// Only Finnish locale (fi, fi_FI).
+/**
+ * Shorten WooCommerce "Lisää ostoskoriin" to "Lisää koriin" for Finnish shops.
+ * Uses the Woo button filters instead of gettext (which runs on every translated string).
+ */
+function nh_shorten_finnish_add_to_cart_text( $text ) {
 	$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
 	if ( strpos( $locale, 'fi' ) !== 0 ) {
-		return $translated;
+		return $text;
 	}
-
-	// Replace only the exact Finnish string.
-	if ( $translated === 'Lisää ostoskoriin' ) {
-		$translated = 'Lisää koriin';
+	if ( $text === 'Lisää ostoskoriin' ) {
+		return 'Lisää koriin';
 	}
-
-	return $translated;
-
-}, 10, 3 );
+	return $text;
+}
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'nh_shorten_finnish_add_to_cart_text' );
+add_filter( 'woocommerce_product_add_to_cart_text', 'nh_shorten_finnish_add_to_cart_text' );
 
 
 /**
@@ -975,16 +1007,6 @@ function nh_single_product_image_note() {
 }
 
 /**
- * Remove Dashicons from the frontend for non-logged-in users
- */
-add_action( 'wp_enqueue_scripts', function() {
-    if ( ! is_user_logged_in() ) {
-        wp_dequeue_style( 'dashicons' );
-        wp_deregister_style( 'dashicons' );
-    }
-}, 100 );
-
-/**
  * Fail-safe: Strip author links from the final HTML output to fix SEO 3XX errors.
  */
 add_action( 'template_redirect', 'norhage_start_buffer_strip_author', 1 );
@@ -1018,16 +1040,21 @@ add_filter( 'woocommerce_show_page_title', function( $show ) {
 add_filter( 'posts_clauses', 'push_out_of_stock_to_end', 2000, 2 );
 
 function push_out_of_stock_to_end( $posts_clauses, $query ) {
-    if ( ! is_admin() && $query->is_main_query() && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
-        global $wpdb;
-
-        $posts_clauses['join'] .= " LEFT JOIN $wpdb->postmeta istockstatus ON ($wpdb->posts.ID = istockstatus.post_id AND istockstatus.meta_key = '_stock_status') ";
-
-        $posts_clauses['orderby'] = " CASE istockstatus.meta_value 
-            WHEN 'outofstock' THEN 1 
-            ELSE 0 
-        END ASC, " . $posts_clauses['orderby'];
+    if ( is_admin() || ! $query->is_main_query() ) {
+        return $posts_clauses;
     }
+    if ( ! ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
+        return $posts_clauses;
+    }
+
+    global $wpdb;
+    $lookup = $wpdb->prefix . 'wc_product_meta_lookup';
+
+    if ( false === strpos( $posts_clauses['join'], $lookup ) ) {
+        $posts_clauses['join'] .= " LEFT JOIN {$lookup} nh_stock ON ({$wpdb->posts}.ID = nh_stock.product_id) ";
+    }
+
+    $posts_clauses['orderby'] = " CASE nh_stock.stock_status WHEN 'outofstock' THEN 1 ELSE 0 END ASC, " . $posts_clauses['orderby'];
 
     return $posts_clauses;
 }

@@ -280,6 +280,42 @@ class NHHB_Admin {
             </div>
         </div>
 
+        <!-- NEW ARRIVALS -->
+        <div id="nhhb_fields_new_arrivals" class="<?php echo $type === 'new-arrivals' ? '' : 'nhhb-hidden'; ?>">
+            <h3>New Arrivals</h3>
+            <?php
+            $na = [
+                'title'      => $data['title'] ?? 'New Arrivals',
+                'count'      => isset($data['count']) ? (int) $data['count'] : 8,
+                'view_label' => $data['view_label'] ?? 'View All',
+                'view_url'   => $data['view_url'] ?? '',
+            ];
+            ?>
+            <p><label>Section Title (H2)<br>
+                <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($na['title']); ?>">
+            </label></p>
+            <div class="nhhb-grid nhhb-3">
+                <p><label>Number of products<br>
+                    <input type="number" min="1" max="24" class="widefat" name="data[count]" value="<?php echo (int) $na['count']; ?>">
+                </label></p>
+                <p><label>View All label<br>
+                    <input type="text" class="widefat" name="data[view_label]" value="<?php echo esc_attr($na['view_label']); ?>">
+                </label></p>
+                <p><label>View All URL (optional)<br>
+                    <input type="url" class="widefat" name="data[view_url]" value="<?php echo esc_attr($na['view_url']); ?>" placeholder="Defaults to shop page">
+                </label></p>
+            </div>
+        </div>
+
+        <!-- NEWSLETTER -->
+        <div id="nhhb_fields_newsletter" class="<?php echo $type === 'newsletter' ? '' : 'nhhb-hidden'; ?>">
+            <h3>Newsletter</h3>
+            <p class="description">Headline, kicker, placeholder and button text come from the plugin translations so each shop language stays consistent.</p>
+            <p><label>Consent note (optional)<br>
+                <input type="text" class="widefat" name="data[consent_text]" value="<?php echo esc_attr($nl['consent_text']); ?>">
+            </label></p>
+        </div>
+
         <!-- PROMO TRIO -->
         <div id="nhhb_fields_promo_trio" class="<?php echo $type === 'promo-trio' ? '' : 'nhhb-hidden'; ?>">
             <h3>Promo Trio (1 large + 2 small)</h3>
@@ -425,8 +461,7 @@ class NHHB_Admin {
                             <input type="hidden" name="data[logo]" id="b2b_logo_single" value="<?php echo esc_attr($bb['logo']); ?>">
                         </div>
                         <p class="description" style="margin:0 0 0 10px;">
-                            Upload a <strong>single transparent PNG/SVG</strong> in your <em>dark blue</em> brand color.
-                            It will be shown as-is on light backgrounds and automatically converted to white in dark mode via CSS.
+                            Upload a <strong>single transparent PNG/SVG</strong> in your brand color. It is inverted to white on the blue banner.
                         </p>
                     </div>
                 </div>
@@ -445,7 +480,7 @@ class NHHB_Admin {
         $services_q = new WP_Query([
             'post_type'      => 'service',
             'post_status'    => 'publish',
-            'posts_per_page' => -1,
+            'posts_per_page' => 50,
             'orderby'        => 'menu_order title',
             'order'          => 'ASC',
             'no_found_rows'  => true,
@@ -524,6 +559,7 @@ class NHHB_Admin {
                 $('#nhhb_fields_top_offers').toggleClass('nhhb-hidden', t !== 'top-offers');
                 $('#nhhb_fields_top_features').toggleClass('nhhb-hidden', t !== 'top-features');
                 $('#nhhb_fields_browse_cats').toggleClass('nhhb-hidden', t !== 'browse-cats');
+                $('#nhhb_fields_new_arrivals').toggleClass('nhhb-hidden', t !== 'new-arrivals');
                 $('#nhhb_fields_promo_trio').toggleClass('nhhb-hidden', t !== 'promo-trio');
                 $('#nhhb_fields_newsletter').toggleClass('nhhb-hidden', t !== 'newsletter');
                 $('#nhhb_fields_services_slider').toggleClass('nhhb-hidden', t !== 'services-slider');
@@ -685,7 +721,12 @@ class NHHB_Admin {
             ];
 
         } elseif ($type === 'new-arrivals') {
-            $clean = []; // Dynamic.
+            $clean = [
+                'title'      => sanitize_text_field($data['title'] ?? 'New Arrivals'),
+                'count'      => isset($data['count']) ? max(1, min(24, absint($data['count']))) : 8,
+                'view_label' => sanitize_text_field($data['view_label'] ?? 'View All'),
+                'view_url'   => esc_url_raw($data['view_url'] ?? ''),
+            ];
 
         } elseif ($type === 'promo-trio') {
             $cards = [];
