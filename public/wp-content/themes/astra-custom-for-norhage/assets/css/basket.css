@@ -23,38 +23,61 @@ body.woocommerce-cart {
 }
 
 /* --------------------------------------------------------------------------
- * Page shell
+ * Page shell — two columns on desktop (products | shipping/totals)
  * ----------------------------------------------------------------------- */
 body.woocommerce-cart .site-content .ast-container,
 body.woocommerce-cart .site-content .ast-woocommerce-container {
   max-width: 1180px;
 }
 
-body.woocommerce-cart .entry-content > .woocommerce,
-body.woocommerce-cart .woocommerce.wp-block-group {
-  display: grid;
-  gap: 1.25rem;
+body.woocommerce-cart .woocommerce-notices-wrapper {
+  width: 100%;
 }
 
-body.woocommerce-cart .woocommerce-notices-wrapper {
-  grid-column: 1 / -1;
+body.woocommerce-cart .nh-cart-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  clear: both;
+  isolation: isolate;
+}
+
+body.woocommerce-cart .nh-cart-layout > .woocommerce-cart-form,
+body.woocommerce-cart .nh-cart-layout > .cart-collaterals,
+body.woocommerce-cart .nh-cart-layout > .cart_totals,
+body.woocommerce-cart .nh-cart-layout > .cross-sells,
+body.woocommerce-cart .woocommerce-cart-form,
+body.woocommerce-cart .cart-collaterals,
+body.woocommerce-cart .cart_totals {
+  float: none !important;
+  width: 100% !important;
+  max-width: none !important;
 }
 
 @media (min-width: 960px) {
-  body.woocommerce-cart .entry-content > .woocommerce:has(form.woocommerce-cart-form):has(.cart-collaterals),
-  body.woocommerce-cart .woocommerce.wp-block-group:has(form.woocommerce-cart-form):has(.cart-collaterals) {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+  body.woocommerce-cart .nh-cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+    grid-template-areas:
+      "items summary"
+      "sticky sticky";
     align-items: start;
     gap: 1.75rem 2rem;
   }
 
-  body.woocommerce-cart form.woocommerce-cart-form {
+  body.woocommerce-cart .nh-cart-layout > .woocommerce-cart-form {
+    grid-area: items;
     min-width: 0;
   }
 
-  body.woocommerce-cart .cart-collaterals {
+  body.woocommerce-cart .nh-cart-layout > .cart-collaterals {
+    grid-area: summary;
     position: sticky;
     top: calc(var(--masthead-h, 96px) + 12px);
+  }
+
+  body.woocommerce-cart .nh-cart-layout > .nh-cart-sticky-bar {
+    grid-area: sticky;
   }
 }
 
@@ -124,22 +147,7 @@ body.woocommerce-cart table.shop_table.cart td::before {
 
 body.woocommerce-cart table.shop_table.cart tbody tr.cart_item,
 body.woocommerce-cart table.shop_table.cart tbody tr.woocommerce-cart-form__cart-item {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) auto;
-  grid-template-areas:
-    "thumb name remove"
-    "thumb meta remove"
-    "qty price price";
-  gap: 6px 12px;
   background: #fff;
-  border: 1px solid var(--nh-mint, #c3e8c6);
-  border-radius: var(--nh-cart-radius);
-  padding: 12px;
-  box-shadow: 0 1px 2px rgba(30, 57, 50, 0.04);
-}
-
-body.woocommerce-cart .product-thumbnail {
-  grid-area: thumb;
 }
 
 body.woocommerce-cart .product-thumbnail img {
@@ -151,11 +159,55 @@ body.woocommerce-cart .product-thumbnail img {
 }
 
 body.woocommerce-cart .product-name {
-  grid-area: name;
   font-weight: 700;
   color: var(--nh-forest, #1e3932);
   line-height: 1.3;
   padding-right: 4px;
+}
+
+@media (max-width: 899px) {
+  body.woocommerce-cart table.shop_table.cart tbody tr.cart_item,
+  body.woocommerce-cart table.shop_table.cart tbody tr.woocommerce-cart-form__cart-item {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "thumb name remove"
+      "thumb meta remove"
+      "qty price price";
+    gap: 6px 12px;
+    border: 1px solid var(--nh-mint, #c3e8c6);
+    border-radius: var(--nh-cart-radius);
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(30, 57, 50, 0.04);
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-thumbnail {
+    grid-area: thumb;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-name {
+    grid-area: name;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-quantity {
+    grid-area: qty;
+    align-self: end;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-subtotal {
+    grid-area: price;
+    justify-self: end;
+    align-self: end;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-remove {
+    grid-area: remove;
+    justify-self: end;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-price {
+    display: none;
+  }
 }
 
 body.woocommerce-cart .product-name a {
@@ -181,15 +233,6 @@ body.woocommerce-cart .product-name dl.variation dd {
   float: none;
 }
 
-body.woocommerce-cart .product-price {
-  display: none;
-}
-
-body.woocommerce-cart .product-quantity {
-  grid-area: qty;
-  align-self: end;
-}
-
 body.woocommerce-cart .product-quantity .quantity,
 body.woocommerce-cart .product-quantity .qty {
   min-height: 44px;
@@ -210,17 +253,9 @@ body.woocommerce-cart .product-quantity .qty {
 }
 
 body.woocommerce-cart .product-subtotal {
-  grid-area: price;
-  justify-self: end;
-  align-self: end;
   font-weight: 700;
   color: var(--nh-forest, #1e3932);
   font-size: 1.05rem;
-}
-
-body.woocommerce-cart .product-remove {
-  grid-area: remove;
-  justify-self: end;
 }
 
 body.woocommerce-cart .product-remove a.remove {
@@ -282,6 +317,15 @@ body.woocommerce-cart .product-remove a.remove:focus-visible {
   body.woocommerce-cart table.shop_table.cart tbody td.product-subtotal {
     border-right: 1px solid var(--nh-mint, #c3e8c6);
     border-radius: 0 14px 14px 0;
+  }
+
+  body.woocommerce-cart table.shop_table.cart .product-thumbnail,
+  body.woocommerce-cart table.shop_table.cart .product-name,
+  body.woocommerce-cart table.shop_table.cart .product-price,
+  body.woocommerce-cart table.shop_table.cart .product-quantity,
+  body.woocommerce-cart table.shop_table.cart .product-subtotal,
+  body.woocommerce-cart table.shop_table.cart .product-remove {
+    grid-area: auto;
   }
 
   body.woocommerce-cart .product-price {
@@ -368,6 +412,7 @@ body.woocommerce-cart .cart-collaterals,
 body.woocommerce-cart .cart_totals {
   width: 100% !important;
   float: none !important;
+  clear: both;
 }
 
 body.woocommerce-cart .cart_totals {

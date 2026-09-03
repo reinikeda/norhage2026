@@ -49,8 +49,10 @@ function nh_cart_ux_init() {
 	add_filter( 'woocommerce_shipping_calculator_enable_state', '__return_false' );
 	add_filter( 'woocommerce_shipping_calculator_enable_postcode', '__return_true' );
 
-	add_action( 'wp_enqueue_scripts', 'nh_cart_ux_assets', 20 );
+	add_action( 'wp_enqueue_scripts', 'nh_cart_ux_assets', 100 );
+	add_action( 'woocommerce_before_cart', 'nh_cart_ux_layout_open', 1 );
 	add_action( 'woocommerce_after_cart', 'nh_cart_ux_sticky_bar', 20 );
+	add_action( 'woocommerce_after_cart', 'nh_cart_ux_layout_close', 99 );
 	add_filter( 'body_class', 'nh_cart_ux_body_class' );
 }
 add_action( 'init', 'nh_cart_ux_init' );
@@ -94,6 +96,32 @@ function nh_cart_ux_assets() {
 			'couponLabel' => __( 'Have a coupon?', 'nh-theme' ),
 		)
 	);
+
+	// Reload after Astra / Woo layout CSS so floats cannot cover the product table.
+	$style_deps = array( 'astra-custom-for-norhage-theme-css' );
+	foreach ( array( 'woocommerce-layout', 'woocommerce-general', 'woocommerce-smallscreen', 'astra-theme-css' ) as $handle ) {
+		if ( wp_style_is( $handle, 'registered' ) || wp_style_is( $handle, 'enqueued' ) ) {
+			$style_deps[] = $handle;
+		}
+	}
+	wp_dequeue_style( 'custom-basket-css' );
+	wp_enqueue_style(
+		'custom-basket-css',
+		get_stylesheet_directory_uri() . '/assets/css/basket.css',
+		$style_deps,
+		norhage_asset_version( '/assets/css/basket.css' )
+	);
+}
+
+/**
+ * Two-column shell: products | shipping + totals.
+ */
+function nh_cart_ux_layout_open() {
+	echo '<div class="nh-cart-layout">';
+}
+
+function nh_cart_ux_layout_close() {
+	echo '</div>';
 }
 
 /**
