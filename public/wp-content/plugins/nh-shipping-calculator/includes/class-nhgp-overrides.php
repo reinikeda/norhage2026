@@ -15,8 +15,9 @@ class NHGP_Overrides {
 	 * Put the calculator's shipping class on the in-memory cart product
 	 * BEFORE WooCommerce evaluates flat-rate "class cost" vs "no class cost".
 	 *
-	 * Custom-cut products have no class in the catalog. Without this, live
-	 * shops charge the zone's "No shipping class cost".
+	 * Custom-cut products with no catalog class would otherwise pay the zone's
+	 * "No shipping class cost". Products that already have a shipping class
+	 * in the editor keep that class (see mapped_class_slug_for_item).
 	 *
 	 * @param WC_Cart $cart Cart.
 	 */
@@ -115,8 +116,9 @@ class NHGP_Overrides {
 
 	/**
 	 * Woo Flat Rate groups package lines by product->get_shipping_class().
-	 * Custom-cut catalog products have no class, so they land in the empty
-	 * bucket and get "No shipping class cost". Re-bucket from cut rules.
+	 * Custom-cut catalog products with no class land in the empty bucket and
+	 * get "No shipping class cost". Re-bucket from the resolved class (editor
+	 * class if set, otherwise cut-size rules).
 	 *
 	 * @param array $found   slug => items.
 	 * @param array $package Shipping package.
@@ -410,7 +412,7 @@ class NHGP_Overrides {
 					}
 				}
 
-				// Add mapped classes from custom-cut items
+				// Add resolved classes from custom-cut items (editor class, else size rules)
 				foreach ( $line_items as $item ) {
 					if ( empty( $item['data'] ) || ! $item['data'] instanceof WC_Product ) {
 						continue;
