@@ -299,15 +299,73 @@ body.woocommerce-cart .return-to-shop .button {
   color: #9b1c1c !important;
 }
 
+/*
+ * Quantity stepper. Astra still ships:
+ *   .quantity { width:100%; padding-left for absolutely positioned minus }
+ *   .minus/.plus { position:absolute; flex:1 1 20%; border-radius:100% }
+ *   .qty { margin-left:auto; padding-left for the abs minus }
+ * Putting minus back in normal flow without resetting those leaves a white
+ * gap beside "-" and can leave a circular ::before/::after ring.
+ */
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity.buttons_added,
+.nh-cart-layout .quantity,
 .nh-cart-layout .quantity.buttons_added {
-  display: inline-flex;
-  align-items: stretch;
-  position: relative;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  float: none !important;
+  position: relative !important;
   z-index: 0;
+  box-sizing: border-box;
   border: 1px solid var(--nh-mint, #c3e8c6);
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .screen-reader-text,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity label,
+.nh-cart-layout .quantity .screen-reader-text,
+.nh-cart-layout .quantity label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  flex: 0 0 0 !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus::before,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus::after,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .plus::before,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .plus::after,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity::before,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity::after,
+.nh-cart-layout .quantity .minus::before,
+.nh-cart-layout .quantity .minus::after,
+.nh-cart-layout .quantity .plus::before,
+.nh-cart-layout .quantity .plus::after,
+.nh-cart-layout .quantity::before,
+.nh-cart-layout .quantity::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
 }
 
 html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .plus,
@@ -319,22 +377,31 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
   left: auto !important;
   right: auto !important;
   bottom: auto !important;
+  inset: auto !important;
+  transform: none !important;
   z-index: auto !important;
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
   min-height: 40px;
+  height: auto !important;
   float: none !important;
   margin: 0 !important;
+  padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
+  outline: none !important;
   background: var(--nh-offwhite, #faf7f2);
   color: var(--nh-forest, #1e3932) !important;
   text-decoration: none !important;
   box-shadow: none !important;
   font-size: 1.15rem;
   line-height: 1;
+  box-sizing: border-box;
 }
 
 .nh-cart-layout .quantity .plus:hover,
@@ -342,16 +409,32 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
   background: var(--nh-mint, #c3e8c6);
 }
 
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
 .nh-cart-layout .quantity .qty {
-  width: 3rem;
+  flex: 0 0 2.75rem !important;
+  width: 2.75rem !important;
+  min-width: 2.75rem !important;
+  max-width: 2.75rem !important;
   min-height: 40px;
+  margin: 0 !important;
+  padding: 0 !important;
   font-size: 16px;
   text-align: center;
-  border: 0;
-  border-left: 1px solid var(--nh-mint, #c3e8c6);
-  border-right: 1px solid var(--nh-mint, #c3e8c6);
-  border-radius: 0;
-  box-shadow: none;
+  border: 0 !important;
+  border-left: 1px solid var(--nh-mint, #c3e8c6) !important;
+  border-right: 1px solid var(--nh-mint, #c3e8c6) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #fff;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  box-sizing: border-box;
+}
+
+.nh-cart-layout .quantity .qty::-webkit-outer-spin-button,
+.nh-cart-layout .quantity .qty::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .nh-cart-layout .product-subtotal {
@@ -430,9 +513,18 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
     background: #fff;
     border: 1px solid var(--nh-mint, #c3e8c6);
     border-radius: var(--nh-cart-radius);
-    overflow: hidden;
+    /* overflow:hidden on a table paints a separate clip that can show up as
+       a large oval over the product rows. Round the corner cells instead. */
+    overflow: visible;
     border-collapse: separate !important;
     border-spacing: 0;
+  }
+
+  .nh-cart-layout table.shop_table.cart tbody,
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item {
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
   }
 
   .nh-cart-layout table.shop_table.cart thead {
@@ -450,6 +542,14 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
     border-bottom: 1px solid var(--nh-mint, #c3e8c6);
     background: #fbf8f3;
     vertical-align: middle;
+  }
+
+  .nh-cart-layout table.shop_table.cart thead th:first-child {
+    border-top-left-radius: var(--nh-cart-radius);
+  }
+
+  .nh-cart-layout table.shop_table.cart thead th:last-child {
+    border-top-right-radius: var(--nh-cart-radius);
   }
 
   .nh-cart-layout table.shop_table.cart thead th.product-remove,
@@ -517,7 +617,8 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-quantity {
-    min-width: 148px;
+    width: 1%;
+    min-width: 0;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-subtotal {
@@ -539,7 +640,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
     border: 0 !important;
     border-top: 1px solid var(--nh-mint, #c3e8c6) !important;
     padding: 10px 16px !important;
-    border-radius: 0 !important;
+    border-radius: 0 0 var(--nh-cart-radius) var(--nh-cart-radius) !important;
   }
 }
 
@@ -557,6 +658,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
     background: #fbf8f3 !important;
     border-top: 1px solid var(--nh-mint, #c3e8c6) !important;
     padding: 10px 16px !important;
+    border-radius: 0 0 var(--nh-cart-radius) var(--nh-cart-radius) !important;
   }
 }
 
