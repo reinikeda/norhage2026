@@ -457,15 +457,10 @@ body.nh-sc-open {
   color: var(--nh-sc-forest);
 }
 
-.nh-sc__shipping-hint,
-.nh-sc__shipping-empty {
+.nh-sc__shipping-hint {
   margin: 0 0 12px;
   font-size: 0.9rem;
   line-height: 1.4;
-}
-
-.nh-sc__shipping-empty {
-  margin: 12px 0 0;
 }
 
 .nh-sc__shipping-form {

@@ -187,12 +187,6 @@ final class NH_Side_Cart_Render {
 		$show_country    = count( $countries ) > 1;
 		$current_country = NH_Side_Cart::default_shipping_country();
 		$postcode        = WC()->customer ? (string) WC()->customer->get_shipping_postcode() : '';
-		$calculated      = false;
-		if ( WC()->customer ) {
-			$calculated = method_exists( WC()->customer, 'has_calculated_shipping' )
-				? (bool) WC()->customer->has_calculated_shipping()
-				: (bool) WC()->customer->get_calculated_shipping();
-		}
 		$packages        = WC()->shipping()->get_packages();
 		$has_rates       = false;
 
@@ -243,12 +237,10 @@ final class NH_Side_Cart_Render {
 				</button>
 			</form>
 
-			<?php if ( $calculated && $has_rates ) : ?>
+			<?php if ( $has_rates ) : ?>
 				<div class="nh-sc__methods">
 					<?php self::render_methods( $packages ); ?>
 				</div>
-			<?php elseif ( $calculated && ! $has_rates ) : ?>
-				<p class="nh-sc__shipping-empty"><?php esc_html_e( 'No shipping methods available for this postcode.', NH_SC_TD ); ?></p>
 			<?php endif; ?>
 		</section>
 		<?php
