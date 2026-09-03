@@ -363,6 +363,9 @@ final class NH_Side_Cart_Render {
 		$checkout_url = wc_get_checkout_url();
 		?>
 		<div class="nh-sc__actions">
+			<button type="button" class="nh-sc__continue" data-nh-sc-close>
+				<?php esc_html_e( 'Continue shopping', NH_SC_TD ); ?>
+			</button>
 			<a class="nh-sc__btn nh-sc__btn--ghost" href="<?php echo esc_url( $cart_url ); ?>">
 				<?php esc_html_e( 'View basket', NH_SC_TD ); ?>
 			</a>

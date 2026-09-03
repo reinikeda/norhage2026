@@ -266,6 +266,9 @@ msgstr "Įjungti pjovimą pagal išmatavimus"
 msgid "Cutting fee per sheet"
 msgstr "Pjovimo mokestis už lakštą"
 
+msgid "Cutting fee per metre"
+msgstr "Pjovimo mokestis už metrą"
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr "Min. plotis (mm)"

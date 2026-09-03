@@ -265,6 +265,10 @@ msgstr ""
 msgid "Cutting fee per sheet"
 msgstr ""
 
+#: inc/product-customize.php:80 inc/order-attributes.php
+msgid "Cutting fee per metre"
+msgstr ""
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr ""

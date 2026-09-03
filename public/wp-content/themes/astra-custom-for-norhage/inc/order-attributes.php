@@ -33,6 +33,7 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	$width_val  = '';
 	$length_val = '';
 	$fee_val    = '';
+	$is_linear  = false;
 
 	foreach ( $meta_data as $meta ) {
 		$key = (string) ( $meta->key ?? '' );
@@ -47,15 +48,19 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				$width_val = (string) $val;
 				break;
 
-			case 'cutting_height':
 			case 'cutting_length_m':
 			case 'nh_length_m':
 			case '_nh_length_m':
+				$is_linear  = true;
 				$length_val = (string) $val;
 
 				if ( is_numeric( $length_val ) ) {
 					$length_val .= ' m';
 				}
+				break;
+
+			case 'cutting_height':
+				$length_val = (string) $val;
 				break;
 
 			case 'cutting_fee':
@@ -77,6 +82,7 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 				break;
 
 			case 'Cutting fee per sheet':
+			case 'Cutting fee per metre':
 			case 'Cutting fee per unit':
 				if ( '' === $fee_val ) {
 					$fee_val = $val;
@@ -86,9 +92,10 @@ function nh_order_item_measured_meta( WC_Order_Item_Product $item ): array {
 	}
 
 	return array(
-		'width'  => $width_val,
-		'length' => $length_val,
-		'fee'    => $fee_val,
+		'width'     => $width_val,
+		'length'    => $length_val,
+		'fee'       => $fee_val,
+		'is_linear' => $is_linear,
 	);
 }
 
@@ -131,7 +138,11 @@ function nh_order_apply_measured_pairs( array $pairs, WC_Order_Item_Product $ite
 			$fee_val = wp_strip_all_tags( wc_price( $amount ) );
 		}
 
-		$pairs[ __( 'Cutting fee per sheet', 'nh-theme' ) ] = (string) $fee_val;
+		$fee_label = ! empty( $measured_meta['is_linear'] )
+			? __( 'Cutting fee per metre', 'nh-theme' )
+			: __( 'Cutting fee per sheet', 'nh-theme' );
+
+		$pairs[ $fee_label ] = (string) $fee_val;
 	}
 
 	return $pairs;
@@ -292,6 +303,7 @@ function nh_order_duplicate_meta_keys(): array {
 		'Length',
 		'Cutting fee',
 		'Cutting fee per sheet',
+		'Cutting fee per metre',
 		'Cutting fee per unit',
 	);
 }
@@ -350,6 +362,7 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 		'Length',
 		'Cutting fee',
 		'Cutting fee per sheet',
+		'Cutting fee per metre',
 		'Cutting fee per unit',
 	);
 
@@ -358,6 +371,7 @@ function nh_filter_order_item_formatted_meta( $formatted_meta, $item ) {
 	$hidden_labels[] = __( 'Width', 'nh-theme' );
 	$hidden_labels[] = __( 'Length', 'nh-theme' );
 	$hidden_labels[] = __( 'Cutting fee per sheet', 'nh-theme' );
+	$hidden_labels[] = __( 'Cutting fee per metre', 'nh-theme' );
 	$hidden_labels[] = __( 'Cutting fee per unit', 'nh-theme' );
 
 	$hidden_label_keys = array_unique( array_map( 'nh_normalize_order_meta_label', $hidden_labels ) );
