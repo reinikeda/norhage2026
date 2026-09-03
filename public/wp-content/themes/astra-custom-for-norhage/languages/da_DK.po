@@ -266,6 +266,9 @@ msgstr "Aktivér tilpasset skæring"
 msgid "Cutting fee per sheet"
 msgstr "Skæregebyr pr. plade"
 
+msgid "Cutting fee per metre"
+msgstr "Skæregebyr pr. meter"
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr "Min. bredde (mm)"

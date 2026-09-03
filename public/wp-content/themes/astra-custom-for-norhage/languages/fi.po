@@ -266,6 +266,9 @@ msgstr "Ota mittatilausleikkaus käyttöön"
 msgid "Cutting fee per sheet"
 msgstr "Leikkausmaksu / levy"
 
+msgid "Cutting fee per metre"
+msgstr "Leikkausmaksu / metri"
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr "Min. leveys (mm)"

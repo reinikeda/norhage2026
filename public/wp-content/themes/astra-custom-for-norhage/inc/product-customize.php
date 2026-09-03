@@ -65,6 +65,23 @@ function nh_cc_get_kg_per_m2_from_product( WC_Product $p ) : float {
 	return 0.0;
 }
 
+/**
+ * Cart / checkout / order label for the custom-cut fee.
+ *
+ * Must be a single gettext string. Concatenating __( 'Cutting fee' ) and
+ * __( 'per sheet' ) never matches the translated "Cutting fee per sheet"
+ * entries in the theme PO files.
+ *
+ * @param string $unit 'mm' (planar / per sheet) or 'm' (linear / per metre).
+ * @return string
+ */
+function nh_cc_cutting_fee_label( $unit = 'mm' ) {
+	if ( 'm' === $unit ) {
+		return __( 'Cutting fee per metre', 'nh-theme' );
+	}
+	return __( 'Cutting fee per sheet', 'nh-theme' );
+}
+
 /* ============================================================================
  * BODY CLASS — flag custom-cut product pages (simple OR variable)
  * ========================================================================== */
@@ -614,14 +631,8 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
 		}
 
-		// label depends on unit/type
-		$label = __( 'Cutting fee', 'nh-theme' );
-		$unit = isset( $cart_item['nh_custom_size']['unit'] ) ? $cart_item['nh_custom_size']['unit'] : 'mm';
-		if ( $unit === 'm' ) {
-			$label .= ' ' . __( 'per metre', 'nh-theme' );
-		} else {
-			$label .= ' ' . __( 'per sheet', 'nh-theme' );
-		}
+		$unit  = isset( $cart_item['nh_custom_size']['unit'] ) ? $cart_item['nh_custom_size']['unit'] : 'mm';
+		$label = nh_cc_cutting_fee_label( $unit );
 
 		$item_data[] = [
 			'name'  => $label,
@@ -703,12 +714,13 @@ add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $car
 		}
 	}
 
-	// Cutting fee (human)
+	// Cutting fee (human) — full phrase so PO files can translate it
 	if ( $fee > 0 ) {
-		$existing_fee = $item->get_meta( __( 'Cutting fee', 'nh-theme' ), true );
+		$fee_label    = nh_cc_cutting_fee_label( $unit );
+		$existing_fee = $item->get_meta( $fee_label, true );
 		if ( empty( $existing_fee ) ) {
 			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
-			$item->add_meta_data( __( 'Cutting fee', 'nh-theme' ), wc_price( $fee_disp ), true );
+			$item->add_meta_data( $fee_label, wc_price( $fee_disp ), true );
 		}
 	}
 

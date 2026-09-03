@@ -266,6 +266,9 @@ msgstr ""
 msgid "Cutting fee per sheet"
 msgstr "Skärkostnad per ark"
 
+msgid "Cutting fee per metre"
+msgstr "Skärkostnad per meter"
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr ""

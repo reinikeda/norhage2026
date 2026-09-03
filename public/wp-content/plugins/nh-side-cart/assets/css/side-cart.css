@@ -69,6 +69,70 @@ body.nh-sc-open {
     inset: 0 0 0 auto;
     width: min(420px, 100vw);
   }
+
+  .nh-sc__items {
+    gap: 0;
+  }
+
+  .nh-sc__item {
+    grid-template-columns: 52px 1fr;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .nh-sc__thumb img {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+  }
+
+  .nh-sc__item-main {
+    gap: 2px;
+  }
+
+  .nh-sc__name {
+    font-size: 0.9rem;
+    line-height: 1.25;
+  }
+
+  .nh-sc__meta {
+    font-size: 0.78rem;
+  }
+
+  .nh-sc__item-bottom {
+    margin-top: 2px;
+  }
+
+  .nh-sc__qty {
+    border-radius: 8px;
+  }
+
+  .nh-sc__qty-btn,
+  .nh-sc__qty-input {
+    min-height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .nh-sc__qty-btn {
+    width: 28px;
+  }
+
+  .nh-sc__qty-input {
+    width: 2.1rem;
+    min-width: 2.1rem;
+  }
+
+  .nh-sc__remove {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    margin: -4px -6px 0 0;
+    font-size: 18px;
+  }
+
+  .nh-sc__price {
+    font-size: 0.9rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -481,7 +545,8 @@ body.nh-sc-open {
 .nh-sc__btn,
 .nh-sc__qty-btn,
 .nh-sc__close,
-.nh-sc__remove {
+.nh-sc__remove,
+.nh-sc__continue {
   touch-action: manipulation;
 }
 
@@ -529,6 +594,29 @@ body.nh-sc-open {
 .nh-sc__btn--ghost:hover,
 .nh-sc__btn--ghost:focus-visible {
   background: rgba(0, 112, 74, 0.06);
+}
+
+.nh-sc__continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--nh-sc-green);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.nh-sc__continue:hover,
+.nh-sc__continue:focus-visible {
+  color: var(--nh-sc-forest);
+  outline: none;
 }
 
 /* Hide XootiX floating bubble / markup when this plugin is active. */
