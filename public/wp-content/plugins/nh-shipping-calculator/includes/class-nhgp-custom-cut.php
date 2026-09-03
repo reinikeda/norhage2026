@@ -174,7 +174,11 @@ class NHGP_Custom_Cut {
 	}
 
 	/**
-	 * Shipping class slug this cart line should use (custom-cut rules, else empty).
+	 * Shipping class slug this cart line should use.
+	 *
+	 * A shipping class set on the product (or variation / parent) in the
+	 * WooCommerce editor always wins. Size-based plugin rules are used only
+	 * when that catalog class is empty.
 	 *
 	 * @param array            $item    Cart item.
 	 * @param WC_Product|null  $product Line product.
@@ -184,6 +188,11 @@ class NHGP_Custom_Cut {
 	public static function mapped_class_slug_for_item( $item, $product, $cs ) {
 		if ( ! self::is_custom_item( $item, $product, $cs ) ) {
 			return '';
+		}
+
+		$editor_slug = self::product_editor_shipping_class_slug( $product );
+		if ( $editor_slug !== '' ) {
+			return $editor_slug;
 		}
 
 		list( $w, $h ) = self::get_dims( $item, $product, $cs );
@@ -198,6 +207,72 @@ class NHGP_Custom_Cut {
 		}
 
 		return self::normalize_class_slug( $slug );
+	}
+
+	/**
+	 * Shipping class assigned in the product editor, if any.
+	 *
+	 * Reads taxonomy terms so an in-memory cart override from this plugin
+	 * is not mistaken for an editor-assigned class. Variations inherit from
+	 * the parent when they have no class of their own.
+	 *
+	 * @param WC_Product|null $product Line product.
+	 * @return string
+	 */
+	public static function product_editor_shipping_class_slug( $product ) {
+		if ( ! is_object( $product ) ) {
+			return '';
+		}
+
+		$ids = array();
+
+		if ( method_exists( $product, 'get_id' ) ) {
+			$id = (int) $product->get_id();
+			if ( $id > 0 ) {
+				$ids[] = $id;
+			}
+		}
+
+		if ( method_exists( $product, 'get_parent_id' ) ) {
+			$parent_id = (int) $product->get_parent_id();
+			if ( $parent_id > 0 && ! in_array( $parent_id, $ids, true ) ) {
+				$ids[] = $parent_id;
+			}
+		}
+
+		foreach ( $ids as $object_id ) {
+			$slug = self::shipping_class_slug_from_object_id( $object_id );
+			if ( $slug !== '' ) {
+				return $slug;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Catalog shipping-class slug for a product or variation ID.
+	 *
+	 * @param int $object_id Product or variation ID.
+	 * @return string
+	 */
+	protected static function shipping_class_slug_from_object_id( $object_id ) {
+		$object_id = (int) $object_id;
+		if ( $object_id <= 0 || ! function_exists( 'wp_get_object_terms' ) ) {
+			return '';
+		}
+
+		$terms = wp_get_object_terms( $object_id, 'product_shipping_class' );
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return '';
+		}
+
+		$term = is_array( $terms ) ? $terms[0] : $terms;
+		if ( is_object( $term ) && ! empty( $term->slug ) ) {
+			return self::normalize_class_slug( $term->slug );
+		}
+
+		return '';
 	}
 
 	/**
