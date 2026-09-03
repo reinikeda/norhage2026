@@ -9,6 +9,8 @@
  * woocommerce_get_cart_item_from_session (Blocks variation rows).
  * sample-order.php does NOT hook these — see its header note.
  *
+ * Cart page layout / shipping calculator UX lives in inc/cart-ux.php.
+ *
  * Handles:
  * - Sample cart items: show only Cutting type + Dimensions (full replace).
  * - Custom-cut items: leave their own display logic untouched.

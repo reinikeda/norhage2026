@@ -63,7 +63,34 @@
     }
   }
 
+  function ensureLayout() {
+    var $form = $('.woocommerce-cart-form').first();
+    var $col = $('.cart-collaterals').first();
+    if (!$form.length || !$col.length) {
+      return;
+    }
+
+    var $layout = $form.closest('.nh-cart-layout');
+    if (!$layout.length) {
+      $form.add($col).wrapAll('<div class="nh-cart-layout"></div>');
+      $layout = $form.closest('.nh-cart-layout');
+    }
+
+    if (!$form.parent().is($layout)) {
+      $layout.prepend($form);
+    }
+    if (!$col.parent().is($layout)) {
+      $form.after($col);
+    }
+
+    var $bar = $('.nh-cart-sticky-bar').first();
+    if ($bar.length && !$bar.parent().is($layout)) {
+      $layout.append($bar);
+    }
+  }
+
   function boot() {
+    ensureLayout();
     keepCalculatorOpen();
     bindQtyAutoUpdate();
     enhanceCoupon();
