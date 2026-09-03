@@ -40,6 +40,7 @@ final class NH_Side_Cart {
 		add_action( 'woocommerce_add_to_cart', array( $this, 'flag_open_after_add' ), 30 );
 		add_action( 'admin_notices', array( $this, 'xootix_notice' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'hide_xootix' ), 999 );
+		add_action( 'woocommerce_after_shipping_calculator', array( $this, 'cart_pickup_only_notice' ) );
 
 		NH_Side_Cart_Ajax::init();
 	}
@@ -158,6 +159,107 @@ final class NH_Side_Cart {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Recalculate rates when this request has not built shipping packages yet.
+	 * Fragment refreshes otherwise redraw the drawer with an empty method list.
+	 */
+	public static function ensure_shipping_calculated() {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->shipping() ) {
+			return;
+		}
+		if ( ! WC()->cart->needs_shipping() ) {
+			return;
+		}
+
+		$packages = WC()->shipping()->get_packages();
+		foreach ( (array) $packages as $package ) {
+			if ( ! empty( $package['rates'] ) ) {
+				return;
+			}
+		}
+
+		WC()->cart->calculate_shipping();
+	}
+
+	/**
+	 * Lithuanian shop (norhage.lt / staging.norhage.lt), not a destination check.
+	 *
+	 * @return bool
+	 */
+	public static function is_lithuanian_shop() {
+		$host = '';
+		if ( function_exists( 'nh_seo_current_host' ) ) {
+			$host = nh_seo_current_host();
+		} elseif ( function_exists( 'home_url' ) ) {
+			$host = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+			$host = (string) preg_replace( '/^www\./', '', $host );
+		}
+		if ( $host !== '' && substr( $host, -strlen( 'norhage.lt' ) ) === 'norhage.lt' ) {
+			return true;
+		}
+		if ( function_exists( 'nh_get_shop_country_code' ) ) {
+			return nh_get_shop_country_code() === 'LT';
+		}
+		if ( function_exists( 'wc_get_base_location' ) ) {
+			$base = wc_get_base_location();
+			return isset( $base['country'] ) && strtoupper( (string) $base['country'] ) === 'LT';
+		}
+		return false;
+	}
+
+	/**
+	 * True when warehouse pickup is offered and no courier / DPD rate remains.
+	 *
+	 * @param array|null $packages Packages.
+	 * @return bool
+	 */
+	public static function is_pickup_only( $packages = null ) {
+		return self::packages_have_warehouse_pickup( $packages ) && ! self::packages_have_delivery_rate( $packages );
+	}
+
+	/**
+	 * Chosen rate for the first package, if any.
+	 *
+	 * @param array|null $packages Packages.
+	 * @return WC_Shipping_Rate|null
+	 */
+	public static function chosen_shipping_rate( $packages = null ) {
+		if ( $packages === null && function_exists( 'WC' ) && WC()->shipping() ) {
+			$packages = WC()->shipping()->get_packages();
+		}
+		$chosen = ( function_exists( 'WC' ) && WC()->session )
+			? (array) WC()->session->get( 'chosen_shipping_methods', array() )
+			: array();
+
+		foreach ( (array) $packages as $i => $package ) {
+			$rates = isset( $package['rates'] ) ? $package['rates'] : array();
+			$id    = isset( $chosen[ $i ] ) ? (string) $chosen[ $i ] : '';
+			if ( $id !== '' && isset( $rates[ $id ] ) && $rates[ $id ] instanceof WC_Shipping_Rate ) {
+				return $rates[ $id ];
+			}
+			if ( count( $rates ) === 1 ) {
+				$only = reset( $rates );
+				if ( $only instanceof WC_Shipping_Rate ) {
+					return $only;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Visible notice when Lithuania carts can only use warehouse pickup.
+	 *
+	 * @return string
+	 */
+	public static function pickup_only_notice_html() {
+		return '<p class="nh-pickup-only-notice" role="status">' . esc_html__(
+			'This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery.',
+			NH_SC_TD
+		) . '</p>';
 	}
 
 	/**
@@ -341,6 +443,7 @@ final class NH_Side_Cart {
 			return;
 		}
 
+		self::ensure_shipping_calculated();
 		self::prefer_delivery_method();
 
 		$count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
@@ -356,6 +459,7 @@ final class NH_Side_Cart {
 			return $fragments;
 		}
 
+		self::ensure_shipping_calculated();
 		self::prefer_delivery_method();
 
 		$count = (int) WC()->cart->get_cart_contents_count();
@@ -401,6 +505,22 @@ final class NH_Side_Cart {
 		}
 		WC()->session->set( self::SESSION_OPEN, null );
 		return true;
+	}
+
+	/**
+	 * Basket page: same oversize / pickup-only notice as the side cart.
+	 */
+	public function cart_pickup_only_notice() {
+		if ( ! self::is_lithuanian_shop() ) {
+			return;
+		}
+
+		self::ensure_shipping_calculated();
+		if ( ! self::is_pickup_only() ) {
+			return;
+		}
+
+		echo self::pickup_only_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function hide_xootix() {

@@ -64,6 +64,12 @@ msgstr "Vis fraktkostnad"
 msgid "Free pickup from the warehouse is also available."
 msgstr "Gratis henting fra lageret er også mulig."
 
+msgid "Warehouse pickup"
+msgstr "Henting fra lager"
+
+msgid "This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery."
+msgstr "Denne sendingen er for stor for vanlig budlevering. Gratis henting fra lageret er mulig. Kontakt oss hvis du trenger levering."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Ingen fraktmetoder tilgjengelig for dette postnummeret."
 

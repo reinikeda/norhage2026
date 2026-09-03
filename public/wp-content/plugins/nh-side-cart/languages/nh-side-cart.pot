@@ -64,6 +64,12 @@ msgstr ""
 msgid "Free pickup from the warehouse is also available."
 msgstr ""
 
+msgid "Warehouse pickup"
+msgstr ""
+
+msgid "This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery."
+msgstr ""
+
 msgid "No shipping methods available for this postcode."
 msgstr ""
 

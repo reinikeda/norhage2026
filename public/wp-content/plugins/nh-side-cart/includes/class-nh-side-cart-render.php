@@ -183,6 +183,8 @@ final class NH_Side_Cart_Render {
 	}
 
 	private static function render_shipping() {
+		NH_Side_Cart::ensure_shipping_calculated();
+
 		$countries       = NH_Side_Cart::shipping_countries();
 		$show_country    = count( $countries ) > 1;
 		$current_country = NH_Side_Cart::default_shipping_country();
@@ -244,6 +246,9 @@ final class NH_Side_Cart_Render {
 				<?php if ( NH_Side_Cart::packages_have_warehouse_pickup( $packages ) && NH_Side_Cart::packages_have_delivery_rate( $packages ) ) : ?>
 					<p class="nh-sc__pickup-note"><?php esc_html_e( 'Free pickup from the warehouse is also available.', NH_SC_TD ); ?></p>
 				<?php endif; ?>
+			<?php endif; ?>
+			<?php if ( NH_Side_Cart::is_lithuanian_shop() && NH_Side_Cart::is_pickup_only( $packages ) ) : ?>
+				<?php echo NH_Side_Cart::pickup_only_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php endif; ?>
 		</section>
 		<?php
@@ -326,7 +331,7 @@ final class NH_Side_Cart_Render {
 			<?php endforeach; ?>
 			<?php if ( $cart->needs_shipping() && $cart->show_shipping() ) : ?>
 				<div class="nh-sc__total-row">
-					<dt><?php esc_html_e( 'Shipping', NH_SC_TD ); ?></dt>
+					<dt><?php echo esc_html( self::shipping_row_label() ); ?></dt>
 					<dd><?php echo self::shipping_total_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></dd>
 				</div>
 			<?php endif; ?>
@@ -349,6 +354,22 @@ final class NH_Side_Cart_Render {
 	/**
 	 * @return string
 	 */
+	private static function shipping_row_label() {
+		$rate = NH_Side_Cart::chosen_shipping_rate();
+		if ( $rate && NH_Side_Cart::rate_is_warehouse_pickup( $rate ) ) {
+			$label = trim( (string) $rate->get_label() );
+			if ( $label !== '' ) {
+				return $label;
+			}
+			return __( 'Warehouse pickup', NH_SC_TD );
+		}
+
+		return __( 'Shipping', NH_SC_TD );
+	}
+
+	/**
+	 * @return string
+	 */
 	private static function shipping_total_html() {
 		$cart = WC()->cart;
 		if ( ! $cart ) {
@@ -362,11 +383,11 @@ final class NH_Side_Cart_Render {
 				: (bool) WC()->customer->get_calculated_shipping();
 		}
 
-		if ( $calculated ) {
-			return $cart->get_cart_shipping_total();
+		if ( ! $calculated ) {
+			return esc_html__( 'Enter postcode', NH_SC_TD );
 		}
 
-		return esc_html__( 'Enter postcode', NH_SC_TD );
+		return $cart->get_cart_shipping_total();
 	}
 
 	private static function render_actions() {
