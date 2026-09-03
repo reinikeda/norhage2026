@@ -101,25 +101,55 @@ body.nh-sc-open {
 
   .nh-sc__item-bottom {
     margin-top: 2px;
+    gap: 8px;
   }
 
-  .nh-sc__qty {
-    border-radius: 8px;
+  .nh-sc .nh-sc__qty {
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: max-content;
+    border-radius: 6px;
   }
 
-  .nh-sc__qty-btn,
-  .nh-sc__qty-input {
-    min-height: 32px;
-    font-size: 0.85rem;
+  .nh-sc .nh-sc__qty-btn,
+  .nh-sc button.nh-sc__qty-btn {
+    flex: 0 0 22px;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    font-size: 13px !important;
+    background: #fff !important;
+    color: var(--nh-sc-forest) !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
   }
 
-  .nh-sc__qty-btn {
-    width: 28px;
+  .nh-sc .nh-sc__qty-btn:hover,
+  .nh-sc .nh-sc__qty-btn:focus,
+  .nh-sc .nh-sc__qty-btn:focus-visible,
+  .nh-sc button.nh-sc__qty-btn:hover,
+  .nh-sc button.nh-sc__qty-btn:focus {
+    background: var(--nh-sc-cream) !important;
+    color: var(--nh-sc-forest) !important;
   }
 
-  .nh-sc__qty-input {
-    width: 2.1rem;
-    min-width: 2.1rem;
+  .nh-sc .nh-sc__qty-input {
+    flex: 0 0 1.7rem;
+    width: 1.7rem !important;
+    min-width: 1.7rem !important;
+    max-width: 1.7rem !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    padding: 0 !important;
+    font-size: 13px !important;
   }
 
   .nh-sc__remove {
@@ -371,8 +401,15 @@ body.nh-sc-open {
 
 .nh-sc__qty-btn {
   width: 44px;
+  min-width: 44px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
   cursor: pointer;
   font-weight: 700;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .nh-sc__qty-btn:hover,
@@ -596,15 +633,21 @@ body.nh-sc-open {
   background: rgba(0, 112, 74, 0.06);
 }
 
-.nh-sc__continue {
+.nh-sc button.nh-sc__continue,
+.nh-sc .nh-sc__continue {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: auto;
   min-height: 40px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--nh-sc-green);
+  padding: 0 !important;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nh-sc-green) !important;
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: underline;
@@ -613,9 +656,17 @@ body.nh-sc-open {
   touch-action: manipulation;
 }
 
-.nh-sc__continue:hover,
-.nh-sc__continue:focus-visible {
-  color: var(--nh-sc-forest);
+.nh-sc button.nh-sc__continue:hover,
+.nh-sc button.nh-sc__continue:focus,
+.nh-sc button.nh-sc__continue:focus-visible,
+.nh-sc .nh-sc__continue:hover,
+.nh-sc .nh-sc__continue:focus,
+.nh-sc .nh-sc__continue:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nh-sc-charcoal) !important;
+  text-decoration: underline;
   outline: none;
 }
 
