@@ -232,7 +232,7 @@ class NHGP_Admin {
 					<th scope="row"><?php esc_html_e( 'Custom-cut size rules', NHGP_TEXTDOMAIN ); ?></th>
 					<td>
 						<p class="description">
-							<?php esc_html_e( 'Custom-cut items with a width/height will be mapped to a shipping class using the rules below. The feature is always enabled for items that have the custom-cut flag. The active shipping class name will be appended in brackets after the Flat rate name.', NHGP_TEXTDOMAIN ); ?>
+							<?php esc_html_e( 'Custom-cut items with a width/height are mapped to a shipping class using the rules below, but only when the product has no shipping class in the product editor. If a shipping class is already selected there, that class is used and these size rules are ignored. The feature is always enabled for items that have the custom-cut flag. The active shipping class name will be appended in brackets after the Flat rate name.', NHGP_TEXTDOMAIN ); ?>
 						</p>
 					</td>
 				</tr>
