@@ -121,15 +121,12 @@
     var wide = window.matchMedia('(min-width: 960px)').matches;
     layout.style.setProperty('flex-direction', wide ? 'row' : 'column', 'important');
 
-    layout.querySelectorAll('.woocommerce-cart-form, .cart-collaterals, .cart_totals').forEach(function (el) {
-      el.style.setProperty('float', 'none', 'important');
-      el.style.setProperty('position', 'relative', 'important');
-      el.style.setProperty('left', 'auto', 'important');
-      el.style.setProperty('right', 'auto', 'important');
-    });
+    var main = layout.querySelector('.nh-cart-layout__main');
+    var side = layout.querySelector('.nh-cart-layout__side');
+    var form = layout.querySelector('.woocommerce-cart-form');
+    var col = layout.querySelector('.cart-collaterals');
+    var totals = layout.querySelector('.cart_totals');
 
-    var main = layout.querySelector('.nh-cart-layout__main') || layout.querySelector('.woocommerce-cart-form');
-    var side = layout.querySelector('.nh-cart-layout__side') || layout.querySelector('.cart-collaterals');
     if (main) {
       main.style.setProperty('min-width', '0', 'important');
       main.style.setProperty('overflow', 'hidden', 'important');
@@ -155,6 +152,40 @@
         side.style.setProperty('width', '100%', 'important');
         side.style.setProperty('max-width', '100%', 'important');
       }
+    }
+
+    if (form) {
+      form.style.setProperty('position', 'relative', 'important');
+      if (wide && !main) {
+        form.style.setProperty('float', 'left', 'important');
+        form.style.setProperty('width', 'calc(100% - 432px)', 'important');
+        form.style.setProperty('max-width', 'calc(100% - 432px)', 'important');
+      } else {
+        form.style.setProperty('float', 'none', 'important');
+        form.style.setProperty('width', '100%', 'important');
+        form.style.setProperty('max-width', '100%', 'important');
+      }
+    }
+    if (col) {
+      col.style.setProperty('position', 'relative', 'important');
+      if (wide && !side) {
+        col.style.setProperty('float', 'right', 'important');
+        col.style.setProperty('width', '400px', 'important');
+        col.style.setProperty('max-width', '400px', 'important');
+      } else if (wide && side) {
+        col.style.setProperty('float', 'none', 'important');
+        col.style.setProperty('width', '100%', 'important');
+        col.style.setProperty('max-width', '100%', 'important');
+      } else {
+        col.style.setProperty('float', 'none', 'important');
+        col.style.setProperty('width', '100%', 'important');
+        col.style.setProperty('max-width', '100%', 'important');
+      }
+    }
+    if (totals) {
+      totals.style.setProperty('float', 'none', 'important');
+      totals.style.setProperty('width', '100%', 'important');
+      totals.style.setProperty('max-width', '100%', 'important');
     }
   }
 

@@ -137,15 +137,18 @@ function nh_cart_ux_layout_lock_css() {
 		. '@media(min-width:960px){'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{flex-direction:row!important;flex-wrap:wrap!important;align-items:flex-start!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-cart-form{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;width:auto!important;max-width:calc(100% - 432px)!important;float:none!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-cart-form{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;width:auto!important;max-width:calc(100% - 432px)!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.cart-collaterals{flex:0 0 400px!important;width:400px!important;max-width:400px!important;float:none!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.cart-collaterals{flex:0 0 400px!important;width:400px!important;max-width:400px!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .woocommerce-cart-form{float:left!important;width:calc(100% - 432px)!important;max-width:calc(100% - 432px)!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart-collaterals,'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart_totals{float:right!important;width:400px!important;max-width:400px!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main .woocommerce-cart-form{float:none!important;width:100%!important;max-width:100%!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side .cart-collaterals,'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side .cart_totals{float:none!important;width:100%!important;max-width:100%!important}'
 		. '}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-notices-wrapper,'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.nh-cart-sticky-bar{flex:1 0 100%;width:100%!important}'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .woocommerce-cart-form,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart-collaterals,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart_totals{float:none!important;position:relative!important;left:auto!important;right:auto!important}'
 		. '</style>' . "\n";
 }
 

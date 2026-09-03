@@ -138,8 +138,39 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells,
     order: 3;
   }
 
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .woocommerce-cart-form,
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main .woocommerce-cart-form,
+  .nh-cart-layout .woocommerce-cart-form {
+    float: left !important;
+    width: calc(100% - 432px) !important;
+    max-width: calc(100% - 432px) !important;
+  }
+
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart-collaterals,
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart_totals,
+  .nh-cart-layout .cart-collaterals,
+  .nh-cart-layout .cart_totals {
+    float: right !important;
+    width: 400px !important;
+    max-width: 400px !important;
+  }
+
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main .woocommerce-cart-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+  }
+
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side .cart-collaterals,
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side .cart_totals {
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+  }
+
   .nh-cart-layout__main table.shop_table.cart,
-  .nh-cart-layout > .woocommerce-cart-form table.shop_table.cart {
+  .nh-cart-layout > .woocommerce-cart-form table.shop_table.cart,
+  .nh-cart-layout table.shop_table.cart {
     display: table !important;
     table-layout: fixed !important;
     width: 100% !important;
