@@ -50,7 +50,7 @@ function nh_cart_ux_init() {
 	add_filter( 'woocommerce_shipping_calculator_enable_postcode', '__return_true' );
 
 	add_action( 'wp_enqueue_scripts', 'nh_cart_ux_assets', 100 );
-	add_action( 'wp_head', 'nh_cart_ux_layout_lock_css', 200 );
+	add_action( 'wp_footer', 'nh_cart_ux_layout_lock_css', 1 );
 	add_action( 'woocommerce_before_cart', 'nh_cart_ux_layout_open', 1 );
 	add_action( 'woocommerce_before_cart', 'nh_cart_ux_layout_main_open', 15 );
 	add_action( 'woocommerce_before_cart_collaterals', 'nh_cart_ux_layout_side_open', 1 );
