@@ -158,6 +158,9 @@ function nh_cart_ux_layout_lock_css() {
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .plus{width:40px!important;min-width:40px!important;max-width:40px!important;border-radius:0!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty{width:2.75rem!important;min-width:2.75rem!important;max-width:2.75rem!important;padding:0!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout table.shop_table.cart{overflow:visible!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout td.product-remove{position:relative!important;overflow:hidden!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove{position:relative!important;display:inline-flex!important;inset:auto!important;float:none!important;width:36px!important;height:36px!important;min-width:36px!important;max-width:36px!important;min-height:36px!important;max-height:36px!important;margin:0!important;padding:0!important;font-size:16px!important;overflow:hidden!important;border-radius:999px!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}'
 		. '</style>' . "\n";
 }
 

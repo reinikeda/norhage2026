@@ -280,17 +280,73 @@ body.woocommerce-cart .return-to-shop .button {
   display: block;
 }
 
+/*
+ * Astra cart remove is an <a class="remove"> wrapping .ahfb-svg-iconset SVG.
+ * Woo/Astra size it with ems and often position:absolute. If the cell is
+ * position:static, the link positions against the cart form and
+ * border-radius:999px paints a huge oval over every row.
+ */
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout td.product-remove,
+.nh-cart-layout td.product-remove {
+  position: relative !important;
+  overflow: hidden;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove,
 .nh-cart-layout .product-remove a.remove {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  inset: auto !important;
+  float: none !important;
+  transform: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  text-indent: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 999px !important;
   background: var(--nh-offwhite, #faf7f2);
   color: var(--nh-charcoal, #2c2a29) !important;
   text-decoration: none !important;
   border: 1px solid transparent;
+  box-shadow: none !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove::before,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove::after,
+.nh-cart-layout .product-remove a.remove::before,
+.nh-cart-layout .product-remove a.remove::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove .ahfb-svg-iconset,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove svg,
+.nh-cart-layout .product-remove a.remove .ahfb-svg-iconset,
+.nh-cart-layout .product-remove a.remove svg {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  min-height: 16px !important;
+  max-height: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .nh-cart-layout .product-remove a.remove:hover,
@@ -578,27 +634,24 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
     border-bottom: 1px solid var(--nh-mint, #c3e8c6);
   }
 
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove,
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-thumbnail {
-    position: static !important;
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove {
+    position: relative !important;
     width: 56px;
     min-width: 56px;
+    max-width: 56px;
     white-space: nowrap;
     padding-left: 16px;
     padding-right: 8px;
+    overflow: hidden;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-thumbnail {
+    position: static !important;
     width: 88px;
     min-width: 88px;
+    white-space: nowrap;
     padding-left: 8px;
     padding-right: 16px;
-  }
-
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove a.remove {
-    position: static !important;
-    float: none !important;
-    margin: 0 !important;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-name {
