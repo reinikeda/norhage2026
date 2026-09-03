@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Side Cart 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 12:00+0000\n"
+"PO-Revision-Date: 2026-09-03 12:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Norwegian Bokmål\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "Basket"
+msgstr "Handlekurv"
+
+msgid "Close basket"
+msgstr "Lukk handlekurven"
+
+msgid "Your basket is empty"
+msgstr "Handlekurven din er tom"
+
+msgid "Add products to see shipping costs by postcode."
+msgstr "Legg til produkter for å se fraktkostnad etter postnummer."
+
+msgid "Continue shopping"
+msgstr "Fortsett å handle"
+
+msgid "Remove %s from basket"
+msgstr "Fjern %s fra handlekurven"
+
+msgid "Qty: %d"
+msgstr "Antall: %d"
+
+msgid "Decrease quantity"
+msgstr "Reduser antall"
+
+msgid "Increase quantity"
+msgstr "Øk antall"
+
+msgid "Quantity"
+msgstr "Antall"
+
+msgid "Calculate shipping"
+msgstr "Beregn frakt"
+
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Skriv inn postnummeret ditt for å se fraktkostnaden."
+
+msgid "Country / region"
+msgstr "Land / region"
+
+msgid "Select a country / region…"
+msgstr "Velg et land / en region…"
+
+msgid "Postcode / ZIP"
+msgstr "Postnummer"
+
+msgid "Show shipping cost"
+msgstr "Vis fraktkostnad"
+
+msgid "No shipping methods available for this postcode."
+msgstr "Ingen fraktmetoder tilgjengelig for dette postnummeret."
+
+msgid "Subtotal"
+msgstr "Delsum"
+
+msgid "Coupon: %s"
+msgstr "Rabattkode: %s"
+
+msgid "Shipping"
+msgstr "Frakt"
+
+msgid "Total"
+msgstr "Totalt"
+
+msgid "Enter postcode"
+msgstr "Skriv inn postnummer"
+
+msgid "View basket"
+msgstr "Se handlekurv"
+
+msgid "Checkout"
+msgstr "Til kassen"
+
+msgid "Updating…"
+msgstr "Oppdaterer…"
+
+msgid "Could not update the basket. Please try again."
+msgstr "Kunne ikke oppdatere handlekurven. Prøv igjen."
+
+msgid "Basket is not available."
+msgstr "Handlekurven er ikke tilgjengelig."
+
+msgid "Unknown basket action."
+msgstr "Ukjent handlekurvhandling."
+
+msgid "Basket item not found."
+msgstr "Varen ble ikke funnet i handlekurven."
+
+msgid "Could not update the quantity."
+msgstr "Kunne ikke oppdatere antallet."
+
+msgid "Could not remove the item."
+msgstr "Kunne ikke fjerne varen."
+
+msgid "Please select a country / region."
+msgstr "Velg et land / en region."
+
+msgid "Please enter a postcode."
+msgstr "Skriv inn et postnummer."
+
+msgid "Please enter a valid postcode / ZIP."
+msgstr "Skriv inn et gyldig postnummer."
+
+msgid "Shipping costs updated."
+msgstr "Fraktkostnadene er oppdatert."
+
+msgid "Please choose a shipping method."
+msgstr "Velg en fraktmetode."
+
+msgid "Norhage Side Cart is active. Deactivate Side Cart WooCommerce (XootiX) so customers only see one basket drawer."
+msgstr "Norhage Side Cart er aktiv. Deaktiver Side Cart WooCommerce (XootiX) slik at kundene bare ser én handlekurv."
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d vare"
+msgstr[1] "%d varer"

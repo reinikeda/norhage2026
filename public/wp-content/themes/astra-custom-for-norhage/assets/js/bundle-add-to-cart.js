@@ -757,6 +757,7 @@ jQuery(function ($) {
         if (resp.data.fragments) {
           applyFragments(resp.data.fragments);
           $body.trigger('wc_fragments_refreshed');
+          $body.trigger('added_to_cart', [resp.data.fragments, resp.data.cart_hash, $btn]);
         }
 
         if (typeof resp.data.notices_html !== 'undefined') {
