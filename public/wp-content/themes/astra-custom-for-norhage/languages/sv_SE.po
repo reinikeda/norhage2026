@@ -1738,6 +1738,19 @@ msgstr "Kunde inte lägga till prov i varukorgen."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Kunde inte ansluta till WooCommerce. Försök igen."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Ange ditt postnummer för att se fraktkostnaden."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Visa fraktkostnad"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Har du en rabattkod?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 
