@@ -129,7 +129,7 @@
 
     if (main) {
       main.style.setProperty('min-width', '0', 'important');
-      main.style.setProperty('overflow', 'hidden', 'important');
+      main.style.setProperty('overflow', 'visible', 'important');
       if (wide) {
         main.style.setProperty('flex', '1 1 0%', 'important');
         main.style.setProperty('max-width', 'calc(100% - 432px)', 'important');
