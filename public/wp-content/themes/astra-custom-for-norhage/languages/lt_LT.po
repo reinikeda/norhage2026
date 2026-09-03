@@ -1738,6 +1738,19 @@ msgstr "Nepavyko pridėti pavyzdžio į krepšelį."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Nepavyko prisijungti prie „WooCommerce“. Bandykite vėl."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Įveskite pašto kodą, kad pamatytumėte pristatymo kainą."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Rodyti pristatymo kainą"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Turite nuolaidos kodą?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 

@@ -1738,6 +1738,19 @@ msgstr "Muster konnte nicht zum Warenkorb hinzugefügt werden."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Verbindung zu WooCommerce fehlgeschlagen. Bitte versuchen Sie es erneut."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Geben Sie Ihre Postleitzahl ein, um die Versandkosten zu sehen."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Versandkosten anzeigen"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Gutschein vorhanden?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

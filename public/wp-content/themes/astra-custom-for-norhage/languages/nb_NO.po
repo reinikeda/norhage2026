@@ -1734,6 +1734,19 @@ msgstr "Kunne ikke legge vareprøve i handlekurven."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Kunne ikke koble til WooCommerce. Vennligst prøv igjen."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Skriv inn postnummeret ditt for å se fraktkostnaden."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Vis fraktkostnad"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Har du en rabattkode?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 
