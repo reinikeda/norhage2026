@@ -241,6 +241,9 @@ final class NH_Side_Cart_Render {
 				<div class="nh-sc__methods">
 					<?php self::render_methods( $packages ); ?>
 				</div>
+				<?php if ( NH_Side_Cart::packages_have_warehouse_pickup( $packages ) && NH_Side_Cart::packages_have_delivery_rate( $packages ) ) : ?>
+					<p class="nh-sc__pickup-note"><?php esc_html_e( 'Free pickup from the warehouse is also available.', NH_SC_TD ); ?></p>
+				<?php endif; ?>
 			<?php endif; ?>
 		</section>
 		<?php
@@ -258,13 +261,29 @@ final class NH_Side_Cart_Render {
 				continue;
 			}
 
-			$selected = isset( $chosen[ $i ] ) ? $chosen[ $i ] : '';
+			$selected   = isset( $chosen[ $i ] ) ? $chosen[ $i ] : '';
+			$delivery   = NH_Side_Cart::pick_delivery_rate_id( $rates );
+			$user_chose = WC()->session && WC()->session->get( NH_Side_Cart::SESSION_USER_METHOD );
 			if ( $selected === '' || ! isset( $rates[ $selected ] ) ) {
-				$selected = (string) key( $rates );
+				$selected = $delivery !== '' ? $delivery : (string) key( $rates );
+			} elseif ( ! $user_chose && $delivery !== '' && NH_Side_Cart::rate_is_warehouse_pickup( $rates[ $selected ] ) ) {
+				$selected = $delivery;
+			}
+
+			$ordered = array();
+			foreach ( $rates as $rate_id => $rate ) {
+				if ( ! NH_Side_Cart::rate_is_warehouse_pickup( $rate ) ) {
+					$ordered[ $rate_id ] = $rate;
+				}
+			}
+			foreach ( $rates as $rate_id => $rate ) {
+				if ( NH_Side_Cart::rate_is_warehouse_pickup( $rate ) ) {
+					$ordered[ $rate_id ] = $rate;
+				}
 			}
 
 			echo '<ul class="nh-sc__method-list">';
-			foreach ( $rates as $rate_id => $rate ) {
+			foreach ( $ordered as $rate_id => $rate ) {
 				if ( ! $rate instanceof WC_Shipping_Rate ) {
 					continue;
 				}

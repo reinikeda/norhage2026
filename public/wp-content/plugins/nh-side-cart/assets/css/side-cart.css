@@ -496,6 +496,13 @@ body.nh-sc-open {
   margin-top: 12px;
 }
 
+.nh-sc__pickup-note {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--nh-sc-forest);
+}
+
 .nh-sc__method-list {
   list-style: none;
   margin: 0;

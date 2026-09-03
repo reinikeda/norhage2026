@@ -61,6 +61,9 @@ msgstr "Postinumero"
 msgid "Show shipping cost"
 msgstr "Näytä toimituskulut"
 
+msgid "Free pickup from the warehouse is also available."
+msgstr "Ilmainen noutaminen varastolta on myös mahdollista."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Tälle postinumerolle ei ole toimitustapoja."
 

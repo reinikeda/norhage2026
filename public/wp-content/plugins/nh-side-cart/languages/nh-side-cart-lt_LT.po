@@ -61,6 +61,9 @@ msgstr "Pašto kodas"
 msgid "Show shipping cost"
 msgstr "Rodyti pristatymo kainą"
 
+msgid "Free pickup from the warehouse is also available."
+msgstr "Galimas ir nemokamas atsiėmimas iš sandėlio."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Šiam pašto kodui nėra pristatymo būdų."
 
