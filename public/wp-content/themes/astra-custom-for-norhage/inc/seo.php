@@ -29,6 +29,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * looks up the same SKU on sibling domains (separate DBs) and uses that
  * shop's real permalink. Missing SKUs are omitted (never host-swap slugs).
  *
+ * Sibling REST lookups often take several seconds; a 1.5s timeout used to drop
+ * shops from the cluster (SERanking "return links missing"). Incomplete maps
+ * are retried; confirmed 404s stay omitted. Hreflang hrefs are IRI-decoded so
+ * they match Yoast canonicals (² vs %c2%b2).
+ *
  * @return array<string, array{host:string, hreflang:string, x_default:bool, area:string, country:string}>
  */
 function nh_seo_shop_network() {
@@ -226,7 +231,7 @@ function nh_seo_current_product_sku() {
 }
 
 /**
- * Local catalog URL for a SKU, if the product is published and visible.
+ * Local catalog URL for a SKU, if the product is published.
  *
  * @param string $sku SKU.
  * @return string
@@ -253,7 +258,9 @@ function nh_seo_local_url_for_sku( $sku ) {
 		}
 	}
 
-	if ( $product->get_status() !== 'publish' || ! $product->is_visible() ) {
+	// Catalog visibility must not drop an indexable product URL from the
+	// cluster: siblings that omit this shop break hreflang return links.
+	if ( $product->get_status() !== 'publish' ) {
 		return '';
 	}
 
@@ -264,8 +271,9 @@ function nh_seo_local_url_for_sku( $sku ) {
 /**
  * Product hreflang cluster: local permalink + sibling shops resolved by SKU.
  *
- * Sibling lookups are cached (12h). Separate DBs mean slugs differ; we never
- * rewrite the path onto another host. Shops that lack the SKU are omitted.
+ * Sibling lookups are cached (12h when complete, 5 min when a shop timed out).
+ * Separate DBs mean slugs differ; we never rewrite the path onto another host.
+ * Shops that lack the SKU (confirmed 404) are omitted.
  *
  * @return array<int, array{hreflang:string, url:string, x_default:bool}>
  */
@@ -319,6 +327,10 @@ function nh_seo_product_hreflang_cluster() {
 /**
  * Keep only https URLs whose host matches the expected shop.
  *
+ * Path percent-encoded UTF-8 (e.g. %c2%b2 for ²) is decoded so hreflang
+ * hrefs match Yoast canonical IRIs. Auditors treat those as different URLs
+ * and flag missing return links.
+ *
  * @param string $url  Candidate permalink.
  * @param string $host Expected host (no www).
  * @return string
@@ -338,10 +350,56 @@ function nh_seo_normalize_shop_url( $url, $host ) {
 		return '';
 	}
 
-	$path  = isset( $parts['path'] ) ? $parts['path'] : '/';
+	$path  = isset( $parts['path'] ) ? nh_seo_decode_utf8_path( $parts['path'] ) : '/';
 	$query = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
 
 	return 'https://' . $host . $path . $query;
+}
+
+/**
+ * Decode percent-encoded UTF-8 in a URL path; leave ASCII encodings intact.
+ *
+ * @param string $path Path.
+ * @return string
+ */
+function nh_seo_decode_utf8_path( $path ) {
+	$path = (string) $path;
+	if ( $path === '' ) {
+		return '/';
+	}
+
+	$utf8 = '%(?:[cC][2-9a-fA-F]|[dD][0-9a-fA-F])%[89abAB][0-9a-fA-F]'
+		. '|%[eE][0-9a-fA-F](?:%[89abAB][0-9a-fA-F]){2}'
+		. '|%[fF][0-4](?:%[89abAB][0-9a-fA-F]){3}';
+
+	$path = preg_replace_callback(
+		'/' . $utf8 . '/',
+		static function ( $m ) {
+			$decoded = rawurldecode( $m[0] );
+			if ( ! is_string( $decoded ) || $decoded === $m[0] ) {
+				return $m[0];
+			}
+			if ( ! preg_match( '//u', $decoded ) ) {
+				return $m[0];
+			}
+			return $decoded;
+		},
+		$path
+	);
+
+	if ( ! is_string( $path ) || $path === '' ) {
+		return '/';
+	}
+
+	$upper = preg_replace_callback(
+		'/%[0-9a-fA-F]{2}/',
+		static function ( $m ) {
+			return strtoupper( $m[0] );
+		},
+		$path
+	);
+
+	return is_string( $upper ) ? $upper : $path;
 }
 
 /**
@@ -353,7 +411,7 @@ function nh_seo_normalize_shop_url( $url, $host ) {
  */
 function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 	$current_host = nh_seo_current_host();
-	$cache_key    = 'nh_seo_hl_' . md5( strtolower( $sku ) );
+	$cache_key    = 'nh_seo_hl2_' . md5( strtolower( $sku ) );
 	$cached       = get_transient( $cache_key );
 
 	$map = array();
@@ -362,7 +420,8 @@ function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 	}
 
 	if ( $current_host !== '' ) {
-		$map[ $current_host ] = $local_url;
+		$clean_local          = nh_seo_normalize_shop_url( $local_url, $current_host );
+		$map[ $current_host ] = $clean_local !== '' ? $clean_local : $local_url;
 	}
 
 	$missing = array();
@@ -385,23 +444,45 @@ function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 			}
 		}
 		foreach ( $fetched['absent'] as $host ) {
-			if ( ! isset( $map[ $host ] ) ) {
+			if ( empty( $map[ $host ] ) ) {
 				$map[ $host ] = '';
 			}
 		}
 
 		$ttl = (int) apply_filters( 'nh_seo_hreflang_cache_ttl', 12 * HOUR_IN_SECONDS, $sku );
-		set_transient( $cache_key, $map, max( 300, $ttl ) );
+		if ( ! nh_seo_hreflang_map_is_resolved( $map ) ) {
+			$ttl = (int) apply_filters( 'nh_seo_hreflang_incomplete_cache_ttl', 5 * MINUTE_IN_SECONDS, $sku );
+		}
+		set_transient( $cache_key, $map, max( 60, $ttl ) );
 	}
 
 	return $map;
 }
 
 /**
+ * Whether every shop in the network is either found or confirmed absent.
+ *
+ * @param array<string, string> $map host => url (empty string = absent).
+ * @return bool
+ */
+function nh_seo_hreflang_map_is_resolved( $map ) {
+	if ( ! is_array( $map ) ) {
+		return false;
+	}
+	foreach ( nh_seo_shop_network() as $shop ) {
+		if ( ! array_key_exists( $shop['host'], $map ) ) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
  * Resolve permalinks for a SKU on sibling shops.
  *
- * Prefers this theme's tiny REST route; falls back to the public Woo Store API
- * so lookups work before every shop has deployed the new endpoint.
+ * Prefers this theme's tiny REST route (which may also return a cached
+ * cluster). Falls back to the public Woo Store API only when the route is
+ * missing, so timeouts are not stored as "SKU absent".
  *
  * @param string        $sku   SKU.
  * @param array<string> $hosts Sibling hosts.
@@ -423,28 +504,50 @@ function nh_seo_fetch_remote_sku_urls( $sku, $hosts ) {
 		$urls[ $host ] = 'https://' . $host . '/wp-json/nh-seo/v1/product-by-sku?sku=' . $sku_q;
 	}
 
-	$responses = nh_seo_parallel_get( $urls );
-	$retry     = array();
+	$responses      = nh_seo_parallel_get( $urls );
+	$retry          = array();
+	$retry_no_route = array();
 	foreach ( $hosts as $host ) {
-		$body = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
-		$url  = nh_seo_parse_remote_sku_body( $body, $sku, $host );
-		if ( $url !== '' ) {
-			$found[ $host ] = $url;
-		} else {
-			$retry[ $host ] = 'https://' . $host . '/wp-json/wc/store/v1/products?sku=' . $sku_q;
+		$body   = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
+		$parsed = nh_seo_parse_remote_sku_payload( $body, $sku, $host );
+
+		foreach ( $parsed['cluster'] as $cluster_host => $cluster_url ) {
+			if ( $cluster_url !== '' ) {
+				$found[ $cluster_host ] = $cluster_url;
+			}
 		}
+		if ( $parsed['url'] !== '' ) {
+			$found[ $host ] = $parsed['url'];
+			continue;
+		}
+
+		if ( 'nh_seo_not_found' === $parsed['error'] ) {
+			$absent[] = $host;
+			continue;
+		}
+
+		$store = 'https://' . $host . '/wp-json/wc/store/v1/products?sku=' . $sku_q;
+		if ( 'rest_no_route' === $parsed['error'] ) {
+			$retry[ $host ]          = $store;
+			$retry_no_route[ $host ] = true;
+		}
+		// Timeouts / 5xx stay unresolved so the next view retries them.
+		// A second Store API round would double TTFB and still time out.
 	}
 
 	$use_store = apply_filters( 'nh_seo_hreflang_use_store_api', true, $sku );
 	if ( $use_store && ! empty( $retry ) ) {
 		$responses = nh_seo_parallel_get( $retry );
 		foreach ( $retry as $host => $ignored ) {
+			if ( isset( $found[ $host ] ) && $found[ $host ] !== '' ) {
+				continue;
+			}
 			$code = isset( $responses[ $host ]['code'] ) ? (int) $responses[ $host ]['code'] : 0;
 			$body = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
 			$url  = nh_seo_parse_remote_sku_body( $body, $sku, $host );
 			if ( $url !== '' ) {
 				$found[ $host ] = $url;
-			} elseif ( 200 === $code && is_string( $body ) ) {
+			} elseif ( 200 === $code && is_string( $body ) && ! empty( $retry_no_route[ $host ] ) ) {
 				$absent[] = $host;
 			}
 		}
@@ -454,6 +557,53 @@ function nh_seo_fetch_remote_sku_urls( $sku, $hosts ) {
 		'found'  => $found,
 		'absent' => $absent,
 	);
+}
+
+/**
+ * Parse REST JSON: local URL, optional cached cluster, error code.
+ *
+ * @param string|null $body          Response body.
+ * @param string      $sku           Expected SKU.
+ * @param string      $expected_host Expected host.
+ * @return array{url:string, cluster:array<string,string>, error:string}
+ */
+function nh_seo_parse_remote_sku_payload( $body, $sku, $expected_host ) {
+	$out = array(
+		'url'     => '',
+		'cluster' => array(),
+		'error'   => '',
+	);
+	if ( ! is_string( $body ) || $body === '' ) {
+		return $out;
+	}
+
+	$data = json_decode( $body, true );
+	if ( ! is_array( $data ) ) {
+		return $out;
+	}
+
+	if ( isset( $data['code'] ) && is_string( $data['code'] ) ) {
+		$out['error'] = $data['code'];
+	}
+
+	$out['url'] = nh_seo_parse_remote_sku_body( $body, $sku, $expected_host );
+	if ( $out['url'] !== '' ) {
+		$out['cluster'][ $expected_host ] = $out['url'];
+	}
+
+	if ( isset( $data['cluster'] ) && is_array( $data['cluster'] ) ) {
+		foreach ( $data['cluster'] as $host => $url ) {
+			if ( ! is_string( $host ) || ! is_string( $url ) || $url === '' ) {
+				continue;
+			}
+			$clean = nh_seo_normalize_shop_url( $url, $host );
+			if ( $clean !== '' ) {
+				$out['cluster'][ $host ] = $clean;
+			}
+		}
+	}
+
+	return $out;
 }
 
 /**
@@ -522,7 +672,7 @@ function nh_seo_parallel_get( $urls ) {
 			'body' => null,
 		);
 	}
-	$timeout = (float) apply_filters( 'nh_seo_hreflang_http_timeout', 1.5 );
+	$timeout = (float) apply_filters( 'nh_seo_hreflang_http_timeout', 10.0 );
 
 	if ( function_exists( 'curl_multi_init' ) && function_exists( 'curl_init' ) ) {
 		$mh  = curl_multi_init();
@@ -539,7 +689,8 @@ function nh_seo_parallel_get( $urls ) {
 					CURLOPT_FOLLOWLOCATION    => true,
 					CURLOPT_MAXREDIRS         => 2,
 					CURLOPT_TIMEOUT_MS        => (int) round( $timeout * 1000 ),
-					CURLOPT_CONNECTTIMEOUT_MS => 800,
+					CURLOPT_CONNECTTIMEOUT_MS => 3000,
+					CURLOPT_NOSIGNAL          => true,
 					CURLOPT_HTTPHEADER        => array( 'Accept: application/json' ),
 					CURLOPT_USERAGENT         => 'NorhageHreflang/1.0',
 					CURLOPT_SSL_VERIFYPEER    => true,
@@ -631,14 +782,33 @@ function nh_seo_rest_product_by_sku( $request ) {
 		return new WP_Error( 'nh_seo_not_found', 'Product not found.', array( 'status' => 404 ) );
 	}
 
-	$shop = nh_seo_current_shop();
+	$shop    = nh_seo_current_shop();
+	$host    = $shop ? $shop['host'] : nh_seo_current_host();
+	$cluster = array();
+	$cached  = get_transient( 'nh_seo_hl2_' . md5( strtolower( $sku ) ) );
+	if ( is_array( $cached ) ) {
+		foreach ( $cached as $cached_host => $cached_url ) {
+			if ( ! is_string( $cached_host ) || ! is_string( $cached_url ) || $cached_url === '' ) {
+				continue;
+			}
+			$clean = nh_seo_normalize_shop_url( $cached_url, $cached_host );
+			if ( $clean !== '' ) {
+				$cluster[ $cached_host ] = $clean;
+			}
+		}
+	}
+	if ( $host !== '' ) {
+		$local = nh_seo_normalize_shop_url( $url, $host );
+		$cluster[ $host ] = $local !== '' ? $local : $url;
+	}
 
 	return new WP_REST_Response(
 		array(
 			'sku'      => $sku,
 			'url'      => $url,
-			'host'     => $shop ? $shop['host'] : nh_seo_current_host(),
+			'host'     => $host,
 			'hreflang' => $shop ? $shop['hreflang'] : '',
+			'cluster'  => $cluster,
 		),
 		200
 	);
@@ -663,7 +833,9 @@ function nh_seo_bust_sku_hreflang_cache( $product_id ) {
 		$sku    = $parent ? (string) $parent->get_sku() : '';
 	}
 	if ( nh_seo_is_usable_sku( $sku ) ) {
-		delete_transient( 'nh_seo_hl_' . md5( strtolower( $sku ) ) );
+		$sku_hash = md5( strtolower( $sku ) );
+		delete_transient( 'nh_seo_hl_' . $sku_hash );
+		delete_transient( 'nh_seo_hl2_' . $sku_hash );
 	}
 }
 add_action( 'woocommerce_update_product', 'nh_seo_bust_sku_hreflang_cache' );
