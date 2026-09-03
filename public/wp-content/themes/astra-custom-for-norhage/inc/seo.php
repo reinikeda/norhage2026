@@ -411,7 +411,7 @@ function nh_seo_decode_utf8_path( $path ) {
  */
 function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 	$current_host = nh_seo_current_host();
-	$cache_key    = 'nh_seo_hl_' . md5( strtolower( $sku ) );
+	$cache_key    = 'nh_seo_hl2_' . md5( strtolower( $sku ) );
 	$cached       = get_transient( $cache_key );
 
 	$map = array();
@@ -785,7 +785,7 @@ function nh_seo_rest_product_by_sku( $request ) {
 	$shop    = nh_seo_current_shop();
 	$host    = $shop ? $shop['host'] : nh_seo_current_host();
 	$cluster = array();
-	$cached  = get_transient( 'nh_seo_hl_' . md5( strtolower( $sku ) ) );
+	$cached  = get_transient( 'nh_seo_hl2_' . md5( strtolower( $sku ) ) );
 	if ( is_array( $cached ) ) {
 		foreach ( $cached as $cached_host => $cached_url ) {
 			if ( ! is_string( $cached_host ) || ! is_string( $cached_url ) || $cached_url === '' ) {
@@ -833,7 +833,9 @@ function nh_seo_bust_sku_hreflang_cache( $product_id ) {
 		$sku    = $parent ? (string) $parent->get_sku() : '';
 	}
 	if ( nh_seo_is_usable_sku( $sku ) ) {
-		delete_transient( 'nh_seo_hl_' . md5( strtolower( $sku ) ) );
+		$sku_hash = md5( strtolower( $sku ) );
+		delete_transient( 'nh_seo_hl_' . $sku_hash );
+		delete_transient( 'nh_seo_hl2_' . $sku_hash );
 	}
 }
 add_action( 'woocommerce_update_product', 'nh_seo_bust_sku_hreflang_cache' );
