@@ -244,6 +244,7 @@ body.woocommerce-cart .return-to-shop .button {
   color: var(--nh-forest, #1e3932);
   line-height: 1.3;
   overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .nh-cart-layout .product-name a {
@@ -502,8 +503,9 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-name {
     width: auto;
+    min-width: 14rem;
     overflow-wrap: break-word;
-    word-break: break-word;
+    word-break: normal;
     padding-left: 4px;
   }
 
