@@ -61,6 +61,9 @@ msgstr "Postnummer"
 msgid "Show shipping cost"
 msgstr "Vis fragtomkostning"
 
+msgid "Free pickup from the warehouse is also available."
+msgstr "Gratis afhentning på lageret er også mulig."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Ingen fragtmetoder tilgængelige for dette postnummer."
 

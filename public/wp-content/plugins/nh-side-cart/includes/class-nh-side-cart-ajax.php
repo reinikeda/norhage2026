@@ -38,9 +38,11 @@ final class NH_Side_Cart_Ajax {
 					break;
 				case 'shipping':
 					self::calculate_shipping();
+					WC()->session->set( NH_Side_Cart::SESSION_USER_METHOD, null );
 					break;
 				case 'method':
 					self::choose_method();
+					WC()->session->set( NH_Side_Cart::SESSION_USER_METHOD, '1' );
 					break;
 				default:
 					throw new Exception( __( 'Unknown basket action.', NH_SC_TD ) );
@@ -50,6 +52,9 @@ final class NH_Side_Cart_Ajax {
 		}
 
 		WC()->cart->calculate_shipping();
+		if ( 'method' !== $op ) {
+			NH_Side_Cart::prefer_delivery_method();
+		}
 		WC()->cart->calculate_totals();
 
 		$fragments = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
