@@ -134,14 +134,18 @@ function nh_cart_ux_layout_lock_css() {
 	}
 	echo '<style id="nh-cart-layout-lock">'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{display:grid!important;grid-template-columns:minmax(0,1fr);width:100%!important;max-width:100%!important;float:none!important}'
-		. '@media(min-width:960px){html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{grid-template-columns:minmax(0,1fr) minmax(320px,400px)!important;align-items:start}}'
+		. '@media(min-width:960px){'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{grid-template-columns:minmax(0,1fr) 400px!important;align-items:start}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main,'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-cart-form{grid-column:1;min-width:0!important;overflow:hidden;width:auto!important;max-width:100%!important;float:none!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side,'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.cart-collaterals{grid-column:2;width:400px!important;max-width:400px!important;float:none!important}'
+		. '}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-notices-wrapper,'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.nh-cart-sticky-bar{grid-column:1/-1}'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__side{min-width:0;float:none!important;width:auto!important;max-width:100%!important;isolation:isolate}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .woocommerce-cart-form,'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart-collaterals,'
-		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart_totals{float:none!important;width:100%!important;max-width:100%!important;position:relative!important;left:auto!important;right:auto!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cart_totals{float:none!important;position:relative!important;left:auto!important;right:auto!important}'
 		. '</style>' . "\n";
 }
 

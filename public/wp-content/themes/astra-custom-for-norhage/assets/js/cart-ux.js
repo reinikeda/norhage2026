@@ -106,8 +106,59 @@
     }
   }
 
+  function lockColumnStyles() {
+    var layout = document.querySelector('.nh-cart-layout');
+    if (!layout) {
+      return;
+    }
+
+    layout.style.setProperty('display', 'grid', 'important');
+    layout.style.setProperty('width', '100%', 'important');
+    layout.style.setProperty('max-width', '100%', 'important');
+    layout.style.setProperty('float', 'none', 'important');
+
+    var wide = window.matchMedia('(min-width: 960px)').matches;
+    layout.style.setProperty(
+      'grid-template-columns',
+      wide ? 'minmax(0, 1fr) 400px' : 'minmax(0, 1fr)',
+      'important'
+    );
+
+    layout.querySelectorAll('.woocommerce-cart-form, .cart-collaterals, .cart_totals').forEach(function (el) {
+      el.style.setProperty('float', 'none', 'important');
+      el.style.setProperty('position', 'relative', 'important');
+      el.style.setProperty('left', 'auto', 'important');
+      el.style.setProperty('right', 'auto', 'important');
+    });
+
+    var main = layout.querySelector('.nh-cart-layout__main') || layout.querySelector('.woocommerce-cart-form');
+    var side = layout.querySelector('.nh-cart-layout__side') || layout.querySelector('.cart-collaterals');
+    if (main) {
+      main.style.setProperty('min-width', '0', 'important');
+      main.style.setProperty('max-width', '100%', 'important');
+      main.style.setProperty('overflow', 'hidden', 'important');
+      if (wide) {
+        main.style.setProperty('grid-column', '1', 'important');
+      }
+    }
+    if (side) {
+      side.style.setProperty('min-width', '0', 'important');
+      side.style.setProperty('float', 'none', 'important');
+      if (wide) {
+        side.style.setProperty('grid-column', '2', 'important');
+        side.style.setProperty('width', '400px', 'important');
+        side.style.setProperty('max-width', '400px', 'important');
+      } else {
+        side.style.setProperty('width', '100%', 'important');
+        side.style.setProperty('max-width', '100%', 'important');
+        side.style.removeProperty('grid-column');
+      }
+    }
+  }
+
   function boot() {
     ensureLayout();
+    lockColumnStyles();
     keepCalculatorOpen();
     bindQtyAutoUpdate();
     enhanceCoupon();
@@ -115,6 +166,7 @@
   }
 
   $(boot);
+  $(window).on('resize.nhCartUx', lockColumnStyles);
   $(document.body).on(
     'updated_wc_div updated_cart_totals wc_fragments_refreshed updated_shipping_method',
     boot
