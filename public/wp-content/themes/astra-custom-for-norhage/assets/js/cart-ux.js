@@ -72,15 +72,32 @@
 
     var $layout = $form.closest('.nh-cart-layout');
     if (!$layout.length) {
+      $layout = $col.closest('.nh-cart-layout');
+    }
+    if (!$layout.length) {
       $form.add($col).wrapAll('<div class="nh-cart-layout"></div>');
       $layout = $form.closest('.nh-cart-layout');
     }
 
-    if (!$form.parent().is($layout)) {
-      $layout.prepend($form);
+    var $main = $layout.children('.nh-cart-layout__main');
+    if (!$main.length) {
+      $main = $('<div class="nh-cart-layout__main" />');
+      $layout.prepend($main);
     }
-    if (!$col.parent().is($layout)) {
-      $form.after($col);
+
+    var $side = $layout.children('.nh-cart-layout__side');
+    if (!$side.length) {
+      $side = $('<div class="nh-cart-layout__side" />');
+      $main.after($side);
+    }
+
+    $layout.children('.woocommerce-notices-wrapper').prependTo($layout);
+
+    if (!$form.closest('.nh-cart-layout__main').length) {
+      $main.append($form);
+    }
+    if (!$col.closest('.nh-cart-layout__side').length) {
+      $side.append($col);
     }
 
     var $bar = $('.nh-cart-sticky-bar').first();
