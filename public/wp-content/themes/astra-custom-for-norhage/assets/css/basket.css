@@ -114,7 +114,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells,
     min-width: 0 !important;
     width: auto !important;
     max-width: calc(100% - var(--nh-cart-summary) - 2rem) !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     order: 1;
   }
 
@@ -172,7 +172,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells,
   .nh-cart-layout > .woocommerce-cart-form table.shop_table.cart,
   .nh-cart-layout table.shop_table.cart {
     display: table !important;
-    table-layout: fixed !important;
+    table-layout: auto !important;
     width: 100% !important;
     max-width: 100% !important;
     float: none !important;
@@ -244,6 +244,7 @@ body.woocommerce-cart .return-to-shop .button {
   color: var(--nh-forest, #1e3932);
   line-height: 1.3;
   overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .nh-cart-layout .product-name a {
@@ -424,8 +425,14 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
 
 @media (min-width: 900px) {
   .nh-cart-layout table.shop_table.cart {
-    table-layout: fixed !important;
+    table-layout: auto !important;
     width: 100% !important;
+    background: #fff;
+    border: 1px solid var(--nh-mint, #c3e8c6);
+    border-radius: var(--nh-cart-radius);
+    overflow: hidden;
+    border-collapse: separate !important;
+    border-spacing: 0;
   }
 
   .nh-cart-layout table.shop_table.cart thead {
@@ -437,108 +444,120 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .minus,
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--ui-muted, #8e8c89);
-    padding: 0 12px 10px;
+    padding: 14px 16px;
     font-weight: 600;
     border: 0;
-    background: transparent;
-    vertical-align: bottom;
+    border-bottom: 1px solid var(--nh-mint, #c3e8c6);
+    background: #fbf8f3;
+    vertical-align: middle;
   }
 
   .nh-cart-layout table.shop_table.cart thead th.product-remove,
   .nh-cart-layout table.shop_table.cart thead th.product-thumbnail {
-    width: 1%;
-    padding-left: 8px;
+    width: 56px;
+    padding-left: 12px;
     padding-right: 8px;
+  }
+
+  .nh-cart-layout table.shop_table.cart thead th.product-name {
+    text-align: left;
   }
 
   .nh-cart-layout table.shop_table.cart thead th.product-price,
   .nh-cart-layout table.shop_table.cart thead th.product-quantity,
   .nh-cart-layout table.shop_table.cart thead th.product-subtotal {
     text-align: right;
-    width: 1%;
     white-space: nowrap;
   }
 
-  /*
-   * One list card: outer edge + single dividers.
-   * Per-row radius on every td stacked adjacent rows into colliding pills.
-   */
   .nh-cart-layout table.shop_table.cart tbody td {
     background: #fff;
-    padding: 16px 12px;
+    padding: 18px 16px;
     vertical-align: middle;
     border: 0;
     border-bottom: 1px solid var(--nh-mint, #c3e8c6);
   }
 
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove {
-    border-left: 1px solid var(--nh-mint, #c3e8c6);
-    width: 1%;
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove,
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-thumbnail {
+    position: static !important;
+    width: 56px;
+    min-width: 56px;
     white-space: nowrap;
-    padding-left: 10px;
-    padding-right: 6px;
+    padding-left: 16px;
+    padding-right: 8px;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-thumbnail {
-    width: 1%;
-    white-space: nowrap;
-    padding-left: 6px;
-    padding-right: 12px;
+    width: 88px;
+    min-width: 88px;
+    padding-left: 8px;
+    padding-right: 16px;
+  }
+
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-remove a.remove {
+    position: static !important;
+    float: none !important;
+    margin: 0 !important;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-name {
     width: auto;
+    min-width: 14rem;
     overflow-wrap: break-word;
-    word-break: break-word;
+    word-break: normal;
+    padding-left: 4px;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-price,
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-quantity,
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-subtotal {
-    width: 1%;
     white-space: nowrap;
     text-align: right;
   }
 
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-quantity {
+    min-width: 148px;
+  }
+
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item td.product-subtotal {
-    border-right: 1px solid var(--nh-mint, #c3e8c6);
-    padding-right: 16px;
+    padding-right: 20px;
   }
 
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:first-child td {
-    border-top: 1px solid var(--nh-mint, #c3e8c6);
-  }
-
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:first-child td.product-remove {
-    border-top-left-radius: var(--nh-cart-radius);
-  }
-
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:first-child td.product-subtotal {
-    border-top-right-radius: var(--nh-cart-radius);
-  }
-
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:nth-last-child(2) td.product-remove,
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:last-child td.product-remove {
-    border-bottom-left-radius: var(--nh-cart-radius);
-  }
-
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:nth-last-child(2) td.product-subtotal,
-  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:last-child td.product-subtotal {
-    border-bottom-right-radius: var(--nh-cart-radius);
+  .nh-cart-layout table.shop_table.cart tbody tr.cart_item:nth-last-child(2) td,
+  .nh-cart-layout table.shop_table.cart tbody tr:last-child td {
+    border-bottom: 0;
   }
 
   .nh-cart-layout table.shop_table.cart tbody tr.cart_item:hover td {
     background: #fcfbf9;
   }
+
+  .nh-cart-layout table.shop_table.cart td.actions {
+    display: table-cell;
+    background: #fbf8f3 !important;
+    border: 0 !important;
+    border-top: 1px solid var(--nh-mint, #c3e8c6) !important;
+    padding: 10px 16px !important;
+    border-radius: 0 !important;
+  }
 }
 
 /* Coupon */
 .nh-cart-layout table.shop_table.cart td.actions {
-  display: block;
   background: transparent !important;
   border: 0 !important;
   padding: 12px 0 0;
   border-radius: 0 !important;
+}
+
+@media (min-width: 900px) {
+  .nh-cart-layout table.shop_table.cart td.actions {
+    display: table-cell;
+    background: #fbf8f3 !important;
+    border-top: 1px solid var(--nh-mint, #c3e8c6) !important;
+    padding: 10px 16px !important;
+  }
 }
 
 .nh-cart-layout button[name="update_cart"] {
