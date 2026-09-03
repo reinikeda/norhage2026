@@ -17,6 +17,7 @@ jQuery(function ($) {
             if (response.success) {
                 $btn.text(i18n.added || 'Added');
                 $(document.body).trigger('wc_fragment_refresh');
+                $(document.body).trigger('nh_side_cart_open');
 
                 setTimeout(function () {
                     $btn.prop('disabled', false).text(i18n.add_sample || 'Add sample');
