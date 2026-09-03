@@ -1734,6 +1734,19 @@ msgstr "Kunne ikke tilføje vareprøve til kurven."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Kunne ikke forbinde til WooCommerce. Prøv venligst igen."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Indtast dit postnummer for at se fragtomkostningen."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Vis fragtomkostning"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Har du en rabatkode?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"
 

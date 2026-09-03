@@ -1738,6 +1738,19 @@ msgstr "Näytettä ei voitu lisätä ostoskoriin."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Yhteyttä WooCommerceen ei saatu. Yritä uudelleen."
 
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Syötä postinumerosi nähdäksesi toimituskulut."
+
+#: woocommerce/cart/shipping-calculator.php
+msgid "Show shipping cost"
+msgstr "Näytä toimituskulut"
+
+#: inc/cart-ux.php
+msgid "Have a coupon?"
+msgstr "Onko sinulla alennuskoodi?"
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 
