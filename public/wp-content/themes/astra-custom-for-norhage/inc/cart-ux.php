@@ -134,7 +134,7 @@ function nh_cart_ux_layout_lock_css() {
 	}
 	echo '<style id="nh-cart-layout-lock">'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{display:grid!important;grid-template-columns:minmax(0,1fr);width:100%!important;max-width:100%!important;float:none!important}'
-		. '@media(min-width:960px){html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{grid-template-columns:minmax(0,1fr) minmax(300px,380px)!important;align-items:start}}'
+		. '@media(min-width:960px){html body.woocommerce-cart.nh-cart-ux .nh-cart-layout{grid-template-columns:minmax(0,1fr) minmax(320px,400px)!important;align-items:start}}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.woocommerce-notices-wrapper,'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout>.nh-cart-sticky-bar{grid-column:1/-1}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main,'
