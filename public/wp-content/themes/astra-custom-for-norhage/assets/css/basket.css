@@ -166,7 +166,7 @@ body.woocommerce-cart .return-to-shop .button {
   font-weight: 700;
   color: var(--nh-forest, #1e3932);
   line-height: 1.3;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .nh-cart-layout .product-name a {
@@ -211,6 +211,7 @@ body.woocommerce-cart .return-to-shop .button {
   border-radius: 999px;
   background: var(--nh-offwhite, #faf7f2);
   color: var(--nh-charcoal, #2c2a29) !important;
+  text-decoration: none !important;
   border: 1px solid transparent;
 }
 
