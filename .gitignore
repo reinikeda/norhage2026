@@ -51,6 +51,8 @@
 !/public/wp-content/plugins/nh-filters/**
 !/public/wp-content/plugins/nh-tax-switcher/
 !/public/wp-content/plugins/nh-tax-switcher/**
+!/public/wp-content/plugins/nh-side-cart/
+!/public/wp-content/plugins/nh-side-cart/**
 
 # Uploads
 /public/wp-content/uploads/

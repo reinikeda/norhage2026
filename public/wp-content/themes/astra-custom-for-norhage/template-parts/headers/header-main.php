@@ -46,7 +46,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
       </a>
 
       <!-- Cart -->
-      <a class="nh-cart" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>">
+		<a class="nh-cart" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>" aria-haspopup="dialog" aria-controls="nh-side-cart">
         <span class="nh-cart-icon">
           <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
             <circle cx="9" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>
@@ -144,7 +144,7 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
           <span class="screen-reader-text"><?php echo esc_html( $account_label ); ?></span>
         </a>
 
-        <a class="nh-cart nh-cart--mobile" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>">
+        <a class="nh-cart nh-cart--mobile" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>" aria-haspopup="dialog" aria-controls="nh-side-cart">
           <span class="nh-cart-icon">
             <svg class="nh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
               <circle cx="9" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>

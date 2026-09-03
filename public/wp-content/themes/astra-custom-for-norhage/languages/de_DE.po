@@ -266,6 +266,9 @@ msgstr ""
 msgid "Cutting fee per sheet"
 msgstr "Zuschnittgebühr pro Platte"
 
+msgid "Cutting fee per metre"
+msgstr "Zuschnittgebühr pro Meter"
+
 #: inc/meta-boxes.php:164
 msgid "Min width (mm)"
 msgstr ""

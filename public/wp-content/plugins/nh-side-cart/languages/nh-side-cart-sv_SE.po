@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Side Cart 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 12:00+0000\n"
+"PO-Revision-Date: 2026-09-03 12:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "Basket"
+msgstr "Varukorg"
+
+msgid "Close basket"
+msgstr "Stäng varukorgen"
+
+msgid "Your basket is empty"
+msgstr "Din varukorg är tom"
+
+msgid "Add products to see shipping costs by postcode."
+msgstr "Lägg till produkter för att se fraktkostnad efter postnummer."
+
+msgid "Continue shopping"
+msgstr "Fortsätt handla"
+
+msgid "Remove %s from basket"
+msgstr "Ta bort %s från varukorgen"
+
+msgid "Qty: %d"
+msgstr "Antal: %d"
+
+msgid "Decrease quantity"
+msgstr "Minska antal"
+
+msgid "Increase quantity"
+msgstr "Öka antal"
+
+msgid "Quantity"
+msgstr "Antal"
+
+msgid "Calculate shipping"
+msgstr "Beräkna frakt"
+
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Ange ditt postnummer för att se fraktkostnaden."
+
+msgid "Country / region"
+msgstr "Land / region"
+
+msgid "Select a country / region…"
+msgstr "Välj ett land / en region…"
+
+msgid "Postcode / ZIP"
+msgstr "Postnummer"
+
+msgid "Show shipping cost"
+msgstr "Visa fraktkostnad"
+
+msgid "No shipping methods available for this postcode."
+msgstr "Inga fraktmetoder tillgängliga för detta postnummer."
+
+msgid "Subtotal"
+msgstr "Delsumma"
+
+msgid "Coupon: %s"
+msgstr "Rabattkod: %s"
+
+msgid "Shipping"
+msgstr "Frakt"
+
+msgid "Total"
+msgstr "Totalt"
+
+msgid "Enter postcode"
+msgstr "Ange postnummer"
+
+msgid "View basket"
+msgstr "Visa varukorg"
+
+msgid "Checkout"
+msgstr "Till kassan"
+
+msgid "Updating…"
+msgstr "Uppdaterar…"
+
+msgid "Could not update the basket. Please try again."
+msgstr "Kunde inte uppdatera varukorgen. Försök igen."
+
+msgid "Basket is not available."
+msgstr "Varukorgen är inte tillgänglig."
+
+msgid "Unknown basket action."
+msgstr "Okänd varukorgsåtgärd."
+
+msgid "Basket item not found."
+msgstr "Artikeln hittades inte i varukorgen."
+
+msgid "Could not update the quantity."
+msgstr "Kunde inte uppdatera antalet."
+
+msgid "Could not remove the item."
+msgstr "Kunde inte ta bort artikeln."
+
+msgid "Please select a country / region."
+msgstr "Välj ett land / en region."
+
+msgid "Please enter a postcode."
+msgstr "Ange ett postnummer."
+
+msgid "Please enter a valid postcode / ZIP."
+msgstr "Ange ett giltigt postnummer."
+
+msgid "Shipping costs updated."
+msgstr "Fraktkostnaderna har uppdaterats."
+
+msgid "Please choose a shipping method."
+msgstr "Välj en fraktmetod."
+
+msgid "Norhage Side Cart is active. Deactivate Side Cart WooCommerce (XootiX) so customers only see one basket drawer."
+msgstr "Norhage Side Cart är aktiv. Inaktivera Side Cart WooCommerce (XootiX) så att kunderna bara ser en varukorg."
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d vara"
+msgstr[1] "%d varor"

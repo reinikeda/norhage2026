@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Side Cart 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 12:00+0000\n"
+"PO-Revision-Date: 2026-09-03 12:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "Basket"
+msgstr "Warenkorb"
+
+msgid "Close basket"
+msgstr "Warenkorb schließen"
+
+msgid "Your basket is empty"
+msgstr "Ihr Warenkorb ist leer"
+
+msgid "Add products to see shipping costs by postcode."
+msgstr "Fügen Sie Produkte hinzu, um die Versandkosten nach Postleitzahl zu sehen."
+
+msgid "Continue shopping"
+msgstr "Weiter einkaufen"
+
+msgid "Remove %s from basket"
+msgstr "%s aus dem Warenkorb entfernen"
+
+msgid "Qty: %d"
+msgstr "Menge: %d"
+
+msgid "Decrease quantity"
+msgstr "Menge verringern"
+
+msgid "Increase quantity"
+msgstr "Menge erhöhen"
+
+msgid "Quantity"
+msgstr "Menge"
+
+msgid "Calculate shipping"
+msgstr "Versand berechnen"
+
+msgid "Enter your postcode to see the shipping cost."
+msgstr "Geben Sie Ihre Postleitzahl ein, um die Versandkosten zu sehen."
+
+msgid "Country / region"
+msgstr "Land / Region"
+
+msgid "Select a country / region…"
+msgstr "Land / Region auswählen…"
+
+msgid "Postcode / ZIP"
+msgstr "Postleitzahl"
+
+msgid "Show shipping cost"
+msgstr "Versandkosten anzeigen"
+
+msgid "No shipping methods available for this postcode."
+msgstr "Für diese Postleitzahl sind keine Versandmethoden verfügbar."
+
+msgid "Subtotal"
+msgstr "Zwischensumme"
+
+msgid "Coupon: %s"
+msgstr "Gutschein: %s"
+
+msgid "Shipping"
+msgstr "Versand"
+
+msgid "Total"
+msgstr "Gesamt"
+
+msgid "Enter postcode"
+msgstr "Postleitzahl eingeben"
+
+msgid "View basket"
+msgstr "Warenkorb anzeigen"
+
+msgid "Checkout"
+msgstr "Zur Kasse"
+
+msgid "Updating…"
+msgstr "Aktualisierung…"
+
+msgid "Could not update the basket. Please try again."
+msgstr "Der Warenkorb konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."
+
+msgid "Basket is not available."
+msgstr "Warenkorb ist nicht verfügbar."
+
+msgid "Unknown basket action."
+msgstr "Unbekannte Warenkorbaktion."
+
+msgid "Basket item not found."
+msgstr "Artikel im Warenkorb nicht gefunden."
+
+msgid "Could not update the quantity."
+msgstr "Menge konnte nicht aktualisiert werden."
+
+msgid "Could not remove the item."
+msgstr "Artikel konnte nicht entfernt werden."
+
+msgid "Please select a country / region."
+msgstr "Bitte wählen Sie ein Land / eine Region."
+
+msgid "Please enter a postcode."
+msgstr "Bitte geben Sie eine Postleitzahl ein."
+
+msgid "Please enter a valid postcode / ZIP."
+msgstr "Bitte geben Sie eine gültige Postleitzahl ein."
+
+msgid "Shipping costs updated."
+msgstr "Versandkosten aktualisiert."
+
+msgid "Please choose a shipping method."
+msgstr "Bitte wählen Sie eine Versandmethode."
+
+msgid "Norhage Side Cart is active. Deactivate Side Cart WooCommerce (XootiX) so customers only see one basket drawer."
+msgstr "Norhage Side Cart ist aktiv. Deaktivieren Sie Side Cart WooCommerce (XootiX), damit Kunden nur eine Warenkorb-Leiste sehen."
+
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d Artikel"
+msgstr[1] "%d Artikel"

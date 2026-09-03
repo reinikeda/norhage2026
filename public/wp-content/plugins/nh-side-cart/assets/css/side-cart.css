@@ -1,0 +1,675 @@
+/**
+ * Norhage side cart — mobile first.
+ */
+
+.nh-sc {
+  --nh-sc-green: var(--nh-green, #00704a);
+  --nh-sc-forest: var(--nh-forest, #1e3932);
+  --nh-sc-cream: var(--nh-cream, #f1e6d6);
+  --nh-sc-mint: var(--nh-mint, #c3e8c6);
+  --nh-sc-charcoal: var(--nh-charcoal, #2c2a29);
+  --nh-sc-muted: var(--ui-muted, #8e8c89);
+  --nh-sc-radius: 14px;
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  pointer-events: none;
+}
+
+.nh-sc.is-open {
+  pointer-events: auto;
+}
+
+.nh-sc[hidden] {
+  display: block !important;
+  visibility: hidden;
+}
+
+.nh-sc.is-open[hidden] {
+  visibility: visible;
+}
+
+body.nh-sc-open {
+  overflow: hidden;
+}
+
+.nh-sc__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 57, 50, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.nh-sc.is-open .nh-sc__overlay {
+  opacity: 1;
+}
+
+.nh-sc__panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  background: #fff;
+  color: var(--nh-sc-charcoal);
+  box-shadow: -8px 0 32px rgba(30, 57, 50, 0.12);
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+  overflow: hidden;
+}
+
+.nh-sc.is-open .nh-sc__panel {
+  transform: translateX(0);
+}
+
+@media (min-width: 640px) {
+  .nh-sc__panel {
+    inset: 0 0 0 auto;
+    width: min(420px, 100vw);
+  }
+
+  .nh-sc__items {
+    gap: 0;
+  }
+
+  .nh-sc__item {
+    grid-template-columns: 52px 1fr;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .nh-sc__thumb img {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+  }
+
+  .nh-sc__item-main {
+    gap: 2px;
+  }
+
+  .nh-sc__name {
+    font-size: 0.9rem;
+    line-height: 1.25;
+  }
+
+  .nh-sc__meta {
+    font-size: 0.78rem;
+  }
+
+  .nh-sc__item-bottom {
+    margin-top: 2px;
+    gap: 8px;
+  }
+
+  .nh-sc .nh-sc__qty {
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: max-content;
+    border-radius: 6px;
+  }
+
+  .nh-sc .nh-sc__qty-btn,
+  .nh-sc button.nh-sc__qty-btn {
+    flex: 0 0 22px;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    font-size: 13px !important;
+    background: #fff !important;
+    color: var(--nh-sc-forest) !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .nh-sc .nh-sc__qty-btn:hover,
+  .nh-sc .nh-sc__qty-btn:focus,
+  .nh-sc .nh-sc__qty-btn:focus-visible,
+  .nh-sc button.nh-sc__qty-btn:hover,
+  .nh-sc button.nh-sc__qty-btn:focus {
+    background: var(--nh-sc-cream) !important;
+    color: var(--nh-sc-forest) !important;
+  }
+
+  .nh-sc .nh-sc__qty-input {
+    flex: 0 0 1.7rem;
+    width: 1.7rem !important;
+    min-width: 1.7rem !important;
+    max-width: 1.7rem !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+  }
+
+  .nh-sc__remove {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    margin: -4px -6px 0 0;
+    font-size: 18px;
+  }
+
+  .nh-sc__price {
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nh-sc__overlay,
+  .nh-sc__panel {
+    transition: none;
+  }
+}
+
+.nh-sc__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--nh-sc-mint);
+  background: var(--nh-sc-forest);
+  color: #fff;
+}
+
+.nh-sc__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.nh-sc__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: inherit;
+  line-height: 1.2;
+}
+
+.nh-sc__count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.nh-sc__close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nh-sc__close:hover,
+.nh-sc__close:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.nh-sc__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px max(24px, env(safe-area-inset-bottom));
+}
+
+.nh-sc__body.is-loading {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.nh-sc__notices {
+  margin: 0 0 12px;
+}
+
+.nh-sc__notices .woocommerce-message,
+.nh-sc__notices .woocommerce-info,
+.nh-sc__notices .woocommerce-error {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.nh-sc__notices .woocommerce-error {
+  list-style: none;
+}
+
+.nh-sc__empty {
+  margin: auto 0;
+  padding: 24px 8px;
+  text-align: center;
+}
+
+.nh-sc__empty-title {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--nh-sc-forest);
+}
+
+.nh-sc__empty-text {
+  margin: 0 0 20px;
+  color: var(--nh-sc-muted);
+  line-height: 1.45;
+}
+
+.nh-sc__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nh-sc__item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--nh-sc-mint);
+}
+
+.nh-sc__thumb img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--nh-sc-cream);
+}
+
+.nh-sc__item-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nh-sc__item-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.nh-sc__name {
+  flex: 1 1 auto;
+  font-weight: 700;
+  color: var(--nh-sc-forest);
+  text-decoration: none;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.nh-sc__name:hover {
+  color: var(--nh-sc-green);
+}
+
+.nh-sc__remove {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  margin: -6px -8px 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nh-sc-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nh-sc__remove:hover,
+.nh-sc__remove:focus-visible {
+  color: #7a1f1f;
+  background: #fdecec;
+  outline: none;
+}
+
+.nh-sc__meta {
+  font-size: 0.85rem;
+  color: var(--nh-sc-muted);
+  line-height: 1.4;
+}
+
+.nh-sc__meta dl.variation,
+.nh-sc__meta .variation {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 0.4em;
+  row-gap: 2px;
+  margin: 0;
+}
+
+.nh-sc__meta dt,
+.nh-sc__meta dd {
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+
+.nh-sc__meta p {
+  margin: 0;
+}
+
+.nh-sc__item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.nh-sc__qty {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--nh-sc-mint);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.nh-sc__qty-btn,
+.nh-sc__qty-input {
+  min-height: 44px;
+  border: 0;
+  background: #fff;
+  color: var(--nh-sc-forest);
+  font-size: 1rem;
+}
+
+.nh-sc__qty-btn {
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.nh-sc__qty-btn:hover,
+.nh-sc__qty-btn:focus-visible {
+  background: var(--nh-sc-cream);
+  outline: none;
+}
+
+.nh-sc__qty-input {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.nh-sc__qty-input::-webkit-outer-spin-button,
+.nh-sc__qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.nh-sc__qty-locked {
+  font-size: 0.9rem;
+  color: var(--nh-sc-muted);
+}
+
+.nh-sc__price {
+  font-weight: 700;
+  color: var(--nh-sc-forest);
+}
+
+.nh-sc__shipping {
+  margin: 16px 0 0;
+  padding: 14px;
+  background: var(--nh-sc-cream);
+  border: 1px solid var(--nh-sc-mint);
+  border-radius: var(--nh-sc-radius);
+}
+
+.nh-sc__shipping-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--nh-sc-forest);
+}
+
+.nh-sc__shipping-hint {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.nh-sc__shipping-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nh-sc__field {
+  margin: 0;
+}
+
+.nh-sc__field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--nh-sc-forest);
+}
+
+.nh-sc__field input,
+.nh-sc__field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid #d7cbb8;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 16px;
+}
+
+.nh-sc__methods {
+  margin-top: 12px;
+}
+
+.nh-sc__method-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nh-sc__method label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--nh-sc-mint);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.nh-sc__method input:checked + .nh-sc__method-label,
+.nh-sc__method:has(input:checked) label {
+  border-color: var(--nh-sc-green);
+}
+
+.nh-sc__method-input {
+  margin-top: 3px;
+  accent-color: var(--nh-sc-green);
+}
+
+.nh-sc__method-label {
+  flex: 1 1 auto;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.nh-sc__totals {
+  margin: 16px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--nh-sc-mint);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nh-sc__total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.nh-sc__total-row dt,
+.nh-sc__total-row dd {
+  margin: 0;
+}
+
+.nh-sc__total-row--grand {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--nh-sc-mint);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--nh-sc-forest);
+}
+
+.nh-sc__actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 12px);
+}
+
+.nh-sc__btn,
+.nh-sc__qty-btn,
+.nh-sc__close,
+.nh-sc__remove,
+.nh-sc__continue {
+  touch-action: manipulation;
+}
+
+.nh-sc__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.nh-sc__btn--primary {
+  background: var(--nh-sc-green);
+  color: #fff !important;
+}
+
+.nh-sc__btn--primary:hover,
+.nh-sc__btn--primary:focus-visible {
+  background: var(--nh-sc-forest);
+}
+
+.nh-sc__btn--secondary {
+  width: 100%;
+  background: var(--nh-sc-forest);
+  color: #fff !important;
+}
+
+.nh-sc__btn--secondary:hover,
+.nh-sc__btn--secondary:focus-visible {
+  background: var(--nh-sc-green);
+}
+
+.nh-sc__btn--ghost {
+  background: transparent;
+  color: var(--nh-sc-forest) !important;
+  border: 1.5px solid var(--nh-sc-green);
+}
+
+.nh-sc__btn--ghost:hover,
+.nh-sc__btn--ghost:focus-visible {
+  background: rgba(0, 112, 74, 0.06);
+}
+
+.nh-sc button.nh-sc__continue,
+.nh-sc .nh-sc__continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 40px;
+  padding: 0 !important;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nh-sc-green) !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.nh-sc button.nh-sc__continue:hover,
+.nh-sc button.nh-sc__continue:focus,
+.nh-sc button.nh-sc__continue:focus-visible,
+.nh-sc .nh-sc__continue:hover,
+.nh-sc .nh-sc__continue:focus,
+.nh-sc .nh-sc__continue:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nh-sc-charcoal) !important;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Hide XootiX floating bubble / markup when this plugin is active. */
+.xoo-wsc-modal,
+.xoo-wsc-basket,
+.xoo-wsc-sc-cont,
+.xoo-wsc-markup,
+.xoo-wsc-overlay {
+  display: none !important;
+}
