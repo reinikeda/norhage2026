@@ -52,6 +52,12 @@ function nh_checkout_ux_init() {
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
+	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
+
+	add_action( 'woocommerce_after_calculate_totals', 'nh_checkout_remember_cart_shipping', 99 );
+	add_action( 'woocommerce_before_calculate_totals', 'nh_checkout_restore_cart_shipping', 5 );
+	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
+	add_filter( 'woocommerce_shipping_chosen_method', 'nh_checkout_keep_cart_shipping', 99, 3 );
 }
 add_action( 'init', 'nh_checkout_ux_init' );
 
@@ -1259,7 +1265,245 @@ function nh_checkout_secure_note() {
 }
 
 /**
+ * True on the checkout page and on checkout AJAX (update_order_review / place order).
+ */
+function nh_checkout_is_checkout_request() {
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		return true;
+	}
+	if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) {
+		return true;
+	}
+	$wc_ajax = isset( $_REQUEST['wc-ajax'] ) ? sanitize_key( wp_unslash( $_REQUEST['wc-ajax'] ) ) : '';
+	return in_array( $wc_ajax, array( 'update_order_review', 'checkout' ), true );
+}
+
+/**
+ * Woo checkout.js posts shipping_method[undefined] when data-index is missing.
+ * Package 0 then keeps the previous (often flat-rate) method.
+ *
+ * @param array $methods Posted methods.
+ * @return array<int, string>
+ */
+function nh_checkout_normalize_shipping_methods( $methods ) {
+	if ( ! is_array( $methods ) ) {
+		return array();
+	}
+
+	$clean = array();
+	foreach ( $methods as $key => $value ) {
+		if ( ! is_scalar( $value ) ) {
+			continue;
+		}
+		$value = wc_clean( (string) $value );
+		if ( '' === $value ) {
+			continue;
+		}
+		if ( 'undefined' === $key || '' === $key || null === $key ) {
+			$key = 0;
+		}
+		if ( ! is_numeric( $key ) ) {
+			continue;
+		}
+		$clean[ (int) $key ] = $value;
+	}
+
+	return $clean;
+}
+
+/**
+ * @param array  $rates     Package rates keyed by rate id.
+ * @param string $preferred Chosen rate id (e.g. local_pickup:3).
+ * @return string Matching rate id or empty.
+ */
+function nh_checkout_match_shipping_rate( $rates, $preferred ) {
+	if ( ! is_array( $rates ) || ! $preferred ) {
+		return '';
+	}
+	if ( isset( $rates[ $preferred ] ) ) {
+		return $preferred;
+	}
+
+	$parts     = explode( ':', (string) $preferred, 2 );
+	$pref_type = $parts[0];
+	if ( '' === $pref_type ) {
+		return '';
+	}
+
+	foreach ( $rates as $id => $rate ) {
+		$id_parts = explode( ':', (string) $id, 2 );
+		if ( $id_parts[0] === $pref_type ) {
+			return (string) $id;
+		}
+	}
+
+	foreach ( $rates as $id => $rate ) {
+		if ( is_object( $rate ) && isset( $rate->method_id ) && (string) $rate->method_id === $pref_type ) {
+			return (string) $id;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Remember the cart's chosen rates so checkout cannot silently fall back to flat rate.
+ */
+function nh_checkout_remember_cart_shipping() {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return;
+	}
+	if ( nh_checkout_is_checkout_request() ) {
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$chosen = WC()->session->get( 'chosen_shipping_methods' );
+	if ( ! is_array( $chosen ) || ! $chosen ) {
+		return;
+	}
+
+	$clean = nh_checkout_normalize_shipping_methods( $chosen );
+	if ( $clean ) {
+		WC()->session->set( 'nh_cart_chosen_shipping', $clean );
+	}
+}
+
+/**
+ * On first checkout paint, put the cart's pickup/delivery choice back into the session
+ * before Woo picks the zone default (usually the paid Flexible Shipping rate).
+ */
+function nh_checkout_restore_cart_shipping() {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return;
+	}
+	if ( wp_doing_ajax() ) {
+		return;
+	}
+	if ( ! nh_checkout_is_checkout_request() ) {
+		return;
+	}
+	if ( isset( $_POST['shipping_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$saved = WC()->session->get( 'nh_cart_chosen_shipping' );
+	if ( ! is_array( $saved ) || ! $saved ) {
+		return;
+	}
+
+	$chosen = WC()->session->get( 'chosen_shipping_methods' );
+	if ( ! is_array( $chosen ) ) {
+		$chosen = array();
+	}
+
+	foreach ( $saved as $index => $method_id ) {
+		$chosen[ (int) $index ] = $method_id;
+	}
+
+	WC()->session->set( 'chosen_shipping_methods', $chosen );
+}
+
+/**
+ * Rewrite shipping_method[undefined] (and recover methods from serialized post_data)
+ * before Woo copies them into the session.
+ *
+ * @param string $post_data Checkout form query string.
+ */
+function nh_checkout_sanitize_posted_shipping( $post_data ) {
+	$posted = isset( $_POST['shipping_method'] ) ? wp_unslash( $_POST['shipping_method'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( ! is_array( $posted ) ) {
+		$posted = array();
+	}
+
+	$clean = nh_checkout_normalize_shipping_methods( $posted );
+
+	if ( ! $clean && is_string( $post_data ) && '' !== $post_data ) {
+		$form = array();
+		parse_str( $post_data, $form );
+		$from_form = isset( $form['shipping_method'] ) ? $form['shipping_method'] : array();
+		if ( is_array( $from_form ) ) {
+			$clean = nh_checkout_normalize_shipping_methods( $from_form );
+		}
+	}
+
+	if ( $clean ) {
+		$_POST['shipping_method'] = $clean;
+		if ( WC()->session ) {
+			WC()->session->set( 'nh_cart_chosen_shipping', $clean );
+		}
+		return;
+	}
+
+	// Drop unusable keys so Woo does not store shipping_method[undefined].
+	if ( isset( $_POST['shipping_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		unset( $_POST['shipping_method'] );
+	}
+}
+
+/**
+ * Keep a still-available cart method (e.g. local_pickup) instead of the zone default.
+ *
+ * @param string $default        Woo's chosen/default rate id.
+ * @param array  $rates          Available rates.
+ * @param string $chosen_method  Session method for this package.
+ * @return string
+ */
+function nh_checkout_keep_cart_shipping( $default, $rates, $chosen_method ) {
+	if ( ! is_array( $rates ) || ! $rates ) {
+		return $default;
+	}
+
+	if ( $chosen_method ) {
+		$match = nh_checkout_match_shipping_rate( $rates, $chosen_method );
+		if ( $match ) {
+			return $match;
+		}
+	}
+
+	if ( wp_doing_ajax() ) {
+		return $default;
+	}
+
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return $default;
+	}
+
+	$saved = WC()->session->get( 'nh_cart_chosen_shipping' );
+	if ( ! is_array( $saved ) ) {
+		return $default;
+	}
+
+	foreach ( $saved as $id ) {
+		$match = nh_checkout_match_shipping_rate( $rates, $id );
+		if ( $match ) {
+			return $match;
+		}
+	}
+
+	return $default;
+}
+
+/**
+ * Stamp data-index before wc-checkout.js runs (it reads the attribute on first update_checkout).
+ */
+function nh_checkout_shipping_index_boot_script() {
+	$on_checkout = nh_is_classic_checkout_form();
+	$on_cart     = function_exists( 'is_cart' ) && is_cart();
+	if ( ! $on_checkout && ! $on_cart ) {
+		return;
+	}
+	echo '<script id="nh-shipping-index-boot">document.querySelectorAll("input.shipping_method,select.shipping_method").forEach(function(el){var n=el.getAttribute("name")||"",m=n.match(/shipping_method\\[(\\d+)\\]/);el.setAttribute("data-index",m?m[1]:(el.getAttribute("data-index")||"0"));});</script>' . "\n";
+}
+
+/**
  * Beat Astra/Woo floats on #order_review (they shrink the summary to ~40% of the sidebar).
+ * Also flatten the inner #order_review card so the summary is a single frame.
  */
 function nh_checkout_layout_lock_css() {
 	if ( ! nh_is_classic_checkout_form() ) {
@@ -1272,6 +1516,10 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout.nh-checkout-form #order_review,'
 		. 'html body.woocommerce-checkout.nh-checkout-form #order_review_heading,'
 		. 'html body.woocommerce-checkout.nh-checkout-form .woocommerce-checkout-review-order{float:none!important;width:100%!important;max-width:100%!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review,'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary .woocommerce-checkout-review-order,'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary table.shop_table,'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary table.woocommerce-checkout-review-order-table{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0!important;border-radius:0!important;min-height:0!important}'
 		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table,'
 		. 'html body.woocommerce-checkout.nh-checkout-form table.woocommerce-checkout-review-order-table{display:table!important;width:100%!important;max-width:100%!important;table-layout:auto!important;float:none!important}'
 		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tr{display:table-row!important}'
