@@ -123,6 +123,7 @@
     });
 
     orderBillingFields();
+    forcePairClasses();
     syncPairedAddressRows();
   }
 
@@ -130,11 +131,6 @@
     $(document.body).off('change.nhCheckoutType', 'input[name="billing_customer_type"]');
     $(document.body).on('change.nhCheckoutType', 'input[name="billing_customer_type"]', applyCustomerType);
     applyCustomerType();
-  }
-
-  function callingCodeForCountry(iso) {
-    var map = i18n.phoneIsoCodes || {};
-    return map[iso] || '';
   }
 
   function longestCallingCodes() {
@@ -150,6 +146,29 @@
       return b.length - a.length;
     });
     return codes;
+  }
+
+  function flagEmoji(iso) {
+    if (!iso || String(iso).length !== 2) {
+      return '';
+    }
+    iso = String(iso).toUpperCase();
+    return String.fromCodePoint(127397 + iso.charCodeAt(0), 127397 + iso.charCodeAt(1));
+  }
+
+  function isoForCallingCode(code) {
+    var flags = i18n.phoneCodeFlags || {};
+    if (flags[code]) {
+      return flags[code];
+    }
+    var map = i18n.phoneIsoCodes || {};
+    var keys = Object.keys(map);
+    for (var i = 0; i < keys.length; i++) {
+      if (String(map[keys[i]]) === String(code)) {
+        return keys[i];
+      }
+    }
+    return '';
   }
 
   function splitInternationalPhone(value) {
@@ -170,53 +189,84 @@
     return null;
   }
 
+  function updatePhonePrefixUI($select) {
+    var code = $.trim($select.val() || '');
+    var $flag = $select.closest('.nh-phone-combo').find('.nh-phone-flag');
+    if ($flag.length) {
+      $flag.text(code ? flagEmoji(isoForCallingCode(code)) : '');
+    }
+    $select.toggleClass('is-empty', !code);
+  }
+
+  function extractDialFromInput($input, $select) {
+    if (!$input.length || !$select.length) {
+      return;
+    }
+    var parsed = splitInternationalPhone($input.val());
+    if (!parsed) {
+      return;
+    }
+    if ($select.find('option[value="' + parsed.code + '"]').length) {
+      $select.val(parsed.code);
+    }
+    if (String($input.val()) !== String(parsed.national)) {
+      $input.val(parsed.national);
+    }
+    updatePhonePrefixUI($select);
+  }
+
   function hydratePhoneCombos() {
     $('.nh-phone-combo').each(function () {
       var $combo = $(this);
-      if ($combo.data('nhHydrated')) {
-        return;
-      }
       var $select = $combo.find('select.nh-phone-code');
       var $input = $combo.find('input.input-text, input[type="tel"]');
       if (!$select.length || !$input.length) {
         return;
       }
-      var parsed = splitInternationalPhone($input.val());
-      if (parsed) {
-        if ($select.find('option[value="' + parsed.code + '"]').length) {
-          $select.val(parsed.code);
-        }
-        $input.val(parsed.national);
-        $select.data('userSet', true);
-      }
-      $combo.data('nhHydrated', true);
+      extractDialFromInput($input, $select);
+      updatePhonePrefixUI($select);
     });
   }
 
   function bindCallingCode() {
     $(document.body).off('change.nhPhoneCode', '.nh-phone-code');
     $(document.body).on('change.nhPhoneCode', '.nh-phone-code', function () {
-      $(this).data('userSet', true);
+      updatePhonePrefixUI($(this));
     });
-    $(document.body).off('change.nhPhoneCountry', '#billing_country');
-    $(document.body).on('change.nhPhoneCountry', '#billing_country', function () {
-      var code = callingCodeForCountry($(this).val());
-      if (!code) {
-        return;
-      }
-      $('#billing_phone_code, #billing_contact_phone_code').each(function () {
-        var $select = $(this);
-        if ($select.data('userSet')) {
-          return;
-        }
-        var $input = $select.closest('.nh-phone-combo').find('input');
-        var val = $.trim($input.val() || '');
-        if (val.charAt(0) === '+' || val.indexOf('00') === 0) {
-          return;
-        }
-        $select.val(code);
-      });
+    $(document.body).off('input.nhPhoneParse change.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input');
+    $(document.body).on('input.nhPhoneParse change.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input', function () {
+      var $input = $(this);
+      var $select = $input.closest('.nh-phone-combo').find('select.nh-phone-code');
+      window.setTimeout(function () {
+        extractDialFromInput($input, $select);
+      }, 0);
     });
+  }
+
+  function bindShippingTotals() {
+    $(document.body).off('change.nhShipTotals', 'input.shipping_method, select.shipping_method');
+    $(document.body).on('change.nhShipTotals', 'input.shipping_method, select.shipping_method', function () {
+      $(document.body).trigger('update_checkout');
+    });
+  }
+
+  function forcePairClasses() {
+    var starts = [
+      '#billing_email_field',
+      '#billing_contact_email_field',
+      '#billing_first_name_field',
+      '#billing_country_field',
+      '#billing_city_field'
+    ];
+    var ends = [
+      '#billing_phone_field',
+      '#billing_contact_phone_field',
+      '#billing_last_name_field',
+      '#billing_postcode_field',
+      '#billing_state_field'
+    ];
+    $(starts.join(',')).removeClass('form-row-wide').addClass('form-row-first nh-checkout-pair-start');
+    $(ends.join(',')).removeClass('form-row-wide').addClass('form-row-last nh-checkout-pair-end');
   }
 
   function pairCityState($city, $state) {
@@ -228,7 +278,7 @@
       $state.hasClass('hidden') ||
       $state.find('input[type="hidden"]').length > 0;
     $city.toggleClass('form-row-wide', stateHidden);
-    $city.toggleClass('form-row-first', !stateHidden);
+    $city.toggleClass('form-row-first nh-checkout-pair-start', !stateHidden);
   }
 
   function syncPairedAddressRows() {
@@ -378,9 +428,7 @@
     });
   }
 
-  function boot() {
-    bindCustomerType();
-    bindCallingCode();
+  function refreshCheckoutChrome() {
     keepPhoneCodeNative();
     hydratePhoneCombos();
     bindSummaryToggle();
@@ -388,23 +436,30 @@
     enhanceNotes();
     enhancePaymentCards();
     lockSummaryLayout();
+    forcePairClasses();
     syncPairedAddressRows();
+  }
+
+  function boot() {
+    bindCustomerType();
+    bindCallingCode();
+    bindShippingTotals();
+    refreshCheckoutChrome();
   }
 
   $(boot);
   $(window).on('resize.nhCheckout', lockSummaryLayout);
-  $(document.body).on(
-    'updated_checkout payment_method_selected init_checkout',
-    function () {
-      boot();
-    }
-  );
+  $(document.body).on('init_checkout', boot);
+  $(document.body).on('updated_checkout', function () {
+    refreshCheckoutChrome();
+  });
+  $(document.body).on('payment_method_selected', enhancePaymentCards);
   $(document.body).on('country_to_state_changing country_to_state_changed', function () {
     window.setTimeout(function () {
       orderBillingFields();
+      forcePairClasses();
       syncPairedAddressRows();
       lockSummaryLayout();
     }, 0);
   });
-  $(document.body).on('payment_method_selected', enhancePaymentCards);
 })(jQuery);
