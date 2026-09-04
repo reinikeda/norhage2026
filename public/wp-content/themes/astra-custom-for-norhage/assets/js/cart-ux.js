@@ -214,13 +214,31 @@
     });
   }
 
+  function rewriteShippingPayload(data) {
+    if (typeof data === 'string') {
+      return data
+        .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
+        .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
+    }
+    if (data && typeof data === 'object' && data.shipping_method && typeof data.shipping_method === 'object') {
+      if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
+        if (data.shipping_method[0] == null) {
+          data.shipping_method[0] = data.shipping_method.undefined;
+        }
+        delete data.shipping_method.undefined;
+      }
+    }
+    return data;
+  }
+
   $.ajaxPrefilter(function (options) {
-    if (!options || typeof options.data !== 'string' || options.data.indexOf('shipping_method') === -1) {
+    if (!options || options.data == null) {
       return;
     }
-    options.data = options.data
-      .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
-      .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
+    if (typeof options.data === 'string' && options.data.indexOf('shipping_method') === -1) {
+      return;
+    }
+    options.data = rewriteShippingPayload(options.data);
   });
 
   function boot() {

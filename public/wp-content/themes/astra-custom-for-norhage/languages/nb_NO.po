@@ -1809,6 +1809,9 @@ msgstr "Leilighet, etasje osv."
 msgid "Secure checkout"
 msgstr "Sikker kasse"
 
+msgid "Other payment method"
+msgstr "Annet betalingsvalg"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Skriv inn et fornavn."

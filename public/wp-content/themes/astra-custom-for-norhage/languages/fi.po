@@ -1813,6 +1813,9 @@ msgstr "Huoneisto, kerros jne."
 msgid "Secure checkout"
 msgstr "Turvallinen kassa"
 
+msgid "Other payment method"
+msgstr "Muu maksutapa"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Anna etunimi."

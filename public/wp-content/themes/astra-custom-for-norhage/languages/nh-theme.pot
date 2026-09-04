@@ -1022,6 +1022,15 @@ msgstr ""
 msgid "Order summary"
 msgstr ""
 
+msgid "Have a coupon?"
+msgstr ""
+
+msgid "Enter your postcode to see the shipping cost."
+msgstr ""
+
+msgid "Show shipping cost"
+msgstr ""
+
 msgid "Contact person"
 msgstr ""
 
@@ -1039,6 +1048,9 @@ msgid "Apartment, suite, etc."
 msgstr ""
 
 msgid "Secure checkout"
+msgstr ""
+
+msgid "Other payment method"
 msgstr ""
 
 #: inc/checkout-ux.php

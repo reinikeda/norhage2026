@@ -25,6 +25,72 @@ function nh_is_classic_checkout_form() {
 	return true;
 }
 
+/**
+ * Chosen payment method from this request, then the Woo session.
+ *
+ * @return string
+ */
+function nh_checkout_chosen_payment_method() {
+	if ( isset( $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return sanitize_text_field( wp_unslash( $_POST['payment_method'] ) );
+	}
+	if ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$form = array();
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $form['payment_method'] ) && is_scalar( $form['payment_method'] ) ) {
+			return sanitize_text_field( (string) $form['payment_method'] );
+		}
+	}
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		return (string) WC()->session->get( 'chosen_payment_method' );
+	}
+	return '';
+}
+
+/**
+ * SVEA / Kustom / Klarna Checkout replace the Woo form with their iframe.
+ *
+ * @param string $gateway_id Optional gateway id; request/session method if empty.
+ */
+function nh_checkout_is_snippet_gateway( $gateway_id = '' ) {
+	if ( $gateway_id === '' ) {
+		$gateway_id = nh_checkout_chosen_payment_method();
+	}
+	$id = strtolower( (string) $gateway_id );
+	if ( $id === '' ) {
+		return false;
+	}
+	if ( in_array( $id, array( 'kco', 'sco', 'kustom_checkout', 'svea_checkout', 'sveacheckout', 'klarna_checkout' ), true ) ) {
+		return true;
+	}
+	return (bool) preg_match( '/svea.?checkout|sveacheckout|kustom_checkout|klarna_checkout/', $id );
+}
+
+/**
+ * Extra Woo fields snippet checkouts would otherwise print next to the iframe.
+ *
+ * @param array $fields Field names.
+ * @return array
+ */
+function nh_checkout_snippet_ignored_fields( $fields ) {
+	if ( ! is_array( $fields ) ) {
+		$fields = array();
+	}
+	foreach ( array(
+		'billing_customer_type',
+		'billing_company_reg',
+		'billing_contact_email',
+		'billing_contact_phone',
+		'nh_section_person',
+		'order_comments',
+	) as $name ) {
+		if ( ! in_array( $name, $fields, true ) ) {
+			$fields[] = $name;
+		}
+	}
+	return $fields;
+}
+
 function nh_checkout_ux_init() {
 	add_filter( 'render_block', 'nh_checkout_render_classic_block', 5, 2 );
 	add_filter( 'body_class', 'nh_checkout_ux_body_class' );
@@ -53,11 +119,49 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
-
-	add_action( 'woocommerce_after_calculate_totals', 'nh_checkout_remember_cart_shipping', 99 );
-	add_action( 'woocommerce_before_calculate_totals', 'nh_checkout_restore_cart_shipping', 5 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
-	add_filter( 'woocommerce_shipping_chosen_method', 'nh_checkout_keep_cart_shipping', 99, 3 );
+	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_strip_snippet_fields', 10000 );
+	add_filter( 'woocommerce_enable_order_notes_field', 'nh_checkout_snippet_disable_order_notes', 10000 );
+	add_filter( 'kco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'kco_wc_ignored_order_fields', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'kco_ignored_field_names', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'sco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'svea_checkout_ignored_fields', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'svea_wc_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
+	add_filter( 'woocommerce_svea_checkout_ignored_fields', 'nh_checkout_snippet_ignored_fields' );
+}
+
+/**
+ * Snippet checkouts collect address in their iframe — drop our extra Woo fields.
+ *
+ * @param array $fields Checkout fieldsets.
+ * @return array
+ */
+function nh_checkout_strip_snippet_fields( $fields ) {
+	if ( ! nh_checkout_is_snippet_gateway() || ! is_array( $fields ) ) {
+		return $fields;
+	}
+	if ( isset( $fields['billing'] ) && is_array( $fields['billing'] ) ) {
+		unset(
+			$fields['billing']['billing_customer_type'],
+			$fields['billing']['nh_section_person']
+		);
+	}
+	if ( isset( $fields['order'] ) && is_array( $fields['order'] ) ) {
+		unset( $fields['order']['order_comments'] );
+	}
+	return $fields;
+}
+
+/**
+ * @param bool $enabled Whether Woo should print order notes.
+ * @return bool
+ */
+function nh_checkout_snippet_disable_order_notes( $enabled ) {
+	if ( nh_checkout_is_snippet_gateway() ) {
+		return false;
+	}
+	return $enabled;
 }
 add_action( 'init', 'nh_checkout_ux_init' );
 
@@ -89,6 +193,9 @@ function nh_checkout_ux_body_class( $classes ) {
 	}
 	if ( nh_is_classic_checkout_form() ) {
 		$classes[] = 'nh-checkout-form';
+	}
+	if ( nh_checkout_is_snippet_gateway() ) {
+		$classes[] = 'nh-checkout--snippet';
 	}
 	return $classes;
 }
@@ -149,6 +256,7 @@ function nh_checkout_ux_assets() {
 			'phoneCodeFlags'  => nh_checkout_calling_code_flag_map(),
 			'phoneLengths'    => nh_checkout_national_digit_limits(),
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
+			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
 		)
 	);
 }
@@ -305,26 +413,33 @@ function nh_checkout_fields( $fields ) {
 
 	$billing = &$fields['billing'];
 
-	$billing['billing_customer_type'] = array(
-		'type'     => 'radio',
-		'label'    => __( 'I am ordering as', 'nh-theme' ),
-		'required' => true,
-		'class'    => array( 'form-row-wide', 'nh-checkout-type' ),
-		'options'  => array(
-			'private'  => __( 'Private', 'nh-theme' ),
-			'business' => __( 'Business', 'nh-theme' ),
-		),
-		'default'  => 'private',
-		'priority' => 4,
-	);
+	if ( nh_checkout_is_snippet_gateway() ) {
+		unset( $billing['billing_customer_type'], $billing['nh_section_person'] );
+		if ( isset( $fields['order'] ) && is_array( $fields['order'] ) ) {
+			unset( $fields['order']['order_comments'] );
+		}
+	} else {
+		$billing['billing_customer_type'] = array(
+			'type'     => 'radio',
+			'label'    => __( 'I am ordering as', 'nh-theme' ),
+			'required' => true,
+			'class'    => array( 'form-row-wide', 'nh-checkout-type' ),
+			'options'  => array(
+				'private'  => __( 'Private', 'nh-theme' ),
+				'business' => __( 'Business', 'nh-theme' ),
+			),
+			'default'  => 'private',
+			'priority' => 4,
+		);
 
-	$billing['nh_section_person'] = array(
-		'type'     => 'nh_section',
-		'label'    => __( 'Contact person', 'nh-theme' ),
-		'required' => false,
-		'class'    => array( 'nh-checkout-field--person-heading' ),
-		'priority' => 200,
-	);
+		$billing['nh_section_person'] = array(
+			'type'     => 'nh_section',
+			'label'    => __( 'Contact person', 'nh-theme' ),
+			'required' => false,
+			'class'    => array( 'nh-checkout-field--person-heading' ),
+			'priority' => 200,
+		);
+	}
 
 	nh_checkout_set_field( $billing, 'billing_company', array(
 		'label'        => __( 'Business name', 'nh-theme' ),
@@ -997,6 +1112,9 @@ function nh_checkout_validate_fields( $data, $errors ) {
 	if ( ! $errors instanceof WP_Error ) {
 		return;
 	}
+	if ( nh_checkout_is_snippet_gateway() ) {
+		return;
+	}
 
 	$email = isset( $data['billing_email'] ) ? trim( (string) $data['billing_email'] ) : '';
 	$phone = isset( $data['billing_phone'] ) ? trim( (string) $data['billing_phone'] ) : '';
@@ -1261,26 +1379,15 @@ function nh_checkout_pdf_reg_number( $type, $order_or_document ) { // phpcs:igno
 }
 
 function nh_checkout_secure_note() {
+	if ( nh_checkout_is_snippet_gateway() ) {
+		return;
+	}
 	echo '<p class="nh-checkout-secure">' . esc_html__( 'Secure checkout', 'nh-theme' ) . '</p>';
 }
 
 /**
- * True on the checkout page and on checkout AJAX (update_order_review / place order).
- */
-function nh_checkout_is_checkout_request() {
-	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		return true;
-	}
-	if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) {
-		return true;
-	}
-	$wc_ajax = isset( $_REQUEST['wc-ajax'] ) ? sanitize_key( wp_unslash( $_REQUEST['wc-ajax'] ) ) : '';
-	return in_array( $wc_ajax, array( 'update_order_review', 'checkout' ), true );
-}
-
-/**
  * Woo checkout.js posts shipping_method[undefined] when data-index is missing.
- * Package 0 then keeps the previous (often flat-rate) method.
+ * Package 0 then keeps the previous method and the total does not change.
  *
  * @param array $methods Posted methods.
  * @return array<int, string>
@@ -1312,104 +1419,6 @@ function nh_checkout_normalize_shipping_methods( $methods ) {
 }
 
 /**
- * @param array  $rates     Package rates keyed by rate id.
- * @param string $preferred Chosen rate id (e.g. local_pickup:3).
- * @return string Matching rate id or empty.
- */
-function nh_checkout_match_shipping_rate( $rates, $preferred ) {
-	if ( ! is_array( $rates ) || ! $preferred ) {
-		return '';
-	}
-	if ( isset( $rates[ $preferred ] ) ) {
-		return $preferred;
-	}
-
-	$parts     = explode( ':', (string) $preferred, 2 );
-	$pref_type = $parts[0];
-	if ( '' === $pref_type ) {
-		return '';
-	}
-
-	foreach ( $rates as $id => $rate ) {
-		$id_parts = explode( ':', (string) $id, 2 );
-		if ( $id_parts[0] === $pref_type ) {
-			return (string) $id;
-		}
-	}
-
-	foreach ( $rates as $id => $rate ) {
-		if ( is_object( $rate ) && isset( $rate->method_id ) && (string) $rate->method_id === $pref_type ) {
-			return (string) $id;
-		}
-	}
-
-	return '';
-}
-
-/**
- * Remember the cart's chosen rates so checkout cannot silently fall back to flat rate.
- */
-function nh_checkout_remember_cart_shipping() {
-	if ( is_admin() && ! wp_doing_ajax() ) {
-		return;
-	}
-	if ( nh_checkout_is_checkout_request() ) {
-		return;
-	}
-	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
-		return;
-	}
-
-	$chosen = WC()->session->get( 'chosen_shipping_methods' );
-	if ( ! is_array( $chosen ) || ! $chosen ) {
-		return;
-	}
-
-	$clean = nh_checkout_normalize_shipping_methods( $chosen );
-	if ( $clean ) {
-		WC()->session->set( 'nh_cart_chosen_shipping', $clean );
-	}
-}
-
-/**
- * On first checkout paint, put the cart's pickup/delivery choice back into the session
- * before Woo picks the zone default (usually the paid Flexible Shipping rate).
- */
-function nh_checkout_restore_cart_shipping() {
-	if ( is_admin() && ! wp_doing_ajax() ) {
-		return;
-	}
-	if ( wp_doing_ajax() ) {
-		return;
-	}
-	if ( ! nh_checkout_is_checkout_request() ) {
-		return;
-	}
-	if ( isset( $_POST['shipping_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		return;
-	}
-	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
-		return;
-	}
-
-	$saved = WC()->session->get( 'nh_cart_chosen_shipping' );
-	if ( ! is_array( $saved ) || ! $saved ) {
-		return;
-	}
-
-	$chosen = WC()->session->get( 'chosen_shipping_methods' );
-	if ( ! is_array( $chosen ) ) {
-		$chosen = array();
-	}
-
-	foreach ( $saved as $index => $method_id ) {
-		$chosen[ (int) $index ] = $method_id;
-	}
-
-	WC()->session->set( 'chosen_shipping_methods', $chosen );
-}
-
-/**
  * Rewrite shipping_method[undefined] (and recover methods from serialized post_data)
  * before Woo copies them into the session.
  *
@@ -1434,59 +1443,18 @@ function nh_checkout_sanitize_posted_shipping( $post_data ) {
 
 	if ( $clean ) {
 		$_POST['shipping_method'] = $clean;
-		if ( WC()->session ) {
-			WC()->session->set( 'nh_cart_chosen_shipping', $clean );
-		}
-		return;
 	}
 
-	// Drop unusable keys so Woo does not store shipping_method[undefined].
-	if ( isset( $_POST['shipping_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		unset( $_POST['shipping_method'] );
-	}
-}
-
-/**
- * Keep a still-available cart method (e.g. local_pickup) instead of the zone default.
- *
- * @param string $default        Woo's chosen/default rate id.
- * @param array  $rates          Available rates.
- * @param string $chosen_method  Session method for this package.
- * @return string
- */
-function nh_checkout_keep_cart_shipping( $default, $rates, $chosen_method ) {
-	if ( ! is_array( $rates ) || ! $rates ) {
-		return $default;
-	}
-
-	if ( $chosen_method ) {
-		$match = nh_checkout_match_shipping_rate( $rates, $chosen_method );
-		if ( $match ) {
-			return $match;
+	if ( is_string( $post_data ) && $post_data !== '' && false !== strpos( $post_data, 'shipping_method' ) ) {
+		$rewritten = str_replace(
+			array( 'shipping_method%5Bundefined%5D', 'shipping_method[undefined]' ),
+			array( 'shipping_method%5B0%5D', 'shipping_method[0]' ),
+			$post_data
+		);
+		if ( $rewritten !== $post_data && isset( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$_POST['post_data'] = $rewritten;
 		}
 	}
-
-	if ( wp_doing_ajax() ) {
-		return $default;
-	}
-
-	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
-		return $default;
-	}
-
-	$saved = WC()->session->get( 'nh_cart_chosen_shipping' );
-	if ( ! is_array( $saved ) ) {
-		return $default;
-	}
-
-	foreach ( $saved as $id ) {
-		$match = nh_checkout_match_shipping_rate( $rates, $id );
-		if ( $match ) {
-			return $match;
-		}
-	}
-
-	return $default;
 }
 
 /**
@@ -1534,6 +1502,18 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside{width:400px!important;max-width:400px!important;min-width:400px!important;flex:0 0 400px!important}'
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main{min-width:0!important;width:auto!important;max-width:none!important}'
 		. '}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-secure,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet #billing_customer_type_field,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-type,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-notes,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-additional-fields,'
+		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-secure,'
+		. 'html body.woocommerce-checkout .nh-checkout-layout__aside #billing_customer_type_field,'
+		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-type,'
+		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,'
+		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields{display:none!important}'
+		. 'html body.woocommerce-checkout .nh-checkout-other-payment:not([hidden]),'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-other-payment-btn{display:flex!important;align-items:center;justify-content:center;width:100%!important;min-height:52px;margin:.85rem 0 0;padding:.85rem 1rem;border:0;border-radius:12px;background:#00704a!important;color:#fff!important;font-weight:800;font-size:1.05rem;text-align:center;text-decoration:none!important;cursor:pointer}'
 		. '@media(max-width:959px){'
 		. 'html body.woocommerce-checkout .site-content>.ast-container,'
 		. 'html body.woocommerce-checkout.ast-separate-container .ast-container,'
