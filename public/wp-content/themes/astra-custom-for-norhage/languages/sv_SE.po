@@ -1832,6 +1832,9 @@ msgstr "Kontakttelefon"
 msgid "Please enter a valid contact email."
 msgstr "Ange en giltig kontakt-e-postadress."
 
+msgid "Please enter a valid phone number."
+msgstr "Ange ett giltigt telefonnummer."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

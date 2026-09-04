@@ -1828,6 +1828,9 @@ msgstr "Kontakttelefon"
 msgid "Please enter a valid contact email."
 msgstr "Angiv en gyldig kontakt-e-mail."
 
+msgid "Please enter a valid phone number."
+msgstr "Angiv et gyldigt telefonnummer."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"
 

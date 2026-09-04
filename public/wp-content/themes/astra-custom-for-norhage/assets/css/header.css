@@ -1275,8 +1275,78 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
     padding-top: 32px;
     padding-bottom: 28px;
   }
-  .nhhb-hero--page .nhhb-hero__title {
+	.nhhb-hero--page .nhhb-hero__title {
     max-width: none;
     font-size: clamp(20px, 6vw, 28px);
   }
+}
+
+/* =========================================================
+   26) CART / CHECKOUT — no extra band under the hero
+   Astra separate-container + masthead offset add a large
+   white gap between the page hero and the form.
+   ========================================================= */
+
+body.woocommerce-cart.has-fixed-masthead #content.site-content,
+body.woocommerce-checkout.has-fixed-masthead #content.site-content {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+body.woocommerce-cart #primary,
+body.woocommerce-checkout #primary,
+body.woocommerce-cart #primary.content-area,
+body.woocommerce-checkout #primary.content-area {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+body.woocommerce-cart .site-content > .ast-container,
+body.woocommerce-checkout .site-content > .ast-container,
+body.woocommerce-cart.ast-separate-container .ast-container,
+body.woocommerce-checkout.ast-separate-container .ast-container,
+body.woocommerce-cart.ast-plain-container .ast-container,
+body.woocommerce-checkout.ast-plain-container .ast-container {
+  padding-top: 12px !important;
+  margin-top: 0 !important;
+}
+
+@media (min-width: 921px) {
+  body.woocommerce-cart .site-content > .ast-container,
+  body.woocommerce-checkout .site-content > .ast-container,
+  body.woocommerce-cart.ast-separate-container .ast-container,
+  body.woocommerce-checkout.ast-separate-container .ast-container {
+    padding-top: 16px !important;
+  }
+}
+
+body.woocommerce-cart.ast-separate-container .ast-article-single,
+body.woocommerce-checkout.ast-separate-container .ast-article-single,
+body.woocommerce-cart.ast-separate-container #primary,
+body.woocommerce-checkout.ast-separate-container #primary {
+  margin-top: 0 !important;
+  padding: 0 0 1.25rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+body.woocommerce-cart .entry-header,
+body.woocommerce-checkout .entry-header {
+  display: none !important;
+}
+
+body.woocommerce-cart .entry-content,
+body.woocommerce-checkout .entry-content,
+body.woocommerce-cart .ast-article-single .entry-content,
+body.woocommerce-checkout .ast-article-single .entry-content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body.woocommerce-cart .entry-content > .wp-block-spacer:first-child,
+body.woocommerce-checkout .entry-content > .wp-block-spacer:first-child {
+  display: none !important;
 }
