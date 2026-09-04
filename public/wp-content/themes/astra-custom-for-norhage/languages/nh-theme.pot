@@ -1022,6 +1022,10 @@ msgstr ""
 msgid "Order summary"
 msgstr ""
 
+#. translators: %s: formatted shipping price
+msgid "Shipping: %s"
+msgstr ""
+
 msgid "Have a coupon?"
 msgstr ""
 

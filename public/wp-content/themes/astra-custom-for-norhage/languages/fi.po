@@ -1794,6 +1794,10 @@ msgstr "Anna puhelinnumero."
 msgid "Order summary"
 msgstr "Tilauksen yhteenveto"
 
+#. translators: %s: formatted shipping price
+msgid "Shipping: %s"
+msgstr "Toimitus: %s"
+
 msgid "Contact person"
 msgstr "Yhteyshenkilö"
 

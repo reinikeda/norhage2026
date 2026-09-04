@@ -33,10 +33,13 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 		<aside class="nh-checkout-layout__aside">
 			<?php do_action( 'woocommerce_checkout_before_order_review_heading' ); ?>
 
-			<section class="nh-checkout-summary" aria-labelledby="order_review_heading">
-				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="false" aria-controls="nh-checkout-summary-body">
+			<section class="nh-checkout-summary is-open" aria-labelledby="order_review_heading">
+				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="true" aria-controls="nh-checkout-summary-body">
 					<span class="nh-checkout-summary-toggle__label"><?php esc_html_e( 'Order summary', 'nh-theme' ); ?></span>
-					<span class="nh-checkout-summary-toggle__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
+					<span class="nh-checkout-summary-toggle__meta">
+						<span class="nh-checkout-summary-toggle__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
+						<span class="nh-checkout-summary-toggle__shipping"><?php echo wp_kses_post( function_exists( 'nh_checkout_summary_shipping_html' ) ? nh_checkout_summary_shipping_html() : '' ); ?></span>
+					</span>
 				</button>
 
 				<div id="nh-checkout-summary-body" class="nh-checkout-summary__body">

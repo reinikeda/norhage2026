@@ -1790,6 +1790,10 @@ msgstr "Skriv inn et telefonnummer."
 msgid "Order summary"
 msgstr "Ordreoppsummering"
 
+#. translators: %s: formatted shipping price
+msgid "Shipping: %s"
+msgstr "Frakt: %s"
+
 msgid "Contact person"
 msgstr "Kontaktperson"
 
