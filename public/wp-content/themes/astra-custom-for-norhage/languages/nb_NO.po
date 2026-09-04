@@ -1750,6 +1750,65 @@ msgstr "Vis fraktkostnad"
 msgid "Have a coupon?"
 msgstr "Har du en rabattkode?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Jeg bestiller som"
+
+msgid "Private"
+msgstr "Privatkunde"
+
+msgid "Business"
+msgstr "Bedrift"
+
+msgid "Business name"
+msgstr "Firmanavn"
+
+msgid "Registration number"
+msgstr "Organisasjonsnummer"
+
+msgid "Business details"
+msgstr "Bedriftsopplysninger"
+
+msgid "Contact"
+msgstr "Kontaktinformasjon"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Your details"
+msgstr "Dine opplysninger"
+
+msgid "Please enter your business name."
+msgstr "Skriv inn firmanavn."
+
+msgid "Please enter your registration number."
+msgstr "Skriv inn organisasjonsnummer."
+
+msgid "Please enter a phone number."
+msgstr "Skriv inn et telefonnummer."
+
+msgid "Order summary"
+msgstr "Ordreoppsummering"
+
+msgid "Contact person"
+msgstr "Kontaktperson"
+
+msgid "Add a note (optional)"
+msgstr "Legg til en merknad (valgfritt)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "Org.nr %s"
+
+msgid "Customer type"
+msgstr "Kundetype"
+
+msgid "Apartment, suite, etc."
+msgstr "Leilighet, etasje osv."
+
+msgid "Secure checkout"
+msgstr "Sikker kasse"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

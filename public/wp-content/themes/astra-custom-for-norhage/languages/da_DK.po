@@ -1750,6 +1750,65 @@ msgstr "Vis fragtomkostning"
 msgid "Have a coupon?"
 msgstr "Har du en rabatkode?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Jeg bestiller som"
+
+msgid "Private"
+msgstr "Privatkunde"
+
+msgid "Business"
+msgstr "Erhverv"
+
+msgid "Business name"
+msgstr "Firmanavn"
+
+msgid "Registration number"
+msgstr "CVR-nummer"
+
+msgid "Business details"
+msgstr "Virksomhedsoplysninger"
+
+msgid "Contact"
+msgstr "Kontaktoplysninger"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Your details"
+msgstr "Dine oplysninger"
+
+msgid "Please enter your business name."
+msgstr "Angiv firmanavn."
+
+msgid "Please enter your registration number."
+msgstr "Angiv CVR-nummer."
+
+msgid "Please enter a phone number."
+msgstr "Angiv et telefonnummer."
+
+msgid "Order summary"
+msgstr "Ordreoversigt"
+
+msgid "Contact person"
+msgstr "Kontaktperson"
+
+msgid "Add a note (optional)"
+msgstr "Tilføj en bemærkning (valgfrit)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "CVR %s"
+
+msgid "Customer type"
+msgstr "Kundetype"
+
+msgid "Apartment, suite, etc."
+msgstr "Lejlighed, etage osv."
+
+msgid "Secure checkout"
+msgstr "Sikker kasse"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"
 
