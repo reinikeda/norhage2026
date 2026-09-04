@@ -356,6 +356,20 @@ body.woocommerce-checkout.nh-checkout-form .form-row-wide {
   body.woocommerce-checkout.nh-checkout-form .form-row-last.form-row-wide {
     grid-column: 1 / -1;
   }
+
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-pair-start {
+    grid-column: 1 !important;
+    width: auto !important;
+  }
+
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-pair-end {
+    grid-column: 2 !important;
+    width: auto !important;
+  }
+
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-pair-start.form-row-wide {
+    grid-column: 1 / -1 !important;
+  }
 }
 
 body.woocommerce-checkout.nh-checkout-form .form-row label {
@@ -441,13 +455,38 @@ body.woocommerce-checkout.nh-checkout-form .nh-phone-combo {
   width: 100%;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-phone-combo .nh-phone-code {
-  flex: 0 0 5.75rem;
-  width: 5.75rem;
-  max-width: 5.75rem;
-  min-width: 5.75rem;
-  padding-left: 0.5rem;
-  padding-right: 0.3rem;
+body.woocommerce-checkout.nh-checkout-form .nh-phone-prefix {
+  display: flex;
+  align-items: center;
+  flex: 0 0 7.75rem;
+  width: 7.75rem;
+  max-width: 7.75rem;
+  min-width: 7.75rem;
+  min-height: 48px;
+  padding: 0 0.2rem 0 0.55rem;
+  border: 1px solid #d7e6d8;
+  border-radius: 10px;
+  background: #fff;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-phone-flag {
+  flex: 0 0 1.25em;
+  width: 1.25em;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-phone-combo .nh-phone-code,
+body.woocommerce-checkout.nh-checkout-form .nh-phone-prefix .nh-phone-code {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  min-height: 44px;
+  padding: 0 0.15rem 0 0.2rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-phone-combo .input-text {
@@ -674,20 +713,23 @@ body.woocommerce-checkout.nh-checkout-form #order_review .woocommerce-shipping-t
 }
 
 body.woocommerce-checkout.nh-checkout-form #order_review ul.woocommerce-shipping-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: block;
 }
 
 body.woocommerce-checkout.nh-checkout-form #order_review ul.woocommerce-shipping-methods li {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
   gap: 8px;
   margin: 0;
-  padding: 4px 0;
+  padding: 6px 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review ul.woocommerce-shipping-methods li label {
+  cursor: pointer;
 }
 
 body.woocommerce-checkout.nh-checkout-form #order_review ul.woocommerce-shipping-methods input.shipping_method {

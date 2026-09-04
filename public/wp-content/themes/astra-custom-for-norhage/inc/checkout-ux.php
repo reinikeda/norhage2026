@@ -34,7 +34,8 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_default_address_fields', 'nh_checkout_default_address_fields', 20 );
 	add_filter( 'woocommerce_get_country_locale', 'nh_checkout_country_locale', 20 );
 	add_filter( 'woocommerce_billing_fields', 'nh_checkout_billing_fields', 20 );
-	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_fields', 99 );
+	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_fields', 999 );
+	add_filter( 'woocommerce_form_field_args', 'nh_checkout_form_field_args', 99, 3 );
 	add_filter( 'woocommerce_form_field_nh_section', 'nh_checkout_section_field', 10, 4 );
 	add_filter( 'woocommerce_form_field_tel', 'nh_checkout_phone_field_html', 10, 4 );
 	add_filter( 'woocommerce_checkout_get_value', 'nh_checkout_get_value', 10, 2 );
@@ -139,6 +140,7 @@ function nh_checkout_ux_assets() {
 			'noteLabel'      => __( 'Add a note (optional)', 'nh-theme' ),
 			'summaryLabel'   => __( 'Order summary', 'nh-theme' ),
 			'phoneIsoCodes'  => nh_checkout_calling_codes(),
+			'phoneCodeFlags' => nh_checkout_calling_code_flag_map(),
 		)
 	);
 }
@@ -335,21 +337,21 @@ function nh_checkout_fields( $fields ) {
 
 	nh_checkout_set_field( $billing, 'billing_first_name', array(
 		'required'     => false,
-		'class'        => array( 'form-row-first', 'nh-checkout-field--person' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'nh-checkout-field--person' ),
 		'autocomplete' => 'given-name',
 		'priority'     => 30,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_last_name', array(
 		'required'     => false,
-		'class'        => array( 'form-row-last', 'nh-checkout-field--person' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'nh-checkout-field--person' ),
 		'autocomplete' => 'family-name',
 		'priority'     => 32,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_email', array(
 		'required'     => true,
-		'class'        => array( 'form-row-first', 'nh-checkout-field--contact' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'nh-checkout-field--contact' ),
 		'validate'     => array( 'email' ),
 		'autocomplete' => 'email',
 		'priority'     => 34,
@@ -361,9 +363,9 @@ function nh_checkout_fields( $fields ) {
 	nh_checkout_set_field( $billing, 'billing_phone', array(
 		'type'         => 'tel',
 		'required'     => true,
-		'class'        => array( 'form-row-last', 'nh-checkout-field--contact' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'nh-checkout-field--contact' ),
 		'validate'     => array( 'phone' ),
-		'autocomplete' => 'tel',
+		'autocomplete' => 'tel-national',
 		'priority'     => 36,
 		'custom_attributes' => array(
 			'inputmode' => 'tel',
@@ -371,13 +373,13 @@ function nh_checkout_fields( $fields ) {
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_country', array(
-		'class'        => array( 'form-row-first', 'address-field', 'update_totals_on_change' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'country',
 		'priority'     => 40,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_postcode', array(
-		'class'        => array( 'form-row-last', 'address-field', 'update_totals_on_change' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'postal-code',
 		'priority'     => 50,
 	) );
@@ -397,14 +399,14 @@ function nh_checkout_fields( $fields ) {
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_city', array(
-		'class'        => array( 'form-row-first', 'address-field' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'address-field' ),
 		'autocomplete' => 'address-level2',
 		'priority'     => 80,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_state', array(
 		'required'     => false,
-		'class'        => array( 'form-row-last', 'address-field' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'address-field' ),
 		'autocomplete' => 'address-level1',
 		'priority'     => 90,
 	) );
@@ -413,7 +415,7 @@ function nh_checkout_fields( $fields ) {
 		'type'         => 'email',
 		'label'        => __( 'Contact email', 'nh-theme' ),
 		'required'     => false,
-		'class'        => array( 'form-row-first', 'nh-checkout-field--person-extra' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'nh-checkout-field--person-extra' ),
 		'validate'     => array( 'email' ),
 		'autocomplete' => 'email',
 		'priority'     => 220,
@@ -426,9 +428,9 @@ function nh_checkout_fields( $fields ) {
 		'type'         => 'tel',
 		'label'        => __( 'Contact phone', 'nh-theme' ),
 		'required'     => false,
-		'class'        => array( 'form-row-last', 'nh-checkout-field--person-extra' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'nh-checkout-field--person-extra' ),
 		'validate'     => array( 'phone' ),
-		'autocomplete' => 'tel',
+		'autocomplete' => 'tel-national',
 		'priority'     => 222,
 		'custom_attributes' => array(
 			'inputmode' => 'tel',
@@ -496,6 +498,50 @@ function nh_checkout_set_field( &$fields, $key, $args ) {
 }
 
 /**
+ * Keep paired fields from being forced full-width by Woo/Astra at render time.
+ *
+ * @param array  $args  Field args.
+ * @param string $key   Field key.
+ * @param mixed  $value Unused.
+ * @return array
+ */
+function nh_checkout_form_field_args( $args, $key, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	$pairs = array(
+		'billing_first_name'     => 'start',
+		'billing_last_name'      => 'end',
+		'billing_email'          => 'start',
+		'billing_phone'          => 'end',
+		'billing_country'        => 'start',
+		'billing_postcode'       => 'end',
+		'billing_city'           => 'start',
+		'billing_state'          => 'end',
+		'billing_contact_email'  => 'start',
+		'billing_contact_phone'  => 'end',
+		'shipping_country'       => 'start',
+		'shipping_postcode'      => 'end',
+		'shipping_city'          => 'start',
+		'shipping_state'         => 'end',
+	);
+
+	if ( ! isset( $pairs[ $key ] ) || ! is_array( $args ) ) {
+		return $args;
+	}
+
+	$class = isset( $args['class'] ) && is_array( $args['class'] ) ? $args['class'] : array();
+	$class = array_values( array_diff( $class, array( 'form-row-wide', 'form-row-first', 'form-row-last', 'nh-checkout-pair-start', 'nh-checkout-pair-end' ) ) );
+	if ( 'start' === $pairs[ $key ] ) {
+		$class[] = 'form-row-first';
+		$class[] = 'nh-checkout-pair-start';
+	} else {
+		$class[] = 'form-row-last';
+		$class[] = 'nh-checkout-pair-end';
+	}
+	$args['class'] = $class;
+
+	return $args;
+}
+
+/**
  * Dialling codes used by the checkout phone field.
  *
  * Keys are ISO 3166-1 alpha-2. Values are digits without the plus sign.
@@ -543,16 +589,56 @@ function nh_checkout_calling_codes() {
 /**
  * Unique calling-code options for the phone prefix select.
  *
- * @return array<string,string> code => label ("+370")
+ * Empty "+" is the default until the number (or the customer) sets a code.
+ *
+ * @return array<string,string> code => label
  */
 function nh_checkout_calling_code_options() {
+	$options = array(
+		'' => '+',
+	);
 	$codes = array_unique( array_values( nh_checkout_calling_codes() ) );
 	sort( $codes, SORT_NUMERIC );
-	$options = array();
+	$flags = nh_checkout_calling_code_flag_map();
 	foreach ( $codes as $code ) {
-		$options[ $code ] = '+' . $code;
+		$iso   = isset( $flags[ $code ] ) ? $flags[ $code ] : '';
+		$flag  = nh_checkout_flag_emoji( $iso );
+		$label = trim( $flag . ' +' . $code );
+		$options[ $code ] = $label !== '' ? $label : ( '+' . $code );
 	}
 	return $options;
+}
+
+/**
+ * First ISO country for each calling code (for flags).
+ *
+ * @return array<string,string> code => ISO
+ */
+function nh_checkout_calling_code_flag_map() {
+	$map = array();
+	foreach ( nh_checkout_calling_codes() as $iso => $code ) {
+		if ( ! isset( $map[ $code ] ) ) {
+			$map[ $code ] = $iso;
+		}
+	}
+	return $map;
+}
+
+/**
+ * Regional-indicator flag emoji for an ISO country code.
+ *
+ * @param string $iso ISO 3166-1 alpha-2.
+ * @return string
+ */
+function nh_checkout_flag_emoji( $iso ) {
+	$iso = strtoupper( preg_replace( '/[^A-Za-z]/', '', (string) $iso ) );
+	if ( 2 !== strlen( $iso ) ) {
+		return '';
+	}
+	if ( function_exists( 'mb_chr' ) ) {
+		return mb_chr( 127397 + ord( $iso[0] ) ) . mb_chr( 127397 + ord( $iso[1] ) );
+	}
+	return html_entity_decode( '&#' . ( 127397 + ord( $iso[0] ) ) . ';&#' . ( 127397 + ord( $iso[1] ) ) . ';', ENT_NOQUOTES, 'UTF-8' );
 }
 
 /**
@@ -675,15 +761,7 @@ function nh_checkout_phone_field_html( $field, $key, $args, $value ) { // phpcs:
 	list( $split_code, $national ) = nh_checkout_split_phone( (string) $value );
 
 	$selected = nh_checkout_sanitize_calling_code( $posted_code ? $posted_code : $split_code );
-	if ( ! $selected ) {
-		$country = '';
-		if ( function_exists( 'WC' ) && WC()->customer && is_callable( array( WC()->customer, 'get_billing_country' ) ) ) {
-			$country = WC()->customer->get_billing_country();
-		}
-		$selected = nh_checkout_default_calling_code( $country );
-	}
-
-	$display = $split_code ? $national : (string) $value;
+	$display  = $split_code ? $national : (string) $value;
 
 	$input = $match[0];
 	if ( preg_match( '/\svalue="/', $input ) ) {
@@ -691,16 +769,26 @@ function nh_checkout_phone_field_html( $field, $key, $args, $value ) { // phpcs:
 	} else {
 		$input = preg_replace( '/<input\b/i', '<input value="' . esc_attr( $display ) . '"', $input, 1 );
 	}
+	if ( false === strpos( $input, 'autocomplete=' ) ) {
+		$input = preg_replace( '/<input\b/i', '<input autocomplete="tel-national"', $input, 1 );
+	}
+
+	$flags    = nh_checkout_calling_code_flag_map();
+	$flag_iso = ( $selected && isset( $flags[ $selected ] ) ) ? $flags[ $selected ] : '';
+	$flag     = nh_checkout_flag_emoji( $flag_iso );
 
 	$options_html = '';
 	foreach ( nh_checkout_calling_code_options() as $code => $label ) {
-		$options_html .= '<option value="' . esc_attr( $code ) . '"' . selected( $selected, $code, false ) . '>' . esc_html( $label ) . '</option>';
+		$options_html .= '<option value="' . esc_attr( $code ) . '"' . selected( (string) $selected, (string) $code, false ) . '>' . esc_html( $label ) . '</option>';
 	}
 
 	$combo = '<span class="nh-phone-combo">'
+		. '<span class="nh-phone-prefix">'
+		. '<span class="nh-phone-flag" aria-hidden="true">' . esc_html( $flag ) . '</span>'
 		. '<select name="' . esc_attr( $code_name ) . '" id="' . esc_attr( $code_name ) . '" class="nh-phone-code" aria-label="' . esc_attr__( 'Country calling code', 'nh-theme' ) . '" autocomplete="tel-country-code">'
 		. $options_html
 		. '</select>'
+		. '</span>'
 		. $input
 		. '</span>';
 
