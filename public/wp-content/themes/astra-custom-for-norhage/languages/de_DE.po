@@ -1813,6 +1813,9 @@ msgstr "Wohnung, Suite usw."
 msgid "Secure checkout"
 msgstr "Sichere Bestellung"
 
+msgid "Other payment method"
+msgstr "Andere Zahlungsmethode"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Bitte geben Sie einen Vornamen ein."

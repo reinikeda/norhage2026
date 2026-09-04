@@ -1019,6 +1019,72 @@ body.woocommerce-order-received.nh-checkout-ux .woocommerce-thankyou-order-recei
 }
 
 /* --------------------------------------------------------------------------
+ * SVEA / Kustom snippet checkout — hide Woo fields they don't use
+ * ----------------------------------------------------------------------- */
+body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-secure,
+body.woocommerce-checkout.nh-checkout--snippet #billing_customer_type_field,
+body.woocommerce-checkout.nh-checkout--snippet .form-row.nh-checkout-type,
+body.woocommerce-checkout.nh-checkout--snippet .nh-notes,
+body.woocommerce-checkout.nh-checkout--snippet .woocommerce-additional-fields,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-secure,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet #billing_customer_type_field,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-type,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-notes,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-additional-fields,
+body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-secure,
+body.woocommerce-checkout .nh-checkout-layout__aside #billing_customer_type_field,
+body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-type,
+body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,
+body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields,
+#kco-wrapper #billing_customer_type_field,
+#kco-wrapper .nh-checkout-secure,
+#kco-wrapper .nh-checkout-type,
+#svea-checkout #billing_customer_type_field,
+#svea-checkout .nh-checkout-secure,
+.sco-checkout #billing_customer_type_field,
+.sco-checkout .nh-checkout-secure {
+  display: none !important;
+}
+
+body.woocommerce-checkout .nh-checkout-other-payment:not([hidden]),
+body.woocommerce-checkout .nh-checkout-other-payment-btn,
+body.woocommerce-checkout.nh-checkout--snippet #klarna-checkout-select-other,
+body.woocommerce-checkout.nh-checkout--snippet #svea-checkout-select-other,
+body.woocommerce-checkout.nh-checkout--snippet .kco-select-another-method a,
+body.woocommerce-checkout.nh-checkout--snippet a.sco-change-payment-method {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  margin: 0.85rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--nh-green, #00704a) !important;
+  color: #fff !important;
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none !important;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 112, 74, 0.22);
+}
+
+body.woocommerce-checkout .nh-checkout-other-payment[hidden],
+body.woocommerce-checkout .nh-checkout-other-payment-src[hidden] {
+  display: none !important;
+}
+
+body.woocommerce-checkout .nh-checkout-other-payment:hover,
+body.woocommerce-checkout .nh-checkout-other-payment-btn:hover,
+body.woocommerce-checkout #klarna-checkout-select-other:hover,
+body.woocommerce-checkout #svea-checkout-select-other:hover {
+  background: var(--nh-forest, #1e3932) !important;
+}
+
+/* --------------------------------------------------------------------------
  * Block checkout fallback (should not render; keep usable if it does)
  * ----------------------------------------------------------------------- */
 body.woocommerce-checkout.nh-checkout-ux .wp-block-woocommerce-checkout {

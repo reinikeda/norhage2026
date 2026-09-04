@@ -24,6 +24,7 @@ $form_class    = 'checkout woocommerce-checkout nh-checkout-form-el';
 if ( 'business' === $customer_type ) {
 	$form_class .= ' nh-checkout--business';
 }
+$snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_checkout_is_snippet_gateway();
 ?>
 
 <form name="checkout" method="post" class="<?php echo esc_attr( $form_class ); ?>" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>" autocomplete="on">
@@ -50,6 +51,10 @@ if ( 'business' === $customer_type ) {
 					<?php do_action( 'woocommerce_checkout_after_order_review' ); ?>
 				</div>
 			</section>
+
+			<button type="button" class="nh-checkout-other-payment"<?php echo $snippet_checkout ? '' : ' hidden'; ?>>
+				<?php esc_html_e( 'Other payment method', 'nh-theme' ); ?>
+			</button>
 		</aside>
 
 		<div class="nh-checkout-layout__main">

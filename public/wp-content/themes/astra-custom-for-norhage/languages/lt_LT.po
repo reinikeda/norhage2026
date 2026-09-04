@@ -1813,6 +1813,9 @@ msgstr "Butas, korpusas ir pan."
 msgid "Secure checkout"
 msgstr "Saugus atsiskaitymas"
 
+msgid "Other payment method"
+msgstr "Kitas mokėjimo būdas"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Įveskite vardą."
