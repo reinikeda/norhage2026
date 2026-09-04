@@ -1813,6 +1813,13 @@ msgstr "Wohnung, Suite usw."
 msgid "Secure checkout"
 msgstr "Sichere Bestellung"
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Bitte geben Sie einen Vornamen ein."
+
+msgid "Please enter a last name."
+msgstr "Bitte geben Sie einen Nachnamen ein."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

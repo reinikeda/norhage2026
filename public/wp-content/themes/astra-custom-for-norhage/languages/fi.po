@@ -1813,6 +1813,13 @@ msgstr "Huoneisto, kerros jne."
 msgid "Secure checkout"
 msgstr "Turvallinen kassa"
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Anna etunimi."
+
+msgid "Please enter a last name."
+msgstr "Anna sukunimi."
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 
