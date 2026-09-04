@@ -63,6 +63,18 @@
     }
   }
 
+  function placeCrossSells($main, $form) {
+    var $sells = $('.cross-sells');
+    if (!$sells.length || !$main || !$main.length || !$form || !$form.length) {
+      return;
+    }
+    $sells.not(':first').remove();
+    $sells = $('.cross-sells').first();
+    if (!$sells.parent().is($main) || $sells.prev()[0] !== $form[0]) {
+      $sells.insertAfter($form);
+    }
+  }
+
   function ensureLayout() {
     var $form = $('.woocommerce-cart-form').first();
     var $col = $('.cart-collaterals').first();
@@ -99,6 +111,8 @@
     if (!$col.closest('.nh-cart-layout__side').length) {
       $side.append($col);
     }
+
+    placeCrossSells($main, $form);
 
     var $bar = $('.nh-cart-sticky-bar').first();
     if ($bar.length && !$bar.parent().is($layout)) {

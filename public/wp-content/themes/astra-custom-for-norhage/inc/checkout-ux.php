@@ -1534,5 +1534,14 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside{width:400px!important;max-width:400px!important;min-width:400px!important;flex:0 0 400px!important}'
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main{min-width:0!important;width:auto!important;max-width:none!important}'
 		. '}'
+		. '@media(max-width:959px){'
+		. 'html body.woocommerce-checkout .site-content>.ast-container,'
+		. 'html body.woocommerce-checkout.ast-separate-container .ast-container,'
+		. 'html body.woocommerce-checkout.ast-plain-container .ast-container{padding-left:10px!important;padding-right:10px!important}'
+		. 'html body.woocommerce-checkout #primary,'
+		. 'html body.woocommerce-checkout .ast-article-single,'
+		. 'html body.woocommerce-checkout .entry-content,'
+		. 'html body.woocommerce-checkout .woocommerce{padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}'
+		. '}'
 		. '</style>' . "\n";
 }

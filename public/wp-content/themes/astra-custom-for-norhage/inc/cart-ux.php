@@ -53,10 +53,14 @@ function nh_cart_ux_init() {
 	add_action( 'wp_footer', 'nh_cart_ux_layout_lock_css', 1 );
 	add_action( 'woocommerce_before_cart', 'nh_cart_ux_layout_open', 1 );
 	add_action( 'woocommerce_before_cart', 'nh_cart_ux_layout_main_open', 15 );
+	add_action( 'woocommerce_before_cart_collaterals', 'nh_cart_ux_render_cross_sells', 0 );
 	add_action( 'woocommerce_before_cart_collaterals', 'nh_cart_ux_layout_side_open', 1 );
 	add_action( 'woocommerce_after_cart', 'nh_cart_ux_layout_side_close', 5 );
 	add_action( 'woocommerce_after_cart', 'nh_cart_ux_sticky_bar', 20 );
 	add_action( 'woocommerce_after_cart', 'nh_cart_ux_layout_close', 99 );
+	add_action( 'wp', 'nh_cart_ux_relocate_cross_sells', 99 );
+	add_filter( 'woocommerce_cross_sells_columns', 'nh_cart_ux_cross_sells_columns' );
+	add_filter( 'woocommerce_cross_sells_total', 'nh_cart_ux_cross_sells_total' );
 	add_filter( 'body_class', 'nh_cart_ux_body_class' );
 }
 add_action( 'init', 'nh_cart_ux_init' );
@@ -161,6 +165,15 @@ function nh_cart_ux_layout_lock_css() {
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout td.product-remove{position:relative!important;overflow:hidden!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove{position:relative!important;display:inline-flex!important;inset:auto!important;float:none!important;width:36px!important;height:36px!important;min-width:36px!important;max-width:36px!important;min-height:36px!important;max-height:36px!important;margin:0!important;padding:0!important;font-size:16px!important;overflow:hidden!important;border-radius:999px!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}'
+		. '@media(max-width:959px){'
+		. 'html body.woocommerce-cart .site-content>.ast-container,'
+		. 'html body.woocommerce-cart.ast-separate-container .ast-container,'
+		. 'html body.woocommerce-cart.ast-plain-container .ast-container{padding-left:10px!important;padding-right:10px!important}'
+		. 'html body.woocommerce-cart #primary,'
+		. 'html body.woocommerce-cart .ast-article-single,'
+		. 'html body.woocommerce-cart .entry-content,'
+		. 'html body.woocommerce-cart .woocommerce{padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}'
+		. '}'
 		. '</style>' . "\n";
 }
 
@@ -169,7 +182,49 @@ function nh_cart_ux_layout_lock_css() {
  *
  * Separate column wrappers create block formatting contexts so Astra/Woo
  * `float:right` on `.cart-collaterals` cannot sit on top of the product table.
+ *
+ * Cross-sells sit in the first column under the product list so the totals
+ * column stays a focused checkout card.
  */
+function nh_cart_ux_relocate_cross_sells() {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+		return;
+	}
+	remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display' );
+	remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display', 10 );
+	remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display', 20 );
+}
+
+/**
+ * First column, under the product list — totals stay focused in the sidebar.
+ */
+function nh_cart_ux_render_cross_sells() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return;
+	}
+	$ids = WC()->cart->get_cross_sells();
+	if ( empty( $ids ) ) {
+		return;
+	}
+	woocommerce_cross_sell_display( 4, 2 );
+}
+
+/**
+ * @param int $columns Woo default.
+ * @return int
+ */
+function nh_cart_ux_cross_sells_columns( $columns ) {
+	return 2;
+}
+
+/**
+ * @param int $total Woo default.
+ * @return int
+ */
+function nh_cart_ux_cross_sells_total( $total ) {
+	return 4;
+}
+
 function nh_cart_ux_layout_open() {
 	echo '<div class="nh-cart-layout">';
 }
