@@ -1754,6 +1754,65 @@ msgstr "Versandkosten anzeigen"
 msgid "Have a coupon?"
 msgstr "Gutschein vorhanden?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Ich bestelle als"
+
+msgid "Private"
+msgstr "Privatkunde"
+
+msgid "Business"
+msgstr "Geschäftskunde"
+
+msgid "Business name"
+msgstr "Firmenname"
+
+msgid "Registration number"
+msgstr "Handelsregisternummer"
+
+msgid "Business details"
+msgstr "Firmendaten"
+
+msgid "Contact"
+msgstr "Kontaktdaten"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Your details"
+msgstr "Ihre Angaben"
+
+msgid "Please enter your business name."
+msgstr "Bitte geben Sie Ihren Firmennamen ein."
+
+msgid "Please enter your registration number."
+msgstr "Bitte geben Sie Ihre Handelsregisternummer ein."
+
+msgid "Please enter a phone number."
+msgstr "Bitte geben Sie eine Telefonnummer ein."
+
+msgid "Order summary"
+msgstr "Bestellübersicht"
+
+msgid "Contact person"
+msgstr "Ansprechpartner"
+
+msgid "Add a note (optional)"
+msgstr "Hinweis hinzufügen (optional)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "Reg.-Nr. %s"
+
+msgid "Customer type"
+msgstr "Kundentyp"
+
+msgid "Apartment, suite, etc."
+msgstr "Wohnung, Suite usw."
+
+msgid "Secure checkout"
+msgstr "Sichere Bestellung"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

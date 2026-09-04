@@ -981,3 +981,63 @@ msgstr ""
 #. Author of the plugin/theme
 msgid "Daiva Reinike"
 msgstr ""
+
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Business"
+msgstr ""
+
+msgid "Business name"
+msgstr ""
+
+msgid "Registration number"
+msgstr ""
+
+msgid "Business details"
+msgstr ""
+
+msgid "Contact"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "Your details"
+msgstr ""
+
+msgid "Please enter your business name."
+msgstr ""
+
+msgid "Please enter your registration number."
+msgstr ""
+
+msgid "Please enter a phone number."
+msgstr ""
+
+msgid "Order summary"
+msgstr ""
+
+msgid "Contact person"
+msgstr ""
+
+msgid "Add a note (optional)"
+msgstr ""
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr ""
+
+msgid "Customer type"
+msgstr ""
+
+msgid "Apartment, suite, etc."
+msgstr ""
+
+msgid "Secure checkout"
+msgstr ""
+
