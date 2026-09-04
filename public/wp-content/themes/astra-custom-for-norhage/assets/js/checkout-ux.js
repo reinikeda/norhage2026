@@ -481,9 +481,30 @@
         return;
       }
       el.style.setProperty('float', 'none', 'important');
-      el.style.setProperty('width', '100%', 'important');
       el.style.setProperty('max-width', '100%', 'important');
+      el.style.setProperty('border', '0', 'important');
+      el.style.setProperty('border-width', '0', 'important');
+      el.style.setProperty('outline', '0', 'important');
+      el.style.setProperty('box-shadow', 'none', 'important');
+      el.style.setProperty('background', 'transparent', 'important');
+      el.style.setProperty('border-radius', '0', 'important');
     });
+    if (review) {
+      review.style.setProperty('width', '100%', 'important');
+      review.style.setProperty('padding', '0', 'important');
+      review.style.setProperty('margin', '0', 'important');
+    }
+    var heading = document.getElementById('order_review_heading');
+    if (heading) {
+      heading.style.setProperty('padding', '0 0 0.75rem', 'important');
+      heading.style.setProperty('margin', '0', 'important');
+      if (wide) {
+        heading.style.setProperty('width', '100%', 'important');
+        heading.style.setProperty('position', 'static', 'important');
+      } else {
+        heading.style.removeProperty('width');
+      }
+    }
     if (table) {
       table.style.setProperty('display', 'table', 'important');
       table.style.setProperty('width', '100%', 'important');
