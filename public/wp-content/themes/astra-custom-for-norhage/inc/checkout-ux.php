@@ -67,6 +67,23 @@ function nh_checkout_is_snippet_gateway( $gateway_id = '' ) {
 }
 
 /**
+ * Payment iframes that collect or freeze address/totals outside the Woo form.
+ *
+ * @param string $gateway_id Optional gateway id.
+ * @return bool
+ */
+function nh_checkout_is_iframe_gateway( $gateway_id = '' ) {
+	if ( nh_checkout_is_snippet_gateway( $gateway_id ) ) {
+		return true;
+	}
+	$id = strtolower( (string) ( $gateway_id !== '' ? $gateway_id : nh_checkout_chosen_payment_method() ) );
+	if ( $id === '' ) {
+		return false;
+	}
+	return (bool) preg_match( '/paypal|ppcp|ppec|paypal_express|paypalcp/', $id );
+}
+
+/**
  * Extra Woo fields snippet checkouts would otherwise print next to the iframe.
  *
  * @param array $fields Field names.
@@ -120,6 +137,8 @@ function nh_checkout_ux_init() {
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
+	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_review_address', 2 );
+	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping' );
 	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_strip_snippet_fields', 10000 );
 	add_filter( 'woocommerce_enable_order_notes_field', 'nh_checkout_snippet_disable_order_notes', 10000 );
 	add_filter( 'kco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
@@ -1455,6 +1474,149 @@ function nh_checkout_sanitize_posted_shipping( $post_data ) {
 			$_POST['post_data'] = $rewritten;
 		}
 	}
+}
+
+/**
+ * @param string $key POST key.
+ * @return string
+ */
+function nh_checkout_posted_scalar( $key ) {
+	if ( ! isset( $_POST[ $key ] ) || ! is_scalar( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return '';
+	}
+	return trim( wc_clean( wp_unslash( (string) $_POST[ $key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+}
+
+/**
+ * @param string               $post_key Review-request key (postcode, s_postcode, …).
+ * @param array<int, string>   $form_keys Checkout field names to try from post_data.
+ * @param array<string, mixed> $form      Parsed checkout form.
+ * @param string               $customer_field billing_postcode / shipping_postcode / …
+ */
+function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_field ) {
+	if ( nh_checkout_posted_scalar( $post_key ) !== '' ) {
+		return;
+	}
+
+	foreach ( $form_keys as $form_key ) {
+		if ( empty( $form[ $form_key ] ) || ! is_scalar( $form[ $form_key ] ) ) {
+			continue;
+		}
+		$value = trim( wc_clean( (string) $form[ $form_key ] ) );
+		if ( $value !== '' ) {
+			$_POST[ $post_key ] = $value;
+			return;
+		}
+	}
+
+	if ( ! nh_checkout_is_iframe_gateway() || ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return;
+	}
+
+	$customer = WC()->customer;
+	$map      = array(
+		'billing_postcode'   => 'get_billing_postcode',
+		'shipping_postcode'  => 'get_shipping_postcode',
+		'billing_country'    => 'get_billing_country',
+		'shipping_country'   => 'get_shipping_country',
+		'billing_city'       => 'get_billing_city',
+		'shipping_city'      => 'get_shipping_city',
+		'billing_state'      => 'get_billing_state',
+		'shipping_state'     => 'get_shipping_state',
+		'billing_address_1'  => 'get_billing_address_1',
+		'shipping_address_1' => 'get_shipping_address_1',
+	);
+	if ( ! isset( $map[ $customer_field ] ) || ! method_exists( $customer, $map[ $customer_field ] ) ) {
+		return;
+	}
+	$existing = trim( (string) call_user_func( array( $customer, $map[ $customer_field ] ) ) );
+	if ( $existing !== '' ) {
+		$_POST[ $post_key ] = $existing;
+	}
+}
+
+/**
+ * Iframe checkouts (SVEA, Kustom, PayPal) set the postcode on the customer,
+ * then Woo's next update_order_review can overwrite it with empty form fields.
+ * Country + postcode is enough to recalculate zip-based shipping.
+ *
+ * @param string $post_data Checkout form query string.
+ */
+function nh_checkout_sync_review_address( $post_data ) {
+	$form = array();
+	if ( is_string( $post_data ) && $post_data !== '' ) {
+		parse_str( $post_data, $form );
+	}
+
+	$ship_diff = ! empty( $form['ship_to_different_address'] );
+
+	nh_checkout_fill_review_field( 'postcode', array( 'billing_postcode', 'shipping_postcode' ), $form, 'billing_postcode' );
+	nh_checkout_fill_review_field( 'country', array( 'billing_country', 'shipping_country' ), $form, 'billing_country' );
+	nh_checkout_fill_review_field( 'city', array( 'billing_city', 'shipping_city' ), $form, 'billing_city' );
+	nh_checkout_fill_review_field( 'state', array( 'billing_state', 'shipping_state' ), $form, 'billing_state' );
+	nh_checkout_fill_review_field( 'address', array( 'billing_address_1', 'shipping_address_1' ), $form, 'billing_address_1' );
+
+	if ( $ship_diff ) {
+		nh_checkout_fill_review_field( 's_postcode', array( 'shipping_postcode', 'billing_postcode' ), $form, 'shipping_postcode' );
+		nh_checkout_fill_review_field( 's_country', array( 'shipping_country', 'billing_country' ), $form, 'shipping_country' );
+		nh_checkout_fill_review_field( 's_city', array( 'shipping_city', 'billing_city' ), $form, 'shipping_city' );
+		nh_checkout_fill_review_field( 's_state', array( 'shipping_state', 'billing_state' ), $form, 'shipping_state' );
+		nh_checkout_fill_review_field( 's_address', array( 'shipping_address_1', 'billing_address_1' ), $form, 'shipping_address_1' );
+	} else {
+		foreach ( array(
+			's_postcode' => 'postcode',
+			's_country'  => 'country',
+			's_city'     => 'city',
+			's_state'    => 'state',
+			's_address'  => 'address',
+		) as $ship_key => $bill_key ) {
+			if ( nh_checkout_posted_scalar( $ship_key ) === '' && nh_checkout_posted_scalar( $bill_key ) !== '' ) {
+				$_POST[ $ship_key ] = nh_checkout_posted_scalar( $bill_key );
+			}
+		}
+		nh_checkout_fill_review_field( 's_postcode', array( 'shipping_postcode', 'billing_postcode' ), $form, 'shipping_postcode' );
+		nh_checkout_fill_review_field( 's_country', array( 'shipping_country', 'billing_country' ), $form, 'shipping_country' );
+	}
+
+	$postcode = nh_checkout_posted_scalar( 's_postcode' );
+	if ( $postcode === '' ) {
+		$postcode = nh_checkout_posted_scalar( 'postcode' );
+	}
+	$country = nh_checkout_posted_scalar( 's_country' );
+	if ( $country === '' ) {
+		$country = nh_checkout_posted_scalar( 'country' );
+	}
+	if ( $postcode !== '' && $country !== '' ) {
+		$_POST['has_full_address'] = '1';
+	}
+}
+
+/**
+ * Zip-based rates should calculate once country + postcode exist, even if street is still in the iframe.
+ *
+ * @param bool $ready Woo default.
+ * @return bool
+ */
+function nh_checkout_ready_to_calc_shipping( $ready ) {
+	if ( $ready || ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return $ready;
+	}
+
+	$customer = WC()->customer;
+	$postcode = trim( (string) $customer->get_shipping_postcode() );
+	if ( $postcode === '' ) {
+		$postcode = trim( (string) $customer->get_billing_postcode() );
+	}
+	$country = trim( (string) $customer->get_shipping_country() );
+	if ( $country === '' ) {
+		$country = trim( (string) $customer->get_billing_country() );
+	}
+
+	if ( $postcode !== '' && $country !== '' ) {
+		return true;
+	}
+
+	return $ready;
 }
 
 /**
