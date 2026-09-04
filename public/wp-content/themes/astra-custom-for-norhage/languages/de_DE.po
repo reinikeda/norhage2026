@@ -1820,6 +1820,18 @@ msgstr "Bitte geben Sie einen Vornamen ein."
 msgid "Please enter a last name."
 msgstr "Bitte geben Sie einen Nachnamen ein."
 
+msgid "Country calling code"
+msgstr "Ländervorwahl"
+
+msgid "Contact email"
+msgstr "Kontakt-E-Mail"
+
+msgid "Contact phone"
+msgstr "Kontakttelefon"
+
+msgid "Please enter a valid contact email."
+msgstr "Bitte geben Sie eine gültige Kontakt-E-Mail ein."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

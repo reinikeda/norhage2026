@@ -1816,6 +1816,18 @@ msgstr "Angiv et fornavn."
 msgid "Please enter a last name."
 msgstr "Angiv et efternavn."
 
+msgid "Country calling code"
+msgstr "Landekode"
+
+msgid "Contact email"
+msgstr "Kontakt-e-mail"
+
+msgid "Contact phone"
+msgstr "Kontakttelefon"
+
+msgid "Please enter a valid contact email."
+msgstr "Angiv en gyldig kontakt-e-mail."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"
 

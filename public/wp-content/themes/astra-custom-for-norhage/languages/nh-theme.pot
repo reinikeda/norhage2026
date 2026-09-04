@@ -1048,3 +1048,15 @@ msgstr ""
 msgid "Please enter a last name."
 msgstr ""
 
+msgid "Country calling code"
+msgstr ""
+
+msgid "Contact email"
+msgstr ""
+
+msgid "Contact phone"
+msgstr ""
+
+msgid "Please enter a valid contact email."
+msgstr ""
+
