@@ -1113,6 +1113,195 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout ul#shipping_method label,
 }
 
 /* --------------------------------------------------------------------------
+ * Cross-sells — first column, under the product list
+ * ----------------------------------------------------------------------- */
+.nh-cart-layout .cart-collaterals .cross-sells {
+  display: none !important;
+}
+
+.nh-cart-layout__main > .cross-sells {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  float: none !important;
+  margin: 1.25rem 0 0;
+  padding: var(--nh-cart-pad, 16px);
+  background: #fff;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: var(--nh-cart-radius, 14px);
+  box-shadow: 0 8px 24px rgba(30, 57, 50, 0.06);
+}
+
+.nh-cart-layout .cross-sells > h2,
+.nh-cart-layout .cross-sells .cross-sells-title {
+  margin: 0 0 0.85rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--nh-forest, #1e3932);
+  letter-spacing: -0.02em;
+}
+
+.nh-cart-layout .cross-sells ul.products,
+.nh-cart-layout .cross-sells .products {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  float: none !important;
+}
+
+@media (min-width: 720px) {
+  .nh-cart-layout .cross-sells ul.products,
+  .nh-cart-layout .cross-sells .products {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.nh-cart-layout .cross-sells li.product,
+.nh-cart-layout .cross-sells .product {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  float: none !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 10px;
+  background: #fff;
+  position: relative;
+  text-align: left;
+}
+
+.nh-cart-layout .cross-sells .astra-shop-thumbnail-wrap,
+.nh-cart-layout .cross-sells li.product > a.woocommerce-LoopProduct-link,
+.nh-cart-layout .cross-sells li.product > a.ast-loop-product__link {
+  flex: 0 0 72px;
+  display: block;
+  margin: 0;
+  width: 72px;
+  max-width: 72px;
+}
+
+.nh-cart-layout .cross-sells li.product > a.woocommerce-LoopProduct-link {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: auto;
+  max-width: none;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nh-cart-layout .cross-sells li.product img,
+.nh-cart-layout .cross-sells .product img {
+  width: 72px !important;
+  height: 72px !important;
+  max-width: 72px !important;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.nh-cart-layout .cross-sells .astra-shop-summary-wrap {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.nh-cart-layout .cross-sells li.product .woocommerce-loop-product__title,
+.nh-cart-layout .cross-sells li.product h2,
+.nh-cart-layout .cross-sells li.product h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--nh-forest, #1e3932);
+}
+
+.nh-cart-layout .cross-sells .woocommerce-loop-product__title a,
+.nh-cart-layout .cross-sells .astra-shop-summary-wrap a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nh-cart-layout .cross-sells .price {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--nh-green, #00704a);
+}
+
+.nh-cart-layout .cross-sells .star-rating,
+.nh-cart-layout .cross-sells .ast-woo-product-category,
+.nh-cart-layout .cross-sells .ast-woo-shop-product-description,
+.nh-cart-layout .cross-sells .ast-on-card-button,
+.nh-cart-layout .cross-sells .ast-quick-view-trigger,
+.nh-cart-layout .cross-sells .quantity {
+  display: none !important;
+}
+
+.nh-cart-layout .cross-sells .button,
+.nh-cart-layout .cross-sells a.button,
+.nh-cart-layout .cross-sells .add_to_cart_button {
+  flex: 1 1 100%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--nh-forest, #1e3932) !important;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none !important;
+}
+
+.nh-cart-layout .cross-sells .button:hover,
+.nh-cart-layout .cross-sells a.button:hover,
+.nh-cart-layout .cross-sells .add_to_cart_button:hover {
+  background: var(--nh-green, #00704a) !important;
+}
+
+.nh-cart-layout .cross-sells .added_to_cart {
+  grid-column: 1 / -1;
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--nh-green, #00704a);
+  text-align: center;
+}
+
+.nh-cart-layout .cross-sells .onsale {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  margin: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--nh-green, #00704a);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+/* --------------------------------------------------------------------------
  * Sticky mobile checkout bar
  * ----------------------------------------------------------------------- */
 .nh-cart-layout > .nh-cart-sticky-bar {

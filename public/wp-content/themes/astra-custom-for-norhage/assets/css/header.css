@@ -1311,6 +1311,34 @@ body.woocommerce-checkout.ast-plain-container .ast-container {
   margin-top: 0 !important;
 }
 
+@media (max-width: 959px) {
+  body.woocommerce-cart .site-content > .ast-container,
+  body.woocommerce-checkout .site-content > .ast-container,
+  body.woocommerce-cart.ast-separate-container .ast-container,
+  body.woocommerce-checkout.ast-separate-container .ast-container,
+  body.woocommerce-cart.ast-plain-container .ast-container,
+  body.woocommerce-checkout.ast-plain-container .ast-container,
+  body.woocommerce-cart .ast-container,
+  body.woocommerce-checkout .ast-container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  body.woocommerce-cart #primary,
+  body.woocommerce-checkout #primary,
+  body.woocommerce-cart .site-main,
+  body.woocommerce-checkout .site-main,
+  body.woocommerce-cart .ast-article-single,
+  body.woocommerce-checkout .ast-article-single,
+  body.woocommerce-cart .woocommerce,
+  body.woocommerce-checkout .woocommerce {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
 @media (min-width: 921px) {
   body.woocommerce-cart .site-content > .ast-container,
   body.woocommerce-checkout .site-content > .ast-container,
