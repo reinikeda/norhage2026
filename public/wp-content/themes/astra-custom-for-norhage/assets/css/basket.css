@@ -550,6 +550,28 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
   white-space: nowrap;
 }
 
+/* One VAT note on Total is enough — hide Woo's per-line “(incl. VAT)”. */
+.nh-cart-layout .tax_label,
+.nh-cart-layout .price-tax-note,
+.nh-cart-sticky-bar .tax_label,
+.nh-cart-sticky-bar .includes_tax {
+  display: none !important;
+}
+
+.nh-cart-layout .cart_totals .order-total td {
+  text-align: right;
+  white-space: normal;
+}
+
+.nh-cart-layout .cart_totals .order-total .includes_tax {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ui-muted, #8e8c89);
+  white-space: normal;
+}
+
 /* Phone: stack the product row without CSS grid (grid-area leaked into the page). */
 @media (max-width: 899px) {
   .nh-cart-layout table.shop_table.cart thead {
@@ -868,7 +890,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
 .nh-cart-layout .cart_totals table.shop_table tr.nhgp-cart-total-weight-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 12px;
   padding: 0.65rem 0;
 }
@@ -1110,6 +1132,190 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout ul#shipping_method label,
 .nh-cart-layout .nhgp-cart-total-weight-row {
   font-size: 0.9rem;
   color: var(--ui-muted, #8e8c89);
+}
+
+/* --------------------------------------------------------------------------
+ * Cross-sells — first column, under the product list
+ * ----------------------------------------------------------------------- */
+.nh-cart-layout .cart-collaterals .cross-sells {
+  display: none !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout__main > .cross-sells,
+.nh-cart-layout__main > .cross-sells {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  float: none !important;
+  margin: 0.75rem 0 0 !important;
+  padding: 8px !important;
+  background: #fff;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: var(--nh-cart-radius, 14px);
+  box-shadow: none;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells > h2,
+.nh-cart-layout .cross-sells > h2,
+.nh-cart-layout .cross-sells .cross-sells-title {
+  margin: 0 0 6px !important;
+  padding: 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--nh-forest, #1e3932);
+  letter-spacing: -0.02em;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells ul.products,
+.nh-cart-layout .cross-sells ul.products,
+.nh-cart-layout .cross-sells .products {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px !important;
+  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  float: none !important;
+}
+
+@media (min-width: 960px) {
+  html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells ul.products,
+  .nh-cart-layout .cross-sells ul.products,
+  .nh-cart-layout .cross-sells .products {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells li.product,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells ul.products li.product,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells ul.products li.product.first,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells ul.products li.product.last,
+.nh-cart-layout .cross-sells li.product,
+.nh-cart-layout .cross-sells .product {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  float: none !important;
+  clear: none !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
+  text-align: left !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .nhg-labels,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .nhg-badge,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .onsale,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .ast-on-card-button,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .ast-onsale-card,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .button,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells a.button,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .add_to_cart_button,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .added_to_cart,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .star-rating,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .ast-woo-product-category,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .ast-woo-shop-product-description,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .ast-quick-view-trigger,
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .quantity,
+.nh-cart-layout .cross-sells .nhg-labels,
+.nh-cart-layout .cross-sells .nhg-badge,
+.nh-cart-layout .cross-sells .onsale,
+.nh-cart-layout .cross-sells .button,
+.nh-cart-layout .cross-sells a.button,
+.nh-cart-layout .cross-sells .add_to_cart_button,
+.nh-cart-layout .cross-sells .added_to_cart,
+.nh-cart-layout .cross-sells .star-rating,
+.nh-cart-layout .cross-sells .ast-woo-product-category,
+.nh-cart-layout .cross-sells .ast-woo-shop-product-description,
+.nh-cart-layout .cross-sells .ast-on-card-button,
+.nh-cart-layout .cross-sells .ast-quick-view-trigger,
+.nh-cart-layout .cross-sells .quantity {
+  display: none !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .astra-shop-thumbnail-wrap,
+.nh-cart-layout .cross-sells .astra-shop-thumbnail-wrap {
+  flex: 0 0 56px !important;
+  width: 56px !important;
+  max-width: 56px !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  text-align: left !important;
+  position: relative !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells li.product img,
+.nh-cart-layout .cross-sells li.product img,
+.nh-cart-layout .cross-sells .product img {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  object-fit: contain;
+  border-radius: 6px;
+  display: block;
+  margin: 0 !important;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .astra-shop-summary-wrap,
+.nh-cart-layout .cross-sells .astra-shop-summary-wrap {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+.nh-cart-layout .cross-sells li.product > a.woocommerce-LoopProduct-link,
+.nh-cart-layout .cross-sells .astra-shop-thumbnail-wrap a {
+  display: block !important;
+  width: 56px !important;
+  max-width: 56px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: inherit;
+  text-decoration: none;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells li.product .woocommerce-loop-product__title,
+.nh-cart-layout .cross-sells li.product .woocommerce-loop-product__title,
+.nh-cart-layout .cross-sells li.product h2,
+.nh-cart-layout .cross-sells li.product h3 {
+  margin: 0 0 2px !important;
+  padding: 0 !important;
+  font-size: 0.8rem !important;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left !important;
+  color: var(--nh-forest, #1e3932);
+}
+
+.nh-cart-layout .cross-sells .woocommerce-loop-product__title a,
+.nh-cart-layout .cross-sells .astra-shop-summary-wrap a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .cross-sells .price,
+.nh-cart-layout .cross-sells .price {
+  margin: 0 !important;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--nh-green, #00704a);
 }
 
 /* --------------------------------------------------------------------------

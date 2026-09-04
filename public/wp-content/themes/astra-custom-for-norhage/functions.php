@@ -370,6 +370,7 @@ require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/cart-ux.php';
+require_once get_stylesheet_directory() . '/inc/checkout-ux.php';
 require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';

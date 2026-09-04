@@ -1754,6 +1754,90 @@ msgstr "Näytä toimituskulut"
 msgid "Have a coupon?"
 msgstr "Onko sinulla alennuskoodi?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Tilaan"
+
+msgid "Private"
+msgstr "Yksityishenkilö"
+
+msgid "Business"
+msgstr "Yritys"
+
+msgid "Business name"
+msgstr "Yrityksen nimi"
+
+msgid "Registration number"
+msgstr "Y-tunnus"
+
+msgid "Business details"
+msgstr "Yritystiedot"
+
+msgid "Contact"
+msgstr "Yhteystiedot"
+
+msgid "Address"
+msgstr "Osoite"
+
+msgid "Your details"
+msgstr "Omat tietosi"
+
+msgid "Please enter your business name."
+msgstr "Anna yrityksen nimi."
+
+msgid "Please enter your registration number."
+msgstr "Anna Y-tunnus."
+
+msgid "Please enter a phone number."
+msgstr "Anna puhelinnumero."
+
+msgid "Order summary"
+msgstr "Tilauksen yhteenveto"
+
+msgid "Contact person"
+msgstr "Yhteyshenkilö"
+
+msgid "Add a note (optional)"
+msgstr "Lisää viesti (valinnainen)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "Y-tunnus %s"
+
+msgid "Customer type"
+msgstr "Asiakastyyppi"
+
+msgid "Apartment, suite, etc."
+msgstr "Huoneisto, kerros jne."
+
+msgid "Secure checkout"
+msgstr "Turvallinen kassa"
+
+msgid "Other payment method"
+msgstr "Muu maksutapa"
+
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Anna etunimi."
+
+msgid "Please enter a last name."
+msgstr "Anna sukunimi."
+
+msgid "Country calling code"
+msgstr "Maakoodi"
+
+msgid "Contact email"
+msgstr "Yhteyshenkilön sähköposti"
+
+msgid "Contact phone"
+msgstr "Yhteyshenkilön puhelin"
+
+msgid "Please enter a valid contact email."
+msgstr "Anna kelvollinen yhteyssähköposti."
+
+msgid "Please enter a valid phone number."
+msgstr "Anna kelvollinen puhelinnumero."
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 

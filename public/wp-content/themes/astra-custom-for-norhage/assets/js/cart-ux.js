@@ -55,11 +55,43 @@
     });
   }
 
+  function amountHtmlFromTotalCell($src) {
+    var $strong;
+    var $amount;
+    var $clone;
+    if (!$src || !$src.length) {
+      return '';
+    }
+    $strong = $src.find('strong').first();
+    if ($strong.length) {
+      return $strong.html();
+    }
+    $amount = $src.find('.woocommerce-Price-amount').first();
+    if ($amount.length) {
+      return $amount.prop('outerHTML');
+    }
+    $clone = $src.clone();
+    $clone.find('.includes_tax, .tax_label, .price-tax-note').remove();
+    return $.trim($clone.html());
+  }
+
   function syncStickyTotal() {
     var $src = $('.cart_totals .order-total td').first();
     var $dest = $('.nh-cart-sticky-bar__amount');
     if ($src.length && $dest.length) {
-      $dest.html($src.html());
+      $dest.html(amountHtmlFromTotalCell($src));
+    }
+  }
+
+  function placeCrossSells($main, $form) {
+    var $sells = $('.cross-sells');
+    if (!$sells.length || !$main || !$main.length || !$form || !$form.length) {
+      return;
+    }
+    $sells.not(':first').remove();
+    $sells = $('.cross-sells').first();
+    if (!$sells.parent().is($main) || $sells.prev()[0] !== $form[0]) {
+      $sells.insertAfter($form);
     }
   }
 
@@ -99,6 +131,8 @@
     if (!$col.closest('.nh-cart-layout__side').length) {
       $side.append($col);
     }
+
+    placeCrossSells($main, $form);
 
     var $bar = $('.nh-cart-sticky-bar').first();
     if ($bar.length && !$bar.parent().is($layout)) {
@@ -189,7 +223,46 @@
     }
   }
 
+  function stampShippingIndexes() {
+    $('input.shipping_method, select.shipping_method').each(function () {
+      var $el = $(this);
+      var name = $el.attr('name') || '';
+      var match = name.match(/shipping_method\[(\d+)\]/);
+      var index = match ? match[1] : ($el.attr('data-index') || '0');
+      $el.attr('data-index', index);
+      $el.data('index', parseInt(index, 10));
+    });
+  }
+
+  function rewriteShippingPayload(data) {
+    if (typeof data === 'string') {
+      return data
+        .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
+        .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
+    }
+    if (data && typeof data === 'object' && data.shipping_method && typeof data.shipping_method === 'object') {
+      if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
+        if (data.shipping_method[0] == null) {
+          data.shipping_method[0] = data.shipping_method.undefined;
+        }
+        delete data.shipping_method.undefined;
+      }
+    }
+    return data;
+  }
+
+  $.ajaxPrefilter(function (options) {
+    if (!options || options.data == null) {
+      return;
+    }
+    if (typeof options.data === 'string' && options.data.indexOf('shipping_method') === -1) {
+      return;
+    }
+    options.data = rewriteShippingPayload(options.data);
+  });
+
   function boot() {
+    stampShippingIndexes();
     ensureLayout();
     lockColumnStyles();
     keepCalculatorOpen();
@@ -197,6 +270,8 @@
     enhanceCoupon();
     syncStickyTotal();
   }
+
+  stampShippingIndexes();
 
   $(boot);
   $(window).on('resize.nhCartUx', lockColumnStyles);

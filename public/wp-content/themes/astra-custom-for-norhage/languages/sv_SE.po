@@ -1754,6 +1754,90 @@ msgstr "Visa fraktkostnad"
 msgid "Have a coupon?"
 msgstr "Har du en rabattkod?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Jag beställer som"
+
+msgid "Private"
+msgstr "Privatperson"
+
+msgid "Business"
+msgstr "Företag"
+
+msgid "Business name"
+msgstr "Företagsnamn"
+
+msgid "Registration number"
+msgstr "Organisationsnummer"
+
+msgid "Business details"
+msgstr "Företagsuppgifter"
+
+msgid "Contact"
+msgstr "Kontaktuppgifter"
+
+msgid "Address"
+msgstr "Adress"
+
+msgid "Your details"
+msgstr "Dina uppgifter"
+
+msgid "Please enter your business name."
+msgstr "Ange företagsnamn."
+
+msgid "Please enter your registration number."
+msgstr "Ange organisationsnummer."
+
+msgid "Please enter a phone number."
+msgstr "Ange ett telefonnummer."
+
+msgid "Order summary"
+msgstr "Ordersammanfattning"
+
+msgid "Contact person"
+msgstr "Kontaktperson"
+
+msgid "Add a note (optional)"
+msgstr "Lägg till en kommentar (valfritt)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "Org.nr %s"
+
+msgid "Customer type"
+msgstr "Kundtyp"
+
+msgid "Apartment, suite, etc."
+msgstr "Lägenhet, våning osv."
+
+msgid "Secure checkout"
+msgstr "Säker kassa"
+
+msgid "Other payment method"
+msgstr "Annat betalsätt"
+
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Ange ett förnamn."
+
+msgid "Please enter a last name."
+msgstr "Ange ett efternamn."
+
+msgid "Country calling code"
+msgstr "Landsnummer"
+
+msgid "Contact email"
+msgstr "Kontakt-e-post"
+
+msgid "Contact phone"
+msgstr "Kontakttelefon"
+
+msgid "Please enter a valid contact email."
+msgstr "Ange en giltig kontakt-e-postadress."
+
+msgid "Please enter a valid phone number."
+msgstr "Ange ett giltigt telefonnummer."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

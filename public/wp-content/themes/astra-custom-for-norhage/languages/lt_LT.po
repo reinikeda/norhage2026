@@ -1754,6 +1754,90 @@ msgstr "Rodyti pristatymo kainą"
 msgid "Have a coupon?"
 msgstr "Turite nuolaidos kodą?"
 
+#: inc/checkout-ux.php
+msgid "I am ordering as"
+msgstr "Užsakau kaip"
+
+msgid "Private"
+msgstr "Privatus asmuo"
+
+msgid "Business"
+msgstr "Įmonė"
+
+msgid "Business name"
+msgstr "Įmonės pavadinimas"
+
+msgid "Registration number"
+msgstr "Įmonės kodas"
+
+msgid "Business details"
+msgstr "Įmonės duomenys"
+
+msgid "Contact"
+msgstr "Kontaktai"
+
+msgid "Address"
+msgstr "Adresas"
+
+msgid "Your details"
+msgstr "Jūsų duomenys"
+
+msgid "Please enter your business name."
+msgstr "Įveskite įmonės pavadinimą."
+
+msgid "Please enter your registration number."
+msgstr "Įveskite įmonės kodą."
+
+msgid "Please enter a phone number."
+msgstr "Įveskite telefono numerį."
+
+msgid "Order summary"
+msgstr "Užsakymo santrauka"
+
+msgid "Contact person"
+msgstr "Kontaktinis asmuo"
+
+msgid "Add a note (optional)"
+msgstr "Pridėti pastabą (neprivaloma)"
+
+#. translators: %s: company registration number
+msgid "Reg. no. %s"
+msgstr "Įm. k. %s"
+
+msgid "Customer type"
+msgstr "Kliento tipas"
+
+msgid "Apartment, suite, etc."
+msgstr "Butas, korpusas ir pan."
+
+msgid "Secure checkout"
+msgstr "Saugus atsiskaitymas"
+
+msgid "Other payment method"
+msgstr "Kitas mokėjimo būdas"
+
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Įveskite vardą."
+
+msgid "Please enter a last name."
+msgstr "Įveskite pavardę."
+
+msgid "Country calling code"
+msgstr "Šalies kodas"
+
+msgid "Contact email"
+msgstr "Kontaktinis el. paštas"
+
+msgid "Contact phone"
+msgstr "Kontaktinis telefonas"
+
+msgid "Please enter a valid contact email."
+msgstr "Įveskite teisingą kontaktinį el. paštą."
+
+msgid "Please enter a valid phone number."
+msgstr "Įveskite teisingą telefono numerį."
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 
