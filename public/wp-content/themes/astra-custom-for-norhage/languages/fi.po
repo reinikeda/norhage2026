@@ -1820,6 +1820,18 @@ msgstr "Anna etunimi."
 msgid "Please enter a last name."
 msgstr "Anna sukunimi."
 
+msgid "Country calling code"
+msgstr "Maakoodi"
+
+msgid "Contact email"
+msgstr "Yhteyshenkilön sähköposti"
+
+msgid "Contact phone"
+msgstr "Yhteyshenkilön puhelin"
+
+msgid "Please enter a valid contact email."
+msgstr "Anna kelvollinen yhteyssähköposti."
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 

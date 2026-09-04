@@ -1820,6 +1820,18 @@ msgstr "Įveskite vardą."
 msgid "Please enter a last name."
 msgstr "Įveskite pavardę."
 
+msgid "Country calling code"
+msgstr "Šalies kodas"
+
+msgid "Contact email"
+msgstr "Kontaktinis el. paštas"
+
+msgid "Contact phone"
+msgstr "Kontaktinis telefonas"
+
+msgid "Please enter a valid contact email."
+msgstr "Įveskite teisingą kontaktinį el. paštą."
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 

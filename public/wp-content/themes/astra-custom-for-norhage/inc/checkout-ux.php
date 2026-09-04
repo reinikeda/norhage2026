@@ -36,14 +36,18 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_billing_fields', 'nh_checkout_billing_fields', 20 );
 	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_fields', 99 );
 	add_filter( 'woocommerce_form_field_nh_section', 'nh_checkout_section_field', 10, 4 );
+	add_filter( 'woocommerce_form_field_tel', 'nh_checkout_phone_field_html', 10, 4 );
 	add_filter( 'woocommerce_checkout_get_value', 'nh_checkout_get_value', 10, 2 );
+	add_filter( 'woocommerce_checkout_posted_data', 'nh_checkout_normalize_posted_phones', 20 );
 
 	add_action( 'woocommerce_after_checkout_validation', 'nh_checkout_validate_fields', 20, 2 );
 	add_action( 'woocommerce_checkout_create_order', 'nh_checkout_save_order_meta', 20, 2 );
 	add_action( 'woocommerce_checkout_update_customer', 'nh_checkout_save_customer_meta', 20, 2 );
 
 	add_filter( 'woocommerce_order_formatted_billing_address', 'nh_checkout_formatted_billing_address', 20, 2 );
+	add_filter( 'woocommerce_email_customer_details_fields', 'nh_checkout_email_contact_fields', 20, 3 );
 	add_action( 'woocommerce_admin_order_data_after_billing_address', 'nh_checkout_admin_billing_meta', 10, 1 );
+	add_action( 'woocommerce_order_details_after_customer_details', 'nh_checkout_order_contact_details', 10, 1 );
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
@@ -134,6 +138,7 @@ function nh_checkout_ux_assets() {
 			'contactHeading' => __( 'Contact person', 'nh-theme' ),
 			'noteLabel'      => __( 'Add a note (optional)', 'nh-theme' ),
 			'summaryLabel'   => __( 'Order summary', 'nh-theme' ),
+			'phoneIsoCodes'  => nh_checkout_calling_codes(),
 		)
 	);
 }
@@ -174,17 +179,21 @@ function nh_checkout_default_address_fields( $fields ) {
 	}
 	if ( isset( $fields['country'] ) ) {
 		$fields['country']['priority'] = 40;
+		$fields['country']['class']    = array( 'form-row-first', 'address-field', 'update_totals_on_change' );
 	}
 	if ( isset( $fields['postcode'] ) ) {
 		$fields['postcode']['priority'] = 50;
-		$fields['postcode']['class']    = array( 'form-row-wide', 'address-field', 'update_totals_on_change' );
+		$fields['postcode']['class']    = array( 'form-row-last', 'address-field', 'update_totals_on_change' );
 	}
 	if ( isset( $fields['address_1'] ) ) {
 		$fields['address_1']['priority'] = 60;
 	}
 	if ( isset( $fields['city'] ) ) {
 		$fields['city']['priority'] = 80;
-		$fields['city']['class']    = array( 'form-row-wide', 'address-field' );
+		$fields['city']['class']    = array( 'form-row-first', 'address-field' );
+	}
+	if ( isset( $fields['state'] ) ) {
+		$fields['state']['class'] = array( 'form-row-last', 'address-field' );
 	}
 	return $fields;
 }
@@ -209,12 +218,14 @@ function nh_checkout_country_locale( $locale ) {
 		$locale[ $country ]['company']['label']      = __( 'Business name', 'nh-theme' );
 		$locale[ $country ]['company']['required']   = false;
 		$locale[ $country ]['country']['priority']   = 40;
+		$locale[ $country ]['country']['class']      = array( 'form-row-first' );
 		$locale[ $country ]['postcode']['priority']  = 50;
-		$locale[ $country ]['postcode']['class']     = array( 'form-row-wide' );
+		$locale[ $country ]['postcode']['class']     = array( 'form-row-last' );
 		$locale[ $country ]['address_1']['priority'] = 60;
 		$locale[ $country ]['address_2']['priority'] = 70;
 		$locale[ $country ]['city']['priority']      = 80;
-		$locale[ $country ]['city']['class']         = array( 'form-row-wide' );
+		$locale[ $country ]['city']['class']         = array( 'form-row-first' );
+		$locale[ $country ]['state']['class']        = array( 'form-row-last' );
 	}
 
 	return $locale;
@@ -360,13 +371,13 @@ function nh_checkout_fields( $fields ) {
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_country', array(
-		'class'        => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
+		'class'        => array( 'form-row-first', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'country',
 		'priority'     => 40,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_postcode', array(
-		'class'        => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
+		'class'        => array( 'form-row-last', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'postal-code',
 		'priority'     => 50,
 	) );
@@ -386,17 +397,43 @@ function nh_checkout_fields( $fields ) {
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_city', array(
-		'class'        => array( 'form-row-wide', 'address-field' ),
+		'class'        => array( 'form-row-first', 'address-field' ),
 		'autocomplete' => 'address-level2',
 		'priority'     => 80,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_state', array(
 		'required'     => false,
-		'class'        => array( 'form-row-wide', 'address-field' ),
+		'class'        => array( 'form-row-last', 'address-field' ),
 		'autocomplete' => 'address-level1',
 		'priority'     => 90,
 	) );
+
+	$billing['billing_contact_email'] = array(
+		'type'         => 'email',
+		'label'        => __( 'Contact email', 'nh-theme' ),
+		'required'     => false,
+		'class'        => array( 'form-row-first', 'nh-checkout-field--person-extra' ),
+		'validate'     => array( 'email' ),
+		'autocomplete' => 'email',
+		'priority'     => 220,
+		'custom_attributes' => array(
+			'inputmode' => 'email',
+		),
+	);
+
+	$billing['billing_contact_phone'] = array(
+		'type'         => 'tel',
+		'label'        => __( 'Contact phone', 'nh-theme' ),
+		'required'     => false,
+		'class'        => array( 'form-row-last', 'nh-checkout-field--person-extra' ),
+		'validate'     => array( 'phone' ),
+		'autocomplete' => 'tel',
+		'priority'     => 222,
+		'custom_attributes' => array(
+			'inputmode' => 'tel',
+		),
+	);
 
 	if ( function_exists( 'wc_checkout_fields_uasort_comparison' ) ) {
 		uasort( $billing, 'wc_checkout_fields_uasort_comparison' );
@@ -404,10 +441,11 @@ function nh_checkout_fields( $fields ) {
 
 	if ( ! empty( $fields['shipping'] ) && is_array( $fields['shipping'] ) ) {
 		nh_checkout_set_field( $fields['shipping'], 'shipping_country', array(
+			'class'    => array( 'form-row-first', 'address-field', 'update_totals_on_change' ),
 			'priority' => 40,
 		) );
 		nh_checkout_set_field( $fields['shipping'], 'shipping_postcode', array(
-			'class'    => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
+			'class'    => array( 'form-row-last', 'address-field', 'update_totals_on_change' ),
 			'priority' => 50,
 		) );
 		nh_checkout_set_field( $fields['shipping'], 'shipping_address_1', array(
@@ -417,11 +455,12 @@ function nh_checkout_fields( $fields ) {
 			'priority' => 70,
 		) );
 		nh_checkout_set_field( $fields['shipping'], 'shipping_city', array(
-			'class'    => array( 'form-row-wide', 'address-field' ),
+			'class'    => array( 'form-row-first', 'address-field' ),
 			'priority' => 80,
 		) );
 		nh_checkout_set_field( $fields['shipping'], 'shipping_state', array(
 			'required' => false,
+			'class'    => array( 'form-row-last', 'address-field' ),
 			'priority' => 90,
 		) );
 		if ( isset( $fields['shipping']['shipping_company'] ) ) {
@@ -454,6 +493,249 @@ function nh_checkout_set_field( &$fields, $key, $args ) {
 	}
 
 	$fields[ $key ] = array_merge( $fields[ $key ], $args );
+}
+
+/**
+ * Dialling codes used by the checkout phone field.
+ *
+ * Keys are ISO 3166-1 alpha-2. Values are digits without the plus sign.
+ *
+ * @return array<string,string>
+ */
+function nh_checkout_calling_codes() {
+	return array(
+		'LT' => '370',
+		'LV' => '371',
+		'EE' => '372',
+		'FI' => '358',
+		'SE' => '46',
+		'NO' => '47',
+		'DK' => '45',
+		'IS' => '354',
+		'DE' => '49',
+		'AT' => '43',
+		'BE' => '32',
+		'NL' => '31',
+		'FR' => '33',
+		'PL' => '48',
+		'CZ' => '420',
+		'SK' => '421',
+		'HU' => '36',
+		'IE' => '353',
+		'ES' => '34',
+		'PT' => '351',
+		'IT' => '39',
+		'GR' => '30',
+		'RO' => '40',
+		'BG' => '359',
+		'HR' => '385',
+		'SI' => '386',
+		'LU' => '352',
+		'CH' => '41',
+		'GB' => '44',
+		'CY' => '357',
+		'MT' => '356',
+		'US' => '1',
+		'CA' => '1',
+	);
+}
+
+/**
+ * Unique calling-code options for the phone prefix select.
+ *
+ * @return array<string,string> code => label ("+370")
+ */
+function nh_checkout_calling_code_options() {
+	$codes = array_unique( array_values( nh_checkout_calling_codes() ) );
+	sort( $codes, SORT_NUMERIC );
+	$options = array();
+	foreach ( $codes as $code ) {
+		$options[ $code ] = '+' . $code;
+	}
+	return $options;
+}
+
+/**
+ * Default calling-code digits for the shop / current billing country.
+ *
+ * @param string $country ISO country.
+ * @return string
+ */
+function nh_checkout_default_calling_code( $country = '' ) {
+	$map     = nh_checkout_calling_codes();
+	$country = strtoupper( (string) $country );
+	if ( $country && isset( $map[ $country ] ) ) {
+		return $map[ $country ];
+	}
+	$base = function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_base_country() : '';
+	if ( $base && isset( $map[ $base ] ) ) {
+		return $map[ $base ];
+	}
+	return '370';
+}
+
+/**
+ * Keep only an allowed calling-code value.
+ *
+ * @param string $code Raw posted code.
+ * @return string
+ */
+function nh_checkout_sanitize_calling_code( $code ) {
+	$code    = preg_replace( '/\D/', '', (string) $code );
+	$allowed = nh_checkout_calling_code_options();
+	return isset( $allowed[ $code ] ) ? $code : '';
+}
+
+/**
+ * Combine a national number with a calling code into +XXXXXXXX.
+ *
+ * If the number is already international (+ or 00), keep that form.
+ *
+ * @param string $number Raw national or international number.
+ * @param string $code   Dialling digits without +.
+ * @return string
+ */
+function nh_checkout_normalize_phone( $number, $code ) {
+	$number = preg_replace( '/[^\d+]/', '', (string) $number );
+	$code   = nh_checkout_sanitize_calling_code( $code );
+
+	if ( '' === $number ) {
+		return '';
+	}
+
+	if ( 0 === strpos( $number, '00' ) ) {
+		$number = '+' . substr( $number, 2 );
+	}
+
+	if ( 0 === strpos( $number, '+' ) ) {
+		$digits = preg_replace( '/\D/', '', substr( $number, 1 ) );
+		return $digits === '' ? '' : '+' . $digits;
+	}
+
+	if ( $code && 0 === strpos( $number, '0' ) ) {
+		$number = ltrim( $number, '0' );
+	}
+
+	if ( $code && $number !== '' ) {
+		return '+' . $code . $number;
+	}
+
+	return $number;
+}
+
+/**
+ * Split a stored international number into calling-code digits and the rest.
+ *
+ * @param string $phone Stored phone.
+ * @return array{0:string,1:string} [ code digits, national remainder ]
+ */
+function nh_checkout_split_phone( $phone ) {
+	$phone = (string) $phone;
+	if ( 0 === strpos( $phone, '00' ) ) {
+		$phone = '+' . substr( $phone, 2 );
+	}
+	if ( 0 !== strpos( $phone, '+' ) ) {
+		return array( '', $phone );
+	}
+	$digits  = preg_replace( '/\D/', '', substr( $phone, 1 ) );
+	$options = array_keys( nh_checkout_calling_code_options() );
+	usort(
+		$options,
+		function ( $a, $b ) {
+			return strlen( $b ) - strlen( $a );
+		}
+	);
+	foreach ( $options as $code ) {
+		if ( 0 === strpos( $digits, $code ) ) {
+			return array( $code, substr( $digits, strlen( $code ) ) );
+		}
+	}
+	return array( '', $phone );
+}
+
+/**
+ * Inject a calling-code select next to checkout tel fields.
+ *
+ * @param string $field Field HTML.
+ * @param string $key   Field key.
+ * @param array  $args  Field args.
+ * @param mixed  $value Current value.
+ * @return string
+ */
+function nh_checkout_phone_field_html( $field, $key, $args, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	if ( ! in_array( $key, array( 'billing_phone', 'billing_contact_phone' ), true ) ) {
+		return $field;
+	}
+	if ( ! preg_match( '/<input\b[^>]*>/i', $field, $match ) ) {
+		return $field;
+	}
+
+	$code_name   = $key . '_code';
+	$posted_code = isset( $_POST[ $code_name ] ) ? wc_clean( wp_unslash( $_POST[ $code_name ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	list( $split_code, $national ) = nh_checkout_split_phone( (string) $value );
+
+	$selected = nh_checkout_sanitize_calling_code( $posted_code ? $posted_code : $split_code );
+	if ( ! $selected ) {
+		$country = '';
+		if ( function_exists( 'WC' ) && WC()->customer && is_callable( array( WC()->customer, 'get_billing_country' ) ) ) {
+			$country = WC()->customer->get_billing_country();
+		}
+		$selected = nh_checkout_default_calling_code( $country );
+	}
+
+	$display = $split_code ? $national : (string) $value;
+
+	$input = $match[0];
+	if ( preg_match( '/\svalue="/', $input ) ) {
+		$input = preg_replace( '/\svalue="[^"]*"/', ' value="' . esc_attr( $display ) . '"', $input, 1 );
+	} else {
+		$input = preg_replace( '/<input\b/i', '<input value="' . esc_attr( $display ) . '"', $input, 1 );
+	}
+
+	$options_html = '';
+	foreach ( nh_checkout_calling_code_options() as $code => $label ) {
+		$options_html .= '<option value="' . esc_attr( $code ) . '"' . selected( $selected, $code, false ) . '>' . esc_html( $label ) . '</option>';
+	}
+
+	$combo = '<span class="nh-phone-combo">'
+		. '<select name="' . esc_attr( $code_name ) . '" id="' . esc_attr( $code_name ) . '" class="nh-phone-code" aria-label="' . esc_attr__( 'Country calling code', 'nh-theme' ) . '" autocomplete="tel-country-code">'
+		. $options_html
+		. '</select>'
+		. $input
+		. '</span>';
+
+	return str_replace( $match[0], $combo, $field );
+}
+
+/**
+ * Persist phones as +XXXXXXXX from the calling-code select + number.
+ *
+ * @param array $data Posted checkout data.
+ * @return array
+ */
+function nh_checkout_normalize_posted_phones( $data ) {
+	if ( ! is_array( $data ) ) {
+		return $data;
+	}
+
+	$country = isset( $data['billing_country'] ) ? $data['billing_country'] : '';
+	$code    = isset( $_POST['billing_phone_code'] ) ? wc_clean( wp_unslash( $_POST['billing_phone_code'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( ! nh_checkout_sanitize_calling_code( $code ) ) {
+		$code = nh_checkout_default_calling_code( $country );
+	}
+	if ( isset( $data['billing_phone'] ) ) {
+		$data['billing_phone'] = nh_checkout_normalize_phone( $data['billing_phone'], $code );
+	}
+
+	$contact_code = isset( $_POST['billing_contact_phone_code'] ) ? wc_clean( wp_unslash( $_POST['billing_contact_phone_code'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( ! nh_checkout_sanitize_calling_code( $contact_code ) ) {
+		$contact_code = nh_checkout_default_calling_code( $country );
+	}
+	if ( isset( $data['billing_contact_phone'] ) ) {
+		$data['billing_contact_phone'] = nh_checkout_normalize_phone( $data['billing_contact_phone'], $contact_code );
+	}
+
+	return $data;
 }
 
 /**
@@ -505,8 +787,8 @@ function nh_checkout_get_value( $value, $input ) {
 		return 'private';
 	}
 
-	if ( 'billing_company_reg' === $input && ( $value === null || $value === '' ) && is_user_logged_in() ) {
-		return (string) get_user_meta( get_current_user_id(), 'billing_company_reg', true );
+	if ( in_array( $input, array( 'billing_company_reg', 'billing_contact_email', 'billing_contact_phone' ), true ) && ( $value === null || $value === '' ) && is_user_logged_in() ) {
+		return (string) get_user_meta( get_current_user_id(), $input, true );
 	}
 
 	return $value;
@@ -561,8 +843,16 @@ function nh_checkout_validate_fields( $data, $errors ) {
 		if ( $reg === '' ) {
 			$errors->add( 'billing_company_reg', __( 'Please enter your registration number.', 'nh-theme' ) );
 		}
+
+		$contact_email = isset( $data['billing_contact_email'] ) ? trim( (string) $data['billing_contact_email'] ) : '';
+		if ( $contact_email !== '' && ! is_email( $contact_email ) ) {
+			$errors->add( 'billing_contact_email', __( 'Please enter a valid contact email.', 'nh-theme' ) );
+		}
 		return;
 	}
+
+	$errors->remove( 'billing_contact_email' );
+	$errors->remove( 'billing_contact_phone' );
 
 	if ( $first === '' ) {
 		$errors->add( 'billing_first_name', __( 'Please enter a first name.', 'nh-theme' ) );
@@ -589,6 +879,8 @@ function nh_checkout_save_order_meta( $order, $data ) {
 	if ( 'business' === $type ) {
 		$reg = isset( $data['billing_company_reg'] ) ? sanitize_text_field( wp_unslash( $data['billing_company_reg'] ) ) : '';
 		$order->update_meta_data( '_billing_company_reg', $reg );
+		$order->update_meta_data( '_billing_contact_email', isset( $data['billing_contact_email'] ) ? sanitize_email( $data['billing_contact_email'] ) : '' );
+		$order->update_meta_data( '_billing_contact_phone', isset( $data['billing_contact_phone'] ) ? wc_clean( $data['billing_contact_phone'] ) : '' );
 
 		$first = trim( (string) $order->get_billing_first_name() );
 		$last  = trim( (string) $order->get_billing_last_name() );
@@ -603,6 +895,8 @@ function nh_checkout_save_order_meta( $order, $data ) {
 
 	$order->set_billing_company( '' );
 	$order->update_meta_data( '_billing_company_reg', '' );
+	$order->update_meta_data( '_billing_contact_email', '' );
+	$order->update_meta_data( '_billing_contact_phone', '' );
 }
 
 /**
@@ -622,11 +916,15 @@ function nh_checkout_save_customer_meta( $customer, $data ) {
 	if ( 'business' === $type ) {
 		$reg = isset( $data['billing_company_reg'] ) ? sanitize_text_field( wp_unslash( $data['billing_company_reg'] ) ) : '';
 		$customer->update_meta_data( 'billing_company_reg', $reg );
+		$customer->update_meta_data( 'billing_contact_email', isset( $data['billing_contact_email'] ) ? sanitize_email( $data['billing_contact_email'] ) : '' );
+		$customer->update_meta_data( 'billing_contact_phone', isset( $data['billing_contact_phone'] ) ? wc_clean( $data['billing_contact_phone'] ) : '' );
 		return;
 	}
 
 	$customer->set_billing_company( '' );
 	$customer->update_meta_data( 'billing_company_reg', '' );
+	$customer->update_meta_data( 'billing_contact_email', '' );
+	$customer->update_meta_data( 'billing_contact_phone', '' );
 }
 
 /**
@@ -659,6 +957,35 @@ function nh_checkout_formatted_billing_address( $address, $order ) {
 }
 
 /**
+ * Optional business contact-person email and phone stored on the order.
+ *
+ * @param WC_Order $order Order.
+ * @return array<int,array{label:string,value:string}>
+ */
+function nh_checkout_contact_meta_lines( $order ) {
+	if ( ! $order instanceof WC_Order ) {
+		return array();
+	}
+
+	$lines = array();
+	$email = trim( (string) $order->get_meta( '_billing_contact_email' ) );
+	$phone = trim( (string) $order->get_meta( '_billing_contact_phone' ) );
+	if ( $email !== '' ) {
+		$lines[] = array(
+			'label' => __( 'Contact email', 'nh-theme' ),
+			'value' => $email,
+		);
+	}
+	if ( $phone !== '' ) {
+		$lines[] = array(
+			'label' => __( 'Contact phone', 'nh-theme' ),
+			'value' => $phone,
+		);
+	}
+	return $lines;
+}
+
+/**
  * @param WC_Order $order Order.
  */
 function nh_checkout_admin_billing_meta( $order ) {
@@ -677,6 +1004,49 @@ function nh_checkout_admin_billing_meta( $order ) {
 	if ( $reg ) {
 		echo '<p><strong>' . esc_html__( 'Registration number', 'nh-theme' ) . ':</strong> ' . esc_html( $reg ) . '</p>';
 	}
+
+	foreach ( nh_checkout_contact_meta_lines( $order ) as $line ) {
+		echo '<p><strong>' . esc_html( $line['label'] ) . ':</strong> ' . esc_html( $line['value'] ) . '</p>';
+	}
+}
+
+/**
+ * Thank-you / my-account order details.
+ *
+ * @param WC_Order $order Order.
+ */
+function nh_checkout_order_contact_details( $order ) {
+	$lines = nh_checkout_contact_meta_lines( $order );
+	if ( ! $lines ) {
+		return;
+	}
+
+	echo '<section class="woocommerce-customer-details--contact"><h2>' . esc_html__( 'Contact person', 'nh-theme' ) . '</h2>';
+	foreach ( $lines as $line ) {
+		echo '<p><strong>' . esc_html( $line['label'] ) . ':</strong> ' . esc_html( $line['value'] ) . '</p>';
+	}
+	echo '</section>';
+}
+
+/**
+ * @param array         $fields        Email customer fields.
+ * @param bool          $sent_to_admin Unused.
+ * @param WC_Order|null $order         Order.
+ * @return array
+ */
+function nh_checkout_email_contact_fields( $fields, $sent_to_admin, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	if ( ! $order instanceof WC_Order || ! is_array( $fields ) ) {
+		return $fields;
+	}
+
+	foreach ( nh_checkout_contact_meta_lines( $order ) as $index => $line ) {
+		$fields[ 'nh_contact_' . $index ] = array(
+			'label' => $line['label'],
+			'value' => $line['value'],
+		);
+	}
+
+	return $fields;
 }
 
 /**
