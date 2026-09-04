@@ -138,8 +138,12 @@ function nh_checkout_ux_init() {
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_review_address', 2 );
+	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_reapply_posted_iframe_zip', 1, 2 );
 	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_on_iframe_customer_updated', 5, 2 );
-	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping' );
+	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping', 999 );
+	add_filter( 'woocommerce_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
+	add_filter( 'woocommerce_cart_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
+	add_action( 'wc_ajax_nh_snippet_apply_zip', 'nh_checkout_ajax_snippet_apply_zip' );
 	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_strip_snippet_fields', 10000 );
 	add_filter( 'woocommerce_enable_order_notes_field', 'nh_checkout_snippet_disable_order_notes', 10000 );
 	add_filter( 'kco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
@@ -278,6 +282,7 @@ function nh_checkout_ux_assets() {
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
 			'snippetCheckout' => nh_checkout_is_snippet_gateway(),
+			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
 		)
 	);
 }
@@ -1576,6 +1581,11 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
  * @param string $post_data Checkout form query string.
  */
 function nh_checkout_sync_review_address( $post_data ) {
+	if ( nh_checkout_is_snippet_gateway() ) {
+		nh_checkout_apply_snippet_posted_zip( $post_data );
+		return;
+	}
+
 	$form = array();
 	if ( is_string( $post_data ) && $post_data !== '' ) {
 		parse_str( $post_data, $form );
@@ -1624,6 +1634,126 @@ function nh_checkout_sync_review_address( $post_data ) {
 	}
 
 	nh_checkout_flush_shipping_cache_for_destination( $country, $postcode );
+}
+
+/**
+ * Pull a usable postcode from the current iframe refresh request.
+ *
+ * @param string $post_data Serialized checkout form.
+ * @return string
+ */
+function nh_checkout_posted_iframe_zip( $post_data = '' ) {
+	$zip = nh_checkout_usable_postcode( nh_checkout_posted_scalar( 'billing_postcode' ) );
+	if ( $zip !== '' ) {
+		return $zip;
+	}
+
+	$zip = nh_checkout_usable_postcode( nh_checkout_posted_scalar( 'postcode' ) );
+	if ( $zip !== '' ) {
+		return $zip;
+	}
+
+	if ( is_string( $post_data ) && $post_data !== '' ) {
+		$form = array();
+		parse_str( $post_data, $form );
+		if ( ! empty( $form['billing_postcode'] ) && is_scalar( $form['billing_postcode'] ) ) {
+			$zip = nh_checkout_usable_postcode( (string) $form['billing_postcode'] );
+			if ( $zip !== '' ) {
+				return $zip;
+			}
+		}
+	}
+
+	if ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$form = array();
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $form['billing_postcode'] ) && is_scalar( $form['billing_postcode'] ) ) {
+			return nh_checkout_usable_postcode( (string) $form['billing_postcode'] );
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Country + ZIP is enough for snippet order-summary rates. Do not wait for
+ * street/name/email from the iframe, and do not copy stale session address.
+ *
+ * @param string $post_data Serialized checkout form.
+ */
+function nh_checkout_apply_snippet_posted_zip( $post_data = '' ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return;
+	}
+
+	$zip = nh_checkout_posted_iframe_zip( $post_data );
+	if ( $zip === '' ) {
+		return;
+	}
+
+	$country = nh_checkout_posted_scalar( 'billing_country' );
+	if ( $country === '' ) {
+		$country = nh_checkout_posted_scalar( 'country' );
+	}
+	if ( $country === '' ) {
+		$country = (string) WC()->customer->get_shipping_country();
+	}
+	if ( $country === '' ) {
+		$country = (string) WC()->customer->get_billing_country();
+	}
+
+	WC()->customer->set_billing_postcode( $zip );
+	WC()->customer->set_shipping_postcode( $zip );
+	if ( $country !== '' ) {
+		WC()->customer->set_billing_country( $country );
+		WC()->customer->set_shipping_country( $country );
+	}
+	WC()->customer->set_calculated_shipping( true );
+
+	$_POST['billing_postcode'] = $zip; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$_POST['postcode']         = $zip; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$_POST['s_postcode']       = $zip; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$_POST['has_full_address'] = '1'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+	nh_checkout_flush_shipping_cache_for_destination( $country, $zip );
+}
+
+/**
+ * SVEA refresh_sco_snippet overlays BillingAddress from its server get(),
+ * which stays empty until the customer is fully identified. Restore the ZIP
+ * that was already posted from the iframe.
+ *
+ * @param WC_Customer          $customer Customer.
+ * @param array<string, mixed> $data     Address payload from SVEA.
+ */
+function nh_checkout_reapply_posted_iframe_zip( $customer, $data = array() ) {
+	if ( ! is_object( $customer ) || ! method_exists( $customer, 'set_billing_postcode' ) ) {
+		return;
+	}
+
+	$zip = nh_checkout_posted_iframe_zip();
+	if ( $zip === '' && is_array( $data ) ) {
+		if ( ! empty( $data['billing_postcode'] ) ) {
+			$zip = nh_checkout_usable_postcode( $data['billing_postcode'] );
+		}
+		if ( $zip === '' && ! empty( $data['shipping_postcode'] ) ) {
+			$zip = nh_checkout_usable_postcode( $data['shipping_postcode'] );
+		}
+	}
+	if ( $zip === '' ) {
+		return;
+	}
+
+	$current_billing  = nh_checkout_usable_postcode( $customer->get_billing_postcode() );
+	$current_shipping = nh_checkout_usable_postcode( $customer->get_shipping_postcode() );
+	if ( $current_billing === $zip && $current_shipping === $zip ) {
+		return;
+	}
+
+	$customer->set_billing_postcode( $zip );
+	$customer->set_shipping_postcode( $zip );
+	$customer->set_calculated_shipping( true );
+	$customer->save();
 }
 
 /**
@@ -1713,6 +1843,95 @@ function nh_checkout_ready_to_calc_shipping( $ready ) {
 	}
 
 	return $ready;
+}
+
+/**
+ * Do not tell iframe customers that no shipping exists before a postcode is known.
+ *
+ * @param string $html WooCommerce empty-shipping HTML.
+ * @return string
+ */
+function nh_checkout_snippet_no_shipping_html( $html ) {
+	if ( ! nh_checkout_is_snippet_gateway() || ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return $html;
+	}
+
+	$postcode = nh_checkout_usable_postcode( WC()->customer->get_shipping_postcode() );
+	if ( $postcode === '' ) {
+		$postcode = nh_checkout_usable_postcode( WC()->customer->get_billing_postcode() );
+	}
+	if ( $postcode !== '' ) {
+		return $html;
+	}
+
+	return '<p>' . esc_html__( 'Enter your postcode to see the shipping cost.', 'nh-theme' ) . '</p>';
+}
+
+/**
+ * Apply an iframe ZIP to the Woo customer and return the order-summary fragment.
+ * Bypasses SVEA's empty BillingAddress get() so rates can show before full identity.
+ */
+function nh_checkout_ajax_snippet_apply_zip() {
+	check_ajax_referer( 'nh-snippet-apply-zip', 'security' );
+
+	if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->customer ) {
+		wp_send_json_error();
+	}
+
+	wc_maybe_define_constant( 'WOOCOMMERCE_CHECKOUT', true );
+
+	$zip = nh_checkout_usable_postcode( nh_checkout_posted_scalar( 'postcode' ) );
+	if ( $zip === '' ) {
+		$zip = nh_checkout_usable_postcode( nh_checkout_posted_scalar( 'billing_postcode' ) );
+	}
+	if ( $zip === '' ) {
+		wp_send_json_error();
+	}
+
+	$country = nh_checkout_posted_scalar( 'country' );
+	if ( $country === '' ) {
+		$country = nh_checkout_posted_scalar( 'billing_country' );
+	}
+	if ( $country === '' ) {
+		$country = (string) WC()->customer->get_shipping_country();
+	}
+	if ( $country === '' ) {
+		$country = (string) WC()->customer->get_billing_country();
+	}
+
+	WC()->customer->set_billing_postcode( $zip );
+	WC()->customer->set_shipping_postcode( $zip );
+	if ( $country !== '' ) {
+		WC()->customer->set_billing_country( $country );
+		WC()->customer->set_shipping_country( $country );
+	}
+	WC()->customer->set_calculated_shipping( true );
+	WC()->customer->save();
+
+	if ( WC()->session ) {
+		WC()->session->set( 'nh_ship_dest', '' );
+	}
+	nh_checkout_flush_shipping_cache_for_destination( $country, $zip );
+
+	WC()->cart->calculate_shipping();
+	WC()->cart->calculate_totals();
+
+	$template = function_exists( 'wc_locate_template' ) ? wc_locate_template( 'checkout/review-order.php' ) : '';
+	ob_start();
+	if ( $template ) {
+		include $template;
+	} elseif ( function_exists( 'woocommerce_order_review' ) ) {
+		woocommerce_order_review();
+	}
+	$html = ob_get_clean();
+
+	wp_send_json_success(
+		array(
+			'fragments' => array(
+				'.woocommerce-checkout-review-order' => $html,
+			),
+		)
+	);
 }
 
 /**
