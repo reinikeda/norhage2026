@@ -433,9 +433,17 @@
     return /update_order_review/i.test(url);
   }
 
-  function isSveaSnippetRefresh(options) {
-    var url = String((options && options.url) || '');
-    return /refresh_sco_snippet/i.test(url);
+  function isSnippetCheckoutPage() {
+    if (i18n.snippetCheckout === true || i18n.snippetCheckout === 1 || i18n.snippetCheckout === '1') {
+      return true;
+    }
+    var body = document.body;
+    if (body && body.classList.contains('nh-checkout--snippet')) {
+      return true;
+    }
+    return !!(document.querySelector(
+      '.wc-svea-checkout-page, #kco-wrapper, form.svea-checkout, form.kco-checkout, #svea-checkout-iframe-container, #klarna-checkout-container'
+    ));
   }
 
   function stampShippingIndexes() {
@@ -444,17 +452,10 @@
   }
 
   $.ajaxPrefilter(function (options) {
-    if (!options || options.data == null) {
+    if (!options || options.data == null || !isWooUpdateOrderReview(options)) {
       return;
     }
-    if (isWooUpdateOrderReview(options)) {
-      options.data = rewriteShippingPayload(options.data);
-      injectIframeDestination(options);
-      return;
-    }
-    if (isSveaSnippetRefresh(options)) {
-      injectIframeDestination(options);
-    }
+    options.data = rewriteShippingPayload(options.data);
   });
 
   function bindShippingTotals() {
@@ -474,6 +475,9 @@
     $(document.body).off('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method');
     $(document.body).on('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method', function () {
       stampShippingIndexes();
+      if (isSnippetCheckoutPage()) {
+        return;
+      }
       $(document.body).trigger('update_checkout', { update_shipping_method: true });
     });
   }
@@ -807,187 +811,45 @@
   }
 
   function refreshCheckoutChrome() {
-    keepPhoneCodeNative();
-    hydratePhoneCombos();
     stampShippingIndexes();
     bindSummaryToggle();
     syncSummaryTotal();
+    lockSummaryLayout();
+    syncSnippetCheckout();
+    if (isSnippetCheckoutPage()) {
+      return;
+    }
+    keepPhoneCodeNative();
+    hydratePhoneCombos();
     enhanceNotes();
     enhancePaymentCards();
-    lockSummaryLayout();
     forcePairClasses();
     syncPairedAddressRows();
-    syncSnippetCheckout();
   }
 
-  var fillingAddressFields = false;
   var postcodeShipTimer = null;
   var lastShipDest = '';
-
-  function usablePostcode(value) {
-    value = String(value == null ? '' : value).trim();
-    if (!value || value === '••••' || /^•+$/.test(value)) {
-      return '';
-    }
-    return value;
-  }
-
-  function latestNamedValue(name) {
-    var value = '';
-    $('#' + name + ', [name="' + name + '"]').each(function () {
-      var raw = String($(this).val() || '').trim();
-      if (name.indexOf('postcode') !== -1) {
-        raw = usablePostcode(raw);
-      }
-      if (raw) {
-        value = raw;
-      }
-    });
-    return value;
-  }
-
-  function latestPostcode() {
-    var zip = latestNamedValue('billing_postcode');
-    if (shipToDifferentAddress()) {
-      var shipping = latestNamedValue('shipping_postcode');
-      if (shipping) {
-        return shipping;
-      }
-    }
-    return zip;
-  }
-
-  function latestCountry() {
-    var country = String($('#billing_country').val() || latestNamedValue('billing_country') || '').trim();
-    if (shipToDifferentAddress()) {
-      var shipping = String($('#shipping_country').val() || latestNamedValue('shipping_country') || '').trim();
-      if (shipping) {
-        return shipping;
-      }
-    }
-    return country;
-  }
-
-  function rewriteQueryParam(qs, key, value) {
-    qs = String(qs || '');
-    var encoded = encodeURIComponent(value);
-    var re = new RegExp('(^|&)' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=[^&]*', 'g');
-    var next = qs.replace(re, '$1' + key + '=' + encoded);
-    if (next !== qs) {
-      return next;
-    }
-    return qs + (qs ? '&' : '') + key + '=' + encoded;
-  }
-
-  function injectIframeDestination(options) {
-    var zip = latestPostcode();
-    var country = iso2Country(latestCountry()) || latestCountry();
-    if (!options || !zip) {
-      return;
-    }
-    if (typeof options.data === 'string') {
-      options.data = rewriteQueryParam(options.data, 'billing_postcode', zip);
-      options.data = rewriteQueryParam(options.data, 'postcode', zip);
-      if (!shipToDifferentAddress()) {
-        options.data = rewriteQueryParam(options.data, 'shipping_postcode', zip);
-        options.data = rewriteQueryParam(options.data, 's_postcode', zip);
-      }
-      if (country) {
-        options.data = rewriteQueryParam(options.data, 'billing_country', country);
-        options.data = rewriteQueryParam(options.data, 'country', country);
-        if (!shipToDifferentAddress()) {
-          options.data = rewriteQueryParam(options.data, 's_country', country);
-        }
-      }
-      options.data = rewriteQueryParam(options.data, 'has_full_address', '1');
-      return;
-    }
-    if (!options.data || typeof options.data !== 'object') {
-      return;
-    }
-    options.data.billing_postcode = zip;
-    options.data.postcode = zip;
-    if (!shipToDifferentAddress()) {
-      options.data.shipping_postcode = zip;
-      options.data.s_postcode = zip;
-    }
-    if (country) {
-      options.data.billing_country = country;
-      options.data.country = country;
-      if (!shipToDifferentAddress()) {
-        options.data.s_country = country;
-      }
-    }
-    options.data.has_full_address = '1';
-    if (typeof options.data.post_data === 'string') {
-      options.data.post_data = rewriteQueryParam(options.data.post_data, 'billing_postcode', zip);
-      if (!shipToDifferentAddress()) {
-        options.data.post_data = rewriteQueryParam(options.data.post_data, 'shipping_postcode', zip);
-      }
-      if (country) {
-        options.data.post_data = rewriteQueryParam(options.data.post_data, 'billing_country', country);
-      }
-    }
-  }
-
-  function fillCheckoutField(selector, value) {
-    var $fields = $(selector);
-    if (!$fields.length || value == null) {
-      return false;
-    }
-    value = String(value);
-    var changed = false;
-    fillingAddressFields = true;
-    try {
-      $fields.each(function () {
-        if (String($(this).val() || '') !== value) {
-          $(this).val(value);
-          changed = true;
-        }
-      });
-    } finally {
-      fillingAddressFields = false;
-    }
-    return changed;
-  }
 
   function shipToDifferentAddress() {
     return $('#ship-to-different-address-checkbox').is(':checked');
   }
 
   function destinationKey() {
-    var country = latestCountry();
-    var postcode = latestNamedValue('billing_postcode');
+    var country = String($('#billing_country').val() || '').trim();
+    var postcode = String($('#billing_postcode').val() || '').trim();
     var sCountry = country;
     var sPostcode = postcode;
     if (shipToDifferentAddress()) {
       sCountry = String($('#shipping_country').val() || country).trim();
-      sPostcode = latestNamedValue('shipping_postcode') || postcode;
+      sPostcode = String($('#shipping_postcode').val() || '').trim();
     }
     return [country, postcode, sCountry, sPostcode].join('|');
   }
 
-  function syncDuplicateAddressFields() {
-    var postcode = latestNamedValue('billing_postcode');
-    fillingAddressFields = true;
-    try {
-      if (postcode) {
-        $('input#billing_postcode, input[name="billing_postcode"]').val(postcode);
-      }
-      if (!shipToDifferentAddress() && postcode) {
-        $('input#shipping_postcode, input[name="shipping_postcode"]').val(postcode);
-        var country = $('#billing_country').val();
-        if (country) {
-          $('#shipping_country, select[name="shipping_country"]').val(country);
-        }
-      }
-    } finally {
-      fillingAddressFields = false;
-    }
-  }
-
   function flushPostcodeShipping() {
-    syncDuplicateAddressFields();
+    if (isSnippetCheckoutPage()) {
+      return;
+    }
     var key = destinationKey();
     var postcode = key.split('|')[1];
     if (!postcode) {
@@ -1003,235 +865,27 @@
   }
 
   function schedulePostcodeShipping() {
+    if (isSnippetCheckoutPage()) {
+      return;
+    }
     window.clearTimeout(postcodeShipTimer);
-    postcodeShipTimer = window.setTimeout(flushPostcodeShipping, 250);
+    postcodeShipTimer = window.setTimeout(flushPostcodeShipping, 400);
   }
-
-  function applyIframeAddress(parts) {
-    var copyShip = !shipToDifferentAddress();
-    parts = parts || {};
-    var country = iso2Country(parts.country);
-    var postcode = usablePostcode(parts.postcode);
-
-    if (postcode) {
-      fillCheckoutField('#billing_postcode, input[name="billing_postcode"]', postcode);
-      if (copyShip) {
-        fillCheckoutField('#shipping_postcode, input[name="shipping_postcode"]', postcode);
-      }
-    }
-    if (country) {
-      fillCheckoutField('#billing_country, select[name="billing_country"]', country);
-      if (copyShip) {
-        fillCheckoutField('#shipping_country, select[name="shipping_country"]', country);
-      }
-    }
-    if (parts.city) {
-      fillCheckoutField('#billing_city, input[name="billing_city"]', parts.city);
-      if (copyShip) {
-        fillCheckoutField('#shipping_city, input[name="shipping_city"]', parts.city);
-      }
-    }
-    schedulePostcodeShipping();
-  }
-
-  function iso2Country(country) {
-    country = String(country || '').toUpperCase();
-    if (country.length === 2) {
-      return country;
-    }
-    var map = {
-      SWE: 'SE', NOR: 'NO', DNK: 'DK', FIN: 'FI', DEU: 'DE',
-      AUT: 'AT', NLD: 'NL', BEL: 'BE', LTU: 'LT', LVA: 'LV',
-      EST: 'EE', POL: 'PL', FRA: 'FR', GBR: 'GB', IRL: 'IE'
-    };
-    return map[country] || '';
-  }
-
-  function observeValue(data) {
-    if (data == null) {
-      return '';
-    }
-    if (typeof data === 'string' || typeof data === 'number') {
-      return String(data);
-    }
-    if (typeof data.value === 'string' || typeof data.value === 'number') {
-      return String(data.value);
-    }
-    if (typeof data.postalCode === 'string') {
-      return data.postalCode;
-    }
-    if (typeof data.postal_code === 'string') {
-      return data.postal_code;
-    }
-    return '';
-  }
-
-  function fieldLooksLikePostcode(el) {
-    if (!el) {
-      return false;
-    }
-    var id = el.id || '';
-    var name = el.name || '';
-    return (
-      id === 'billing_postcode' ||
-      id === 'shipping_postcode' ||
-      id === 'billing_country' ||
-      id === 'shipping_country' ||
-      name === 'billing_postcode' ||
-      name === 'shipping_postcode' ||
-      name === 'billing_country' ||
-      name === 'shipping_country'
-    );
-  }
-
-  function hookProgrammaticAddressVal() {
-    if ($.fn.val._nhIframeDest) {
-      return;
-    }
-    var originalVal = $.fn.val;
-    $.fn.val = function () {
-      var result = originalVal.apply(this, arguments);
-      if (fillingAddressFields || !arguments.length) {
-        return result;
-      }
-      var touched = false;
-      this.each(function () {
-        if (fieldLooksLikePostcode(this)) {
-          touched = true;
-          return false;
-        }
-      });
-      if (touched) {
-        syncDuplicateAddressFields();
-        schedulePostcodeShipping();
-      }
-      return result;
-    };
-    $.fn.val._nhIframeDest = true;
-  }
-
-  function sveaObserve(api, name, handler) {
-    if (!api) {
-      return false;
-    }
-    if (typeof api.observeEvent === 'function') {
-      api.observeEvent(name, handler);
-      return true;
-    }
-    if (typeof api.observe === 'function') {
-      api.observe(name, handler);
-      return true;
-    }
-    return false;
-  }
-
-  var sveaAddressBound = false;
-  function tryBindSveaAddress() {
-    if (sveaAddressBound) {
-      return;
-    }
-    var api = window.scoApi;
-    if (!api) {
-      return;
-    }
-    var bound = sveaObserve(api, 'identity.postalCode', function (data) {
-      var postcode = usablePostcode(observeValue(data));
-      if (postcode) {
-        applyIframeAddress({ postcode: postcode });
-      }
-    });
-    if (!bound) {
-      return;
-    }
-    sveaAddressBound = true;
-    sveaObserve(api, 'identity.city', function (data) {
-      var city = observeValue(data);
-      if (city) {
-        applyIframeAddress({ city: city });
-      }
-    });
-    sveaObserve(api, 'identity.countryCode', function (data) {
-      var country = observeValue(data);
-      if (country) {
-        applyIframeAddress({ country: country });
-      }
-    });
-  }
-
-  function patchKlarnaApi(api) {
-    if (!api || api._nhDestPatched || typeof api.on !== 'function') {
-      return;
-    }
-    api._nhDestPatched = true;
-    var originalOn = api.on.bind(api);
-    api.on = function (listeners) {
-      if (!listeners || typeof listeners !== 'object') {
-        return originalOn(listeners);
-      }
-      var originalChange = listeners.change;
-      listeners.change = function (data) {
-        if (typeof originalChange === 'function') {
-          originalChange(data);
-        }
-        if (!data) {
-          return;
-        }
-        applyIframeAddress({
-          postcode: data.postal_code || data.postalCode || '',
-          country: data.country || '',
-          city: data.city || ''
-        });
-      };
-      return originalOn(listeners);
-    };
-  }
-
-  function wrapKlarnaCheckout() {
-    var original = window._klarnaCheckout;
-    if (typeof original !== 'function' || original._nhWrapped) {
-      return typeof original === 'function';
-    }
-    window._klarnaCheckout = function (cb) {
-      original(function (api) {
-        patchKlarnaApi(api);
-        if (typeof cb === 'function') {
-          cb(api);
-        }
-      });
-    };
-    window._klarnaCheckout._nhWrapped = true;
-    return true;
-  }
-
-  var kustomAddressBound = false;
-  function tryBindKustomAddress() {
-    wrapKlarnaCheckout();
-    if (kustomAddressBound || typeof window._klarnaCheckout !== 'function') {
-      return;
-    }
-    kustomAddressBound = true;
-    window._klarnaCheckout(function (api) {
-      patchKlarnaApi(api);
-    });
-  }
-
-  wrapKlarnaCheckout();
 
   function bindPostcodeShippingUpdate() {
+    if (isSnippetCheckoutPage()) {
+      return;
+    }
     if (document.body.getAttribute('data-nh-postcode-ship') === '1') {
       return;
     }
     document.body.setAttribute('data-nh-postcode-ship', '1');
 
-    hookProgrammaticAddressVal();
-
     var selector = [
       '#billing_postcode',
       '#shipping_postcode',
       '#billing_country',
-      '#shipping_country',
-      'input[name="billing_postcode"]',
-      'input[name="shipping_postcode"]'
+      '#shipping_country'
     ].join(', ');
 
     $(document.body).on(
@@ -1239,37 +893,6 @@
       selector,
       schedulePostcodeShipping
     );
-
-    document.addEventListener('change', function (e) {
-      if (fieldLooksLikePostcode(e.target)) {
-        schedulePostcodeShipping();
-      }
-    }, true);
-
-    document.addEventListener('checkoutReady', tryBindSveaAddress);
-    $(document.body).on('kco_shipping_address_changed', function (e, payload) {
-      var data = payload && payload.data ? payload.data : payload;
-      if (!data) {
-        return;
-      }
-      applyIframeAddress({
-        postcode: data.postal_code || data.postalCode || '',
-        country: data.country || '',
-        city: data.city || ''
-      });
-    });
-
-    tryBindSveaAddress();
-    tryBindKustomAddress();
-    var tries = 0;
-    var poll = window.setInterval(function () {
-      tries += 1;
-      tryBindSveaAddress();
-      tryBindKustomAddress();
-      if ((sveaAddressBound && kustomAddressBound) || tries >= 45) {
-        window.clearInterval(poll);
-      }
-    }, 1000);
   }
 
   function watchSnippetCheckout() {
@@ -1283,23 +906,21 @@
     var timer = null;
     var obs = new MutationObserver(function () {
       window.clearTimeout(timer);
-      timer = window.setTimeout(function () {
-        syncSnippetCheckout();
-        tryBindSveaAddress();
-        tryBindKustomAddress();
-      }, 50);
+      timer = window.setTimeout(syncSnippetCheckout, 50);
     });
     obs.observe(document.body, { childList: true, subtree: true });
   }
 
   function boot() {
     stampShippingIndexes();
-    bindCustomerType();
-    bindCallingCode();
     bindShippingTotals();
-    bindPostcodeShippingUpdate();
-    refreshCheckoutChrome();
     watchSnippetCheckout();
+    if (!isSnippetCheckoutPage()) {
+      bindCustomerType();
+      bindCallingCode();
+      bindPostcodeShippingUpdate();
+    }
+    refreshCheckoutChrome();
   }
 
   $(document).on('click', '.nh-checkout-other-payment', function (e) {
@@ -1332,11 +953,16 @@
     refreshCheckoutChrome();
   });
   $(document.body).on('payment_method_selected', function () {
-    enhancePaymentCards();
     syncSnippetCheckout();
+    if (!isSnippetCheckoutPage()) {
+      enhancePaymentCards();
+    }
     window.setTimeout(syncSnippetCheckout, 300);
   });
   $(document.body).on('country_to_state_changing country_to_state_changed', function () {
+    if (isSnippetCheckoutPage()) {
+      return;
+    }
     window.setTimeout(function () {
       orderBillingFields();
       forcePairClasses();

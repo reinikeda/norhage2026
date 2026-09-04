@@ -277,6 +277,7 @@ function nh_checkout_ux_assets() {
 			'phoneLengths'    => nh_checkout_national_digit_limits(),
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
+			'snippetCheckout' => nh_checkout_is_snippet_gateway(),
 		)
 	);
 }
@@ -1530,6 +1531,12 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
 			$_POST[ $post_key ] = $value;
 			return;
 		}
+	}
+
+	// SVEA/Kustom write billing_postcode onto the customer after this hook.
+	// Restoring a stale session zip here freezes zip-specific shipping.
+	if ( nh_checkout_is_iframe_gateway() && ( strpos( $post_key, 'postcode' ) !== false || strpos( $customer_field, 'postcode' ) !== false ) ) {
+		return;
 	}
 
 	if ( ! nh_checkout_is_iframe_gateway() || ! function_exists( 'WC' ) || ! WC()->customer ) {
