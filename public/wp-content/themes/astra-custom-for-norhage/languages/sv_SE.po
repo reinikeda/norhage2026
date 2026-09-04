@@ -1813,6 +1813,13 @@ msgstr "Lägenhet, våning osv."
 msgid "Secure checkout"
 msgstr "Säker kassa"
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Ange ett förnamn."
+
+msgid "Please enter a last name."
+msgstr "Ange ett efternamn."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 

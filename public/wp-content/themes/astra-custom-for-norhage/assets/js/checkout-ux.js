@@ -1,5 +1,5 @@
 /**
- * Classic checkout: private/business toggle, mobile summary, notes accordion.
+ * Classic checkout: private/business toggle, field order, summary layout lock.
  */
 (function ($) {
   'use strict';
@@ -12,6 +12,57 @@
       return $checked.val() === 'business' ? 'business' : 'private';
     }
     return 'private';
+  }
+
+  function fieldOrder(isBusiness) {
+    if (isBusiness) {
+      return [
+        'billing_customer_type_field',
+        'billing_company_field',
+        'billing_company_reg_field',
+        'billing_country_field',
+        'billing_postcode_field',
+        'billing_address_1_field',
+        'billing_address_2_field',
+        'billing_city_field',
+        'billing_state_field',
+        'billing_email_field',
+        'billing_phone_field',
+        'nh_section_person_field',
+        'billing_first_name_field',
+        'billing_last_name_field'
+      ];
+    }
+    return [
+      'billing_customer_type_field',
+      'billing_first_name_field',
+      'billing_last_name_field',
+      'billing_email_field',
+      'billing_phone_field',
+      'billing_country_field',
+      'billing_postcode_field',
+      'billing_address_1_field',
+      'billing_address_2_field',
+      'billing_city_field',
+      'billing_state_field'
+    ];
+  }
+
+  function orderBillingFields() {
+    var $wrap = $('.woocommerce-billing-fields__field-wrapper');
+    if (!$wrap.length) {
+      return;
+    }
+    var isBusiness = selectedType() === 'business';
+    fieldOrder(isBusiness).forEach(function (id, index) {
+      var $el = $('#' + id);
+      if (!$el.length) {
+        return;
+      }
+      var priority = (index + 1) * 10;
+      $el.attr('data-priority', priority).data('priority', priority);
+      $wrap.append($el);
+    });
   }
 
   function ensureRequiredMark($row, on) {
@@ -41,8 +92,7 @@
 
     $('.nh-checkout-field--business').each(function () {
       var $row = $(this);
-      var hide = !isBusiness;
-      $row.toggleClass('nh-checkout-field--hidden', hide);
+      $row.toggleClass('nh-checkout-field--hidden', !isBusiness);
       if ($row.is('p.form-row')) {
         $row.toggleClass('validate-required', isBusiness);
         ensureRequiredMark($row, isBusiness);
@@ -52,18 +102,78 @@
       }
     });
 
-    var contactTitle = isBusiness
-      ? i18n.contactHeadingBusiness
-      : i18n.contactHeadingPrivate;
-    if (contactTitle) {
-      $('#nh_section_contact_field .nh-checkout-section__title').text(contactTitle);
-    }
+    $('.nh-checkout-field--person').each(function () {
+      var $row = $(this);
+      $row.toggleClass('validate-required', !isBusiness);
+      ensureRequiredMark($row, !isBusiness);
+      if (isBusiness) {
+        $row.removeClass('woocommerce-invalid woocommerce-invalid-required-field');
+      }
+    });
+
+    orderBillingFields();
   }
 
   function bindCustomerType() {
     $(document.body).off('change.nhCheckoutType', 'input[name="billing_customer_type"]');
     $(document.body).on('change.nhCheckoutType', 'input[name="billing_customer_type"]', applyCustomerType);
     applyCustomerType();
+  }
+
+  function lockSummaryLayout() {
+    var wide = window.matchMedia('(min-width: 960px)').matches;
+    var layout = document.querySelector('.nh-checkout-layout');
+    var aside = document.querySelector('.nh-checkout-layout__aside');
+    var main = document.querySelector('.nh-checkout-layout__main');
+    var review = document.getElementById('order_review');
+    var table = document.querySelector('#order_review table.shop_table');
+
+    if (layout) {
+      layout.style.setProperty('width', '100%', 'important');
+      layout.style.setProperty('max-width', '100%', 'important');
+      layout.style.setProperty('float', 'none', 'important');
+      layout.style.setProperty('display', wide ? 'grid' : 'flex', 'important');
+      if (wide) {
+        layout.style.setProperty('grid-template-columns', 'minmax(0, 1fr) 400px', 'important');
+      } else {
+        layout.style.setProperty('flex-direction', 'column', 'important');
+      }
+    }
+    if (aside) {
+      aside.style.setProperty('float', 'none', 'important');
+      if (wide) {
+        aside.style.setProperty('width', '400px', 'important');
+        aside.style.setProperty('max-width', '400px', 'important');
+        aside.style.setProperty('min-width', '400px', 'important');
+      } else {
+        aside.style.setProperty('width', '100%', 'important');
+        aside.style.setProperty('max-width', '100%', 'important');
+        aside.style.setProperty('min-width', '0', 'important');
+      }
+    }
+    if (main) {
+      main.style.setProperty('float', 'none', 'important');
+      main.style.setProperty('min-width', '0', 'important');
+      if (!wide) {
+        main.style.setProperty('width', '100%', 'important');
+      }
+    }
+    [review, document.getElementById('order_review_heading')].forEach(function (el) {
+      if (!el) {
+        return;
+      }
+      el.style.setProperty('float', 'none', 'important');
+      el.style.setProperty('width', '100%', 'important');
+      el.style.setProperty('max-width', '100%', 'important');
+    });
+    if (table) {
+      table.style.setProperty('display', 'table', 'important');
+      table.style.setProperty('width', '100%', 'important');
+      table.style.setProperty('max-width', '100%', 'important');
+      table.style.setProperty('float', 'none', 'important');
+      table.style.setProperty('table-layout', 'auto', 'important');
+      table.style.removeProperty('zoom');
+    }
   }
 
   function syncSummaryTotal() {
@@ -149,11 +259,22 @@
     syncSummaryTotal();
     enhanceNotes();
     enhancePaymentCards();
+    lockSummaryLayout();
   }
 
   $(boot);
-  $(document.body).on('updated_checkout payment_method_selected init_checkout', function () {
-    boot();
+  $(window).on('resize.nhCheckout', lockSummaryLayout);
+  $(document.body).on(
+    'updated_checkout payment_method_selected init_checkout',
+    function () {
+      boot();
+    }
+  );
+  $(document.body).on('country_to_state_changing country_to_state_changed', function () {
+    window.setTimeout(function () {
+      orderBillingFields();
+      lockSummaryLayout();
+    }, 0);
   });
   $(document.body).on('payment_method_selected', enhancePaymentCards);
 })(jQuery);

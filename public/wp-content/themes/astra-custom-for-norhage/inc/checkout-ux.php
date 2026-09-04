@@ -38,7 +38,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_form_field_nh_section', 'nh_checkout_section_field', 10, 4 );
 	add_filter( 'woocommerce_checkout_get_value', 'nh_checkout_get_value', 10, 2 );
 
-	add_action( 'woocommerce_after_checkout_validation', 'nh_checkout_validate_fields', 10, 2 );
+	add_action( 'woocommerce_after_checkout_validation', 'nh_checkout_validate_fields', 20, 2 );
 	add_action( 'woocommerce_checkout_create_order', 'nh_checkout_save_order_meta', 20, 2 );
 	add_action( 'woocommerce_checkout_update_customer', 'nh_checkout_save_customer_meta', 20, 2 );
 
@@ -46,6 +46,7 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_admin_order_data_after_billing_address', 'nh_checkout_admin_billing_meta', 10, 1 );
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
+	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
 }
 add_action( 'init', 'nh_checkout_ux_init' );
 
@@ -130,10 +131,9 @@ function nh_checkout_ux_assets() {
 		'nh-checkout-ux',
 		'nhCheckoutUx',
 		array(
-			'contactHeadingPrivate'  => __( 'Contact', 'nh-theme' ),
-			'contactHeadingBusiness' => __( 'Contact person', 'nh-theme' ),
-			'noteLabel'              => __( 'Add a note (optional)', 'nh-theme' ),
-			'summaryLabel'           => __( 'Order summary', 'nh-theme' ),
+			'contactHeading' => __( 'Contact person', 'nh-theme' ),
+			'noteLabel'      => __( 'Add a note (optional)', 'nh-theme' ),
+			'summaryLabel'   => __( 'Order summary', 'nh-theme' ),
 		)
 	);
 }
@@ -162,13 +162,29 @@ function nh_checkout_split_review_and_payment() {
 function nh_checkout_default_address_fields( $fields ) {
 	if ( isset( $fields['state'] ) ) {
 		$fields['state']['required'] = false;
+		$fields['state']['priority'] = 90;
 	}
 	if ( isset( $fields['address_2'] ) ) {
 		$fields['address_2']['required'] = false;
+		$fields['address_2']['priority'] = 70;
 	}
 	if ( isset( $fields['company'] ) ) {
 		$fields['company']['label']    = __( 'Business name', 'nh-theme' );
 		$fields['company']['required'] = false;
+	}
+	if ( isset( $fields['country'] ) ) {
+		$fields['country']['priority'] = 40;
+	}
+	if ( isset( $fields['postcode'] ) ) {
+		$fields['postcode']['priority'] = 50;
+		$fields['postcode']['class']    = array( 'form-row-wide', 'address-field', 'update_totals_on_change' );
+	}
+	if ( isset( $fields['address_1'] ) ) {
+		$fields['address_1']['priority'] = 60;
+	}
+	if ( isset( $fields['city'] ) ) {
+		$fields['city']['priority'] = 80;
+		$fields['city']['class']    = array( 'form-row-wide', 'address-field' );
 	}
 	return $fields;
 }
@@ -188,9 +204,17 @@ function nh_checkout_country_locale( $locale ) {
 		if ( ! is_array( $fields ) ) {
 			continue;
 		}
-		$locale[ $country ]['state']['required'] = false;
-		$locale[ $country ]['company']['label']  = __( 'Business name', 'nh-theme' );
-		$locale[ $country ]['company']['required'] = false;
+		$locale[ $country ]['state']['required']     = false;
+		$locale[ $country ]['state']['priority']     = 90;
+		$locale[ $country ]['company']['label']      = __( 'Business name', 'nh-theme' );
+		$locale[ $country ]['company']['required']   = false;
+		$locale[ $country ]['country']['priority']   = 40;
+		$locale[ $country ]['postcode']['priority']  = 50;
+		$locale[ $country ]['postcode']['class']     = array( 'form-row-wide' );
+		$locale[ $country ]['address_1']['priority'] = 60;
+		$locale[ $country ]['address_2']['priority'] = 70;
+		$locale[ $country ]['city']['priority']      = 80;
+		$locale[ $country ]['city']['class']         = array( 'form-row-wide' );
 	}
 
 	return $locale;
@@ -273,28 +297,12 @@ function nh_checkout_fields( $fields ) {
 		'priority' => 4,
 	);
 
-	$billing['nh_section_business'] = array(
+	$billing['nh_section_person'] = array(
 		'type'     => 'nh_section',
-		'label'    => __( 'Business details', 'nh-theme' ),
+		'label'    => __( 'Contact person', 'nh-theme' ),
 		'required' => false,
-		'class'    => array( 'nh-checkout-field--business' ),
-		'priority' => 8,
-	);
-
-	$billing['nh_section_contact'] = array(
-		'type'     => 'nh_section',
-		'label'    => __( 'Contact', 'nh-theme' ),
-		'required' => false,
-		'class'    => array(),
-		'priority' => 34,
-	);
-
-	$billing['nh_section_address'] = array(
-		'type'     => 'nh_section',
-		'label'    => __( 'Address', 'nh-theme' ),
-		'required' => false,
-		'class'    => array(),
-		'priority' => 54,
+		'class'    => array( 'nh-checkout-field--person-heading' ),
+		'priority' => 200,
 	);
 
 	nh_checkout_set_field( $billing, 'billing_company', array(
@@ -315,15 +323,17 @@ function nh_checkout_fields( $fields ) {
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_first_name', array(
+		'required'     => false,
 		'class'        => array( 'form-row-first', 'nh-checkout-field--person' ),
 		'autocomplete' => 'given-name',
-		'priority'     => 36,
+		'priority'     => 30,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_last_name', array(
+		'required'     => false,
 		'class'        => array( 'form-row-last', 'nh-checkout-field--person' ),
 		'autocomplete' => 'family-name',
-		'priority'     => 38,
+		'priority'     => 32,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_email', array(
@@ -331,7 +341,7 @@ function nh_checkout_fields( $fields ) {
 		'class'        => array( 'form-row-first', 'nh-checkout-field--contact' ),
 		'validate'     => array( 'email' ),
 		'autocomplete' => 'email',
-		'priority'     => 40,
+		'priority'     => 34,
 		'custom_attributes' => array(
 			'inputmode' => 'email',
 		),
@@ -343,7 +353,7 @@ function nh_checkout_fields( $fields ) {
 		'class'        => array( 'form-row-last', 'nh-checkout-field--contact' ),
 		'validate'     => array( 'phone' ),
 		'autocomplete' => 'tel',
-		'priority'     => 42,
+		'priority'     => 36,
 		'custom_attributes' => array(
 			'inputmode' => 'tel',
 		),
@@ -352,13 +362,19 @@ function nh_checkout_fields( $fields ) {
 	nh_checkout_set_field( $billing, 'billing_country', array(
 		'class'        => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'country',
-		'priority'     => 60,
+		'priority'     => 40,
+	) );
+
+	nh_checkout_set_field( $billing, 'billing_postcode', array(
+		'class'        => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
+		'autocomplete' => 'postal-code',
+		'priority'     => 50,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_address_1', array(
 		'class'        => array( 'form-row-wide', 'address-field' ),
 		'autocomplete' => 'address-line1',
-		'priority'     => 70,
+		'priority'     => 60,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_address_2', array(
@@ -366,26 +382,20 @@ function nh_checkout_fields( $fields ) {
 		'required'     => false,
 		'class'        => array( 'form-row-wide', 'address-field' ),
 		'autocomplete' => 'address-line2',
-		'priority'     => 80,
-	) );
-
-	nh_checkout_set_field( $billing, 'billing_postcode', array(
-		'class'        => array( 'form-row-first', 'address-field' ),
-		'autocomplete' => 'postal-code',
-		'priority'     => 90,
+		'priority'     => 70,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_city', array(
-		'class'        => array( 'form-row-last', 'address-field' ),
+		'class'        => array( 'form-row-wide', 'address-field' ),
 		'autocomplete' => 'address-level2',
-		'priority'     => 100,
+		'priority'     => 80,
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_state', array(
 		'required'     => false,
 		'class'        => array( 'form-row-wide', 'address-field' ),
 		'autocomplete' => 'address-level1',
-		'priority'     => 110,
+		'priority'     => 90,
 	) );
 
 	if ( function_exists( 'wc_checkout_fields_uasort_comparison' ) ) {
@@ -393,8 +403,26 @@ function nh_checkout_fields( $fields ) {
 	}
 
 	if ( ! empty( $fields['shipping'] ) && is_array( $fields['shipping'] ) ) {
+		nh_checkout_set_field( $fields['shipping'], 'shipping_country', array(
+			'priority' => 40,
+		) );
+		nh_checkout_set_field( $fields['shipping'], 'shipping_postcode', array(
+			'class'    => array( 'form-row-wide', 'address-field', 'update_totals_on_change' ),
+			'priority' => 50,
+		) );
+		nh_checkout_set_field( $fields['shipping'], 'shipping_address_1', array(
+			'priority' => 60,
+		) );
+		nh_checkout_set_field( $fields['shipping'], 'shipping_address_2', array(
+			'priority' => 70,
+		) );
+		nh_checkout_set_field( $fields['shipping'], 'shipping_city', array(
+			'class'    => array( 'form-row-wide', 'address-field' ),
+			'priority' => 80,
+		) );
 		nh_checkout_set_field( $fields['shipping'], 'shipping_state', array(
 			'required' => false,
+			'priority' => 90,
 		) );
 		if ( isset( $fields['shipping']['shipping_company'] ) ) {
 			$fields['shipping']['shipping_company']['label']    = __( 'Business name', 'nh-theme' );
@@ -509,6 +537,9 @@ function nh_checkout_validate_fields( $data, $errors ) {
 
 	$email = isset( $data['billing_email'] ) ? trim( (string) $data['billing_email'] ) : '';
 	$phone = isset( $data['billing_phone'] ) ? trim( (string) $data['billing_phone'] ) : '';
+	$first = isset( $data['billing_first_name'] ) ? trim( (string) $data['billing_first_name'] ) : '';
+	$last  = isset( $data['billing_last_name'] ) ? trim( (string) $data['billing_last_name'] ) : '';
+	$type  = nh_checkout_posted_type( $data );
 
 	if ( $email === '' ) {
 		$errors->add( 'billing_email', __( 'Please enter a valid email address.', 'nh-theme' ) );
@@ -517,18 +548,27 @@ function nh_checkout_validate_fields( $data, $errors ) {
 		$errors->add( 'billing_phone', __( 'Please enter a phone number.', 'nh-theme' ) );
 	}
 
-	if ( 'business' !== nh_checkout_posted_type( $data ) ) {
+	if ( 'business' === $type ) {
+		$errors->remove( 'billing_first_name' );
+		$errors->remove( 'billing_last_name' );
+
+		$company = isset( $data['billing_company'] ) ? trim( (string) $data['billing_company'] ) : '';
+		$reg     = isset( $data['billing_company_reg'] ) ? trim( (string) $data['billing_company_reg'] ) : '';
+
+		if ( $company === '' ) {
+			$errors->add( 'billing_company', __( 'Please enter your business name.', 'nh-theme' ) );
+		}
+		if ( $reg === '' ) {
+			$errors->add( 'billing_company_reg', __( 'Please enter your registration number.', 'nh-theme' ) );
+		}
 		return;
 	}
 
-	$company = isset( $data['billing_company'] ) ? trim( (string) $data['billing_company'] ) : '';
-	$reg     = isset( $data['billing_company_reg'] ) ? trim( (string) $data['billing_company_reg'] ) : '';
-
-	if ( $company === '' ) {
-		$errors->add( 'billing_company', __( 'Please enter your business name.', 'nh-theme' ) );
+	if ( $first === '' ) {
+		$errors->add( 'billing_first_name', __( 'Please enter a first name.', 'nh-theme' ) );
 	}
-	if ( $reg === '' ) {
-		$errors->add( 'billing_company_reg', __( 'Please enter your registration number.', 'nh-theme' ) );
+	if ( $last === '' ) {
+		$errors->add( 'billing_last_name', __( 'Please enter a last name.', 'nh-theme' ) );
 	}
 }
 
@@ -549,6 +589,15 @@ function nh_checkout_save_order_meta( $order, $data ) {
 	if ( 'business' === $type ) {
 		$reg = isset( $data['billing_company_reg'] ) ? sanitize_text_field( wp_unslash( $data['billing_company_reg'] ) ) : '';
 		$order->update_meta_data( '_billing_company_reg', $reg );
+
+		$first = trim( (string) $order->get_billing_first_name() );
+		$last  = trim( (string) $order->get_billing_last_name() );
+		if ( $first === '' && $last === '' ) {
+			$company = trim( (string) $order->get_billing_company() );
+			if ( $company !== '' ) {
+				$order->set_billing_first_name( $company );
+			}
+		}
 		return;
 	}
 
@@ -655,4 +704,31 @@ function nh_checkout_pdf_reg_number( $type, $order_or_document ) { // phpcs:igno
 
 function nh_checkout_secure_note() {
 	echo '<p class="nh-checkout-secure">' . esc_html__( 'Secure checkout', 'nh-theme' ) . '</p>';
+}
+
+/**
+ * Beat Astra/Woo floats on #order_review (they shrink the summary to ~40% of the sidebar).
+ */
+function nh_checkout_layout_lock_css() {
+	if ( ! nh_is_classic_checkout_form() ) {
+		return;
+	}
+	echo '<style id="nh-checkout-layout-lock">'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout{display:flex!important;flex-direction:column;width:100%!important;max-width:100%!important;float:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside,'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary,'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review,'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review_heading,'
+		. 'html body.woocommerce-checkout.nh-checkout-form .woocommerce-checkout-review-order{float:none!important;width:100%!important;max-width:100%!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table,'
+		. 'html body.woocommerce-checkout.nh-checkout-form table.woocommerce-checkout-review-order-table{display:table!important;width:100%!important;max-width:100%!important;table-layout:auto!important;float:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tr{display:table-row!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table th,'
+		. 'html body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table td{display:table-cell!important;float:none!important}'
+		. '@media(min-width:960px){'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout{display:grid!important;grid-template-columns:minmax(0,1fr) 400px!important;align-items:start}'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside{width:400px!important;max-width:400px!important;min-width:400px!important;flex:0 0 400px!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main{min-width:0!important;width:auto!important;max-width:none!important}'
+		. '}'
+		. '</style>' . "\n";
 }

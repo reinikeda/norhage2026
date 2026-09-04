@@ -1809,6 +1809,13 @@ msgstr "Lejlighed, etage osv."
 msgid "Secure checkout"
 msgstr "Sikker kasse"
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Angiv et fornavn."
+
+msgid "Please enter a last name."
+msgstr "Angiv et efternavn."
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt os"
 

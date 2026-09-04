@@ -1041,3 +1041,10 @@ msgstr ""
 msgid "Secure checkout"
 msgstr ""
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr ""
+
+msgid "Please enter a last name."
+msgstr ""
+

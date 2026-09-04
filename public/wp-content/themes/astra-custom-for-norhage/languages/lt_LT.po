@@ -1813,6 +1813,13 @@ msgstr "Butas, korpusas ir pan."
 msgid "Secure checkout"
 msgstr "Saugus atsiskaitymas"
 
+#: inc/checkout-ux.php
+msgid "Please enter a first name."
+msgstr "Įveskite vardą."
+
+msgid "Please enter a last name."
+msgstr "Įveskite pavardę."
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 
