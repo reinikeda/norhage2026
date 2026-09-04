@@ -215,6 +215,98 @@
     updatePhonePrefixUI($select);
   }
 
+  function phoneLimits(code) {
+    var map = i18n.phoneLengths || {};
+    if (map[code] && map[code].length >= 2) {
+      return { min: parseInt(map[code][0], 10), max: parseInt(map[code][1], 10) };
+    }
+    return { min: 6, max: 15 };
+  }
+
+  function applyPhoneMaxlength($combo) {
+    var $select = $combo.find('select.nh-phone-code');
+    var $input = $combo.find('input.input-text, input[type="tel"]');
+    var raw = String($input.val() || '');
+    if (raw.charAt(0) === '+' || raw.indexOf('00') === 0) {
+      $input.attr('maxlength', 20);
+      return;
+    }
+    $input.attr('maxlength', String(phoneLimits($.trim($select.val() || '')).max));
+  }
+
+  function phoneComboIsValid($combo, required) {
+    var $select = $combo.find('select.nh-phone-code');
+    var $input = $combo.find('input.input-text, input[type="tel"]');
+    var raw = $.trim($input.val() || '');
+    if (raw === '') {
+      return !required;
+    }
+    var parsed = splitInternationalPhone(raw);
+    var code = parsed ? parsed.code : $.trim($select.val() || '');
+    var national = parsed ? parsed.national : raw.replace(/\D/g, '');
+    if (!code || !national) {
+      return false;
+    }
+    var limits = phoneLimits(code);
+    return national.length >= limits.min && national.length <= limits.max;
+  }
+
+  function setPhoneComboState($combo, ok) {
+    var $row = $combo.closest('.form-row');
+    var $hint = $row.find('.nh-phone-hint');
+    if (!$hint.length) {
+      $hint = $('<span class="nh-phone-hint" role="status"></span>');
+      $combo.after($hint);
+    }
+    $row.toggleClass('woocommerce-invalid woocommerce-invalid-phone', !ok);
+    $row.toggleClass('woocommerce-validated', ok);
+    $hint.text(ok ? '' : (i18n.phoneInvalid || 'Please enter a valid phone number.'));
+  }
+
+  function validatePhoneCombo($combo, required, show) {
+    applyPhoneMaxlength($combo);
+    var ok = phoneComboIsValid($combo, required);
+    if (show) {
+      setPhoneComboState($combo, ok);
+    }
+    return ok;
+  }
+
+  function comboIsRequired($combo) {
+    var $row = $combo.closest('.form-row');
+    if ($row.hasClass('nh-checkout-field--person-extra')) {
+      return false;
+    }
+    return $row.hasClass('validate-required') || $combo.find('#billing_phone').length > 0;
+  }
+
+  function ensureCallingCodeFromCountry($combo) {
+    var $select = $combo.find('select.nh-phone-code');
+    if ($.trim($select.val() || '')) {
+      return;
+    }
+    var iso = $('#billing_country').val();
+    var map = i18n.phoneIsoCodes || {};
+    if (iso && map[iso]) {
+      $select.val(map[iso]);
+      updatePhonePrefixUI($select);
+    }
+  }
+
+  function validateAllPhones(show) {
+    var ok = true;
+    $('.nh-phone-combo').each(function () {
+      var $combo = $(this);
+      if ($combo.closest('.nh-checkout-field--hidden').length) {
+        return;
+      }
+      if (!validatePhoneCombo($combo, comboIsRequired($combo), show)) {
+        ok = false;
+      }
+    });
+    return ok;
+  }
+
   function hydratePhoneCombos() {
     $('.nh-phone-combo').each(function () {
       var $combo = $(this);
@@ -225,21 +317,60 @@
       }
       extractDialFromInput($input, $select);
       updatePhonePrefixUI($select);
+      applyPhoneMaxlength($combo);
     });
   }
 
   function bindCallingCode() {
     $(document.body).off('change.nhPhoneCode', '.nh-phone-code');
     $(document.body).on('change.nhPhoneCode', '.nh-phone-code', function () {
-      updatePhonePrefixUI($(this));
+      var $select = $(this);
+      var $combo = $select.closest('.nh-phone-combo');
+      updatePhonePrefixUI($select);
+      applyPhoneMaxlength($combo);
+      var $input = $combo.find('input.input-text, input[type="tel"]');
+      var digits = String($input.val() || '').replace(/\D/g, '');
+      var max = phoneLimits($.trim($select.val() || '')).max;
+      if (digits.length > max) {
+        $input.val(digits.slice(0, max));
+      }
+      if ($.trim($input.val() || '') !== '') {
+        validatePhoneCombo($combo, comboIsRequired($combo), true);
+      }
     });
-    $(document.body).off('input.nhPhoneParse change.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input');
-    $(document.body).on('input.nhPhoneParse change.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input', function () {
+    $(document.body).off('input.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input');
+    $(document.body).on('input.nhPhoneParse paste.nhPhoneParse', '.nh-phone-combo input', function () {
       var $input = $(this);
-      var $select = $input.closest('.nh-phone-combo').find('select.nh-phone-code');
+      var $combo = $input.closest('.nh-phone-combo');
+      var $select = $combo.find('select.nh-phone-code');
+      var raw = String($input.val() || '');
+      if (raw.charAt(0) !== '+' && raw.indexOf('00') !== 0) {
+        var digits = raw.replace(/\D/g, '');
+        var max = phoneLimits($.trim($select.val() || '')).max;
+        if (digits.length > max) {
+          digits = digits.slice(0, max);
+        }
+        if (digits !== raw) {
+          $input.val(digits);
+        }
+      }
       window.setTimeout(function () {
         extractDialFromInput($input, $select);
+        applyPhoneMaxlength($combo);
       }, 0);
+    });
+    $(document.body).off('blur.nhPhoneValidate', '.nh-phone-combo input');
+    $(document.body).on('blur.nhPhoneValidate', '.nh-phone-combo input', function () {
+      var $combo = $(this).closest('.nh-phone-combo');
+      ensureCallingCodeFromCountry($combo);
+      validatePhoneCombo($combo, comboIsRequired($combo), true);
+    });
+    $('form.checkout').off('checkout_place_order.nhPhone');
+    $('form.checkout').on('checkout_place_order.nhPhone', function () {
+      $('.nh-phone-combo').each(function () {
+        ensureCallingCodeFromCountry($(this));
+      });
+      return validateAllPhones(true);
     });
   }
 

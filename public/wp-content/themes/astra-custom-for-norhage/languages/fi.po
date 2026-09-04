@@ -1832,6 +1832,9 @@ msgstr "Yhteyshenkilön puhelin"
 msgid "Please enter a valid contact email."
 msgstr "Anna kelvollinen yhteyssähköposti."
 
+msgid "Please enter a valid phone number."
+msgstr "Anna kelvollinen puhelinnumero."
+
 #~ msgid "Contact Us"
 #~ msgstr "Ota yhteyttä"
 

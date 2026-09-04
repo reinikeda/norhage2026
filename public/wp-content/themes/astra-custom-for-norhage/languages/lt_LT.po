@@ -1832,6 +1832,9 @@ msgstr "Kontaktinis telefonas"
 msgid "Please enter a valid contact email."
 msgstr "Įveskite teisingą kontaktinį el. paštą."
 
+msgid "Please enter a valid phone number."
+msgstr "Įveskite teisingą telefono numerį."
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 

@@ -139,8 +139,10 @@ function nh_checkout_ux_assets() {
 			'contactHeading' => __( 'Contact person', 'nh-theme' ),
 			'noteLabel'      => __( 'Add a note (optional)', 'nh-theme' ),
 			'summaryLabel'   => __( 'Order summary', 'nh-theme' ),
-			'phoneIsoCodes'  => nh_checkout_calling_codes(),
-			'phoneCodeFlags' => nh_checkout_calling_code_flag_map(),
+			'phoneIsoCodes'   => nh_checkout_calling_codes(),
+			'phoneCodeFlags'  => nh_checkout_calling_code_flag_map(),
+			'phoneLengths'    => nh_checkout_national_digit_limits(),
+			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
 		)
 	);
 }
@@ -642,6 +644,81 @@ function nh_checkout_flag_emoji( $iso ) {
 }
 
 /**
+ * National significant-number length after the calling code (no leading 0).
+ *
+ * @return array<string,array{0:int,1:int}> code => [ min, max ]
+ */
+function nh_checkout_national_digit_limits() {
+	return array(
+		'370' => array( 8, 8 ),
+		'371' => array( 8, 8 ),
+		'372' => array( 7, 8 ),
+		'358' => array( 6, 10 ),
+		'46'  => array( 7, 9 ),
+		'47'  => array( 8, 8 ),
+		'45'  => array( 8, 8 ),
+		'354' => array( 7, 7 ),
+		'49'  => array( 10, 11 ),
+		'43'  => array( 10, 13 ),
+		'32'  => array( 8, 9 ),
+		'31'  => array( 9, 9 ),
+		'33'  => array( 9, 9 ),
+		'48'  => array( 9, 9 ),
+		'420' => array( 9, 9 ),
+		'421' => array( 9, 9 ),
+		'36'  => array( 8, 9 ),
+		'353' => array( 7, 9 ),
+		'34'  => array( 9, 9 ),
+		'351' => array( 9, 9 ),
+		'39'  => array( 9, 11 ),
+		'30'  => array( 10, 10 ),
+		'40'  => array( 9, 9 ),
+		'359' => array( 8, 9 ),
+		'385' => array( 8, 9 ),
+		'386' => array( 8, 8 ),
+		'352' => array( 8, 9 ),
+		'41'  => array( 9, 9 ),
+		'44'  => array( 10, 10 ),
+		'357' => array( 8, 8 ),
+		'356' => array( 8, 8 ),
+		'1'   => array( 10, 10 ),
+	);
+}
+
+/**
+ * Whether a stored +XXXXXXXX number has a plausible national length.
+ *
+ * @param string $phone Normalised E.164-like number.
+ * @return bool
+ */
+function nh_checkout_phone_number_is_valid( $phone ) {
+	$phone = trim( (string) $phone );
+	if ( $phone === '' ) {
+		return false;
+	}
+
+	list( $code, $national ) = nh_checkout_split_phone( $phone );
+	$national = preg_replace( '/\D/', '', (string) $national );
+
+	if ( $code === '' || $national === '' ) {
+		$digits = preg_replace( '/\D/', '', $phone );
+		$len    = strlen( (string) $digits );
+		return $len >= 8 && $len <= 15;
+	}
+
+	$limits = nh_checkout_national_digit_limits();
+	$min    = 6;
+	$max    = 15;
+	if ( isset( $limits[ $code ] ) ) {
+		$min = (int) $limits[ $code ][0];
+		$max = (int) $limits[ $code ][1];
+	}
+
+	$len = strlen( $national );
+	return $len >= $min && $len <= $max;
+}
+
+/**
  * Default calling-code digits for the shop / current billing country.
  *
  * @param string $country ISO country.
@@ -732,6 +809,13 @@ function nh_checkout_split_phone( $phone ) {
 		}
 	);
 	foreach ( $options as $code ) {
+		if ( $code === '' || ! is_string( $code ) && ! is_int( $code ) ) {
+			continue;
+		}
+		$code = (string) $code;
+		if ( $code === '' ) {
+			continue;
+		}
 		if ( 0 === strpos( $digits, $code ) ) {
 			return array( $code, substr( $digits, strlen( $code ) ) );
 		}
@@ -771,6 +855,9 @@ function nh_checkout_phone_field_html( $field, $key, $args, $value ) { // phpcs:
 	}
 	if ( false === strpos( $input, 'autocomplete=' ) ) {
 		$input = preg_replace( '/<input\b/i', '<input autocomplete="tel-national"', $input, 1 );
+	}
+	if ( false === strpos( $input, 'maxlength=' ) ) {
+		$input = preg_replace( '/<input\b/i', '<input maxlength="16"', $input, 1 );
 	}
 
 	$flags    = nh_checkout_calling_code_flag_map();
@@ -916,6 +1003,8 @@ function nh_checkout_validate_fields( $data, $errors ) {
 	}
 	if ( $phone === '' ) {
 		$errors->add( 'billing_phone', __( 'Please enter a phone number.', 'nh-theme' ) );
+	} elseif ( ! nh_checkout_phone_number_is_valid( $phone ) ) {
+		$errors->add( 'billing_phone', __( 'Please enter a valid phone number.', 'nh-theme' ) );
 	}
 
 	if ( 'business' === $type ) {
@@ -935,6 +1024,11 @@ function nh_checkout_validate_fields( $data, $errors ) {
 		$contact_email = isset( $data['billing_contact_email'] ) ? trim( (string) $data['billing_contact_email'] ) : '';
 		if ( $contact_email !== '' && ! is_email( $contact_email ) ) {
 			$errors->add( 'billing_contact_email', __( 'Please enter a valid contact email.', 'nh-theme' ) );
+		}
+
+		$contact_phone = isset( $data['billing_contact_phone'] ) ? trim( (string) $data['billing_contact_phone'] ) : '';
+		if ( $contact_phone !== '' && ! nh_checkout_phone_number_is_valid( $contact_phone ) ) {
+			$errors->add( 'billing_contact_phone', __( 'Please enter a valid phone number.', 'nh-theme' ) );
 		}
 		return;
 	}
