@@ -25,14 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Shop network used for homepage hreflang.
  *
- * Homepage hreflang is host-based. Product hreflang is SKU-based: each shop
- * looks up the same SKU on sibling domains (separate DBs) and uses that
- * shop's real permalink. Missing SKUs are omitted (never host-swap slugs).
- *
- * Sibling REST lookups often take several seconds; a 1.5s timeout used to drop
- * shops from the cluster (SERanking "return links missing"). Incomplete maps
- * are retried; confirmed 404s stay omitted. Hreflang hrefs are IRI-decoded so
- * they match Yoast canonicals (² vs %c2%b2).
+ * Homepage hreflang is host-based. Product hreflang is SKU-based: shops share
+ * no database, so each shop dumps SKU → permalink once a day and pulls the
+ * other dumps in a background job. Product HTML only reads that saved map
+ * (no cross-shop HTTP, no TTFB wait). Missing SKUs are omitted.
  *
  * @return array<string, array{host:string, hreflang:string, x_default:bool, area:string, country:string}>
  */
@@ -271,9 +267,9 @@ function nh_seo_local_url_for_sku( $sku ) {
 /**
  * Product hreflang cluster: local permalink + sibling shops resolved by SKU.
  *
- * Sibling lookups are cached (12h when complete, 5 min when a shop timed out).
+ * Sibling URLs come from the daily network map (uploads/nh-seo/network-map.json).
  * Separate DBs mean slugs differ; we never rewrite the path onto another host.
- * Shops that lack the SKU (confirmed 404) are omitted.
+ * Shops that lack the SKU are omitted. The current shop URL is always fresh.
  *
  * @return array<int, array{hreflang:string, url:string, x_default:bool}>
  */
@@ -405,18 +401,28 @@ function nh_seo_decode_utf8_path( $path ) {
 /**
  * host => url for a SKU. Always includes the current shop's local URL.
  *
+ * Reads the daily network map only. Never performs HTTP during page render.
+ *
  * @param string $sku       SKU.
  * @param string $local_url Current shop permalink.
  * @return array<string, string>
  */
 function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 	$current_host = nh_seo_current_host();
-	$cache_key    = 'nh_seo_hl2_' . md5( strtolower( $sku ) );
-	$cached       = get_transient( $cache_key );
+	$sku_key      = strtolower( (string) $sku );
+	$network      = nh_seo_load_network_map();
+	$map          = array();
 
-	$map = array();
-	if ( is_array( $cached ) ) {
-		$map = $cached;
+	if ( isset( $network['skus'][ $sku_key ] ) && is_array( $network['skus'][ $sku_key ] ) ) {
+		foreach ( $network['skus'][ $sku_key ] as $host => $url ) {
+			if ( ! is_string( $host ) || ! is_string( $url ) || $url === '' ) {
+				continue;
+			}
+			$clean = nh_seo_normalize_shop_url( $url, $host );
+			if ( $clean !== '' ) {
+				$map[ $host ] = $clean;
+			}
+		}
 	}
 
 	if ( $current_host !== '' ) {
@@ -424,247 +430,336 @@ function nh_seo_sku_hreflang_map( $sku, $local_url ) {
 		$map[ $current_host ] = $clean_local !== '' ? $clean_local : $local_url;
 	}
 
-	$missing = array();
-	foreach ( nh_seo_shop_network() as $shop ) {
-		$host = $shop['host'];
-		if ( $host === $current_host ) {
-			continue;
-		}
-		if ( ! array_key_exists( $host, $map ) ) {
-			$missing[] = $host;
-		}
+	return $map;
+}
+
+/**
+ * Directory for SKU dump + merged network map.
+ *
+ * @return string
+ */
+function nh_seo_map_dir() {
+	$uploads = wp_upload_dir();
+	$base    = isset( $uploads['basedir'] ) ? (string) $uploads['basedir'] : '';
+	return $base !== '' ? $base . '/nh-seo' : '';
+}
+
+/**
+ * @return string
+ */
+function nh_seo_sku_map_path() {
+	return nh_seo_map_dir() . '/sku-map.json';
+}
+
+/**
+ * @return string
+ */
+function nh_seo_network_map_path() {
+	return nh_seo_map_dir() . '/network-map.json';
+}
+
+/**
+ * Load merged SKU → { host => url } map from disk.
+ *
+ * @param bool $reload Re-read from disk.
+ * @return array{generated_at?:int, skus: array<string, array<string, string>>}
+ */
+function nh_seo_load_network_map( $reload = false ) {
+	static $data = null;
+	if ( $reload ) {
+		$data = null;
+	}
+	if ( null !== $data ) {
+		return $data;
 	}
 
-	if ( ! empty( $missing ) ) {
-		$fetched = nh_seo_fetch_remote_sku_urls( $sku, $missing );
-		foreach ( $fetched['found'] as $host => $url ) {
-			$clean = nh_seo_normalize_shop_url( $url, $host );
+	$data = array(
+		'generated_at' => 0,
+		'skus'         => array(),
+	);
+
+	$path = nh_seo_network_map_path();
+	if ( $path === '' || ! is_readable( $path ) ) {
+		return $data;
+	}
+
+	$raw  = file_get_contents( $path );
+	$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
+	if ( is_array( $json ) && isset( $json['skus'] ) && is_array( $json['skus'] ) ) {
+		$data = $json;
+	}
+
+	return $data;
+}
+
+/**
+ * Atomically write JSON.
+ *
+ * @param string               $path Path.
+ * @param array<string, mixed> $data Data.
+ * @return bool
+ */
+function nh_seo_write_json_file( $path, $data ) {
+	$dir = dirname( $path );
+	if ( $dir === '' || ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) ) {
+		return false;
+	}
+
+	$index = $dir . '/index.php';
+	if ( ! file_exists( $index ) ) {
+		file_put_contents( $index, "<?php\n// Silence.\n" );
+	}
+
+	$json = wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	if ( ! is_string( $json ) ) {
+		return false;
+	}
+
+	$tmp = $path . '.tmp.' . uniqid( '', true );
+	if ( false === file_put_contents( $tmp, $json, LOCK_EX ) ) {
+		return false;
+	}
+	if ( ! rename( $tmp, $path ) ) {
+		unlink( $tmp );
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Published parent-product SKU → permalink for this shop.
+ *
+ * @return array<string, string>
+ */
+function nh_seo_build_local_sku_map() {
+	$map  = array();
+	$shop = nh_seo_current_shop();
+	$host = $shop ? $shop['host'] : nh_seo_current_host();
+	if ( $host === '' || ! function_exists( 'wc_get_products' ) ) {
+		return $map;
+	}
+
+	$page  = 1;
+	$limit = 100;
+	do {
+		$ids = wc_get_products(
+			array(
+				'status' => 'publish',
+				'limit'  => $limit,
+				'page'   => $page,
+				'return' => 'ids',
+				'type'   => array( 'simple', 'variable', 'grouped', 'external' ),
+			)
+		);
+		if ( ! is_array( $ids ) || empty( $ids ) ) {
+			break;
+		}
+		foreach ( $ids as $id ) {
+			$product = wc_get_product( $id );
+			if ( ! $product ) {
+				continue;
+			}
+			$sku = (string) $product->get_sku();
+			if ( ! nh_seo_is_usable_sku( $sku ) ) {
+				continue;
+			}
+			$url   = get_permalink( $id );
+			$clean = is_string( $url ) ? nh_seo_normalize_shop_url( $url, $host ) : '';
 			if ( $clean !== '' ) {
-				$map[ $host ] = $clean;
+				$map[ strtolower( $sku ) ] = $clean;
 			}
 		}
-		foreach ( $fetched['absent'] as $host ) {
-			if ( empty( $map[ $host ] ) ) {
-				$map[ $host ] = '';
-			}
-		}
-
-		$ttl = (int) apply_filters( 'nh_seo_hreflang_cache_ttl', 12 * HOUR_IN_SECONDS, $sku );
-		if ( ! nh_seo_hreflang_map_is_resolved( $map ) ) {
-			$ttl = (int) apply_filters( 'nh_seo_hreflang_incomplete_cache_ttl', 5 * MINUTE_IN_SECONDS, $sku );
-		}
-		set_transient( $cache_key, $map, max( 60, $ttl ) );
-	}
+		$page++;
+	} while ( count( $ids ) === $limit );
 
 	return $map;
 }
 
 /**
- * Whether every shop in the network is either found or confirmed absent.
+ * Replace one host's URLs in the network map from an authoritative dump.
  *
- * @param array<string, string> $map host => url (empty string = absent).
- * @return bool
+ * @param array<string, mixed>  $network Network map.
+ * @param string                $host    Shop host.
+ * @param array<string, string> $skus    sku => url.
+ * @return array<string, mixed>
  */
-function nh_seo_hreflang_map_is_resolved( $map ) {
-	if ( ! is_array( $map ) ) {
-		return false;
+function nh_seo_apply_host_sku_map( $network, $host, $skus ) {
+	if ( ! isset( $network['skus'] ) || ! is_array( $network['skus'] ) ) {
+		$network['skus'] = array();
 	}
-	foreach ( nh_seo_shop_network() as $shop ) {
-		if ( ! array_key_exists( $shop['host'], $map ) ) {
-			return false;
+
+	foreach ( $network['skus'] as $sku => $hosts ) {
+		if ( is_array( $hosts ) ) {
+			unset( $network['skus'][ $sku ][ $host ] );
+			if ( empty( $network['skus'][ $sku ] ) ) {
+				unset( $network['skus'][ $sku ] );
+			}
 		}
 	}
-	return true;
+
+	foreach ( $skus as $sku => $url ) {
+		$sku = strtolower( (string) $sku );
+		if ( $sku === '' || ! is_string( $url ) || $url === '' ) {
+			continue;
+		}
+		if ( ! isset( $network['skus'][ $sku ] ) || ! is_array( $network['skus'][ $sku ] ) ) {
+			$network['skus'][ $sku ] = array();
+		}
+		$network['skus'][ $sku ][ $host ] = $url;
+	}
+
+	return $network;
 }
 
 /**
- * Resolve permalinks for a SKU on sibling shops.
+ * Parse a sibling sku-map JSON dump.
  *
- * Prefers this theme's tiny REST route (which may also return a cached
- * cluster). Falls back to the public Woo Store API only when the route is
- * missing, so timeouts are not stored as "SKU absent".
- *
- * @param string        $sku   SKU.
- * @param array<string> $hosts Sibling hosts.
- * @return array{found: array<string, string>, absent: array<int, string>}
+ * @param string|null $body          Body.
+ * @param string      $expected_host Host.
+ * @return array<string, string>
  */
-function nh_seo_fetch_remote_sku_urls( $sku, $hosts ) {
-	$found  = array();
-	$absent = array();
-	if ( empty( $hosts ) ) {
-		return array(
-			'found'  => $found,
-			'absent' => $absent,
-		);
-	}
-
-	$sku_q = rawurlencode( $sku );
-	$urls  = array();
-	foreach ( $hosts as $host ) {
-		$urls[ $host ] = 'https://' . $host . '/wp-json/nh-seo/v1/product-by-sku?sku=' . $sku_q;
-	}
-
-	$responses      = nh_seo_parallel_get( $urls );
-	$retry          = array();
-	$retry_no_route = array();
-	foreach ( $hosts as $host ) {
-		$body   = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
-		$parsed = nh_seo_parse_remote_sku_payload( $body, $sku, $host );
-
-		foreach ( $parsed['cluster'] as $cluster_host => $cluster_url ) {
-			if ( $cluster_url !== '' ) {
-				$found[ $cluster_host ] = $cluster_url;
-			}
-		}
-		if ( $parsed['url'] !== '' ) {
-			$found[ $host ] = $parsed['url'];
-			continue;
-		}
-
-		if ( 'nh_seo_not_found' === $parsed['error'] ) {
-			$absent[] = $host;
-			continue;
-		}
-
-		$store = 'https://' . $host . '/wp-json/wc/store/v1/products?sku=' . $sku_q;
-		if ( 'rest_no_route' === $parsed['error'] ) {
-			$retry[ $host ]          = $store;
-			$retry_no_route[ $host ] = true;
-		}
-		// Timeouts / 5xx stay unresolved so the next view retries them.
-		// A second Store API round would double TTFB and still time out.
-	}
-
-	$use_store = apply_filters( 'nh_seo_hreflang_use_store_api', true, $sku );
-	if ( $use_store && ! empty( $retry ) ) {
-		$responses = nh_seo_parallel_get( $retry );
-		foreach ( $retry as $host => $ignored ) {
-			if ( isset( $found[ $host ] ) && $found[ $host ] !== '' ) {
-				continue;
-			}
-			$code = isset( $responses[ $host ]['code'] ) ? (int) $responses[ $host ]['code'] : 0;
-			$body = isset( $responses[ $host ]['body'] ) ? $responses[ $host ]['body'] : null;
-			$url  = nh_seo_parse_remote_sku_body( $body, $sku, $host );
-			if ( $url !== '' ) {
-				$found[ $host ] = $url;
-			} elseif ( 200 === $code && is_string( $body ) && ! empty( $retry_no_route[ $host ] ) ) {
-				$absent[] = $host;
-			}
-		}
-	}
-
-	return array(
-		'found'  => $found,
-		'absent' => $absent,
-	);
-}
-
-/**
- * Parse REST JSON: local URL, optional cached cluster, error code.
- *
- * @param string|null $body          Response body.
- * @param string      $sku           Expected SKU.
- * @param string      $expected_host Expected host.
- * @return array{url:string, cluster:array<string,string>, error:string}
- */
-function nh_seo_parse_remote_sku_payload( $body, $sku, $expected_host ) {
-	$out = array(
-		'url'     => '',
-		'cluster' => array(),
-		'error'   => '',
-	);
+function nh_seo_parse_shop_sku_map( $body, $expected_host ) {
+	$out = array();
 	if ( ! is_string( $body ) || $body === '' ) {
 		return $out;
 	}
-
 	$data = json_decode( $body, true );
-	if ( ! is_array( $data ) ) {
+	if ( ! is_array( $data ) || empty( $data['skus'] ) || ! is_array( $data['skus'] ) ) {
 		return $out;
 	}
-
-	if ( isset( $data['code'] ) && is_string( $data['code'] ) ) {
-		$out['error'] = $data['code'];
-	}
-
-	$out['url'] = nh_seo_parse_remote_sku_body( $body, $sku, $expected_host );
-	if ( $out['url'] !== '' ) {
-		$out['cluster'][ $expected_host ] = $out['url'];
-	}
-
-	if ( isset( $data['cluster'] ) && is_array( $data['cluster'] ) ) {
-		foreach ( $data['cluster'] as $host => $url ) {
-			if ( ! is_string( $host ) || ! is_string( $url ) || $url === '' ) {
-				continue;
-			}
-			$clean = nh_seo_normalize_shop_url( $url, $host );
-			if ( $clean !== '' ) {
-				$out['cluster'][ $host ] = $clean;
-			}
+	foreach ( $data['skus'] as $sku => $url ) {
+		if ( ! nh_seo_is_usable_sku( (string) $sku ) || ! is_string( $url ) ) {
+			continue;
+		}
+		$clean = nh_seo_normalize_shop_url( $url, $expected_host );
+		if ( $clean !== '' ) {
+			$out[ strtolower( (string) $sku ) ] = $clean;
 		}
 	}
-
 	return $out;
 }
 
 /**
- * Parse either our REST object or the Woo Store API list.
+ * Daily job: dump this catalog, pull sibling dumps, save the merged map.
  *
- * @param string|null $body          Response body.
- * @param string      $sku           Expected SKU.
- * @param string      $expected_host Expected host.
- * @return string
+ * Safe to run in WP-Cron / Action Scheduler. Not used during page render.
  */
-function nh_seo_parse_remote_sku_body( $body, $sku, $expected_host ) {
-	if ( ! is_string( $body ) || $body === '' ) {
-		return '';
+function nh_seo_rebuild_hreflang_maps() {
+	$shop = nh_seo_current_shop();
+	$host = $shop ? $shop['host'] : nh_seo_current_host();
+	if ( $host === '' ) {
+		return;
 	}
 
-	$data = json_decode( $body, true );
-	if ( ! is_array( $data ) ) {
-		return '';
+	if ( function_exists( 'set_time_limit' ) ) {
+		set_time_limit( 120 );
 	}
 
-	$candidates = array();
-	if ( isset( $data['url'] ) ) {
-		$candidates[] = $data;
-	} elseif ( array_keys( $data ) === range( 0, count( $data ) - 1 ) ) {
-		$candidates = $data;
+	$local = nh_seo_build_local_sku_map();
+	nh_seo_write_json_file(
+		nh_seo_sku_map_path(),
+		array(
+			'host'         => $host,
+			'hreflang'     => $shop ? $shop['hreflang'] : '',
+			'generated_at' => time(),
+			'skus'         => $local,
+		)
+	);
+
+	$network = nh_seo_load_network_map( true );
+	if ( empty( $network['skus'] ) || ! is_array( $network['skus'] ) ) {
+		$network = array(
+			'generated_at' => time(),
+			'skus'         => array(),
+		);
 	}
 
-	$sku_l = strtolower( $sku );
-	foreach ( $candidates as $item ) {
-		if ( ! is_array( $item ) ) {
+	$network = nh_seo_apply_host_sku_map( $network, $host, $local );
+
+	$urls = array();
+	foreach ( nh_seo_shop_network() as $row ) {
+		if ( $row['host'] === $host ) {
 			continue;
 		}
-		$item_sku = isset( $item['sku'] ) ? strtolower( (string) $item['sku'] ) : '';
-		if ( $item_sku !== '' && $item_sku !== $sku_l ) {
-			continue;
-		}
-		if ( isset( $item['type'] ) && $item['type'] === 'variation' ) {
-			continue;
-		}
-		$permalink = '';
-		if ( ! empty( $item['url'] ) && is_string( $item['url'] ) ) {
-			$permalink = $item['url'];
-		} elseif ( ! empty( $item['permalink'] ) && is_string( $item['permalink'] ) ) {
-			$permalink = $item['permalink'];
-		}
-		$clean = nh_seo_normalize_shop_url( $permalink, $expected_host );
-		if ( $clean !== '' ) {
-			return $clean;
+		$urls[ $row['host'] ] = 'https://' . $row['host'] . '/wp-json/nh-seo/v1/sku-map';
+	}
+
+	if ( ! empty( $urls ) ) {
+		$responses = nh_seo_parallel_get( $urls, 45.0 );
+		foreach ( $urls as $remote_host => $ignored ) {
+			$body = isset( $responses[ $remote_host ]['body'] ) ? $responses[ $remote_host ]['body'] : null;
+			$skus = nh_seo_parse_shop_sku_map( $body, $remote_host );
+			if ( ! empty( $skus ) ) {
+				$network = nh_seo_apply_host_sku_map( $network, $remote_host, $skus );
+			}
 		}
 	}
 
-	return '';
+	$network['generated_at'] = time();
+	$network['host']         = $host;
+	nh_seo_write_json_file( nh_seo_network_map_path(), $network );
+	update_option( 'nh_seo_hreflang_rebuilt_at', time(), false );
+	nh_seo_load_network_map( true );
 }
+
+/**
+ * Queue a background rebuild (Action Scheduler, else WP-Cron).
+ */
+function nh_seo_enqueue_hreflang_rebuild() {
+	if ( function_exists( 'as_enqueue_async_action' ) ) {
+		if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( 'nh_seo_rebuild_hreflang_maps' ) ) {
+			return;
+		}
+		as_enqueue_async_action( 'nh_seo_rebuild_hreflang_maps' );
+		return;
+	}
+	if ( ! wp_next_scheduled( 'nh_seo_rebuild_hreflang_maps' ) ) {
+		wp_schedule_single_event( time() + 30, 'nh_seo_rebuild_hreflang_maps' );
+	}
+}
+
+/**
+ * Recurring daily rebuild + one run soon after deploy if the map is missing.
+ */
+function nh_seo_schedule_hreflang_jobs() {
+	if ( function_exists( 'as_schedule_recurring_action' ) ) {
+		$has_daily = function_exists( 'as_has_scheduled_action' )
+			? as_has_scheduled_action( 'nh_seo_rebuild_hreflang_maps_daily' )
+			: (bool) get_option( 'nh_seo_hreflang_daily_scheduled', false );
+		if ( ! $has_daily ) {
+			as_schedule_recurring_action( time() + 120, DAY_IN_SECONDS, 'nh_seo_rebuild_hreflang_maps_daily' );
+			update_option( 'nh_seo_hreflang_daily_scheduled', 1, false );
+		}
+	} elseif ( ! wp_next_scheduled( 'nh_seo_rebuild_hreflang_maps_daily' ) ) {
+		wp_schedule_event( time() + 120, 'daily', 'nh_seo_rebuild_hreflang_maps_daily' );
+	}
+
+	$path = nh_seo_network_map_path();
+	if ( $path !== '' && ! is_readable( $path ) ) {
+		nh_seo_enqueue_hreflang_rebuild();
+	}
+}
+
+/**
+ * Daily hook wrapper.
+ */
+function nh_seo_rebuild_hreflang_maps_daily() {
+	nh_seo_rebuild_hreflang_maps();
+}
+
+add_action( 'init', 'nh_seo_schedule_hreflang_jobs', 20 );
+add_action( 'nh_seo_rebuild_hreflang_maps', 'nh_seo_rebuild_hreflang_maps' );
+add_action( 'nh_seo_rebuild_hreflang_maps_daily', 'nh_seo_rebuild_hreflang_maps_daily' );
 
 /**
  * Parallel GET. Falls back to sequential wp_remote_get when curl_multi is missing.
  *
- * @param array<string, string> $urls key => url.
+ * @param array<string, string> $urls    key => url.
+ * @param float|null            $timeout Seconds. Null uses the filter default.
  * @return array<string, array{code:int, body:?string}>
  */
-function nh_seo_parallel_get( $urls ) {
+function nh_seo_parallel_get( $urls, $timeout = null ) {
 	$out     = array();
 	foreach ( array_keys( $urls ) as $key ) {
 		$out[ $key ] = array(
@@ -672,7 +767,10 @@ function nh_seo_parallel_get( $urls ) {
 			'body' => null,
 		);
 	}
-	$timeout = (float) apply_filters( 'nh_seo_hreflang_http_timeout', 10.0 );
+	if ( null === $timeout ) {
+		$timeout = 10.0;
+	}
+	$timeout = (float) apply_filters( 'nh_seo_hreflang_http_timeout', $timeout );
 
 	if ( function_exists( 'curl_multi_init' ) && function_exists( 'curl_init' ) ) {
 		$mh  = curl_multi_init();
@@ -689,7 +787,7 @@ function nh_seo_parallel_get( $urls ) {
 					CURLOPT_FOLLOWLOCATION    => true,
 					CURLOPT_MAXREDIRS         => 2,
 					CURLOPT_TIMEOUT_MS        => (int) round( $timeout * 1000 ),
-					CURLOPT_CONNECTTIMEOUT_MS => 3000,
+					CURLOPT_CONNECTTIMEOUT_MS => min( 8000, (int) round( $timeout * 1000 ) ),
 					CURLOPT_NOSIGNAL          => true,
 					CURLOPT_HTTPHEADER        => array( 'Accept: application/json' ),
 					CURLOPT_USERAGENT         => 'NorhageHreflang/1.0',
@@ -743,9 +841,18 @@ function nh_seo_parallel_get( $urls ) {
 }
 
 /**
- * Public SKU → permalink endpoint for sibling shops (no prices or stock).
+ * Public SKU dumps for sibling daily jobs (no prices or stock).
  */
 function nh_seo_register_rest_routes() {
+	register_rest_route(
+		'nh-seo/v1',
+		'/sku-map',
+		array(
+			'methods'             => 'GET',
+			'callback'            => 'nh_seo_rest_sku_map',
+			'permission_callback' => '__return_true',
+		)
+	);
 	register_rest_route(
 		'nh-seo/v1',
 		'/product-by-sku',
@@ -762,11 +869,77 @@ function nh_seo_register_rest_routes() {
 			),
 		)
 	);
+	register_rest_route(
+		'nh-seo/v1',
+		'/rebuild-maps',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'nh_seo_rest_rebuild_maps',
+			'permission_callback' => 'nh_seo_rest_rebuild_maps_permission',
+		)
+	);
 }
 add_action( 'rest_api_init', 'nh_seo_register_rest_routes' );
 
 /**
- * REST: published, visible product URL for one SKU.
+ * Only logged-in admins (or a defined secret) may queue a rebuild.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return bool
+ */
+function nh_seo_rest_rebuild_maps_permission( $request ) {
+	if ( current_user_can( 'manage_options' ) ) {
+		return true;
+	}
+	$secret = (string) apply_filters( 'nh_seo_hreflang_rebuild_secret', defined( 'NH_SEO_HREFLANG_SECRET' ) ? NH_SEO_HREFLANG_SECRET : '' );
+	$token  = (string) $request->get_header( 'X-NH-SEO-Token' );
+	if ( $token === '' ) {
+		$token = (string) $request->get_param( 'token' );
+	}
+	return $secret !== '' && hash_equals( $secret, $token );
+}
+
+/**
+ * This shop's SKU → permalink dump. Built on demand if the daily file is missing.
+ *
+ * @return WP_REST_Response
+ */
+function nh_seo_rest_sku_map() {
+	$path = nh_seo_sku_map_path();
+	$shop = nh_seo_current_shop();
+	$host = $shop ? $shop['host'] : nh_seo_current_host();
+
+	if ( $path === '' || ! is_readable( $path ) ) {
+		$local = nh_seo_build_local_sku_map();
+		$payload = array(
+			'host'         => $host,
+			'hreflang'     => $shop ? $shop['hreflang'] : '',
+			'generated_at' => time(),
+			'skus'         => $local,
+		);
+		if ( $path !== '' ) {
+			nh_seo_write_json_file( $path, $payload );
+		}
+	} else {
+		$raw     = file_get_contents( $path );
+		$payload = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		if ( ! is_array( $payload ) ) {
+			$payload = array(
+				'host'         => $host,
+				'hreflang'     => $shop ? $shop['hreflang'] : '',
+				'generated_at' => 0,
+				'skus'         => array(),
+			);
+		}
+	}
+
+	$response = new WP_REST_Response( $payload, 200 );
+	$response->header( 'Cache-Control', 'public, max-age=3600' );
+	return $response;
+}
+
+/**
+ * REST: published product URL for one SKU.
  *
  * @param WP_REST_Request $request Request.
  * @return WP_REST_Response|WP_Error
@@ -777,7 +950,7 @@ function nh_seo_rest_product_by_sku( $request ) {
 		return new WP_Error( 'nh_seo_bad_sku', 'Invalid SKU.', array( 'status' => 400 ) );
 	}
 
-	$url  = nh_seo_local_url_for_sku( $sku );
+	$url = nh_seo_local_url_for_sku( $sku );
 	if ( $url === '' ) {
 		return new WP_Error( 'nh_seo_not_found', 'Product not found.', array( 'status' => 404 ) );
 	}
@@ -785,20 +958,13 @@ function nh_seo_rest_product_by_sku( $request ) {
 	$shop    = nh_seo_current_shop();
 	$host    = $shop ? $shop['host'] : nh_seo_current_host();
 	$cluster = array();
-	$cached  = get_transient( 'nh_seo_hl2_' . md5( strtolower( $sku ) ) );
-	if ( is_array( $cached ) ) {
-		foreach ( $cached as $cached_host => $cached_url ) {
-			if ( ! is_string( $cached_host ) || ! is_string( $cached_url ) || $cached_url === '' ) {
-				continue;
-			}
-			$clean = nh_seo_normalize_shop_url( $cached_url, $cached_host );
-			if ( $clean !== '' ) {
-				$cluster[ $cached_host ] = $clean;
-			}
-		}
+	$sku_key = strtolower( (string) $sku );
+	$network = nh_seo_load_network_map();
+	if ( isset( $network['skus'][ $sku_key ] ) && is_array( $network['skus'][ $sku_key ] ) ) {
+		$cluster = $network['skus'][ $sku_key ];
 	}
 	if ( $host !== '' ) {
-		$local = nh_seo_normalize_shop_url( $url, $host );
+		$local            = nh_seo_normalize_shop_url( $url, $host );
 		$cluster[ $host ] = $local !== '' ? $local : $url;
 	}
 
@@ -815,11 +981,28 @@ function nh_seo_rest_product_by_sku( $request ) {
 }
 
 /**
- * Drop cached sibling URLs when a product SKU or slug changes.
+ * Queue a background map rebuild (admin or secret token).
+ *
+ * @return WP_REST_Response
+ */
+function nh_seo_rest_rebuild_maps() {
+	nh_seo_enqueue_hreflang_rebuild();
+	return new WP_REST_Response(
+		array(
+			'status'     => 'queued',
+			'rebuilt_at' => (int) get_option( 'nh_seo_hreflang_rebuilt_at', 0 ),
+		),
+		202
+	);
+}
+
+/**
+ * Keep this shop's local URL in the saved maps when a product is saved.
+ * Sibling shops pick up the change on their next daily pull.
  *
  * @param int $product_id Product ID.
  */
-function nh_seo_bust_sku_hreflang_cache( $product_id ) {
+function nh_seo_touch_sku_maps( $product_id ) {
 	if ( ! function_exists( 'wc_get_product' ) ) {
 		return;
 	}
@@ -827,19 +1010,73 @@ function nh_seo_bust_sku_hreflang_cache( $product_id ) {
 	if ( ! $product ) {
 		return;
 	}
-	$sku = (string) $product->get_sku();
-	if ( $sku === '' && $product->get_parent_id() ) {
+	if ( $product->is_type( 'variation' ) && $product->get_parent_id() ) {
 		$parent = wc_get_product( $product->get_parent_id() );
-		$sku    = $parent ? (string) $parent->get_sku() : '';
+		if ( $parent ) {
+			$product = $parent;
+		}
 	}
-	if ( nh_seo_is_usable_sku( $sku ) ) {
-		$sku_hash = md5( strtolower( $sku ) );
-		delete_transient( 'nh_seo_hl_' . $sku_hash );
-		delete_transient( 'nh_seo_hl2_' . $sku_hash );
+
+	$shop = nh_seo_current_shop();
+	$host = $shop ? $shop['host'] : nh_seo_current_host();
+	$sku  = (string) $product->get_sku();
+	if ( $host === '' || ! nh_seo_is_usable_sku( $sku ) ) {
+		return;
 	}
+	$sku_key = strtolower( $sku );
+	$path    = nh_seo_sku_map_path();
+	if ( $path === '' || ! is_readable( $path ) ) {
+		return;
+	}
+
+	$raw   = file_get_contents( $path );
+	$json  = is_string( $raw ) ? json_decode( $raw, true ) : null;
+	$local = ( is_array( $json ) && isset( $json['skus'] ) && is_array( $json['skus'] ) ) ? $json['skus'] : array();
+
+	if ( $product->get_status() === 'publish' ) {
+		$url   = get_permalink( $product->get_id() );
+		$clean = is_string( $url ) ? nh_seo_normalize_shop_url( $url, $host ) : '';
+		if ( $clean !== '' ) {
+			$local[ $sku_key ] = $clean;
+		}
+	} else {
+		unset( $local[ $sku_key ] );
+	}
+
+	nh_seo_write_json_file(
+		$path,
+		array(
+			'host'         => $host,
+			'hreflang'     => $shop ? $shop['hreflang'] : '',
+			'generated_at' => time(),
+			'skus'         => $local,
+		)
+	);
+
+	if ( ! is_readable( nh_seo_network_map_path() ) ) {
+		return;
+	}
+
+	$network = nh_seo_load_network_map( true );
+	if ( isset( $local[ $sku_key ] ) ) {
+		if ( ! isset( $network['skus'] ) || ! is_array( $network['skus'] ) ) {
+			$network['skus'] = array();
+		}
+		if ( ! isset( $network['skus'][ $sku_key ] ) || ! is_array( $network['skus'][ $sku_key ] ) ) {
+			$network['skus'][ $sku_key ] = array();
+		}
+		$network['skus'][ $sku_key ][ $host ] = $local[ $sku_key ];
+	} elseif ( isset( $network['skus'][ $sku_key ][ $host ] ) ) {
+		unset( $network['skus'][ $sku_key ][ $host ] );
+		if ( empty( $network['skus'][ $sku_key ] ) ) {
+			unset( $network['skus'][ $sku_key ] );
+		}
+	}
+	nh_seo_write_json_file( nh_seo_network_map_path(), $network );
+	nh_seo_load_network_map( true );
 }
-add_action( 'woocommerce_update_product', 'nh_seo_bust_sku_hreflang_cache' );
-add_action( 'woocommerce_new_product', 'nh_seo_bust_sku_hreflang_cache' );
+add_action( 'woocommerce_update_product', 'nh_seo_touch_sku_maps' );
+add_action( 'woocommerce_new_product', 'nh_seo_touch_sku_maps' );
 
 /**
  * Organization details shared with JSON-LD.
