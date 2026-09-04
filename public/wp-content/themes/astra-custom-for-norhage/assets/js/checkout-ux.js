@@ -809,53 +809,114 @@
   }
 
   function fillCheckoutField(selector, value) {
-    var $el = $(selector);
-    if (!$el.length || value == null) {
+    var $fields = $(selector);
+    if (!$fields.length || value == null) {
       return false;
     }
     value = String(value);
-    if (value === '' || String($el.val() || '') === value) {
-      return false;
-    }
-    $el.val(value);
-    return true;
+    var changed = false;
+    $fields.each(function () {
+      if (String($(this).val() || '') !== value) {
+        $(this).val(value);
+        changed = true;
+      }
+    });
+    return changed;
   }
 
   function shipToDifferentAddress() {
     return $('#ship-to-different-address-checkbox').is(':checked');
   }
 
-  var iframeAddrTimer = null;
+  function destinationKey() {
+    var country = String($('#billing_country').val() || '').trim();
+    var postcode = String($('#billing_postcode').last().val() || '').trim();
+    var sCountry = country;
+    var sPostcode = postcode;
+    if (shipToDifferentAddress()) {
+      sCountry = String($('#shipping_country').val() || country).trim();
+      sPostcode = String($('#shipping_postcode').last().val() || '').trim();
+    }
+    return [country, postcode, sCountry, sPostcode].join('|');
+  }
+
+  function syncDuplicateAddressFields() {
+    var postcode = '';
+    $('input#billing_postcode, input[name="billing_postcode"]').each(function () {
+      var v = String($(this).val() || '').trim();
+      if (v) {
+        postcode = v;
+      }
+    });
+    if (postcode) {
+      $('input#billing_postcode, input[name="billing_postcode"]').val(postcode);
+    }
+    if (!shipToDifferentAddress() && postcode) {
+      $('input#shipping_postcode, input[name="shipping_postcode"]').val(postcode);
+      fillCheckoutField('#shipping_country', $('#billing_country').val());
+    }
+  }
+
+  var postcodeShipTimer = null;
+  var lastShipDest = '';
+  function flushPostcodeShipping() {
+    syncDuplicateAddressFields();
+    var key = destinationKey();
+    var postcode = key.split('|')[1];
+    if (!postcode) {
+      lastShipDest = key;
+      return;
+    }
+    if (key === lastShipDest) {
+      return;
+    }
+    lastShipDest = key;
+    stampShippingIndexes();
+    $(document.body).trigger('update_checkout');
+  }
+
+  function schedulePostcodeShipping() {
+    window.clearTimeout(postcodeShipTimer);
+    postcodeShipTimer = window.setTimeout(flushPostcodeShipping, 400);
+  }
+
   function applyIframeAddress(parts) {
-    var changed = false;
     var copyShip = !shipToDifferentAddress();
     parts = parts || {};
+    var country = iso2Country(parts.country);
 
     if (parts.postcode) {
-      changed = fillCheckoutField('#billing_postcode', parts.postcode) || changed;
+      fillCheckoutField('#billing_postcode, input[name="billing_postcode"]', parts.postcode);
       if (copyShip) {
-        changed = fillCheckoutField('#shipping_postcode', parts.postcode) || changed;
+        fillCheckoutField('#shipping_postcode, input[name="shipping_postcode"]', parts.postcode);
       }
     }
-    if (parts.country && String(parts.country).length === 2) {
-      changed = fillCheckoutField('#billing_country', String(parts.country).toUpperCase()) || changed;
+    if (country) {
+      fillCheckoutField('#billing_country', country);
       if (copyShip) {
-        changed = fillCheckoutField('#shipping_country', String(parts.country).toUpperCase()) || changed;
+        fillCheckoutField('#shipping_country', country);
       }
     }
     if (parts.city) {
-      changed = fillCheckoutField('#billing_city', parts.city) || changed;
+      fillCheckoutField('#billing_city', parts.city);
       if (copyShip) {
-        changed = fillCheckoutField('#shipping_city', parts.city) || changed;
+        fillCheckoutField('#shipping_city', parts.city);
       }
     }
-    if (!changed) {
-      return;
+    schedulePostcodeShipping();
+  }
+
+  function iso2Country(country) {
+    country = String(country || '').toUpperCase();
+    if (country.length === 2) {
+      return country;
     }
-    window.clearTimeout(iframeAddrTimer);
-    iframeAddrTimer = window.setTimeout(function () {
-      $(document.body).trigger('update_checkout');
-    }, 350);
+    var map = {
+      SWE: 'SE', NOR: 'NO', DNK: 'DK', FIN: 'FI', DEU: 'DE',
+      AUT: 'AT', NLD: 'NL', BEL: 'BE', LTU: 'LT', LVA: 'LV',
+      EST: 'EE', POL: 'PL', FRA: 'FR', GBR: 'GB', IRL: 'IE'
+    };
+    return map[country] || '';
   }
 
   function observeValue(data) {
@@ -904,35 +965,78 @@
     });
   }
 
-  function bindIframeShippingAddress() {
-    if (document.body.getAttribute('data-nh-iframe-addr') === '1') {
+  var kustomAddressBound = false;
+  function tryBindKustomAddress() {
+    if (kustomAddressBound || typeof window._klarnaCheckout !== 'function') {
       return;
     }
-    document.body.setAttribute('data-nh-iframe-addr', '1');
+    kustomAddressBound = true;
+    window._klarnaCheckout(function (api) {
+      if (!api || typeof api.on !== 'function') {
+        return;
+      }
+      api.on({
+        change: function (data) {
+          if (!data) {
+            return;
+          }
+          applyIframeAddress({
+            postcode: data.postal_code || data.postalCode || '',
+            country: data.country || ''
+          });
+        }
+      });
+    });
+  }
+
+  function bindPostcodeShippingUpdate() {
+    if (document.body.getAttribute('data-nh-postcode-ship') === '1') {
+      return;
+    }
+    document.body.setAttribute('data-nh-postcode-ship', '1');
+
+    var selector = [
+      '#billing_postcode',
+      '#shipping_postcode',
+      '#billing_country',
+      '#shipping_country',
+      'input[name="billing_postcode"]',
+      'input[name="shipping_postcode"]'
+    ].join(', ');
 
     $(document.body).on(
-      'change.nhIframeAddr input.nhIframeAddr',
-      '#billing_postcode, #billing_country, #billing_city, #billing_address_1',
-      function () {
-        var dest = {
-          billing_postcode: '#shipping_postcode',
-          billing_country: '#shipping_country',
-          billing_city: '#shipping_city',
-          billing_address_1: '#shipping_address_1'
-        }[this.id];
-        if (!dest || shipToDifferentAddress()) {
-          return;
-        }
-        fillCheckoutField(dest, $(this).val());
-      }
+      'change.nhPostcodeShip input.nhPostcodeShip keyup.nhPostcodeShip paste.nhPostcodeShip',
+      selector,
+      schedulePostcodeShipping
     );
 
+    document.addEventListener('change', function (e) {
+      var t = e.target;
+      if (!t) {
+        return;
+      }
+      var id = t.id || '';
+      var name = t.name || '';
+      if (
+        id === 'billing_postcode' ||
+        id === 'shipping_postcode' ||
+        id === 'billing_country' ||
+        id === 'shipping_country' ||
+        name === 'billing_postcode' ||
+        name === 'shipping_postcode'
+      ) {
+        schedulePostcodeShipping();
+      }
+    }, true);
+
     tryBindSveaAddress();
+    tryBindKustomAddress();
     var tries = 0;
     var poll = window.setInterval(function () {
       tries += 1;
       tryBindSveaAddress();
-      if (sveaAddressBound || tries >= 45) {
+      tryBindKustomAddress();
+      if ((sveaAddressBound && kustomAddressBound) || tries >= 45) {
         window.clearInterval(poll);
       }
     }, 1000);
@@ -952,6 +1056,7 @@
       timer = window.setTimeout(function () {
         syncSnippetCheckout();
         tryBindSveaAddress();
+        tryBindKustomAddress();
       }, 50);
     });
     obs.observe(document.body, { childList: true, subtree: true });
@@ -962,7 +1067,7 @@
     bindCustomerType();
     bindCallingCode();
     bindShippingTotals();
-    bindIframeShippingAddress();
+    bindPostcodeShippingUpdate();
     refreshCheckoutChrome();
     watchSnippetCheckout();
   }

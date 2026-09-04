@@ -1589,6 +1589,40 @@ function nh_checkout_sync_review_address( $post_data ) {
 	if ( $postcode !== '' && $country !== '' ) {
 		$_POST['has_full_address'] = '1';
 	}
+
+	nh_checkout_flush_shipping_cache_for_destination( $country, $postcode );
+}
+
+/**
+ * Drop cached package rates when the destination postcode changes.
+ *
+ * @param string $country  Shipping country.
+ * @param string $postcode Shipping postcode.
+ */
+function nh_checkout_flush_shipping_cache_for_destination( $country, $postcode ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$key  = strtoupper( (string) $country ) . '|' . (string) $postcode;
+	$prev = (string) WC()->session->get( 'nh_ship_dest', '' );
+	if ( $key === $prev ) {
+		return;
+	}
+
+	WC()->session->set( 'nh_ship_dest', $key );
+
+	if ( method_exists( WC()->session, 'get_session_data' ) ) {
+		foreach ( array_keys( (array) WC()->session->get_session_data() ) as $session_key ) {
+			if ( is_string( $session_key ) && strpos( $session_key, 'shipping_for_package_' ) === 0 ) {
+				WC()->session->__unset( $session_key );
+			}
+		}
+	} else {
+		for ( $i = 0; $i < 10; $i++ ) {
+			WC()->session->__unset( 'shipping_for_package_' . $i );
+		}
+	}
 }
 
 /**
