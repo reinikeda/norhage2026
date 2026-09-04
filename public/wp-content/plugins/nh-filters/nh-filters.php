@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.7.1
+ * Version: 1.7.2
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -33,7 +33,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.7.1'
+		'1.7.2'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,7 +41,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.7.1',
+		'1.7.2',
 		true
 	);
 

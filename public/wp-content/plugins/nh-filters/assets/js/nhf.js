@@ -10,10 +10,10 @@ const nhfT = (key, fallback) =>
   let filtersFormClone = null;
   let badgeEl = null;
   let openedByBtn = null;
-  let resizeObserver = null;
 
-  const qs = (sel, ctx = document) => ctx.querySelector(sel);
-  const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+  const qs = (sel, ctx = document) => (ctx ? ctx.querySelector(sel) : null);
+  const qsa = (sel, ctx = document) =>
+    ctx ? Array.from(ctx.querySelectorAll(sel)) : [];
 
   function lockBody(lock) {
     document.documentElement.classList.toggle('nhf-lock', lock);
@@ -85,21 +85,6 @@ const nhfT = (key, fallback) =>
     badgeEl.style.display = count > 0 ? 'inline-flex' : 'none';
   }
 
-  function setMobileBarHeight() {
-    if (!mobileBar) return;
-
-    document.documentElement.style.setProperty(
-      '--nhf-mb-h',
-      `${mobileBar.offsetHeight || 60}px`
-    );
-    document.body.classList.add('nhf-has-mobilebar');
-  }
-
-  function clearMobileBarHeight() {
-    document.documentElement.style.removeProperty('--nhf-mb-h');
-    document.body.classList.remove('nhf-has-mobilebar');
-  }
-
   function createDrawer(id, title, footerHTML = '') {
     const wrap = document.createElement('div');
     wrap.className = 'nhf-drawer';
@@ -164,11 +149,17 @@ const nhfT = (key, fallback) =>
     return wrap;
   }
 
+  function setOpenerExpanded(expanded) {
+    if (!openedByBtn) return;
+    openedByBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+
   function openDrawer(drawer, openerBtn = null) {
     if (!drawer) return;
 
     openedByBtn = openerBtn;
     drawer.classList.add('is-open');
+    setOpenerExpanded(true);
     lockBody(true);
 
     requestAnimationFrame(() => {
@@ -182,6 +173,7 @@ const nhfT = (key, fallback) =>
     if (!drawer) return;
 
     drawer.classList.remove('is-open');
+    setOpenerExpanded(false);
     lockBody(false);
 
     if (restoreFocus && openedByBtn) {
@@ -191,8 +183,8 @@ const nhfT = (key, fallback) =>
 
   function buildMobileUI() {
     const sidebar = qs('#nhf-sidebar');
-    const filters = qs('.nhf-filters', sidebar);
-    const originalForm = qs('.nhf-form', filters);
+    const filters = sidebar ? qs('.nhf-filters', sidebar) : null;
+    const originalForm = filters ? qs('.nhf-form', filters) : null;
 
     if (!sidebar || !filters || !originalForm) return;
 
@@ -204,9 +196,16 @@ const nhfT = (key, fallback) =>
         class="nhf-mb-btn nhf-mb-btn--filters"
         id="nhf-mb-filters"
         aria-controls="nhf-drawer-filters"
+        aria-expanded="false"
         aria-live="polite"
       >
-        <span class="nhf-mb-icon" aria-hidden="true">⚙️</span>
+        <span class="nhf-mb-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+            <line x1="11" y1="18" x2="13" y2="18"></line>
+          </svg>
+        </span>
         <span class="nhf-mb-label">${nhfT('filters', 'Filters')}</span>
         <span class="nhf-badge" id="nhf-badge" style="display:none">0</span>
       </button>
@@ -250,41 +249,28 @@ const nhfT = (key, fallback) =>
 
       if (action === 'reset') {
         const baseUrl =
-          qs('.nhf-form', filtersFormClone)?.getAttribute('action') ||
-          window.location.pathname;
+          filtersFormClone?.getAttribute('action') || window.location.pathname;
 
         window.location.href = baseUrl;
       }
 
       if (action === 'apply') {
-        qs('.nhf-form', filtersDrawer)?.submit();
+        filtersFormClone?.submit();
       }
     });
 
     updateBadge();
-    setMobileBarHeight();
-
-    if ('ResizeObserver' in window) {
-      resizeObserver = new ResizeObserver(() => setMobileBarHeight());
-      resizeObserver.observe(mobileBar);
-    }
-
     initializedMobileUI = true;
   }
 
   function destroyMobileUI() {
     closeDrawer(filtersDrawer, false);
 
-    resizeObserver?.disconnect();
-    resizeObserver = null;
-
     filtersDrawer?.remove();
     mobileBar?.remove();
 
     document.documentElement.classList.remove('nhf-lock');
     document.body.classList.remove('nhf-lock');
-
-    clearMobileBarHeight();
 
     initializedMobileUI = false;
     mobileBar = null;
@@ -330,6 +316,8 @@ const nhfT = (key, fallback) =>
 
   function bindGlobalEvents() {
     document.addEventListener('click', (e) => {
+      if (!(e.target instanceof Element)) return;
+
       const catToggle = e.target.closest('button.nhf-cat-toggle');
       if (catToggle) {
         e.preventDefault();
@@ -346,6 +334,7 @@ const nhfT = (key, fallback) =>
 
     document.addEventListener('change', (e) => {
       const target = e.target;
+      if (!(target instanceof Element)) return;
 
       if (
         target.matches('.nhf-filter input, .nhf-filter select, .nhf-filter textarea')
@@ -364,6 +353,7 @@ const nhfT = (key, fallback) =>
 
     document.addEventListener('input', (e) => {
       const target = e.target;
+      if (!(target instanceof Element)) return;
 
       if (
         target.matches(
@@ -378,6 +368,7 @@ const nhfT = (key, fallback) =>
       if (e.key !== 'Enter') return;
 
       const target = e.target;
+      if (!(target instanceof Element)) return;
 
       if (!mq.matches && target.matches('#nhf-sidebar .nhf-form input[type="number"]')) {
         target.form?.submit();
