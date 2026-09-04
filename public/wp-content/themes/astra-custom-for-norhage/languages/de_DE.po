@@ -1794,6 +1794,10 @@ msgstr "Bitte geben Sie eine Telefonnummer ein."
 msgid "Order summary"
 msgstr "Bestellübersicht"
 
+#. translators: %s: formatted shipping price
+msgid "Shipping: %s"
+msgstr "Versand: %s"
+
 msgid "Contact person"
 msgstr "Ansprechpartner"
 

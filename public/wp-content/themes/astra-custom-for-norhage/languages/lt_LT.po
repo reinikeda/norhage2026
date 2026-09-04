@@ -1794,6 +1794,10 @@ msgstr "Įveskite telefono numerį."
 msgid "Order summary"
 msgstr "Užsakymo santrauka"
 
+#. translators: %s: formatted shipping price
+msgid "Shipping: %s"
+msgstr "Pristatymas: %s"
+
 msgid "Contact person"
 msgstr "Kontaktinis asmuo"
 
