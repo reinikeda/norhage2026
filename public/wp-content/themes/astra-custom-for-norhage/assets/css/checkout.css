@@ -576,19 +576,35 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary {
   overflow: hidden;
 }
 
-/* Inner Woo/Astra #order_review card — keep a single outer frame. */
+/* Inner Woo/Astra stacked card (#order_review_heading + #order_review). */
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review_heading,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary .woocommerce-checkout-review-order,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary table.shop_table,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary table.woocommerce-checkout-review-order-table {
   border: 0 !important;
+  border-width: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
+  background-image: none !important;
   padding: 0 !important;
   margin: 0 !important;
   border-radius: 0 !important;
   min-height: 0 !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review_heading,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary__body #order_review_heading {
+  padding: 0 0 0.75rem !important;
+  margin: 0 !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review_heading::before,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary #order_review_heading::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle {
