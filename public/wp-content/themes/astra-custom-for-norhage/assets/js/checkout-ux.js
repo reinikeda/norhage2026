@@ -374,9 +374,30 @@
     });
   }
 
+  function stampShippingIndexes() {
+    $('input.shipping_method, select.shipping_method').each(function () {
+      var $el = $(this);
+      var name = $el.attr('name') || '';
+      var match = name.match(/shipping_method\[(\d+)\]/);
+      var index = match ? match[1] : ($el.attr('data-index') || '0');
+      $el.attr('data-index', index);
+      $el.data('index', parseInt(index, 10));
+    });
+  }
+
+  $.ajaxPrefilter(function (options) {
+    if (!options || typeof options.data !== 'string' || options.data.indexOf('shipping_method') === -1) {
+      return;
+    }
+    options.data = options.data
+      .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
+      .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
+  });
+
   function bindShippingTotals() {
     $(document.body).off('change.nhShipTotals', 'input.shipping_method, select.shipping_method');
     $(document.body).on('change.nhShipTotals', 'input.shipping_method, select.shipping_method', function () {
+      stampShippingIndexes();
       $(document.body).trigger('update_checkout');
     });
   }
@@ -562,6 +583,7 @@
   function refreshCheckoutChrome() {
     keepPhoneCodeNative();
     hydratePhoneCombos();
+    stampShippingIndexes();
     bindSummaryToggle();
     syncSummaryTotal();
     enhanceNotes();
@@ -572,11 +594,14 @@
   }
 
   function boot() {
+    stampShippingIndexes();
     bindCustomerType();
     bindCallingCode();
     bindShippingTotals();
     refreshCheckoutChrome();
   }
+
+  stampShippingIndexes();
 
   $(boot);
   $(window).on('resize.nhCheckout', lockSummaryLayout);
