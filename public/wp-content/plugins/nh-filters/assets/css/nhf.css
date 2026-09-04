@@ -1,7 +1,3 @@
-:root {
-  --nhf-mb-h: 60px;
-}
-
 /* Sidebar */
 #nhf-sidebar {
   padding: 0.75rem 0 1rem;
@@ -440,47 +436,46 @@
 
 .nhf-mobilebar {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--nhf-mb-h);
+  left: auto;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  height: auto;
+  width: auto;
   box-sizing: border-box;
-  padding-top: 0;
-  padding-right: calc(16px + env(safe-area-inset-right, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: calc(20px + env(safe-area-inset-left, 0px));
-  background: #fff;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   display: none;
-  z-index: 1100;
+  z-index: 1200;
+  pointer-events: none;
 }
 
 @media (max-width: 992px) {
   .nhf-mobilebar {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
+    justify-content: flex-end;
   }
 
   .nhf-mobilebar .nhf-mb-btn--filters {
-    margin-left: 0;
-    margin-right: auto;
+    margin: 0;
+    pointer-events: auto;
   }
 }
 
-@media (max-width: 992px) {
-  body.nhf-has-mobilebar {
-    padding-bottom: calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px));
-  }
+html.nhf-lock .nhf-mobilebar,
+body.nhf-lock .nhf-mobilebar {
+  display: none;
+}
 
-  body.nhf-has-mobilebar .site-footer {
-    padding-bottom: max(
-      24px,
-      calc(var(--nhf-mb-h) + env(safe-area-inset-bottom, 0px))
-    );
-  }
+/* Keep Crisp on the left from covering the filter drawer/actions. */
+html.nhf-lock .crisp-client,
+body.nhf-lock .crisp-client,
+html.nhf-lock #crisp-chatbox,
+body.nhf-lock #crisp-chatbox {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .nhf-mb-btn {
@@ -490,14 +485,14 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 10px 16px;
-  border-radius: 8px;
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 999px;
   font-weight: 600;
   font-size: 14px;
   line-height: 1;
   color: var(--nh-charcoal, #2C2A29);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
   touch-action: manipulation;
   transition:
     background-color 0.2s ease,
@@ -509,7 +504,7 @@
 .nhf-mb-btn:hover {
   background: #fafafa;
   border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .nhf-mb-btn:focus-visible {
@@ -565,7 +560,7 @@ body.nhf-lock {
   position: fixed;
   inset: 0;
   display: none;
-  z-index: 1001;
+  z-index: 5000;
 }
 
 .nhf-drawer.is-open {
@@ -649,13 +644,13 @@ body.nhf-lock {
   bottom: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 12px calc(96px + env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  border-radius: 0;
 }
 
 .nhf-drawer__apply {
