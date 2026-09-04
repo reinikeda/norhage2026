@@ -167,13 +167,13 @@ function nh_cart_ux_layout_lock_css() {
 		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .product-remove a.remove svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells{margin:.75rem 0 0!important;padding:8px!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells>h2{margin:0 0 6px!important;padding:0!important;font-size:.95rem!important}'
-		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells ul.products{display:grid!important;grid-template-columns:1fr;gap:6px!important;margin:0!important;padding:0!important;width:100%!important;float:none!important}'
-		. '@media(min-width:720px){html body.woocommerce-cart.nh-cart-ux .cross-sells ul.products{grid-template-columns:1fr 1fr!important}}'
-		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells li.product{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;float:none!important;width:auto!important;max-width:none!important;margin:0!important;padding:6px!important;text-align:left!important}'
-		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .astra-shop-thumbnail-wrap,html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{width:48px!important;max-width:48px!important;height:auto!important;margin:0!important;padding:0!important}'
-		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{height:48px!important;object-fit:cover}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells ul.products{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important;margin:0!important;padding:0!important;width:100%!important;float:none!important}'
+		. '@media(min-width:960px){html body.woocommerce-cart.nh-cart-ux .cross-sells ul.products{grid-template-columns:1fr 1fr 1fr!important}}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells li.product{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;float:none!important;width:auto!important;max-width:none!important;margin:0!important;padding:8px!important;text-align:left!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .nhg-labels,html body.woocommerce-cart.nh-cart-ux .cross-sells .nhg-badge,html body.woocommerce-cart.nh-cart-ux .cross-sells .onsale,html body.woocommerce-cart.nh-cart-ux .cross-sells .button,html body.woocommerce-cart.nh-cart-ux .cross-sells a.button,html body.woocommerce-cart.nh-cart-ux .cross-sells .add_to_cart_button{display:none!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .astra-shop-thumbnail-wrap,html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{width:56px!important;max-width:56px!important;margin:0!important;padding:0!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{height:56px!important;object-fit:contain}'
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .astra-shop-summary-wrap,html body.woocommerce-cart.nh-cart-ux .cross-sells .woocommerce-loop-product__title{margin:0!important;padding:0!important;text-align:left!important}'
-		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .button{margin:0!important;min-height:32px!important;padding:0 8px!important}'
 		. '@media(max-width:959px){'
 		. 'html body.woocommerce-cart .site-content>.ast-container,'
 		. 'html body.woocommerce-cart.ast-separate-container .ast-container,'
@@ -215,7 +215,7 @@ function nh_cart_ux_render_cross_sells() {
 	if ( empty( $ids ) ) {
 		return;
 	}
-	woocommerce_cross_sell_display( 4, 2 );
+	woocommerce_cross_sell_display( 6, 3 );
 }
 
 /**
@@ -223,7 +223,7 @@ function nh_cart_ux_render_cross_sells() {
  * @return int
  */
 function nh_cart_ux_cross_sells_columns( $columns ) {
-	return 2;
+	return 3;
 }
 
 /**
@@ -231,7 +231,7 @@ function nh_cart_ux_cross_sells_columns( $columns ) {
  * @return int
  */
 function nh_cart_ux_cross_sells_total( $total ) {
-	return 4;
+	return 6;
 }
 
 function nh_cart_ux_layout_open() {

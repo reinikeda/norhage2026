@@ -1406,7 +1406,7 @@ function nh_checkout_normalize_shipping_methods( $methods ) {
 		if ( '' === $value ) {
 			continue;
 		}
-		if ( 'undefined' === $key || '' === $key || null === $key ) {
+		if ( 'undefined' === $key || '' === $key || null === $key || 'NaN' === $key ) {
 			$key = 0;
 		}
 		if ( ! is_numeric( $key ) ) {

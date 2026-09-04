@@ -374,14 +374,52 @@
     });
   }
 
+  function checkoutShippingMethods() {
+    var methods = {};
+    $(
+      'form.checkout select.shipping_method, form.checkout input[name^="shipping_method"][type="radio"]:checked, form.checkout input[name^="shipping_method"][type="hidden"]'
+    ).each(function () {
+      var $el = $(this);
+      var name = $el.attr('name') || '';
+      var match = name.match(/shipping_method\[(\d+)\]/);
+      var index = match ? match[1] : ($el.attr('data-index') || '0');
+      if (index === 'undefined' || index === '' || isNaN(parseInt(index, 10))) {
+        index = '0';
+      }
+      $el.attr('data-index', index);
+      $el.data('index', parseInt(index, 10));
+      methods[parseInt(index, 10)] = $el.val();
+    });
+    return methods;
+  }
+
+  function isolateCheckoutShipping() {
+    $(
+      'input[name^="shipping_method"], select[name^="shipping_method"]'
+    ).not('form.checkout input, form.checkout select').each(function () {
+      var $el = $(this);
+      var name = String($el.attr('name') || '');
+      if (name.indexOf('shipping_method') !== 0) {
+        return;
+      }
+      $el.attr('name', name.replace(/^shipping_method/, 'nh_sc_shipping_method'));
+      $el.removeClass('shipping_method');
+    });
+  }
+
   function rewriteShippingPayload(data) {
+    var methods = checkoutShippingMethods();
+    var hasCheckout = Object.keys(methods).length > 0;
+
     if (typeof data === 'string') {
       return data
         .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
         .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
     }
     if (data && typeof data === 'object' && data.shipping_method && typeof data.shipping_method === 'object') {
-      if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
+      if (hasCheckout) {
+        data.shipping_method = methods;
+      } else if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
         if (data.shipping_method[0] == null) {
           data.shipping_method[0] = data.shipping_method.undefined;
         }
@@ -392,14 +430,8 @@
   }
 
   function stampShippingIndexes() {
-    $('input.shipping_method, select.shipping_method').each(function () {
-      var $el = $(this);
-      var name = $el.attr('name') || '';
-      var match = name.match(/shipping_method\[(\d+)\]/);
-      var index = match ? match[1] : ($el.attr('data-index') || '0');
-      $el.attr('data-index', index);
-      $el.data('index', parseInt(index, 10));
-    });
+    isolateCheckoutShipping();
+    checkoutShippingMethods();
   }
 
   $.ajaxPrefilter(function (options) {
@@ -413,9 +445,23 @@
   });
 
   function bindShippingTotals() {
-    $(document.body).off('change.nhShipTotals', 'input.shipping_method, select.shipping_method');
-    $(document.body).on('change.nhShipTotals', 'input.shipping_method, select.shipping_method', function () {
+    if (!document.body.getAttribute('data-nh-ship-capture')) {
+      document.body.setAttribute('data-nh-ship-capture', '1');
+      document.addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t || !t.name || String(t.name).indexOf('shipping_method') !== 0) {
+          return;
+        }
+        if (!t.closest || !t.closest('form.checkout')) {
+          return;
+        }
+        stampShippingIndexes();
+      }, true);
+    }
+    $(document.body).off('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method');
+    $(document.body).on('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method', function () {
       stampShippingIndexes();
+      $(document.body).trigger('update_checkout', { update_shipping_method: true });
     });
   }
 

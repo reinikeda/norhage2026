@@ -300,7 +300,7 @@ final class NH_Side_Cart_Render {
 						<input
 							type="radio"
 							id="<?php echo esc_attr( $input_id ); ?>"
-							name="shipping_method[<?php echo esc_attr( (string) $i ); ?>]"
+							name="nh_sc_shipping_method[<?php echo esc_attr( (string) $i ); ?>]"
 							value="<?php echo esc_attr( $rate_id ); ?>"
 							class="nh-sc__method-input"
 							data-index="<?php echo esc_attr( (string) $i ); ?>"
