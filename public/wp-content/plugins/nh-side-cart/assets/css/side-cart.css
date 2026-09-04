@@ -442,6 +442,11 @@ body.nh-sc-open {
   color: var(--nh-sc-forest);
 }
 
+.nh-sc .tax_label,
+.nh-sc .price-tax-note {
+  display: none !important;
+}
+
 .nh-sc__shipping {
   margin: 16px 0 0;
   padding: 14px;
@@ -580,6 +585,20 @@ body.nh-sc-open {
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--nh-sc-forest);
+  align-items: flex-start;
+}
+
+.nh-sc__total-row--grand dd {
+  text-align: right;
+}
+
+.nh-sc__total-row--grand .includes_tax {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--nh-sc-muted);
+  white-space: normal;
 }
 
 .nh-sc__actions {
