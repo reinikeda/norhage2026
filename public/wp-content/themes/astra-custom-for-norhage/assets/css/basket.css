@@ -909,6 +909,18 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
   order: -1;
 }
 
+.nh-cart-layout .nh-pickup-only-notice {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6c36b;
+  background: #fff6d8;
+  color: var(--nh-charcoal, #2c2a29);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .nh-cart-layout .nh-shipping-calc {
   display: block;
   background: var(--nh-cream, #f1e6d6);

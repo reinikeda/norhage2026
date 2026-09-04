@@ -64,6 +64,12 @@ msgstr "Versandkosten anzeigen"
 msgid "Free pickup from the warehouse is also available."
 msgstr "Eine kostenlose Abholung im Lager ist ebenfalls möglich."
 
+msgid "Warehouse pickup"
+msgstr "Abholung im Lager"
+
+msgid "This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery."
+msgstr "Dieses Paket ist zu groß für die Standardlieferung. Kostenlose Abholung im Lager ist möglich. Kontaktieren Sie uns, wenn Sie eine Lieferung benötigen."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Für diese Postleitzahl sind keine Versandmethoden verfügbar."
 
