@@ -345,7 +345,13 @@ final class NH_Side_Cart_Render {
 			<?php endif; ?>
 			<div class="nh-sc__total-row nh-sc__total-row--grand">
 				<dt><?php esc_html_e( 'Total', NH_SC_TD ); ?></dt>
-				<dd><?php echo $cart->get_total(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></dd>
+				<dd><?php
+				if ( function_exists( 'wc_cart_totals_order_total_html' ) ) {
+					wc_cart_totals_order_total_html();
+				} else {
+					echo $cart->get_total(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				?></dd>
 			</div>
 		</dl>
 		<?php

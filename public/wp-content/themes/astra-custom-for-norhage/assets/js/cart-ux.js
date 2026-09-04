@@ -55,11 +55,31 @@
     });
   }
 
+  function amountHtmlFromTotalCell($src) {
+    var $strong;
+    var $amount;
+    var $clone;
+    if (!$src || !$src.length) {
+      return '';
+    }
+    $strong = $src.find('strong').first();
+    if ($strong.length) {
+      return $strong.html();
+    }
+    $amount = $src.find('.woocommerce-Price-amount').first();
+    if ($amount.length) {
+      return $amount.prop('outerHTML');
+    }
+    $clone = $src.clone();
+    $clone.find('.includes_tax, .tax_label, .price-tax-note').remove();
+    return $.trim($clone.html());
+  }
+
   function syncStickyTotal() {
     var $src = $('.cart_totals .order-total td').first();
     var $dest = $('.nh-cart-sticky-bar__amount');
     if ($src.length && $dest.length) {
-      $dest.html($src.html());
+      $dest.html(amountHtmlFromTotalCell($src));
     }
   }
 

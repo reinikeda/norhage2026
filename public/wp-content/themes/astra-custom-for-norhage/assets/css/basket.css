@@ -550,6 +550,28 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
   white-space: nowrap;
 }
 
+/* One VAT note on Total is enough — hide Woo's per-line “(incl. VAT)”. */
+.nh-cart-layout .tax_label,
+.nh-cart-layout .price-tax-note,
+.nh-cart-sticky-bar .tax_label,
+.nh-cart-sticky-bar .includes_tax {
+  display: none !important;
+}
+
+.nh-cart-layout .cart_totals .order-total td {
+  text-align: right;
+  white-space: normal;
+}
+
+.nh-cart-layout .cart_totals .order-total .includes_tax {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ui-muted, #8e8c89);
+  white-space: normal;
+}
+
 /* Phone: stack the product row without CSS grid (grid-area leaked into the page). */
 @media (max-width: 899px) {
   .nh-cart-layout table.shop_table.cart thead {
@@ -868,7 +890,7 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout .quantity .qty,
 .nh-cart-layout .cart_totals table.shop_table tr.nhgp-cart-total-weight-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 12px;
   padding: 0.65rem 0;
 }

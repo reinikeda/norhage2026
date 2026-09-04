@@ -633,6 +633,11 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle__amount {
   margin-left: auto;
 }
 
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle .tax_label,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle .includes_tax {
+  display: none !important;
+}
+
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle::after {
   content: "";
   width: 8px;
@@ -806,6 +811,26 @@ body.woocommerce-checkout.nh-checkout-form #order_review .product-total {
 body.woocommerce-checkout.nh-checkout-form #order_review .product-total {
   text-align: right;
   white-space: nowrap;
+}
+
+/* One VAT note on Total — hide Woo's per-line “(incl. VAT)”. */
+body.woocommerce-checkout.nh-checkout-form #order_review .tax_label,
+body.woocommerce-checkout.nh-checkout-form #order_review .price-tax-note {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tfoot .order-total td {
+  text-align: right;
+  white-space: normal;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review .order-total .includes_tax {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ui-muted, #8e8c89);
+  white-space: normal;
 }
 
 body.woocommerce-checkout.nh-checkout-form #order_review ul.wc-item-meta {

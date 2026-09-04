@@ -62,6 +62,48 @@ function nh_cart_ux_init() {
 	add_filter( 'woocommerce_cross_sells_columns', 'nh_cart_ux_cross_sells_columns' );
 	add_filter( 'woocommerce_cross_sells_total', 'nh_cart_ux_cross_sells_total' );
 	add_filter( 'body_class', 'nh_cart_ux_body_class' );
+
+	add_filter( 'woocommerce_cart_product_price', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_item_price', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_product_subtotal', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_item_subtotal', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_subtotal', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_shipping_total', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'nh_cart_strip_repeated_vat_note', 99 );
+	add_filter( 'woocommerce_cart_totals_fee_html', 'nh_cart_strip_repeated_vat_note', 99 );
+}
+
+/**
+ * Woo repeats “(incl. VAT)” on every line, the subtotal, and shipping.
+ * Keep the tax amount on the Total row only.
+ *
+ * @param string $html Price HTML.
+ * @return string
+ */
+function nh_cart_strip_repeated_vat_note( $html ) {
+	if ( ! is_string( $html ) || $html === '' ) {
+		return $html;
+	}
+
+	$stripped = preg_replace( '/\s*<small[^>]*class=(["\'])[^"\']*tax_label[^"\']*\1[^>]*>.*?<\/small>/is', '', $html );
+	if ( is_string( $stripped ) ) {
+		$html = $stripped;
+	}
+
+	if ( function_exists( 'WC' ) && WC()->countries ) {
+		foreach ( array( WC()->countries->inc_tax_or_vat(), WC()->countries->ex_tax_or_vat() ) as $note ) {
+			$note = trim( wp_strip_all_tags( (string) $note ) );
+			if ( $note === '' ) {
+				continue;
+			}
+			$without_note = preg_replace( '/\s*' . preg_quote( $note, '/' ) . '/u', '', $html );
+			if ( is_string( $without_note ) ) {
+				$html = $without_note;
+			}
+		}
+	}
+
+	return $html;
 }
 add_action( 'init', 'nh_cart_ux_init' );
 
@@ -174,6 +216,9 @@ function nh_cart_ux_layout_lock_css() {
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .astra-shop-thumbnail-wrap,html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{width:56px!important;max-width:56px!important;margin:0!important;padding:0!important}'
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells li.product img{height:56px!important;object-fit:contain}'
 		. 'html body.woocommerce-cart.nh-cart-ux .cross-sells .astra-shop-summary-wrap,html body.woocommerce-cart.nh-cart-ux .cross-sells .woocommerce-loop-product__title{margin:0!important;padding:0!important;text-align:left!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .tax_label,html body.woocommerce-cart.nh-cart-ux .price-tax-note{display:none!important}'
+		. 'html body.woocommerce-cart.nh-cart-ux .cart_totals .order-total .includes_tax{display:block;font-size:.75rem;font-weight:500;color:#8e8c89;white-space:normal}'
+		. 'html body.woocommerce-cart.nh-cart-ux .nh-cart-sticky-bar .includes_tax,html body.woocommerce-cart.nh-cart-ux .nh-cart-sticky-bar .tax_label{display:none!important}'
 		. '@media(max-width:959px){'
 		. 'html body.woocommerce-cart .site-content>.ast-container,'
 		. 'html body.woocommerce-cart.ast-separate-container .ast-container,'
