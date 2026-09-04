@@ -7,6 +7,9 @@
  *
  * Yoast SEO is installed on the servers (not in this repo). Filters no-op if Yoast is off.
  *
+ * Product JSON-LD: EU return policy, GTIN, and customer aggregateRating/review
+ * from approved WooCommerce / CusRev comments (never fabricated).
+ *
  * Server-side (not in git) still required for full SEO:
  *   - Cloudflare Managed robots.txt Disallows GPTBot, ClaudeBot, Google-Extended,
  *     Applebot-Extended, Amazonbot, Bytespider, CCBot, meta-externalagent.
@@ -1440,6 +1443,290 @@ function nh_seo_product_return_policy( $markup, $product ) {
 	return $markup;
 }
 add_filter( 'woocommerce_structured_data_product', 'nh_seo_product_return_policy', 20, 2 );
+
+/**
+ * Parent product ID used for reviews (variations inherit the parent's comments).
+ *
+ * @param WC_Product $product Product.
+ * @return int
+ */
+function nh_seo_review_product_id( $product ) {
+	if ( ! is_object( $product ) || ! is_a( $product, 'WC_Product' ) ) {
+		return 0;
+	}
+
+	if ( is_callable( array( $product, 'is_type' ) ) && $product->is_type( 'variation' ) && is_callable( array( $product, 'get_parent_id' ) ) ) {
+		$parent_id = (int) $product->get_parent_id();
+		if ( $parent_id > 0 ) {
+			return $parent_id;
+		}
+	}
+
+	return (int) $product->get_id();
+}
+
+/**
+ * Average and count of approved customer star ratings for a product.
+ *
+ * Reads comment meta directly so stale WooCommerce lookup tables or disabled
+ * native star-rating settings cannot hide real CusRev / WooCommerce reviews.
+ *
+ * @param int $product_id Product ID.
+ * @return array{count:int, average:float}|null
+ */
+function nh_seo_product_rating_aggregate( $product_id ) {
+	static $cache = array();
+
+	$product_id = (int) $product_id;
+	if ( $product_id <= 0 ) {
+		return null;
+	}
+
+	if ( array_key_exists( $product_id, $cache ) ) {
+		return $cache[ $product_id ];
+	}
+
+	global $wpdb;
+
+	$row = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT COUNT(*) AS rating_count, AVG(cm.meta_value + 0) AS rating_avg
+			FROM {$wpdb->comments} c
+			INNER JOIN {$wpdb->commentmeta} cm
+				ON cm.comment_id = c.comment_ID AND cm.meta_key = 'rating'
+			WHERE c.comment_post_ID = %d
+				AND c.comment_approved = '1'
+				AND c.comment_parent = 0
+				AND c.comment_type NOT IN ('cr_qna', 'pingback', 'trackback', 'order_note')
+				AND (cm.meta_value + 0) > 0",
+			$product_id
+		)
+	);
+
+	$count   = $row ? (int) $row->rating_count : 0;
+	$average = $row ? (float) $row->rating_avg : 0.0;
+
+	$cache[ $product_id ] = ( $count > 0 && $average > 0 )
+		? array(
+			'count'   => $count,
+			'average' => $average,
+		)
+		: null;
+
+	return $cache[ $product_id ];
+}
+
+/**
+ * Most recent approved reviews that include a star rating.
+ *
+ * @param int $product_id Product ID.
+ * @param int $limit      Max comments.
+ * @return array<int, WP_Comment>
+ */
+function nh_seo_product_review_comments( $product_id, $limit = 10 ) {
+	$product_id = (int) $product_id;
+	$limit      = max( 1, (int) $limit );
+	if ( $product_id <= 0 ) {
+		return array();
+	}
+
+	$comments = get_comments(
+		array(
+			'post_id'                   => $product_id,
+			'status'                    => 'approve',
+			'parent'                    => 0,
+			'type__not_in'              => array( 'cr_qna', 'pingback', 'trackback', 'order_note' ),
+			'number'                    => $limit,
+			'orderby'                   => 'comment_date_gmt',
+			'order'                     => 'DESC',
+			'no_found_rows'             => true,
+			'update_comment_meta_cache' => true,
+			'meta_query'                => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				array(
+					'key'     => 'rating',
+					'value'   => 0,
+					'compare' => '>',
+					'type'    => 'NUMERIC',
+				),
+			),
+		)
+	);
+
+	return is_array( $comments ) ? $comments : array();
+}
+
+/**
+ * One nested Review object for Product JSON-LD, or null if unusable.
+ *
+ * @param WP_Comment $comment Review comment.
+ * @return array<string, mixed>|null
+ */
+function nh_seo_comment_to_review_schema( $comment ) {
+	if ( ! $comment instanceof WP_Comment ) {
+		return null;
+	}
+
+	$rating = (int) get_comment_meta( $comment->comment_ID, 'rating', true );
+	if ( $rating < 1 || $rating > 5 ) {
+		return null;
+	}
+
+	$author = trim( wp_strip_all_tags( get_comment_author( $comment ) ) );
+	if ( $author === '' ) {
+		return null;
+	}
+
+	$review = array(
+		'@type'        => 'Review',
+		'reviewRating' => array(
+			'@type'       => 'Rating',
+			'bestRating'  => '5',
+			'worstRating' => '1',
+			'ratingValue' => (string) $rating,
+		),
+		'author'       => array(
+			'@type' => 'Person',
+			'name'  => $author,
+		),
+		'datePublished' => get_comment_date( 'c', $comment->comment_ID ),
+	);
+
+	$title = trim( wp_strip_all_tags( (string) get_comment_meta( $comment->comment_ID, 'cr_rev_title', true ) ) );
+	if ( $title !== '' ) {
+		$review['name'] = $title;
+	}
+
+	$body = trim( wp_strip_all_tags( get_comment_text( $comment ) ) );
+	if ( $body !== '' ) {
+		$review['reviewBody'] = $body;
+	}
+
+	return $review;
+}
+
+/**
+ * Whether Product markup already has a usable aggregateRating.
+ *
+ * @param array<string, mixed> $markup Product markup.
+ * @return bool
+ */
+function nh_seo_product_markup_has_rating( $markup ) {
+	if ( empty( $markup['aggregateRating'] ) || ! is_array( $markup['aggregateRating'] ) ) {
+		return false;
+	}
+
+	$value = isset( $markup['aggregateRating']['ratingValue'] ) ? (float) $markup['aggregateRating']['ratingValue'] : 0.0;
+	$count = 0;
+	if ( isset( $markup['aggregateRating']['reviewCount'] ) ) {
+		$count = (int) $markup['aggregateRating']['reviewCount'];
+	} elseif ( isset( $markup['aggregateRating']['ratingCount'] ) ) {
+		$count = (int) $markup['aggregateRating']['ratingCount'];
+	}
+
+	return $value > 0 && $count > 0;
+}
+
+/**
+ * Nest real customer aggregateRating + review inside Product JSON-LD.
+ *
+ * WooCommerce only emits these when get_rating_count() is set and native
+ * star ratings are enabled. CusRev reviews are WooCommerce comments, but
+ * that gate often leaves Product snippets without review fields in GSC.
+ *
+ * Google forbids fabricated ratings: products with no approved reviews
+ * stay unchanged (GSC will still list those as optional enhancements).
+ *
+ * @param array<string, mixed> $markup  Product markup.
+ * @param WC_Product           $product Product.
+ * @return array<string, mixed>
+ */
+function nh_seo_product_review_schema( $markup, $product ) {
+	if ( ! is_array( $markup ) ) {
+		return $markup;
+	}
+
+	$product_id = nh_seo_review_product_id( $product );
+	if ( $product_id <= 0 ) {
+		return $markup;
+	}
+
+	$has_rating = nh_seo_product_markup_has_rating( $markup );
+	$has_review = ! empty( $markup['review'] );
+	if ( $has_rating && $has_review ) {
+		return $markup;
+	}
+
+	$aggregate = nh_seo_product_rating_aggregate( $product_id );
+	if ( ! $aggregate ) {
+		return $markup;
+	}
+
+	if ( ! $has_rating ) {
+		$rating_value = function_exists( 'wc_format_decimal' )
+			? wc_format_decimal( $aggregate['average'], 2 )
+			: number_format( $aggregate['average'], 2, '.', '' );
+
+		$markup['aggregateRating'] = array(
+			'@type'       => 'AggregateRating',
+			'ratingValue' => $rating_value,
+			'bestRating'  => '5',
+			'worstRating' => '1',
+			'ratingCount' => $aggregate['count'],
+			'reviewCount' => $aggregate['count'],
+		);
+	}
+
+	if ( ! $has_review ) {
+		$limit = (int) apply_filters( 'nh_seo_product_schema_review_limit', 10, $product );
+		$items = array();
+		foreach ( nh_seo_product_review_comments( $product_id, $limit ) as $comment ) {
+			$item = nh_seo_comment_to_review_schema( $comment );
+			if ( $item ) {
+				$items[] = $item;
+			}
+		}
+		if ( $items ) {
+			$markup['review'] = $items;
+		}
+	}
+
+	return $markup;
+}
+add_filter( 'woocommerce_structured_data_product', 'nh_seo_product_review_schema', 30, 2 );
+
+/**
+ * Mirror review fields onto Yoast Product pieces when WooCommerce SEO is active.
+ *
+ * @param array<int, array<string, mixed>> $graph Schema graph.
+ * @return array<int, array<string, mixed>>
+ */
+function nh_seo_filter_product_schema_graph( $graph ) {
+	if ( ! is_array( $graph ) || ! function_exists( 'wc_get_product' ) ) {
+		return $graph;
+	}
+
+	$product = null;
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		$product = wc_get_product( get_queried_object_id() );
+	}
+	if ( ! $product ) {
+		return $graph;
+	}
+
+	foreach ( $graph as $i => $piece ) {
+		if ( ! is_array( $piece ) || empty( $piece['@type'] ) ) {
+			continue;
+		}
+		$types = (array) $piece['@type'];
+		if ( ! array_intersect( array( 'Product', 'ProductGroup' ), $types ) ) {
+			continue;
+		}
+		$graph[ $i ] = nh_seo_product_review_schema( $piece, $product );
+	}
+
+	return $graph;
+}
+add_filter( 'wpseo_schema_graph', 'nh_seo_filter_product_schema_graph', 20 );
 
 /**
  * ItemList of visible products on product category archives (page 1).
