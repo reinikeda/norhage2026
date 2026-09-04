@@ -394,9 +394,7 @@
   }
 
   function isolateCheckoutShipping() {
-    $(
-      'input[name^="shipping_method"], select[name^="shipping_method"]'
-    ).not('form.checkout input, form.checkout select').each(function () {
+    $('.nh-sc input[name^="shipping_method"], .nh-sc select[name^="shipping_method"]').each(function () {
       var $el = $(this);
       var name = String($el.attr('name') || '');
       if (name.indexOf('shipping_method') !== 0) {
@@ -408,25 +406,31 @@
   }
 
   function rewriteShippingPayload(data) {
-    var methods = checkoutShippingMethods();
-    var hasCheckout = Object.keys(methods).length > 0;
-
     if (typeof data === 'string') {
       return data
         .replace(/shipping_method%5Bundefined%5D/g, 'shipping_method%5B0%5D')
         .replace(/shipping_method\[undefined\]/g, 'shipping_method[0]');
     }
     if (data && typeof data === 'object' && data.shipping_method && typeof data.shipping_method === 'object') {
-      if (hasCheckout) {
-        data.shipping_method = methods;
-      } else if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
+      if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'undefined')) {
         if (data.shipping_method[0] == null) {
           data.shipping_method[0] = data.shipping_method.undefined;
         }
         delete data.shipping_method.undefined;
       }
+      if (Object.prototype.hasOwnProperty.call(data.shipping_method, 'NaN')) {
+        if (data.shipping_method[0] == null) {
+          data.shipping_method[0] = data.shipping_method.NaN;
+        }
+        delete data.shipping_method.NaN;
+      }
     }
     return data;
+  }
+
+  function isWooUpdateOrderReview(options) {
+    var url = String((options && options.url) || '');
+    return /update_order_review/i.test(url);
   }
 
   function stampShippingIndexes() {
@@ -435,10 +439,7 @@
   }
 
   $.ajaxPrefilter(function (options) {
-    if (!options || options.data == null) {
-      return;
-    }
-    if (typeof options.data === 'string' && options.data.indexOf('shipping_method') === -1) {
+    if (!options || options.data == null || !isWooUpdateOrderReview(options)) {
       return;
     }
     options.data = rewriteShippingPayload(options.data);
@@ -807,6 +808,136 @@
     syncSnippetCheckout();
   }
 
+  function fillCheckoutField(selector, value) {
+    var $el = $(selector);
+    if (!$el.length || value == null) {
+      return false;
+    }
+    value = String(value);
+    if (value === '' || String($el.val() || '') === value) {
+      return false;
+    }
+    $el.val(value);
+    return true;
+  }
+
+  function shipToDifferentAddress() {
+    return $('#ship-to-different-address-checkbox').is(':checked');
+  }
+
+  var iframeAddrTimer = null;
+  function applyIframeAddress(parts) {
+    var changed = false;
+    var copyShip = !shipToDifferentAddress();
+    parts = parts || {};
+
+    if (parts.postcode) {
+      changed = fillCheckoutField('#billing_postcode', parts.postcode) || changed;
+      if (copyShip) {
+        changed = fillCheckoutField('#shipping_postcode', parts.postcode) || changed;
+      }
+    }
+    if (parts.country && String(parts.country).length === 2) {
+      changed = fillCheckoutField('#billing_country', String(parts.country).toUpperCase()) || changed;
+      if (copyShip) {
+        changed = fillCheckoutField('#shipping_country', String(parts.country).toUpperCase()) || changed;
+      }
+    }
+    if (parts.city) {
+      changed = fillCheckoutField('#billing_city', parts.city) || changed;
+      if (copyShip) {
+        changed = fillCheckoutField('#shipping_city', parts.city) || changed;
+      }
+    }
+    if (!changed) {
+      return;
+    }
+    window.clearTimeout(iframeAddrTimer);
+    iframeAddrTimer = window.setTimeout(function () {
+      $(document.body).trigger('update_checkout');
+    }, 350);
+  }
+
+  function observeValue(data) {
+    if (data == null) {
+      return '';
+    }
+    if (typeof data === 'string' || typeof data === 'number') {
+      return String(data);
+    }
+    if (typeof data.value === 'string' || typeof data.value === 'number') {
+      return String(data.value);
+    }
+    if (typeof data.postalCode === 'string') {
+      return data.postalCode;
+    }
+    if (typeof data.postal_code === 'string') {
+      return data.postal_code;
+    }
+    return '';
+  }
+
+  var sveaAddressBound = false;
+  function tryBindSveaAddress() {
+    var api = window.scoApi;
+    if (sveaAddressBound || !api || typeof api.observe !== 'function') {
+      return;
+    }
+    sveaAddressBound = true;
+    api.observe('identity.postalCode', function (data) {
+      var postcode = observeValue(data);
+      if (postcode) {
+        applyIframeAddress({ postcode: postcode });
+      }
+    });
+    api.observe('identity.city', function (data) {
+      var city = observeValue(data);
+      if (city) {
+        applyIframeAddress({ city: city });
+      }
+    });
+    api.observe('identity.countryCode', function (data) {
+      var country = observeValue(data);
+      if (country) {
+        applyIframeAddress({ country: country });
+      }
+    });
+  }
+
+  function bindIframeShippingAddress() {
+    if (document.body.getAttribute('data-nh-iframe-addr') === '1') {
+      return;
+    }
+    document.body.setAttribute('data-nh-iframe-addr', '1');
+
+    $(document.body).on(
+      'change.nhIframeAddr input.nhIframeAddr',
+      '#billing_postcode, #billing_country, #billing_city, #billing_address_1',
+      function () {
+        var dest = {
+          billing_postcode: '#shipping_postcode',
+          billing_country: '#shipping_country',
+          billing_city: '#shipping_city',
+          billing_address_1: '#shipping_address_1'
+        }[this.id];
+        if (!dest || shipToDifferentAddress()) {
+          return;
+        }
+        fillCheckoutField(dest, $(this).val());
+      }
+    );
+
+    tryBindSveaAddress();
+    var tries = 0;
+    var poll = window.setInterval(function () {
+      tries += 1;
+      tryBindSveaAddress();
+      if (sveaAddressBound || tries >= 45) {
+        window.clearInterval(poll);
+      }
+    }, 1000);
+  }
+
   function watchSnippetCheckout() {
     if (document.body.getAttribute('data-nh-snippet-watch') === '1') {
       return;
@@ -818,7 +949,10 @@
     var timer = null;
     var obs = new MutationObserver(function () {
       window.clearTimeout(timer);
-      timer = window.setTimeout(syncSnippetCheckout, 50);
+      timer = window.setTimeout(function () {
+        syncSnippetCheckout();
+        tryBindSveaAddress();
+      }, 50);
     });
     obs.observe(document.body, { childList: true, subtree: true });
   }
@@ -828,6 +962,7 @@
     bindCustomerType();
     bindCallingCode();
     bindShippingTotals();
+    bindIframeShippingAddress();
     refreshCheckoutChrome();
     watchSnippetCheckout();
   }
