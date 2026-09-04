@@ -756,11 +756,35 @@
     return $.trim($clone.html());
   }
 
+  function shippingLabelHtml() {
+    var $row = $('#order_review tr.woocommerce-shipping-totals, #order_review tr.shipping').first();
+    if (!$row.length) {
+      return '';
+    }
+    var $checked = $row.find('input.shipping_method:checked, input.shipping_method[type="hidden"]').first();
+    var $amount = $();
+    if ($checked.length) {
+      $amount = $checked.closest('li, td').find('.woocommerce-Price-amount').first();
+    }
+    if (!$amount.length) {
+      $amount = $row.find('.woocommerce-Price-amount').first();
+    }
+    if (!$amount.length) {
+      return '';
+    }
+    var template = i18n.inclShipping || 'Shipping: %s';
+    return template.replace('%s', $amount.prop('outerHTML'));
+  }
+
   function syncSummaryTotal() {
     var $src = $('#order_review .order-total td').first();
     var $dest = $('.nh-checkout-summary-toggle__amount');
     if ($src.length && $dest.length) {
       $dest.html(amountHtmlFromTotalCell($src));
+    }
+    var $ship = $('.nh-checkout-summary-toggle__shipping');
+    if ($ship.length) {
+      $ship.html(shippingLabelHtml());
     }
   }
 
@@ -770,7 +794,13 @@
       return;
     }
 
+    if (document.body.getAttribute('data-nh-summary-init') !== '1') {
+      document.body.setAttribute('data-nh-summary-init', '1');
+      $summary.addClass('is-open');
+    }
+
     var $toggle = $summary.find('.nh-checkout-summary-toggle');
+    $toggle.attr('aria-expanded', $summary.hasClass('is-open') ? 'true' : 'false');
     $toggle.off('click.nhCheckout').on('click.nhCheckout', function () {
       if (window.matchMedia('(min-width: 960px)').matches) {
         return;

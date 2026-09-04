@@ -627,10 +627,30 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle__label {
   font-weight: 800;
 }
 
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  margin-left: auto;
+  min-width: 0;
+}
+
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle__amount {
   font-weight: 800;
   color: var(--nh-green, #00704a);
-  margin-left: auto;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle__shipping {
+  display: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--nh-forest, #1e3932);
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary:not(.is-open) .nh-checkout-summary-toggle__shipping:not(:empty) {
+  display: block;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary-toggle .tax_label,

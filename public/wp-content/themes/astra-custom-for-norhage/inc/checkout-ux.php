@@ -283,7 +283,34 @@ function nh_checkout_ux_assets() {
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
 			'snippetCheckout' => nh_checkout_is_snippet_gateway(),
 			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
+			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
 		)
+	);
+}
+
+/**
+ * Shipping line for the mobile summary bar, so the cost stays visible if the accordion is closed.
+ *
+ * @return string HTML
+ */
+function nh_checkout_summary_shipping_html() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->cart->needs_shipping() ) {
+		return '';
+	}
+	if ( ! WC()->cart->show_shipping() ) {
+		return '';
+	}
+
+	$total = WC()->cart->get_cart_shipping_total();
+	$text  = wp_strip_all_tags( (string) $total );
+	if ( $text === '' || ! preg_match( '/\d/', $text ) ) {
+		return '';
+	}
+
+	return sprintf(
+		/* translators: %s: formatted shipping price */
+		__( 'Shipping: %s', 'nh-theme' ),
+		$total
 	);
 }
 
