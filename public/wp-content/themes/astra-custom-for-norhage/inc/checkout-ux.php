@@ -138,6 +138,7 @@ function nh_checkout_ux_init() {
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_review_address', 2 );
+	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_on_iframe_customer_updated', 5, 2 );
 	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping' );
 	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_strip_snippet_fields', 10000 );
 	add_filter( 'woocommerce_enable_order_notes_field', 'nh_checkout_snippet_disable_order_notes', 10000 );
@@ -1477,6 +1478,18 @@ function nh_checkout_sanitize_posted_shipping( $post_data ) {
 }
 
 /**
+ * @param string $value Raw postcode.
+ * @return string
+ */
+function nh_checkout_usable_postcode( $value ) {
+	$value = trim( (string) $value );
+	if ( $value === '' || $value === '••••' || preg_match( '/^•+$/u', $value ) ) {
+		return '';
+	}
+	return $value;
+}
+
+/**
  * @param string $key POST key.
  * @return string
  */
@@ -1484,7 +1497,11 @@ function nh_checkout_posted_scalar( $key ) {
 	if ( ! isset( $_POST[ $key ] ) || ! is_scalar( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		return '';
 	}
-	return trim( wc_clean( wp_unslash( (string) $_POST[ $key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$value = trim( wc_clean( wp_unslash( (string) $_POST[ $key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( strpos( $key, 'postcode' ) !== false ) {
+		return nh_checkout_usable_postcode( $value );
+	}
+	return $value;
 }
 
 /**
@@ -1499,10 +1516,16 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
 	}
 
 	foreach ( $form_keys as $form_key ) {
-		if ( empty( $form[ $form_key ] ) || ! is_scalar( $form[ $form_key ] ) ) {
-			continue;
+		$value = '';
+		if ( ! empty( $form[ $form_key ] ) && is_scalar( $form[ $form_key ] ) ) {
+			$value = trim( wc_clean( (string) $form[ $form_key ] ) );
 		}
-		$value = trim( wc_clean( (string) $form[ $form_key ] ) );
+		if ( $value === '' ) {
+			$value = nh_checkout_posted_scalar( $form_key );
+		}
+		if ( strpos( $post_key, 'postcode' ) !== false || strpos( $form_key, 'postcode' ) !== false ) {
+			$value = nh_checkout_usable_postcode( $value );
+		}
 		if ( $value !== '' ) {
 			$_POST[ $post_key ] = $value;
 			return;
@@ -1530,6 +1553,9 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
 		return;
 	}
 	$existing = trim( (string) call_user_func( array( $customer, $map[ $customer_field ] ) ) );
+	if ( strpos( $post_key, 'postcode' ) !== false || strpos( $customer_field, 'postcode' ) !== false ) {
+		$existing = nh_checkout_usable_postcode( $existing );
+	}
 	if ( $existing !== '' ) {
 		$_POST[ $post_key ] = $existing;
 	}
@@ -1594,6 +1620,35 @@ function nh_checkout_sync_review_address( $post_data ) {
 }
 
 /**
+ * After SVEA writes the iframe ZIP onto the Woo customer, drop cached rates
+ * so zip-specific methods are rebuilt for that destination.
+ *
+ * @param WC_Customer          $customer Customer.
+ * @param array<string, mixed> $data     Address payload from SVEA.
+ */
+function nh_checkout_on_iframe_customer_updated( $customer, $data = array() ) {
+	if ( ! is_array( $data ) ) {
+		$data = array();
+	}
+
+	$country = isset( $data['shipping_country'] ) ? (string) $data['shipping_country'] : '';
+	if ( $country === '' && is_object( $customer ) && method_exists( $customer, 'get_shipping_country' ) ) {
+		$country = (string) $customer->get_shipping_country();
+	}
+
+	$postcode = isset( $data['shipping_postcode'] ) ? nh_checkout_usable_postcode( $data['shipping_postcode'] ) : '';
+	if ( $postcode === '' && is_object( $customer ) && method_exists( $customer, 'get_shipping_postcode' ) ) {
+		$postcode = nh_checkout_usable_postcode( $customer->get_shipping_postcode() );
+	}
+
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'nh_ship_dest', '' );
+	}
+
+	nh_checkout_flush_shipping_cache_for_destination( $country, $postcode );
+}
+
+/**
  * Drop cached package rates when the destination postcode changes.
  *
  * @param string $country  Shipping country.
@@ -1637,9 +1692,9 @@ function nh_checkout_ready_to_calc_shipping( $ready ) {
 	}
 
 	$customer = WC()->customer;
-	$postcode = trim( (string) $customer->get_shipping_postcode() );
+	$postcode = nh_checkout_usable_postcode( $customer->get_shipping_postcode() );
 	if ( $postcode === '' ) {
-		$postcode = trim( (string) $customer->get_billing_postcode() );
+		$postcode = nh_checkout_usable_postcode( $customer->get_billing_postcode() );
 	}
 	$country = trim( (string) $customer->get_shipping_country() );
 	if ( $country === '' ) {
