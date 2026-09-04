@@ -64,6 +64,12 @@ msgstr "Näytä toimituskulut"
 msgid "Free pickup from the warehouse is also available."
 msgstr "Ilmainen noutaminen varastolta on myös mahdollista."
 
+msgid "Warehouse pickup"
+msgstr "Nouto varastolta"
+
+msgid "This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery."
+msgstr "Lähetys on liian suuri tavalliseen kuriiritoimitukseen. Ilmainen noutaminen varastolta on mahdollista. Ota yhteyttä, jos tarvitset toimituksen."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Tälle postinumerolle ei ole toimitustapoja."
 

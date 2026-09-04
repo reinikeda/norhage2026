@@ -28,6 +28,19 @@
     });
   }
 
+  function rememberCartHash(hash) {
+    if (!hash || !window.sessionStorage) {
+      return;
+    }
+    try {
+      var params = window.wc_cart_fragments_params || {};
+      var key = params.cart_hash_key || 'wc_cart_hash';
+      sessionStorage.setItem(key, String(hash));
+    } catch (err) {
+      /* private mode / blocked storage */
+    }
+  }
+
   function setLoading(on) {
     if (!$root) {
       return;
@@ -44,9 +57,9 @@
     pending = $.post(ajaxUrl('nh_sc_update'), $.extend({ nonce: cfg.nonce }, data))
       .done(function (res) {
         if (res && res.success && res.data && res.data.fragments) {
+          rememberCartHash(res.data.cart_hash);
           applyFragments(res.data.fragments);
           $(document.body).trigger('wc_fragments_refreshed');
-          $(document.body).trigger('updated_wc_div');
         } else {
           window.alert((res && res.data && res.data.message) || (cfg.i18n && cfg.i18n.error));
         }

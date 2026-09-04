@@ -64,6 +64,12 @@ msgstr "Rodyti pristatymo kainą"
 msgid "Free pickup from the warehouse is also available."
 msgstr "Galimas ir nemokamas atsiėmimas iš sandėlio."
 
+msgid "Warehouse pickup"
+msgstr "Atsiėmimas iš sandėlio"
+
+msgid "This parcel is too large for standard courier delivery. Free warehouse pickup is available. Contact us if you need delivery."
+msgstr "Siunta per didelė standartiniam kurjerių pristatymui. Galimas nemokamas atsiėmimas iš sandėlio. Jei reikia pristatymo, susisiekite su mumis."
+
 msgid "No shipping methods available for this postcode."
 msgstr "Šiam pašto kodui nėra pristatymo būdų."
 
