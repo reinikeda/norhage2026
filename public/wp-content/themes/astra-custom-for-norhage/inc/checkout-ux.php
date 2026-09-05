@@ -154,6 +154,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'svea_wc_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'woocommerce_svea_checkout_ignored_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false', 20 );
+	add_filter( 'woocommerce_package_rates', 'nh_checkout_numeric_shipping_rate_costs', 999 );
 }
 
 /**
@@ -1778,10 +1779,16 @@ function nh_checkout_reapply_posted_iframe_zip( $customer, $data = array() ) {
 		return;
 	}
 
-	$customer->set_billing_postcode( $zip );
-	$customer->set_shipping_postcode( $zip );
-	$customer->set_calculated_shipping( true );
-	$customer->save();
+	try {
+		$customer->set_billing_postcode( $zip );
+		$customer->set_shipping_postcode( $zip );
+		if ( method_exists( $customer, 'set_calculated_shipping' ) ) {
+			$customer->set_calculated_shipping( true );
+		}
+		// SVEA owns this AJAX. save() on a guest session has fataled refresh_sco_snippet.
+	} catch ( Throwable $e ) {
+		return;
+	}
 }
 
 /**
@@ -1806,6 +1813,10 @@ function nh_checkout_on_iframe_customer_updated( $customer, $data = array() ) {
 		$postcode = nh_checkout_usable_postcode( $customer->get_shipping_postcode() );
 	}
 
+	if ( $country === '' && $postcode === '' ) {
+		return;
+	}
+
 	if ( function_exists( 'WC' ) && WC()->session ) {
 		WC()->session->set( 'nh_ship_dest', '' );
 	}
@@ -1824,7 +1835,13 @@ function nh_checkout_flush_shipping_cache_for_destination( $country, $postcode )
 		return;
 	}
 
-	$key  = strtoupper( (string) $country ) . '|' . (string) $postcode;
+	$country  = strtoupper( trim( (string) $country ) );
+	$postcode = (string) $postcode;
+	if ( $country === '' && $postcode === '' ) {
+		return;
+	}
+
+	$key  = $country . '|' . $postcode;
 	$prev = (string) WC()->session->get( 'nh_ship_dest', '' );
 	if ( $key === $prev ) {
 		return;
@@ -1843,6 +1860,43 @@ function nh_checkout_flush_shipping_cache_for_destination( $country, $postcode )
 			WC()->session->__unset( 'shipping_for_package_' . $i );
 		}
 	}
+}
+
+/**
+ * SVEA map_shipping() fatals when a rate cost is "" (string + int).
+ * Keep every package rate numeric before the snippet is built.
+ *
+ * @param array<string, mixed> $rates Package rates.
+ * @return array<string, mixed>
+ */
+function nh_checkout_numeric_shipping_rate_costs( $rates ) {
+	if ( ! is_array( $rates ) ) {
+		return $rates;
+	}
+
+	foreach ( $rates as $rate ) {
+		if ( ! is_object( $rate ) || ! method_exists( $rate, 'get_cost' ) || ! method_exists( $rate, 'set_cost' ) ) {
+			continue;
+		}
+		$cost = $rate->get_cost();
+		if ( $cost === '' || $cost === null || ! is_numeric( $cost ) ) {
+			$rate->set_cost( 0 );
+		}
+		if ( ! method_exists( $rate, 'get_taxes' ) || ! method_exists( $rate, 'set_taxes' ) ) {
+			continue;
+		}
+		$taxes = $rate->get_taxes();
+		if ( ! is_array( $taxes ) ) {
+			continue;
+		}
+		$clean = array();
+		foreach ( $taxes as $id => $tax ) {
+			$clean[ $id ] = is_numeric( $tax ) ? $tax : 0;
+		}
+		$rate->set_taxes( $clean );
+	}
+
+	return $rates;
 }
 
 /**
@@ -2017,9 +2071,7 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-type,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields{display:none!important}'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet #customer_details,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-shipping-fields,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-payment>.nh-checkout-section__title{display:none!important}'
 		. 'html body.woocommerce-checkout .nh-checkout-other-payment:not([hidden]),'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-other-payment-btn{display:flex!important;align-items:center;justify-content:center;width:100%!important;min-height:44px;margin:.75rem 0 0;padding:.65rem 1rem;border:1px solid #c3e8c6;border-radius:12px;background:#fff!important;color:#00704a!important;font-weight:700;font-size:.95rem;text-align:center;text-decoration:none!important;cursor:pointer;box-shadow:none}'

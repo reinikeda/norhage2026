@@ -1160,9 +1160,7 @@ body.woocommerce-checkout #svea-checkout-select-other:hover {
   border-color: var(--nh-green, #00704a);
 }
 
-body.woocommerce-checkout.nh-checkout--snippet #customer_details,
 body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,
-body.woocommerce-checkout.nh-checkout--snippet .woocommerce-shipping-fields,
 body.woocommerce-checkout.nh-checkout--snippet .create-account,
 body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-payment > .nh-checkout-section__title {
   display: none !important;
