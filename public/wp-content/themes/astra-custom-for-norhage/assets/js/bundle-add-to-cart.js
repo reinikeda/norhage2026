@@ -641,6 +641,8 @@ jQuery(function ($) {
       .prop('disabled', !shouldEnable)
       .toggleClass('is-disabled', !shouldEnable)
       .attr('aria-disabled', shouldEnable ? 'false' : 'true');
+
+    $body.trigger('nh_bundle_state', [shouldEnable]);
   }
 
   function updateGrandTotal() {

@@ -369,6 +369,7 @@ add_action( 'woocommerce_after_shop_loop', function () {
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
+require_once get_stylesheet_directory() . '/inc/sticky-atc.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
@@ -403,12 +404,10 @@ add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $arg
         return $html;
     }
 
-    $url   = $product->get_permalink();
-    
-    // Using 'nh-theme' textdomain makes these visible in your theme's POT file
-    $text  = $product->is_type( 'variable' ) 
-        ? __( 'Select options', 'nh-theme' ) 
-        : __( 'View product', 'nh-theme' );
+    $url = $product->get_permalink();
+
+    // Both types open the product page — keep the label honest.
+    $text = __( 'View product', 'nh-theme' );
         
     $class = isset( $args['class'] ) ? $args['class'] : 'button';
 

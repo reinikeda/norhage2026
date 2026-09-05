@@ -1594,14 +1594,159 @@ h2.nh-in-title::after,
     margin-top: -1px; /* Optical adjustment to center text baseline with icon */
 }
 
-/* Mobile */
+.nhf-more {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+    padding: 6px 0 0;
+    border: 0;
+    border-top: 1px solid var(--nh-mint);
+    background: transparent;
+    color: var(--nh-green);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nhf-more__close { display: none; }
+.nhf-box.is-expanded .nhf-more__open { display: none; }
+.nhf-box.is-expanded .nhf-more__close { display: inline; }
+
+/* Mobile — keep two columns so the box stays short */
 @media (max-width: 575px) {
-    .nhf-box .nhf-list {
-        grid-template-columns: 1fr;
+    .nhf-box.nhf--summary-card {
+        margin-top: 10px;
+        margin-bottom: 14px;
+        padding: 8px 10px;
     }
 
-    .nhf-box.nhf--summary-card {
-        padding: 12px 14px;
+    .nhf-box .nhf-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px 8px;
+    }
+
+    .nhf-box .nhf-item {
+        gap: 6px;
+        min-height: 0;
+    }
+
+    .nhf-box .nhf-icon {
+        flex: 0 0 22px;
+        width: 22px;
+        height: 22px;
+    }
+
+    .nhf-box .nhf-icon svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .nhf-box .nhf-label {
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .nhf-box.nhf--collapsible:not(.is-expanded) .nhf-item:nth-child(n+7) {
+        display: none;
+    }
+
+    .nhf-box.nhf--collapsible .nhf-more {
+        display: block;
+    }
+}
+
+/* =========================================================
+   Mobile sticky add-to-cart (main product only)
+   ========================================================= */
+
+.nh-sticky-atc {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    body.has-nh-sticky-atc {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .nh-sticky-atc.is-visible,
+    .nh-sticky-atc.is-visible[hidden] {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 900;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid var(--nh-mint, #c3e8c6);
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
+    }
+
+    .nh-sticky-atc__price {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .nh-sticky-atc__label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ui-muted, #8e8c89);
+        font-weight: 700;
+    }
+
+    .nh-sticky-atc__amount {
+        font-weight: 800;
+        color: var(--nh-forest, #1e3932);
+        font-size: 1.05rem;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .nh-sticky-atc__amount del {
+        color: var(--ui-muted);
+        font-weight: 400;
+        margin-right: 0.35em;
+        font-size: 0.85em;
+    }
+
+    .nh-sticky-atc__amount ins {
+        text-decoration: none;
+        font-weight: 800;
+    }
+
+    .nh-sticky-atc__btn {
+        flex: 0 0 auto;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .nh-sticky-atc.is-bundle .nh-sticky-atc__btn {
+        white-space: normal;
+        max-width: 58%;
+        font-size: 0.88rem;
+        line-height: 1.15;
+        padding: 8px 12px;
+        text-align: center;
+    }
+
+    .nh-sticky-atc__btn.disabled,
+    .nh-sticky-atc__btn:disabled {
+        opacity: 0.55;
+    }
+
+    /* Keep chat above the bar so it does not cover the CTA */
+    body.has-nh-sticky-atc .crisp-client,
+    body.has-nh-sticky-atc #crisp-chatbox {
+        bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
     }
 }
 
