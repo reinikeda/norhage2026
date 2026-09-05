@@ -115,11 +115,50 @@
       return rect.top < (vh - barH - 8) && rect.bottom > 96;
     }
 
+    function crispNodes() {
+      return document.querySelectorAll('.crisp-client, #crisp-chatbox');
+    }
+
+    function placeCrisp(active) {
+      var offset = 0;
+      if (active) {
+        offset = (bar.offsetHeight || 76) + 12;
+      }
+
+      document.documentElement.style.setProperty('--nh-crisp-bottom', offset ? offset + 'px' : '');
+
+      crispNodes().forEach(function (el) {
+        if (active) {
+          el.style.setProperty('bottom', offset + 'px', 'important');
+        } else {
+          el.style.removeProperty('bottom');
+        }
+      });
+
+      document.body.classList.remove('has-crisp-left', 'has-crisp-right');
+      if (!active) return;
+
+      var probe = document.querySelector('.crisp-client') || document.getElementById('crisp-chatbox');
+      if (!probe) return;
+
+      var barRect = bar.getBoundingClientRect();
+      var r = probe.getBoundingClientRect();
+      var overlaps = r.bottom > barRect.top && r.top < barRect.bottom && r.left < barRect.right && r.right > barRect.left;
+      if (!overlaps) return;
+
+      if (r.left < window.innerWidth / 2) {
+        document.body.classList.add('has-crisp-left');
+      } else {
+        document.body.classList.add('has-crisp-right');
+      }
+    }
+
     function updateVisibility() {
       if (!mq.matches || isOverlayOpen()) {
         bar.hidden = true;
         bar.classList.remove('is-visible');
-        document.body.classList.remove('has-nh-sticky-atc');
+        document.body.classList.remove('has-nh-sticky-atc', 'has-crisp-left', 'has-crisp-right');
+        placeCrisp(false);
         return;
       }
 
@@ -127,6 +166,9 @@
       bar.hidden = !show;
       bar.classList.toggle('is-visible', show);
       document.body.classList.toggle('has-nh-sticky-atc', show);
+      window.requestAnimationFrame(function () {
+        placeCrisp(show);
+      });
     }
 
     function sync() {
@@ -208,8 +250,25 @@
       mq.addListener(updateVisibility);
     }
 
+    if (typeof MutationObserver === 'function' && !document.querySelector('.crisp-client, #crisp-chatbox')) {
+      var crispWatch = new MutationObserver(function () {
+        if (document.querySelector('.crisp-client, #crisp-chatbox')) {
+          if (bar.classList.contains('is-visible')) {
+            placeCrisp(true);
+          }
+          crispWatch.disconnect();
+        }
+      });
+      crispWatch.observe(document.body, { childList: true, subtree: true });
+    }
+
     sync();
     window.setTimeout(sync, 400);
+    window.setTimeout(function () {
+      if (bar.classList.contains('is-visible')) {
+        placeCrisp(true);
+      }
+    }, 1500);
   }
 
   onReady(function () {
