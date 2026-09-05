@@ -796,7 +796,12 @@
 
     if (document.body.getAttribute('data-nh-summary-init') !== '1') {
       document.body.setAttribute('data-nh-summary-init', '1');
-      $summary.addClass('is-open');
+      // Snippet checkout: keep the iframe first on mobile. Total + shipping stay on the toggle.
+      if (window.matchMedia('(min-width: 960px)').matches || !isSnippetCheckoutPage()) {
+        $summary.addClass('is-open');
+      } else {
+        $summary.removeClass('is-open');
+      }
     }
 
     var $toggle = $summary.find('.nh-checkout-summary-toggle');
