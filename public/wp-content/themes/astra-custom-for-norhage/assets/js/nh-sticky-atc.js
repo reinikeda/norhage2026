@@ -209,6 +209,9 @@
       bundleForm.addEventListener('input', sync);
     }
 
+    window.addEventListener('pagehide', function () {
+      setCrispLauncher(true);
+    });
     window.addEventListener('scroll', updateVisibility, { passive: true });
     window.addEventListener('resize', updateVisibility);
     if (typeof mq.addEventListener === 'function') {
