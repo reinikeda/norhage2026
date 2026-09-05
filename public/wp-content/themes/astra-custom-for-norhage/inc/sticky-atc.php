@@ -1,9 +1,10 @@
 <?php
 /**
- * Mobile sticky add-to-cart for the main product only.
+ * Mobile sticky add-to-cart.
  *
- * Bundle extras keep their own “Add all to basket” block.
- * Desktop keeps the in-form button — this bar is phones/tablets.
+ * Defaults to the main product button. When the bundle “Add all”
+ * button is enabled, the sticky bar mirrors that instead.
+ * Desktop keeps the in-form buttons — this bar is phones/tablets.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,7 +46,7 @@ function nh_render_sticky_atc() {
 			<span class="nh-sticky-atc__label"><?php esc_html_e( 'Total', 'nh-theme' ); ?></span>
 			<span class="nh-sticky-atc__amount" data-sticky-price>—</span>
 		</div>
-		<button type="button" class="button alt nh-sticky-atc__btn">
+		<button type="button" class="button alt nh-sticky-atc__btn" data-default-label="<?php echo esc_attr( $label ); ?>">
 			<?php echo esc_html( $label ); ?>
 		</button>
 	</div>
