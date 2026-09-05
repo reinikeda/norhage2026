@@ -57,7 +57,7 @@ class NH_CR_Mailer {
 		}
 
 		$type   = ( $row->type === 'checkout' ) ? 'checkout' : 'cart';
-		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		$locale = nh_cr_shop_locale();
 		$copy   = nh_cr_effective_copy( $settings, $locale, $type, $step );
 		$name   = trim( (string) $row->first_name );
 		foreach ( $copy as $field => $text ) {
@@ -192,7 +192,7 @@ class NH_CR_Mailer {
 	 */
 	public static function body_html( $row, $items, $copy, $restore, $unsub, $locale = '' ) {
 		if ( $locale === '' ) {
-			$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+			$locale = nh_cr_shop_locale();
 		}
 		$ui   = nh_cr_ui_copy( $locale );
 		$pal  = nh_cr_palette();
