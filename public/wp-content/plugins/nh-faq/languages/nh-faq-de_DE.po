@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nh-faq\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -32,3 +32,118 @@ msgstr "faq"
 # ---------------------------------------------------------
 msgid "Questions & Answers"
 msgstr "Fragen & Antworten"
+
+msgid "FAQs"
+msgstr "FAQs"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "Add New"
+msgstr "Neu hinzufügen"
+
+msgid "Add New FAQ"
+msgstr "Neue FAQ hinzufügen"
+
+msgid "Edit FAQ"
+msgstr "FAQ bearbeiten"
+
+msgid "New FAQ"
+msgstr "Neue FAQ"
+
+msgid "View FAQ"
+msgstr "FAQ ansehen"
+
+msgid "Search FAQs"
+msgstr "FAQs suchen"
+
+msgid "No FAQs found"
+msgstr "Keine FAQs gefunden"
+
+msgid "FAQ Details"
+msgstr "FAQ-Details"
+
+msgid "FAQ Topics"
+msgstr "FAQ-Themen"
+
+msgid "FAQ Topic"
+msgstr "FAQ-Thema"
+
+msgid "Search Topics"
+msgstr "Themen suchen"
+
+msgid "All Topics"
+msgstr "Alle Themen"
+
+msgid "Edit Topic"
+msgstr "Thema bearbeiten"
+
+msgid "Update Topic"
+msgstr "Thema aktualisieren"
+
+msgid "Add New Topic"
+msgstr "Neues Thema hinzufügen"
+
+msgid "New Topic Name"
+msgstr "Name des neuen Themas"
+
+msgid "Order"
+msgstr "Reihenfolge"
+
+msgid "Drag to reorder"
+msgstr "Zum Sortieren ziehen"
+
+msgid "Attach to products"
+msgstr "Produkten zuweisen"
+
+msgid "Type to filter…"
+msgstr "Zum Filtern tippen…"
+
+msgid "Filter products"
+msgstr "Produkte filtern"
+
+msgid "Select visible"
+msgstr "Sichtbare auswählen"
+
+msgid "Clear visible"
+msgstr "Sichtbare abwählen"
+
+msgid "Products checklist"
+msgstr "Produktliste"
+
+msgid "No products found."
+msgstr "Keine Produkte gefunden."
+
+msgid "Tip: use the filter to narrow the list, then “Select visible”."
+msgstr "Tipp: Filtern Sie die Liste und klicken Sie dann auf „Sichtbare auswählen“."
+
+msgid "To show this FAQ on the %1$s, assign one or more %2$s in the sidebar."
+msgstr "Um diese FAQ auf der %1$s anzuzeigen, weisen Sie in der Seitenleiste eine oder mehrere %2$s zu."
+
+msgid "Global FAQ page"
+msgstr "globale FAQ-Seite"
+
+msgid "Last reviewed"
+msgstr "Zuletzt geprüft"
+
+msgid "Keep answers fresh for support and SEO."
+msgstr "Halten Sie Antworten für Support und SEO aktuell."
+
+msgid "selected"
+msgstr "ausgewählt"
+
+msgid "visible"
+msgstr "sichtbar"
+
+msgid "#Products"
+msgstr "#Produkte"
+
+msgid "FAQs attached to this product"
+msgstr "Diesem Produkt zugeordnete FAQs"
+
+msgid "No FAQs attached."
+msgstr "Keine FAQs zugeordnet."
+
+msgid "Forbidden"
+msgstr "Zugriff verweigert"
+

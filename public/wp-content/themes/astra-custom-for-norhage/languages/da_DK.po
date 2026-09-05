@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-01 16:29+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -837,7 +837,7 @@ msgstr "Dine ordreoplysninger er som følger:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgid "Thanks for creating an account on %s. Here is a copy of your user details."
 msgstr "Tak fordi du oprettede en konto på %s. Her er en kopi af dine brugeroplysninger."
 
 #. translators: %s: Username
@@ -1356,7 +1356,7 @@ msgid "How long do I have to return an item?"
 msgstr "Hvor lang frist har jeg til at returnere en vare?"
 
 #: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
 msgstr "Vores returfrist følger lokal forbrugerlovgivning. Tjek venligst vores side for <a href=\"https://norhage.dk/retur-og-refusionspolitik/\">Retur og refundering</a> for de specifikke tidsfrister, der gælder for din region."
 
 #. return-condition
@@ -1413,7 +1413,7 @@ msgid "What maintenance does a greenhouse require?"
 msgstr "Hvilken vedligeholdelse kræver et drivhus?"
 
 #: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer’s instructions for seasonal checks and snow management."
 msgstr "Regelmæssig vedligeholdelse hjælper med at holde dit drivhus sikkert og langtidsholdbart. Rengør pladerne/glassene, tjek rammen, fastgørelser, tætninger og døre, og sørg for, at ventilationsåbninger fungerer frit. Fjern blade og snavs fra tagrender eller tagområder, og følg producentens anvisninger for sæsonkontroller og snerydning."
 
 #. greenhouse-ventilation
@@ -1887,3 +1887,84 @@ msgstr "Angiv et gyldigt telefonnummer."
 
 #~ msgid "Plus Quantity"
 #~ msgstr "Læg antal til"
+
+msgid "Breadcrumbs"
+msgstr "Brødkrummer"
+
+msgid "Key product features"
+msgstr "Vigtige produktegenskaber"
+
+msgid "Please enter length (m)."
+msgstr "Angiv længde (m)."
+
+msgid "Please enter a valid length in metres."
+msgstr "Angiv en gyldig længde i meter."
+
+msgid "Minimum length is %s m."
+msgstr "Minimumslængde er %s m."
+
+msgid "Maximum length is %s m."
+msgstr "Maksimumslængde er %s m."
+
+msgid "Length must align to %1$s m steps starting at %2$s m."
+msgstr "Længden skal følge trin på %1$s m fra %2$s m."
+
+msgid "Cutting fee per unit"
+msgstr "Skæregebyr pr. enhed"
+
+msgid "View products by %s"
+msgstr "Se produkter fra %s"
+
+msgid "Bundle Box Name"
+msgstr "Bundle-boksnavn"
+
+msgid "If set, this name will be used in the bundle box instead of the product title."
+msgstr "Hvis angivet, bruges dette navn i bundle-boksen i stedet for produkttitlen."
+
+msgid "Enable sample ordering"
+msgstr "Aktivér prøvebestilling"
+
+msgid "Show \"Order a sample\" strip on the front end."
+msgstr "Vis \"Bestil en prøve\"-linjen i shoppen."
+
+msgid "Sample width (mm)"
+msgstr "Prøvebredde (mm)"
+
+msgid "Sample length (mm)"
+msgstr "Prøvelængde (mm)"
+
+msgid "Sample price (€)"
+msgstr "Prøvepris (€)"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Select Logo"
+msgstr "Vælg logo"
+
+msgid "Use this logo"
+msgstr "Brug dette logo"
+
+msgid "Attached FAQ IDs"
+msgstr "Tilknyttede FAQ-ID'er"
+
+msgid "Available IDs:"
+msgstr "Tilgængelige ID'er:"
+
+msgid "FAQ topics"
+msgstr "FAQ-emner"
+
+msgid "Product FAQ IDs"
+msgstr "Produkt-FAQ-ID'er"
+
+msgid "Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports."
+msgstr "Komma-separerede FAQ-ID'er. Samme produktmetafelt som ved CSV-import."
+
+msgctxt "price unit"
+msgid " / m"
+msgstr " / m"
+
+msgctxt "price unit"
+msgid " / m²"
+msgstr " / m²"
+

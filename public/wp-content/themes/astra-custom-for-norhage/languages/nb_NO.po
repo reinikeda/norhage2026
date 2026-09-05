@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-01 16:29+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -17,19 +17,19 @@ msgstr ""
 
 #: functions.php:25
 msgid "Primary Menu"
-msgstr ""
+msgstr "Hovedmeny"
 
 #: functions.php:26
 msgid "Secondary Menu"
-msgstr ""
+msgstr "Sekundærmeny"
 
 #: functions.php:27
 msgid "Footer — Explore"
-msgstr ""
+msgstr "Bunntekst — Utforsk"
 
 #: functions.php:28
 msgid "Footer — Bottom Bar"
-msgstr ""
+msgstr "Bunntekst — Nedre linje"
 
 #: functions.php:88 template-parts/headers/header-main.php:85
 msgctxt "Default FAQ page slug"
@@ -42,15 +42,15 @@ msgstr "Handle etter kategori"
 
 #: functions.php:276 functions.php:288
 msgid "Long description"
-msgstr ""
+msgstr "Lang beskrivelse"
 
 #: functions.php:278 functions.php:305
 msgid "Shown after the product list and pagination on the category page."
-msgstr ""
+msgstr "Vises etter produktlisten og sidenummereringen på kategorisiden."
 
 #: functions.php:339
 msgid "Category long description"
-msgstr ""
+msgstr "Lang kategoribeskrivelse"
 
 #: functions.php:375
 msgid "Select options"
@@ -68,19 +68,19 @@ msgstr "Vis mindre"
 
 #: functions.php:405
 msgid "Secondary product title"
-msgstr ""
+msgstr "Sekundær produkttittel"
 
 #: functions.php:434
 msgid "Footer — Shop Categories"
-msgstr ""
+msgstr "Bunntekst — Butikkategorier"
 
 #: functions.php:435
 msgid "Footer — Secondary (Services, Blog, Contact)"
-msgstr ""
+msgstr "Bunntekst — Sekundær (Tjenester, Blogg, Kontakt)"
 
 #: functions.php:436
 msgid "Footer — Legal/Policies"
-msgstr ""
+msgstr "Bunntekst — Juridisk"
 
 #: functions.php:620
 msgid "Please enter a valid email address."
@@ -403,15 +403,15 @@ msgstr "Tilbake til pakken"
 
 #: inc/product-customize.php:166 inc/product-customize.php:171
 msgid "%1$d–%2$d mm"
-msgstr ""
+msgstr "%1$d–%2$d mm"
 
 #: inc/product-customize.php:167 inc/product-customize.php:172
 msgid "≥ %d mm"
-msgstr ""
+msgstr "≥ %d mm"
 
 #: inc/product-customize.php:168 inc/product-customize.php:173
 msgid "≤ %d mm"
-msgstr ""
+msgstr "≤ %d mm"
 
 #: inc/product-customize.php:185
 msgid "Width (mm)"
@@ -419,11 +419,11 @@ msgstr "Bredde (mm)"
 
 #: inc/product-customize.php:187
 msgid "Decrease width"
-msgstr ""
+msgstr "Reduser bredde"
 
 #: inc/product-customize.php:194
 msgid "Increase width"
-msgstr ""
+msgstr "Øk bredde"
 
 #: inc/product-customize.php:198
 msgid "Length (mm)"
@@ -435,15 +435,15 @@ msgstr "Lengde (m)"
 
 #: inc/product-customize.php:200
 msgid "Decrease length"
-msgstr ""
+msgstr "Reduser lengde"
 
 #: inc/product-customize.php:207
 msgid "Increase length"
-msgstr ""
+msgstr "Øk lengde"
 
 #: inc/product-customize.php:213
 msgid "Step: %d mm"
-msgstr ""
+msgstr "Trinn: %d mm"
 
 #: inc/product-customize.php:224
 msgid "Your selection"
@@ -535,15 +535,15 @@ msgstr "Tjenester"
 
 #: inc/services.php:27
 msgid "Add New Service"
-msgstr ""
+msgstr "Legg til ny tjeneste"
 
 #: inc/services.php:28
 msgid "Edit Service"
-msgstr ""
+msgstr "Rediger tjeneste"
 
 #: inc/services.php:29
 msgid "View Service"
-msgstr ""
+msgstr "Vis tjeneste"
 
 #: inc/services.php:30
 msgid "All Services"
@@ -596,19 +596,19 @@ msgstr "https://norhageindustri.no"
 
 #: template-parts/footer/footer.php:29
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #: template-parts/footer/footer.php:30
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: template-parts/footer/footer.php:31
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: template-parts/footer/footer.php:32
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: template-parts/footer/footer.php:70
 msgid "Company Info"
@@ -684,7 +684,7 @@ msgstr "B2B-portal"
 
 #: template-parts/footer/footer.php:155
 msgid "Legal bottom"
-msgstr ""
+msgstr "Juridisk"
 
 #: template-parts/headers/header-main.php:13
 msgid "My Account"
@@ -710,7 +710,7 @@ msgstr "Se handlekurv"
 
 #: template-parts/headers/header-main.php:65
 msgid "Switch theme"
-msgstr ""
+msgstr "Bytt tema"
 
 #: template-parts/headers/header-main.php:86
 msgid "FAQ"
@@ -719,32 +719,32 @@ msgstr "FAQ"
 #: template-parts/headers/header-main.php:106
 #: template-parts/headers/header-main.php:211
 msgid "Search"
-msgstr ""
+msgstr "Søk"
 
 #: template-parts/headers/header-main.php:113
 #: template-parts/headers/header-main.php:218
 msgid "Search suggestions"
-msgstr ""
+msgstr "Søkeforslag"
 
 #: template-parts/headers/header-main.php:137
 msgid "Primary menu"
-msgstr ""
+msgstr "Hovedmeny"
 
 #: template-parts/headers/header-main.php:166
 msgid "Open menu"
-msgstr ""
+msgstr "Åpne meny"
 
 #: template-parts/headers/header-main.php:188
 msgid "Menu"
-msgstr ""
+msgstr "Meny"
 
 #: template-parts/headers/header-main.php:189
 msgid "Close menu"
-msgstr ""
+msgstr "Lukk meny"
 
 #: template-parts/headers/header-main.php:222
 msgid "Mobile navigation"
-msgstr ""
+msgstr "Mobilnavigasjon"
 
 #: template-parts/headers/header-main.php:232
 msgid "More"
@@ -752,23 +752,23 @@ msgstr "Mer"
 
 #: template-parts/headers/hero-home.php:11
 msgid "Homepage highlights"
-msgstr ""
+msgstr "Høydepunkter på forsiden"
 
 #: template-parts/headers/hero-home.php:41
 msgid "Previous slide"
-msgstr ""
+msgstr "Forrige lysbilde"
 
 #: template-parts/headers/hero-home.php:49
 msgid "Hero slides"
-msgstr ""
+msgstr "Hero-lysbilder"
 
 #: template-parts/headers/hero-home.php:58
 msgid "Go to slide %d"
-msgstr ""
+msgstr "Gå til lysbilde %d"
 
 #: template-parts/headers/hero-home.php:67
 msgid "Next slide"
-msgstr ""
+msgstr "Neste lysbilde"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
@@ -837,7 +837,7 @@ msgstr "Bestillingsopplysningene dine er som følger:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgid "Thanks for creating an account on %s. Here is a copy of your user details."
 msgstr "Takk for at du opprettet en konto på %s. Her er en kopi av brukeropplysningene dine."
 
 #. translators: %s: Username
@@ -1356,7 +1356,7 @@ msgid "How long do I have to return an item?"
 msgstr "Hvor lang frist har jeg på å returnere en vare?"
 
 #: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
 msgstr "Vår returfrist følger gjeldende forbrukerkjøpslovgivning. Vennligst sjekk vår side for <a href=\"https://norhage.no/retur-og-refusjonspolicy/\">Retur og refundering</a> for de nøyaktige tidsfristene som gjelder for din region."
 
 #. return-condition
@@ -1413,7 +1413,7 @@ msgid "What maintenance does a greenhouse require?"
 msgstr "Hvilket vedlikehold krever et drivhus?"
 
 #: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer’s instructions for seasonal checks and snow management."
 msgstr "Jevnlig vedlikehold bidrar til å holde drivhuset trygt og forlenger levetiden. Rengjør platene/glassene, sjekk rammen, festemidler, pakninger og dører, og pass på at luftelukiene fungerer som de skal. Fjern løv og rusk fra takrennene, og følg produsentens anvisninger for sesongsjekk og snørydding."
 
 #. greenhouse-ventilation
@@ -1887,3 +1887,84 @@ msgstr "Skriv inn et gyldig telefonnummer."
 
 #~ msgid "Plus Quantity"
 #~ msgstr "Pluss Antall"
+
+msgid "Breadcrumbs"
+msgstr "Brødsmuler"
+
+msgid "Key product features"
+msgstr "Viktige produktegenskaper"
+
+msgid "Please enter length (m)."
+msgstr "Angi lengde (m)."
+
+msgid "Please enter a valid length in metres."
+msgstr "Angi en gyldig lengde i meter."
+
+msgid "Minimum length is %s m."
+msgstr "Minimumslengde er %s m."
+
+msgid "Maximum length is %s m."
+msgstr "Maksimumslengde er %s m."
+
+msgid "Length must align to %1$s m steps starting at %2$s m."
+msgstr "Lengden må følge trinn på %1$s m fra %2$s m."
+
+msgid "Cutting fee per unit"
+msgstr "Kappegebyr per enhet"
+
+msgid "View products by %s"
+msgstr "Se produkter fra %s"
+
+msgid "Bundle Box Name"
+msgstr "Bundle-boksnavn"
+
+msgid "If set, this name will be used in the bundle box instead of the product title."
+msgstr "Hvis satt, brukes dette navnet i bundle-boksen i stedet for produkttittelen."
+
+msgid "Enable sample ordering"
+msgstr "Aktiver prøvebestilling"
+
+msgid "Show \"Order a sample\" strip on the front end."
+msgstr "Vis \"Bestill en prøve\"-linjen i butikken."
+
+msgid "Sample width (mm)"
+msgstr "Prøvebredde (mm)"
+
+msgid "Sample length (mm)"
+msgstr "Prøvelengde (mm)"
+
+msgid "Sample price (€)"
+msgstr "Prøvepris (€)"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Select Logo"
+msgstr "Velg logo"
+
+msgid "Use this logo"
+msgstr "Bruk denne logoen"
+
+msgid "Attached FAQ IDs"
+msgstr "Tilknyttede FAQ-ID-er"
+
+msgid "Available IDs:"
+msgstr "Tilgjengelige ID-er:"
+
+msgid "FAQ topics"
+msgstr "FAQ-emner"
+
+msgid "Product FAQ IDs"
+msgstr "Produkt-FAQ-ID-er"
+
+msgid "Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports."
+msgstr "Kommaseparerte FAQ-ID-er. Samme produktmetafelt som ved CSV-import."
+
+msgctxt "price unit"
+msgid " / m"
+msgstr " / m"
+
+msgctxt "price unit"
+msgid " / m²"
+msgstr " / m²"
+

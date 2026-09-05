@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nh-faq\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -32,3 +32,118 @@ msgstr "ukk"
 # ---------------------------------------------------------
 msgid "Questions & Answers"
 msgstr "Kysymyksiä & vastauksia"
+
+msgid "FAQs"
+msgstr "UKK"
+
+msgid "FAQ"
+msgstr "UKK"
+
+msgid "Add New"
+msgstr "Lisää uusi"
+
+msgid "Add New FAQ"
+msgstr "Lisää uusi UKK"
+
+msgid "Edit FAQ"
+msgstr "Muokkaa UKK:ta"
+
+msgid "New FAQ"
+msgstr "Uusi UKK"
+
+msgid "View FAQ"
+msgstr "Näytä UKK"
+
+msgid "Search FAQs"
+msgstr "Hae UKK:ita"
+
+msgid "No FAQs found"
+msgstr "UKK:ita ei löytynyt"
+
+msgid "FAQ Details"
+msgstr "UKK-tiedot"
+
+msgid "FAQ Topics"
+msgstr "UKK-aiheet"
+
+msgid "FAQ Topic"
+msgstr "UKK-aihe"
+
+msgid "Search Topics"
+msgstr "Hae aiheita"
+
+msgid "All Topics"
+msgstr "Kaikki aiheet"
+
+msgid "Edit Topic"
+msgstr "Muokkaa aihetta"
+
+msgid "Update Topic"
+msgstr "Päivitä aihe"
+
+msgid "Add New Topic"
+msgstr "Lisää uusi aihe"
+
+msgid "New Topic Name"
+msgstr "Uuden aiheen nimi"
+
+msgid "Order"
+msgstr "Järjestys"
+
+msgid "Drag to reorder"
+msgstr "Vedä järjestääksesi"
+
+msgid "Attach to products"
+msgstr "Liitä tuotteisiin"
+
+msgid "Type to filter…"
+msgstr "Kirjoita suodattaaksesi…"
+
+msgid "Filter products"
+msgstr "Suodata tuotteita"
+
+msgid "Select visible"
+msgstr "Valitse näkyvät"
+
+msgid "Clear visible"
+msgstr "Tyhjennä näkyvät"
+
+msgid "Products checklist"
+msgstr "Tuotelista"
+
+msgid "No products found."
+msgstr "Tuotteita ei löytynyt."
+
+msgid "Tip: use the filter to narrow the list, then “Select visible”."
+msgstr "Vinkki: suodata lista ja valitse sitten „Valitse näkyvät“."
+
+msgid "To show this FAQ on the %1$s, assign one or more %2$s in the sidebar."
+msgstr "Näyttääksesi tämän UKK:n sivulla %1$s, määritä sivupalkissa yksi tai useampi %2$s."
+
+msgid "Global FAQ page"
+msgstr "yleinen UKK-sivu"
+
+msgid "Last reviewed"
+msgstr "Viimeksi tarkistettu"
+
+msgid "Keep answers fresh for support and SEO."
+msgstr "Pidä vastaukset ajan tasalla tukea ja hakukoneita varten."
+
+msgid "selected"
+msgstr "valittu"
+
+msgid "visible"
+msgstr "näkyvissä"
+
+msgid "#Products"
+msgstr "#Tuotteet"
+
+msgid "FAQs attached to this product"
+msgstr "Tähän tuotteeseen liitetyt UKK:t"
+
+msgid "No FAQs attached."
+msgstr "Ei liitettyjä UKK:ita."
+
+msgid "Forbidden"
+msgstr "Ei käyttöoikeutta"
+

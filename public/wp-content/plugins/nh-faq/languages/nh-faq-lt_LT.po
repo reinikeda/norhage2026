@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nh-faq\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -145,3 +145,13 @@ msgstr "Suskleisti visus"
 # ---------------------------------------------------------
 msgid "faq"
 msgstr "duk"
+
+msgid "Filter products"
+msgstr "Filtruoti produktus"
+
+msgid "Forbidden"
+msgstr "Draudžiama"
+
+msgid "To show this FAQ on the %1$s, assign one or more %2$s in the sidebar."
+msgstr "Kad šis DUK būtų rodomas %1$s, šoninėje juostoje priskirkite vieną ar daugiau %2$s."
+

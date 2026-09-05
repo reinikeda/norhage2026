@@ -1008,7 +1008,7 @@ function norhage_output_product_brand_logo() {
             $output = sprintf(
                 '<a href="%1$s" class="norhage-product-brand-logo-link" aria-label="%2$s">%3$s</a>',
                 esc_url( $brand_url ),
-                esc_attr( sprintf( __( 'View products by %s', 'astra-child' ), $brand_name ) ),
+                esc_attr( sprintf( __( 'View products by %s', 'nh-theme' ), $brand_name ) ),
                 $logo_image
             );
         } else {

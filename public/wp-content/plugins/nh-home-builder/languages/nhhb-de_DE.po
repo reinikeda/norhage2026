@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: nh-home-builder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-19 00:00+0000\n"
-"PO-Revision-Date: 2026-04-17 15:27+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -71,8 +71,8 @@ msgstr "Vorherige Folie"
 msgid "Next slide"
 msgstr "Nächste Folie"
 
-msgid "No services to display. Add Services or enable “Include in slider”."
-msgstr "Keine Dienstleistungen zum Anzeigen. Fügen Sie Dienstleistungen hinzu oder aktivieren Sie „Im Slider anzeigen“."
+msgid "No services to display. Add Desktop/Mobile text in the section settings."
+msgstr "Keine Dienstleistungen zum Anzeigen. Fügen Sie Desktop-/Mobiltext in den Abschnittseinstellungen hinzu."
 
 # bb-banner.php
 msgid "🤝 Business Solutions"
@@ -86,3 +86,16 @@ msgstr "Exklusive Preise und Dienstleistungen für B2B-Partner."
 
 msgid "Learn more"
 msgstr "Mehr erfahren"
+
+msgid "Featured offers"
+msgstr "Empfohlene Angebote"
+
+msgid "Go to slide"
+msgstr "Zur Folie"
+
+msgid "Offer slides"
+msgstr "Angebotsfolien"
+
+msgid "Shop benefits"
+msgstr "Shop-Vorteile"
+
