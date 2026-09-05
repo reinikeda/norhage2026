@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class NH_CR_Store {
 
-	const DB_VERSION = '1.0.0';
+	const DB_VERSION = '1.1.0';
 
 	/**
 	 * @return string
@@ -39,25 +39,45 @@ class NH_CR_Store {
 			order_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			type varchar(20) NOT NULL DEFAULT 'cart',
 			status varchar(20) NOT NULL DEFAULT 'open',
+			emails_sent tinyint(3) unsigned NOT NULL DEFAULT 0,
 			created_at datetime NOT NULL,
 			updated_at datetime NOT NULL,
 			emailed_at datetime NULL,
+			first_emailed_at datetime NULL,
 			converted_order_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (id),
 			UNIQUE KEY token (token),
 			KEY session_key (session_key),
 			KEY email (email),
 			KEY status_updated (status, updated_at),
-			KEY order_id (order_id)
+			KEY order_id (order_id),
+			KEY status_emails (status, emails_sent)
 		) {$collate};";
 		dbDelta( $sql );
 		update_option( 'nh_cr_db_version', self::DB_VERSION );
 	}
 
 	public static function maybe_upgrade() {
-		if ( get_option( 'nh_cr_db_version' ) !== self::DB_VERSION ) {
-			self::install();
+		$current = get_option( 'nh_cr_db_version' );
+		if ( $current === self::DB_VERSION ) {
+			return;
 		}
+		self::install();
+		if ( $current && version_compare( (string) $current, '1.1.0', '<' ) ) {
+			self::backfill_sequence_columns();
+		}
+	}
+
+	/**
+	 * Rows emailed on 1.0.0 have emailed_at but emails_sent = 0.
+	 *
+	 * @return void
+	 */
+	private static function backfill_sequence_columns() {
+		global $wpdb;
+		$wpdb->query(
+			'UPDATE ' . self::table() . ' SET emails_sent = 1, first_emailed_at = emailed_at WHERE emailed_at IS NOT NULL AND emails_sent = 0'
+		);
 	}
 
 	/**
@@ -77,9 +97,11 @@ class NH_CR_Store {
 			'order_id'           => 0,
 			'type'               => 'cart',
 			'status'             => 'open',
+			'emails_sent'        => 0,
 			'created_at'         => $now,
 			'updated_at'         => $now,
 			'emailed_at'         => null,
+			'first_emailed_at'   => null,
 			'converted_order_id' => 0,
 		);
 	}
@@ -191,20 +213,17 @@ class NH_CR_Store {
 	}
 
 	/**
-	 * @param int $minutes Idle minutes for cart-type rows.
+	 * Candidate rows; PHP applies the 1h / 24h / 72h sequence.
+	 *
+	 * @param int $max_emails Cap (1–3).
 	 * @return array<int, object>
 	 */
-	public static function due_cart_emails( $minutes ) {
+	public static function due_email_candidates( $max_emails = 3 ) {
 		global $wpdb;
-		$minutes      = max( 15, (int) $minutes );
-		$cart_cut     = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - ( $minutes * MINUTE_IN_SECONDS ) );
-		$checkout_cut = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - ( 5 * MINUTE_IN_SECONDS ) );
-		$sql          = $wpdb->prepare(
-			'SELECT * FROM ' . self::table() . " WHERE status = 'open' AND email <> '' AND cart_hash <> '' AND emailed_at IS NULL AND (
-				(type = 'cart' AND updated_at <= %s) OR (type = 'checkout' AND updated_at <= %s)
-			) ORDER BY id ASC LIMIT 50",
-			$cart_cut,
-			$checkout_cut
+		$max_emails = max( 1, min( 3, (int) $max_emails ) );
+		$sql        = $wpdb->prepare(
+			'SELECT * FROM ' . self::table() . " WHERE status IN ('open','sent') AND email <> '' AND cart_hash <> '' AND emails_sent < %d ORDER BY id ASC LIMIT 80",
+			$max_emails
 		);
 		$rows = $wpdb->get_results( $sql );
 		return is_array( $rows ) ? $rows : array();
@@ -260,6 +279,23 @@ class NH_CR_Store {
 	public static function normalize_email( $email ) {
 		$email = strtolower( trim( (string) $email ) );
 		return is_email( $email ) ? $email : '';
+	}
+
+	/**
+	 * How many emails this row has already sent (legacy emailed_at counts as 1).
+	 *
+	 * @param object $row Store row.
+	 * @return int
+	 */
+	public static function emails_sent_count( $row ) {
+		if ( ! $row ) {
+			return 0;
+		}
+		$sent = isset( $row->emails_sent ) ? (int) $row->emails_sent : 0;
+		if ( $sent < 1 && ! empty( $row->emailed_at ) ) {
+			return 1;
+		}
+		return $sent;
 	}
 
 	/**
