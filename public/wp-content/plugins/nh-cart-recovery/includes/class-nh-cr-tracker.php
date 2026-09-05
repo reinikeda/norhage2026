@@ -37,6 +37,9 @@ class NH_CR_Tracker {
 		) {
 			add_action( $hook, array( __CLASS__, 'on_kustom_address_ajax' ), 1 );
 		}
+		add_action( 'woocommerce_sco_refresh_snippet_customer_updated', array( __CLASS__, 'on_woo_customer_identity' ), 20, 1 );
+		add_action( 'woocommerce_sco_after_refresh_sco_snippet', array( __CLASS__, 'on_svea_snippet' ), 20, 1 );
+		add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'on_update_order_review' ), 99 );
 	}
 
 	/**
@@ -411,6 +414,9 @@ class NH_CR_Tracker {
 		$email = NH_CR_Store::normalize_email( $email );
 		$first = sanitize_text_field( (string) $first );
 		$last  = sanitize_text_field( (string) $last );
+		if ( $email === '' && $first === '' && $last === '' ) {
+			return;
+		}
 
 		if ( function_exists( 'WC' ) && WC()->customer && $email ) {
 			WC()->customer->set_billing_email( $email );
@@ -422,7 +428,11 @@ class NH_CR_Tracker {
 			}
 		}
 
-		self::snapshot();
+		// Never snapshot an empty cart here: wc-ajax without a loaded cart would
+		// mark the open recovery row skipped and drop the email.
+		if ( self::current_items() ) {
+			self::snapshot();
+		}
 
 		$session = self::session_key();
 		$row     = $session ? NH_CR_Store::get_open_by_session( $session ) : null;
@@ -441,6 +451,51 @@ class NH_CR_Tracker {
 				NH_CR_Store::update( (int) $row->id, $update );
 			}
 		}
+	}
+
+	/**
+	 * Svea plugin copies iframe identity onto WC_Customer after Continue / snippet refresh.
+	 *
+	 * @param mixed $customer WC_Customer.
+	 */
+	public static function on_woo_customer_identity( $customer ) {
+		if ( ! is_object( $customer ) || ! method_exists( $customer, 'get_billing_email' ) ) {
+			return;
+		}
+		self::apply_identity(
+			(string) $customer->get_billing_email(),
+			method_exists( $customer, 'get_billing_first_name' ) ? (string) $customer->get_billing_first_name() : '',
+			method_exists( $customer, 'get_billing_last_name' ) ? (string) $customer->get_billing_last_name() : ''
+		);
+	}
+
+	/**
+	 * @param mixed $module Svea checkout module array.
+	 */
+	public static function on_svea_snippet( $module ) {
+		$ident = nh_cr_identity_from_svea_module( $module );
+		if ( $ident['email'] === '' && $ident['first_name'] === '' && $ident['last_name'] === '' ) {
+			return;
+		}
+		self::apply_identity( $ident['email'], $ident['first_name'], $ident['last_name'] );
+	}
+
+	/**
+	 * After Woo/Kustom/Svea update the customer during checkout review.
+	 */
+	public static function on_update_order_review() {
+		if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+			return;
+		}
+		$email = (string) WC()->customer->get_billing_email();
+		if ( $email === '' ) {
+			return;
+		}
+		self::apply_identity(
+			$email,
+			(string) WC()->customer->get_billing_first_name(),
+			(string) WC()->customer->get_billing_last_name()
+		);
 	}
 
 	public static function maybe_unsubscribe() {
