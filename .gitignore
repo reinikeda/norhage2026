@@ -53,6 +53,8 @@
 !/public/wp-content/plugins/nh-tax-switcher/**
 !/public/wp-content/plugins/nh-side-cart/
 !/public/wp-content/plugins/nh-side-cart/**
+!/public/wp-content/plugins/nh-cart-recovery/
+!/public/wp-content/plugins/nh-cart-recovery/**
 
 # Uploads
 /public/wp-content/uploads/
