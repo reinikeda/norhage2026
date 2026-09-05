@@ -33,8 +33,8 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 		<aside class="nh-checkout-layout__aside">
 			<?php do_action( 'woocommerce_checkout_before_order_review_heading' ); ?>
 
-			<section class="nh-checkout-summary is-open" aria-labelledby="order_review_heading">
-				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="true" aria-controls="nh-checkout-summary-body">
+			<section class="nh-checkout-summary<?php echo $snippet_checkout ? '' : ' is-open'; ?>" aria-labelledby="order_review_heading">
+				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="<?php echo $snippet_checkout ? 'false' : 'true'; ?>" aria-controls="nh-checkout-summary-body">
 					<span class="nh-checkout-summary-toggle__label"><?php esc_html_e( 'Order summary', 'nh-theme' ); ?></span>
 					<span class="nh-checkout-summary-toggle__meta">
 						<span class="nh-checkout-summary-toggle__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
@@ -54,10 +54,6 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 					<?php do_action( 'woocommerce_checkout_after_order_review' ); ?>
 				</div>
 			</section>
-
-			<button type="button" class="nh-checkout-other-payment"<?php echo $snippet_checkout ? '' : ' hidden'; ?>>
-				<?php esc_html_e( 'Other payment method', 'nh-theme' ); ?>
-			</button>
 		</aside>
 
 		<div class="nh-checkout-layout__main">
@@ -83,6 +79,10 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
 				<?php do_action( 'nh_checkout_payment' ); ?>
 			</section>
+
+			<button type="button" class="nh-checkout-other-payment"<?php echo $snippet_checkout ? '' : ' hidden'; ?>>
+				<?php esc_html_e( 'Other payment method', 'nh-theme' ); ?>
+			</button>
 		</div>
 	</div>
 
