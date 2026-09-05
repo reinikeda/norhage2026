@@ -43,6 +43,16 @@
     panel.style.cssText = '';
   }
 
+  function setCrispLauncher(show) {
+    if (show && (document.body.classList.contains('has-nh-sticky-atc') || document.body.classList.contains('nh-sc-open'))) {
+      show = false;
+    }
+    window.$crisp = window.$crisp || [];
+    try {
+      window.$crisp.push(['do', show ? 'chat:show' : 'chat:hide']);
+    } catch (e) { /* Crisp not present */ }
+  }
+
   /* ── Open / close drawer ── */
   function openDrawer() {
     if (!drawer || !isMobile()) return;
@@ -50,6 +60,7 @@
     drawer.setAttribute('aria-hidden', 'false');
     drawer.classList.add('is-open');
     document.body.classList.add('drawer-open');
+    setCrispLauncher(false);
     if (burger) burger.setAttribute('aria-expanded', 'true');
     updateDrawerPosition();
     window.setTimeout(() => {
@@ -66,6 +77,7 @@
     drawer.setAttribute('aria-hidden', 'true');
     drawer.hidden = true;
     document.body.classList.remove('drawer-open');
+    setCrispLauncher(true);
     if (burger) burger.setAttribute('aria-expanded', 'false');
     resetDrawerInlineStyles();
   }
