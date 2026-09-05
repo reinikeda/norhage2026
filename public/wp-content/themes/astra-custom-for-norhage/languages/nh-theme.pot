@@ -1085,3 +1085,15 @@ msgstr ""
 msgid "Please enter a valid phone number."
 msgstr ""
 
+msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
+msgstr ""
+
+msgid "Were you looking for these?"
+msgstr ""
+
+msgid "Popular products"
+msgstr ""
+
+msgid "Browse the shop"
+msgstr ""
+
