@@ -135,7 +135,7 @@ class NH_CR_Admin {
 		settings_fields( 'nh_cr_settings_group' );
 		echo '<table class="form-table" role="presentation">';
 		self::checkbox_row( 'enabled', $o['enabled'], __( 'Enable recovery emails', NH_CR_TD ), __( 'Emails are sent with wp_mail, so WP Mail SMTP + Brevo is used automatically. No extra Brevo API key is required.', NH_CR_TD ) );
-		self::checkbox_row( 'checkout_on_cancel', $o['checkout_on_cancel'], __( 'Email after unpaid checkout is cancelled', NH_CR_TD ), __( 'This is the Svea “pending payment → cancelled” case. Skipped if the same email already placed a paid order.', NH_CR_TD ) );
+		self::checkbox_row( 'checkout_on_cancel', $o['checkout_on_cancel'], __( 'Email after unpaid checkout is cancelled', NH_CR_TD ), __( 'This is the Svea / Kustom “pending payment → cancelled” case. Skipped if the same email already placed a paid order.', NH_CR_TD ) );
 
 		echo '<tr><th>' . esc_html__( 'Email 1 delay (abandoned cart)', NH_CR_TD ) . '</th><td>';
 		echo '<input name="nh_cr_settings[email_1_minutes]" type="number" min="15" max="1440" value="' . esc_attr( (string) $o['email_1_minutes'] ) . '" /> ';
