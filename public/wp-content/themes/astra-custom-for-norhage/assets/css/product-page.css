@@ -1729,6 +1729,15 @@ h2.nh-in-title::after,
         white-space: nowrap;
     }
 
+    .nh-sticky-atc.is-bundle .nh-sticky-atc__btn {
+        white-space: normal;
+        max-width: 58%;
+        font-size: 0.88rem;
+        line-height: 1.15;
+        padding: 8px 12px;
+        text-align: center;
+    }
+
     .nh-sticky-atc__btn.disabled,
     .nh-sticky-atc__btn:disabled {
         opacity: 0.55;
