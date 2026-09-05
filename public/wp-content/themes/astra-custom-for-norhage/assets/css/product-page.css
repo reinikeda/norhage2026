@@ -1668,8 +1668,9 @@ h2.nh-in-title::after,
         padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
     }
 
-    .nh-sticky-atc.is-visible {
-        display: flex;
+    .nh-sticky-atc.is-visible,
+    .nh-sticky-atc.is-visible[hidden] {
+        display: flex !important;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
