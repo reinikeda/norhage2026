@@ -783,6 +783,40 @@ function nh_cr_identity_from_payload( $data ) {
 }
 
 /**
+ * Identity from a Svea Checkout module / snippet payload.
+ *
+ * @param mixed $module Svea module.
+ * @return array{email:string,first_name:string,last_name:string}
+ */
+function nh_cr_identity_from_svea_module( $module ) {
+	if ( ! is_array( $module ) ) {
+		return array(
+			'email'      => '',
+			'first_name' => '',
+			'last_name'  => '',
+		);
+	}
+	$bill = isset( $module['BillingAddress'] ) && is_array( $module['BillingAddress'] ) ? $module['BillingAddress'] : array();
+	$ident = nh_cr_identity_from_payload(
+		array(
+			'email'      => isset( $module['EmailAddress'] ) ? $module['EmailAddress'] : '',
+			'first_name' => isset( $bill['FirstName'] ) ? $bill['FirstName'] : '',
+			'last_name'  => isset( $bill['LastName'] ) ? $bill['LastName'] : '',
+		)
+	);
+	if ( ( $ident['first_name'] === '' || $ident['last_name'] === '' ) && ! empty( $bill['FullName'] ) && is_scalar( $bill['FullName'] ) ) {
+		$parts = preg_split( '/\s+/', trim( (string) $bill['FullName'] ), 2 );
+		if ( $ident['first_name'] === '' && ! empty( $parts[0] ) ) {
+			$ident['first_name'] = $parts[0];
+		}
+		if ( $ident['last_name'] === '' && ! empty( $parts[1] ) ) {
+			$ident['last_name'] = $parts[1];
+		}
+	}
+	return $ident;
+}
+
+/**
  * Woo internals that must not be fed back into add_to_cart().
  *
  * @return array<int, string>
