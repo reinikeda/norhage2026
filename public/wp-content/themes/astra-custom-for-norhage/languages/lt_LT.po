@@ -1033,6 +1033,18 @@ msgstr "Neseniai atnaujinome savo svetainę ir darome viską, kad sutvarkytume n
 msgid "Back to Homepage"
 msgstr "Į pradinį puslapį"
 
+msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
+msgstr "Ši nuoroda yra iš senosios parduotuvės arba jos nebėra. Ieškokite prekės arba tęskite iš kategorijos žemiau."
+
+msgid "Were you looking for these?"
+msgstr "Ar ieškojote šių prekių?"
+
+msgid "Popular products"
+msgstr "Populiarios prekės"
+
+msgid "Browse the shop"
+msgstr "Eiti į parduotuvę"
+
 #: inc/functions.php
 msgid "Estimate Shipping"
 msgstr "Apskaičiuoti pristatymą"

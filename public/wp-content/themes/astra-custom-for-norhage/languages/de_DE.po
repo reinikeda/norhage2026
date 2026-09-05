@@ -1033,6 +1033,18 @@ msgstr "Wir haben unsere Website vor Kurzem aktualisiert und tun alles, um fehle
 msgid "Back to Homepage"
 msgstr "Zurück zur Startseite"
 
+msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
+msgstr "Dieser Link stammt aus unserem früheren Shop oder ist nicht mehr verfügbar. Suchen Sie nach einem Produkt oder wählen Sie unten eine Kategorie."
+
+msgid "Were you looking for these?"
+msgstr "Haben Sie nach diesen Produkten gesucht?"
+
+msgid "Popular products"
+msgstr "Beliebte Produkte"
+
+msgid "Browse the shop"
+msgstr "Zum Shop"
+
 #: inc/functions.php
 msgid "Estimate Shipping"
 msgstr "Versand berechnen"
