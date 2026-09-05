@@ -285,6 +285,7 @@ function nh_checkout_ux_assets() {
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
 			'snippetCheckout' => nh_checkout_is_snippet_gateway(),
 			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
+			'sveaEventNonce'  => wp_create_nonce( 'nh-svea-client-event' ),
 			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
 		)
 	);

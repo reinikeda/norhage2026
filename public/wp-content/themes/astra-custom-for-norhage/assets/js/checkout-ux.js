@@ -478,8 +478,109 @@
     checkoutShippingMethods();
   }
 
+  var sveaPaymentLock = false;
+
+  function lockSveaPayment(reason) {
+    if (sveaPaymentLock) {
+      return;
+    }
+    sveaPaymentLock = true;
+    reportSveaClientEvent('payment_lock', { message: String(reason || '') });
+  }
+
+  function isSveaCheckoutProcessAjax(options) {
+    var url = String((options && options.url) || '');
+    var data = typeof options.data === 'string' ? options.data : '';
+    var haystack = url + '&' + data;
+    return /wc-ajax=checkout|woocommerce_checkout|sco[-_]checkout|sco_checkout_order/i.test(haystack);
+  }
+
+  function reportSveaClientEvent(event, extra) {
+    extra = extra || {};
+    var params = window.wc_checkout_params || {};
+    var url = String(params.wc_ajax_url || '');
+    var nonce = i18n.sveaEventNonce || '';
+    if (!url || !nonce || !event) {
+      return;
+    }
+    $.ajax({
+      type: 'POST',
+      url: url.replace('%%endpoint%%', 'nh_svea_client_event'),
+      dataType: 'json',
+      data: {
+        security: nonce,
+        event: event,
+        status: extra.status || 0,
+        message: extra.message || extra.url || ''
+      }
+    });
+  }
+
+  function wrapSveaConfirmOrderNetwork() {
+    if (window._nhSveaNetWrapped) {
+      return;
+    }
+    window._nhSveaNetWrapped = true;
+
+    function maybeReport(url, status) {
+      url = String(url || '');
+      if (!/confirmOrder|validationCallback|checkoutapi\.svea/i.test(url)) {
+        return;
+      }
+      if (/confirmOrder/i.test(url) && status && status >= 400) {
+        reportSveaClientEvent('confirm_order_failed', { status: status, url: url });
+      }
+    }
+
+    if (typeof window.fetch === 'function') {
+      var origFetch = window.fetch;
+      window.fetch = function () {
+        var input = arguments[0];
+        var url = (input && input.url) ? input.url : input;
+        return origFetch.apply(this, arguments).then(function (res) {
+          maybeReport(url, res && res.status);
+          return res;
+        });
+      };
+    }
+
+    if (window.XMLHttpRequest && window.XMLHttpRequest.prototype) {
+      var origOpen = window.XMLHttpRequest.prototype.open;
+      var origSend = window.XMLHttpRequest.prototype.send;
+      window.XMLHttpRequest.prototype.open = function (method, url) {
+        this._nhSveaUrl = url;
+        return origOpen.apply(this, arguments);
+      };
+      window.XMLHttpRequest.prototype.send = function () {
+        var xhr = this;
+        xhr.addEventListener('loadend', function () {
+          maybeReport(xhr._nhSveaUrl, xhr.status);
+        });
+        return origSend.apply(this, arguments);
+      };
+    }
+  }
+
   $.ajaxPrefilter(function (options) {
-    if (!options || options.data == null) {
+    if (!options) {
+      return;
+    }
+    if (sveaPaymentLock && (isSveaRefreshSnippet(options) || /nh_snippet_apply_zip/i.test(String(options.url || '')))) {
+      reportSveaClientEvent('snippet_refresh_blocked', { url: String(options.url || '') });
+      options.abortOnSveaLock = true;
+      var origBefore = options.beforeSend;
+      options.beforeSend = function (xhr) {
+        if (typeof origBefore === 'function') {
+          origBefore.apply(this, arguments);
+        }
+        if (xhr && typeof xhr.abort === 'function') {
+          xhr.abort();
+        }
+        return false;
+      };
+      return;
+    }
+    if (options.data == null) {
       return;
     }
     if (isWooUpdateOrderReview(options)) {
@@ -487,6 +588,9 @@
     }
     if (isSveaRefreshSnippet(options) && lastWrittenZip) {
       options.data = ensureBillingPostcode(options.data, lastWrittenZip);
+    }
+    if (isSveaCheckoutProcessAjax(options)) {
+      lockSveaPayment('checkout_process');
     }
   });
 
@@ -1029,6 +1133,9 @@
   }
 
   function applySnippetZipAjax(postcode, country) {
+    if (sveaPaymentLock) {
+      return;
+    }
     stampShippingIndexes();
     postcode = usablePostcode(postcode);
     if (!postcode) {
@@ -1070,6 +1177,9 @@
   var iframeZipTimer = null;
   var lastIframeZip = '';
   function onIframeZip(postcode, country) {
+    if (sveaPaymentLock) {
+      return;
+    }
     postcode = usablePostcode(postcode);
     if (!postcode) {
       return;
@@ -1131,6 +1241,7 @@
       return;
     }
     document.body.setAttribute('data-nh-iframe-zip', '1');
+    wrapSveaConfirmOrderNetwork();
 
     function attachSveaAfterNative() {
       window.setTimeout(bindSveaZip, 50);
