@@ -855,33 +855,51 @@
    -------------------------------------------------------------------------- */
 
 @media (max-width: 920px) {
+  #nc-complete-set.nc-bundle,
+  #nc-complete-set.nc-bundle.card {
+    --nc-gap: 8px;
+    --nc-img-col: 40px;
+    --nc-qty-width: 86px;
+    padding: 18px 10px 10px;
+    margin-top: 14px;
+  }
+
   .nc-bundle-header {
     display: none;
   }
 
+  .nc-bundle-row {
+    padding: 8px 0;
+  }
+
+  .nc-row-name {
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .nc-title {
+    font-size: 0.85rem;
+  }
+
   .nc-row-body {
-    grid-template-columns: 48px minmax(0, 1fr);
-    row-gap: 8px;
+    grid-template-columns: var(--nc-img-col) minmax(0, 1fr);
+    column-gap: 8px;
+    row-gap: 6px;
+    align-items: start;
   }
 
   .nc-col-image {
-    grid-row: 1 / span 2;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .nc-col-image img {
+    max-width: 40px;
   }
 
   .nc-col-variations {
     grid-column: 2;
     grid-row: 1;
-  }
-
-  /* Simple products have no variations content, so let side column
-     sit right after image on the same row instead of leaving empty space */
-  .nc-bundle-row.is-simple .nc-row-body {
-    grid-template-columns: 48px minmax(0, 1fr);
-  }
-
-  .nc-bundle-row.is-simple .nc-col-variations {
-    grid-row: 1;
-    grid-column: 2;
     min-height: 0;
   }
 
@@ -891,28 +909,52 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+  }
+
+  .nc-bundle-row.is-simple .nc-col-variations {
+    display: none;
   }
 
   .nc-bundle-row.is-simple .nc-col-side {
     grid-column: 2;
     grid-row: 1;
-    flex-direction: column;
-    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
   }
 
-  .nc-col-image img {
-    max-width: 48px;
+  .nc-col-price del,
+  .nc-col-price ins {
+    display: inline;
+  }
+
+  .nc-bundle-variations {
+    margin: 0;
+    gap: 4px;
+  }
+
+  .nc-bundle-variation-field select.bundle-variation,
+  .nc-bundle-variation-field--locked .nc-bundle-variation-value {
+    height: 28px;
+    min-height: 28px;
+    font-size: 0.78rem;
   }
 
   .nc-bundle-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 8px;
     padding-bottom: 4px;
   }
-}
 
-@media (max-width: 720px) {
-  #nc-complete-set.nc-bundle,
-  #nc-complete-set.nc-bundle.card {
-    --nc-qty-width: 82px;
+  .nc-total {
+    flex: 1 1 auto;
+    font-size: 0.88rem;
+  }
+
+  #add-bundle-to-cart.nc-bundle-btn {
+    width: 100%;
+    text-align: center;
   }
 
   #nc-complete-set .quantity.buttons_added {
@@ -930,14 +972,6 @@
   #nc-complete-set .quantity.buttons_added .qty {
     min-width: 34px;
     font-size: 13px;
-  }
-
-  .nc-bundle-footer {
-    flex-wrap: wrap;
-  }
-
-  .nc-total {
-    flex: 1 1 100%;
   }
 }
 
@@ -1684,6 +1718,16 @@ h2.nh-in-title::after,
         border-top: 1px solid var(--nh-mint, #c3e8c6);
         padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
         box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
+        box-sizing: border-box;
+    }
+
+    /* Crisp can only sit left or right — keep that side of the bar clear */
+    body.has-crisp-left .nh-sticky-atc.is-visible {
+        padding-left: 72px;
+    }
+
+    body.has-crisp-right .nh-sticky-atc.is-visible {
+        padding-right: 72px;
     }
 
     .nh-sticky-atc__price {
@@ -1743,10 +1787,15 @@ h2.nh-in-title::after,
         opacity: 0.55;
     }
 
-    /* Keep chat above the bar so it does not cover the CTA */
+    /*
+     * Crisp only lets you pick left vs right. We lift the widget above
+     * the sticky bar (JS also writes an inline bottom). Left/right stay as set.
+     */
     body.has-nh-sticky-atc .crisp-client,
-    body.has-nh-sticky-atc #crisp-chatbox {
-        bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+    body.has-nh-sticky-atc #crisp-chatbox,
+    body.has-nh-sticky-atc .crisp-client [data-has-available-website-widget],
+    body.has-nh-sticky-atc .cky-btn-revisit {
+        bottom: var(--nh-crisp-bottom, calc(80px + env(safe-area-inset-bottom, 0px))) !important;
     }
 }
 
