@@ -147,6 +147,29 @@ $hash_a = nh_cr_cart_hash( array( $snap ) );
 $hash_b = nh_cr_cart_hash( array( $snap ) );
 nh_cr_assert( 'hash stable', $hash_a === $hash_b );
 
+$kustom = nh_cr_identity_from_payload(
+	array(
+		'email'       => 'anna@example.de',
+		'given_name'  => 'Anna',
+		'family_name' => 'Müller',
+	)
+);
+nh_cr_assert( 'kustom change email', $kustom['email'] === 'anna@example.de' );
+nh_cr_assert( 'kustom given_name', $kustom['first_name'] === 'Anna' );
+nh_cr_assert( 'kustom family_name', $kustom['last_name'] === 'Müller' );
+$nested = nh_cr_identity_from_payload(
+	array(
+		'billing_address' => array(
+			'email'       => 'hans@example.de',
+			'given_name'  => 'Hans',
+			'family_name' => 'Berg',
+		),
+	)
+);
+nh_cr_assert( 'kustom nested email', $nested['email'] === 'hans@example.de' );
+$obf = nh_cr_identity_from_payload( array( 'email' => 'a***@klarna.com' ) );
+nh_cr_assert( 'kustom skips obfuscated email', $obf['email'] === '' );
+
 $pal = nh_cr_palette();
 nh_cr_assert( 'palette green', $pal['green'] === '#00704A' );
 nh_cr_assert( 'palette gold', $pal['gold'] === '#C89F63' );
