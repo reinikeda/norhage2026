@@ -713,6 +713,76 @@ function nh_cr_copy_catalog() {
 }
 
 /**
+ * Email / name from a Kustom, Klarna, or similar iframe payload.
+ *
+ * @param mixed $data Event or AJAX body.
+ * @return array{email:string,first_name:string,last_name:string}
+ */
+function nh_cr_identity_from_payload( $data ) {
+	$empty = array(
+		'email'      => '',
+		'first_name' => '',
+		'last_name'  => '',
+	);
+	if ( is_string( $data ) ) {
+		$decoded = json_decode( $data, true );
+		$data    = is_array( $decoded ) ? $decoded : array();
+	}
+	if ( ! is_array( $data ) ) {
+		return $empty;
+	}
+
+	$pick = static function ( $arr, $keys ) {
+		if ( ! is_array( $arr ) ) {
+			return '';
+		}
+		foreach ( $keys as $key ) {
+			if ( empty( $arr[ $key ] ) || ! is_scalar( $arr[ $key ] ) ) {
+				continue;
+			}
+			$value = trim( (string) $arr[ $key ] );
+			if ( $value !== '' ) {
+				return $value;
+			}
+		}
+		return '';
+	};
+
+	$email_keys = array( 'email' );
+	$first_keys = array( 'given_name', 'first_name', 'firstName' );
+	$last_keys  = array( 'family_name', 'last_name', 'lastName' );
+
+	$email = $pick( $data, $email_keys );
+	$first = $pick( $data, $first_keys );
+	$last  = $pick( $data, $last_keys );
+
+	foreach ( array( 'billing_address', 'shipping_address', 'customer', 'billingAddress', 'shippingAddress' ) as $nest ) {
+		if ( empty( $data[ $nest ] ) || ! is_array( $data[ $nest ] ) ) {
+			continue;
+		}
+		if ( $email === '' ) {
+			$email = $pick( $data[ $nest ], $email_keys );
+		}
+		if ( $first === '' ) {
+			$first = $pick( $data[ $nest ], $first_keys );
+		}
+		if ( $last === '' ) {
+			$last = $pick( $data[ $nest ], $last_keys );
+		}
+	}
+
+	if ( $email !== '' && ( strpos( $email, '@' ) === false || strpos( $email, '*' ) !== false ) ) {
+		$email = '';
+	}
+
+	return array(
+		'email'      => $email,
+		'first_name' => $first,
+		'last_name'  => $last,
+	);
+}
+
+/**
  * Woo internals that must not be fed back into add_to_cart().
  *
  * @return array<int, string>

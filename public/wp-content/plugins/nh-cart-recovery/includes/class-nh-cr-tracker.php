@@ -1,6 +1,6 @@
 <?php
 /**
- * Snapshot the Woo cart and attach an email when Svea or checkout reveals one.
+ * Snapshot the Woo cart and attach an email when Svea, Kustom, or checkout reveals one.
  *
  * @package nh-cart-recovery
  */
@@ -28,6 +28,15 @@ class NH_CR_Tracker {
 		add_action( 'wc_ajax_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
 		add_action( 'wp_ajax_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
 		add_action( 'wp_ajax_nopriv_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
+		foreach (
+			array(
+				'wp_ajax_kco_wc_iframe_shipping_address_change',
+				'wp_ajax_nopriv_kco_wc_iframe_shipping_address_change',
+				'wc_ajax_kco_wc_iframe_shipping_address_change',
+			) as $hook
+		) {
+			add_action( $hook, array( __CLASS__, 'on_kustom_address_ajax' ), 1 );
+		}
 	}
 
 	/**
@@ -370,6 +379,38 @@ class NH_CR_Tracker {
 		$email = NH_CR_Store::normalize_email( isset( $_POST['email'] ) ? wp_unslash( (string) $_POST['email'] ) : '' );
 		$first = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['first_name'] ) ) : '';
 		$last  = isset( $_POST['last_name'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['last_name'] ) ) : '';
+		self::apply_identity( $email, $first, $last );
+		wp_send_json_success();
+	}
+
+	/**
+	 * Kustom/Klarna Checkout plugin posts iframe address (including DE, where JS "change" does not fire).
+	 */
+	public static function on_kustom_address_ajax() {
+		$raw = array();
+		if ( isset( $_REQUEST['data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$raw = wp_unslash( $_REQUEST['data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		}
+		$ident = nh_cr_identity_from_payload( $raw );
+		if ( $ident['email'] === '' && $ident['first_name'] === '' && $ident['last_name'] === '' ) {
+			return;
+		}
+		self::apply_identity(
+			NH_CR_Store::normalize_email( $ident['email'] ),
+			sanitize_text_field( $ident['first_name'] ),
+			sanitize_text_field( $ident['last_name'] )
+		);
+	}
+
+	/**
+	 * @param string $email Email.
+	 * @param string $first First name.
+	 * @param string $last  Last name.
+	 */
+	public static function apply_identity( $email, $first, $last ) {
+		$email = NH_CR_Store::normalize_email( $email );
+		$first = sanitize_text_field( (string) $first );
+		$last  = sanitize_text_field( (string) $last );
 
 		if ( function_exists( 'WC' ) && WC()->customer && $email ) {
 			WC()->customer->set_billing_email( $email );
@@ -400,7 +441,6 @@ class NH_CR_Tracker {
 				NH_CR_Store::update( (int) $row->id, $update );
 			}
 		}
-		wp_send_json_success();
 	}
 
 	public static function maybe_unsubscribe() {
