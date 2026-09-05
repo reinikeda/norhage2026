@@ -60,6 +60,12 @@ msgstr "Välj alternativ"
 msgid "View product"
 msgstr "Visa produkt"
 
+msgid "Show more"
+msgstr "Visa mer"
+
+msgid "Show less"
+msgstr "Visa mindre"
+
 #: functions.php:405
 msgid "Secondary product title"
 msgstr ""

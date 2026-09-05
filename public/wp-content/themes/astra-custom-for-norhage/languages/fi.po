@@ -60,6 +60,12 @@ msgstr "Valitse mitat"
 msgid "View product"
 msgstr "Katso tuote"
 
+msgid "Show more"
+msgstr "Näytä lisää"
+
+msgid "Show less"
+msgstr "Näytä vähemmän"
+
 #: functions.php:405
 msgid "Secondary product title"
 msgstr "Toissijainen tuotteen nimi"

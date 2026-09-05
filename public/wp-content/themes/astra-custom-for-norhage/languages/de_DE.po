@@ -60,6 +60,12 @@ msgstr "Optionen auswählen"
 msgid "View product"
 msgstr "Produkt ansehen"
 
+msgid "Show more"
+msgstr "Mehr anzeigen"
+
+msgid "Show less"
+msgstr "Weniger anzeigen"
+
 #: functions.php:405
 msgid "Secondary product title"
 msgstr ""

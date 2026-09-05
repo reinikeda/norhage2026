@@ -59,6 +59,12 @@ msgstr ""
 msgid "View product"
 msgstr ""
 
+msgid "Show more"
+msgstr ""
+
+msgid "Show less"
+msgstr ""
+
 #: functions.php:405
 msgid "Secondary product title"
 msgstr ""
