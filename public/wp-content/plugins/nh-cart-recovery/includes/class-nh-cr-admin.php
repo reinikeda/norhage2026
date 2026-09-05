@@ -103,13 +103,25 @@ class NH_CR_Admin {
 			return;
 		}
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( (string) $_GET['tab'] ) ) : 'settings'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! in_array( $tab, array( 'settings', 'preview', 'list' ), true ) ) {
+			$tab = 'settings';
+		}
 		echo '<div class="wrap"><h1>' . esc_html__( 'Cart recovery', NH_CR_TD ) . '</h1>';
 		echo '<h2 class="nav-tab-wrapper">';
-		echo '<a class="nav-tab ' . ( $tab !== 'list' ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=nh-cart-recovery&tab=settings' ) ) . '">' . esc_html__( 'Settings', NH_CR_TD ) . '</a>';
-		echo '<a class="nav-tab ' . ( $tab === 'list' ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=nh-cart-recovery&tab=list' ) ) . '">' . esc_html__( 'Carts', NH_CR_TD ) . '</a>';
+		$tabs = array(
+			'settings' => __( 'Settings', NH_CR_TD ),
+			'preview'  => __( 'Preview', NH_CR_TD ),
+			'list'     => __( 'Carts', NH_CR_TD ),
+		);
+		foreach ( $tabs as $key => $label ) {
+			$url = admin_url( 'admin.php?page=nh-cart-recovery&tab=' . $key );
+			echo '<a class="nav-tab ' . ( $tab === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+		}
 		echo '</h2>';
 		if ( $tab === 'list' ) {
 			self::render_list();
+		} elseif ( $tab === 'preview' ) {
+			self::render_preview();
 		} else {
 			self::render_settings();
 		}
@@ -155,7 +167,7 @@ class NH_CR_Admin {
 		self::render_copy_block( $o, $locale, 'checkout', __( 'Unfinished payment emails', NH_CR_TD ) );
 
 		submit_button();
-		echo '<p class="description">' . esc_html__( 'Each message uses the shop WooCommerce email template, Norhage colours (forest, green, cream, gold), a cart table with image / name / qty / total, a checkout button, and an unsubscribe link. Brevo’s free plan is typically 300 emails/day.', NH_CR_TD ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Each message uses the shop WooCommerce email template, Norhage colours (forest, green, cream, gold), a cart table with image / name / qty / total, a checkout button, and an unsubscribe link. Open the Preview tab to see the layout. Brevo’s free plan is typically 300 emails/day.', NH_CR_TD ) . '</p>';
 		echo '</form>';
 	}
 
@@ -195,6 +207,41 @@ class NH_CR_Admin {
 			}
 			echo '</table>';
 		}
+	}
+
+	private static function render_preview() {
+		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		$type   = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( (string) $_GET['type'] ) ) : 'cart'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'checkout' !== $type ) {
+			$type = 'cart';
+		}
+		$step = isset( $_GET['step'] ) ? absint( $_GET['step'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$step = nh_cr_normalize_step( $step );
+		$named = ! isset( $_GET['named'] ) || (string) $_GET['named'] !== '0'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$name  = $named ? 'Anna' : '';
+
+		$base = admin_url( 'admin.php?page=nh-cart-recovery&tab=preview' );
+		echo '<p class="description" style="max-width:52em;">';
+		echo esc_html__( 'This is the inner email plus a Norhage-coloured header. Live mail is wrapped in the shop WooCommerce email template (logo and footer from WooCommerce → Settings → Emails). Sample products are placeholders; real emails use the customer’s cart, including images and custom sizes.', NH_CR_TD );
+		echo '</p>';
+
+		echo '<p>';
+		foreach ( array( 'cart' => __( 'Abandoned cart', NH_CR_TD ), 'checkout' => __( 'Unfinished payment', NH_CR_TD ) ) as $key => $label ) {
+			echo '<a class="button' . ( $type === $key ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $key, 'step' => $step, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
+		}
+		echo '</p><p>';
+		foreach ( array( 1 => __( 'Email 1 (1 hour / on cancel)', NH_CR_TD ), 2 => __( 'Email 2 (next day)', NH_CR_TD ), 3 => __( 'Email 3 (3 days)', NH_CR_TD ) ) as $n => $label ) {
+			echo '<a class="button' . ( $step === $n ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $n, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
+		}
+		echo '</p><p>';
+		echo '<a class="button' . ( $named ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $step, 'named' => '1' ), $base ) ) . '">' . esc_html__( 'With name (Anna)', NH_CR_TD ) . '</a>';
+		echo '<a class="button' . ( ! $named ? ' button-primary' : '' ) . '" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $step, 'named' => '0' ), $base ) ) . '">' . esc_html__( 'No name known', NH_CR_TD ) . '</a>';
+		echo '</p>';
+
+		$parts = NH_CR_Mailer::preview_parts( $type, $step, $locale, $name );
+		$doc   = NH_CR_Mailer::preview_document( $type, $step, $locale, $name );
+		echo '<p><strong>' . esc_html__( 'Subject', NH_CR_TD ) . ':</strong> ' . esc_html( $parts['subject'] ) . '</p>';
+		echo '<iframe title="' . esc_attr__( 'Email preview', NH_CR_TD ) . '" style="width:100%;max-width:680px;height:820px;border:1px solid #c3c4c7;background:#fff;" srcdoc="' . esc_attr( $doc ) . '"></iframe>';
 	}
 
 	/**

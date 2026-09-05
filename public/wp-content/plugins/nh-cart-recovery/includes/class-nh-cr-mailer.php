@@ -97,6 +97,91 @@ class NH_CR_Mailer {
 	}
 
 	/**
+	 * Dummy cart used by the admin Preview tab (not sent to customers).
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function sample_items() {
+		return array(
+			array(
+				'product_id' => 0,
+				'quantity'   => 1,
+				'name'       => 'Kanalplast 16 mm, 800 × 2100 mm',
+				'line_total' => 1290,
+				'image_url'  => '',
+			),
+			array(
+				'product_id' => 0,
+				'quantity'   => 2,
+				'name'       => 'Greenhouse aluminium profile',
+				'line_total' => 860,
+				'image_url'  => '',
+			),
+		);
+	}
+
+	/**
+	 * Subject, heading, and inner HTML for one sequence email.
+	 *
+	 * @param string $type       cart|checkout.
+	 * @param int    $step       1–3.
+	 * @param string $locale     Locale.
+	 * @param string $first_name Name, or empty.
+	 * @return array{subject:string,heading:string,html:string}
+	 */
+	public static function preview_parts( $type, $step, $locale, $first_name = 'Anna' ) {
+		$settings = nh_cr_get_settings();
+		$copy     = nh_cr_effective_copy( $settings, $locale, $type, $step );
+		foreach ( $copy as $field => $text ) {
+			$copy[ $field ] = nh_cr_personalize( $text, $first_name );
+		}
+		$row = (object) array( 'first_name' => $first_name );
+		return array(
+			'subject' => $copy['subject'],
+			'heading' => $copy['heading'],
+			'html'    => self::body_html(
+				$row,
+				self::sample_items(),
+				$copy,
+				'https://example.com/checkout?nh_cr=preview',
+				'https://example.com/?nh_cr_unsub=preview',
+				$locale
+			),
+		);
+	}
+
+	/**
+	 * Full HTML document approximating WooCommerce’s email wrap (shop header + our body).
+	 *
+	 * @param string $type       cart|checkout.
+	 * @param int    $step       1–3.
+	 * @param string $locale     Locale.
+	 * @param string $first_name Name, or empty.
+	 * @return string
+	 */
+	public static function preview_document( $type, $step, $locale, $first_name = 'Anna' ) {
+		$parts = self::preview_parts( $type, $step, $locale, $first_name );
+		$pal   = nh_cr_palette();
+		$shop  = function_exists( 'get_bloginfo' ) ? (string) get_bloginfo( 'name' ) : 'Norhage';
+		if ( $shop === '' ) {
+			$shop = 'Norhage';
+		}
+
+		$html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' . esc_html( $parts['subject'] ) . '</title></head>';
+		$html .= '<body style="margin:0;padding:0;background:' . esc_attr( $pal['cream'] ) . ';font-family:Arial,Helvetica,sans-serif;">';
+		$html .= '<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:' . esc_attr( $pal['cream'] ) . ';padding:24px 0;">';
+		$html .= '<tr><td align="center">';
+		$html .= '<table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">';
+		$html .= '<tr><td style="background:' . esc_attr( $pal['forest'] ) . ';color:' . esc_attr( $pal['offwhite'] ) . ';padding:20px 28px;font-size:20px;font-weight:700;letter-spacing:.02em;">' . esc_html( $shop ) . '</td></tr>';
+		$html .= '<tr><td style="padding:28px 28px 8px;"><h2 style="margin:0 0 16px;color:' . esc_attr( $pal['forest'] ) . ';font-size:22px;line-height:1.3;">' . esc_html( $parts['heading'] ) . '</h2>';
+		$html .= $parts['html'];
+		$html .= '</td></tr>';
+		$html .= '<tr><td style="background:' . esc_attr( $pal['offwhite'] ) . ';color:' . esc_attr( $pal['muted'] ) . ';padding:16px 28px;font-size:12px;border-top:1px solid ' . esc_attr( $pal['cream'] ) . ';">' . esc_html( $shop ) . '</td></tr>';
+		$html .= '</table></td></tr></table></body></html>';
+		return $html;
+	}
+
+	/**
 	 * @param object               $row     Store row.
 	 * @param array<int, mixed>    $items   Snapshot items.
 	 * @param array<string,string> $copy    Copy.

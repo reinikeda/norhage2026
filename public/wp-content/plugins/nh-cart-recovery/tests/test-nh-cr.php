@@ -11,7 +11,27 @@ if ( ! function_exists( 'absint' ) ) {
 	}
 }
 
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', '/tmp/' );
+}
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+if ( ! function_exists( 'esc_attr' ) ) {
+	function esc_attr( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+if ( ! function_exists( 'esc_url' ) ) {
+	function esc_url( $text ) {
+		return (string) $text;
+	}
+}
+
 require_once dirname( __DIR__ ) . '/includes/class-nh-cr-copy.php';
+require_once dirname( __DIR__ ) . '/includes/class-nh-cr-mailer.php';
 
 $failures = 0;
 
@@ -127,6 +147,23 @@ nh_cr_assert( 'hash stable', $hash_a === $hash_b );
 $pal = nh_cr_palette();
 nh_cr_assert( 'palette green', $pal['green'] === '#00704A' );
 nh_cr_assert( 'palette gold', $pal['gold'] === '#C89F63' );
+
+$named_parts = NH_CR_Mailer::preview_parts( 'cart', 1, 'sv_SE', 'Anna' );
+nh_cr_assert( 'preview subject uses name', strpos( $named_parts['subject'], 'Anna' ) !== false );
+nh_cr_assert( 'preview html greets by name', strpos( $named_parts['html'], 'Hej Anna' ) !== false );
+nh_cr_assert( 'preview html has cart table', strpos( $named_parts['html'], 'Kanalplast' ) !== false );
+nh_cr_assert( 'preview html uses green CTA', strpos( $named_parts['html'], '#00704A' ) !== false );
+nh_cr_assert( 'preview html uses forest header', strpos( $named_parts['html'], '#1E3932' ) !== false );
+nh_cr_assert( 'preview html has unsubscribe', strpos( $named_parts['html'], 'nh_cr_unsub' ) !== false );
+
+$anon_parts = NH_CR_Mailer::preview_parts( 'cart', 1, 'en_GB', '' );
+nh_cr_assert( 'anon subject drops placeholder', strpos( $anon_parts['subject'], '{first_name}' ) === false );
+nh_cr_assert( 'anon subject capitalizes', strpos( $anon_parts['subject'], 'Your Norhage cart is saved' ) !== false );
+nh_cr_assert( 'anon greeting has no name', strpos( $anon_parts['html'], 'Hi,' ) !== false );
+
+$doc = NH_CR_Mailer::preview_document( 'checkout', 3, 'nb_NO', 'Anna' );
+nh_cr_assert( 'document wraps heading', strpos( $doc, 'Siste sjanse' ) !== false );
+nh_cr_assert( 'document uses cream page background', strpos( $doc, '#F1E6D6' ) !== false );
 
 if ( $failures ) {
 	fwrite( STDERR, "$failures failed\n" );
