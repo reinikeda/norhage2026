@@ -169,6 +169,26 @@ $nested = nh_cr_identity_from_payload(
 nh_cr_assert( 'kustom nested email', $nested['email'] === 'hans@example.de' );
 $obf = nh_cr_identity_from_payload( array( 'email' => 'a***@klarna.com' ) );
 nh_cr_assert( 'kustom skips obfuscated email', $obf['email'] === '' );
+$svea = nh_cr_identity_from_svea_module(
+	array(
+		'EmailAddress'   => 'anna@norhage.se',
+		'BillingAddress' => array(
+			'FirstName' => 'Anna',
+			'LastName'  => 'Svensson',
+		),
+	)
+);
+nh_cr_assert( 'svea module email', $svea['email'] === 'anna@norhage.se' );
+nh_cr_assert( 'svea module first', $svea['first_name'] === 'Anna' );
+$svea_full = nh_cr_identity_from_svea_module(
+	array(
+		'EmailAddress'   => 'hans@norhage.se',
+		'BillingAddress' => array(
+			'FullName' => 'Hans Berg',
+		),
+	)
+);
+nh_cr_assert( 'svea full name split', $svea_full['first_name'] === 'Hans' && $svea_full['last_name'] === 'Berg' );
 
 $pal = nh_cr_palette();
 nh_cr_assert( 'palette green', $pal['green'] === '#00704A' );

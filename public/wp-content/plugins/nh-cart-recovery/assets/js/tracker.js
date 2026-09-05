@@ -8,6 +8,7 @@
   var timer = null;
   var last = '';
   var kustomTries = 0;
+  var sveaTries = 0;
 
   function val(id) {
     var el = document.getElementById(id);
@@ -30,14 +31,22 @@
       return String(data).trim();
     }
     if (typeof data === 'object') {
-      return String(data.value || data.email || data.firstName || data.lastName || data.given_name || data.family_name || '').trim();
+      return String(
+        data.value ||
+        data.email ||
+        data.firstName ||
+        data.lastName ||
+        data.given_name ||
+        data.family_name ||
+        ''
+      ).trim();
     }
     return '';
   }
 
   function usableEmail(email) {
     email = String(email || '').trim();
-    if (!email || email.indexOf('@') === -1 || email.indexOf('*') !== -1) {
+    if (!email || email.indexOf('@') === -1 || email.indexOf('*') !== -1 || email.indexOf('•') !== -1) {
       return '';
     }
     return email;
@@ -89,6 +98,7 @@
       window.fetch(cfg.ajax, {
         method: 'POST',
         credentials: 'same-origin',
+        keepalive: true,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         body: body.toString()
       });
@@ -153,6 +163,14 @@
     return true;
   }
 
+  function waitSvea() {
+    if (bindSvea() || sveaTries > 60) {
+      return;
+    }
+    sveaTries += 1;
+    window.setTimeout(waitSvea, 500);
+  }
+
   function waitKustom() {
     if (bindKustom() || kustomTries > 40) {
       return;
@@ -181,6 +199,15 @@
     );
   }
 
+  function sveaIframePresent() {
+    return !!(
+      document.querySelector(
+        '.wc-svea-checkout-page, #svea-checkout, #svea-checkout-iframe-container, form.svea-checkout, ' +
+        'iframe[src*="svea.com"], iframe[src*="sveacheckout"]'
+      )
+    );
+  }
+
   document.addEventListener('change', function (e) {
     var t = e.target;
     if (!t || !t.id) {
@@ -191,15 +218,25 @@
     }
   });
 
-  document.addEventListener('checkoutReady', function () {
+  function onCheckoutReady() {
     window.setTimeout(bindSvea, 50);
     window.setTimeout(bindKustom, 50);
-  });
+  }
+  document.addEventListener('checkoutReady', onCheckoutReady);
+  window.addEventListener('checkoutReady', onCheckoutReady);
+
+  if (window.jQuery) {
+    window.jQuery(document.body).on('updated_checkout', function () {
+      schedule();
+    });
+  }
+
   if (window.scoApi) {
     bindSvea();
   }
+  waitSvea();
   waitKustom();
-  if (kustomIframePresent() || document.body.classList.contains('woocommerce-checkout')) {
+  if (kustomIframePresent() || sveaIframePresent() || document.body.classList.contains('woocommerce-checkout')) {
     watchHiddenIdentity();
   }
 })();
