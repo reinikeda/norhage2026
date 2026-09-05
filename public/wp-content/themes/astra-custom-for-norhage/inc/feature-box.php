@@ -151,9 +151,13 @@ function nh_get_feature_box_html( $product_id = 0 ) {
         return '';
     }
 
+    $count     = count( $selected );
+    $collapse  = $count > 6;
+    $box_class = 'nhf-box nhf--summary-card' . ( $collapse ? ' nhf--collapsible' : '' );
+
     ob_start();
     ?>
-    <section class="nhf-box nhf--summary-card" aria-label="<​?php esc_attr_e( 'Key product features', 'nh-theme' ); ?>">
+    <section class="<?php echo esc_attr( $box_class ); ?>" aria-label="<?php esc_attr_e( 'Key product features', 'nh-theme' ); ?>">
         <ul class="nhf-list" role="list">
             <?php foreach ( $selected as $key => $feature ) : ?>
                 <li class="nhf-item">
@@ -164,6 +168,12 @@ function nh_get_feature_box_html( $product_id = 0 ) {
                 </li>
             <?php endforeach; ?>
         </ul>
+        <?php if ( $collapse ) : ?>
+            <button type="button" class="nhf-more" data-nhf-more aria-expanded="false">
+                <span class="nhf-more__open"><?php esc_html_e( 'Show more', 'nh-theme' ); ?></span>
+                <span class="nhf-more__close"><?php esc_html_e( 'Show less', 'nh-theme' ); ?></span>
+            </button>
+        <?php endif; ?>
     </section>
     <?php
     return ob_get_clean();

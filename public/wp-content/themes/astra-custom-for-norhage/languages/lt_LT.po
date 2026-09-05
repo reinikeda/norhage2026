@@ -60,6 +60,12 @@ msgstr "Pasirinkti"
 msgid "View product"
 msgstr "Žiūrėti prekę"
 
+msgid "Show more"
+msgstr "Rodyti daugiau"
+
+msgid "Show less"
+msgstr "Rodyti mažiau"
+
 #: functions.php:405
 msgid "Secondary product title"
 msgstr "Antrinis prekės pavadinimas"
