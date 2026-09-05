@@ -50,6 +50,15 @@ body.woocommerce-checkout.nh-checkout-ux .woocommerce-form-coupon-toggle .woocom
   color: var(--nh-charcoal, #2c2a29);
 }
 
+@media (max-width: 959px) {
+  body.woocommerce-checkout.nh-checkout-ux .woocommerce-form-login-toggle .woocommerce-info,
+  body.woocommerce-checkout.nh-checkout-ux .woocommerce-form-coupon-toggle .woocommerce-info {
+    padding: 0.5rem 0.75rem;
+    margin: 0 0 0.45rem;
+    font-size: 0.9rem;
+  }
+}
+
 body.woocommerce-checkout.nh-checkout-ux .woocommerce-form-login-toggle .woocommerce-info::before,
 body.woocommerce-checkout.nh-checkout-ux .woocommerce-form-coupon-toggle .woocommerce-info::before {
   display: none;
@@ -114,6 +123,16 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside {
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main {
   order: 1;
   min-width: 0;
+}
+
+@media (max-width: 959px) {
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-layout__main {
+    order: 0;
+  }
+
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-layout__aside {
+    order: 1;
+  }
 }
 
 body.woocommerce-checkout.nh-checkout-form #customer_details.col2-set,
@@ -1021,11 +1040,15 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
 }
 
 @media (max-width: 959px) {
-  body.woocommerce-checkout.nh-checkout-form {
+  body.woocommerce-checkout.nh-checkout-form:not(.nh-checkout--snippet) {
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
-  body.woocommerce-checkout.nh-checkout-form #payment .form-row.place-order {
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.woocommerce-checkout.nh-checkout-form:not(.nh-checkout--snippet) #payment .form-row.place-order {
     position: fixed;
     left: 0;
     right: 0;
@@ -1037,6 +1060,13 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
     background: #fff;
     border-top: 1px solid var(--nh-mint, #c3e8c6);
     box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
+  }
+
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet #payment .form-row.place-order {
+    position: static;
+    box-shadow: none;
+    border-top: 0;
+    padding: 0;
   }
 
   body.woocommerce-checkout.nh-checkout-form #place_order {
@@ -1101,20 +1131,20 @@ body.woocommerce-checkout.nh-checkout--snippet a.sco-change-payment-method {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 52px;
-  margin: 0.85rem 0 0;
-  padding: 0.85rem 1rem;
-  border: 0;
+  min-height: 44px;
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--nh-mint, #c3e8c6);
   border-radius: 12px;
-  background: var(--nh-green, #00704a) !important;
-  color: #fff !important;
-  font-weight: 800;
-  font-size: 1.05rem;
+  background: #fff !important;
+  color: var(--nh-green, #00704a) !important;
+  font-weight: 700;
+  font-size: 0.95rem;
   line-height: 1.2;
   text-align: center;
   text-decoration: none !important;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(0, 112, 74, 0.22);
+  box-shadow: none;
 }
 
 body.woocommerce-checkout .nh-checkout-other-payment[hidden],
@@ -1126,7 +1156,21 @@ body.woocommerce-checkout .nh-checkout-other-payment:hover,
 body.woocommerce-checkout .nh-checkout-other-payment-btn:hover,
 body.woocommerce-checkout #klarna-checkout-select-other:hover,
 body.woocommerce-checkout #svea-checkout-select-other:hover {
-  background: var(--nh-forest, #1e3932) !important;
+  background: #f3faf6 !important;
+  border-color: var(--nh-green, #00704a);
+}
+
+body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,
+body.woocommerce-checkout.nh-checkout--snippet .create-account,
+body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-payment > .nh-checkout-section__title {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-payment {
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 /* --------------------------------------------------------------------------

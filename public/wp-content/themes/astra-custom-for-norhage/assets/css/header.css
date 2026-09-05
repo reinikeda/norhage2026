@@ -1288,8 +1288,9 @@ body.has-fixed-masthead .nhhb-hero ~ #content.site-content { padding-top: 0 !imp
    ========================================================= */
 
 body.woocommerce-cart.has-fixed-masthead #content.site-content,
-body.woocommerce-checkout.has-fixed-masthead #content.site-content {
-  padding-top: 0 !important;
+body.woocommerce-checkout.has-fixed-masthead #content.site-content,
+body.woocommerce-account.has-fixed-masthead #content.site-content {
+  padding-top: var(--masthead-h, 72px) !important;
   margin-top: 0 !important;
 }
 

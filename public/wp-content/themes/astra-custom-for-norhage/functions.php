@@ -221,6 +221,9 @@ add_action( 'astra_header_after', function () {
 	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_category() || is_product_tag() || is_product() ) ) {
 		return; // no hero on shop/product surfaces
 	}
+	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() ) ) {
+		return; // keep cart/checkout above the fold on mobile
+	}
 
 	$data = array(
 		'bg'    => function_exists('nhhb_get_hero_image_url') ? nhhb_get_hero_image_url() : '',
