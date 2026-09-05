@@ -72,6 +72,23 @@ function nh_cr_palette() {
 }
 
 /**
+ * Shop language (Settings → General), never the logged-in admin’s profile language.
+ * Admin `determine_locale()` is often English while norhage.no is nb_NO.
+ *
+ * @return string
+ */
+function nh_cr_shop_locale() {
+	$locale = function_exists( 'get_locale' ) ? (string) get_locale() : 'en_US';
+	if ( $locale === '' && function_exists( 'get_option' ) ) {
+		$locale = (string) get_option( 'WPLANG', 'en_US' );
+	}
+	if ( function_exists( 'apply_filters' ) ) {
+		$locale = (string) apply_filters( 'nh_cr_shop_locale', $locale );
+	}
+	return $locale !== '' ? $locale : 'en_US';
+}
+
+/**
  * @param string $locale WordPress locale.
  * @return string
  */
@@ -81,6 +98,9 @@ function nh_cr_locale_group( $locale ) {
 		'sv_SE' => 'sv',
 		'nb_NO' => 'nb',
 		'nn_NO' => 'nb',
+		'nb'    => 'nb',
+		'no'    => 'nb',
+		'no_NO' => 'nb',
 		'da_DK' => 'da',
 		'fi'    => 'fi',
 		'fi_FI' => 'fi',
@@ -88,7 +108,23 @@ function nh_cr_locale_group( $locale ) {
 		'de_AT' => 'de',
 		'lt_LT' => 'lt',
 	);
-	return isset( $map[ $locale ] ) ? $map[ $locale ] : 'en';
+	if ( isset( $map[ $locale ] ) ) {
+		return $map[ $locale ];
+	}
+	$parts = explode( '_', $locale );
+	$lang  = strtolower( (string) $parts[0] );
+	$short = array(
+		'sv' => 'sv',
+		'nb' => 'nb',
+		'nn' => 'nb',
+		'no' => 'nb',
+		'da' => 'da',
+		'fi' => 'fi',
+		'de' => 'de',
+		'lt' => 'lt',
+		'en' => 'en',
+	);
+	return isset( $short[ $lang ] ) ? $short[ $lang ] : 'en';
 }
 
 /**

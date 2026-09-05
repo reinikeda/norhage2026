@@ -47,7 +47,7 @@ class NH_CR_Admin {
 		$defaults = nh_cr_default_settings();
 		$input    = is_array( $input ) ? $input : array();
 		$out      = $defaults;
-		$locale   = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		$locale   = nh_cr_shop_locale();
 
 		$out['enabled']            = empty( $input['enabled'] ) ? 0 : 1;
 		$out['checkout_on_cancel'] = empty( $input['checkout_on_cancel'] ) ? 0 : 1;
@@ -130,7 +130,7 @@ class NH_CR_Admin {
 
 	private static function render_settings() {
 		$o      = nh_cr_get_settings();
-		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		$locale = nh_cr_shop_locale();
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'nh_cr_settings_group' );
 		echo '<table class="form-table" role="presentation">';
@@ -159,8 +159,25 @@ class NH_CR_Admin {
 		echo '</td></tr>';
 		echo '</table>';
 
+		$group_labels = array(
+			'en' => 'English',
+			'sv' => 'Swedish',
+			'nb' => 'Norwegian',
+			'da' => 'Danish',
+			'fi' => 'Finnish',
+			'de' => 'German',
+			'lt' => 'Lithuanian',
+		);
+		$group = nh_cr_locale_group( $locale );
 		echo '<p class="description" style="max-width:52em;">';
-		echo esc_html__( 'Fields below are prefilled in the shop language. Leave them as they are to keep future translation updates. Change a field only when you want shop-specific wording. Use {first_name} in subject/heading — it is replaced with the customer’s name, or removed when no name is known.', NH_CR_TD );
+		echo esc_html(
+			sprintf(
+				/* translators: 1: language name, 2: WordPress locale code */
+				__( 'Fields below are prefilled in the shop language (%1$s, %2$s from Settings → General), not your WordPress profile language. Leave them as they are to keep future translation updates. Change a field only when you want shop-specific wording. Use {first_name} in subject/heading — it is replaced with the customer’s name, or removed when no name is known.', NH_CR_TD ),
+				isset( $group_labels[ $group ] ) ? $group_labels[ $group ] : $group,
+				$locale
+			)
+		);
 		echo '</p>';
 
 		self::render_copy_block( $o, $locale, 'cart', __( 'Abandoned cart emails', NH_CR_TD ) );
@@ -210,7 +227,7 @@ class NH_CR_Admin {
 	}
 
 	private static function render_preview() {
-		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+		$locale = nh_cr_shop_locale();
 		$type   = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( (string) $_GET['type'] ) ) : 'cart'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( 'checkout' !== $type ) {
 			$type = 'cart';

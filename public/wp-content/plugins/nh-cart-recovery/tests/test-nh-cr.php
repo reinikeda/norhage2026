@@ -47,6 +47,9 @@ function nh_cr_assert( $label, $ok ) {
 
 nh_cr_assert( 'sv locale group', nh_cr_locale_group( 'sv_SE' ) === 'sv' );
 nh_cr_assert( 'nb locale group', nh_cr_locale_group( 'nb_NO' ) === 'nb' );
+nh_cr_assert( 'nb short locale group', nh_cr_locale_group( 'nb' ) === 'nb' );
+nh_cr_assert( 'no_NO locale group', nh_cr_locale_group( 'no_NO' ) === 'nb' );
+nh_cr_assert( 'shop locale is a string', is_string( nh_cr_shop_locale() ) && nh_cr_shop_locale() !== '' );
 nh_cr_assert( 'sv cart 1 subject', nh_cr_default_copy( 'sv_SE', 'cart', 1 )['subject'] !== '' );
 nh_cr_assert( 'sv cart 3 last reminder', strpos( nh_cr_default_copy( 'sv_SE', 'cart', 3 )['subject'], 'Sista' ) !== false );
 nh_cr_assert( 'nb checkout 1 button', nh_cr_default_copy( 'nb_NO', 'checkout', 1 )['button'] !== '' );
