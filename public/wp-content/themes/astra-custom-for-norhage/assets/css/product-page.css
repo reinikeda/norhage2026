@@ -1712,22 +1712,13 @@ h2.nh-in-title::after,
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 900;
+        z-index: 2147483646;
         width: 100%;
         background: #fff;
         border-top: 1px solid var(--nh-mint, #c3e8c6);
         padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
         box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
         box-sizing: border-box;
-    }
-
-    /* Crisp can only sit left or right — keep that side of the bar clear */
-    body.has-crisp-left .nh-sticky-atc.is-visible {
-        padding-left: 72px;
-    }
-
-    body.has-crisp-right .nh-sticky-atc.is-visible {
-        padding-right: 72px;
     }
 
     .nh-sticky-atc__price {
@@ -1787,15 +1778,12 @@ h2.nh-in-title::after,
         opacity: 0.55;
     }
 
-    /*
-     * Crisp only lets you pick left vs right. We lift the widget above
-     * the sticky bar (JS also writes an inline bottom). Left/right stay as set.
-     */
+    /* Hide the launcher while the bar is up — Crisp z-index is otherwise above everything */
     body.has-nh-sticky-atc .crisp-client,
-    body.has-nh-sticky-atc #crisp-chatbox,
-    body.has-nh-sticky-atc .crisp-client [data-has-available-website-widget],
-    body.has-nh-sticky-atc .cky-btn-revisit {
-        bottom: var(--nh-crisp-bottom, calc(80px + env(safe-area-inset-bottom, 0px))) !important;
+    body.has-nh-sticky-atc #crisp-chatbox {
+        visibility: hidden !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
     }
 }
 
