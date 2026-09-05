@@ -1033,6 +1033,18 @@ msgstr "Olemme hiljattain uudistaneet verkkosivumme ja teemme parhaamme korjatak
 msgid "Back to Homepage"
 msgstr "Takaisin etusivulle"
 
+msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
+msgstr "Tämä linkki on vanhasta verkkokaupasta tai sitä ei enää ole. Hae tuotetta tai jatka alempaa kategoriasta."
+
+msgid "Were you looking for these?"
+msgstr "Etsitkö näitä?"
+
+msgid "Popular products"
+msgstr "Suosituimmat tuotteet"
+
+msgid "Browse the shop"
+msgstr "Siirry kauppaan"
+
 #: inc/functions.php
 msgid "Estimate Shipping"
 msgstr "Laske toimitus"

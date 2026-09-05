@@ -1029,6 +1029,18 @@ msgstr "Vi har nyligt opdateret vores hjemmeside og gør alt, hvad vi kan, for a
 msgid "Back to Homepage"
 msgstr "Tilbage til forsiden"
 
+msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
+msgstr "Dette link er fra den tidligere webshop eller findes ikke længere. Søg efter et produkt, eller fortsæt fra en kategori nedenfor."
+
+msgid "Were you looking for these?"
+msgstr "Ledte du efter disse?"
+
+msgid "Popular products"
+msgstr "Populære produkter"
+
+msgid "Browse the shop"
+msgstr "Gå til shoppen"
+
 #: inc/functions.php
 msgid "Estimate Shipping"
 msgstr "Beregn fragt"

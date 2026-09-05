@@ -1,79 +1,114 @@
 <?php
 /**
- * 404 Template — Norhage Child Theme
- * Translatable via 'nh-theme' text domain
+ * 404 — keep shoppers on the site after old-shop / broken inbound links.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 get_header();
+
+$shop_url   = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
+$home_url   = home_url( '/' );
+$search_url = home_url( '/' );
+$suggested  = function_exists( 'nh_404_suggested_products' ) ? nh_404_suggested_products() : array();
+$suggest_ids = array();
+foreach ( $suggested as $product ) {
+	if ( $product instanceof WC_Product ) {
+		$suggest_ids[] = $product->get_id();
+	}
+}
+$popular    = function_exists( 'nh_404_popular_products' ) ? nh_404_popular_products( $suggest_ids ) : array();
+$categories = function_exists( 'nh_404_categories' ) ? nh_404_categories() : array();
 ?>
 
-<style>
-.nh-404-wrapper {
-    max-width: 600px;
-    margin: 100px auto;
-    padding: 0 20px 80px;
-    text-align: center;
-    font-family: inherit;
-    color: var(--nh-charcoal, #2C2A29);
-}
+<main class="nh-404" id="main">
+	<div class="nh-404__intro">
+		<p class="nh-404__code" aria-hidden="true">404</p>
+		<h1><?php esc_html_e( "We couldn't find that page", 'nh-theme' ); ?></h1>
+		<p class="nh-404__lead">
+			<?php esc_html_e( 'This link is from our previous shop or is no longer available. Search for a product, or continue from a category below.', 'nh-theme' ); ?>
+		</p>
 
-.nh-404-code {
-    font-size: 6rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--nh-mint, #C3E8C6);
-    margin-bottom: 8px;
-    letter-spacing: -2px;
-}
+		<form class="nh-404__search" action="<?php echo esc_url( $search_url ); ?>" method="get" role="search">
+			<label class="screen-reader-text" for="nh-404-search"><?php esc_html_e( 'Search products', 'nh-theme' ); ?></label>
+			<input
+				type="search"
+				id="nh-404-search"
+				name="s"
+				placeholder="<?php esc_attr_e( 'Search products…', 'nh-theme' ); ?>"
+				autocomplete="off"
+			/>
+			<input type="hidden" name="post_type" value="product" />
+			<button type="submit" class="nh-404__search-btn">
+				<?php esc_html_e( 'Search products', 'nh-theme' ); ?>
+			</button>
+		</form>
 
-.nh-404-wrapper h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--nh-forest, #1E3932);
-    margin-bottom: 16px;
-}
+		<div class="nh-404__actions">
+			<?php if ( $shop_url ) : ?>
+				<a class="nh-404__btn nh-404__btn--primary" href="<?php echo esc_url( $shop_url ); ?>">
+					<?php esc_html_e( 'Browse the shop', 'nh-theme' ); ?>
+				</a>
+			<?php endif; ?>
+			<a class="nh-404__btn nh-404__btn--ghost" href="<?php echo esc_url( $home_url ); ?>">
+				<?php esc_html_e( 'Back to Homepage', 'nh-theme' ); ?>
+			</a>
+		</div>
+	</div>
 
-.nh-404-subtitle {
-    font-size: 1rem;
-    color: var(--ui-muted, #8e8c89);
-    line-height: 1.75;
-    margin-bottom: 40px;
-}
+	<?php if ( ! empty( $suggested ) ) : ?>
+		<section class="nh-404__section" aria-labelledby="nh-404-suggested">
+			<h2 id="nh-404-suggested"><?php esc_html_e( 'Were you looking for these?', 'nh-theme' ); ?></h2>
+			<?php nh_404_render_product_grid( $suggested ); ?>
+		</section>
+	<?php endif; ?>
 
-.nh-404-btn {
-    display: inline-block;
-    padding: 13px 32px;
-    background-color: var(--nh-green, #00704A);
-    color: #fff;
-    border: 2px solid var(--nh-green, #00704A);
-    border-radius: 4px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s, border-color 0.2s;
-    letter-spacing: 0.01em;
-}
+	<?php if ( ! empty( $categories ) ) : ?>
+		<section class="nh-404__section" aria-labelledby="nh-404-cats">
+			<h2 id="nh-404-cats"><?php esc_html_e( 'Shop by Category', 'nh-theme' ); ?></h2>
+			<div class="nh-404-cats">
+				<?php foreach ( $categories as $term ) : ?>
+					<?php
+					$thumb_id = get_term_meta( $term->term_id, 'thumbnail_id', true );
+					$link     = get_term_link( $term );
+					if ( is_wp_error( $link ) ) {
+						continue;
+					}
+					?>
+					<a class="nh-404-cat" href="<?php echo esc_url( $link ); ?>">
+						<span class="nh-404-cat__img">
+							<?php
+							if ( $thumb_id ) {
+								echo wp_get_attachment_image(
+									(int) $thumb_id,
+									'woocommerce_thumbnail',
+									false,
+									array(
+										'alt'      => $term->name,
+										'loading'  => 'lazy',
+										'decoding' => 'async',
+									)
+								);
+							} else {
+								echo '<img src="' . esc_url( wc_placeholder_img_src( 'woocommerce_thumbnail' ) ) . '" alt="" loading="lazy" decoding="async" width="300" height="300" />';
+							}
+							?>
+						</span>
+						<span class="nh-404-cat__name"><?php echo esc_html( $term->name ); ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</section>
+	<?php endif; ?>
 
-.nh-404-btn:hover {
-    background-color: var(--nh-forest, #1E3932);
-    border-color: var(--nh-forest, #1E3932);
-    color: #fff;
-}
-</style>
+	<?php if ( ! empty( $popular ) ) : ?>
+		<section class="nh-404__section" aria-labelledby="nh-404-popular">
+			<h2 id="nh-404-popular"><?php esc_html_e( 'Popular products', 'nh-theme' ); ?></h2>
+			<?php nh_404_render_product_grid( $popular ); ?>
+		</section>
+	<?php endif; ?>
+</main>
 
-<div class="nh-404-wrapper">
-
-    <div class="nh-404-code">404</div>
-
-    <h1><?php esc_html_e( "We couldn't find that page", 'nh-theme' ); ?></h1>
-
-    <p class="nh-404-subtitle">
-        <?php esc_html_e( "We've recently updated our website and are doing everything we can to fix broken links — but sometimes a 404 still slips through. Feel free to browse our updated site.", 'nh-theme' ); ?>
-    </p>
-
-    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="nh-404-btn">
-        <?php esc_html_e( 'Back to Homepage', 'nh-theme' ); ?>
-    </a>
-
-</div>
-
-<?php get_footer(); ?>
+<?php
+get_footer();
