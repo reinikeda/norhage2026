@@ -86,10 +86,42 @@
       return document.querySelector('#nh-price-summary [data-ps="total"]');
     }
 
+    function isPlaceholderPrice(html) {
+      var text = String(html || '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return !text || /^(—|–|−|-)$/.test(text);
+    }
+
+    function fallbackPriceHtml() {
+      var selectors = [
+        '#nh-price-summary [data-ps="unit"]',
+        '.summary p.price',
+        '.summary .price',
+        'div.product p.price',
+        'p.price'
+      ];
+      for (var i = 0; i < selectors.length; i++) {
+        var node = document.querySelector(selectors[i]);
+        if (node && !isPlaceholderPrice(node.innerHTML)) {
+          return node.innerHTML;
+        }
+      }
+      return '';
+    }
+
     function syncPrice() {
+      if (!priceOut) return;
       var src = priceSource();
-      if (!src || !priceOut) return;
-      priceOut.innerHTML = src.innerHTML;
+      var html = src ? src.innerHTML : '';
+      if (isPlaceholderPrice(html)) {
+        html = fallbackPriceHtml();
+      }
+      if (!isPlaceholderPrice(html)) {
+        priceOut.innerHTML = html;
+      }
     }
 
     function syncButton() {
@@ -122,12 +154,22 @@
       } catch (e) {}
     }
 
+    function isSideCartOpen() {
+      return document.body.classList.contains('nh-sc-open');
+    }
+
+    function isNavOpen() {
+      if (document.body.classList.contains('drawer-open')) return true;
+      var drawer = document.getElementById('nh-mobile-drawer');
+      return !!(drawer && drawer.classList.contains('is-open'));
+    }
+
     function updateVisibility() {
       if (!mq.matches || isOverlayOpen()) {
         bar.hidden = true;
         bar.classList.remove('is-visible');
         document.body.classList.remove('has-nh-sticky-atc');
-        setCrispLauncher(true);
+        setCrispLauncher(!isSideCartOpen() && !isNavOpen());
         return;
       }
 
@@ -181,7 +223,10 @@
         'found_variation hide_variation reset_data updated_checkout added_to_cart nh_bundle_state',
         sync
       );
-      window.jQuery(document.body).on('nh_side_cart_open nh_side_cart_close', updateVisibility);
+      window.jQuery(document.body).on(
+        'nh_side_cart_open nh_side_cart_close nh_side_cart_opened nh_side_cart_closed',
+        updateVisibility
+      );
     }
 
     function observeNode(node) {
@@ -191,6 +236,7 @@
 
     observeNode(document.querySelector('#nh-price-summary [data-ps="total"]'));
     observeNode(document.getElementById('bundle-total-amount'));
+    observeNode(document.querySelector('.summary p.price, .summary .price, div.product p.price'));
 
     function observeButton(btn) {
       if (!btn || typeof MutationObserver !== 'function') return;
@@ -217,8 +263,14 @@
       mq.addListener(updateVisibility);
     }
 
+    window.addEventListener('pagehide', function () {
+      document.body.classList.remove('has-nh-sticky-atc');
+      setCrispLauncher(true);
+    });
+
     sync();
     window.setTimeout(sync, 400);
+    window.setTimeout(sync, 1200);
   }
 
   onReady(function () {

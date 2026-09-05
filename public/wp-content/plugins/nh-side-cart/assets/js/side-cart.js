@@ -41,6 +41,18 @@
     }
   }
 
+  function setCrispLauncher(show) {
+    if (show && document.body.classList.contains('has-nh-sticky-atc')) {
+      show = false;
+    }
+    window.$crisp = window.$crisp || [];
+    try {
+      window.$crisp.push(['do', show ? 'chat:show' : 'chat:hide']);
+    } catch (err) {
+      /* Crisp not present */
+    }
+  }
+
   function setLoading(on) {
     if (!$root) {
       return;
@@ -127,6 +139,8 @@
     $root.removeAttr('hidden').addClass('is-open');
     $root.attr('aria-hidden', 'false');
     document.body.classList.add('nh-sc-open');
+    setCrispLauncher(false);
+    $(document.body).trigger('nh_side_cart_opened');
     window.setTimeout(function () {
       var closeBtn = $root.find('.nh-sc__close').get(0);
       if (closeBtn) {
@@ -141,6 +155,8 @@
     }
     $root.removeClass('is-open').attr('aria-hidden', 'true');
     document.body.classList.remove('nh-sc-open');
+    setCrispLauncher(true);
+    $(document.body).trigger('nh_side_cart_closed');
     window.setTimeout(function () {
       if (!isOpen()) {
         $root.attr('hidden', 'hidden');
@@ -273,5 +289,9 @@
       open: open,
       close: close,
     };
+
+    window.addEventListener('pagehide', function () {
+      setCrispLauncher(true);
+    });
   });
 })(jQuery);

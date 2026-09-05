@@ -60,6 +60,13 @@ body.has-fixed-masthead #content.site-content {
 
 body.drawer-open { overflow: hidden; }
 
+body.drawer-open .crisp-client,
+body.drawer-open #crisp-chatbox {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
 /* =========================================================
    4) MAIN HEADER BASE
    ========================================================= */

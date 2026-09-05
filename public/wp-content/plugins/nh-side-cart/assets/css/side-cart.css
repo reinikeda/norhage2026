@@ -703,6 +703,14 @@ body.nh-sc-open {
   outline: none;
 }
 
+/* Crisp sits above the drawer (z-index ~2e9) and covers Checkout. */
+body.nh-sc-open .crisp-client,
+body.nh-sc-open #crisp-chatbox {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
 /* Hide XootiX floating bubble / markup when this plugin is active. */
 .xoo-wsc-modal,
 .xoo-wsc-basket,
