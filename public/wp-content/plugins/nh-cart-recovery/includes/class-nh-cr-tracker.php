@@ -76,7 +76,7 @@ class NH_CR_Tracker {
 		$items = self::current_items();
 		$row   = NH_CR_Store::get_open_by_session( $session );
 		if ( ! $items ) {
-			if ( $row && $row->status === 'open' && (int) $row->order_id === 0 ) {
+			if ( $row && in_array( $row->status, array( 'open', 'sent' ), true ) && (int) $row->order_id === 0 ) {
 				NH_CR_Store::update( (int) $row->id, array( 'status' => 'skipped', 'cart' => '[]', 'cart_hash' => '' ) );
 			}
 			return;
@@ -110,15 +110,29 @@ class NH_CR_Tracker {
 			'cart'        => wp_json_encode( $items ),
 			'cart_hash'   => nh_cr_cart_hash( $items ),
 			'type'        => 'cart',
-			'status'      => 'open',
 		);
 
-		if ( $row && $row->status === 'open' ) {
+		if ( $row && in_array( $row->status, array( 'open', 'sent' ), true ) ) {
+			$sent = NH_CR_Store::emails_sent_count( $row );
+			$max  = (int) nh_cr_get_settings()['max_emails'];
+			if ( $sent >= $max ) {
+				$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+				$insert['status'] = 'open';
+				NH_CR_Store::insert( $insert );
+				return;
+			}
+			if ( $row->status === 'open' ) {
+				$data['status'] = 'open';
+			}
+			if ( (int) $row->order_id > 0 ) {
+				unset( $data['type'] );
+			}
 			NH_CR_Store::update( (int) $row->id, $data );
 			return;
 		}
 
-		$insert = array_merge( NH_CR_Store::blank_row(), $data );
+		$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+		$insert['status'] = 'open';
 		NH_CR_Store::insert( $insert );
 	}
 
@@ -160,7 +174,7 @@ class NH_CR_Tracker {
 			return;
 		}
 		$row = NH_CR_Store::get_open_by_session( $session );
-		if ( $row && $row->status === 'open' && (int) $row->order_id === 0 ) {
+		if ( $row && in_array( $row->status, array( 'open', 'sent' ), true ) && (int) $row->order_id === 0 ) {
 			NH_CR_Store::update( (int) $row->id, array( 'status' => 'skipped', 'cart' => '[]', 'cart_hash' => '' ) );
 		}
 	}
@@ -187,7 +201,7 @@ class NH_CR_Tracker {
 					'email'     => $email ? $email : $row->email,
 					'order_id'  => (int) $order->get_id(),
 					'type'      => 'checkout',
-					'status'    => $order->is_paid() ? 'converted' : 'open',
+					'status'    => $order->is_paid() ? 'converted' : ( $row->status === 'sent' ? 'sent' : 'open' ),
 				)
 			);
 		}
@@ -256,24 +270,41 @@ class NH_CR_Tracker {
 		$session = self::session_key();
 		$row     = $session ? NH_CR_Store::get_open_by_session( $session ) : null;
 		$items   = array();
-		foreach ( $order->get_items() as $item ) {
-			if ( ! $item instanceof WC_Order_Item_Product ) {
-				continue;
+		if ( $row && ! empty( $row->cart ) && ! empty( $row->cart_hash ) ) {
+			$existing = json_decode( (string) $row->cart, true );
+			if ( is_array( $existing ) && $existing ) {
+				$items = $existing;
 			}
-			$items[] = array(
-				'product_id'     => (int) $item->get_product_id(),
-				'variation_id'   => (int) $item->get_variation_id(),
-				'quantity'       => (float) $item->get_quantity(),
-				'variation'      => array(),
-				'cart_item_data' => array(),
-				'name'           => $item->get_name(),
-			);
+		}
+		if ( ! $items ) {
+			foreach ( $order->get_items() as $item ) {
+				if ( ! $item instanceof WC_Order_Item_Product ) {
+					continue;
+				}
+				$product   = $item->get_product();
+				$image_url = '';
+				if ( $product && function_exists( 'wp_get_attachment_image_url' ) ) {
+					$image_id  = (int) $product->get_image_id();
+					$image_url = $image_id ? (string) wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' ) : '';
+				}
+				$items[] = array(
+					'product_id'     => (int) $item->get_product_id(),
+					'variation_id'   => (int) $item->get_variation_id(),
+					'quantity'       => (float) $item->get_quantity(),
+					'variation'      => array(),
+					'cart_item_data' => array(),
+					'name'           => $item->get_name(),
+					'line_total'     => (float) $item->get_total() + (float) $item->get_total_tax(),
+					'image_url'      => $image_url,
+				);
+			}
 		}
 		if ( ! $items ) {
 			return;
 		}
 
-		$data = array(
+		$already = $row ? NH_CR_Store::emails_sent_count( $row ) : 0;
+		$data    = array(
 			'email'      => $email,
 			'first_name' => sanitize_text_field( (string) $order->get_billing_first_name() ),
 			'last_name'  => sanitize_text_field( (string) $order->get_billing_last_name() ),
@@ -281,22 +312,24 @@ class NH_CR_Tracker {
 			'cart_hash'  => nh_cr_cart_hash( $items ),
 			'order_id'   => (int) $order->get_id(),
 			'type'       => 'checkout',
-			'status'     => 'open',
 			'user_id'    => (int) $order->get_customer_id(),
 		);
 
-		if ( $row && $row->emailed_at ) {
-			return;
-		}
 		if ( $row ) {
+			if ( $already < 1 ) {
+				$data['status'] = 'open';
+			}
 			NH_CR_Store::update( (int) $row->id, $data );
-			NH_CR_Mailer::send_row( NH_CR_Store::get( (int) $row->id ) );
+			if ( $already < 1 ) {
+				NH_CR_Mailer::send_row( NH_CR_Store::get( (int) $row->id ), 1 );
+			}
 			return;
 		}
 
-		$insert = array_merge( NH_CR_Store::blank_row(), $data );
-		$id     = NH_CR_Store::insert( $insert );
-		NH_CR_Mailer::send_row( NH_CR_Store::get( $id ) );
+		$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+		$insert['status'] = 'open';
+		$id               = NH_CR_Store::insert( $insert );
+		NH_CR_Mailer::send_row( NH_CR_Store::get( $id ), 1 );
 	}
 
 	public static function enqueue() {

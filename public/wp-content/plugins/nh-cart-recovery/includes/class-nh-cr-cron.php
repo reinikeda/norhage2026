@@ -57,9 +57,13 @@ class NH_CR_Cron {
 			return;
 		}
 
-		$rows = NH_CR_Store::due_cart_emails( (int) $settings['cart_wait_minutes'] );
+		$now  = (int) current_time( 'timestamp' );
+		$rows = NH_CR_Store::due_email_candidates( (int) $settings['max_emails'] );
 		foreach ( $rows as $row ) {
-			NH_CR_Mailer::send_row( $row );
+			$step = nh_cr_next_due_step( $row, $settings, $now );
+			if ( $step ) {
+				NH_CR_Mailer::send_row( $row, $step );
+			}
 		}
 
 		NH_CR_Store::purge_old( (int) $settings['delete_after_days'] );
