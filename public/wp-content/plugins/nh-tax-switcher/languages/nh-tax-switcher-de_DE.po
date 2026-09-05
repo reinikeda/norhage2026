@@ -1,0 +1,46 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: NH Tax Switcher\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+"X-Domain: nh-tax-switcher\n"
+
+msgid "Including VAT"
+msgstr "Inkl. MwSt."
+
+msgid "Excluding VAT"
+msgstr "Exkl. MwSt."
+
+msgid "Show prices with VAT:"
+msgstr "Preise mit MwSt. anzeigen:"
+
+msgid "VAT display switch"
+msgstr "MwSt.-Anzeige umschalten"
+
+msgid "Display"
+msgstr "Anzeige"
+
+msgid "Enable switcher"
+msgstr "Umschalter aktivieren"
+
+msgid "Show VAT switch on product category & single product pages"
+msgstr "MwSt.-Umschalter auf Kategorie- und Produktseiten anzeigen"
+
+msgid "“Including VAT” text"
+msgstr "Text „Inkl. MwSt.“"
+
+msgid "“Excluding VAT” text"
+msgstr "Text „Exkl. MwSt.“"
+
+msgid "NH Tax Switcher"
+msgstr "NH MwSt.-Umschalter"
+

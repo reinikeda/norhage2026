@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nh-faq\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -32,3 +32,118 @@ msgstr "faq"
 # ---------------------------------------------------------
 msgid "Questions & Answers"
 msgstr "Spørgsmål og svar"
+
+msgid "FAQs"
+msgstr "FAQ"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "Add New"
+msgstr "Tilføj ny"
+
+msgid "Add New FAQ"
+msgstr "Tilføj ny FAQ"
+
+msgid "Edit FAQ"
+msgstr "Rediger FAQ"
+
+msgid "New FAQ"
+msgstr "Ny FAQ"
+
+msgid "View FAQ"
+msgstr "Se FAQ"
+
+msgid "Search FAQs"
+msgstr "Søg i FAQ"
+
+msgid "No FAQs found"
+msgstr "Ingen FAQ fundet"
+
+msgid "FAQ Details"
+msgstr "FAQ-detaljer"
+
+msgid "FAQ Topics"
+msgstr "FAQ-emner"
+
+msgid "FAQ Topic"
+msgstr "FAQ-emne"
+
+msgid "Search Topics"
+msgstr "Søg emner"
+
+msgid "All Topics"
+msgstr "Alle emner"
+
+msgid "Edit Topic"
+msgstr "Rediger emne"
+
+msgid "Update Topic"
+msgstr "Opdater emne"
+
+msgid "Add New Topic"
+msgstr "Tilføj nyt emne"
+
+msgid "New Topic Name"
+msgstr "Navn på nyt emne"
+
+msgid "Order"
+msgstr "Rækkefølge"
+
+msgid "Drag to reorder"
+msgstr "Træk for at ændre rækkefølge"
+
+msgid "Attach to products"
+msgstr "Tilknyt produkter"
+
+msgid "Type to filter…"
+msgstr "Skriv for at filtrere…"
+
+msgid "Filter products"
+msgstr "Filtrer produkter"
+
+msgid "Select visible"
+msgstr "Vælg synlige"
+
+msgid "Clear visible"
+msgstr "Fjern synlige"
+
+msgid "Products checklist"
+msgstr "Produktliste"
+
+msgid "No products found."
+msgstr "Ingen produkter fundet."
+
+msgid "Tip: use the filter to narrow the list, then “Select visible”."
+msgstr "Tip: brug filteret, og klik derefter på „Vælg synlige“."
+
+msgid "To show this FAQ on the %1$s, assign one or more %2$s in the sidebar."
+msgstr "For at vise denne FAQ på %1$s skal du tildele en eller flere %2$s i sidepanelet."
+
+msgid "Global FAQ page"
+msgstr "den globale FAQ-side"
+
+msgid "Last reviewed"
+msgstr "Sidst gennemgået"
+
+msgid "Keep answers fresh for support and SEO."
+msgstr "Hold svarene opdaterede af hensyn til support og SEO."
+
+msgid "selected"
+msgstr "valgt"
+
+msgid "visible"
+msgstr "synlige"
+
+msgid "#Products"
+msgstr "#Produkter"
+
+msgid "FAQs attached to this product"
+msgstr "FAQ tilknyttet dette produkt"
+
+msgid "No FAQs attached."
+msgstr "Ingen FAQ tilknyttet."
+
+msgid "Forbidden"
+msgstr "Adgang nægtet"
+

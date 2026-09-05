@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-01 16:28+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -17,19 +17,19 @@ msgstr ""
 
 #: functions.php:25
 msgid "Primary Menu"
-msgstr ""
+msgstr "Huvudmeny"
 
 #: functions.php:26
 msgid "Secondary Menu"
-msgstr ""
+msgstr "Sekundär meny"
 
 #: functions.php:27
 msgid "Footer — Explore"
-msgstr ""
+msgstr "Sidfot — Utforska"
 
 #: functions.php:28
 msgid "Footer — Bottom Bar"
-msgstr ""
+msgstr "Sidfot — Nedre list"
 
 #: functions.php:88 template-parts/headers/header-main.php:85
 msgctxt "Default FAQ page slug"
@@ -42,15 +42,15 @@ msgstr "Handla efter kategori"
 
 #: functions.php:276 functions.php:288
 msgid "Long description"
-msgstr ""
+msgstr "Lång beskrivning"
 
 #: functions.php:278 functions.php:305
 msgid "Shown after the product list and pagination on the category page."
-msgstr ""
+msgstr "Visas efter produktlistan och sidnumreringen på kategorisidan."
 
 #: functions.php:339
 msgid "Category long description"
-msgstr ""
+msgstr "Lång kategoribeskrivning"
 
 #: functions.php:375
 msgid "Select options"
@@ -68,19 +68,19 @@ msgstr "Visa mindre"
 
 #: functions.php:405
 msgid "Secondary product title"
-msgstr ""
+msgstr "Sekundär produkttitel"
 
 #: functions.php:434
 msgid "Footer — Shop Categories"
-msgstr ""
+msgstr "Sidfot — Butikskategorier"
 
 #: functions.php:435
 msgid "Footer — Secondary (Services, Blog, Contact)"
-msgstr ""
+msgstr "Sidfot — Sekundär (Tjänster, Blogg, Kontakt)"
 
 #: functions.php:436
 msgid "Footer — Legal/Policies"
-msgstr ""
+msgstr "Sidfot — Juridik"
 
 #: functions.php:620
 msgid "Please enter a valid email address."
@@ -345,7 +345,7 @@ msgstr ""
 
 #: inc/meta-boxes.php:642
 msgid "Watch video"
-msgstr ""
+msgstr "Titta på video"
 
 #: inc/meta-boxes.php:656
 msgid "Product extras"
@@ -394,24 +394,24 @@ msgstr "Läs mer"
 #: inc/order-attributes.php:92 inc/order-attributes.php:310
 #: inc/product-customize.php:539 inc/product-customize.php:588
 msgid "Width"
-msgstr ""
+msgstr "Bredd"
 
 #: inc/product-customize.php:36 inc/product-customize.php:37
 #: inc/product-customize.php:59
 msgid "Back to bundle"
-msgstr ""
+msgstr "Tillbaka till paketet"
 
 #: inc/product-customize.php:166 inc/product-customize.php:171
 msgid "%1$d–%2$d mm"
-msgstr ""
+msgstr "%1$d–%2$d mm"
 
 #: inc/product-customize.php:167 inc/product-customize.php:172
 msgid "≥ %d mm"
-msgstr ""
+msgstr "≥ %d mm"
 
 #: inc/product-customize.php:168 inc/product-customize.php:173
 msgid "≤ %d mm"
-msgstr ""
+msgstr "≤ %d mm"
 
 #: inc/product-customize.php:185
 msgid "Width (mm)"
@@ -419,11 +419,11 @@ msgstr "Bredd (mm)"
 
 #: inc/product-customize.php:187
 msgid "Decrease width"
-msgstr ""
+msgstr "Minska bredd"
 
 #: inc/product-customize.php:194
 msgid "Increase width"
-msgstr ""
+msgstr "Öka bredd"
 
 #: inc/product-customize.php:198
 msgid "Length (mm)"
@@ -435,15 +435,15 @@ msgstr "Längd (m)"
 
 #: inc/product-customize.php:200
 msgid "Decrease length"
-msgstr ""
+msgstr "Minska längd"
 
 #: inc/product-customize.php:207
 msgid "Increase length"
-msgstr ""
+msgstr "Öka längd"
 
 #: inc/product-customize.php:213
 msgid "Step: %d mm"
-msgstr ""
+msgstr "Steg: %d mm"
 
 #: inc/product-customize.php:224
 msgid "Your selection"
@@ -535,15 +535,15 @@ msgstr "Tjänster"
 
 #: inc/services.php:27
 msgid "Add New Service"
-msgstr ""
+msgstr "Lägg till ny tjänst"
 
 #: inc/services.php:28
 msgid "Edit Service"
-msgstr ""
+msgstr "Redigera tjänst"
 
 #: inc/services.php:29
 msgid "View Service"
-msgstr ""
+msgstr "Visa tjänst"
 
 #: inc/services.php:30
 msgid "All Services"
@@ -596,19 +596,19 @@ msgstr "https://norhageindustri.se"
 
 #: template-parts/footer/footer.php:29
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #: template-parts/footer/footer.php:30
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: template-parts/footer/footer.php:31
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: template-parts/footer/footer.php:32
 msgid "LinkedIn"
-msgstr ""
+msgstr "LinkedIn"
 
 #: template-parts/footer/footer.php:70
 msgid "Company Info"
@@ -636,7 +636,7 @@ msgstr "Följ oss"
 
 #: template-parts/footer/footer.php:85
 msgid "Social media"
-msgstr ""
+msgstr "Sociala medier"
 
 #: template-parts/footer/footer.php:113
 msgid "Shop Categories"
@@ -684,7 +684,7 @@ msgstr "B2B-portal"
 
 #: template-parts/footer/footer.php:155
 msgid "Legal bottom"
-msgstr ""
+msgstr "Juridik"
 
 #: template-parts/headers/header-main.php:13
 msgid "My Account"
@@ -701,16 +701,16 @@ msgstr "+46728380058"
 #: template-parts/headers/header-main.php:48
 #: template-parts/headers/header-main.php:151
 msgid "Cart"
-msgstr ""
+msgstr "Varukorg"
 
 #: template-parts/headers/header-main.php:57
 #: template-parts/headers/header-main.php:160
 msgid "View cart"
-msgstr ""
+msgstr "Visa varukorg"
 
 #: template-parts/headers/header-main.php:65
 msgid "Switch theme"
-msgstr ""
+msgstr "Byt tema"
 
 #: template-parts/headers/header-main.php:86
 msgid "FAQ"
@@ -719,32 +719,32 @@ msgstr "FAQ"
 #: template-parts/headers/header-main.php:106
 #: template-parts/headers/header-main.php:211
 msgid "Search"
-msgstr ""
+msgstr "Sök"
 
 #: template-parts/headers/header-main.php:113
 #: template-parts/headers/header-main.php:218
 msgid "Search suggestions"
-msgstr ""
+msgstr "Sökförslag"
 
 #: template-parts/headers/header-main.php:137
 msgid "Primary menu"
-msgstr ""
+msgstr "Huvudmeny"
 
 #: template-parts/headers/header-main.php:166
 msgid "Open menu"
-msgstr ""
+msgstr "Öppna meny"
 
 #: template-parts/headers/header-main.php:188
 msgid "Menu"
-msgstr ""
+msgstr "Meny"
 
 #: template-parts/headers/header-main.php:189
 msgid "Close menu"
-msgstr ""
+msgstr "Stäng meny"
 
 #: template-parts/headers/header-main.php:222
 msgid "Mobile navigation"
-msgstr ""
+msgstr "Mobilnavigering"
 
 #: template-parts/headers/header-main.php:232
 msgid "More"
@@ -752,23 +752,23 @@ msgstr "Mer"
 
 #: template-parts/headers/hero-home.php:11
 msgid "Homepage highlights"
-msgstr ""
+msgstr "Startsideshöjdpunkter"
 
 #: template-parts/headers/hero-home.php:41
 msgid "Previous slide"
-msgstr ""
+msgstr "Föregående bild"
 
 #: template-parts/headers/hero-home.php:49
 msgid "Hero slides"
-msgstr ""
+msgstr "Hero-bilder"
 
 #: template-parts/headers/hero-home.php:58
 msgid "Go to slide %d"
-msgstr ""
+msgstr "Gå till bild %d"
 
 #: template-parts/headers/hero-home.php:67
 msgid "Next slide"
-msgstr ""
+msgstr "Nästa bild"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
@@ -837,7 +837,7 @@ msgstr "Uppgifterna för din beställning är följande:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgid "Thanks for creating an account on %s. Here is a copy of your user details."
 msgstr "Tack för att du skapade ett konto på %s. Här är en kopia av dina användaruppgifter."
 
 #. translators: %s: Username
@@ -911,17 +911,13 @@ msgid "Your order from %s has been refunded."
 msgstr "Din beställning från %s har återbetalats."
 
 #: woocommerce/emails/customer-processing-order.php:46
-#, fuzzy
-#| msgid "Just to let you know — we’ve received your order, and it is now being processed."
 msgid "Just to let you know &mdash; we’ve received your order, and it is now being processed."
-msgstr "Bara så att du vet – vi har mottagit din beställning och den behandlas just nu."
+msgstr "Bara så att du vet &mdash; vi har tagit emot din beställning och den behandlas nu."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:50
-#, fuzzy
-#| msgid "Just to let you know — we've received your order #%s, and it is now being processed:"
 msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
-msgstr "Bara för att informera dig – vi har mottagit din beställning nr %s och den behandlas just nu:"
+msgstr "Bara så att du vet &mdash; vi har tagit emot din beställning #%s och den behandlas nu:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:59
@@ -1360,7 +1356,7 @@ msgid "How long do I have to return an item?"
 msgstr "Hur lång returrätt har jag?"
 
 #: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
 msgstr "Vår returperiod följer gällande konsumentlagstiftning. Se vår sida för <a href=\"https://norhage.se/retur-och-aterbetalningspolicy/\">Returer &amp; återbetalningar</a> för exakta tidsfrister som gäller för din region."
 
 #. return-condition
@@ -1417,7 +1413,7 @@ msgid "What maintenance does a greenhouse require?"
 msgstr "Vilket underhåll kräver ett växthus?"
 
 #: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer’s instructions for seasonal checks and snow management."
 msgstr "Regelbundet underhåll hjälper till att hålla växthuset säkert och förlänger dess livslängd. Rengör skivorna, kontrollera stommen, skruvar, tätningslister och dörrar, samt se till att vädringsfönster öppnas smidigt. Ta bort löv och skräp från hängrännor och takytor, och följ tillverkarens anvisningar för säsongstillsyn och snöröjning."
 
 #. greenhouse-ventilation
@@ -1885,3 +1881,84 @@ msgstr "Ange ett giltigt telefonnummer."
 
 #~ msgid "Max per bundle: %d"
 #~ msgstr "Max antal per paket: %d"
+
+msgid "Breadcrumbs"
+msgstr "Länkstig"
+
+msgid "Key product features"
+msgstr "Viktiga produktegenskaper"
+
+msgid "Please enter length (m)."
+msgstr "Ange längd (m)."
+
+msgid "Please enter a valid length in metres."
+msgstr "Ange en giltig längd i meter."
+
+msgid "Minimum length is %s m."
+msgstr "Minsta längd är %s m."
+
+msgid "Maximum length is %s m."
+msgstr "Största längd är %s m."
+
+msgid "Length must align to %1$s m steps starting at %2$s m."
+msgstr "Längden måste följa steg om %1$s m från %2$s m."
+
+msgid "Cutting fee per unit"
+msgstr "Kapningsavgift per enhet"
+
+msgid "View products by %s"
+msgstr "Visa produkter från %s"
+
+msgid "Bundle Box Name"
+msgstr "Bundle-boxnamn"
+
+msgid "If set, this name will be used in the bundle box instead of the product title."
+msgstr "Om angivet används detta namn i bundle-boxen i stället för produkttiteln."
+
+msgid "Enable sample ordering"
+msgstr "Aktivera provbeställning"
+
+msgid "Show \"Order a sample\" strip on the front end."
+msgstr "Visa \"Beställ ett prov\"-listen i butiken."
+
+msgid "Sample width (mm)"
+msgstr "Provbredd (mm)"
+
+msgid "Sample length (mm)"
+msgstr "Provlängd (mm)"
+
+msgid "Sample price (€)"
+msgstr "Provpris (€)"
+
+msgid "Logo"
+msgstr "Logotyp"
+
+msgid "Select Logo"
+msgstr "Välj logotyp"
+
+msgid "Use this logo"
+msgstr "Använd denna logotyp"
+
+msgid "Attached FAQ IDs"
+msgstr "Kopplade FAQ-ID:n"
+
+msgid "Available IDs:"
+msgstr "Tillgängliga ID:n:"
+
+msgid "FAQ topics"
+msgstr "FAQ-ämnen"
+
+msgid "Product FAQ IDs"
+msgstr "Produkt-FAQ-ID:n"
+
+msgid "Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports."
+msgstr "Kommaseparerade FAQ-ID:n. Samma produktmetafält som vid CSV-import."
+
+msgctxt "price unit"
+msgid " / m"
+msgstr " / m"
+
+msgctxt "price unit"
+msgid " / m²"
+msgstr " / m²"
+

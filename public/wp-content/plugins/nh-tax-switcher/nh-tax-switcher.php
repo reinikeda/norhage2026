@@ -5,6 +5,8 @@
  * Author: Daiva Reinike
  * Version: 1.1.4
  * Requires Plugins: woocommerce
+ * Text Domain: nh-tax-switcher
+ * Domain Path: /languages
  * License: GPLv2 or later
  */
 
@@ -20,6 +22,8 @@ final class NHTaxSwitcher {
 
     public function __construct() {
         register_activation_hook(__FILE__, [$this, 'activate']);
+
+        add_action('plugins_loaded', [$this, 'load_textdomain']);
 
         // Admin settings
         add_action('admin_init',  [$this, 'register_settings']);
@@ -66,16 +70,32 @@ final class NHTaxSwitcher {
 
     /** ===== Helpers ===== */
 
+    public function load_textdomain(): void {
+        load_plugin_textdomain(
+            'nh-tax-switcher',
+            false,
+            dirname(plugin_basename(__FILE__)) . '/languages'
+        );
+    }
+
     public static function is_enabled(): bool {
         return (bool) get_option(self::OPT_ENABLED, true);
     }
     public static function label_in(): string {
-        $d = __('Including VAT', 'nh-tax-switcher');
-        return (string) get_option(self::OPT_LABEL_IN, $d);
+        $translated = __('Including VAT', 'nh-tax-switcher');
+        $saved = get_option(self::OPT_LABEL_IN, null);
+        if ($saved === null || $saved === '' || $saved === 'Including VAT') {
+            return $translated;
+        }
+        return (string) $saved;
     }
     public static function label_ex(): string {
-        $d = __('Excluding VAT', 'nh-tax-switcher');
-        return (string) get_option(self::OPT_LABEL_EX, $d);
+        $translated = __('Excluding VAT', 'nh-tax-switcher');
+        $saved = get_option(self::OPT_LABEL_EX, null);
+        if ($saved === null || $saved === '' || $saved === 'Excluding VAT') {
+            return $translated;
+        }
+        return (string) $saved;
     }
     public static function current_mode(): string {
         if (!empty($_COOKIE[self::COOKIE_KEY])) {

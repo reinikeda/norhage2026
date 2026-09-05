@@ -1098,10 +1098,10 @@ add_action( 'woocommerce_product_options_general_product_data', 'nh_add_bundle_n
 function nh_add_bundle_name_field() {
     woocommerce_wp_text_input( array(
         'id'          => '_bundle_box_name',
-        'label'       => __( 'Bundle Box Name', 'astra-child' ),
+        'label'       => __( 'Bundle Box Name', 'nh-theme' ),
         'placeholder' => 'Custom name for bundle display',
         'desc_tip'    => 'true',
-        'description' => __( 'If set, this name will be used in the bundle box instead of the product title.', 'astra-child' ),
+        'description' => __( 'If set, this name will be used in the bundle box instead of the product title.', 'nh-theme' ),
     ) );
 }
 
@@ -1110,7 +1110,7 @@ add_action( 'woocommerce_product_after_variable_attributes', 'nh_add_variation_b
 function nh_add_variation_bundle_name_field( $loop, $variation_data, $variation ) {
     woocommerce_wp_text_input( array(
         'id'            => '_bundle_box_name[' . $loop . ']',
-        'label'         => __( 'Bundle Box Name', 'astra-child' ),
+        'label'         => __( 'Bundle Box Name', 'nh-theme' ),
         'placeholder'   => 'Custom name for variation in bundle',
         'value'         => get_post_meta( $variation->ID, '_bundle_box_name', true ),
         'wrapper_class' => 'form-row form-row-full',

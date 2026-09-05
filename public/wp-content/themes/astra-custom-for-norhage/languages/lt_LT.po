@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-01 16:29+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -42,15 +42,15 @@ msgstr "Pirkti pagal kategoriją"
 
 #: functions.php:276 functions.php:288
 msgid "Long description"
-msgstr ""
+msgstr "Ilgas aprašymas"
 
 #: functions.php:278 functions.php:305
 msgid "Shown after the product list and pagination on the category page."
-msgstr ""
+msgstr "Rodoma po produktų sąrašu ir puslapiavimu kategorijos puslapyje."
 
 #: functions.php:339
 msgid "Category long description"
-msgstr ""
+msgstr "Ilgas kategorijos aprašymas"
 
 #: functions.php:375
 msgid "Select options"
@@ -471,7 +471,7 @@ msgstr "Atsiprašome, visi deriniai negalimi."
 
 #: inc/product-customize.php:430
 msgid "Please choose product options (variation) before entering dimensions."
-msgstr ""
+msgstr "Prieš įvesdami matmenis pasirinkite produkto variantą."
 
 #: inc/product-customize.php:437
 msgid "Please enter width and length (mm)."
@@ -752,23 +752,23 @@ msgstr "Daugiau"
 
 #: template-parts/headers/hero-home.php:11
 msgid "Homepage highlights"
-msgstr ""
+msgstr "Pagrindinio puslapio akcentai"
 
 #: template-parts/headers/hero-home.php:41
 msgid "Previous slide"
-msgstr ""
+msgstr "Ankstesnė skaidrė"
 
 #: template-parts/headers/hero-home.php:49
 msgid "Hero slides"
-msgstr ""
+msgstr "Hero skaidrės"
 
 #: template-parts/headers/hero-home.php:58
 msgid "Go to slide %d"
-msgstr ""
+msgstr "Eiti į skaidrę %d"
 
 #: template-parts/headers/hero-home.php:67
 msgid "Next slide"
-msgstr ""
+msgstr "Kita skaidrė"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
@@ -837,7 +837,7 @@ msgstr "Jūsų užsakymo informacija yra tokia:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgid "Thanks for creating an account on %s. Here is a copy of your user details."
 msgstr "Dėkojame, kad sukūrėte paskyrą %s. Pateikiame jūsų naudotojo duomenų kopiją."
 
 #. translators: %s: Username
@@ -911,17 +911,13 @@ msgid "Your order from %s has been refunded."
 msgstr "Jūsų užsakymas iš %s buvo grąžintas."
 
 #: woocommerce/emails/customer-processing-order.php:46
-#, fuzzy
-#| msgid "Just to let you know — we’ve received your order, and it is now being processed."
 msgid "Just to let you know &mdash; we’ve received your order, and it is now being processed."
-msgstr "Tiesiog norime pranešti – gavome jūsų užsakymą ir jis dabar apdorojamas."
+msgstr "Norime pranešti &mdash; gavome jūsų užsakymą ir dabar jį apdorojame."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:50
-#, fuzzy
-#| msgid "Just to let you know — we've received your order #%s, and it is now being processed:"
 msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
-msgstr "Tiesiog norime pranešti – gavome jūsų užsakymą #%s ir jis dabar apdorojamas:"
+msgstr "Norime pranešti &mdash; gavome jūsų užsakymą #%s ir dabar jį apdorojame:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:59
@@ -1360,7 +1356,7 @@ msgid "How long do I have to return an item?"
 msgstr "Per kiek laiko galiu grąžinti prekę?"
 
 #: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
 msgstr "Mūsų grąžinimo terminas atitinka vietos vartotojų teisių apsaugos įstatymus. Tikslius terminus, taikomus jūsų regione, rasite mūsų <a href=\"https://norhage.lt/grazinimo-taisykles/\">Grąžinimo ir pinigų grąžinimo politikos</a> puslapyje."
 
 #. return-condition
@@ -1417,7 +1413,7 @@ msgid "What maintenance does a greenhouse require?"
 msgstr "Kokios priežiūros reikalauja šiltnamis?"
 
 #: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer’s instructions for seasonal checks and snow management."
 msgstr "Reguliari priežiūra padeda užtikrinti šiltnamio saugumą ir ilgaamžiškumą. Valykite dangą, tikrinkite rėmą, tvirtinimo detales, sandariklius bei duris, įsitikinkite, kad vėdinimo langeliai darinėjasi sklandžiai. Pašalinkite lapus ir nešvarumus nuo latakų bei stogo ir laikykitės gamintojo nurodymų dėl sezoninių patikrinimų bei sniego valymo."
 
 #. greenhouse-ventilation
@@ -1934,3 +1930,84 @@ msgstr "Įveskite teisingą telefono numerį."
 
 #~ msgid "Total weight"
 #~ msgstr "Bendras svoris"
+
+msgid "Breadcrumbs"
+msgstr "Naršymo kelias"
+
+msgid "Key product features"
+msgstr "Pagrindinės produkto savybės"
+
+msgid "Please enter length (m)."
+msgstr "Įveskite ilgį (m)."
+
+msgid "Please enter a valid length in metres."
+msgstr "Įveskite tinkamą ilgį metrais."
+
+msgid "Minimum length is %s m."
+msgstr "Minimalus ilgis yra %s m."
+
+msgid "Maximum length is %s m."
+msgstr "Maksimalus ilgis yra %s m."
+
+msgid "Length must align to %1$s m steps starting at %2$s m."
+msgstr "Ilgis turi atitikti %1$s m žingsnius, pradedant nuo %2$s m."
+
+msgid "Cutting fee per unit"
+msgstr "Pjovimo mokestis už vienetą"
+
+msgid "View products by %s"
+msgstr "Peržiūrėti %s produktus"
+
+msgid "Bundle Box Name"
+msgstr "Rinkinio dėžutės pavadinimas"
+
+msgid "If set, this name will be used in the bundle box instead of the product title."
+msgstr "Jei nurodyta, šis pavadinimas bus naudojamas rinkinio dėžutėje vietoje produkto pavadinimo."
+
+msgid "Enable sample ordering"
+msgstr "Įjungti pavyzdžių užsakymą"
+
+msgid "Show \"Order a sample\" strip on the front end."
+msgstr "Rodyti „Užsakyti pavyzdį“ juostą parduotuvėje."
+
+msgid "Sample width (mm)"
+msgstr "Pavyzdžio plotis (mm)"
+
+msgid "Sample length (mm)"
+msgstr "Pavyzdžio ilgis (mm)"
+
+msgid "Sample price (€)"
+msgstr "Pavyzdžio kaina (€)"
+
+msgid "Logo"
+msgstr "Logotipas"
+
+msgid "Select Logo"
+msgstr "Pasirinkti logotipą"
+
+msgid "Use this logo"
+msgstr "Naudoti šį logotipą"
+
+msgid "Attached FAQ IDs"
+msgstr "Priskirti DUK ID"
+
+msgid "Available IDs:"
+msgstr "Galimi ID:"
+
+msgid "FAQ topics"
+msgstr "DUK temos"
+
+msgid "Product FAQ IDs"
+msgstr "Produkto DUK ID"
+
+msgid "Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports."
+msgstr "Kableliais atskirti DUK ID. Tas pats produkto metafield kaip ir CSV importui."
+
+msgctxt "price unit"
+msgid " / m"
+msgstr " / m"
+
+msgctxt "price unit"
+msgid " / m²"
+msgstr " / m²"
+
