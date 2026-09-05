@@ -1,0 +1,46 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: NH Tax Switcher\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Finnish\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+"X-Domain: nh-tax-switcher\n"
+
+msgid "Including VAT"
+msgstr "Sis. ALV"
+
+msgid "Excluding VAT"
+msgstr "Ilman ALV"
+
+msgid "Show prices with VAT:"
+msgstr "Näytä hinnat ALV:n kanssa:"
+
+msgid "VAT display switch"
+msgstr "ALV-näyttö"
+
+msgid "Display"
+msgstr "Näyttö"
+
+msgid "Enable switcher"
+msgstr "Ota kytkin käyttöön"
+
+msgid "Show VAT switch on product category & single product pages"
+msgstr "Näytä ALV-kytkin kategoria- ja tuotesivuilla"
+
+msgid "“Including VAT” text"
+msgstr "Teksti „Sis. ALV“"
+
+msgid "“Excluding VAT” text"
+msgstr "Teksti „Ilman ALV“"
+
+msgid "NH Tax Switcher"
+msgstr "NH ALV-kytkin"
+

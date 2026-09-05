@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-01 16:29+0300\n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -42,15 +42,15 @@ msgstr "Osta kategorian mukaan"
 
 #: functions.php:276 functions.php:288
 msgid "Long description"
-msgstr ""
+msgstr "Pitkä kuvaus"
 
 #: functions.php:278 functions.php:305
 msgid "Shown after the product list and pagination on the category page."
-msgstr ""
+msgstr "Näytetään tuotelistan ja sivutuksen jälkeen kategoriasivulla."
 
 #: functions.php:339
 msgid "Category long description"
-msgstr ""
+msgstr "Kategorian pitkä kuvaus"
 
 #: functions.php:375
 msgid "Select options"
@@ -471,7 +471,7 @@ msgstr "Pahoittelut, kaikki yhdistelmät eivät ole saatavilla."
 
 #: inc/product-customize.php:430
 msgid "Please choose product options (variation) before entering dimensions."
-msgstr ""
+msgstr "Valitse tuotevaihtoehto ennen mittojen syöttämistä."
 
 #: inc/product-customize.php:437
 msgid "Please enter width and length (mm)."
@@ -752,23 +752,23 @@ msgstr "Lisää"
 
 #: template-parts/headers/hero-home.php:11
 msgid "Homepage highlights"
-msgstr ""
+msgstr "Etusivun nostot"
 
 #: template-parts/headers/hero-home.php:41
 msgid "Previous slide"
-msgstr ""
+msgstr "Edellinen dia"
 
 #: template-parts/headers/hero-home.php:49
 msgid "Hero slides"
-msgstr ""
+msgstr "Hero-diat"
 
 #: template-parts/headers/hero-home.php:58
 msgid "Go to slide %d"
-msgstr ""
+msgstr "Siirry diaan %d"
 
 #: template-parts/headers/hero-home.php:67
 msgid "Next slide"
-msgstr ""
+msgstr "Seuraava dia"
 
 #. translators: %1$s: Order number
 #: woocommerce/emails/customer-cancelled-order.php:37
@@ -837,7 +837,7 @@ msgstr "Tilauksesi tiedot ovat seuraavat:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-new-account.php:38
-msgid "Thanks for creating an account on %s. Here’s a copy of your user details."
+msgid "Thanks for creating an account on %s. Here is a copy of your user details."
 msgstr "Kiitos tilin luomisesta sivustolla %s. Tässä kopio käyttäjätiedoistasi."
 
 #. translators: %s: Username
@@ -911,17 +911,13 @@ msgid "Your order from %s has been refunded."
 msgstr "Tilauksesi sivustolta %s on hyvitetty."
 
 #: woocommerce/emails/customer-processing-order.php:46
-#, fuzzy
-#| msgid "Just to let you know — we’ve received your order, and it is now being processed."
 msgid "Just to let you know &mdash; we’ve received your order, and it is now being processed."
-msgstr "Tiedoksi — olemme vastaanottaneet tilauksesi, ja sitä käsitellään parhaillaan."
+msgstr "Halusimme kertoa &mdash; olemme vastaanottaneet tilauksesi ja se on nyt käsittelyssä."
 
 #. translators: %s: Order number
 #: woocommerce/emails/customer-processing-order.php:50
-#, fuzzy
-#| msgid "Just to let you know — we've received your order #%s, and it is now being processed:"
 msgid "Just to let you know &mdash; we've received your order #%s, and it is now being processed:"
-msgstr "Tiedoksi — olemme vastaanottaneet tilauksesi #%s, ja sitä käsitellään parhaillaan:"
+msgstr "Halusimme kertoa &mdash; olemme vastaanottaneet tilauksesi #%s ja se on nyt käsittelyssä:"
 
 #. translators: %s: Site title
 #: woocommerce/emails/customer-refunded-order.php:59
@@ -1360,7 +1356,7 @@ msgid "How long do I have to return an item?"
 msgstr "Kuinka pitkä palautusaika tuotteilla on?"
 
 #: inc/faq-data.php
-msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns &amp; Refunds</a> page for the specific timeframe applicable in your region."
+msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
 msgstr "Palautusaikamme noudattaa paikallista kuluttajansuojalainsäädäntöä. Katso tarkemmat alueellasi voimassa olevat aikataulut <a href=\"https://norhage.fi/palautusehdot/\">Palautus- ja hyvityskäytännöt</a> -sivultamme."
 
 #. return-condition
@@ -1417,7 +1413,7 @@ msgid "What maintenance does a greenhouse require?"
 msgstr "Mitä huoltoa kasvihuone vaatii?"
 
 #: inc/faq-data.php
-msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer\\u2019s instructions for seasonal checks and snow management."
+msgid "Regular maintenance helps keep your greenhouse safe and long-lasting. Clean the glazing, check the frame, fasteners, seals and doors, and make sure vents operate freely. Remove leaves and debris from gutters or roof areas, and follow the manufacturer’s instructions for seasonal checks and snow management."
 msgstr "Säännöllinen huolto pidentää kasvihuoneen käyttöikää ja pitää sen turvallisena. Puhdista kate, tarkista runko, kiinnikkeet, tiivisteet ja ovet sekä varmista tuuletusluukkujen esteetön toiminta. Puhdista lehdett ja roskat ränneistä ja katolta ja noudata valmistajan ohjeita kausitarkastuksista ja lumikuorman hallinnasta."
 
 #. greenhouse-ventilation
@@ -1920,3 +1916,84 @@ msgstr "Anna kelvollinen puhelinnumero."
 
 #~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
 #~ msgstr "Käytä tätä, jos haluat ottaa mittatilausleikkauksen käyttöön yksinkertaisessa tuotteessa. Vakiokokoiset vaihtoehdot kannattaa pitää erillisessä muunnelmatuotteessa."
+
+msgid "Breadcrumbs"
+msgstr "Murupolku"
+
+msgid "Key product features"
+msgstr "Tärkeimmät tuoteominaisuudet"
+
+msgid "Please enter length (m)."
+msgstr "Anna pituus (m)."
+
+msgid "Please enter a valid length in metres."
+msgstr "Anna kelvollinen pituus metreinä."
+
+msgid "Minimum length is %s m."
+msgstr "Vähimmäispituus on %s m."
+
+msgid "Maximum length is %s m."
+msgstr "Enimmäispituus on %s m."
+
+msgid "Length must align to %1$s m steps starting at %2$s m."
+msgstr "Pituuden on noudatettava %1$s m askelia alkaen %2$s m."
+
+msgid "Cutting fee per unit"
+msgstr "Leikkausmaksu per yksikkö"
+
+msgid "View products by %s"
+msgstr "Näytä tuotteet merkillä %s"
+
+msgid "Bundle Box Name"
+msgstr "Bundle-laatikon nimi"
+
+msgid "If set, this name will be used in the bundle box instead of the product title."
+msgstr "Jos asetettu, tätä nimeä käytetään bundle-laatikossa tuotenimen sijaan."
+
+msgid "Enable sample ordering"
+msgstr "Ota näytilaus käyttöön"
+
+msgid "Show \"Order a sample\" strip on the front end."
+msgstr "Näytä \"Tilaa näyte\" -palkki kaupassa."
+
+msgid "Sample width (mm)"
+msgstr "Näytteen leveys (mm)"
+
+msgid "Sample length (mm)"
+msgstr "Näytteen pituus (mm)"
+
+msgid "Sample price (€)"
+msgstr "Näytteen hinta (€)"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Select Logo"
+msgstr "Valitse logo"
+
+msgid "Use this logo"
+msgstr "Käytä tätä logoa"
+
+msgid "Attached FAQ IDs"
+msgstr "Liitetyt UKK-tunnisteet"
+
+msgid "Available IDs:"
+msgstr "Käytettävissä olevat tunnisteet:"
+
+msgid "FAQ topics"
+msgstr "UKK-aiheet"
+
+msgid "Product FAQ IDs"
+msgstr "Tuotteen UKK-tunnisteet"
+
+msgid "Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports."
+msgstr "Pilkuilla erotetut UKK-tunnisteet. Sama tuote-metafkenttä kuin CSV-tuonnissa."
+
+msgctxt "price unit"
+msgid " / m"
+msgstr " / m"
+
+msgctxt "price unit"
+msgid " / m²"
+msgstr " / m²"
+

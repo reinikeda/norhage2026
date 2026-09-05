@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nh-faq\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2026-09-05 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -32,3 +32,118 @@ msgstr "faq"
 # ---------------------------------------------------------
 msgid "Questions & Answers"
 msgstr "Frågor & svar"
+
+msgid "FAQs"
+msgstr "Vanliga frågor"
+
+msgid "FAQ"
+msgstr "Vanlig fråga"
+
+msgid "Add New"
+msgstr "Lägg till ny"
+
+msgid "Add New FAQ"
+msgstr "Lägg till ny fråga"
+
+msgid "Edit FAQ"
+msgstr "Redigera fråga"
+
+msgid "New FAQ"
+msgstr "Ny fråga"
+
+msgid "View FAQ"
+msgstr "Visa fråga"
+
+msgid "Search FAQs"
+msgstr "Sök frågor"
+
+msgid "No FAQs found"
+msgstr "Inga frågor hittades"
+
+msgid "FAQ Details"
+msgstr "Frågedetaljer"
+
+msgid "FAQ Topics"
+msgstr "Frågeämnen"
+
+msgid "FAQ Topic"
+msgstr "Frågeämne"
+
+msgid "Search Topics"
+msgstr "Sök ämnen"
+
+msgid "All Topics"
+msgstr "Alla ämnen"
+
+msgid "Edit Topic"
+msgstr "Redigera ämne"
+
+msgid "Update Topic"
+msgstr "Uppdatera ämne"
+
+msgid "Add New Topic"
+msgstr "Lägg till nytt ämne"
+
+msgid "New Topic Name"
+msgstr "Namn på nytt ämne"
+
+msgid "Order"
+msgstr "Ordning"
+
+msgid "Drag to reorder"
+msgstr "Dra för att ändra ordning"
+
+msgid "Attach to products"
+msgstr "Koppla till produkter"
+
+msgid "Type to filter…"
+msgstr "Skriv för att filtrera…"
+
+msgid "Filter products"
+msgstr "Filtrera produkter"
+
+msgid "Select visible"
+msgstr "Välj synliga"
+
+msgid "Clear visible"
+msgstr "Avmarkera synliga"
+
+msgid "Products checklist"
+msgstr "Produktlista"
+
+msgid "No products found."
+msgstr "Inga produkter hittades."
+
+msgid "Tip: use the filter to narrow the list, then “Select visible”."
+msgstr "Tips: filtrera listan och klicka sedan på „Välj synliga“."
+
+msgid "To show this FAQ on the %1$s, assign one or more %2$s in the sidebar."
+msgstr "För att visa denna fråga på %1$s, tilldela en eller flera %2$s i sidopanelen."
+
+msgid "Global FAQ page"
+msgstr "den globala frågesidan"
+
+msgid "Last reviewed"
+msgstr "Senast granskad"
+
+msgid "Keep answers fresh for support and SEO."
+msgstr "Håll svaren aktuella för support och SEO."
+
+msgid "selected"
+msgstr "valda"
+
+msgid "visible"
+msgstr "synliga"
+
+msgid "#Products"
+msgstr "#Produkter"
+
+msgid "FAQs attached to this product"
+msgstr "Frågor kopplade till denna produkt"
+
+msgid "No FAQs attached."
+msgstr "Inga frågor kopplade."
+
+msgid "Forbidden"
+msgstr "Åtkomst nekad"
+
