@@ -1834,6 +1834,27 @@ msgstr "Sichere Bestellung"
 msgid "Other payment method"
 msgstr "Andere Zahlungsmethode"
 
+msgid "Continue to payment"
+msgstr "Weiter zur Zahlung"
+
+msgid "Back to details"
+msgstr "Zurück zu den Angaben"
+
+msgid "Choose how you want to pay"
+msgstr "Wählen Sie, wie Sie bezahlen möchten"
+
+msgid "Please choose a payment method."
+msgstr "Bitte wählen Sie eine Zahlungsmethode."
+
+msgid "Direct bank transfer"
+msgstr "Direktüberweisung"
+
+msgid "Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account."
+msgstr "Überweisen Sie den Betrag direkt auf unser Bankkonto. Geben Sie die Bestellnummer als Verwendungszweck an. Die Lieferung erfolgt nach Zahlungseingang."
+
+msgid "Place order"
+msgstr "Zahlungspflichtig bestellen"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Bitte geben Sie einen Vornamen ein."

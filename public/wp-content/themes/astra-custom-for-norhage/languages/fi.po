@@ -1834,6 +1834,27 @@ msgstr "Turvallinen kassa"
 msgid "Other payment method"
 msgstr "Muu maksutapa"
 
+msgid "Continue to payment"
+msgstr "Jatka maksamaan"
+
+msgid "Back to details"
+msgstr "Takaisin tietoihin"
+
+msgid "Choose how you want to pay"
+msgstr "Valitse, miten haluat maksaa"
+
+msgid "Please choose a payment method."
+msgstr "Valitse maksutapa."
+
+msgid "Direct bank transfer"
+msgstr "Suora pankkisiirto"
+
+msgid "Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account."
+msgstr "Maksa suoraan pankkitilillemme. Käytä tilausnumeroa viitteenä. Toimitamme tilauksen, kun maksu näkyy tilillä."
+
+msgid "Place order"
+msgstr "Lähetä tilaus"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Anna etunimi."
