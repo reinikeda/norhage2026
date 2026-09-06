@@ -713,17 +713,114 @@ function nh_cr_copy_catalog() {
 }
 
 /**
- * Email / name from a Kustom, Klarna, or similar iframe payload.
+ * Empty identity / location profile.
  *
- * @param mixed $data Event or AJAX body.
- * @return array{email:string,first_name:string,last_name:string}
+ * @return array{email:string,first_name:string,last_name:string,postcode:string,city:string,country:string,phone:string}
  */
-function nh_cr_identity_from_payload( $data ) {
-	$empty = array(
+function nh_cr_empty_profile() {
+	return array(
 		'email'      => '',
 		'first_name' => '',
 		'last_name'  => '',
+		'postcode'   => '',
+		'city'       => '',
+		'country'    => '',
+		'phone'      => '',
 	);
+}
+
+/**
+ * Iframe providers sometimes return masked values (a***@klarna.com, 12•••).
+ *
+ * @param string $value Raw value.
+ * @return bool
+ */
+function nh_cr_looks_obfuscated( $value ) {
+	$value = (string) $value;
+	return $value !== '' && ( strpos( $value, '*' ) !== false || strpos( $value, '•' ) !== false );
+}
+
+/**
+ * @param mixed $value Raw.
+ * @param int   $max   Max length.
+ * @return string
+ */
+function nh_cr_sanitize_location_value( $value, $max = 100 ) {
+	$value = trim( (string) $value );
+	if ( $value === '' || nh_cr_looks_obfuscated( $value ) ) {
+		return '';
+	}
+	if ( function_exists( 'sanitize_text_field' ) ) {
+		$value = sanitize_text_field( $value );
+	}
+	$max = max( 1, (int) $max );
+	if ( function_exists( 'mb_substr' ) ) {
+		return mb_substr( $value, 0, $max );
+	}
+	return substr( $value, 0, $max );
+}
+
+/**
+ * ISO country code, or empty. Shop default country is not a signal on its own.
+ *
+ * @param mixed $value Raw country.
+ * @return string
+ */
+function nh_cr_sanitize_country( $value ) {
+	$value = strtoupper( preg_replace( '/[^A-Za-z]/', '', (string) $value ) );
+	if ( strlen( $value ) !== 2 ) {
+		return '';
+	}
+	return $value;
+}
+
+/**
+ * @param array<string, mixed> $profile Profile.
+ * @return bool
+ */
+function nh_cr_profile_has_value( $profile ) {
+	if ( ! is_array( $profile ) ) {
+		return false;
+	}
+	foreach ( array( 'email', 'first_name', 'last_name', 'postcode', 'city', 'phone' ) as $key ) {
+		if ( ! empty( $profile[ $key ] ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Overlay non-empty fields. Country is kept only when a postcode or city is known.
+ *
+ * @param array<string, mixed> $base     Existing.
+ * @param array<string, mixed> $overlay  Incoming.
+ * @return array{email:string,first_name:string,last_name:string,postcode:string,city:string,country:string,phone:string}
+ */
+function nh_cr_merge_profile( $base, $overlay ) {
+	$out = array_merge( nh_cr_empty_profile(), is_array( $base ) ? $base : array() );
+	if ( ! is_array( $overlay ) ) {
+		$overlay = array();
+	}
+	foreach ( array( 'email', 'first_name', 'last_name', 'postcode', 'city', 'country', 'phone' ) as $key ) {
+		if ( ! empty( $overlay[ $key ] ) && is_scalar( $overlay[ $key ] ) ) {
+			$out[ $key ] = (string) $overlay[ $key ];
+		}
+	}
+	if ( $out['postcode'] === '' && $out['city'] === '' ) {
+		$out['country'] = '';
+	}
+	return $out;
+}
+
+/**
+ * Email / name / location from a Kustom, Klarna, or similar iframe payload.
+ *
+ * @param mixed $data Event or AJAX body.
+ * @return array{email:string,first_name:string,last_name:string,postcode:string,city:string,country:string,phone:string}
+ */
+function nh_cr_identity_from_payload( $data ) {
+	$empty = nh_cr_empty_profile();
 	if ( is_string( $data ) ) {
 		$decoded = json_decode( $data, true );
 		$data    = is_array( $decoded ) ? $decoded : array();
@@ -741,22 +838,30 @@ function nh_cr_identity_from_payload( $data ) {
 				continue;
 			}
 			$value = trim( (string) $arr[ $key ] );
-			if ( $value !== '' ) {
+			if ( $value !== '' && ! nh_cr_looks_obfuscated( $value ) ) {
 				return $value;
 			}
 		}
 		return '';
 	};
 
-	$email_keys = array( 'email' );
-	$first_keys = array( 'given_name', 'first_name', 'firstName' );
-	$last_keys  = array( 'family_name', 'last_name', 'lastName' );
+	$email_keys   = array( 'email' );
+	$first_keys   = array( 'given_name', 'first_name', 'firstName' );
+	$last_keys    = array( 'family_name', 'last_name', 'lastName' );
+	$postcode_keys = array( 'postal_code', 'postalCode', 'postcode', 'zip', 'zip_code', 'PostalCode', 'ZipCode' );
+	$city_keys    = array( 'city', 'locality', 'City' );
+	$country_keys = array( 'country', 'country_code', 'countryCode', 'CountryCode' );
+	$phone_keys   = array( 'phone', 'phone_number', 'phoneNumber', 'PhoneNumber' );
 
-	$email = $pick( $data, $email_keys );
-	$first = $pick( $data, $first_keys );
-	$last  = $pick( $data, $last_keys );
+	$email    = $pick( $data, $email_keys );
+	$first    = $pick( $data, $first_keys );
+	$last     = $pick( $data, $last_keys );
+	$postcode = $pick( $data, $postcode_keys );
+	$city     = $pick( $data, $city_keys );
+	$country  = $pick( $data, $country_keys );
+	$phone    = $pick( $data, $phone_keys );
 
-	foreach ( array( 'billing_address', 'shipping_address', 'customer', 'billingAddress', 'shippingAddress' ) as $nest ) {
+	foreach ( array( 'billing_address', 'shipping_address', 'customer', 'billingAddress', 'shippingAddress', 'BillingAddress', 'ShippingAddress' ) as $nest ) {
 		if ( empty( $data[ $nest ] ) || ! is_array( $data[ $nest ] ) ) {
 			continue;
 		}
@@ -769,16 +874,35 @@ function nh_cr_identity_from_payload( $data ) {
 		if ( $last === '' ) {
 			$last = $pick( $data[ $nest ], $last_keys );
 		}
+		if ( $postcode === '' ) {
+			$postcode = $pick( $data[ $nest ], $postcode_keys );
+		}
+		if ( $city === '' ) {
+			$city = $pick( $data[ $nest ], $city_keys );
+		}
+		if ( $country === '' ) {
+			$country = $pick( $data[ $nest ], $country_keys );
+		}
+		if ( $phone === '' ) {
+			$phone = $pick( $data[ $nest ], $phone_keys );
+		}
 	}
 
-	if ( $email !== '' && ( strpos( $email, '@' ) === false || strpos( $email, '*' ) !== false ) ) {
+	if ( $email !== '' && ( strpos( $email, '@' ) === false || nh_cr_looks_obfuscated( $email ) ) ) {
 		$email = '';
 	}
 
-	return array(
-		'email'      => $email,
-		'first_name' => $first,
-		'last_name'  => $last,
+	return nh_cr_merge_profile(
+		$empty,
+		array(
+			'email'      => $email,
+			'first_name' => $first,
+			'last_name'  => $last,
+			'postcode'   => nh_cr_sanitize_location_value( $postcode, 20 ),
+			'city'       => nh_cr_sanitize_location_value( $city, 100 ),
+			'country'    => nh_cr_sanitize_country( $country ),
+			'phone'      => nh_cr_sanitize_location_value( $phone, 40 ),
+		)
 	);
 }
 
@@ -786,15 +910,11 @@ function nh_cr_identity_from_payload( $data ) {
  * Identity from a Svea Checkout module / snippet payload.
  *
  * @param mixed $module Svea module.
- * @return array{email:string,first_name:string,last_name:string}
+ * @return array{email:string,first_name:string,last_name:string,postcode:string,city:string,country:string,phone:string}
  */
 function nh_cr_identity_from_svea_module( $module ) {
 	if ( ! is_array( $module ) ) {
-		return array(
-			'email'      => '',
-			'first_name' => '',
-			'last_name'  => '',
-		);
+		return nh_cr_empty_profile();
 	}
 	$bill = isset( $module['BillingAddress'] ) && is_array( $module['BillingAddress'] ) ? $module['BillingAddress'] : array();
 	$ident = nh_cr_identity_from_payload(
@@ -802,6 +922,10 @@ function nh_cr_identity_from_svea_module( $module ) {
 			'email'      => isset( $module['EmailAddress'] ) ? $module['EmailAddress'] : '',
 			'first_name' => isset( $bill['FirstName'] ) ? $bill['FirstName'] : '',
 			'last_name'  => isset( $bill['LastName'] ) ? $bill['LastName'] : '',
+			'postcode'   => isset( $bill['PostalCode'] ) ? $bill['PostalCode'] : ( isset( $bill['ZipCode'] ) ? $bill['ZipCode'] : '' ),
+			'city'       => isset( $bill['City'] ) ? $bill['City'] : '',
+			'country'    => isset( $bill['CountryCode'] ) ? $bill['CountryCode'] : '',
+			'phone'      => isset( $module['PhoneNumber'] ) ? $module['PhoneNumber'] : '',
 		)
 	);
 	if ( ( $ident['first_name'] === '' || $ident['last_name'] === '' ) && ! empty( $bill['FullName'] ) && is_scalar( $bill['FullName'] ) ) {
@@ -814,6 +938,81 @@ function nh_cr_identity_from_svea_module( $module ) {
 		}
 	}
 	return $ident;
+}
+
+/**
+ * Short cart line for the admin list: "2 × Kanalplast, 1 × Greenhouse".
+ *
+ * @param mixed $cart JSON string or decoded items.
+ * @param int   $limit Max product lines.
+ * @return string
+ */
+function nh_cr_cart_summary( $cart, $limit = 3 ) {
+	$items = $cart;
+	if ( is_string( $cart ) ) {
+		$decoded = json_decode( $cart, true );
+		$items   = is_array( $decoded ) ? $decoded : array();
+	}
+	if ( ! is_array( $items ) || ! $items ) {
+		return '';
+	}
+	$limit = max( 1, (int) $limit );
+	$parts = array();
+	foreach ( $items as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$qty  = isset( $item['quantity'] ) ? (float) $item['quantity'] : 0;
+		$name = isset( $item['name'] ) ? trim( (string) $item['name'] ) : '';
+		if ( $name === '' ) {
+			$pid  = isset( $item['product_id'] ) ? (int) $item['product_id'] : 0;
+			$name = $pid ? ( '#' . $pid ) : '';
+		}
+		if ( $name === '' || $qty <= 0 ) {
+			continue;
+		}
+		$qty_s   = ( abs( $qty - (int) $qty ) < 0.001 ) ? (string) (int) $qty : (string) $qty;
+		$parts[] = $qty_s . ' × ' . $name;
+	}
+	if ( ! $parts ) {
+		return '';
+	}
+	$more = count( $parts ) > $limit;
+	$out  = implode( ', ', array_slice( $parts, 0, $limit ) );
+	return $more ? ( $out . '…' ) : $out;
+}
+
+/**
+ * Postcode / city / country for the admin list.
+ *
+ * @param object|array<string, mixed> $row Store row.
+ * @return string
+ */
+function nh_cr_format_location( $row ) {
+	if ( is_object( $row ) ) {
+		$row = array(
+			'postcode' => isset( $row->postcode ) ? $row->postcode : '',
+			'city'     => isset( $row->city ) ? $row->city : '',
+			'country'  => isset( $row->country ) ? $row->country : '',
+		);
+	}
+	if ( ! is_array( $row ) ) {
+		return '';
+	}
+	$postcode = trim( (string) ( $row['postcode'] ?? '' ) );
+	$city     = trim( (string) ( $row['city'] ?? '' ) );
+	$country  = strtoupper( trim( (string) ( $row['country'] ?? '' ) ) );
+	$parts    = array();
+	if ( $postcode !== '' ) {
+		$parts[] = $postcode;
+	}
+	if ( $city !== '' ) {
+		$parts[] = $city;
+	}
+	if ( $country !== '' ) {
+		$parts[] = $country;
+	}
+	return implode( ', ', $parts );
 }
 
 /**

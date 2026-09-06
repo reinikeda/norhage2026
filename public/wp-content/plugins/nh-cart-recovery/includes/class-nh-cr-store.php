@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class NH_CR_Store {
 
-	const DB_VERSION = '1.1.0';
+	const DB_VERSION = '1.2.0';
 
 	/**
 	 * @return string
@@ -34,6 +34,10 @@ class NH_CR_Store {
 			email varchar(191) NOT NULL DEFAULT '',
 			first_name varchar(100) NOT NULL DEFAULT '',
 			last_name varchar(100) NOT NULL DEFAULT '',
+			postcode varchar(20) NOT NULL DEFAULT '',
+			city varchar(100) NOT NULL DEFAULT '',
+			country varchar(2) NOT NULL DEFAULT '',
+			phone varchar(40) NOT NULL DEFAULT '',
 			cart longtext NULL,
 			cart_hash varchar(64) NOT NULL DEFAULT '',
 			order_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -49,6 +53,7 @@ class NH_CR_Store {
 			UNIQUE KEY token (token),
 			KEY session_key (session_key),
 			KEY email (email),
+			KEY postcode (postcode),
 			KEY status_updated (status, updated_at),
 			KEY order_id (order_id),
 			KEY status_emails (status, emails_sent)
@@ -92,6 +97,10 @@ class NH_CR_Store {
 			'email'              => '',
 			'first_name'         => '',
 			'last_name'          => '',
+			'postcode'           => '',
+			'city'               => '',
+			'country'            => '',
+			'phone'              => '',
 			'cart'               => '[]',
 			'cart_hash'          => '',
 			'order_id'           => 0,
@@ -305,6 +314,7 @@ class NH_CR_Store {
 	public static function query( $args ) {
 		global $wpdb;
 		$status = isset( $args['status'] ) ? sanitize_key( $args['status'] ) : '';
+		$signal = isset( $args['signal'] ) ? sanitize_key( $args['signal'] ) : '';
 		$paged  = isset( $args['paged'] ) ? max( 1, (int) $args['paged'] ) : 1;
 		$per    = 20;
 		$where  = '1=1';
@@ -313,14 +323,21 @@ class NH_CR_Store {
 			$where   .= ' AND status = %s';
 			$params[] = $status;
 		}
+		if ( $signal === 'with_email' ) {
+			$where .= " AND email <> ''";
+		} elseif ( $signal === 'with_postcode' ) {
+			$where .= " AND postcode <> ''";
+		} elseif ( $signal === 'anonymous' ) {
+			$where .= " AND email = '' AND postcode = ''";
+		}
 		$offset = ( $paged - 1 ) * $per;
 		$table  = self::table();
 		if ( $params ) {
 			$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE {$where}", $params ) );
 			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$where} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge( $params, array( $per, $offset ) ) ) );
 		} else {
-			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
-			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY id DESC LIMIT %d OFFSET %d", $per, $offset ) );
+			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE {$where}" );
+			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$where} ORDER BY id DESC LIMIT %d OFFSET %d", $per, $offset ) );
 		}
 		return array(
 			'rows'  => is_array( $rows ) ? $rows : array(),
