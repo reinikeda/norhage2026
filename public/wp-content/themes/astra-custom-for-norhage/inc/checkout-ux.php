@@ -30,22 +30,42 @@ function nh_is_classic_checkout_form() {
  *
  * @return string
  */
+/**
+ * Payment method posted on this request (not the Woo session).
+ *
+ * @return string
+ */
+function nh_checkout_posted_payment_method() {
+	$raw = '';
+	if ( isset( $_POST['payment_method'] ) && is_scalar( $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw = sanitize_text_field( wp_unslash( (string) $_POST['payment_method'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	} elseif ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$form = array();
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $form['payment_method'] ) && is_scalar( $form['payment_method'] ) ) {
+			$raw = sanitize_text_field( (string) $form['payment_method'] );
+		}
+	}
+	if ( $raw === '' || $raw === 'nh_none' || $raw === 'undefined' || $raw === 'null' ) {
+		return '';
+	}
+	return $raw;
+}
+
 function nh_checkout_chosen_payment_method() {
 	if ( ! nh_checkout_is_payment_step() ) {
 		return '';
 	}
-	if ( isset( $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		return sanitize_text_field( wp_unslash( $_POST['payment_method'] ) );
-	}
-	if ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$form = array();
-		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! empty( $form['payment_method'] ) && is_scalar( $form['payment_method'] ) ) {
-			return sanitize_text_field( (string) $form['payment_method'] );
-		}
+	$posted = nh_checkout_posted_payment_method();
+	if ( $posted !== '' ) {
+		return $posted;
 	}
 	if ( function_exists( 'WC' ) && WC()->session ) {
-		return (string) WC()->session->get( 'chosen_payment_method' );
+		$session = (string) WC()->session->get( 'chosen_payment_method' );
+		if ( $session === 'nh_none' || $session === 'undefined' ) {
+			return '';
+		}
+		return $session;
 	}
 	return '';
 }
@@ -156,6 +176,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
+	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_payment_method_session', 999 );
 	add_action( 'wc_ajax_sco_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 	add_action( 'wc_ajax_kco_wc_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 
@@ -255,6 +276,9 @@ function nh_checkout_no_default_gateway( $gateways ) {
 	if ( nh_checkout_is_payment_step() && nh_checkout_chosen_payment_method() !== '' ) {
 		return $gateways;
 	}
+	if ( nh_checkout_is_payment_step() ) {
+		nh_checkout_lock_empty_payment_choice();
+	}
 	foreach ( $gateways as $gateway ) {
 		if ( is_object( $gateway ) ) {
 			$gateway->chosen = false;
@@ -307,6 +331,48 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 
 	if ( 'details' === $step ) {
 		WC()->session->set( 'chosen_payment_method', '' );
+		return;
+	}
+
+	$method = nh_checkout_posted_payment_method();
+	if ( $method !== '' ) {
+		WC()->session->set( 'chosen_payment_method', $method );
+		return;
+	}
+
+	nh_checkout_lock_empty_payment_choice();
+}
+
+/**
+ * Persist BACS/PayPal (or nh_none) so Svea cannot treat an empty choice as “Svea is first”.
+ */
+function nh_checkout_sync_payment_method_session() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	if ( ! nh_checkout_is_payment_step() ) {
+		return;
+	}
+	$method = nh_checkout_posted_payment_method();
+	if ( $method !== '' ) {
+		WC()->session->set( 'chosen_payment_method', $method );
+		return;
+	}
+	nh_checkout_lock_empty_payment_choice();
+}
+
+/**
+ * Svea is_svea() is true when chosen_payment_method is empty and Svea is the first gateway.
+ *
+ * @return void
+ */
+function nh_checkout_lock_empty_payment_choice() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	$current = (string) WC()->session->get( 'chosen_payment_method' );
+	if ( $current === '' ) {
+		WC()->session->set( 'chosen_payment_method', 'nh_none' );
 	}
 }
 
