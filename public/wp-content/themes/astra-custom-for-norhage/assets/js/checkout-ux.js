@@ -572,7 +572,8 @@
     // Woo auto-selects the first gateway after Next. Abort that so the iframe
     // does not boot until the customer clicks Svea/Kustom. When they have
     // clicked, let the plugin AJAX finish — it reloads and mounts the iframe.
-    if (!allowSnippetGatewayReload || checkoutStep() !== 'payment') {
+    var wantsSnippet = paymentIdIsSnippet(i18n.chosenPayment || chosenPaymentId());
+    if (!allowSnippetGatewayReload || checkoutStep() !== 'payment' || !wantsSnippet) {
       jqXHR.abort();
       window.setTimeout(unblockCheckout, 0);
     }
@@ -989,7 +990,19 @@
       }
     } else {
       $radios.prop('disabled', false);
-      if (!shouldKeepPaymentSelection() && !iframeMarkupPresent()) {
+      var keep = String(i18n.chosenPayment || '').trim();
+      if (!keep && shouldKeepPaymentSelection()) {
+        keep = chosenPaymentId();
+      }
+      if (keep) {
+        var $keep = $radios.filter(function () {
+          return String(this.value) === keep;
+        });
+        if ($keep.length) {
+          $radios.prop('checked', false);
+          $keep.prop('checked', true);
+        }
+      } else if (!iframeMarkupPresent()) {
         $radios.prop('checked', false);
       }
     }
@@ -1115,8 +1128,13 @@
       e.preventDefault();
       goBackToDetails();
     });
-    $(document.body).on('click.nhPayMethod change.nhPayMethod', 'input[name="payment_method"]', function () {
+    $(document.body).on('click.nhPayMethod change.nhPayMethod', 'input[name="payment_method"]', function (e) {
       if (checkoutStep() !== 'payment' || ignoreAutoPaymentClick) {
+        return;
+      }
+      // Woo auto-clicks the first gateway (Svea on NO/SE/DK) when none is checked.
+      // Kustom shops do not reload because preventPaymentMethodChange blocks that JS.
+      if (!e.originalEvent) {
         return;
       }
       paymentChosenByCustomer = true;
@@ -1129,11 +1147,11 @@
       }
       allowSnippetGatewayReload = false;
       syncKcoPrevent();
+      $(document.body).trigger('update_checkout');
       if (snippetCheckoutPresent() || iframeMarkupPresent()) {
         $(document.body).one('updated_checkout.nhLeaveIframe', function () {
           window.location.reload();
         });
-        $(document.body).trigger('update_checkout');
       }
     });
 
