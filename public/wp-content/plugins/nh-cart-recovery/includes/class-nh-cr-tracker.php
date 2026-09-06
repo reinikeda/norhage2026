@@ -19,6 +19,7 @@ class NH_CR_Tracker {
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'on_order_processed' ), 20, 3 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'on_store_api_order' ), 20 );
 		add_action( 'woocommerce_payment_complete', array( __CLASS__, 'on_paid' ), 20 );
+		add_action( 'woocommerce_order_status_on-hold', array( __CLASS__, 'on_paid' ), 20 );
 		add_action( 'woocommerce_order_status_processing', array( __CLASS__, 'on_paid' ), 20 );
 		add_action( 'woocommerce_order_status_completed', array( __CLASS__, 'on_paid' ), 20 );
 		add_action( 'woocommerce_order_status_cancelled', array( __CLASS__, 'on_cancelled' ), 30, 2 );
@@ -248,6 +249,11 @@ class NH_CR_Tracker {
 		$session = self::session_key();
 		$row     = $session ? NH_CR_Store::get_open_by_session( $session ) : null;
 		$email   = NH_CR_Store::normalize_email( $order->get_billing_email() );
+		$closes  = nh_cr_order_closes_recovery(
+			$order->is_paid(),
+			$order->get_status(),
+			$order->get_payment_method()
+		);
 		if ( $row ) {
 			$order_profile = array_filter(
 				self::profile_from_order( $order ),
@@ -255,20 +261,21 @@ class NH_CR_Tracker {
 					return $value !== '';
 				}
 			);
-			NH_CR_Store::update(
-				(int) $row->id,
-				array_merge(
-					$order_profile,
-					array(
-						'email'    => $email ? $email : $row->email,
-						'order_id' => (int) $order->get_id(),
-						'type'     => 'checkout',
-						'status'   => $order->is_paid() ? 'converted' : ( $row->status === 'sent' ? 'sent' : 'open' ),
-					)
+			$update = array_merge(
+				$order_profile,
+				array(
+					'email'    => $email ? $email : $row->email,
+					'order_id' => (int) $order->get_id(),
+					'type'     => 'checkout',
+					'status'   => $closes ? 'converted' : ( $row->status === 'sent' ? 'sent' : 'open' ),
 				)
 			);
+			if ( $closes ) {
+				$update['converted_order_id'] = (int) $order->get_id();
+			}
+			NH_CR_Store::update( (int) $row->id, $update );
 		}
-		if ( $order->is_paid() && $email ) {
+		if ( $closes && $email ) {
 			NH_CR_Store::mark_converted_for_email( $email, (int) $order->get_id() );
 		}
 	}
@@ -291,6 +298,9 @@ class NH_CR_Tracker {
 			return;
 		}
 		$email = NH_CR_Store::normalize_email( $order->get_billing_email() );
+		if ( ! nh_cr_order_closes_recovery( $order->is_paid(), $order->get_status(), $order->get_payment_method() ) ) {
+			return;
+		}
 		if ( $email ) {
 			NH_CR_Store::mark_converted_for_email( $email, (int) $order->get_id() );
 		}
@@ -314,6 +324,9 @@ class NH_CR_Tracker {
 			return;
 		}
 		if ( $order->is_paid() ) {
+			return;
+		}
+		if ( in_array( strtolower( (string) $order->get_payment_method() ), array( 'bacs', 'cheque', 'cod' ), true ) ) {
 			return;
 		}
 		$email = NH_CR_Store::normalize_email( $order->get_billing_email() );

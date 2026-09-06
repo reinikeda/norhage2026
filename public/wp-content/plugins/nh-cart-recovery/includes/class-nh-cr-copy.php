@@ -1273,6 +1273,34 @@ function nh_cr_should_email_cancelled_checkout( $order_status, $payment_method, 
 	return true;
 }
 
+/**
+ * Placed order that should stop abandoned-cart emails.
+ * BACS/cheque/COD are converted even while Woo still shows on-hold / unpaid.
+ * Svea/Kustom pending payment stays open so unfinished-checkout emails can send.
+ *
+ * @param bool   $is_paid         WC_Order::is_paid().
+ * @param string $order_status    Order status (with or without wc- prefix).
+ * @param string $payment_method  Gateway id.
+ * @return bool
+ */
+function nh_cr_order_closes_recovery( $is_paid, $order_status, $payment_method ) {
+	if ( $is_paid ) {
+		return true;
+	}
+	$status = strtolower( (string) $order_status );
+	if ( strpos( $status, 'wc-' ) === 0 ) {
+		$status = substr( $status, 3 );
+	}
+	if ( in_array( $status, array( 'cancelled', 'failed', 'refunded' ), true ) ) {
+		return false;
+	}
+	if ( in_array( $status, array( 'processing', 'completed', 'on-hold' ), true ) ) {
+		return true;
+	}
+	$method = strtolower( (string) $payment_method );
+	return in_array( $method, array( 'bacs', 'cheque', 'cod' ), true );
+}
+
 if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
 	define( 'HOUR_IN_SECONDS', 3600 );
 }
