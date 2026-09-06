@@ -12,6 +12,38 @@ final class NH_Side_Cart_Ajax {
 	public static function init() {
 		add_action( 'wc_ajax_nh_sc_update', array( __CLASS__, 'update' ) );
 		add_action( 'wc_ajax_nopriv_nh_sc_update', array( __CLASS__, 'update' ) );
+		add_action( 'wc_ajax_nh_sc_boot', array( __CLASS__, 'boot' ) );
+		add_action( 'wc_ajax_nopriv_nh_sc_boot', array( __CLASS__, 'boot' ) );
+	}
+
+	/**
+	 * Fresh fragments + nonce. No plugin nonce — same trust model as Woo cart fragments.
+	 * Needed when page cache served a stale drawer (incognito / first visit).
+	 */
+	public static function boot() {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Basket is not available.', NH_SC_TD ),
+				),
+				400
+			);
+		}
+
+		WC()->cart->calculate_shipping();
+		NH_Side_Cart::prefer_delivery_method();
+		WC()->cart->calculate_totals();
+
+		$fragments = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
+
+		wp_send_json_success(
+			array(
+				'fragments'  => $fragments,
+				'nonce'      => wp_create_nonce( NH_Side_Cart::NONCE ),
+				'cart_hash'  => WC()->cart->get_cart_hash(),
+				'cart_count' => WC()->cart->get_cart_contents_count(),
+			)
+		);
 	}
 
 	public static function update() {

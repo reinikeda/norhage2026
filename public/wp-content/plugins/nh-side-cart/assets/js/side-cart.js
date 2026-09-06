@@ -7,16 +7,26 @@
 (function ($) {
   'use strict';
 
+  if (!$) {
+    return;
+  }
+
   var cfg = window.nhSideCart || {};
   var $root = null;
   var $panel = null;
   var lastFocus = null;
   var qtyTimer = null;
   var pending = null;
+  var booted = false;
 
   function ajaxUrl(endpoint) {
     var src = cfg.ajaxUrl || '/?wc-ajax=%%endpoint%%';
     return src.replace('%%endpoint%%', endpoint);
+  }
+
+  function currentNonce() {
+    var fromBody = $root && $root.find('#nh-sc-body').attr('data-nh-sc-nonce');
+    return fromBody || cfg.nonce || '';
   }
 
   function applyFragments(fragments) {
@@ -54,7 +64,7 @@
       pending.abort();
     }
     setLoading(true);
-    pending = $.post(ajaxUrl('nh_sc_update'), $.extend({ nonce: cfg.nonce }, data))
+    pending = $.post(ajaxUrl('nh_sc_update'), $.extend({ nonce: currentNonce() }, data))
       .done(function (res) {
         if (res && res.success && res.data && res.data.fragments) {
           rememberCartHash(res.data.cart_hash);
@@ -127,12 +137,35 @@
     $root.removeAttr('hidden').addClass('is-open');
     $root.attr('aria-hidden', 'false');
     document.body.classList.add('nh-sc-open');
+    bootDrawer();
     window.setTimeout(function () {
       var closeBtn = $root.find('.nh-sc__close').get(0);
       if (closeBtn) {
         closeBtn.focus({ preventScroll: true });
       }
     }, 30);
+  }
+
+  function bootDrawer() {
+    if (booted) {
+      return;
+    }
+    booted = true;
+    $.post(ajaxUrl('nh_sc_boot'), {})
+      .done(function (res) {
+        if (res && res.success && res.data) {
+          if (res.data.nonce) {
+            cfg.nonce = res.data.nonce;
+          }
+          rememberCartHash(res.data.cart_hash);
+          applyFragments(res.data.fragments);
+        } else {
+          booted = false;
+        }
+      })
+      .fail(function () {
+        booted = false;
+      });
   }
 
   function close() {
@@ -274,4 +307,4 @@
       close: close,
     };
   });
-})(jQuery);
+})(window.jQuery);

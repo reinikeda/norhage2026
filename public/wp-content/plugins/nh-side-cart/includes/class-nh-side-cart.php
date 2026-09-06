@@ -61,6 +61,29 @@ final class NH_Side_Cart {
 	}
 
 	/**
+	 * Show the postcode calculator whenever the cart can be shipped.
+	 *
+	 * Do not use WC_Cart::show_shipping() — that is false for new / incognito
+	 * customers when “Hide shipping costs until an address is entered” is on,
+	 * which hid the form that collects the postcode.
+	 *
+	 * @param WC_Cart|null $cart Cart.
+	 * @return bool
+	 */
+	public static function cart_needs_shipping_ui( $cart = null ) {
+		if ( ! $cart && function_exists( 'WC' ) ) {
+			$cart = WC()->cart;
+		}
+		if ( ! $cart || $cart->is_empty() ) {
+			return false;
+		}
+		if ( function_exists( 'wc_shipping_enabled' ) && ! wc_shipping_enabled() ) {
+			return false;
+		}
+		return (bool) $cart->needs_shipping();
+	}
+
+	/**
 	 * Skip auto-open / header intercept on full cart (already the basket page).
 	 *
 	 * @return bool
@@ -390,13 +413,6 @@ final class NH_Side_Cart {
 			return;
 		}
 
-		$script_args = function_exists( 'norhage_script_args' )
-			? norhage_script_args()
-			: array(
-				'in_footer' => true,
-				'strategy'  => 'defer',
-			);
-
 		wp_enqueue_style(
 			'nh-side-cart',
 			NH_SC_URL . 'assets/css/side-cart.css',
@@ -404,18 +420,18 @@ final class NH_Side_Cart {
 			self::asset_version( 'assets/css/side-cart.css' )
 		);
 
-		$deps = array( 'jquery' );
 		if ( wp_script_is( 'wc-cart-fragments', 'registered' ) ) {
 			wp_enqueue_script( 'wc-cart-fragments' );
-			$deps[] = 'wc-cart-fragments';
 		}
 
 		wp_enqueue_script(
 			'nh-side-cart',
 			NH_SC_URL . 'assets/js/side-cart.js',
-			$deps,
+			array( 'jquery' ),
 			self::asset_version( 'assets/js/side-cart.js' ),
-			$script_args
+			array(
+				'in_footer' => true,
+			)
 		);
 
 		$ajax_url = function_exists( 'WC_AJAX' ) && method_exists( 'WC_AJAX', 'get_endpoint' )
@@ -442,9 +458,6 @@ final class NH_Side_Cart {
 		if ( ! self::is_enabled() ) {
 			return;
 		}
-
-		self::ensure_shipping_calculated();
-		self::prefer_delivery_method();
 
 		$count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
 		include NH_SC_DIR . 'templates/drawer.php';
