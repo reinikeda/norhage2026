@@ -545,11 +545,26 @@
     return val === true || val === 1 || val === '1' || onValues.indexOf(String(val).toLowerCase()) !== -1;
   }
 
+  var scoPlaceInFlight = null;
+
   $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
     if (!options || !options.url) {
       return;
     }
     var url = String(options.url);
+    if (/sco_checkout_order/i.test(url)) {
+      if (scoPlaceInFlight) {
+        jqXHR.abort();
+        return;
+      }
+      scoPlaceInFlight = jqXHR;
+      jqXHR.always(function () {
+        if (scoPlaceInFlight === jqXHR) {
+          scoPlaceInFlight = null;
+        }
+      });
+      return;
+    }
     var isSveaChange = /sco_change_payment_method/i.test(url);
     var isKcoChange = /kco_wc_change_payment_method/i.test(url);
     if (!isSveaChange && !isKcoChange) {
@@ -1464,9 +1479,22 @@
     bindIframeZipShipping();
     bindCheckoutSteps();
     refreshCheckoutChrome();
-    if (iframeMarkupPresent() && typeof $.fn.sveaCheckout === 'function') {
-      $('.wc-svea-checkout-page').sveaCheckout();
+  }
+
+  /**
+   * Svea’s plugin already inits on document.ready. Calling sveaCheckout() again
+   * stacks order.validationCallback listeners, so one BankID payment creates
+   * several Woo orders (only the last one is finalized).
+   */
+  function initSveaCheckoutOnce() {
+    if (typeof $.fn.sveaCheckout !== 'function' || !iframeMarkupPresent()) {
+      return;
     }
+    var $page = $('.wc-svea-checkout-page');
+    if (!$page.length || $page.get(0).sveaCheckout) {
+      return;
+    }
+    $page.sveaCheckout();
   }
 
   $(document).on('click', '.nh-checkout-other-payment', function (e) {
@@ -1497,6 +1525,7 @@
   $(document.body).on('init_checkout', boot);
   $(document.body).on('updated_checkout', function () {
     refreshCheckoutChrome();
+    initSveaCheckoutOnce();
     window.setTimeout(function () {
       applyCheckoutStep();
       unblockCheckout();
