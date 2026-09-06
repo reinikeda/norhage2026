@@ -461,16 +461,7 @@
   }
 
   function isSnippetCheckoutPage() {
-    if (i18n.snippetCheckout === true || i18n.snippetCheckout === 1 || i18n.snippetCheckout === '1') {
-      return true;
-    }
-    var body = document.body;
-    if (body && body.classList.contains('nh-checkout--snippet')) {
-      return true;
-    }
-    return !!(document.querySelector(
-      '.wc-svea-checkout-page, #kco-wrapper, form.svea-checkout, form.kco-checkout, #svea-checkout-iframe-container, #klarna-checkout-container'
-    ));
+    return paymentIdIsSnippet(chosenPaymentId()) || snippetCheckoutPresent();
   }
 
   function stampShippingIndexes() {
@@ -487,6 +478,25 @@
     }
     if (isSveaRefreshSnippet(options) && lastWrittenZip) {
       options.data = ensureBillingPostcode(options.data, lastWrittenZip);
+    }
+  });
+
+  $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    if (!options || !options.url) {
+      return;
+    }
+    if (!/sco_change_payment_method/i.test(String(options.url))) {
+      return;
+    }
+    var data = options.data || '';
+    var sveaOn = false;
+    if (typeof data === 'string') {
+      sveaOn = /(?:^|&)svea=(true|1)(?:&|$)/i.test(data);
+    } else if (data && (data.svea === true || data.svea === 'true' || data.svea === 1 || data.svea === '1')) {
+      sveaOn = true;
+    }
+    if (sveaOn && document.getElementById('svea-checkout-iframe-container')) {
+      jqXHR.abort();
     }
   });
 
@@ -507,7 +517,7 @@
     $(document.body).off('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method');
     $(document.body).on('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method', function () {
       stampShippingIndexes();
-      if (isSnippetCheckoutPage()) {
+      if (paymentIdIsSnippet(chosenPaymentId())) {
         return;
       }
       $(document.body).trigger('update_checkout', { update_shipping_method: true });
@@ -585,41 +595,32 @@
   ].join(',');
 
   function isSnippetMode() {
-    if (snippetCheckoutPresent() || paymentIdIsSnippet(chosenPaymentId())) {
-      return true;
-    }
-    return document.body.classList.contains('nh-checkout--snippet') && !chosenPaymentId();
+    return paymentIdIsSnippet(chosenPaymentId());
   }
 
   function syncSnippetCheckout() {
     var on = isSnippetMode();
     $('body').toggleClass('nh-checkout--snippet', on);
     $('form.checkout').toggleClass('nh-checkout--snippet', on);
+    $('form.checkout').toggleClass(
+      'wc-svea-checkout-page svea-checkout',
+      on && (/svea/.test(chosenPaymentId().toLowerCase()) || chosenPaymentId() === 'sco')
+    );
+    $('form.checkout').toggleClass('kco-checkout', on && paymentIdIsSnippet(chosenPaymentId()) && /kco|kustom|klarna/.test(chosenPaymentId().toLowerCase()));
 
-    var $extras = $(snippetExtras);
-    if (on) {
-      $extras.attr('hidden', 'hidden');
-    } else {
-      $extras.removeAttr('hidden');
-    }
+    $('#nh-checkout-iframe').toggle(on);
 
     var $ours = $('.nh-checkout-other-payment');
-    var $plugin = snippetOtherPayment();
-    if ($ours.length) {
-      $ours.each(function () {
-        if (!$.trim($(this).text())) {
-          $(this).text(i18n.otherPayment || 'Other payment method');
-        }
-      });
-      if (on) {
-        $ours.removeAttr('hidden');
-        $plugin.addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
-      } else {
-        $ours.attr('hidden', 'hidden');
-        $plugin.removeClass('nh-checkout-other-payment-src').removeAttr('hidden');
-      }
-    } else if (on && $plugin.length) {
-      $plugin.addClass('nh-checkout-other-payment-btn').removeAttr('hidden');
+    $ours.attr('hidden', 'hidden');
+    snippetOtherPayment().addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
+
+    keepShipToSameAddress();
+  }
+
+  function keepShipToSameAddress() {
+    var $cb = $('#ship-to-different-address-checkbox');
+    if ($cb.length && $cb.prop('checked')) {
+      $cb.prop('checked', false);
     }
   }
 
@@ -796,12 +797,7 @@
 
     if (document.body.getAttribute('data-nh-summary-init') !== '1') {
       document.body.setAttribute('data-nh-summary-init', '1');
-      // Snippet checkout: keep the iframe first on mobile. Total + shipping stay on the toggle.
-      if (window.matchMedia('(min-width: 960px)').matches || !isSnippetCheckoutPage()) {
-        $summary.addClass('is-open');
-      } else {
-        $summary.removeClass('is-open');
-      }
+      $summary.addClass('is-open');
     }
 
     var $toggle = $summary.find('.nh-checkout-summary-toggle');
@@ -883,9 +879,6 @@
     syncSummaryTotal();
     lockSummaryLayout();
     syncSnippetCheckout();
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     keepPhoneCodeNative();
     hydratePhoneCombos();
     enhanceNotes();
@@ -914,9 +907,6 @@
   }
 
   function flushPostcodeShipping() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     var key = destinationKey();
     var postcode = key.split('|')[1];
     if (!postcode) {
@@ -932,17 +922,11 @@
   }
 
   function schedulePostcodeShipping() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     window.clearTimeout(postcodeShipTimer);
     postcodeShipTimer = window.setTimeout(flushPostcodeShipping, 400);
   }
 
   function bindPostcodeShippingUpdate() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     if (document.body.getAttribute('data-nh-postcode-ship') === '1') {
       return;
     }
@@ -1121,9 +1105,6 @@
   }
 
   function bindIframeZipShipping() {
-    if (!isSnippetCheckoutPage()) {
-      return;
-    }
     if (!document.querySelector('.wc-svea-checkout-page, #svea-checkout-iframe-container, form.svea-checkout')) {
       return;
     }
@@ -1163,13 +1144,10 @@
     stampShippingIndexes();
     bindShippingTotals();
     watchSnippetCheckout();
-    if (!isSnippetCheckoutPage()) {
-      bindCustomerType();
-      bindCallingCode();
-      bindPostcodeShippingUpdate();
-    } else {
-      bindIframeZipShipping();
-    }
+    bindCustomerType();
+    bindCallingCode();
+    bindPostcodeShippingUpdate();
+    bindIframeZipShipping();
     refreshCheckoutChrome();
   }
 
@@ -1204,15 +1182,10 @@
   });
   $(document.body).on('payment_method_selected', function () {
     syncSnippetCheckout();
-    if (!isSnippetCheckoutPage()) {
-      enhancePaymentCards();
-    }
+    enhancePaymentCards();
     window.setTimeout(syncSnippetCheckout, 300);
   });
   $(document.body).on('country_to_state_changing country_to_state_changed', function () {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     window.setTimeout(function () {
       orderBillingFields();
       forcePairClasses();
