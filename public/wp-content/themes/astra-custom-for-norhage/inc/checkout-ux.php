@@ -179,6 +179,7 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_payment_method_session', 999 );
 	add_action( 'wc_ajax_sco_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 	add_action( 'wc_ajax_kco_wc_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
+	add_action( 'wc_ajax_sco_checkout_order', 'nh_checkout_svea_serialize_woo_order', 1 );
 
 	add_filter( 'woocommerce_default_address_fields', 'nh_checkout_default_address_fields', 20 );
 	add_filter( 'woocommerce_get_country_locale', 'nh_checkout_country_locale', 20 );
@@ -401,6 +402,66 @@ function nh_checkout_keep_payment_step_on_snippet_ajax() {
 	if ( function_exists( 'WC' ) && WC()->session ) {
 		WC()->session->set( 'nh_checkout_step', 'payment' );
 	}
+}
+
+/**
+ * Svea checkout JS can fire sco_checkout_order more than once for one iframe
+ * payment (stacked listeners). Point later requests at the Woo order the first
+ * request already created so we do not leave extra pending-payment orders.
+ */
+function nh_checkout_svea_serialize_woo_order() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	$sco_id = (string) WC()->session->get( 'sco_order_id' );
+	if ( $sco_id === '' ) {
+		return;
+	}
+
+	$lock_key = nh_checkout_svea_place_lock_key( $sco_id );
+	$held     = get_transient( $lock_key );
+
+	if ( is_numeric( $held ) && absint( $held ) > 0 ) {
+		WC()->session->set( 'order_awaiting_payment', absint( $held ) );
+		return;
+	}
+
+	if ( $held === 'pending' ) {
+		$deadline = time() + 12;
+		while ( time() < $deadline ) {
+			usleep( 200000 );
+			$held = get_transient( $lock_key );
+			if ( is_numeric( $held ) && absint( $held ) > 0 ) {
+				WC()->session->set( 'order_awaiting_payment', absint( $held ) );
+				return;
+			}
+		}
+	}
+
+	set_transient( $lock_key, 'pending', 60 );
+	add_action( 'woocommerce_checkout_order_processed', 'nh_checkout_svea_remember_placed_order', 1 );
+}
+
+/**
+ * @param string $sco_id Svea checkout order id.
+ * @return string
+ */
+function nh_checkout_svea_place_lock_key( $sco_id ) {
+	return 'nh_sco_place_' . md5( (string) $sco_id );
+}
+
+/**
+ * @param int $order_id Woo order id.
+ */
+function nh_checkout_svea_remember_placed_order( $order_id ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	$sco_id = (string) WC()->session->get( 'sco_order_id' );
+	if ( $sco_id === '' ) {
+		return;
+	}
+	set_transient( nh_checkout_svea_place_lock_key( $sco_id ), absint( $order_id ), 120 );
 }
 
 /**
