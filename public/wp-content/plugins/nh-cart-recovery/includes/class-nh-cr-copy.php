@@ -948,38 +948,181 @@ function nh_cr_identity_from_svea_module( $module ) {
  * @return string
  */
 function nh_cr_cart_summary( $cart, $limit = 3 ) {
-	$items = $cart;
-	if ( is_string( $cart ) ) {
-		$decoded = json_decode( $cart, true );
-		$items   = is_array( $decoded ) ? $decoded : array();
-	}
-	if ( ! is_array( $items ) || ! $items ) {
-		return '';
-	}
-	$limit = max( 1, (int) $limit );
 	$parts = array();
-	foreach ( $items as $item ) {
-		if ( ! is_array( $item ) ) {
-			continue;
+	foreach ( nh_cr_decode_cart( $cart ) as $item ) {
+		$line = nh_cr_cart_item_qty_name( $item );
+		if ( $line !== '' ) {
+			$parts[] = $line;
 		}
-		$qty  = isset( $item['quantity'] ) ? (float) $item['quantity'] : 0;
-		$name = isset( $item['name'] ) ? trim( (string) $item['name'] ) : '';
-		if ( $name === '' ) {
-			$pid  = isset( $item['product_id'] ) ? (int) $item['product_id'] : 0;
-			$name = $pid ? ( '#' . $pid ) : '';
-		}
-		if ( $name === '' || $qty <= 0 ) {
-			continue;
-		}
-		$qty_s   = ( abs( $qty - (int) $qty ) < 0.001 ) ? (string) (int) $qty : (string) $qty;
-		$parts[] = $qty_s . ' × ' . $name;
 	}
 	if ( ! $parts ) {
 		return '';
 	}
-	$more = count( $parts ) > $limit;
-	$out  = implode( ', ', array_slice( $parts, 0, $limit ) );
+	$limit = max( 1, (int) $limit );
+	$more  = count( $parts ) > $limit;
+	$out   = implode( ', ', array_slice( $parts, 0, $limit ) );
 	return $more ? ( $out . '…' ) : $out;
+}
+
+/**
+ * Latest snapshot items stored on the recovery row.
+ *
+ * @param mixed $cart JSON string or decoded items.
+ * @return array<int, array<string, mixed>>
+ */
+function nh_cr_decode_cart( $cart ) {
+	if ( is_string( $cart ) ) {
+		$decoded = json_decode( $cart, true );
+		$cart    = is_array( $decoded ) ? $decoded : array();
+	}
+	if ( ! is_array( $cart ) ) {
+		return array();
+	}
+	$out = array();
+	foreach ( $cart as $item ) {
+		if ( is_array( $item ) ) {
+			$out[] = $item;
+		}
+	}
+	return $out;
+}
+
+/**
+ * @param mixed $cart JSON string or decoded items.
+ * @return int
+ */
+function nh_cr_cart_item_count( $cart ) {
+	return count( nh_cr_decode_cart( $cart ) );
+}
+
+/**
+ * @param mixed $qty Quantity.
+ * @return string
+ */
+function nh_cr_format_qty( $qty ) {
+	$qty = (float) $qty;
+	if ( abs( $qty - (int) $qty ) < 0.001 ) {
+		return (string) (int) $qty;
+	}
+	return (string) $qty;
+}
+
+/**
+ * @param array<string, mixed> $item Snapshot item.
+ * @return string
+ */
+function nh_cr_cart_item_name( $item ) {
+	if ( ! is_array( $item ) ) {
+		return '';
+	}
+	$name = isset( $item['name'] ) ? trim( (string) $item['name'] ) : '';
+	if ( $name !== '' ) {
+		return $name;
+	}
+	$pid = isset( $item['product_id'] ) ? (int) $item['product_id'] : 0;
+	return $pid ? ( '#' . $pid ) : '';
+}
+
+/**
+ * @param array<string, mixed> $item Snapshot item.
+ * @return string
+ */
+function nh_cr_cart_item_qty_name( $item ) {
+	$name = nh_cr_cart_item_name( $item );
+	$qty  = isset( $item['quantity'] ) ? (float) $item['quantity'] : 0;
+	if ( $name === '' || $qty <= 0 ) {
+		return '';
+	}
+	return nh_cr_format_qty( $qty ) . ' × ' . $name;
+}
+
+/**
+ * Custom-cut / variation lines for the expanded cart.
+ *
+ * @param array<string, mixed> $item Snapshot item.
+ * @return array<int, string>
+ */
+function nh_cr_cart_item_meta_lines( $item ) {
+	$lines = array();
+	if ( ! is_array( $item ) ) {
+		return $lines;
+	}
+	$data = isset( $item['cart_item_data'] ) && is_array( $item['cart_item_data'] ) ? $item['cart_item_data'] : array();
+	$size = array();
+	if ( ! empty( $data['nh_custom_size'] ) && is_array( $data['nh_custom_size'] ) ) {
+		$size = $data['nh_custom_size'];
+	} elseif ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
+		$size = $item['nh_custom_size'];
+	}
+	$w   = isset( $size['width_mm'] ) ? (int) $size['width_mm'] : 0;
+	$lmm = isset( $size['length_mm'] ) ? (int) $size['length_mm'] : 0;
+	$lm  = isset( $size['length_m'] ) ? (float) $size['length_m'] : 0.0;
+	if ( $w > 0 ) {
+		$lines[] = $w . ' mm';
+	}
+	if ( $lmm > 0 ) {
+		$lines[] = $lmm . ' mm';
+	} elseif ( $lm > 0 ) {
+		$lines[] = rtrim( rtrim( number_format( $lm, 3, '.', '' ), '0' ), '.' ) . ' m';
+	}
+	if ( count( $lines ) === 2 ) {
+		$lines = array( $lines[0] . ' × ' . $lines[1] );
+	}
+	$variation = isset( $item['variation'] ) && is_array( $item['variation'] ) ? $item['variation'] : array();
+	foreach ( $variation as $key => $value ) {
+		if ( ! is_scalar( $value ) || (string) $value === '' ) {
+			continue;
+		}
+		$label   = trim( str_replace( array( 'attribute_', 'pa_' ), array( '', '' ), (string) $key ) );
+		$label   = str_replace( '-', ' ', $label );
+		$lines[] = ( $label !== '' ? $label . ': ' : '' ) . (string) $value;
+	}
+	return $lines;
+}
+
+/**
+ * @param mixed $cart JSON string or decoded items.
+ * @return float
+ */
+function nh_cr_cart_grand_total( $cart ) {
+	$sum = 0.0;
+	foreach ( nh_cr_decode_cart( $cart ) as $item ) {
+		if ( isset( $item['line_total'] ) && is_numeric( $item['line_total'] ) ) {
+			$sum += (float) $item['line_total'];
+		}
+	}
+	return $sum;
+}
+
+/**
+ * @param float $amount Amount.
+ * @return string
+ */
+function nh_cr_format_money( $amount ) {
+	$amount = (float) $amount;
+	if ( function_exists( 'wc_price' ) && function_exists( 'wp_kses_post' ) ) {
+		return wp_kses_post( wc_price( $amount ) );
+	}
+	return number_format( $amount, 2 );
+}
+
+/**
+ * @param string $mysql Datetime.
+ * @return string
+ */
+function nh_cr_format_when( $mysql ) {
+	$mysql = trim( (string) $mysql );
+	if ( $mysql === '' ) {
+		return '';
+	}
+	$ts = strtotime( $mysql );
+	if ( ! $ts ) {
+		return $mysql;
+	}
+	if ( function_exists( 'wp_date' ) ) {
+		return (string) wp_date( 'Y-m-d H:i', $ts );
+	}
+	return date( 'Y-m-d H:i', $ts );
 }
 
 /**

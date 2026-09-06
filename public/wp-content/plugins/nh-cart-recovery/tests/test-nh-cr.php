@@ -228,6 +228,28 @@ nh_cr_assert(
 		)
 	) === '2 × Kanalplast, 1 × Greenhouse'
 );
+$many = array(
+	array( 'name' => 'A', 'quantity' => 1 ),
+	array( 'name' => 'B', 'quantity' => 1 ),
+	array( 'name' => 'C', 'quantity' => 1 ),
+	array( 'name' => 'D', 'quantity' => 1 ),
+);
+nh_cr_assert( 'cart summary truncates', strpos( nh_cr_cart_summary( $many, 3 ), '…' ) !== false );
+nh_cr_assert( 'decode cart counts all lines', nh_cr_cart_item_count( $many ) === 4 );
+$cut = array(
+	'name'           => 'Kanalplast',
+	'quantity'       => 2,
+	'line_total'     => 199,
+	'cart_item_data' => array(
+		'nh_custom_size' => array(
+			'width_mm'  => 800,
+			'length_mm' => 2000,
+		),
+	),
+);
+nh_cr_assert( 'item qty name', nh_cr_cart_item_qty_name( $cut ) === '2 × Kanalplast' );
+nh_cr_assert( 'custom cut meta', nh_cr_cart_item_meta_lines( $cut ) === array( '800 mm × 2000 mm' ) );
+nh_cr_assert( 'grand total', abs( nh_cr_cart_grand_total( array( $cut, $cut ) ) - 398.0 ) < 0.01 );
 nh_cr_assert(
 	'location format',
 	nh_cr_format_location( array( 'postcode' => '14140', 'city' => '', 'country' => 'SE' ) ) === '14140, SE'
