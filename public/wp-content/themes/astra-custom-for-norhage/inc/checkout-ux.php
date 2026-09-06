@@ -155,6 +155,8 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
+	add_action( 'wc_ajax_sco_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
+	add_action( 'wc_ajax_kco_wc_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 
 	add_filter( 'woocommerce_default_address_fields', 'nh_checkout_default_address_fields', 20 );
 	add_filter( 'woocommerce_get_country_locale', 'nh_checkout_country_locale', 20 );
@@ -321,6 +323,16 @@ function nh_checkout_prepare_steps() {
 	}
 	WC()->session->set( 'nh_checkout_step', 'details' );
 	WC()->session->set( 'chosen_payment_method', '' );
+}
+
+/**
+ * Svea/Kustom change-payment AJAX reloads checkout. Keep the payment step so
+ * the iframe is allowed to render after that reload.
+ */
+function nh_checkout_keep_payment_step_on_snippet_ajax() {
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'nh_checkout_step', 'payment' );
+	}
 }
 
 /**
