@@ -86,6 +86,7 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
 				</button>
 				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
+				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay', 'nh-theme' ); ?></p>
 				<?php do_action( 'nh_checkout_payment' ); ?>
 				<?php
 				if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {

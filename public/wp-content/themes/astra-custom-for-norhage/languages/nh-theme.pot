@@ -1063,6 +1063,27 @@ msgstr ""
 msgid "Other payment method"
 msgstr ""
 
+msgid "Continue to payment"
+msgstr ""
+
+msgid "Back to details"
+msgstr ""
+
+msgid "Choose how you want to pay"
+msgstr ""
+
+msgid "Please choose a payment method."
+msgstr ""
+
+msgid "Direct bank transfer"
+msgstr ""
+
+msgid "Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account."
+msgstr ""
+
+msgid "Place order"
+msgstr ""
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr ""

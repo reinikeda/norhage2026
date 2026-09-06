@@ -150,6 +150,9 @@ function nh_checkout_ux_init() {
 	add_action( 'wp', 'nh_checkout_split_review_and_payment', 20 );
 	add_action( 'wp', 'nh_checkout_prepare_steps', 5 );
 	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
+	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
 
@@ -1654,6 +1657,31 @@ function nh_checkout_secure_note() {
 		return;
 	}
 	echo '<p class="nh-checkout-secure">' . esc_html__( 'Secure checkout', 'nh-theme' ) . '</p>';
+}
+
+/**
+ * Gateway titles/descriptions are stored in Woo settings in English and skip gettext.
+ * Run them through WooCommerce and theme translations on checkout.
+ *
+ * @param string $text Title, description, or button label.
+ * @return string
+ */
+function nh_checkout_translate_gateway_text( $text ) {
+	if ( ! is_string( $text ) ) {
+		return $text;
+	}
+	$original = $text;
+	$lookup   = trim( wp_strip_all_tags( $text ) );
+	if ( $lookup === '' ) {
+		return $original;
+	}
+	foreach ( array( 'woocommerce', 'nh-theme' ) as $domain ) {
+		$translated = translate( $lookup, $domain ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralDomain
+		if ( is_string( $translated ) && $translated !== '' && $translated !== $lookup && trim( $original ) === $lookup ) {
+			return $translated;
+		}
+	}
+	return $original;
 }
 
 /**
