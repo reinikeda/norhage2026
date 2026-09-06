@@ -14,7 +14,30 @@ class NH_CR_Admin {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'conflict_notice' ) );
+	}
+
+	/**
+	 * @param string $hook Current admin page.
+	 */
+	public static function assets( $hook ) {
+		if ( strpos( (string) $hook, 'nh-cart-recovery' ) === false ) {
+			return;
+		}
+		wp_enqueue_style(
+			'nh-cart-recovery-admin',
+			NH_CR_URL . 'assets/css/admin.css',
+			array(),
+			NH_CR_VERSION
+		);
+		wp_enqueue_script(
+			'nh-cart-recovery-admin',
+			NH_CR_URL . 'assets/js/admin.js',
+			array(),
+			NH_CR_VERSION,
+			true
+		);
 	}
 
 	public static function menu() {
@@ -106,7 +129,7 @@ class NH_CR_Admin {
 		if ( ! in_array( $tab, array( 'settings', 'preview', 'list' ), true ) ) {
 			$tab = 'settings';
 		}
-		echo '<div class="wrap"><h1>' . esc_html__( 'Cart recovery', NH_CR_TD ) . '</h1>';
+		echo '<div class="wrap nh-cr-admin"><h1>' . esc_html__( 'Cart recovery', NH_CR_TD ) . '</h1>';
 		echo '<h2 class="nav-tab-wrapper">';
 		$tabs = array(
 			'settings' => __( 'Settings', NH_CR_TD ),
@@ -242,23 +265,23 @@ class NH_CR_Admin {
 		echo esc_html__( 'This is the inner email plus a Norhage-coloured header. Live mail is wrapped in the shop WooCommerce email template (logo and footer from WooCommerce → Settings → Emails). Sample products are placeholders; real emails use the customer’s cart, including images and custom sizes.', NH_CR_TD );
 		echo '</p>';
 
-		echo '<p>';
+		echo '<div class="nh-cr-preview-bar">';
 		foreach ( array( 'cart' => __( 'Abandoned cart', NH_CR_TD ), 'checkout' => __( 'Unfinished payment', NH_CR_TD ) ) as $key => $label ) {
-			echo '<a class="button' . ( $type === $key ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $key, 'step' => $step, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
+			echo '<a class="button' . ( $type === $key ? ' button-primary' : '' ) . '" href="' . esc_url( add_query_arg( array( 'type' => $key, 'step' => $step, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
 		}
-		echo '</p><p>';
+		echo '</div><div class="nh-cr-preview-bar">';
 		foreach ( array( 1 => __( 'Email 1 (1 hour / on cancel)', NH_CR_TD ), 2 => __( 'Email 2 (next day)', NH_CR_TD ), 3 => __( 'Email 3 (3 days)', NH_CR_TD ) ) as $n => $label ) {
-			echo '<a class="button' . ( $step === $n ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $n, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
+			echo '<a class="button' . ( $step === $n ? ' button-primary' : '' ) . '" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $n, 'named' => $named ? '1' : '0' ), $base ) ) . '">' . esc_html( $label ) . '</a>';
 		}
-		echo '</p><p>';
-		echo '<a class="button' . ( $named ? ' button-primary' : '' ) . '" style="margin-right:8px;" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $step, 'named' => '1' ), $base ) ) . '">' . esc_html__( 'With name (Anna)', NH_CR_TD ) . '</a>';
+		echo '</div><div class="nh-cr-preview-bar">';
+		echo '<a class="button' . ( $named ? ' button-primary' : '' ) . '" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $step, 'named' => '1' ), $base ) ) . '">' . esc_html__( 'With name (Anna)', NH_CR_TD ) . '</a>';
 		echo '<a class="button' . ( ! $named ? ' button-primary' : '' ) . '" href="' . esc_url( add_query_arg( array( 'type' => $type, 'step' => $step, 'named' => '0' ), $base ) ) . '">' . esc_html__( 'No name known', NH_CR_TD ) . '</a>';
-		echo '</p>';
+		echo '</div>';
 
 		$parts = NH_CR_Mailer::preview_parts( $type, $step, $locale, $name );
 		$doc   = NH_CR_Mailer::preview_document( $type, $step, $locale, $name );
 		echo '<p><strong>' . esc_html__( 'Subject', NH_CR_TD ) . ':</strong> ' . esc_html( $parts['subject'] ) . '</p>';
-		echo '<iframe title="' . esc_attr__( 'Email preview', NH_CR_TD ) . '" style="width:100%;max-width:680px;height:820px;border:1px solid #c3c4c7;background:#fff;" srcdoc="' . esc_attr( $doc ) . '"></iframe>';
+		echo '<iframe class="nh-cr-preview-frame" title="' . esc_attr__( 'Email preview', NH_CR_TD ) . '" srcdoc="' . esc_attr( $doc ) . '"></iframe>';
 	}
 
 	/**
@@ -284,71 +307,222 @@ class NH_CR_Admin {
 				'paged'  => $paged,
 			)
 		);
-		echo '<p class="description" style="max-width:52em;">';
-		echo esc_html__( 'Each row is one WooCommerce browser session (cookie), so the same person on two devices is two carts. Add-to-cart without an email still creates a real cart — recovery emails are only sent once an email is known. Postcode is stored when the customer calculates shipping (cart or mini-cart) or fills it on checkout.', NH_CR_TD );
-		echo '</p>';
-		echo '<p>';
 		$base = array(
 			'page' => 'nh-cart-recovery',
 			'tab'  => 'list',
 		);
-		foreach ( array( '' => __( 'All', NH_CR_TD ), 'open' => 'open', 'sent' => 'sent', 'converted' => 'converted', 'unsubscribed' => 'unsubscribed' ) as $key => $label ) {
-			$url = add_query_arg(
-				array_merge(
-					$base,
-					array(
-						'status' => $key,
-						'signal' => $signal,
-					)
-				),
-				admin_url( 'admin.php' )
-			);
-			echo '<a href="' . esc_url( $url ) . '" style="margin-right:12px;">' . esc_html( $label ) . '</a>';
-		}
-		echo '</p><p>';
+		$pages = max( 1, (int) ceil( $data['total'] / max( 1, (int) $data['per_page'] ) ) );
+
+		echo '<p class="nh-cr-help">';
+		echo esc_html__( 'Each card is one WooCommerce browser session. Open a card to see every item in the latest cart snapshot. Recovery emails are only sent when an email is known. Postcode appears after the customer calculates shipping or fills checkout.', NH_CR_TD );
+		echo '</p>';
+
+		echo '<div class="nh-cr-filters" role="navigation" aria-label="' . esc_attr__( 'Status', NH_CR_TD ) . '">';
 		foreach (
 			array(
-				''               => __( 'Any identity', NH_CR_TD ),
-				'with_email'     => __( 'Has email', NH_CR_TD ),
-				'with_postcode'  => __( 'Has postcode', NH_CR_TD ),
-				'anonymous'      => __( 'No email or postcode', NH_CR_TD ),
+				''             => __( 'All', NH_CR_TD ),
+				'open'         => __( 'Open', NH_CR_TD ),
+				'sent'         => __( 'Sent', NH_CR_TD ),
+				'converted'    => __( 'Converted', NH_CR_TD ),
+				'skipped'      => __( 'Skipped', NH_CR_TD ),
+				'unsubscribed' => __( 'Unsubscribed', NH_CR_TD ),
 			) as $key => $label
 		) {
-			$url = add_query_arg(
-				array_merge(
-					$base,
-					array(
-						'status' => $status,
-						'signal' => $key,
-					)
-				),
-				admin_url( 'admin.php' )
+			self::chip(
+				add_query_arg( array_merge( $base, array( 'status' => $key, 'signal' => $signal ) ), admin_url( 'admin.php' ) ),
+				$label,
+				$status === $key
 			);
-			$style = $signal === $key ? 'margin-right:12px;font-weight:600;' : 'margin-right:12px;';
-			echo '<a href="' . esc_url( $url ) . '" style="' . esc_attr( $style ) . '">' . esc_html( $label ) . '</a>';
 		}
-		echo '</p>';
-		echo '<table class="widefat striped"><thead><tr>';
-		echo '<th>ID</th><th>' . esc_html__( 'Email', NH_CR_TD ) . '</th><th>' . esc_html__( 'Location', NH_CR_TD ) . '</th><th>' . esc_html__( 'Cart', NH_CR_TD ) . '</th><th>' . esc_html__( 'Type', NH_CR_TD ) . '</th><th>' . esc_html__( 'Status', NH_CR_TD ) . '</th><th>' . esc_html__( 'Emails', NH_CR_TD ) . '</th><th>' . esc_html__( 'Updated', NH_CR_TD ) . '</th><th>' . esc_html__( 'Last emailed', NH_CR_TD ) . '</th>';
-		echo '</tr></thead><tbody>';
+		echo '</div>';
+		echo '<div class="nh-cr-filters" role="navigation" aria-label="' . esc_attr__( 'Identity', NH_CR_TD ) . '">';
+		foreach (
+			array(
+				''              => __( 'Any identity', NH_CR_TD ),
+				'with_email'    => __( 'Has email', NH_CR_TD ),
+				'with_postcode' => __( 'Has postcode', NH_CR_TD ),
+				'anonymous'     => __( 'No email or postcode', NH_CR_TD ),
+			) as $key => $label
+		) {
+			self::chip(
+				add_query_arg( array_merge( $base, array( 'status' => $status, 'signal' => $key ) ), admin_url( 'admin.php' ) ),
+				$label,
+				$signal === $key
+			);
+		}
+		echo '</div>';
+
+		echo '<div class="nh-cr-toolbar">';
+		echo '<p class="nh-cr-count">' . esc_html(
+			sprintf(
+				/* translators: %d: number of cart records */
+				_n( '%d cart', '%d carts', $data['total'], NH_CR_TD ),
+				$data['total']
+			)
+		) . '</p>';
+		if ( $data['rows'] ) {
+			echo '<p>';
+			echo '<button type="button" class="button" data-nh-cr-expand="1">' . esc_html__( 'Expand all', NH_CR_TD ) . '</button> ';
+			echo '<button type="button" class="button" data-nh-cr-expand="0">' . esc_html__( 'Collapse all', NH_CR_TD ) . '</button>';
+			echo '</p>';
+		}
+		echo '</div>';
+
 		if ( ! $data['rows'] ) {
-			echo '<tr><td colspan="9">' . esc_html__( 'No records yet.', NH_CR_TD ) . '</td></tr>';
+			echo '<div class="nh-cr-empty">' . esc_html__( 'No records yet.', NH_CR_TD ) . '</div>';
+			return;
 		}
+
+		echo '<div class="nh-cr-list">';
 		foreach ( $data['rows'] as $row ) {
-			$location = nh_cr_format_location( $row );
-			$summary  = nh_cr_cart_summary( isset( $row->cart ) ? $row->cart : '' );
-			echo '<tr>';
-			echo '<td>' . esc_html( (string) $row->id ) . '</td>';
-			echo '<td>' . esc_html( $row->email ? $row->email : '—' ) . '</td>';
-			echo '<td>' . esc_html( $location !== '' ? $location : '—' ) . '</td>';
-			echo '<td>' . esc_html( $summary !== '' ? $summary : '—' ) . '</td>';
-			echo '<td>' . esc_html( $row->type ) . '</td>';
-			echo '<td>' . esc_html( $row->status ) . '</td>';
-			echo '<td>' . esc_html( (string) NH_CR_Store::emails_sent_count( $row ) ) . '</td>';
-			echo '<td>' . esc_html( $row->updated_at ) . '</td>';
-			echo '<td>' . esc_html( $row->emailed_at ? $row->emailed_at : '—' ) . '</td>';
-			echo '</tr>';
+			self::render_card( $row );
 		}
-		echo '</tbody></table>';
+		echo '</div>';
+
+		if ( $pages > 1 ) {
+			echo '<nav class="nh-cr-pager" aria-label="' . esc_attr__( 'Cart pages', NH_CR_TD ) . '">';
+			for ( $i = 1; $i <= $pages; $i++ ) {
+				$url = add_query_arg(
+					array_merge(
+						$base,
+						array(
+							'status' => $status,
+							'signal' => $signal,
+							'paged'  => $i,
+						)
+					),
+					admin_url( 'admin.php' )
+				);
+				$class = $i === (int) $data['paged'] ? ' button button-primary' : ' button';
+				echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
+			}
+			echo '</nav>';
+		}
+	}
+
+	/**
+	 * @param string $url    Link.
+	 * @param string $label  Label.
+	 * @param bool   $active Active chip.
+	 */
+	private static function chip( $url, $label, $active ) {
+		echo '<a class="nh-cr-chip' . ( $active ? ' is-active' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+	}
+
+	/**
+	 * @param object $row Store row.
+	 */
+	private static function render_card( $row ) {
+		$items    = nh_cr_decode_cart( isset( $row->cart ) ? $row->cart : '' );
+		$count    = count( $items );
+		$location = nh_cr_format_location( $row );
+		$email    = isset( $row->email ) ? (string) $row->email : '';
+		$name     = trim( ( isset( $row->first_name ) ? (string) $row->first_name : '' ) . ' ' . ( isset( $row->last_name ) ? (string) $row->last_name : '' ) );
+		$phone    = isset( $row->phone ) ? (string) $row->phone : '';
+		$status   = isset( $row->status ) ? (string) $row->status : 'open';
+		$type     = isset( $row->type ) ? (string) $row->type : 'cart';
+		$who      = $email !== '' ? $email : ( $name !== '' ? $name : __( 'No email', NH_CR_TD ) );
+		$summary  = nh_cr_cart_summary( $items, 4 );
+		$updated  = nh_cr_format_when( isset( $row->updated_at ) ? $row->updated_at : '' );
+		$emailed  = nh_cr_format_when( isset( $row->emailed_at ) ? $row->emailed_at : '' );
+		$sent     = NH_CR_Store::emails_sent_count( $row );
+		$total    = nh_cr_cart_grand_total( $items );
+
+		echo '<details class="nh-cr-card">';
+		echo '<summary>';
+		echo '<div class="nh-cr-card__head">';
+		echo '<div>';
+		echo '<div class="nh-cr-card__title">';
+		echo '<span class="nh-cr-card__id">#' . esc_html( (string) $row->id ) . '</span>';
+		echo '<span class="nh-cr-badge nh-cr-badge--' . esc_attr( $status ) . '">' . esc_html( $status ) . '</span>';
+		echo '<span class="nh-cr-badge nh-cr-badge--' . esc_attr( $type ) . '">' . esc_html( $type ) . '</span>';
+		echo '</div>';
+		echo '<div class="nh-cr-card__meta">';
+		echo '<span>' . esc_html( $who ) . '</span>';
+		if ( $location !== '' ) {
+			echo '<span>' . esc_html( $location ) . '</span>';
+		}
+		echo '<span>' . esc_html(
+			sprintf(
+				/* translators: %d: number of products in the cart */
+				_n( '%d item', '%d items', $count, NH_CR_TD ),
+				$count
+			)
+		) . '</span>';
+		if ( $updated !== '' ) {
+			echo '<span>' . esc_html( $updated ) . '</span>';
+		}
+		echo '</div>';
+		if ( $summary !== '' ) {
+			echo '<div class="nh-cr-card__cart">' . esc_html( $summary ) . '</div>';
+		}
+		echo '</div>';
+		echo '<div class="nh-cr-card__aside">';
+		echo '<span class="nh-cr-chevron" aria-hidden="true"></span>';
+		if ( $total > 0 ) {
+			echo '<span>' . wp_kses_post( nh_cr_format_money( $total ) ) . '</span>';
+		}
+		echo '</div>';
+		echo '</div>';
+		echo '</summary>';
+
+		echo '<div class="nh-cr-card__body">';
+		echo '<dl class="nh-cr-facts">';
+		self::fact( __( 'Email', NH_CR_TD ), $email !== '' ? $email : '—' );
+		self::fact( __( 'Name', NH_CR_TD ), $name !== '' ? $name : '—' );
+		self::fact( __( 'Phone', NH_CR_TD ), $phone !== '' ? $phone : '—' );
+		self::fact( __( 'Location', NH_CR_TD ), $location !== '' ? $location : '—' );
+		self::fact( __( 'Emails sent', NH_CR_TD ), (string) $sent );
+		self::fact( __( 'Last emailed', NH_CR_TD ), $emailed !== '' ? $emailed : '—' );
+		echo '</dl>';
+
+		if ( ! $items ) {
+			echo '<p class="description">' . esc_html__( 'No products in the latest snapshot.', NH_CR_TD ) . '</p>';
+		} else {
+			echo '<ul class="nh-cr-items">';
+			foreach ( $items as $item ) {
+				self::render_item( $item );
+			}
+			echo '</ul>';
+			if ( $total > 0 ) {
+				echo '<div class="nh-cr-total"><span>' . esc_html__( 'Cart total', NH_CR_TD ) . '</span><span>' . wp_kses_post( nh_cr_format_money( $total ) ) . '</span></div>';
+			}
+		}
+		echo '</div>';
+		echo '</details>';
+	}
+
+	/**
+	 * @param string $label Label.
+	 * @param string $value Value.
+	 */
+	private static function fact( $label, $value ) {
+		echo '<div><dt>' . esc_html( $label ) . '</dt><dd>' . esc_html( $value ) . '</dd></div>';
+	}
+
+	/**
+	 * @param array<string, mixed> $item Snapshot item.
+	 */
+	private static function render_item( $item ) {
+		$name  = nh_cr_cart_item_name( $item );
+		$qty   = isset( $item['quantity'] ) ? (float) $item['quantity'] : 0;
+		$meta  = nh_cr_cart_item_meta_lines( $item );
+		$img   = isset( $item['image_url'] ) ? (string) $item['image_url'] : '';
+		$price = isset( $item['line_total'] ) && is_numeric( $item['line_total'] ) ? (float) $item['line_total'] : 0.0;
+
+		echo '<li class="nh-cr-item">';
+		if ( $img !== '' ) {
+			echo '<img class="nh-cr-item__img" src="' . esc_url( $img ) . '" alt="" width="48" height="48" />';
+		} else {
+			echo '<span class="nh-cr-item__ph" aria-hidden="true"></span>';
+		}
+		echo '<div>';
+		echo '<p class="nh-cr-item__name"><span class="nh-cr-item__qty">' . esc_html( nh_cr_format_qty( $qty ) ) . ' ×</span> ' . esc_html( $name ) . '</p>';
+		if ( $meta ) {
+			echo '<p class="nh-cr-item__meta">' . esc_html( implode( ' · ', $meta ) ) . '</p>';
+		}
+		echo '</div>';
+		echo '<div class="nh-cr-item__price">' . ( $price > 0 ? wp_kses_post( nh_cr_format_money( $price ) ) : '' ) . '</div>';
+		echo '</li>';
 	}
 }

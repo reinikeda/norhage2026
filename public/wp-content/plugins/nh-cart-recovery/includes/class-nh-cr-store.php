@@ -316,7 +316,7 @@ class NH_CR_Store {
 		$status = isset( $args['status'] ) ? sanitize_key( $args['status'] ) : '';
 		$signal = isset( $args['signal'] ) ? sanitize_key( $args['signal'] ) : '';
 		$paged  = isset( $args['paged'] ) ? max( 1, (int) $args['paged'] ) : 1;
-		$per    = 20;
+		$per    = isset( $args['per_page'] ) ? max( 5, min( 50, (int) $args['per_page'] ) ) : 20;
 		$where  = '1=1';
 		$params = array();
 		if ( $status ) {
@@ -340,8 +340,10 @@ class NH_CR_Store {
 			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE {$where} ORDER BY id DESC LIMIT %d OFFSET %d", $per, $offset ) );
 		}
 		return array(
-			'rows'  => is_array( $rows ) ? $rows : array(),
-			'total' => $total,
+			'rows'     => is_array( $rows ) ? $rows : array(),
+			'total'    => $total,
+			'paged'    => $paged,
+			'per_page' => $per,
 		);
 	}
 }
