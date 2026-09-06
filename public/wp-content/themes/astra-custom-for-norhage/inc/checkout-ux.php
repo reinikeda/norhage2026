@@ -149,6 +149,7 @@ function nh_checkout_ux_init() {
 	add_action( 'wp_enqueue_scripts', 'nh_checkout_ux_assets', 100 );
 	add_action( 'wp', 'nh_checkout_split_review_and_payment', 20 );
 	add_action( 'wp', 'nh_checkout_prepare_steps', 5 );
+	add_action( 'wp', 'nh_checkout_restore_identity_on_checkout', 6 );
 	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
 	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
@@ -202,6 +203,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_sco_show_change_payment_button', '__return_false' );
 	add_filter( 'woocommerce_sco_needs_new_checkout', 'nh_checkout_svea_needs_new_for_identity', 10, 2 );
 	add_filter( 'woocommerce_sco_create_order', 'nh_checkout_svea_create_order_identity' );
+	add_filter( 'kco_wc_api_request_args', 'nh_checkout_kustom_api_prefill', 20, 1 );
 	add_action( 'wp', 'nh_checkout_unhook_snippet_chrome', 30 );
 }
 
@@ -336,36 +338,520 @@ function nh_checkout_keep_payment_step_on_snippet_ajax() {
 }
 
 /**
- * Svea create() only sends email/phone/postcode as presetValues. Recreate the SCO
- * when Woo now has identity that the existing checkout session does not.
+ * Checkout fields we can persist and hand to Svea/Kustom.
+ *
+ * @return array<string, string> field => sanitizer callback
+ */
+function nh_checkout_identity_field_map() {
+	return array(
+		'billing_email'       => 'sanitize_email',
+		'billing_phone'       => 'wc_clean',
+		'billing_first_name'  => 'wc_clean',
+		'billing_last_name'   => 'wc_clean',
+		'billing_company'     => 'wc_clean',
+		'billing_company_reg' => 'wc_clean',
+		'billing_postcode'    => 'nh_checkout_usable_postcode',
+		'billing_city'        => 'wc_clean',
+		'billing_address_1'   => 'wc_clean',
+		'billing_address_2'   => 'wc_clean',
+		'billing_country'     => 'wc_clean',
+		'billing_state'       => 'wc_clean',
+		'billing_customer_type' => 'wc_clean',
+	);
+}
+
+/**
+ * Collect billed identity from a parsed checkout form / POST.
+ *
+ * @param array<string, mixed> $form Parsed checkout post_data.
+ * @return array<string, string>
+ */
+function nh_checkout_collect_posted_identity( $form = array() ) {
+	if ( ! is_array( $form ) ) {
+		$form = array();
+	}
+
+	$identity = array();
+	foreach ( nh_checkout_identity_field_map() as $key => $sanitize ) {
+		$value = '';
+		if ( ! empty( $form[ $key ] ) && is_scalar( $form[ $key ] ) ) {
+			$value = (string) $form[ $key ];
+		}
+		if ( $value === '' ) {
+			$value = nh_checkout_posted_scalar( $key );
+		}
+		if ( $value === '' || ! is_callable( $sanitize ) ) {
+			continue;
+		}
+		if ( 'billing_phone' === $key ) {
+			$code = '';
+			if ( ! empty( $form['billing_phone_code'] ) && is_scalar( $form['billing_phone_code'] ) ) {
+				$code = (string) $form['billing_phone_code'];
+			}
+			if ( $code === '' ) {
+				$code = nh_checkout_posted_scalar( 'billing_phone_code' );
+			}
+			$value = nh_checkout_normalize_phone( $value, $code );
+		} else {
+			$value = call_user_func( $sanitize, $value );
+		}
+		$value = is_string( $value ) ? trim( $value ) : '';
+		if ( $value === '' ) {
+			continue;
+		}
+		if ( 'billing_customer_type' === $key && ! in_array( $value, array( 'private', 'business' ), true ) ) {
+			continue;
+		}
+		$identity[ $key ] = $value;
+	}
+
+	return $identity;
+}
+
+/**
+ * @param array<string, string> $identity Identity fields.
+ */
+function nh_checkout_store_identity( $identity ) {
+	if ( ! is_array( $identity ) || ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	$stored = nh_checkout_get_stored_identity();
+	foreach ( $identity as $key => $value ) {
+		if ( is_string( $value ) && $value !== '' ) {
+			$stored[ $key ] = $value;
+		}
+	}
+	WC()->session->set( 'nh_checkout_identity', $stored );
+}
+
+/**
+ * @return array<string, string>
+ */
+function nh_checkout_get_stored_identity() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return array();
+	}
+	$stored = WC()->session->get( 'nh_checkout_identity' );
+	return is_array( $stored ) ? $stored : array();
+}
+
+/**
+ * Identity currently on the Woo customer object.
+ *
+ * @return array<string, string>
+ */
+function nh_checkout_identity_from_customer() {
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return array();
+	}
+
+	$customer = WC()->customer;
+	$values   = array(
+		'billing_email'      => method_exists( $customer, 'get_billing_email' ) ? sanitize_email( (string) $customer->get_billing_email() ) : '',
+		'billing_phone'      => method_exists( $customer, 'get_billing_phone' ) ? wc_clean( (string) $customer->get_billing_phone() ) : '',
+		'billing_first_name' => method_exists( $customer, 'get_billing_first_name' ) ? wc_clean( (string) $customer->get_billing_first_name() ) : '',
+		'billing_last_name'  => method_exists( $customer, 'get_billing_last_name' ) ? wc_clean( (string) $customer->get_billing_last_name() ) : '',
+		'billing_company'    => method_exists( $customer, 'get_billing_company' ) ? wc_clean( (string) $customer->get_billing_company() ) : '',
+		'billing_postcode'   => method_exists( $customer, 'get_billing_postcode' ) ? nh_checkout_usable_postcode( $customer->get_billing_postcode() ) : '',
+		'billing_city'       => method_exists( $customer, 'get_billing_city' ) ? wc_clean( (string) $customer->get_billing_city() ) : '',
+		'billing_address_1'  => method_exists( $customer, 'get_billing_address_1' ) ? wc_clean( (string) $customer->get_billing_address_1() ) : '',
+		'billing_address_2'  => method_exists( $customer, 'get_billing_address_2' ) ? wc_clean( (string) $customer->get_billing_address_2() ) : '',
+		'billing_country'    => method_exists( $customer, 'get_billing_country' ) ? wc_clean( (string) $customer->get_billing_country() ) : '',
+		'billing_state'      => method_exists( $customer, 'get_billing_state' ) ? wc_clean( (string) $customer->get_billing_state() ) : '',
+	);
+
+	if ( method_exists( $customer, 'get_meta' ) ) {
+		$reg  = wc_clean( (string) $customer->get_meta( 'billing_company_reg' ) );
+		$type = wc_clean( (string) $customer->get_meta( 'billing_customer_type' ) );
+		if ( $reg !== '' ) {
+			$values['billing_company_reg'] = $reg;
+		}
+		if ( in_array( $type, array( 'private', 'business' ), true ) ) {
+			$values['billing_customer_type'] = $type;
+		}
+	}
+
+	return array_filter(
+		$values,
+		static function ( $value ) {
+			return is_string( $value ) && $value !== '';
+		}
+	);
+}
+
+/**
+ * Posted + session + customer, later sources fill gaps only.
+ *
+ * @param array<string, mixed> $form Parsed checkout post_data.
+ * @return array<string, string>
+ */
+function nh_checkout_merged_identity( $form = array() ) {
+	return array_filter(
+		array_merge(
+			nh_checkout_identity_from_customer(),
+			nh_checkout_get_stored_identity(),
+			nh_checkout_collect_posted_identity( $form )
+		)
+	);
+}
+
+/**
+ * Write identity onto the Woo customer (and matching shipping fields).
+ *
+ * @param array<string, string> $identity Identity fields.
+ * @param bool                  $save     Persist guest session data.
+ */
+function nh_checkout_apply_identity_to_customer( $identity, $save = false ) {
+	if ( ! is_array( $identity ) || ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return;
+	}
+
+	$customer = WC()->customer;
+	$setters  = array(
+		'billing_email'      => 'set_billing_email',
+		'billing_phone'      => 'set_billing_phone',
+		'billing_first_name' => 'set_billing_first_name',
+		'billing_last_name'  => 'set_billing_last_name',
+		'billing_company'    => 'set_billing_company',
+		'billing_postcode'   => 'set_billing_postcode',
+		'billing_city'       => 'set_billing_city',
+		'billing_address_1'  => 'set_billing_address_1',
+		'billing_address_2'  => 'set_billing_address_2',
+		'billing_country'    => 'set_billing_country',
+		'billing_state'      => 'set_billing_state',
+	);
+	$ship     = array(
+		'billing_phone'      => 'set_shipping_phone',
+		'billing_first_name' => 'set_shipping_first_name',
+		'billing_last_name'  => 'set_shipping_last_name',
+		'billing_company'    => 'set_shipping_company',
+		'billing_postcode'   => 'set_shipping_postcode',
+		'billing_city'       => 'set_shipping_city',
+		'billing_address_1'  => 'set_shipping_address_1',
+		'billing_address_2'  => 'set_shipping_address_2',
+		'billing_country'    => 'set_shipping_country',
+		'billing_state'      => 'set_shipping_state',
+	);
+
+	try {
+		foreach ( $setters as $key => $setter ) {
+			if ( empty( $identity[ $key ] ) || ! method_exists( $customer, $setter ) ) {
+				continue;
+			}
+			$customer->{$setter}( $identity[ $key ] );
+			if ( isset( $ship[ $key ] ) && method_exists( $customer, $ship[ $key ] ) ) {
+				$customer->{$ship[ $key ]}( $identity[ $key ] );
+			}
+		}
+		if ( method_exists( $customer, 'update_meta_data' ) ) {
+			if ( ! empty( $identity['billing_company_reg'] ) ) {
+				$customer->update_meta_data( 'billing_company_reg', $identity['billing_company_reg'] );
+			}
+			if ( ! empty( $identity['billing_customer_type'] ) ) {
+				$customer->update_meta_data( 'billing_customer_type', $identity['billing_customer_type'] );
+			}
+		}
+		if ( $save && method_exists( $customer, 'save' ) ) {
+			$customer->save();
+		}
+	} catch ( Throwable $e ) {
+		return;
+	}
+}
+
+/**
+ * Stable hash of the fields a gateway can actually prefill.
+ *
+ * @param array<string, string> $identity Identity fields.
+ * @return string
+ */
+function nh_checkout_identity_prefill_hash( $identity ) {
+	$keys = array(
+		'billing_email',
+		'billing_phone',
+		'billing_first_name',
+		'billing_last_name',
+		'billing_company',
+		'billing_company_reg',
+		'billing_postcode',
+		'billing_city',
+		'billing_address_1',
+		'billing_address_2',
+		'billing_country',
+		'billing_customer_type',
+	);
+	$parts = array();
+	foreach ( $keys as $key ) {
+		$parts[ $key ] = isset( $identity[ $key ] ) ? strtolower( trim( (string) $identity[ $key ] ) ) : '';
+	}
+	return md5( wp_json_encode( $parts ) );
+}
+
+/**
+ * Restore Woo form identity onto the customer before Svea/Kustom create the iframe order.
+ */
+function nh_checkout_restore_identity_on_checkout() {
+	if ( ! nh_is_classic_checkout_form() || wp_doing_ajax() ) {
+		return;
+	}
+	$identity = nh_checkout_merged_identity();
+	if ( ! $identity ) {
+		return;
+	}
+	nh_checkout_store_identity( $identity );
+	nh_checkout_apply_identity_to_customer( $identity, true );
+}
+
+/**
+ * Apply stored Woo identity immediately before the payment iframe is built.
+ *
+ * @return array<string, string>
+ */
+function nh_checkout_prepare_snippet_identity() {
+	$identity = nh_checkout_merged_identity();
+	if ( $identity ) {
+		nh_checkout_store_identity( $identity );
+		nh_checkout_apply_identity_to_customer( $identity, true );
+	}
+	return $identity;
+}
+
+/**
+ * Drop a leftover empty Kustom session so create() can send Woo billing_address.
+ * Klarna ignores most address updates after the first iframe order exists.
+ *
+ * @param array<string, string> $identity Identity fields.
+ */
+function nh_checkout_kustom_maybe_recreate_for_identity( $identity ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->session || ! is_array( $identity ) ) {
+		return;
+	}
+	if ( function_exists( 'kco_wc_prefill_allowed' ) && ! kco_wc_prefill_allowed() ) {
+		return;
+	}
+
+	$has_prefill = ( ! empty( $identity['billing_email'] ) || ! empty( $identity['billing_phone'] ) || ! empty( $identity['billing_first_name'] ) || ! empty( $identity['billing_address_1'] ) );
+	if ( ! $has_prefill ) {
+		return;
+	}
+
+	$hash     = nh_checkout_identity_prefill_hash( $identity );
+	$previous = (string) WC()->session->get( 'nh_kco_prefill_hash', '' );
+	if ( $previous === $hash && WC()->session->get( 'kco_wc_order_id' ) ) {
+		return;
+	}
+
+	WC()->session->__unset( 'kco_wc_order_id' );
+	WC()->session->__unset( 'kco_update_md5' );
+	WC()->session->set( 'nh_kco_prefill_hash', $hash );
+}
+
+/**
+ * Inject Woo identity into Kustom create/update payloads when the plugin's get_value() was empty.
+ *
+ * @param array $request_body Kustom API body.
+ * @return array
+ */
+function nh_checkout_kustom_api_prefill( $request_body ) {
+	if ( ! is_array( $request_body ) ) {
+		return $request_body;
+	}
+	if ( function_exists( 'kco_wc_prefill_allowed' ) && ! kco_wc_prefill_allowed() ) {
+		return $request_body;
+	}
+
+	$identity = nh_checkout_merged_identity();
+	if ( ! $identity ) {
+		return $request_body;
+	}
+
+	$billing = isset( $request_body['billing_address'] ) && is_array( $request_body['billing_address'] )
+		? $request_body['billing_address']
+		: array();
+
+	$map = array(
+		'email'             => 'billing_email',
+		'phone'             => 'billing_phone',
+		'given_name'        => 'billing_first_name',
+		'family_name'       => 'billing_last_name',
+		'organization_name' => 'billing_company',
+		'street_address'    => 'billing_address_1',
+		'street_address2'   => 'billing_address_2',
+		'city'              => 'billing_city',
+		'postal_code'       => 'billing_postcode',
+		'country'           => 'billing_country',
+		'region'            => 'billing_state',
+	);
+	foreach ( $map as $klarna => $woo ) {
+		$current = isset( $billing[ $klarna ] ) ? trim( (string) $billing[ $klarna ] ) : '';
+		if ( $current !== '' || empty( $identity[ $woo ] ) ) {
+			continue;
+		}
+		$value = $identity[ $woo ];
+		if ( 'postal_code' === $klarna ) {
+			$value = str_replace( ' ', '', $value );
+		}
+		$billing[ $klarna ] = $value;
+	}
+
+	$billing = array_filter(
+		$billing,
+		static function ( $value ) {
+			return ! ( $value === '' || $value === null );
+		}
+	);
+	if ( $billing ) {
+		$request_body['billing_address']  = $billing;
+		$request_body['shipping_address'] = isset( $request_body['shipping_address'] ) && is_array( $request_body['shipping_address'] )
+			? array_merge( $request_body['shipping_address'], $billing )
+			: $billing;
+	}
+
+	$type = isset( $identity['billing_customer_type'] ) ? $identity['billing_customer_type'] : '';
+	if ( $type === '' ) {
+		$type = nh_checkout_posted_type_from_request();
+	}
+	if ( 'business' === $type ) {
+		if ( ! isset( $request_body['customer'] ) || ! is_array( $request_body['customer'] ) ) {
+			$request_body['customer'] = array();
+		}
+		$request_body['customer']['type'] = 'organization';
+		if ( ! empty( $identity['billing_company_reg'] ) ) {
+			$request_body['customer']['organization_registration_id'] = $identity['billing_company_reg'];
+		}
+	} elseif ( 'private' === $type ) {
+		if ( ! isset( $request_body['customer'] ) || ! is_array( $request_body['customer'] ) ) {
+			$request_body['customer'] = array();
+		}
+		if ( empty( $request_body['customer']['type'] ) ) {
+			$request_body['customer']['type'] = 'person';
+		}
+	}
+
+	return $request_body;
+}
+
+/**
+ * Read a Svea GET-order field from top-level, Customer, or PresetValues.
+ *
+ * @param array  $checkout_data Svea order.
+ * @param string $type_name     EmailAddress|PhoneNumber|PostalCode|NationalId.
+ * @return string
+ */
+function nh_checkout_svea_checkout_field( $checkout_data, $type_name ) {
+	if ( ! is_array( $checkout_data ) || $type_name === '' ) {
+		return '';
+	}
+	if ( ! empty( $checkout_data[ $type_name ] ) && is_scalar( $checkout_data[ $type_name ] ) ) {
+		return trim( (string) $checkout_data[ $type_name ] );
+	}
+	if ( ! empty( $checkout_data['Customer'][ $type_name ] ) && is_scalar( $checkout_data['Customer'][ $type_name ] ) ) {
+		return trim( (string) $checkout_data['Customer'][ $type_name ] );
+	}
+	$presets = array();
+	if ( ! empty( $checkout_data['PresetValues'] ) && is_array( $checkout_data['PresetValues'] ) ) {
+		$presets = $checkout_data['PresetValues'];
+	} elseif ( ! empty( $checkout_data['presetValues'] ) && is_array( $checkout_data['presetValues'] ) ) {
+		$presets = $checkout_data['presetValues'];
+	}
+	foreach ( $presets as $preset ) {
+		if ( ! is_array( $preset ) ) {
+			continue;
+		}
+		$name = isset( $preset['TypeName'] ) ? $preset['TypeName'] : ( isset( $preset['typeName'] ) ? $preset['typeName'] : '' );
+		if ( strcasecmp( (string) $name, $type_name ) !== 0 ) {
+			continue;
+		}
+		$value = isset( $preset['Value'] ) ? $preset['Value'] : ( isset( $preset['value'] ) ? $preset['value'] : '' );
+		if ( is_scalar( $value ) ) {
+			return trim( (string) $value );
+		}
+	}
+	return '';
+}
+
+/**
+ * Add or replace a Svea PresetValues entry.
+ *
+ * @param array  $presets  Preset list.
+ * @param string $type_name TypeName.
+ * @param mixed  $value     Value.
+ * @param bool   $overwrite Replace an existing value.
+ * @return array
+ */
+function nh_checkout_svea_upsert_preset( $presets, $type_name, $value, $overwrite = true ) {
+	if ( ! is_array( $presets ) ) {
+		$presets = array();
+	}
+	if ( $value === '' || $value === null ) {
+		return $presets;
+	}
+
+	foreach ( $presets as $i => $preset ) {
+		if ( ! is_array( $preset ) ) {
+			continue;
+		}
+		$name = isset( $preset['TypeName'] ) ? $preset['TypeName'] : '';
+		if ( $name !== $type_name ) {
+			continue;
+		}
+		if ( ! empty( $preset['IsReadOnly'] ) ) {
+			return $presets;
+		}
+		if ( $overwrite || $preset['Value'] === '' || $preset['Value'] === null ) {
+			$presets[ $i ]['Value'] = $value;
+		}
+		return $presets;
+	}
+
+	$presets[] = array(
+		'TypeName'   => $type_name,
+		'Value'      => $value,
+		'IsReadOnly' => false,
+	);
+	return $presets;
+}
+
+/**
+ * Svea create() only accepts EmailAddress, PhoneNumber, PostalCode, IsCompany, NationalId.
+ * Recreate the SCO when Woo now has identity the existing checkout session does not.
  *
  * @param bool  $need_new      Plugin decision.
  * @param array $checkout_data Current Svea checkout payload.
  * @return bool
  */
 function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
-	if ( $need_new || ! is_array( $checkout_data ) || ! function_exists( 'WC' ) || ! WC()->customer ) {
+	if ( $need_new || ! is_array( $checkout_data ) ) {
 		return $need_new;
 	}
 
-	$email = sanitize_email( (string) WC()->customer->get_billing_email() );
-	$sco_email = isset( $checkout_data['EmailAddress'] ) ? sanitize_email( (string) $checkout_data['EmailAddress'] ) : '';
+	$identity = nh_checkout_merged_identity();
+
+	$email = isset( $identity['billing_email'] ) ? sanitize_email( $identity['billing_email'] ) : '';
+	$sco_email = sanitize_email( nh_checkout_svea_checkout_field( $checkout_data, 'EmailAddress' ) );
 	if ( $email !== '' && strcasecmp( $email, $sco_email ) !== 0 ) {
 		return true;
 	}
 
-	$phone = trim( (string) WC()->customer->get_billing_phone() );
-	$sco_phone = isset( $checkout_data['PhoneNumber'] ) ? trim( (string) $checkout_data['PhoneNumber'] ) : '';
+	$phone = isset( $identity['billing_phone'] ) ? trim( (string) $identity['billing_phone'] ) : '';
+	$sco_phone = trim( nh_checkout_svea_checkout_field( $checkout_data, 'PhoneNumber' ) );
 	if ( $phone !== '' && $sco_phone === '' ) {
 		return true;
 	}
 
-	$zip = nh_checkout_usable_postcode( WC()->customer->get_billing_postcode() );
-	$sco_zip = '';
-	if ( ! empty( $checkout_data['BillingAddress']['PostalCode'] ) ) {
+	$zip = isset( $identity['billing_postcode'] ) ? nh_checkout_usable_postcode( $identity['billing_postcode'] ) : '';
+	$sco_zip = nh_checkout_usable_postcode( nh_checkout_svea_checkout_field( $checkout_data, 'PostalCode' ) );
+	if ( $sco_zip === '' && ! empty( $checkout_data['BillingAddress']['PostalCode'] ) ) {
 		$sco_zip = nh_checkout_usable_postcode( $checkout_data['BillingAddress']['PostalCode'] );
 	}
 	if ( $zip !== '' && $sco_zip === '' ) {
+		return true;
+	}
+
+	$type = isset( $identity['billing_customer_type'] ) ? $identity['billing_customer_type'] : nh_checkout_posted_type_from_request();
+	$reg  = isset( $identity['billing_company_reg'] ) ? trim( (string) $identity['billing_company_reg'] ) : '';
+	$sco_nid = nh_checkout_svea_checkout_field( $checkout_data, 'NationalId' );
+	if ( 'business' === $type && $reg !== '' && $sco_nid === '' ) {
 		return true;
 	}
 
@@ -373,30 +859,43 @@ function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
 }
 
 /**
- * Align Svea IsCompany with the Woo private/business toggle when a new SCO is created.
+ * Put every Svea-supported preset onto create() from the Woo form.
  *
  * @param array $data Create-order payload.
  * @return array
  */
 function nh_checkout_svea_create_order_identity( $data ) {
-	if ( ! is_array( $data ) || empty( $data['presetValues'] ) || ! is_array( $data['presetValues'] ) ) {
+	if ( ! is_array( $data ) ) {
 		return $data;
 	}
 
-	$type = nh_checkout_posted_type_from_request();
-	if ( $type === '' ) {
-		return $data;
+	$key = isset( $data['PresetValues'] ) && is_array( $data['PresetValues'] ) ? 'PresetValues' : 'presetValues';
+	if ( ! isset( $data[ $key ] ) || ! is_array( $data[ $key ] ) ) {
+		$data[ $key ] = array();
 	}
 
-	$is_company = ( 'business' === $type );
-	foreach ( $data['presetValues'] as $i => $preset ) {
-		if ( ! is_array( $preset ) || empty( $preset['TypeName'] ) || 'IsCompany' !== $preset['TypeName'] ) {
-			continue;
+	$identity = nh_checkout_merged_identity();
+	$type     = isset( $identity['billing_customer_type'] ) ? $identity['billing_customer_type'] : nh_checkout_posted_type_from_request();
+
+	if ( ! empty( $identity['billing_email'] ) ) {
+		$email = sanitize_email( $identity['billing_email'] );
+		if ( $email !== '' ) {
+			$data[ $key ] = nh_checkout_svea_upsert_preset( $data[ $key ], 'EmailAddress', substr( $email, 0, 50 ) );
 		}
-		if ( ! empty( $preset['IsReadOnly'] ) ) {
-			continue;
+	}
+	if ( ! empty( $identity['billing_phone'] ) ) {
+		$data[ $key ] = nh_checkout_svea_upsert_preset( $data[ $key ], 'PhoneNumber', $identity['billing_phone'] );
+	}
+	if ( ! empty( $identity['billing_postcode'] ) ) {
+		$data[ $key ] = nh_checkout_svea_upsert_preset( $data[ $key ], 'PostalCode', $identity['billing_postcode'] );
+	}
+
+	if ( $type !== '' ) {
+		$is_company = ( 'business' === $type );
+		$data[ $key ] = nh_checkout_svea_upsert_preset( $data[ $key ], 'IsCompany', $is_company );
+		if ( $is_company && ! empty( $identity['billing_company_reg'] ) ) {
+			$data[ $key ] = nh_checkout_svea_upsert_preset( $data[ $key ], 'NationalId', $identity['billing_company_reg'] );
 		}
-		$data['presetValues'][ $i ]['Value'] = $is_company;
 	}
 
 	return $data;
@@ -1359,6 +1858,10 @@ function nh_checkout_get_value( $value, $input ) {
 		if ( in_array( $value, array( 'private', 'business' ), true ) ) {
 			return $value;
 		}
+		$stored = nh_checkout_get_stored_identity();
+		if ( ! empty( $stored['billing_customer_type'] ) && in_array( $stored['billing_customer_type'], array( 'private', 'business' ), true ) ) {
+			return $stored['billing_customer_type'];
+		}
 		if ( is_user_logged_in() ) {
 			$saved = get_user_meta( get_current_user_id(), 'billing_customer_type', true );
 			if ( in_array( $saved, array( 'private', 'business' ), true ) ) {
@@ -1372,8 +1875,25 @@ function nh_checkout_get_value( $value, $input ) {
 		return 'private';
 	}
 
-	if ( in_array( $input, array( 'billing_company_reg', 'billing_contact_email', 'billing_contact_phone' ), true ) && ( $value === null || $value === '' ) && is_user_logged_in() ) {
-		return (string) get_user_meta( get_current_user_id(), $input, true );
+	if ( $value !== null && $value !== '' ) {
+		return $value;
+	}
+
+	$identity_key = $input;
+	if ( strpos( $input, 'shipping_' ) === 0 ) {
+		$identity_key = 'billing_' . substr( $input, strlen( 'shipping_' ) );
+	}
+
+	$stored = nh_checkout_get_stored_identity();
+	if ( ! empty( $stored[ $identity_key ] ) && is_string( $stored[ $identity_key ] ) ) {
+		return $stored[ $identity_key ];
+	}
+
+	if ( in_array( $input, array( 'billing_company_reg', 'billing_contact_email', 'billing_contact_phone' ), true ) && is_user_logged_in() ) {
+		$saved = (string) get_user_meta( get_current_user_id(), $input, true );
+		if ( $saved !== '' ) {
+			return $saved;
+		}
 	}
 
 	return $value;
@@ -2049,69 +2569,12 @@ function nh_checkout_reapply_posted_iframe_zip( $customer, $data = array() ) {
  * @param array<string, mixed> $form Parsed checkout post_data.
  */
 function nh_checkout_copy_posted_identity( $form = array() ) {
-	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+	$identity = nh_checkout_collect_posted_identity( $form );
+	if ( ! $identity ) {
 		return;
 	}
-	if ( ! is_array( $form ) ) {
-		$form = array();
-	}
-
-	$customer = WC()->customer;
-	$map      = array(
-		'billing_email'      => array( 'sanitize_email', 'set_billing_email' ),
-		'billing_phone'      => array( 'wc_clean', 'set_billing_phone' ),
-		'billing_first_name' => array( 'wc_clean', 'set_billing_first_name' ),
-		'billing_last_name'  => array( 'wc_clean', 'set_billing_last_name' ),
-		'billing_company'    => array( 'wc_clean', 'set_billing_company' ),
-		'billing_postcode'   => array( 'nh_checkout_usable_postcode', 'set_billing_postcode' ),
-		'billing_city'       => array( 'wc_clean', 'set_billing_city' ),
-		'billing_address_1'  => array( 'wc_clean', 'set_billing_address_1' ),
-		'billing_country'    => array( 'wc_clean', 'set_billing_country' ),
-	);
-
-	foreach ( $map as $key => $pair ) {
-		$sanitize = $pair[0];
-		$setter   = $pair[1];
-		$value    = '';
-		if ( ! empty( $form[ $key ] ) && is_scalar( $form[ $key ] ) ) {
-			$value = (string) $form[ $key ];
-		}
-		if ( $value === '' ) {
-			$value = nh_checkout_posted_scalar( $key );
-		}
-		if ( $value === '' || ! is_callable( $sanitize ) || ! method_exists( $customer, $setter ) ) {
-			continue;
-		}
-		$value = call_user_func( $sanitize, $value );
-		if ( $value === '' ) {
-			continue;
-		}
-		if ( 'billing_phone' === $key ) {
-			$code = '';
-			if ( ! empty( $form['billing_phone_code'] ) && is_scalar( $form['billing_phone_code'] ) ) {
-				$code = (string) $form['billing_phone_code'];
-			}
-			if ( $code === '' ) {
-				$code = nh_checkout_posted_scalar( 'billing_phone_code' );
-			}
-			$value = nh_checkout_normalize_phone( $value, $code );
-			if ( $value === '' ) {
-				continue;
-			}
-		}
-		$customer->{$setter}( $value );
-		if ( 'billing_postcode' === $key ) {
-			$customer->set_shipping_postcode( $value );
-		} elseif ( 'billing_country' === $key ) {
-			$customer->set_shipping_country( $value );
-		} elseif ( 'billing_city' === $key ) {
-			$customer->set_shipping_city( $value );
-		} elseif ( 'billing_address_1' === $key ) {
-			$customer->set_shipping_address_1( $value );
-		} elseif ( 'billing_phone' === $key && method_exists( $customer, 'set_shipping_phone' ) ) {
-			$customer->set_shipping_phone( $value );
-		}
-	}
+	nh_checkout_store_identity( $identity );
+	nh_checkout_apply_identity_to_customer( $identity, false );
 }
 
 /**
@@ -2131,47 +2594,31 @@ function nh_checkout_reapply_posted_woo_identity( $customer, $data = array() ) {
 		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
-	$email = '';
-	if ( ! empty( $form['billing_email'] ) && is_scalar( $form['billing_email'] ) ) {
-		$email = sanitize_email( (string) $form['billing_email'] );
-	}
-	if ( $email === '' ) {
-		$email = sanitize_email( nh_checkout_posted_scalar( 'billing_email' ) );
-	}
-	if ( $email !== '' ) {
-		try {
-			$customer->set_billing_email( $email );
-		} catch ( Throwable $e ) {
-			return;
-		}
+	$identity = nh_checkout_merged_identity( $form );
+	if ( ! $identity ) {
+		return;
 	}
 
-	$phone = '';
-	if ( ! empty( $form['billing_phone'] ) && is_scalar( $form['billing_phone'] ) ) {
-		$phone = wc_clean( (string) $form['billing_phone'] );
-	}
-	if ( $phone === '' ) {
-		$phone = nh_checkout_posted_scalar( 'billing_phone' );
-	}
-	$code = '';
-	if ( ! empty( $form['billing_phone_code'] ) && is_scalar( $form['billing_phone_code'] ) ) {
-		$code = (string) $form['billing_phone_code'];
-	}
-	if ( $code === '' ) {
-		$code = nh_checkout_posted_scalar( 'billing_phone_code' );
-	}
-	if ( $phone !== '' ) {
-		$phone = nh_checkout_normalize_phone( $phone, $code );
-	}
-	if ( $phone !== '' ) {
-		try {
-			$customer->set_billing_phone( $phone );
-			if ( method_exists( $customer, 'set_shipping_phone' ) ) {
-				$customer->set_shipping_phone( $phone );
-			}
-		} catch ( Throwable $e ) {
-			return;
+	nh_checkout_store_identity( $identity );
+
+	try {
+		if ( ! empty( $identity['billing_email'] ) ) {
+			$customer->set_billing_email( $identity['billing_email'] );
 		}
+		if ( ! empty( $identity['billing_phone'] ) ) {
+			$customer->set_billing_phone( $identity['billing_phone'] );
+			if ( method_exists( $customer, 'set_shipping_phone' ) ) {
+				$customer->set_shipping_phone( $identity['billing_phone'] );
+			}
+		}
+		if ( ! empty( $identity['billing_first_name'] ) && method_exists( $customer, 'set_billing_first_name' ) ) {
+			$customer->set_billing_first_name( $identity['billing_first_name'] );
+		}
+		if ( ! empty( $identity['billing_last_name'] ) && method_exists( $customer, 'set_billing_last_name' ) ) {
+			$customer->set_billing_last_name( $identity['billing_last_name'] );
+		}
+	} catch ( Throwable $e ) {
+		return;
 	}
 }
 
@@ -2458,6 +2905,8 @@ function nh_checkout_render_gateway_iframe() {
 		return;
 	}
 
+	$identity = nh_checkout_prepare_snippet_identity();
+
 	$method  = strtolower( (string) nh_checkout_chosen_payment_method() );
 	$is_kco  = in_array( $method, array( 'kco', 'kustom_checkout', 'klarna_checkout' ), true );
 	$is_svea = ( $method === 'svea_checkout' || $method === 'sco' || $method === 'sveacheckout' || (bool) preg_match( '/svea.?checkout/', $method ) );
@@ -2465,6 +2914,7 @@ function nh_checkout_render_gateway_iframe() {
 	echo '<div class="nh-checkout-iframe" id="nh-checkout-iframe">';
 
 	if ( $is_kco && function_exists( 'kco_wc_show_snippet' ) ) {
+		nh_checkout_kustom_maybe_recreate_for_identity( $identity );
 		echo '<div id="kco-wrapper" class="nh-checkout-iframe__kco"><div id="kco-iframe">';
 		do_action( 'kco_wc_before_snippet' );
 		kco_wc_show_snippet();

@@ -1089,10 +1089,15 @@
     $('#nh_checkout_step').val('payment');
     i18n.checkoutStep = 'payment';
     window.clearTimeout(snippetReloadTimer);
+    $(document.body).off('updated_checkout.nhSnippetPrefill');
+    $(document.body).one('updated_checkout.nhSnippetPrefill', function () {
+      window.clearTimeout(snippetReloadTimer);
+      window.location.reload();
+    });
     $(document.body).trigger('update_checkout');
     snippetReloadTimer = window.setTimeout(function () {
       window.location.reload();
-    }, 500);
+    }, 2000);
   }
 
   function bindCheckoutSteps() {
