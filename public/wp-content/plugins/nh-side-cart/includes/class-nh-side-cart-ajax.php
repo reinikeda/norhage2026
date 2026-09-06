@@ -171,6 +171,7 @@ final class NH_Side_Cart_Ajax {
 		WC()->customer->set_shipping_location( $country, $state, $postcode, $city );
 		WC()->customer->set_calculated_shipping( true );
 		WC()->customer->save();
+		do_action( 'woocommerce_calculated_shipping' );
 
 		wc_add_notice( __( 'Shipping costs updated.', NH_SC_TD ), 'success' );
 	}

@@ -40,6 +40,7 @@ class NH_CR_Tracker {
 		add_action( 'woocommerce_sco_refresh_snippet_customer_updated', array( __CLASS__, 'on_woo_customer_identity' ), 20, 1 );
 		add_action( 'woocommerce_sco_after_refresh_sco_snippet', array( __CLASS__, 'on_svea_snippet' ), 20, 1 );
 		add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'on_update_order_review' ), 99 );
+		add_action( 'woocommerce_calculated_shipping', array( __CLASS__, 'on_calculated_shipping' ), 20 );
 	}
 
 	/**
@@ -97,28 +98,43 @@ class NH_CR_Tracker {
 		$email = '';
 		$first = '';
 		$last  = '';
+		$postcode = '';
+		$city     = '';
+		$country  = '';
+		$phone    = '';
 		if ( $row ) {
-			$email = (string) $row->email;
-			$first = (string) $row->first_name;
-			$last  = (string) $row->last_name;
+			$email    = (string) $row->email;
+			$first    = (string) $row->first_name;
+			$last     = (string) $row->last_name;
+			$postcode = isset( $row->postcode ) ? (string) $row->postcode : '';
+			$city     = isset( $row->city ) ? (string) $row->city : '';
+			$country  = isset( $row->country ) ? (string) $row->country : '';
+			$phone    = isset( $row->phone ) ? (string) $row->phone : '';
 		}
-		$from_customer = self::customer_identity();
-		if ( $from_customer['email'] !== '' ) {
-			$email = $from_customer['email'];
-		}
-		if ( $from_customer['first_name'] !== '' ) {
-			$first = $from_customer['first_name'];
-		}
-		if ( $from_customer['last_name'] !== '' ) {
-			$last = $from_customer['last_name'];
-		}
+		$from_customer = self::customer_profile();
+		$merged        = nh_cr_merge_profile(
+			array(
+				'email'      => $email,
+				'first_name' => $first,
+				'last_name'  => $last,
+				'postcode'   => $postcode,
+				'city'       => $city,
+				'country'    => $country,
+				'phone'      => $phone,
+			),
+			$from_customer
+		);
 
 		$data = array(
 			'session_key' => $session,
 			'user_id'     => get_current_user_id(),
-			'email'       => $email,
-			'first_name'  => $first,
-			'last_name'   => $last,
+			'email'       => $merged['email'],
+			'first_name'  => $merged['first_name'],
+			'last_name'   => $merged['last_name'],
+			'postcode'    => $merged['postcode'],
+			'city'        => $merged['city'],
+			'country'     => $merged['country'],
+			'phone'       => $merged['phone'],
 			'cart'        => wp_json_encode( $items ),
 			'cart_hash'   => nh_cr_cart_hash( $items ),
 			'type'        => 'cart',
@@ -149,35 +165,61 @@ class NH_CR_Tracker {
 	}
 
 	/**
-	 * @return array{email:string,first_name:string,last_name:string}
+	 * @return array{email:string,first_name:string,last_name:string,postcode:string,city:string,country:string,phone:string}
 	 */
-	public static function customer_identity() {
-		$out = array(
-			'email'      => '',
-			'first_name' => '',
-			'last_name'  => '',
-		);
+	public static function customer_profile() {
+		$out = nh_cr_empty_profile();
 		if ( is_user_logged_in() ) {
-			$user = wp_get_current_user();
-			$out['email']      = NH_CR_Store::normalize_email( $user->user_email );
+			$user          = wp_get_current_user();
+			$out['email']  = NH_CR_Store::normalize_email( $user->user_email );
 			$out['first_name'] = sanitize_text_field( (string) $user->first_name );
 			$out['last_name']  = sanitize_text_field( (string) $user->last_name );
 		}
 		if ( function_exists( 'WC' ) && WC()->customer ) {
-			$c_email = NH_CR_Store::normalize_email( WC()->customer->get_billing_email() );
+			$c = WC()->customer;
+			$c_email = NH_CR_Store::normalize_email( $c->get_billing_email() );
 			if ( $c_email !== '' ) {
 				$out['email'] = $c_email;
 			}
-			$fn = sanitize_text_field( (string) WC()->customer->get_billing_first_name() );
-			$ln = sanitize_text_field( (string) WC()->customer->get_billing_last_name() );
+			$fn = sanitize_text_field( (string) $c->get_billing_first_name() );
+			$ln = sanitize_text_field( (string) $c->get_billing_last_name() );
 			if ( $fn !== '' ) {
 				$out['first_name'] = $fn;
 			}
 			if ( $ln !== '' ) {
 				$out['last_name'] = $ln;
 			}
+			$ship_post = nh_cr_sanitize_location_value( $c->get_shipping_postcode(), 20 );
+			$bill_post = nh_cr_sanitize_location_value( $c->get_billing_postcode(), 20 );
+			$out['postcode'] = $ship_post !== '' ? $ship_post : $bill_post;
+			$ship_city = nh_cr_sanitize_location_value( $c->get_shipping_city(), 100 );
+			$bill_city = nh_cr_sanitize_location_value( $c->get_billing_city(), 100 );
+			$out['city'] = $ship_city !== '' ? $ship_city : $bill_city;
+			$ship_cc = nh_cr_sanitize_country( $c->get_shipping_country() );
+			$bill_cc = nh_cr_sanitize_country( $c->get_billing_country() );
+			$out['country'] = $ship_cc !== '' ? $ship_cc : $bill_cc;
+			$phone = nh_cr_sanitize_location_value( $c->get_billing_phone(), 40 );
+			if ( $phone === '' && method_exists( $c, 'get_shipping_phone' ) ) {
+				$phone = nh_cr_sanitize_location_value( $c->get_shipping_phone(), 40 );
+			}
+			$out['phone'] = $phone;
+		}
+		if ( $out['postcode'] === '' && $out['city'] === '' ) {
+			$out['country'] = '';
 		}
 		return $out;
+	}
+
+	/**
+	 * @return array{email:string,first_name:string,last_name:string}
+	 */
+	public static function customer_identity() {
+		$profile = self::customer_profile();
+		return array(
+			'email'      => $profile['email'],
+			'first_name' => $profile['first_name'],
+			'last_name'  => $profile['last_name'],
+		);
 	}
 
 	public static function on_cart_emptied() {
@@ -207,13 +249,22 @@ class NH_CR_Tracker {
 		$row     = $session ? NH_CR_Store::get_open_by_session( $session ) : null;
 		$email   = NH_CR_Store::normalize_email( $order->get_billing_email() );
 		if ( $row ) {
+			$order_profile = array_filter(
+				self::profile_from_order( $order ),
+				static function ( $value ) {
+					return $value !== '';
+				}
+			);
 			NH_CR_Store::update(
 				(int) $row->id,
-				array(
-					'email'     => $email ? $email : $row->email,
-					'order_id'  => (int) $order->get_id(),
-					'type'      => 'checkout',
-					'status'    => $order->is_paid() ? 'converted' : ( $row->status === 'sent' ? 'sent' : 'open' ),
+				array_merge(
+					$order_profile,
+					array(
+						'email'    => $email ? $email : $row->email,
+						'order_id' => (int) $order->get_id(),
+						'type'     => 'checkout',
+						'status'   => $order->is_paid() ? 'converted' : ( $row->status === 'sent' ? 'sent' : 'open' ),
+					)
 				)
 			);
 		}
@@ -316,15 +367,16 @@ class NH_CR_Tracker {
 		}
 
 		$already = $row ? NH_CR_Store::emails_sent_count( $row ) : 0;
-		$data    = array(
-			'email'      => $email,
-			'first_name' => sanitize_text_field( (string) $order->get_billing_first_name() ),
-			'last_name'  => sanitize_text_field( (string) $order->get_billing_last_name() ),
-			'cart'       => wp_json_encode( $items ),
-			'cart_hash'  => nh_cr_cart_hash( $items ),
-			'order_id'   => (int) $order->get_id(),
-			'type'       => 'checkout',
-			'user_id'    => (int) $order->get_customer_id(),
+		$data    = array_merge(
+			self::profile_from_order( $order ),
+			array(
+				'email'      => $email,
+				'cart'       => wp_json_encode( $items ),
+				'cart_hash'  => nh_cr_cart_hash( $items ),
+				'order_id'   => (int) $order->get_id(),
+				'type'       => 'checkout',
+				'user_id'    => (int) $order->get_customer_id(),
+			)
 		);
 
 		if ( $row ) {
@@ -379,10 +431,17 @@ class NH_CR_Tracker {
 
 	public static function ajax_sync() {
 		check_ajax_referer( 'nh-cr-sync', 'security' );
-		$email = NH_CR_Store::normalize_email( isset( $_POST['email'] ) ? wp_unslash( (string) $_POST['email'] ) : '' );
-		$first = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['first_name'] ) ) : '';
-		$last  = isset( $_POST['last_name'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['last_name'] ) ) : '';
-		self::apply_identity( $email, $first, $last );
+		self::apply_profile(
+			array(
+				'email'      => isset( $_POST['email'] ) ? wp_unslash( (string) $_POST['email'] ) : '',
+				'first_name' => isset( $_POST['first_name'] ) ? wp_unslash( (string) $_POST['first_name'] ) : '',
+				'last_name'  => isset( $_POST['last_name'] ) ? wp_unslash( (string) $_POST['last_name'] ) : '',
+				'postcode'   => isset( $_POST['postcode'] ) ? wp_unslash( (string) $_POST['postcode'] ) : '',
+				'city'       => isset( $_POST['city'] ) ? wp_unslash( (string) $_POST['city'] ) : '',
+				'country'    => isset( $_POST['country'] ) ? wp_unslash( (string) $_POST['country'] ) : '',
+				'phone'      => isset( $_POST['phone'] ) ? wp_unslash( (string) $_POST['phone'] ) : '',
+			)
+		);
 		wp_send_json_success();
 	}
 
@@ -395,36 +454,91 @@ class NH_CR_Tracker {
 			$raw = wp_unslash( $_REQUEST['data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 		$ident = nh_cr_identity_from_payload( $raw );
-		if ( $ident['email'] === '' && $ident['first_name'] === '' && $ident['last_name'] === '' ) {
+		if ( ! nh_cr_profile_has_value( $ident ) ) {
 			return;
 		}
-		self::apply_identity(
-			NH_CR_Store::normalize_email( $ident['email'] ),
-			sanitize_text_field( $ident['first_name'] ),
-			sanitize_text_field( $ident['last_name'] )
-		);
+		self::apply_profile( $ident );
 	}
 
 	/**
-	 * @param string $email Email.
-	 * @param string $first First name.
-	 * @param string $last  Last name.
+	 * @param WC_Order $order Order.
+	 * @return array<string, string>
 	 */
-	public static function apply_identity( $email, $first, $last ) {
-		$email = NH_CR_Store::normalize_email( $email );
-		$first = sanitize_text_field( (string) $first );
-		$last  = sanitize_text_field( (string) $last );
-		if ( $email === '' && $first === '' && $last === '' ) {
+	public static function profile_from_order( $order ) {
+		$out = nh_cr_empty_profile();
+		if ( ! $order instanceof WC_Order ) {
+			return $out;
+		}
+		$out['email']      = NH_CR_Store::normalize_email( $order->get_billing_email() );
+		$out['first_name'] = sanitize_text_field( (string) $order->get_billing_first_name() );
+		$out['last_name']  = sanitize_text_field( (string) $order->get_billing_last_name() );
+		$ship_post         = nh_cr_sanitize_location_value( $order->get_shipping_postcode(), 20 );
+		$bill_post         = nh_cr_sanitize_location_value( $order->get_billing_postcode(), 20 );
+		$out['postcode']   = $ship_post !== '' ? $ship_post : $bill_post;
+		$ship_city         = nh_cr_sanitize_location_value( $order->get_shipping_city(), 100 );
+		$bill_city         = nh_cr_sanitize_location_value( $order->get_billing_city(), 100 );
+		$out['city']       = $ship_city !== '' ? $ship_city : $bill_city;
+		$ship_cc           = nh_cr_sanitize_country( $order->get_shipping_country() );
+		$bill_cc           = nh_cr_sanitize_country( $order->get_billing_country() );
+		$out['country']    = $ship_cc !== '' ? $ship_cc : $bill_cc;
+		$out['phone']      = nh_cr_sanitize_location_value( $order->get_billing_phone(), 40 );
+		if ( $out['postcode'] === '' && $out['city'] === '' ) {
+			$out['country'] = '';
+		}
+		return $out;
+	}
+
+	/**
+	 * @param array<string, mixed> $profile Incoming fields.
+	 */
+	public static function apply_profile( $profile ) {
+		$clean = nh_cr_merge_profile(
+			nh_cr_empty_profile(),
+			array(
+				'email'      => NH_CR_Store::normalize_email( isset( $profile['email'] ) ? $profile['email'] : '' ),
+				'first_name' => sanitize_text_field( (string) ( $profile['first_name'] ?? '' ) ),
+				'last_name'  => sanitize_text_field( (string) ( $profile['last_name'] ?? '' ) ),
+				'postcode'   => nh_cr_sanitize_location_value( $profile['postcode'] ?? '', 20 ),
+				'city'       => nh_cr_sanitize_location_value( $profile['city'] ?? '', 100 ),
+				'country'    => nh_cr_sanitize_country( $profile['country'] ?? '' ),
+				'phone'      => nh_cr_sanitize_location_value( $profile['phone'] ?? '', 40 ),
+			)
+		);
+		if ( ! nh_cr_profile_has_value( $clean ) ) {
 			return;
 		}
 
-		if ( function_exists( 'WC' ) && WC()->customer && $email ) {
-			WC()->customer->set_billing_email( $email );
-			if ( $first ) {
-				WC()->customer->set_billing_first_name( $first );
+		if ( function_exists( 'WC' ) && WC()->customer ) {
+			$c = WC()->customer;
+			if ( $clean['email'] !== '' ) {
+				$c->set_billing_email( $clean['email'] );
 			}
-			if ( $last ) {
-				WC()->customer->set_billing_last_name( $last );
+			if ( $clean['first_name'] !== '' ) {
+				$c->set_billing_first_name( $clean['first_name'] );
+			}
+			if ( $clean['last_name'] !== '' ) {
+				$c->set_billing_last_name( $clean['last_name'] );
+			}
+			if ( $clean['postcode'] !== '' ) {
+				$c->set_shipping_postcode( $clean['postcode'] );
+				if ( ! $c->get_billing_postcode() ) {
+					$c->set_billing_postcode( $clean['postcode'] );
+				}
+			}
+			if ( $clean['city'] !== '' ) {
+				$c->set_shipping_city( $clean['city'] );
+				if ( ! $c->get_billing_city() ) {
+					$c->set_billing_city( $clean['city'] );
+				}
+			}
+			if ( $clean['country'] !== '' ) {
+				$c->set_shipping_country( $clean['country'] );
+				if ( ! $c->get_billing_country() ) {
+					$c->set_billing_country( $clean['country'] );
+				}
+			}
+			if ( $clean['phone'] !== '' ) {
+				$c->set_billing_phone( $clean['phone'] );
 			}
 		}
 
@@ -436,21 +550,33 @@ class NH_CR_Tracker {
 
 		$session = self::session_key();
 		$row     = $session ? NH_CR_Store::get_open_by_session( $session ) : null;
-		if ( $row && ( $email || $first || $last ) ) {
-			$update = array();
-			if ( $email ) {
-				$update['email'] = $email;
-			}
-			if ( $first ) {
-				$update['first_name'] = $first;
-			}
-			if ( $last ) {
-				$update['last_name'] = $last;
-			}
-			if ( $update ) {
-				NH_CR_Store::update( (int) $row->id, $update );
+		if ( ! $row ) {
+			return;
+		}
+		$update = array();
+		foreach ( array( 'email', 'first_name', 'last_name', 'postcode', 'city', 'country', 'phone' ) as $key ) {
+			if ( $clean[ $key ] !== '' ) {
+				$update[ $key ] = $clean[ $key ];
 			}
 		}
+		if ( $update ) {
+			NH_CR_Store::update( (int) $row->id, $update );
+		}
+	}
+
+	/**
+	 * @param string $email Email.
+	 * @param string $first First name.
+	 * @param string $last  Last name.
+	 */
+	public static function apply_identity( $email, $first, $last ) {
+		self::apply_profile(
+			array(
+				'email'      => $email,
+				'first_name' => $first,
+				'last_name'  => $last,
+			)
+		);
 	}
 
 	/**
@@ -462,10 +588,22 @@ class NH_CR_Tracker {
 		if ( ! is_object( $customer ) || ! method_exists( $customer, 'get_billing_email' ) ) {
 			return;
 		}
-		self::apply_identity(
-			(string) $customer->get_billing_email(),
-			method_exists( $customer, 'get_billing_first_name' ) ? (string) $customer->get_billing_first_name() : '',
-			method_exists( $customer, 'get_billing_last_name' ) ? (string) $customer->get_billing_last_name() : ''
+		self::apply_profile(
+			array(
+				'email'      => (string) $customer->get_billing_email(),
+				'first_name' => method_exists( $customer, 'get_billing_first_name' ) ? (string) $customer->get_billing_first_name() : '',
+				'last_name'  => method_exists( $customer, 'get_billing_last_name' ) ? (string) $customer->get_billing_last_name() : '',
+				'postcode'   => method_exists( $customer, 'get_shipping_postcode' ) && (string) $customer->get_shipping_postcode() !== ''
+					? (string) $customer->get_shipping_postcode()
+					: ( method_exists( $customer, 'get_billing_postcode' ) ? (string) $customer->get_billing_postcode() : '' ),
+				'city'       => method_exists( $customer, 'get_shipping_city' ) && (string) $customer->get_shipping_city() !== ''
+					? (string) $customer->get_shipping_city()
+					: ( method_exists( $customer, 'get_billing_city' ) ? (string) $customer->get_billing_city() : '' ),
+				'country'    => method_exists( $customer, 'get_shipping_country' ) && (string) $customer->get_shipping_country() !== ''
+					? (string) $customer->get_shipping_country()
+					: ( method_exists( $customer, 'get_billing_country' ) ? (string) $customer->get_billing_country() : '' ),
+				'phone'      => method_exists( $customer, 'get_billing_phone' ) ? (string) $customer->get_billing_phone() : '',
+			)
 		);
 	}
 
@@ -474,28 +612,61 @@ class NH_CR_Tracker {
 	 */
 	public static function on_svea_snippet( $module ) {
 		$ident = nh_cr_identity_from_svea_module( $module );
-		if ( $ident['email'] === '' && $ident['first_name'] === '' && $ident['last_name'] === '' ) {
+		if ( ! nh_cr_profile_has_value( $ident ) ) {
 			return;
 		}
-		self::apply_identity( $ident['email'], $ident['first_name'], $ident['last_name'] );
+		self::apply_profile( $ident );
+	}
+
+	/**
+	 * Cart / side-cart “Calculate shipping” — postcode is often the only identity we get.
+	 */
+	public static function on_calculated_shipping() {
+		$posted = array(
+			'postcode' => isset( $_POST['calc_shipping_postcode'] ) ? wp_unslash( (string) $_POST['calc_shipping_postcode'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'city'     => isset( $_POST['calc_shipping_city'] ) ? wp_unslash( (string) $_POST['calc_shipping_city'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'country'  => isset( $_POST['calc_shipping_country'] ) ? wp_unslash( (string) $_POST['calc_shipping_country'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		);
+		self::apply_profile( nh_cr_merge_profile( self::customer_profile(), $posted ) );
 	}
 
 	/**
 	 * After Woo/Kustom/Svea update the customer during checkout review.
+	 *
+	 * @param string $posted_data Query string from update_order_review.
 	 */
-	public static function on_update_order_review() {
-		if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+	public static function on_update_order_review( $posted_data = '' ) {
+		$profile = self::customer_profile();
+		$posted  = array();
+		if ( is_string( $posted_data ) && $posted_data !== '' ) {
+			parse_str( $posted_data, $posted );
+		}
+		if ( is_array( $posted ) && $posted ) {
+			$map = array(
+				'billing_email'      => 'email',
+				'billing_first_name' => 'first_name',
+				'billing_last_name'  => 'last_name',
+				'billing_phone'      => 'phone',
+				'billing_postcode'   => 'postcode',
+				'billing_city'       => 'city',
+				'billing_country'    => 'country',
+				'shipping_postcode'  => 'postcode',
+				'shipping_city'      => 'city',
+				'shipping_country'   => 'country',
+			);
+			$from_post = nh_cr_empty_profile();
+			foreach ( $map as $post_key => $field ) {
+				if ( empty( $posted[ $post_key ] ) || ! is_scalar( $posted[ $post_key ] ) ) {
+					continue;
+				}
+				$from_post[ $field ] = (string) $posted[ $post_key ];
+			}
+			$profile = nh_cr_merge_profile( $profile, $from_post );
+		}
+		if ( ! nh_cr_profile_has_value( $profile ) ) {
 			return;
 		}
-		$email = (string) WC()->customer->get_billing_email();
-		if ( $email === '' ) {
-			return;
-		}
-		self::apply_identity(
-			$email,
-			(string) WC()->customer->get_billing_first_name(),
-			(string) WC()->customer->get_billing_last_name()
-		);
+		self::apply_profile( $profile );
 	}
 
 	public static function maybe_unsubscribe() {

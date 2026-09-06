@@ -275,36 +275,73 @@ class NH_CR_Admin {
 
 	private static function render_list() {
 		$status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( (string) $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$signal = isset( $_GET['signal'] ) ? sanitize_key( wp_unslash( (string) $_GET['signal'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$paged  = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$data   = NH_CR_Store::query(
 			array(
 				'status' => $status,
+				'signal' => $signal,
 				'paged'  => $paged,
 			)
 		);
+		echo '<p class="description" style="max-width:52em;">';
+		echo esc_html__( 'Each row is one WooCommerce browser session (cookie), so the same person on two devices is two carts. Add-to-cart without an email still creates a real cart — recovery emails are only sent once an email is known. Postcode is stored when the customer calculates shipping (cart or mini-cart) or fills it on checkout.', NH_CR_TD );
+		echo '</p>';
 		echo '<p>';
+		$base = array(
+			'page' => 'nh-cart-recovery',
+			'tab'  => 'list',
+		);
 		foreach ( array( '' => __( 'All', NH_CR_TD ), 'open' => 'open', 'sent' => 'sent', 'converted' => 'converted', 'unsubscribed' => 'unsubscribed' ) as $key => $label ) {
 			$url = add_query_arg(
-				array(
-					'page'   => 'nh-cart-recovery',
-					'tab'    => 'list',
-					'status' => $key,
+				array_merge(
+					$base,
+					array(
+						'status' => $key,
+						'signal' => $signal,
+					)
 				),
 				admin_url( 'admin.php' )
 			);
 			echo '<a href="' . esc_url( $url ) . '" style="margin-right:12px;">' . esc_html( $label ) . '</a>';
 		}
+		echo '</p><p>';
+		foreach (
+			array(
+				''               => __( 'Any identity', NH_CR_TD ),
+				'with_email'     => __( 'Has email', NH_CR_TD ),
+				'with_postcode'  => __( 'Has postcode', NH_CR_TD ),
+				'anonymous'      => __( 'No email or postcode', NH_CR_TD ),
+			) as $key => $label
+		) {
+			$url = add_query_arg(
+				array_merge(
+					$base,
+					array(
+						'status' => $status,
+						'signal' => $key,
+					)
+				),
+				admin_url( 'admin.php' )
+			);
+			$style = $signal === $key ? 'margin-right:12px;font-weight:600;' : 'margin-right:12px;';
+			echo '<a href="' . esc_url( $url ) . '" style="' . esc_attr( $style ) . '">' . esc_html( $label ) . '</a>';
+		}
 		echo '</p>';
 		echo '<table class="widefat striped"><thead><tr>';
-		echo '<th>ID</th><th>' . esc_html__( 'Email', NH_CR_TD ) . '</th><th>' . esc_html__( 'Type', NH_CR_TD ) . '</th><th>' . esc_html__( 'Status', NH_CR_TD ) . '</th><th>' . esc_html__( 'Emails', NH_CR_TD ) . '</th><th>' . esc_html__( 'Updated', NH_CR_TD ) . '</th><th>' . esc_html__( 'Last emailed', NH_CR_TD ) . '</th>';
+		echo '<th>ID</th><th>' . esc_html__( 'Email', NH_CR_TD ) . '</th><th>' . esc_html__( 'Location', NH_CR_TD ) . '</th><th>' . esc_html__( 'Cart', NH_CR_TD ) . '</th><th>' . esc_html__( 'Type', NH_CR_TD ) . '</th><th>' . esc_html__( 'Status', NH_CR_TD ) . '</th><th>' . esc_html__( 'Emails', NH_CR_TD ) . '</th><th>' . esc_html__( 'Updated', NH_CR_TD ) . '</th><th>' . esc_html__( 'Last emailed', NH_CR_TD ) . '</th>';
 		echo '</tr></thead><tbody>';
 		if ( ! $data['rows'] ) {
-			echo '<tr><td colspan="7">' . esc_html__( 'No records yet.', NH_CR_TD ) . '</td></tr>';
+			echo '<tr><td colspan="9">' . esc_html__( 'No records yet.', NH_CR_TD ) . '</td></tr>';
 		}
 		foreach ( $data['rows'] as $row ) {
+			$location = nh_cr_format_location( $row );
+			$summary  = nh_cr_cart_summary( isset( $row->cart ) ? $row->cart : '' );
 			echo '<tr>';
 			echo '<td>' . esc_html( (string) $row->id ) . '</td>';
 			echo '<td>' . esc_html( $row->email ? $row->email : '—' ) . '</td>';
+			echo '<td>' . esc_html( $location !== '' ? $location : '—' ) . '</td>';
+			echo '<td>' . esc_html( $summary !== '' ? $summary : '—' ) . '</td>';
 			echo '<td>' . esc_html( $row->type ) . '</td>';
 			echo '<td>' . esc_html( $row->status ) . '</td>';
 			echo '<td>' . esc_html( (string) NH_CR_Store::emails_sent_count( $row ) ) . '</td>';
