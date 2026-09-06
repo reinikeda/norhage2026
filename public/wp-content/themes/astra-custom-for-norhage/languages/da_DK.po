@@ -1834,6 +1834,27 @@ msgstr "Sikker kasse"
 msgid "Other payment method"
 msgstr "Anden betalingsmetode"
 
+msgid "Continue to payment"
+msgstr "Fortsæt til betaling"
+
+msgid "Back to details"
+msgstr "Tilbage til oplysninger"
+
+msgid "Choose how you want to pay"
+msgstr "Vælg, hvordan du vil betale"
+
+msgid "Please choose a payment method."
+msgstr "Vælg en betalingsmetode."
+
+msgid "Direct bank transfer"
+msgstr "Direkte bankoverførsel"
+
+msgid "Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account."
+msgstr "Betal direkte til vores bankkonto. Brug ordrenummeret som reference. Vi sender varerne, når betalingen er registreret."
+
+msgid "Place order"
+msgstr "Afgiv ordre"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Angiv et fornavn."

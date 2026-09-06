@@ -31,6 +31,9 @@ function nh_is_classic_checkout_form() {
  * @return string
  */
 function nh_checkout_chosen_payment_method() {
+	if ( ! nh_checkout_is_payment_step() ) {
+		return '';
+	}
 	if ( isset( $_POST['payment_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		return sanitize_text_field( wp_unslash( $_POST['payment_method'] ) );
 	}
@@ -48,7 +51,37 @@ function nh_checkout_chosen_payment_method() {
 }
 
 /**
- * SVEA / Kustom / Klarna Checkout replace the Woo form with their iframe.
+ * Details first, then payment. Empty until the customer clicks Next.
+ *
+ * @return bool
+ */
+function nh_checkout_is_payment_step() {
+	$step = '';
+	if ( isset( $_POST['nh_checkout_step'] ) && is_scalar( $_POST['nh_checkout_step'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$step = sanitize_text_field( wp_unslash( (string) $_POST['nh_checkout_step'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	} elseif ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$form = array();
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $form['nh_checkout_step'] ) && is_scalar( $form['nh_checkout_step'] ) ) {
+			$step = sanitize_text_field( (string) $form['nh_checkout_step'] );
+		}
+	} elseif ( function_exists( 'WC' ) && WC()->session ) {
+		$step = (string) WC()->session->get( 'nh_checkout_step' );
+	}
+	return 'payment' === $step;
+}
+
+/**
+ * Load Svea/Kustom iframe only after the customer is on the payment step and picked that method.
+ *
+ * @return bool
+ */
+function nh_checkout_should_load_iframe() {
+	return nh_checkout_is_payment_step() && nh_checkout_is_snippet_gateway();
+}
+
+/**
+ * SVEA / Kustom / Klarna Checkout collect payment in an iframe after the Woo form.
  *
  * @param string $gateway_id Optional gateway id; request/session method if empty.
  */
@@ -98,6 +131,8 @@ function nh_checkout_snippet_ignored_fields( $fields ) {
 		'billing_company_reg',
 		'billing_contact_email',
 		'billing_contact_phone',
+		'billing_phone_code',
+		'billing_contact_phone_code',
 		'nh_section_person',
 		'order_comments',
 	) as $name ) {
@@ -113,6 +148,13 @@ function nh_checkout_ux_init() {
 	add_filter( 'body_class', 'nh_checkout_ux_body_class' );
 	add_action( 'wp_enqueue_scripts', 'nh_checkout_ux_assets', 100 );
 	add_action( 'wp', 'nh_checkout_split_review_and_payment', 20 );
+	add_action( 'wp', 'nh_checkout_prepare_steps', 5 );
+	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
+	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
+	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
 
 	add_filter( 'woocommerce_default_address_fields', 'nh_checkout_default_address_fields', 20 );
 	add_filter( 'woocommerce_get_country_locale', 'nh_checkout_country_locale', 20 );
@@ -139,13 +181,12 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_review_address', 2 );
 	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_reapply_posted_iframe_zip', 1, 2 );
+	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_reapply_posted_woo_identity', 2, 2 );
 	add_action( 'woocommerce_sco_refresh_snippet_customer_updated', 'nh_checkout_on_iframe_customer_updated', 5, 2 );
 	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping', 999 );
 	add_filter( 'woocommerce_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
 	add_filter( 'woocommerce_cart_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
 	add_action( 'wc_ajax_nh_snippet_apply_zip', 'nh_checkout_ajax_snippet_apply_zip' );
-	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_strip_snippet_fields', 10000 );
-	add_filter( 'woocommerce_enable_order_notes_field', 'nh_checkout_snippet_disable_order_notes', 10000 );
 	add_filter( 'kco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'kco_wc_ignored_order_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'kco_ignored_field_names', 'nh_checkout_snippet_ignored_fields' );
@@ -155,40 +196,223 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_svea_checkout_ignored_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false', 20 );
 	add_filter( 'woocommerce_package_rates', 'nh_checkout_numeric_shipping_rate_costs', 999 );
+	add_filter( 'woocommerce_sco_should_remove_default_fields', '__return_false' );
+	add_filter( 'woocommerce_sco_show_change_payment_button', '__return_false' );
+	add_filter( 'woocommerce_sco_needs_new_checkout', 'nh_checkout_svea_needs_new_for_identity', 10, 2 );
+	add_filter( 'woocommerce_sco_create_order', 'nh_checkout_svea_create_order_identity' );
+	add_action( 'wp', 'nh_checkout_unhook_snippet_chrome', 30 );
 }
 
 /**
- * Snippet checkouts collect address in their iframe — drop our extra Woo fields.
- *
- * @param array $fields Checkout fieldsets.
- * @return array
+ * Keep Woo billing fields and payment radios. Svea/Kustom only supply the iframe.
  */
-function nh_checkout_strip_snippet_fields( $fields ) {
-	if ( ! nh_checkout_is_snippet_gateway() || ! is_array( $fields ) ) {
-		return $fields;
+function nh_checkout_unhook_snippet_chrome() {
+	if ( ! nh_is_classic_checkout_form() ) {
+		return;
 	}
-	if ( isset( $fields['billing'] ) && is_array( $fields['billing'] ) ) {
-		unset(
-			$fields['billing']['billing_customer_type'],
-			$fields['billing']['nh_section_person']
-		);
+
+	remove_action( 'kco_wc_after_order_review', 'kco_wc_add_extra_checkout_fields', 10 );
+	remove_action( 'kco_wc_after_order_review', 'kco_wc_show_another_gateway_button', 20 );
+
+	if ( class_exists( 'KCO_Templates' ) && method_exists( 'KCO_Templates', 'get_instance' ) ) {
+		$templates = KCO_Templates::get_instance();
+		if ( is_object( $templates ) ) {
+			remove_action( 'kco_wc_before_snippet', array( $templates, 'add_wc_form' ), 10 );
+			remove_action( 'wp_footer', array( $templates, 'check_that_kco_template_has_loaded' ) );
+		}
 	}
-	if ( isset( $fields['order'] ) && is_array( $fields['order'] ) ) {
-		unset( $fields['order']['order_comments'] );
+
+	if ( nh_checkout_should_load_iframe() ) {
+		return;
 	}
-	return $fields;
+
+	if ( function_exists( 'svea_checkout' ) ) {
+		$svea = svea_checkout();
+		if ( is_object( $svea ) && isset( $svea->template_handler ) && is_object( $svea->template_handler ) ) {
+			remove_action( 'woocommerce_checkout_before_order_review', array( $svea->template_handler, 'modify_checkout_page_hooks' ) );
+			remove_action( 'woocommerce_checkout_before_order_review', array( $svea->template_handler, 'maybe_remove_checkout_fields' ) );
+		}
+	}
 }
 
 /**
- * @param bool $enabled Whether Woo should print order notes.
+ * Keep the first payment method unselected until the customer reaches the payment step and clicks one.
+ *
+ * @param array<string, WC_Payment_Gateway> $gateways Gateways.
+ * @return array<string, WC_Payment_Gateway>
+ */
+function nh_checkout_no_default_gateway( $gateways ) {
+	if ( ! is_array( $gateways ) ) {
+		return $gateways;
+	}
+	if ( ! nh_is_classic_checkout_form() && ! ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) ) {
+		return $gateways;
+	}
+	if ( nh_checkout_is_payment_step() && nh_checkout_chosen_payment_method() !== '' ) {
+		return $gateways;
+	}
+	foreach ( $gateways as $gateway ) {
+		if ( is_object( $gateway ) ) {
+			$gateway->chosen = false;
+		}
+	}
+	return $gateways;
+}
+
+/**
+ * Do not let Svea/Kustom swap in their iframe-only templates before a method is chosen.
+ *
+ * @param string $template      Located template.
+ * @param string $template_name Template name.
+ * @return string
+ */
+function nh_checkout_force_woo_form_until_iframe( $template, $template_name ) {
+	if ( 'checkout/form-checkout.php' !== $template_name ) {
+		return $template;
+	}
+	if ( nh_checkout_should_load_iframe() ) {
+		return $template;
+	}
+	$ours = get_stylesheet_directory() . '/woocommerce/checkout/form-checkout.php';
+	return file_exists( $ours ) ? $ours : $template;
+}
+
+/**
+ * Persist details vs payment step from the checkout form.
+ *
+ * @param string $post_data Serialized form.
+ */
+function nh_checkout_sync_checkout_step( $post_data ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$step = 'details';
+	if ( isset( $_POST['nh_checkout_step'] ) && is_scalar( $_POST['nh_checkout_step'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$step = sanitize_text_field( wp_unslash( (string) $_POST['nh_checkout_step'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	} elseif ( is_string( $post_data ) && $post_data !== '' ) {
+		$form = array();
+		parse_str( $post_data, $form );
+		if ( ! empty( $form['nh_checkout_step'] ) && is_scalar( $form['nh_checkout_step'] ) ) {
+			$step = sanitize_text_field( (string) $form['nh_checkout_step'] );
+		}
+	}
+
+	$step = ( 'payment' === $step ) ? 'payment' : 'details';
+	WC()->session->set( 'nh_checkout_step', $step );
+
+	if ( 'details' === $step ) {
+		WC()->session->set( 'chosen_payment_method', '' );
+	}
+}
+
+/**
+ * Fresh checkout visit starts on the details step with no payment method selected.
+ */
+function nh_checkout_prepare_steps() {
+	if ( ! nh_is_classic_checkout_form() || wp_doing_ajax() ) {
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	if ( nh_checkout_is_payment_step() ) {
+		return;
+	}
+	WC()->session->set( 'nh_checkout_step', 'details' );
+	WC()->session->set( 'chosen_payment_method', '' );
+}
+
+/**
+ * Svea create() only sends email/phone/postcode as presetValues. Recreate the SCO
+ * when Woo now has identity that the existing checkout session does not.
+ *
+ * @param bool  $need_new      Plugin decision.
+ * @param array $checkout_data Current Svea checkout payload.
  * @return bool
  */
-function nh_checkout_snippet_disable_order_notes( $enabled ) {
-	if ( nh_checkout_is_snippet_gateway() ) {
-		return false;
+function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
+	if ( $need_new || ! is_array( $checkout_data ) || ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return $need_new;
 	}
-	return $enabled;
+
+	$email = sanitize_email( (string) WC()->customer->get_billing_email() );
+	$sco_email = isset( $checkout_data['EmailAddress'] ) ? sanitize_email( (string) $checkout_data['EmailAddress'] ) : '';
+	if ( $email !== '' && strcasecmp( $email, $sco_email ) !== 0 ) {
+		return true;
+	}
+
+	$phone = trim( (string) WC()->customer->get_billing_phone() );
+	$sco_phone = isset( $checkout_data['PhoneNumber'] ) ? trim( (string) $checkout_data['PhoneNumber'] ) : '';
+	if ( $phone !== '' && $sco_phone === '' ) {
+		return true;
+	}
+
+	$zip = nh_checkout_usable_postcode( WC()->customer->get_billing_postcode() );
+	$sco_zip = '';
+	if ( ! empty( $checkout_data['BillingAddress']['PostalCode'] ) ) {
+		$sco_zip = nh_checkout_usable_postcode( $checkout_data['BillingAddress']['PostalCode'] );
+	}
+	if ( $zip !== '' && $sco_zip === '' ) {
+		return true;
+	}
+
+	return $need_new;
 }
+
+/**
+ * Align Svea IsCompany with the Woo private/business toggle when a new SCO is created.
+ *
+ * @param array $data Create-order payload.
+ * @return array
+ */
+function nh_checkout_svea_create_order_identity( $data ) {
+	if ( ! is_array( $data ) || empty( $data['presetValues'] ) || ! is_array( $data['presetValues'] ) ) {
+		return $data;
+	}
+
+	$type = nh_checkout_posted_type_from_request();
+	if ( $type === '' ) {
+		return $data;
+	}
+
+	$is_company = ( 'business' === $type );
+	foreach ( $data['presetValues'] as $i => $preset ) {
+		if ( ! is_array( $preset ) || empty( $preset['TypeName'] ) || 'IsCompany' !== $preset['TypeName'] ) {
+			continue;
+		}
+		if ( ! empty( $preset['IsReadOnly'] ) ) {
+			continue;
+		}
+		$data['presetValues'][ $i ]['Value'] = $is_company;
+	}
+
+	return $data;
+}
+
+/**
+ * Customer type from this request (AJAX post_data or POST).
+ *
+ * @return string private|business|empty
+ */
+function nh_checkout_posted_type_from_request() {
+	if ( isset( $_POST['billing_customer_type'] ) && is_scalar( $_POST['billing_customer_type'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$type = sanitize_text_field( wp_unslash( (string) $_POST['billing_customer_type'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return in_array( $type, array( 'private', 'business' ), true ) ? $type : '';
+	}
+
+	if ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$form = array();
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $form['billing_customer_type'] ) && is_scalar( $form['billing_customer_type'] ) ) {
+			$type = sanitize_text_field( (string) $form['billing_customer_type'] );
+			return in_array( $type, array( 'private', 'business' ), true ) ? $type : '';
+		}
+	}
+
+	return '';
+}
+
 add_action( 'init', 'nh_checkout_ux_init' );
 
 /**
@@ -219,8 +443,9 @@ function nh_checkout_ux_body_class( $classes ) {
 	}
 	if ( nh_is_classic_checkout_form() ) {
 		$classes[] = 'nh-checkout-form';
+		$classes[] = nh_checkout_is_payment_step() ? 'nh-checkout--step-payment' : 'nh-checkout--step-details';
 	}
-	if ( nh_checkout_is_snippet_gateway() ) {
+	if ( nh_checkout_should_load_iframe() ) {
 		$classes[] = 'nh-checkout--snippet';
 	}
 	return $classes;
@@ -283,7 +508,12 @@ function nh_checkout_ux_assets() {
 			'phoneLengths'    => nh_checkout_national_digit_limits(),
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
-			'snippetCheckout' => nh_checkout_is_snippet_gateway(),
+			'snippetCheckout' => nh_checkout_should_load_iframe(),
+			'checkoutStep'    => nh_checkout_is_payment_step() ? 'payment' : 'details',
+			'chosenPayment'   => nh_checkout_chosen_payment_method(),
+			'nextLabel'       => __( 'Continue to payment', 'nh-theme' ),
+			'backLabel'       => __( 'Back to details', 'nh-theme' ),
+			'selectPayment'   => __( 'Please choose a payment method.', 'nh-theme' ),
 			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
 			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
 		)
@@ -317,18 +547,17 @@ function nh_checkout_summary_shipping_html() {
 }
 
 /**
- * Keep line items in the summary column; payment stays under the form.
- * Skip if a gateway already removed the default payment action.
+ * Keep line items in the summary column; payment radios stay under the form.
+ * Svea also removes woocommerce_checkout_payment from order review — re-attach here.
  */
 function nh_checkout_split_review_and_payment() {
 	if ( ! nh_is_classic_checkout_form() ) {
 		return;
 	}
-	if ( ! has_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment' ) ) {
-		return;
-	}
 	remove_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20 );
-	add_action( 'nh_checkout_payment', 'woocommerce_checkout_payment', 10 );
+	if ( ! has_action( 'nh_checkout_payment', 'woocommerce_checkout_payment' ) ) {
+		add_action( 'nh_checkout_payment', 'woocommerce_checkout_payment', 10 );
+	}
 }
 
 /**
@@ -468,33 +697,26 @@ function nh_checkout_fields( $fields ) {
 
 	$billing = &$fields['billing'];
 
-	if ( nh_checkout_is_snippet_gateway() ) {
-		unset( $billing['billing_customer_type'], $billing['nh_section_person'] );
-		if ( isset( $fields['order'] ) && is_array( $fields['order'] ) ) {
-			unset( $fields['order']['order_comments'] );
-		}
-	} else {
-		$billing['billing_customer_type'] = array(
-			'type'     => 'radio',
-			'label'    => __( 'I am ordering as', 'nh-theme' ),
-			'required' => true,
-			'class'    => array( 'form-row-wide', 'nh-checkout-type' ),
-			'options'  => array(
-				'private'  => __( 'Private', 'nh-theme' ),
-				'business' => __( 'Business', 'nh-theme' ),
-			),
-			'default'  => 'private',
-			'priority' => 4,
-		);
+	$billing['billing_customer_type'] = array(
+		'type'     => 'radio',
+		'label'    => __( 'I am ordering as', 'nh-theme' ),
+		'required' => true,
+		'class'    => array( 'form-row-wide', 'nh-checkout-type', 'update_totals_on_change' ),
+		'options'  => array(
+			'private'  => __( 'Private', 'nh-theme' ),
+			'business' => __( 'Business', 'nh-theme' ),
+		),
+		'default'  => 'private',
+		'priority' => 4,
+	);
 
-		$billing['nh_section_person'] = array(
-			'type'     => 'nh_section',
-			'label'    => __( 'Contact person', 'nh-theme' ),
-			'required' => false,
-			'class'    => array( 'nh-checkout-field--person-heading' ),
-			'priority' => 200,
-		);
-	}
+	$billing['nh_section_person'] = array(
+		'type'     => 'nh_section',
+		'label'    => __( 'Contact person', 'nh-theme' ),
+		'required' => false,
+		'class'    => array( 'nh-checkout-field--person-heading' ),
+		'priority' => 200,
+	);
 
 	nh_checkout_set_field( $billing, 'billing_company', array(
 		'label'        => __( 'Business name', 'nh-theme' ),
@@ -529,7 +751,7 @@ function nh_checkout_fields( $fields ) {
 
 	nh_checkout_set_field( $billing, 'billing_email', array(
 		'required'     => true,
-		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'nh-checkout-field--contact' ),
+		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'nh-checkout-field--contact', 'update_totals_on_change' ),
 		'validate'     => array( 'email' ),
 		'autocomplete' => 'email',
 		'priority'     => 34,
@@ -541,7 +763,7 @@ function nh_checkout_fields( $fields ) {
 	nh_checkout_set_field( $billing, 'billing_phone', array(
 		'type'         => 'tel',
 		'required'     => true,
-		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'nh-checkout-field--contact' ),
+		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'nh-checkout-field--contact', 'update_totals_on_change' ),
 		'validate'     => array( 'phone' ),
 		'autocomplete' => 'tel-national',
 		'priority'     => 36,
@@ -1167,9 +1389,6 @@ function nh_checkout_validate_fields( $data, $errors ) {
 	if ( ! $errors instanceof WP_Error ) {
 		return;
 	}
-	if ( nh_checkout_is_snippet_gateway() ) {
-		return;
-	}
 
 	$email = isset( $data['billing_email'] ) ? trim( (string) $data['billing_email'] ) : '';
 	$phone = isset( $data['billing_phone'] ) ? trim( (string) $data['billing_phone'] ) : '';
@@ -1441,6 +1660,31 @@ function nh_checkout_secure_note() {
 }
 
 /**
+ * Gateway titles/descriptions are stored in Woo settings in English and skip gettext.
+ * Run them through WooCommerce and theme translations on checkout.
+ *
+ * @param string $text Title, description, or button label.
+ * @return string
+ */
+function nh_checkout_translate_gateway_text( $text ) {
+	if ( ! is_string( $text ) ) {
+		return $text;
+	}
+	$original = $text;
+	$lookup   = trim( wp_strip_all_tags( $text ) );
+	if ( $lookup === '' ) {
+		return $original;
+	}
+	foreach ( array( 'woocommerce', 'nh-theme' ) as $domain ) {
+		$translated = translate( $lookup, $domain ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralDomain
+		if ( is_string( $translated ) && $translated !== '' && $translated !== $lookup && trim( $original ) === $lookup ) {
+			return $translated;
+		}
+	}
+	return $original;
+}
+
+/**
  * Woo checkout.js posts shipping_method[undefined] when data-index is missing.
  * Package 0 then keeps the previous method and the total does not change.
  *
@@ -1567,9 +1811,8 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
 		}
 	}
 
-	// SVEA/Kustom write billing_postcode onto the customer after this hook.
-	// Restoring a stale session zip here freezes zip-specific shipping.
-	if ( nh_checkout_is_iframe_gateway() && ( strpos( $post_key, 'postcode' ) !== false || strpos( $customer_field, 'postcode' ) !== false ) ) {
+	// Restoring a stale session zip here can freeze zip-specific shipping.
+	if ( nh_checkout_is_iframe_gateway() && ! nh_checkout_is_snippet_gateway() && ( strpos( $post_key, 'postcode' ) !== false || strpos( $customer_field, 'postcode' ) !== false ) ) {
 		return;
 	}
 
@@ -1610,15 +1853,12 @@ function nh_checkout_fill_review_field( $post_key, $form_keys, $form, $customer_
  * @param string $post_data Checkout form query string.
  */
 function nh_checkout_sync_review_address( $post_data ) {
-	if ( nh_checkout_is_snippet_gateway() ) {
-		nh_checkout_apply_snippet_posted_zip( $post_data );
-		return;
-	}
-
 	$form = array();
 	if ( is_string( $post_data ) && $post_data !== '' ) {
 		parse_str( $post_data, $form );
 	}
+
+	nh_checkout_copy_posted_identity( $form );
 
 	$ship_diff = ! empty( $form['ship_to_different_address'] );
 
@@ -1788,6 +2028,138 @@ function nh_checkout_reapply_posted_iframe_zip( $customer, $data = array() ) {
 		// SVEA owns this AJAX. save() on a guest session has fataled refresh_sco_snippet.
 	} catch ( Throwable $e ) {
 		return;
+	}
+}
+
+/**
+ * Copy Woo form identity onto the customer so Svea create() / Kustom update see it.
+ *
+ * @param array<string, mixed> $form Parsed checkout post_data.
+ */
+function nh_checkout_copy_posted_identity( $form = array() ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return;
+	}
+	if ( ! is_array( $form ) ) {
+		$form = array();
+	}
+
+	$customer = WC()->customer;
+	$map      = array(
+		'billing_email'      => array( 'sanitize_email', 'set_billing_email' ),
+		'billing_phone'      => array( 'wc_clean', 'set_billing_phone' ),
+		'billing_first_name' => array( 'wc_clean', 'set_billing_first_name' ),
+		'billing_last_name'  => array( 'wc_clean', 'set_billing_last_name' ),
+		'billing_company'    => array( 'wc_clean', 'set_billing_company' ),
+		'billing_postcode'   => array( 'nh_checkout_usable_postcode', 'set_billing_postcode' ),
+		'billing_city'       => array( 'wc_clean', 'set_billing_city' ),
+		'billing_address_1'  => array( 'wc_clean', 'set_billing_address_1' ),
+		'billing_country'    => array( 'wc_clean', 'set_billing_country' ),
+	);
+
+	foreach ( $map as $key => $pair ) {
+		$sanitize = $pair[0];
+		$setter   = $pair[1];
+		$value    = '';
+		if ( ! empty( $form[ $key ] ) && is_scalar( $form[ $key ] ) ) {
+			$value = (string) $form[ $key ];
+		}
+		if ( $value === '' ) {
+			$value = nh_checkout_posted_scalar( $key );
+		}
+		if ( $value === '' || ! is_callable( $sanitize ) || ! method_exists( $customer, $setter ) ) {
+			continue;
+		}
+		$value = call_user_func( $sanitize, $value );
+		if ( $value === '' ) {
+			continue;
+		}
+		if ( 'billing_phone' === $key ) {
+			$code = '';
+			if ( ! empty( $form['billing_phone_code'] ) && is_scalar( $form['billing_phone_code'] ) ) {
+				$code = (string) $form['billing_phone_code'];
+			}
+			if ( $code === '' ) {
+				$code = nh_checkout_posted_scalar( 'billing_phone_code' );
+			}
+			$value = nh_checkout_normalize_phone( $value, $code );
+			if ( $value === '' ) {
+				continue;
+			}
+		}
+		$customer->{$setter}( $value );
+		if ( 'billing_postcode' === $key ) {
+			$customer->set_shipping_postcode( $value );
+		} elseif ( 'billing_country' === $key ) {
+			$customer->set_shipping_country( $value );
+		} elseif ( 'billing_city' === $key ) {
+			$customer->set_shipping_city( $value );
+		} elseif ( 'billing_address_1' === $key ) {
+			$customer->set_shipping_address_1( $value );
+		} elseif ( 'billing_phone' === $key && method_exists( $customer, 'set_shipping_phone' ) ) {
+			$customer->set_shipping_phone( $value );
+		}
+	}
+}
+
+/**
+ * Svea refresh overlays BillingAddress/EmailAddress from its server get(), which
+ * stays empty until the customer is identified in the iframe. Restore Woo form values.
+ *
+ * @param WC_Customer          $customer Customer.
+ * @param array<string, mixed> $data     Address payload from SVEA.
+ */
+function nh_checkout_reapply_posted_woo_identity( $customer, $data = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	if ( ! is_object( $customer ) || ! method_exists( $customer, 'set_billing_email' ) ) {
+		return;
+	}
+
+	$form = array();
+	if ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
+
+	$email = '';
+	if ( ! empty( $form['billing_email'] ) && is_scalar( $form['billing_email'] ) ) {
+		$email = sanitize_email( (string) $form['billing_email'] );
+	}
+	if ( $email === '' ) {
+		$email = sanitize_email( nh_checkout_posted_scalar( 'billing_email' ) );
+	}
+	if ( $email !== '' ) {
+		try {
+			$customer->set_billing_email( $email );
+		} catch ( Throwable $e ) {
+			return;
+		}
+	}
+
+	$phone = '';
+	if ( ! empty( $form['billing_phone'] ) && is_scalar( $form['billing_phone'] ) ) {
+		$phone = wc_clean( (string) $form['billing_phone'] );
+	}
+	if ( $phone === '' ) {
+		$phone = nh_checkout_posted_scalar( 'billing_phone' );
+	}
+	$code = '';
+	if ( ! empty( $form['billing_phone_code'] ) && is_scalar( $form['billing_phone_code'] ) ) {
+		$code = (string) $form['billing_phone_code'];
+	}
+	if ( $code === '' ) {
+		$code = nh_checkout_posted_scalar( 'billing_phone_code' );
+	}
+	if ( $phone !== '' ) {
+		$phone = nh_checkout_normalize_phone( $phone, $code );
+	}
+	if ( $phone !== '' ) {
+		try {
+			$customer->set_billing_phone( $phone );
+			if ( method_exists( $customer, 'set_shipping_phone' ) ) {
+				$customer->set_shipping_phone( $phone );
+			}
+		} catch ( Throwable $e ) {
+			return;
+		}
 	}
 }
 
@@ -2029,6 +2401,74 @@ function nh_checkout_shipping_index_boot_script() {
 }
 
 /**
+ * CSS class for the checkout form: Svea JS binds to .wc-svea-checkout-page.
+ *
+ * @return string
+ */
+function nh_checkout_form_classes() {
+	$classes = array( 'checkout', 'woocommerce-checkout', 'nh-checkout-form-el' );
+
+	$checkout = function_exists( 'WC' ) && WC()->checkout() ? WC()->checkout() : null;
+	if ( $checkout && 'business' === $checkout->get_value( 'billing_customer_type' ) ) {
+		$classes[] = 'nh-checkout--business';
+	}
+
+	if ( nh_checkout_is_payment_step() ) {
+		$classes[] = 'nh-checkout--step-payment';
+	} else {
+		$classes[] = 'nh-checkout--step-details';
+	}
+
+	if ( ! nh_checkout_should_load_iframe() ) {
+		return implode( ' ', array_unique( $classes ) );
+	}
+
+	$classes[] = 'nh-checkout--snippet';
+	$method    = strtolower( (string) nh_checkout_chosen_payment_method() );
+	if ( $method === 'svea_checkout' || $method === 'sco' || $method === 'sveacheckout' || preg_match( '/svea.?checkout/', $method ) ) {
+		$classes[] = 'svea-checkout';
+		$classes[] = 'wc-svea-checkout-page';
+	}
+	if ( $method === 'kco' || $method === 'kustom_checkout' || $method === 'klarna_checkout' ) {
+		$classes[] = 'kco-checkout';
+	}
+
+	return implode( ' ', array_unique( $classes ) );
+}
+
+/**
+ * Svea / Kustom iframe under the payment radios. Kept outside #payment so
+ * Woo's update_checkout fragment does not replace a live iframe.
+ * Not printed until the customer is on the payment step and picked that method.
+ */
+function nh_checkout_render_gateway_iframe() {
+	if ( ! nh_checkout_should_load_iframe() ) {
+		return;
+	}
+
+	$method  = strtolower( (string) nh_checkout_chosen_payment_method() );
+	$is_kco  = in_array( $method, array( 'kco', 'kustom_checkout', 'klarna_checkout' ), true );
+	$is_svea = ( $method === 'svea_checkout' || $method === 'sco' || $method === 'sveacheckout' || (bool) preg_match( '/svea.?checkout/', $method ) );
+
+	echo '<div class="nh-checkout-iframe" id="nh-checkout-iframe">';
+
+	if ( $is_kco && function_exists( 'kco_wc_show_snippet' ) ) {
+		echo '<div id="kco-wrapper" class="nh-checkout-iframe__kco"><div id="kco-iframe">';
+		do_action( 'kco_wc_before_snippet' );
+		kco_wc_show_snippet();
+		do_action( 'kco_wc_after_snippet' );
+		echo '</div></div>';
+	} elseif ( $is_svea && class_exists( '\Svea_Checkout_For_Woocommerce\Template_Handler' ) ) {
+		echo '<div class="wc-svea-checkout-checkout-module"><div id="svea-checkout-iframe-container">';
+		echo '<div class="svea-skeleton-loader"><div class="svea-skeleton-loader__heading"></div><div class="svea-skeleton-loader__input"></div><div class="svea-skeleton-loader__input"></div><div class="svea-skeleton-loader__button"></div></div>';
+		\Svea_Checkout_For_Woocommerce\Template_Handler::get_svea_snippet();
+		echo '</div></div>';
+	}
+
+	echo '</div>';
+}
+
+/**
  * Beat Astra/Woo floats on #order_review (they shrink the summary to ~40% of the sidebar).
  * Also flatten the inner #order_review card so the summary is a single frame.
  */
@@ -2061,23 +2501,20 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__aside{width:400px!important;max-width:400px!important;min-width:400px!important;flex:0 0 400px!important}'
 		. 'html body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main{min-width:0!important;width:auto!important;max-width:none!important}'
 		. '}'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-secure,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet #billing_customer_type_field,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-type,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-notes,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-additional-fields,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-secure,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside #billing_customer_type_field,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-checkout-type,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields{display:none!important}'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-payment>.nh-checkout-section__title{display:none!important}'
-		. 'html body.woocommerce-checkout .nh-checkout-other-payment:not([hidden]),'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-other-payment-btn{display:flex!important;align-items:center;justify-content:center;width:100%!important;min-height:44px;margin:.75rem 0 0;padding:.65rem 1rem;border:1px solid #c3e8c6;border-radius:12px;background:#fff!important;color:#00704a!important;font-weight:700;font-size:.95rem;text-align:center;text-decoration:none!important;cursor:pointer;box-shadow:none}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet #payment .form-row.place-order{display:none!important}'
+		. 'html body.woocommerce-checkout .nh-checkout-other-payment,'
+		. 'html body.woocommerce-checkout .nh-checkout-other-payment-btn,'
+		. 'html body.woocommerce-checkout #klarna-checkout-select-other,'
+		. 'html body.woocommerce-checkout #svea-checkout-select-other,'
+		. 'html body.woocommerce-checkout #sco-change-payment,'
+		. 'html body.woocommerce-checkout .kco-select-another-method,'
+		. 'html body.woocommerce-checkout a.sco-change-payment-method{display:none!important}'
 		. '@media(max-width:959px){'
-		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-layout__main{order:0}'
-		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-layout__aside{order:1}'
 		. 'html body.woocommerce-checkout .site-content>.ast-container,'
 		. 'html body.woocommerce-checkout.ast-separate-container .ast-container,'
 		. 'html body.woocommerce-checkout.ast-plain-container .ast-container{padding-left:10px!important;padding-right:10px!important}'
@@ -2088,3 +2525,4 @@ function nh_checkout_layout_lock_css() {
 		. '}'
 		. '</style>' . "\n";
 }
+

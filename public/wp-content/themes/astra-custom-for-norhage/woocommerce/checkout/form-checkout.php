@@ -1,6 +1,6 @@
 <?php
 /**
- * Classic checkout form — two-column layout, payment under details.
+ * Classic checkout form — details first, then payment radios and optional iframe.
  *
  * @see     https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
@@ -19,12 +19,8 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 }
 
 $cart_total = ( function_exists( 'WC' ) && WC()->cart ) ? WC()->cart->get_total() : '';
-$customer_type = $checkout->get_value( 'billing_customer_type' );
-$form_class    = 'checkout woocommerce-checkout nh-checkout-form-el';
-if ( 'business' === $customer_type ) {
-	$form_class .= ' nh-checkout--business';
-}
-$snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_checkout_is_snippet_gateway();
+$form_class = function_exists( 'nh_checkout_form_classes' ) ? nh_checkout_form_classes() : 'checkout woocommerce-checkout nh-checkout-form-el';
+$nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_is_payment_step() ) ? 'payment' : 'details';
 ?>
 
 <form name="checkout" method="post" class="<?php echo esc_attr( $form_class ); ?>" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>" autocomplete="on">
@@ -33,8 +29,8 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 		<aside class="nh-checkout-layout__aside">
 			<?php do_action( 'woocommerce_checkout_before_order_review_heading' ); ?>
 
-			<section class="nh-checkout-summary<?php echo $snippet_checkout ? '' : ' is-open'; ?>" aria-labelledby="order_review_heading">
-				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="<?php echo $snippet_checkout ? 'false' : 'true'; ?>" aria-controls="nh-checkout-summary-body">
+			<section class="nh-checkout-summary is-open" aria-labelledby="order_review_heading">
+				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="true" aria-controls="nh-checkout-summary-body">
 					<span class="nh-checkout-summary-toggle__label"><?php esc_html_e( 'Order summary', 'nh-theme' ); ?></span>
 					<span class="nh-checkout-summary-toggle__meta">
 						<span class="nh-checkout-summary-toggle__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
@@ -75,14 +71,29 @@ $snippet_checkout = function_exists( 'nh_checkout_is_snippet_gateway' ) && nh_ch
 
 			<?php endif; ?>
 
-			<section class="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
-				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
-				<?php do_action( 'nh_checkout_payment' ); ?>
-			</section>
+			<div id="kco-extra-checkout-fields"></div>
 
-			<button type="button" class="nh-checkout-other-payment"<?php echo $snippet_checkout ? '' : ' hidden'; ?>>
-				<?php esc_html_e( 'Other payment method', 'nh-theme' ); ?>
-			</button>
+			<input type="hidden" name="nh_checkout_step" id="nh_checkout_step" value="<?php echo esc_attr( $nh_step ); ?>" />
+
+			<div class="nh-checkout-step-actions nh-checkout-step-actions--details">
+				<button type="button" class="button alt nh-checkout-next" id="nh-checkout-next">
+					<?php esc_html_e( 'Continue to payment', 'nh-theme' ); ?>
+				</button>
+			</div>
+
+			<section class="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
+				<button type="button" class="nh-checkout-back" id="nh-checkout-back">
+					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
+				</button>
+				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
+				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay', 'nh-theme' ); ?></p>
+				<?php do_action( 'nh_checkout_payment' ); ?>
+				<?php
+				if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
+					nh_checkout_render_gateway_iframe();
+				}
+				?>
+			</section>
 		</div>
 	</div>
 

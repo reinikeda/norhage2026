@@ -5,6 +5,9 @@
   'use strict';
 
   var i18n = window.nhCheckoutUx || {};
+  var paymentChosenByCustomer = false;
+  var allowSnippetReload = false;
+  var backReloadTimer = null;
 
   function selectedType() {
     var $checked = $('input[name="billing_customer_type"]:checked');
@@ -461,16 +464,10 @@
   }
 
   function isSnippetCheckoutPage() {
-    if (i18n.snippetCheckout === true || i18n.snippetCheckout === 1 || i18n.snippetCheckout === '1') {
-      return true;
+    if (checkoutStep() !== 'payment') {
+      return false;
     }
-    var body = document.body;
-    if (body && body.classList.contains('nh-checkout--snippet')) {
-      return true;
-    }
-    return !!(document.querySelector(
-      '.wc-svea-checkout-page, #kco-wrapper, form.svea-checkout, form.kco-checkout, #svea-checkout-iframe-container, #klarna-checkout-container'
-    ));
+    return paymentIdIsSnippet(chosenPaymentId()) || snippetCheckoutPresent();
   }
 
   function stampShippingIndexes() {
@@ -487,6 +484,74 @@
     }
     if (isSveaRefreshSnippet(options) && lastWrittenZip) {
       options.data = ensureBillingPostcode(options.data, lastWrittenZip);
+    }
+  });
+
+  function checkoutStep() {
+    var $input = $('#nh_checkout_step');
+    if ($input.length) {
+      return $input.val() === 'payment' ? 'payment' : 'details';
+    }
+    return i18n.checkoutStep === 'payment' ? 'payment' : 'details';
+  }
+
+  function shouldKeepPaymentSelection() {
+    if (checkoutStep() !== 'payment') {
+      return false;
+    }
+    if (paymentChosenByCustomer) {
+      return true;
+    }
+    if (i18n.chosenPayment) {
+      return true;
+    }
+    if (i18n.snippetCheckout) {
+      return true;
+    }
+    return false;
+  }
+
+  function postDataFlag(data, name, onValues) {
+    if (typeof data === 'string') {
+      var re = new RegExp('(?:^|&)' + name + '=(' + onValues.join('|') + ')(?:&|$)', 'i');
+      return re.test(data);
+    }
+    if (!data || typeof data !== 'object') {
+      return false;
+    }
+    var val = data[name];
+    return val === true || val === 1 || val === '1' || onValues.indexOf(String(val).toLowerCase()) !== -1;
+  }
+
+  $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    if (!options || !options.url) {
+      return;
+    }
+    var url = String(options.url);
+    var isSveaChange = /sco_change_payment_method/i.test(url);
+    var isKcoChange = /kco_wc_change_payment_method/i.test(url);
+    if (!isSveaChange && !isKcoChange) {
+      return;
+    }
+
+    var turningOn = isSveaChange
+      ? postDataFlag(options.data, 'svea', ['true', '1'])
+      : postDataFlag(options.data, 'kco', ['true', '1']);
+
+    if (!turningOn) {
+      return;
+    }
+
+    if (checkoutStep() !== 'payment' || !allowSnippetReload) {
+      jqXHR.abort();
+      return;
+    }
+
+    if (isSveaChange && document.getElementById('svea-checkout-iframe-container')) {
+      jqXHR.abort();
+    }
+    if (isKcoChange && document.querySelector('#kco-iframe, #kco-wrapper, #klarna-checkout-container')) {
+      jqXHR.abort();
     }
   });
 
@@ -507,7 +572,7 @@
     $(document.body).off('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method');
     $(document.body).on('change.nhShipTotals', 'form.checkout input.shipping_method, form.checkout select.shipping_method', function () {
       stampShippingIndexes();
-      if (isSnippetCheckoutPage()) {
+      if (paymentIdIsSnippet(chosenPaymentId())) {
         return;
       }
       $(document.body).trigger('update_checkout', { update_shipping_method: true });
@@ -515,11 +580,11 @@
   }
 
   function chosenPaymentId() {
-    var $checked = $('input[name="payment_method"]:checked');
+    var $checked = $('input[name="payment_method"]:checked').not(':disabled');
     if ($checked.length) {
       return String($checked.val() || '');
     }
-    return String($('input[name="payment_method"]').first().val() || '');
+    return '';
   }
 
   function paymentIdIsSnippet(id) {
@@ -585,41 +650,45 @@
   ].join(',');
 
   function isSnippetMode() {
-    if (snippetCheckoutPresent() || paymentIdIsSnippet(chosenPaymentId())) {
+    if (checkoutStep() !== 'payment') {
+      return false;
+    }
+    if (paymentIdIsSnippet(chosenPaymentId())) {
       return true;
     }
-    return document.body.classList.contains('nh-checkout--snippet') && !chosenPaymentId();
+    return !!(i18n.snippetCheckout && snippetCheckoutPresent());
   }
 
   function syncSnippetCheckout() {
     var on = isSnippetMode();
+    var method = chosenPaymentId().toLowerCase();
+    var hasMethod = method !== '' || on;
     $('body').toggleClass('nh-checkout--snippet', on);
+    $('body').toggleClass('nh-checkout--has-method', hasMethod);
     $('form.checkout').toggleClass('nh-checkout--snippet', on);
+    $('form.checkout').toggleClass('nh-checkout--has-method', hasMethod);
+    $('form.checkout').toggleClass(
+      'wc-svea-checkout-page svea-checkout',
+      on && (/svea/.test(method) || method === 'sco' || i18n.chosenPayment === 'svea_checkout')
+    );
+    $('form.checkout').toggleClass(
+      'kco-checkout',
+      on && (/kco|kustom|klarna/.test(method) || i18n.chosenPayment === 'kco')
+    );
 
-    var $extras = $(snippetExtras);
-    if (on) {
-      $extras.attr('hidden', 'hidden');
-    } else {
-      $extras.removeAttr('hidden');
-    }
+    $('#nh-checkout-iframe').toggle(on && snippetCheckoutPresent());
 
     var $ours = $('.nh-checkout-other-payment');
-    var $plugin = snippetOtherPayment();
-    if ($ours.length) {
-      $ours.each(function () {
-        if (!$.trim($(this).text())) {
-          $(this).text(i18n.otherPayment || 'Other payment method');
-        }
-      });
-      if (on) {
-        $ours.removeAttr('hidden');
-        $plugin.addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
-      } else {
-        $ours.attr('hidden', 'hidden');
-        $plugin.removeClass('nh-checkout-other-payment-src').removeAttr('hidden');
-      }
-    } else if (on && $plugin.length) {
-      $plugin.addClass('nh-checkout-other-payment-btn').removeAttr('hidden');
+    $ours.attr('hidden', 'hidden');
+    snippetOtherPayment().addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
+
+    keepShipToSameAddress();
+  }
+
+  function keepShipToSameAddress() {
+    var $cb = $('#ship-to-different-address-checkbox');
+    if ($cb.length && $cb.prop('checked')) {
+      $cb.prop('checked', false);
     }
   }
 
@@ -796,12 +865,7 @@
 
     if (document.body.getAttribute('data-nh-summary-init') !== '1') {
       document.body.setAttribute('data-nh-summary-init', '1');
-      // Snippet checkout: keep the iframe first on mobile. Total + shipping stay on the toggle.
-      if (window.matchMedia('(min-width: 960px)').matches || !isSnippetCheckoutPage()) {
-        $summary.addClass('is-open');
-      } else {
-        $summary.removeClass('is-open');
-      }
+      $summary.addClass('is-open');
     }
 
     var $toggle = $summary.find('.nh-checkout-summary-toggle');
@@ -861,10 +925,167 @@
         $li.toggleClass('is-selected', $li.find('input.input-radio:checked').length > 0);
       });
     }
+  }
 
-    var $section = $('.nh-checkout-payment');
-    if ($section.length) {
-      $section.toggle(!!$section.find('#payment').length);
+  function applyCheckoutStep() {
+    var step = checkoutStep();
+    var onPayment = step === 'payment';
+    $('body')
+      .toggleClass('nh-checkout--step-payment', onPayment)
+      .toggleClass('nh-checkout--step-details', !onPayment);
+    $('form.checkout')
+      .toggleClass('nh-checkout--step-payment', onPayment)
+      .toggleClass('nh-checkout--step-details', !onPayment);
+
+    var $radios = $('input[name="payment_method"]');
+    if (!onPayment) {
+      paymentChosenByCustomer = false;
+      allowSnippetReload = false;
+      $radios.prop('checked', false).prop('disabled', true);
+      $('body, form.checkout').removeClass(
+        'nh-checkout--snippet nh-checkout--has-method wc-svea-checkout-page svea-checkout kco-checkout'
+      );
+    } else {
+      $radios.prop('disabled', false);
+      if (!shouldKeepPaymentSelection()) {
+        $radios.prop('checked', false);
+      }
+    }
+
+    enhancePaymentCards();
+    syncSnippetCheckout();
+  }
+
+  function validateDetailsStep() {
+    var ok = true;
+    var $first = $();
+    $('#customer_details p.validate-required:visible').not('.nh-checkout-field--hidden').each(function () {
+      var $row = $(this);
+      var $inputs = $row.find('input, select, textarea').filter(':visible').not('[type=hidden]').not(':disabled');
+      if (!$inputs.length) {
+        return;
+      }
+      var type = String($inputs.first().attr('type') || '').toLowerCase();
+      var empty = false;
+      if (type === 'radio') {
+        empty = !$row.find('input[type=radio]:checked').length;
+      } else if (type === 'checkbox') {
+        empty = !$inputs.first().is(':checked');
+      } else {
+        empty = $.trim($inputs.first().val() || '') === '';
+      }
+      if (empty) {
+        $row.addClass('woocommerce-invalid woocommerce-invalid-required-field');
+        ok = false;
+        if (!$first.length) {
+          $first = $inputs.first();
+        }
+      }
+    });
+    if (!validateAllPhones(true)) {
+      ok = false;
+      if (!$first.length) {
+        $first = $('.woocommerce-invalid-phone:visible').find('input').first();
+      }
+    }
+    if (!ok && $first.length) {
+      $first.trigger('focus');
+      if ($first[0].scrollIntoView) {
+        $first[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+    return ok;
+  }
+
+  function goToPayment() {
+    if (!validateDetailsStep()) {
+      return;
+    }
+    paymentChosenByCustomer = false;
+    allowSnippetReload = false;
+    i18n.chosenPayment = '';
+    i18n.snippetCheckout = false;
+    $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
+    $('#nh_checkout_step').val('payment');
+    i18n.checkoutStep = 'payment';
+    $('body, form.checkout').removeClass('nh-checkout--step-details').addClass('nh-checkout--step-payment');
+    $(document.body).trigger('update_checkout');
+  }
+
+  function goBackToDetails() {
+    paymentChosenByCustomer = false;
+    allowSnippetReload = false;
+    i18n.chosenPayment = '';
+    i18n.snippetCheckout = false;
+    $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
+    $('#nh_checkout_step').val('details');
+    i18n.checkoutStep = 'details';
+    var hadIframe = snippetCheckoutPresent() || !!document.getElementById('nh-checkout-iframe');
+    applyCheckoutStep();
+    $(document.body).trigger('update_checkout');
+    if (hadIframe) {
+      window.clearTimeout(backReloadTimer);
+      $(document.body).one('updated_checkout.nhBack', function () {
+        window.clearTimeout(backReloadTimer);
+        window.location.reload();
+      });
+      backReloadTimer = window.setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    }
+  }
+
+  function bindCheckoutSteps() {
+    if (document.body.getAttribute('data-nh-checkout-steps') === '1') {
+      return;
+    }
+    document.body.setAttribute('data-nh-checkout-steps', '1');
+
+    $(document.body).on('click.nhCheckoutNext', '#nh-checkout-next, .nh-checkout-next', function (e) {
+      e.preventDefault();
+      goToPayment();
+    });
+    $(document.body).on('click.nhCheckoutBack', '#nh-checkout-back, .nh-checkout-back', function (e) {
+      e.preventDefault();
+      goBackToDetails();
+    });
+    $(document.body).on('click.nhPayMethod', 'input[name="payment_method"]', function () {
+      if (checkoutStep() !== 'payment') {
+        return;
+      }
+      paymentChosenByCustomer = true;
+      var id = String(this.value || '');
+      allowSnippetReload = paymentIdIsSnippet(id);
+      i18n.chosenPayment = id;
+      applyCheckoutStep();
+      if (!allowSnippetReload && snippetCheckoutPresent()) {
+        $(document.body).one('updated_checkout.nhLeaveIframe', function () {
+          window.location.reload();
+        });
+        $(document.body).trigger('update_checkout');
+      }
+    });
+
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (!form || !form.classList || !form.classList.contains('checkout')) {
+        return;
+      }
+      if (checkoutStep() !== 'payment') {
+        e.preventDefault();
+        e.stopPropagation();
+        goToPayment();
+        return;
+      }
+      if (!$('input[name="payment_method"]:checked').not(':disabled').length) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.alert(i18n.selectPayment || 'Please choose a payment method.');
+      }
+    }, true);
+
+    if (i18n.chosenPayment || i18n.snippetCheckout) {
+      paymentChosenByCustomer = true;
     }
   }
 
@@ -882,14 +1103,10 @@
     bindSummaryToggle();
     syncSummaryTotal();
     lockSummaryLayout();
-    syncSnippetCheckout();
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     keepPhoneCodeNative();
     hydratePhoneCombos();
     enhanceNotes();
-    enhancePaymentCards();
+    applyCheckoutStep();
     forcePairClasses();
     syncPairedAddressRows();
   }
@@ -914,9 +1131,6 @@
   }
 
   function flushPostcodeShipping() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     var key = destinationKey();
     var postcode = key.split('|')[1];
     if (!postcode) {
@@ -932,17 +1146,11 @@
   }
 
   function schedulePostcodeShipping() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     window.clearTimeout(postcodeShipTimer);
     postcodeShipTimer = window.setTimeout(flushPostcodeShipping, 400);
   }
 
   function bindPostcodeShippingUpdate() {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     if (document.body.getAttribute('data-nh-postcode-ship') === '1') {
       return;
     }
@@ -1121,9 +1329,6 @@
   }
 
   function bindIframeZipShipping() {
-    if (!isSnippetCheckoutPage()) {
-      return;
-    }
     if (!document.querySelector('.wc-svea-checkout-page, #svea-checkout-iframe-container, form.svea-checkout')) {
       return;
     }
@@ -1163,13 +1368,11 @@
     stampShippingIndexes();
     bindShippingTotals();
     watchSnippetCheckout();
-    if (!isSnippetCheckoutPage()) {
-      bindCustomerType();
-      bindCallingCode();
-      bindPostcodeShippingUpdate();
-    } else {
-      bindIframeZipShipping();
-    }
+    bindCustomerType();
+    bindCallingCode();
+    bindPostcodeShippingUpdate();
+    bindIframeZipShipping();
+    bindCheckoutSteps();
     refreshCheckoutChrome();
   }
 
@@ -1201,18 +1404,19 @@
   $(document.body).on('init_checkout', boot);
   $(document.body).on('updated_checkout', function () {
     refreshCheckoutChrome();
+    window.setTimeout(applyCheckoutStep, 0);
+    window.setTimeout(applyCheckoutStep, 50);
   });
   $(document.body).on('payment_method_selected', function () {
-    syncSnippetCheckout();
-    if (!isSnippetCheckoutPage()) {
-      enhancePaymentCards();
+    if (checkoutStep() !== 'payment') {
+      applyCheckoutStep();
+      return;
     }
+    syncSnippetCheckout();
+    enhancePaymentCards();
     window.setTimeout(syncSnippetCheckout, 300);
   });
   $(document.body).on('country_to_state_changing country_to_state_changed', function () {
-    if (isSnippetCheckoutPage()) {
-      return;
-    }
     window.setTimeout(function () {
       orderBillingFields();
       forcePairClasses();
