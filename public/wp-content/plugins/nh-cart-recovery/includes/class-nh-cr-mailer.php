@@ -35,7 +35,7 @@ class NH_CR_Mailer {
 			return false;
 		}
 		if ( NH_CR_Store::email_has_recent_paid_order( $row->email, 48 ) ) {
-			NH_CR_Store::update( (int) $row->id, array( 'status' => 'skipped' ) );
+			NH_CR_Store::update( (int) $row->id, array( 'status' => 'converted' ) );
 			return false;
 		}
 

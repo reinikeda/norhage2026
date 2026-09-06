@@ -142,6 +142,26 @@ nh_cr_assert(
 	'email unpaid svea cancel',
 	nh_cr_should_email_cancelled_checkout( 'cancelled', 'svea_checkout', false ) === true
 );
+nh_cr_assert(
+	'bacs on-hold closes recovery',
+	nh_cr_order_closes_recovery( false, 'on-hold', 'bacs' ) === true
+);
+nh_cr_assert(
+	'bacs pending at checkout still closes recovery',
+	nh_cr_order_closes_recovery( false, 'pending', 'bacs' ) === true
+);
+nh_cr_assert(
+	'svea pending stays open',
+	nh_cr_order_closes_recovery( false, 'pending', 'svea_checkout' ) === false
+);
+nh_cr_assert(
+	'paid svea closes recovery',
+	nh_cr_order_closes_recovery( true, 'processing', 'svea_checkout' ) === true
+);
+nh_cr_assert(
+	'cancelled bacs does not close',
+	nh_cr_order_closes_recovery( false, 'cancelled', 'bacs' ) === false
+);
 
 $hash_a = nh_cr_cart_hash( array( $snap ) );
 $hash_b = nh_cr_cart_hash( array( $snap ) );
