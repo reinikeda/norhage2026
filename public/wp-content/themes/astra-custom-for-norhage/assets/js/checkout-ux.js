@@ -7,17 +7,18 @@
   var i18n = window.nhCheckoutUx || {};
   var paymentChosenByCustomer = false;
   var ignoreAutoPaymentClick = false;
+  var allowSnippetGatewayReload = false;
   var snippetReloadTimer = null;
   var backReloadTimer = null;
 
-  function preventKcoAutoReload() {
-    if (window.kco_wc) {
-      window.kco_wc.preventPaymentMethodChange = true;
+  function syncKcoPrevent() {
+    if (!window.kco_wc) {
+      return;
     }
+    window.kco_wc.preventPaymentMethodChange = checkoutStep() !== 'payment' || ignoreAutoPaymentClick || !allowSnippetGatewayReload;
   }
 
   function unblockCheckout() {
-    preventKcoAutoReload();
     var $form = $('form.checkout');
     if ($form.length && $form.data('blockUI.isBlocked')) {
       $form.unblock();
@@ -563,17 +564,29 @@
       return;
     }
 
-    // Plugin AJAX blocks the form and reloads. Aborting it without unblock()
-    // leaves the spinning overlay and never mounts the iframe.
-    jqXHR.abort();
-    window.setTimeout(unblockCheckout, 0);
+    if (iframeMarkupPresent()) {
+      jqXHR.abort();
+      return;
+    }
+
+    // Woo auto-selects the first gateway after Next. Abort that so the iframe
+    // does not boot until the customer clicks Svea/Kustom. When they have
+    // clicked, let the plugin AJAX finish — it reloads and mounts the iframe.
+    if (!allowSnippetGatewayReload || checkoutStep() !== 'payment') {
+      jqXHR.abort();
+      window.setTimeout(unblockCheckout, 0);
+    }
   });
 
   $(document).on('ajaxComplete.nhSnippetUnblock', function (e, xhr, settings) {
     var url = settings && settings.url ? String(settings.url) : '';
-    if (/sco_change_payment_method|kco_wc_change_payment_method/i.test(url)) {
-      unblockCheckout();
+    if (!/sco_change_payment_method|kco_wc_change_payment_method/i.test(url)) {
+      return;
     }
+    if (allowSnippetGatewayReload) {
+      return;
+    }
+    unblockCheckout();
   });
 
   function bindShippingTotals() {
@@ -983,6 +996,7 @@
 
     enhancePaymentCards();
     syncSnippetCheckout();
+    syncKcoPrevent();
   }
 
   function validateDetailsStep() {
@@ -1032,6 +1046,7 @@
     }
     paymentChosenByCustomer = false;
     ignoreAutoPaymentClick = true;
+    allowSnippetGatewayReload = false;
     i18n.chosenPayment = '';
     i18n.snippetCheckout = false;
     $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
@@ -1044,6 +1059,7 @@
   function goBackToDetails() {
     paymentChosenByCustomer = false;
     ignoreAutoPaymentClick = false;
+    allowSnippetGatewayReload = false;
     i18n.chosenPayment = '';
     i18n.snippetCheckout = false;
     $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
@@ -1066,25 +1082,17 @@
 
   function reloadForSnippetGateway() {
     if (iframeMarkupPresent()) {
-      unblockCheckout();
       return;
     }
+    allowSnippetGatewayReload = true;
+    syncKcoPrevent();
     $('#nh_checkout_step').val('payment');
     i18n.checkoutStep = 'payment';
-    unblockCheckout();
     window.clearTimeout(snippetReloadTimer);
-    var reloaded = false;
-    function go() {
-      if (reloaded) {
-        return;
-      }
-      reloaded = true;
-      window.clearTimeout(snippetReloadTimer);
-      window.location.reload();
-    }
-    $(document.body).off('updated_checkout.nhSnippetLoad').one('updated_checkout.nhSnippetLoad', go);
     $(document.body).trigger('update_checkout');
-    snippetReloadTimer = window.setTimeout(go, 2000);
+    snippetReloadTimer = window.setTimeout(function () {
+      window.location.reload();
+    }, 500);
   }
 
   function bindCheckoutSteps() {
@@ -1092,7 +1100,7 @@
       return;
     }
     document.body.setAttribute('data-nh-checkout-steps', '1');
-    preventKcoAutoReload();
+    syncKcoPrevent();
 
     $(document.body).on('click.nhCheckoutNext', '#nh-checkout-next, .nh-checkout-next', function (e) {
       e.preventDefault();
@@ -1102,7 +1110,7 @@
       e.preventDefault();
       goBackToDetails();
     });
-    $(document.body).on('click.nhPayMethod', 'input[name="payment_method"]', function () {
+    $(document.body).on('click.nhPayMethod change.nhPayMethod', 'input[name="payment_method"]', function () {
       if (checkoutStep() !== 'payment' || ignoreAutoPaymentClick) {
         return;
       }
@@ -1114,6 +1122,8 @@
         reloadForSnippetGateway();
         return;
       }
+      allowSnippetGatewayReload = false;
+      syncKcoPrevent();
       if (snippetCheckoutPresent() || iframeMarkupPresent()) {
         $(document.body).one('updated_checkout.nhLeaveIframe', function () {
           window.location.reload();
@@ -1421,7 +1431,7 @@
   }
 
   function boot() {
-    preventKcoAutoReload();
+    syncKcoPrevent();
     stampShippingIndexes();
     bindShippingTotals();
     watchSnippetCheckout();
