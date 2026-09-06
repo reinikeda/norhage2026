@@ -16,7 +16,8 @@ final class NH_Side_Cart_Render {
 	 */
 	public static function body_html() {
 		ob_start();
-		echo '<div id="nh-sc-body" class="nh-sc__body">';
+		$nonce = wp_create_nonce( NH_Side_Cart::NONCE );
+		echo '<div id="nh-sc-body" class="nh-sc__body" data-nh-sc-nonce="' . esc_attr( $nonce ) . '">';
 		self::render_body();
 		echo '</div>';
 		return ob_get_clean();
@@ -60,7 +61,7 @@ final class NH_Side_Cart_Render {
 		}
 		echo '</ul>';
 
-		if ( $cart->needs_shipping() && $cart->show_shipping() ) {
+		if ( NH_Side_Cart::cart_needs_shipping_ui( $cart ) ) {
 			self::render_shipping();
 		}
 
@@ -329,7 +330,7 @@ final class NH_Side_Cart_Render {
 					<dd><?php wc_cart_totals_coupon_html( $coupon ); ?></dd>
 				</div>
 			<?php endforeach; ?>
-			<?php if ( $cart->needs_shipping() && $cart->show_shipping() ) : ?>
+			<?php if ( NH_Side_Cart::cart_needs_shipping_ui( $cart ) ) : ?>
 				<div class="nh-sc__total-row">
 					<dt><?php echo esc_html( self::shipping_row_label() ); ?></dt>
 					<dd><?php echo self::shipping_total_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></dd>
