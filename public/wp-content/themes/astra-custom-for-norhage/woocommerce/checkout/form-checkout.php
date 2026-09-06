@@ -20,6 +20,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 
 $cart_total = ( function_exists( 'WC' ) && WC()->cart ) ? WC()->cart->get_total() : '';
 $form_class = function_exists( 'nh_checkout_form_classes' ) ? nh_checkout_form_classes() : 'checkout woocommerce-checkout nh-checkout-form-el';
+$nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_is_payment_step() ) ? 'payment' : 'details';
 ?>
 
 <form name="checkout" method="post" class="<?php echo esc_attr( $form_class ); ?>" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>" autocomplete="on">
@@ -72,7 +73,18 @@ $form_class = function_exists( 'nh_checkout_form_classes' ) ? nh_checkout_form_c
 
 			<div id="kco-extra-checkout-fields"></div>
 
+			<input type="hidden" name="nh_checkout_step" id="nh_checkout_step" value="<?php echo esc_attr( $nh_step ); ?>" />
+
+			<div class="nh-checkout-step-actions nh-checkout-step-actions--details">
+				<button type="button" class="button alt nh-checkout-next" id="nh-checkout-next">
+					<?php esc_html_e( 'Continue to payment', 'nh-theme' ); ?>
+				</button>
+			</div>
+
 			<section class="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
+				<button type="button" class="nh-checkout-back" id="nh-checkout-back">
+					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
+				</button>
 				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
 				<?php do_action( 'nh_checkout_payment' ); ?>
 				<?php
