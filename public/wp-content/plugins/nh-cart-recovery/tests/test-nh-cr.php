@@ -190,6 +190,50 @@ $svea_full = nh_cr_identity_from_svea_module(
 );
 nh_cr_assert( 'svea full name split', $svea_full['first_name'] === 'Hans' && $svea_full['last_name'] === 'Berg' );
 
+$located = nh_cr_identity_from_payload(
+	array(
+		'billing_address' => array(
+			'postal_code' => '141 40',
+			'city'        => 'Huddinge',
+			'country'     => 'SE',
+		),
+	)
+);
+nh_cr_assert( 'kustom nested postcode', $located['postcode'] === '141 40' );
+nh_cr_assert( 'kustom nested city', $located['city'] === 'Huddinge' );
+nh_cr_assert( 'kustom nested country', $located['country'] === 'SE' );
+$obf_post = nh_cr_identity_from_payload( array( 'postal_code' => '12•••' ) );
+nh_cr_assert( 'skips obfuscated postcode', $obf_post['postcode'] === '' );
+$country_only = nh_cr_merge_profile( nh_cr_empty_profile(), array( 'country' => 'NO' ) );
+nh_cr_assert( 'country alone is not a signal', $country_only['country'] === '' && nh_cr_profile_has_value( $country_only ) === false );
+$with_post = nh_cr_merge_profile( nh_cr_empty_profile(), array( 'postcode' => '0150', 'country' => 'NO' ) );
+nh_cr_assert( 'postcode keeps country', $with_post['postcode'] === '0150' && $with_post['country'] === 'NO' );
+nh_cr_assert( 'postcode is a signal', nh_cr_profile_has_value( $with_post ) === true );
+$svea_post = nh_cr_identity_from_svea_module(
+	array(
+		'BillingAddress' => array(
+			'PostalCode'  => '113 46',
+			'City'        => 'Stockholm',
+			'CountryCode' => 'SE',
+		),
+	)
+);
+nh_cr_assert( 'svea module postcode', $svea_post['postcode'] === '113 46' && $svea_post['country'] === 'SE' );
+nh_cr_assert(
+	'cart summary lists items',
+	nh_cr_cart_summary(
+		array(
+			array( 'name' => 'Kanalplast', 'quantity' => 2 ),
+			array( 'name' => 'Greenhouse', 'quantity' => 1 ),
+		)
+	) === '2 × Kanalplast, 1 × Greenhouse'
+);
+nh_cr_assert(
+	'location format',
+	nh_cr_format_location( array( 'postcode' => '14140', 'city' => '', 'country' => 'SE' ) ) === '14140, SE'
+);
+nh_cr_assert( 'obfuscated helper', nh_cr_looks_obfuscated( 'a***@klarna.com' ) === true );
+
 $pal = nh_cr_palette();
 nh_cr_assert( 'palette green', $pal['green'] === '#00704A' );
 nh_cr_assert( 'palette gold', $pal['gold'] === '#C89F63' );

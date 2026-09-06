@@ -1,5 +1,6 @@
 /**
- * Capture billing / Svea / Kustom iframe identity so recovery emails have an address.
+ * Capture billing / shipping calculator / Svea / Kustom identity so recovery
+ * rows show who priced shipping even before an email is known.
  */
 (function () {
   'use strict';
@@ -10,16 +11,62 @@
   var kustomTries = 0;
   var sveaTries = 0;
 
+  var FIELD_IDS = {
+    email: ['billing_email'],
+    first_name: ['billing_first_name'],
+    last_name: ['billing_last_name'],
+    postcode: ['calc_shipping_postcode', 'nh_sc_shipping_postcode', 'shipping_postcode', 'billing_postcode'],
+    city: ['shipping_city', 'billing_city', 'calc_shipping_city'],
+    country: ['calc_shipping_country', 'nh_sc_shipping_country', 'shipping_country', 'billing_country'],
+    phone: ['billing_phone']
+  };
+
   function val(id) {
     var el = document.getElementById(id);
     return el ? String(el.value || '').trim() : '';
   }
 
+  function firstVal(ids) {
+    var i;
+    for (i = 0; i < ids.length; i += 1) {
+      var v = val(ids[i]);
+      if (v) {
+        return v;
+      }
+    }
+    return '';
+  }
+
+  function looksObfuscated(value) {
+    value = String(value || '');
+    return value.indexOf('*') !== -1 || value.indexOf('•') !== -1;
+  }
+
+  function usableEmail(email) {
+    email = String(email || '').trim();
+    if (!email || email.indexOf('@') === -1 || looksObfuscated(email)) {
+      return '';
+    }
+    return email;
+  }
+
+  function usableText(value) {
+    value = String(value || '').trim();
+    if (!value || looksObfuscated(value)) {
+      return '';
+    }
+    return value;
+  }
+
   function payloadFromDom() {
     return {
-      email: val('billing_email'),
-      first_name: val('billing_first_name'),
-      last_name: val('billing_last_name')
+      email: firstVal(FIELD_IDS.email),
+      first_name: firstVal(FIELD_IDS.first_name),
+      last_name: firstVal(FIELD_IDS.last_name),
+      postcode: firstVal(FIELD_IDS.postcode),
+      city: firstVal(FIELD_IDS.city),
+      country: firstVal(FIELD_IDS.country),
+      phone: firstVal(FIELD_IDS.phone)
     };
   }
 
@@ -38,18 +85,15 @@
         data.lastName ||
         data.given_name ||
         data.family_name ||
+        data.postalCode ||
+        data.postal_code ||
+        data.postcode ||
+        data.phoneNumber ||
+        data.phone ||
         ''
       ).trim();
     }
     return '';
-  }
-
-  function usableEmail(email) {
-    email = String(email || '').trim();
-    if (!email || email.indexOf('@') === -1 || email.indexOf('*') !== -1 || email.indexOf('•') !== -1) {
-      return '';
-    }
-    return email;
   }
 
   function identityFromPayload(data) {
@@ -58,31 +102,45 @@
     return {
       email: usableEmail(data.email || nested.email || extract(data)),
       first_name: String(data.given_name || data.first_name || data.firstName || nested.given_name || nested.first_name || '').trim(),
-      last_name: String(data.family_name || data.last_name || data.lastName || nested.family_name || nested.last_name || '').trim()
+      last_name: String(data.family_name || data.last_name || data.lastName || nested.family_name || nested.last_name || '').trim(),
+      postcode: usableText(data.postal_code || data.postalCode || data.postcode || nested.postal_code || nested.postalCode || nested.postcode || ''),
+      city: usableText(data.city || nested.city || ''),
+      country: usableText(data.country || data.country_code || data.countryCode || nested.country || nested.country_code || ''),
+      phone: usableText(data.phone || data.phone_number || data.phoneNumber || nested.phone || nested.phone_number || '')
     };
+  }
+
+  function hasSignal(data) {
+    return !!(data.email || data.first_name || data.last_name || data.postcode || data.city || data.phone);
   }
 
   function sync(extra) {
     extra = extra || {};
     var data = payloadFromDom();
-    if (extra.email) {
-      data.email = extra.email;
-    }
-    if (extra.first_name) {
-      data.first_name = extra.first_name;
-    }
-    if (extra.last_name) {
-      data.last_name = extra.last_name;
+    var key;
+    for (key in extra) {
+      if (Object.prototype.hasOwnProperty.call(extra, key) && extra[key]) {
+        data[key] = extra[key];
+      }
     }
     data.email = usableEmail(data.email);
-    if (!data.email && !data.first_name && !data.last_name) {
+    data.first_name = usableText(data.first_name);
+    data.last_name = usableText(data.last_name);
+    data.postcode = usableText(data.postcode);
+    data.city = usableText(data.city);
+    data.country = usableText(data.country);
+    data.phone = usableText(data.phone);
+    if (!data.postcode && !data.city) {
+      data.country = '';
+    }
+    if (!hasSignal(data)) {
       return;
     }
-    var key = data.email + '|' + data.first_name + '|' + data.last_name;
-    if (key === last) {
+    var stamp = [data.email, data.first_name, data.last_name, data.postcode, data.city, data.country, data.phone].join('|');
+    if (stamp === last) {
       return;
     }
-    last = key;
+    last = stamp;
     if (!cfg.ajax || !cfg.nonce) {
       return;
     }
@@ -91,6 +149,10 @@
     body.set('email', data.email);
     body.set('first_name', data.first_name);
     body.set('last_name', data.last_name);
+    body.set('postcode', data.postcode);
+    body.set('city', data.city);
+    body.set('country', data.country);
+    body.set('phone', data.phone);
     if (cfg.ajax.indexOf('admin-ajax.php') !== -1) {
       body.set('action', 'nh_cr_sync');
     }
@@ -116,7 +178,7 @@
 
   function onKustomData(data) {
     var ident = identityFromPayload(data);
-    if (ident.email || ident.first_name || ident.last_name) {
+    if (hasSignal(ident)) {
       schedule(ident);
     }
   }
@@ -135,6 +197,12 @@
     });
     api.observeEvent('identity.lastName', function (data) {
       schedule({ last_name: extract(data) });
+    });
+    api.observeEvent('identity.postalCode', function (data) {
+      schedule({ postcode: extract(data) });
+    });
+    api.observeEvent('identity.phoneNumber', function (data) {
+      schedule({ phone: extract(data) });
     });
     return true;
   }
@@ -184,7 +252,7 @@
       return;
     }
     window._nhCrWatchId = window.setInterval(function () {
-      if (val('billing_email') || val('billing_first_name')) {
+      if (hasSignal(payloadFromDom())) {
         schedule();
       }
     }, 800);
@@ -208,15 +276,43 @@
     );
   }
 
+  function isWatchedId(id) {
+    var key;
+    var ids;
+    var i;
+    for (key in FIELD_IDS) {
+      if (!Object.prototype.hasOwnProperty.call(FIELD_IDS, key)) {
+        continue;
+      }
+      ids = FIELD_IDS[key];
+      for (i = 0; i < ids.length; i += 1) {
+        if (ids[i] === id) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   document.addEventListener('change', function (e) {
     var t = e.target;
     if (!t || !t.id) {
       return;
     }
-    if (t.id === 'billing_email' || t.id === 'billing_first_name' || t.id === 'billing_last_name') {
+    if (isWatchedId(t.id)) {
       schedule();
     }
   });
+
+  document.addEventListener('blur', function (e) {
+    var t = e.target;
+    if (!t || !t.id) {
+      return;
+    }
+    if (isWatchedId(t.id)) {
+      schedule();
+    }
+  }, true);
 
   function onCheckoutReady() {
     window.setTimeout(bindSvea, 50);
@@ -226,7 +322,7 @@
   window.addEventListener('checkoutReady', onCheckoutReady);
 
   if (window.jQuery) {
-    window.jQuery(document.body).on('updated_checkout', function () {
+    window.jQuery(document.body).on('updated_checkout updated_wc_div updated_shipping_method', function () {
       schedule();
     });
   }
@@ -236,7 +332,7 @@
   }
   waitSvea();
   waitKustom();
-  if (kustomIframePresent() || sveaIframePresent() || document.body.classList.contains('woocommerce-checkout')) {
+  if (kustomIframePresent() || sveaIframePresent() || document.body.classList.contains('woocommerce-checkout') || document.body.classList.contains('woocommerce-cart')) {
     watchHiddenIdentity();
   }
 })();
