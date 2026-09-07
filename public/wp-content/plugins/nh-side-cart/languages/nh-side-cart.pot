@@ -46,7 +46,13 @@ msgstr ""
 msgid "Calculate shipping"
 msgstr ""
 
+msgid "How much is delivery?"
+msgstr ""
+
 msgid "Enter your postcode to see the shipping cost."
+msgstr ""
+
+msgid "Enter your postcode and we will show the price here."
 msgstr ""
 
 msgid "Country / region"
@@ -58,7 +64,13 @@ msgstr ""
 msgid "Postcode / ZIP"
 msgstr ""
 
+msgid "Your postcode"
+msgstr ""
+
 msgid "Show shipping cost"
+msgstr ""
+
+msgid "See price"
 msgstr ""
 
 msgid "Free pickup from the warehouse is also available."
@@ -86,6 +98,9 @@ msgid "Total"
 msgstr ""
 
 msgid "Enter postcode"
+msgstr ""
+
+msgid "Add postcode"
 msgstr ""
 
 msgid "View basket"
