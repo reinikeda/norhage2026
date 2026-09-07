@@ -334,6 +334,20 @@ nh_cr_assert( 'anon subject drops placeholder', strpos( $anon_parts['subject'], 
 nh_cr_assert( 'anon subject capitalizes', strpos( $anon_parts['subject'], 'Your Norhage cart is saved' ) !== false );
 nh_cr_assert( 'anon greeting has no name', strpos( $anon_parts['html'], 'Hi,' ) !== false );
 
+$help = nh_cr_help_popup_copy( 'nb_NO' );
+nh_cr_assert( 'nb help title', $help['title'] === 'Trenger du hjelp med fraktprisen?' );
+nh_cr_assert( 'nb help chat', $help['chat'] !== '' );
+nh_cr_assert( 'nb help kicker placeholder', strpos( $help['kicker'], '%s' ) !== false );
+$help_en = nh_cr_help_popup_copy( 'en_GB' );
+nh_cr_assert( 'en help falls back', $help_en['dismiss'] === 'No thanks' );
+$defaults = nh_cr_default_settings();
+nh_cr_assert( 'help popup on by default', ! empty( $defaults['help_popup'] ) );
+nh_cr_assert( 'help popup delay 45s', (int) $defaults['help_popup_seconds'] === 45 );
+foreach ( array( 'sv_SE', 'da_DK', 'fi', 'de_DE', 'lt_LT' ) as $loc ) {
+	$pack = nh_cr_help_popup_copy( $loc );
+	nh_cr_assert( $loc . ' help keys', isset( $pack['title'], $pack['body'], $pack['chat'], $pack['checkout'], $pack['dismiss'] ) );
+}
+
 $doc = NH_CR_Mailer::preview_document( 'checkout', 3, 'nb_NO', 'Anna' );
 nh_cr_assert( 'document wraps heading', strpos( $doc, 'Siste sjanse' ) !== false );
 nh_cr_assert( 'document uses cream page background', strpos( $doc, '#F1E6D6' ) !== false );

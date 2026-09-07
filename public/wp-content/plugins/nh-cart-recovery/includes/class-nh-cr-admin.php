@@ -72,8 +72,10 @@ class NH_CR_Admin {
 		$out      = $defaults;
 		$locale   = nh_cr_shop_locale();
 
-		$out['enabled']            = empty( $input['enabled'] ) ? 0 : 1;
-		$out['checkout_on_cancel'] = empty( $input['checkout_on_cancel'] ) ? 0 : 1;
+		$out['enabled']             = empty( $input['enabled'] ) ? 0 : 1;
+		$out['checkout_on_cancel']  = empty( $input['checkout_on_cancel'] ) ? 0 : 1;
+		$out['help_popup']          = empty( $input['help_popup'] ) ? 0 : 1;
+		$out['help_popup_seconds']  = max( 20, min( 180, absint( $input['help_popup_seconds'] ?? 45 ) ) );
 		$out['email_1_minutes']    = max( 15, min( 24 * 60, absint( $input['email_1_minutes'] ?? 60 ) ) );
 		$out['email_2_hours']      = max( 6, min( 168, absint( $input['email_2_hours'] ?? 24 ) ) );
 		$out['email_3_hours']      = max( 24, min( 336, absint( $input['email_3_hours'] ?? 72 ) ) );
@@ -159,6 +161,12 @@ class NH_CR_Admin {
 		echo '<table class="form-table" role="presentation">';
 		self::checkbox_row( 'enabled', $o['enabled'], __( 'Enable recovery emails', NH_CR_TD ), __( 'Emails are sent with wp_mail, so WP Mail SMTP + Brevo is used automatically. No extra Brevo API key is required.', NH_CR_TD ) );
 		self::checkbox_row( 'checkout_on_cancel', $o['checkout_on_cancel'], __( 'Email after unpaid checkout is cancelled', NH_CR_TD ), __( 'This is the Svea / Kustom “pending payment → cancelled” case. Skipped if the same email already placed a paid order.', NH_CR_TD ) );
+		self::checkbox_row( 'help_popup', $o['help_popup'], __( 'Help popup after shipping check (no email)', NH_CR_TD ), __( 'If a guest checks the shipping price and stays on the site without leaving an email, show one quiet “need help?” dialog. It opens Crisp chat. Shown at most once per 14 days.', NH_CR_TD ) );
+
+		echo '<tr><th>' . esc_html__( 'Help popup delay', NH_CR_TD ) . '</th><td>';
+		echo '<input name="nh_cr_settings[help_popup_seconds]" type="number" min="20" max="180" value="' . esc_attr( (string) $o['help_popup_seconds'] ) . '" /> ';
+		esc_html_e( 'seconds after they priced shipping and closed the basket. Default 45. Not shown on checkout, and never if we already have their email.', NH_CR_TD );
+		echo '</td></tr>';
 
 		echo '<tr><th>' . esc_html__( 'Email 1 delay (abandoned cart)', NH_CR_TD ) . '</th><td>';
 		echo '<input name="nh_cr_settings[email_1_minutes]" type="number" min="15" max="1440" value="' . esc_attr( (string) $o['email_1_minutes'] ) . '" /> ';

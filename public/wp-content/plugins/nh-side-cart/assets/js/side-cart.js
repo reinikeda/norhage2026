@@ -70,6 +70,11 @@
           rememberCartHash(res.data.cart_hash);
           applyFragments(res.data.fragments);
           $(document.body).trigger('wc_fragments_refreshed');
+          if (data.op === 'shipping') {
+            var priced = { postcode: data.calc_shipping_postcode || '' };
+            document.body.dispatchEvent(new CustomEvent('nh_cr_shipping_priced', { detail: priced }));
+            $(document.body).trigger('nh_cr_shipping_priced', [priced]);
+          }
         } else {
           window.alert((res && res.data && res.data.message) || (cfg.i18n && cfg.i18n.error));
         }
@@ -137,6 +142,8 @@
     $root.removeAttr('hidden').addClass('is-open');
     $root.attr('aria-hidden', 'false');
     document.body.classList.add('nh-sc-open');
+    document.body.dispatchEvent(new CustomEvent('nh_side_cart_opened'));
+    $(document.body).trigger('nh_side_cart_opened');
     bootDrawer();
     window.setTimeout(function () {
       var closeBtn = $root.find('.nh-sc__close').get(0);
@@ -174,6 +181,8 @@
     }
     $root.removeClass('is-open').attr('aria-hidden', 'true');
     document.body.classList.remove('nh-sc-open');
+    document.body.dispatchEvent(new CustomEvent('nh_side_cart_closed'));
+    $(document.body).trigger('nh_side_cart_closed');
     window.setTimeout(function () {
       if (!isOpen()) {
         $root.attr('hidden', 'hidden');
