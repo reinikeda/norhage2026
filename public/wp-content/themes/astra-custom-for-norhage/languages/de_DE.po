@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:24+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -1758,7 +1758,6 @@ msgstr "Muster konnte nicht zum Warenkorb hinzugefügt werden."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Verbindung zu WooCommerce fehlgeschlagen. Bitte versuchen Sie es erneut."
 
-
 #: woocommerce/cart/shipping-calculator.php
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Geben Sie Ihre Postleitzahl ein, um die Versandkosten zu sehen."
@@ -1886,32 +1885,6 @@ msgstr "Bitte geben Sie eine gültige Kontakt-E-Mail ein."
 msgid "Please enter a valid phone number."
 msgstr "Bitte geben Sie eine gültige Telefonnummer ein."
 
-#~ msgid "Contact Us"
-#~ msgstr "Kontakt"
-
-#~ msgid "Customize"
-#~ msgstr "Anpassen"
-
-#~ msgid "Customize “%s”"
-#~ msgstr "Anpassen “%s”"
-
-#~ msgid "%d item has been added to your basket"
-#~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "%d Artikel wurde Ihrem Warenkorb hinzugefügt"
-#~ msgstr[1] "%d Artikel wurden Ihrem Warenkorb hinzugefügt"
-
-#~ msgid "View basket"
-#~ msgstr "Warenkorb anzeigen"
-
-#~ msgid "Buy a complete set"
-#~ msgstr "Komplettes Set kaufen"
-
-#~ msgid "Only %d left in stock"
-#~ msgstr "Nur noch %d auf Lager"
-
-#~ msgid "Max per bundle: %d"
-#~ msgstr "Maximal pro Paket: %d"
-
 msgid "Breadcrumbs"
 msgstr "Navigationspfad"
 
@@ -1992,3 +1965,28 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#~ msgid "Contact Us"
+#~ msgstr "Kontakt"
+
+#~ msgid "Customize"
+#~ msgstr "Anpassen"
+
+#~ msgid "Customize “%s”"
+#~ msgstr "Anpassen “%s”"
+
+#~ msgid "%d item has been added to your basket"
+#~ msgid_plural "%d items have been added to your basket"
+#~ msgstr[0] "%d Artikel wurde Ihrem Warenkorb hinzugefügt"
+#~ msgstr[1] "%d Artikel wurden Ihrem Warenkorb hinzugefügt"
+
+#~ msgid "View basket"
+#~ msgstr "Warenkorb anzeigen"
+
+#~ msgid "Buy a complete set"
+#~ msgstr "Komplettes Set kaufen"
+
+#~ msgid "Only %d left in stock"
+#~ msgstr "Nur noch %d auf Lager"
+
+#~ msgid "Max per bundle: %d"
+#~ msgstr "Maximal pro Paket: %d"

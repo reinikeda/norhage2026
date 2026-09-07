@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:24+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1758,7 +1758,6 @@ msgstr "Näytettä ei voitu lisätä ostoskoriin."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Yhteyttä WooCommerceen ei saatu. Yritä uudelleen."
 
-
 #: woocommerce/cart/shipping-calculator.php
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Syötä postinumerosi nähdäksesi toimituskulut."
@@ -1886,67 +1885,6 @@ msgstr "Anna kelvollinen yhteyssähköposti."
 msgid "Please enter a valid phone number."
 msgstr "Anna kelvollinen puhelinnumero."
 
-#~ msgid "Contact Us"
-#~ msgstr "Ota yhteyttä"
-
-#~ msgid "Utility bar"
-#~ msgstr "Yläpalkki"
-
-#~ msgid "Phone icon"
-#~ msgstr "Puhelinkuvake"
-
-#~ msgid "Customize"
-#~ msgstr "Syötä mitat"
-
-#~ msgid "Customize “%s”"
-#~ msgstr "Mukauta kohdetta “%s”"
-
-#~ msgid "Pickup from Lithuania warehouse"
-#~ msgstr "Nouto Liettuan varastolta"
-
-#~ msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
-#~ msgstr "Osoite: Tiekėjų g. 19E, 97123 Kretinga."
-
-#~ msgid "%1$d × “%2$s”"
-#~ msgstr "%1$d × “%2$s”"
-
-#~ msgid "%d item has been added to your basket"
-#~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "%d tuote on lisätty ostoskoriin"
-#~ msgstr[1] "%d tuotetta on lisätty ostoskoriin"
-
-#~ msgid "(%d product):"
-#~ msgid_plural "(%d products):"
-#~ msgstr[0] "(%d tuote):"
-#~ msgstr[1] "(%d tuotetta):"
-
-#~ msgid "View basket"
-#~ msgstr "Näytä ostoskori"
-
-#~ msgid "Buy a complete set"
-#~ msgstr "Osta valmis kokonaisuus"
-
-#~ msgid "Only %d left in stock"
-#~ msgstr "Vain %d jäljellä varastossa"
-
-#~ msgid "Max per bundle: %d"
-#~ msgstr "Enintään per paketti: %d"
-
-#~ msgid "Minus Quantity"
-#~ msgstr "Vähennä määrää"
-
-#~ msgid "Plus Quantity"
-#~ msgstr "Lisää määrää"
-
-#~ msgid "Close"
-#~ msgstr "Sulje"
-
-#~ msgid "Weight per m² (kg)"
-#~ msgstr "Paino / m² (kg)"
-
-#~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
-#~ msgstr "Käytä tätä, jos haluat ottaa mittatilausleikkauksen käyttöön yksinkertaisessa tuotteessa. Vakiokokoiset vaihtoehdot kannattaa pitää erillisessä muunnelmatuotteessa."
-
 msgid "Breadcrumbs"
 msgstr "Murupolku"
 
@@ -2027,3 +1965,63 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#~ msgid "Contact Us"
+#~ msgstr "Ota yhteyttä"
+
+#~ msgid "Utility bar"
+#~ msgstr "Yläpalkki"
+
+#~ msgid "Phone icon"
+#~ msgstr "Puhelinkuvake"
+
+#~ msgid "Customize"
+#~ msgstr "Syötä mitat"
+
+#~ msgid "Customize “%s”"
+#~ msgstr "Mukauta kohdetta “%s”"
+
+#~ msgid "Pickup from Lithuania warehouse"
+#~ msgstr "Nouto Liettuan varastolta"
+
+#~ msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
+#~ msgstr "Osoite: Tiekėjų g. 19E, 97123 Kretinga."
+
+#~ msgid "%1$d × “%2$s”"
+#~ msgstr "%1$d × “%2$s”"
+
+#~ msgid "%d item has been added to your basket"
+#~ msgid_plural "%d items have been added to your basket"
+#~ msgstr[0] "%d tuote on lisätty ostoskoriin"
+#~ msgstr[1] "%d tuotetta on lisätty ostoskoriin"
+
+#~ msgid "(%d product):"
+#~ msgid_plural "(%d products):"
+#~ msgstr[0] "(%d tuote):"
+#~ msgstr[1] "(%d tuotetta):"
+
+#~ msgid "View basket"
+#~ msgstr "Näytä ostoskori"
+
+#~ msgid "Buy a complete set"
+#~ msgstr "Osta valmis kokonaisuus"
+
+#~ msgid "Only %d left in stock"
+#~ msgstr "Vain %d jäljellä varastossa"
+
+#~ msgid "Max per bundle: %d"
+#~ msgstr "Enintään per paketti: %d"
+
+#~ msgid "Minus Quantity"
+#~ msgstr "Vähennä määrää"
+
+#~ msgid "Plus Quantity"
+#~ msgstr "Lisää määrää"
+
+#~ msgid "Close"
+#~ msgstr "Sulje"
+
+#~ msgid "Weight per m² (kg)"
+#~ msgstr "Paino / m² (kg)"
+
+#~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
+#~ msgstr "Käytä tätä, jos haluat ottaa mittatilausleikkauksen käyttöön yksinkertaisessa tuotteessa. Vakiokokoiset vaihtoehdot kannattaa pitää erillisessä muunnelmatuotteessa."

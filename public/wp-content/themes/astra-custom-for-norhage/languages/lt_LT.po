@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-07 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:24+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -1758,7 +1758,6 @@ msgstr "Nepavyko pridėti pavyzdžio į krepšelį."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Nepavyko prisijungti prie „WooCommerce“. Bandykite vėl."
 
-
 #: woocommerce/cart/shipping-calculator.php
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Įveskite pašto kodą, kad pamatytumėte pristatymo kainą."
@@ -1886,81 +1885,6 @@ msgstr "Įveskite teisingą kontaktinį el. paštą."
 msgid "Please enter a valid phone number."
 msgstr "Įveskite teisingą telefono numerį."
 
-#~ msgid "Contact Us"
-#~ msgstr "Susisiekite su mumis"
-
-#~ msgid "Utility bar"
-#~ msgstr "Pagalbinė juosta"
-
-#~ msgid "Phone icon"
-#~ msgstr "Telefonas"
-
-#~ msgid "Customize"
-#~ msgstr "Pritaikyti"
-
-#~ msgid "Customize “%s”"
-#~ msgstr "Pritaikyti „%s“"
-
-#~ msgid "Pickup from Lithuania warehouse"
-#~ msgstr "Atsiėmimas iš sandėlio"
-
-#~ msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
-#~ msgstr "Adresas: Tiekėjų g. 19E, 97123 Kretinga."
-
-#~ msgid "%1$d × “%2$s”"
-#~ msgstr "%1$d × „%2$s“"
-
-#~ msgid "%d item has been added to your basket"
-#~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "Į krepšelį pridėta %d prekė"
-#~ msgstr[1] "Į krepšelį pridėtos %d prekės"
-#~ msgstr[2] "Į krepšelį pridėta %d prekių"
-
-#~ msgid "(%d product):"
-#~ msgid_plural "(%d products):"
-#~ msgstr[0] "(%d prekė):"
-#~ msgstr[1] "(%d prekės):"
-#~ msgstr[2] "(%d prekių):"
-
-#~ msgid "View basket"
-#~ msgstr "Peržiūrėti krepšelį"
-
-#~ msgid "Buy a complete set"
-#~ msgstr "Pirkti pilną komplektą"
-
-#~ msgid "Only %d left in stock"
-#~ msgstr "Liko tik %d sandėlyje"
-
-#~ msgid "Max per bundle: %d"
-#~ msgstr "Maks. viename rinkinyje: %d"
-
-#~ msgid "Minus Quantity"
-#~ msgstr "Mažinti kiekį"
-
-#~ msgid "Plus Quantity"
-#~ msgstr "Didinti kiekį"
-
-#~ msgid "Close"
-#~ msgstr "Užverti"
-
-#~ msgid "Weight per m² (kg)"
-#~ msgstr "Svoris m² (kg)"
-
-#~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
-#~ msgstr "Naudokite tai, jei norite įjungti pjovimą pagal išmatavimus paprastai prekei. Standartinių matmenų variantus geriausia laikyti atskiroje kintamoje prekėje."
-
-#~ msgid "Pickup hours: Mon–Fri 8:30–16:30"
-#~ msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
-
-#~ msgid "You’ll receive an SMS/email."
-#~ msgstr "Gausite SMS žinutę ir (arba) el. laišką."
-
-#~ msgid "%1$s, %2$s"
-#~ msgstr "%1$s, %2$s"
-
-#~ msgid "Total weight"
-#~ msgstr "Bendras svoris"
-
 msgid "Breadcrumbs"
 msgstr "Naršymo kelias"
 
@@ -2041,3 +1965,77 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#~ msgid "Contact Us"
+#~ msgstr "Susisiekite su mumis"
+
+#~ msgid "Utility bar"
+#~ msgstr "Pagalbinė juosta"
+
+#~ msgid "Phone icon"
+#~ msgstr "Telefonas"
+
+#~ msgid "Customize"
+#~ msgstr "Pritaikyti"
+
+#~ msgid "Customize “%s”"
+#~ msgstr "Pritaikyti „%s“"
+
+#~ msgid "Pickup from Lithuania warehouse"
+#~ msgstr "Atsiėmimas iš sandėlio"
+
+#~ msgid "Address: Tiekėjų g. 19E, 97123 Kretinga."
+#~ msgstr "Adresas: Tiekėjų g. 19E, 97123 Kretinga."
+
+#~ msgid "%1$d × “%2$s”"
+#~ msgstr "%1$d × „%2$s“"
+
+#~ msgid "%d item has been added to your basket"
+#~ msgid_plural "%d items have been added to your basket"
+#~ msgstr[0] "Į krepšelį pridėta %d prekė"
+#~ msgstr[1] "Į krepšelį pridėtos %d prekės"
+#~ msgstr[2] "Į krepšelį pridėta %d prekių"
+
+#~ msgid "(%d product):"
+#~ msgid_plural "(%d products):"
+#~ msgstr[0] "(%d prekė):"
+#~ msgstr[1] "(%d prekės):"
+#~ msgstr[2] "(%d prekių):"
+
+#~ msgid "View basket"
+#~ msgstr "Peržiūrėti krepšelį"
+
+#~ msgid "Buy a complete set"
+#~ msgstr "Pirkti pilną komplektą"
+
+#~ msgid "Only %d left in stock"
+#~ msgstr "Liko tik %d sandėlyje"
+
+#~ msgid "Max per bundle: %d"
+#~ msgstr "Maks. viename rinkinyje: %d"
+
+#~ msgid "Minus Quantity"
+#~ msgstr "Mažinti kiekį"
+
+#~ msgid "Plus Quantity"
+#~ msgstr "Didinti kiekį"
+
+#~ msgid "Close"
+#~ msgstr "Užverti"
+
+#~ msgid "Weight per m² (kg)"
+#~ msgstr "Svoris m² (kg)"
+
+#~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
+#~ msgstr "Naudokite tai, jei norite įjungti pjovimą pagal išmatavimus paprastai prekei. Standartinių matmenų variantus geriausia laikyti atskiroje kintamoje prekėje."
+
+#~ msgid "Pickup hours: Mon–Fri 8:30–16:30"
+#~ msgstr "Atsiėmimo laikas: I–V 8:30–16:30"
+
+#~ msgid "You’ll receive an SMS/email."
+#~ msgstr "Gausite SMS žinutę ir (arba) el. laišką."
+
+#~ msgid "%1$s, %2$s"
+#~ msgstr "%1$s, %2$s"
+
+#~ msgid "Total weight"
+#~ msgstr "Bendras svoris"
