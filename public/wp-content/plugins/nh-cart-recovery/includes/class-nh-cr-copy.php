@@ -15,13 +15,15 @@ if ( ! defined( 'ABSPATH' ) && php_sapi_name() !== 'cli' ) {
  */
 function nh_cr_default_settings() {
 	$out = array(
-		'enabled'            => 1,
-		'checkout_on_cancel' => 1,
-		'email_1_minutes'    => 60,
-		'email_2_hours'      => 24,
-		'email_3_hours'      => 72,
-		'max_emails'         => 3,
-		'delete_after_days'  => 30,
+		'enabled'             => 1,
+		'checkout_on_cancel'  => 1,
+		'help_popup'          => 1,
+		'help_popup_seconds'  => 45,
+		'email_1_minutes'     => 60,
+		'email_2_hours'       => 24,
+		'email_3_hours'       => 72,
+		'max_emails'          => 3,
+		'delete_after_days'   => 30,
 	);
 	foreach ( nh_cr_copy_field_keys() as $key ) {
 		$out[ $key ] = '';
@@ -233,6 +235,82 @@ function nh_cr_ui_copy( $locale ) {
 			'total'     => 'Suma',
 			'unsub'     => 'Atsisakyti krepšelio priminimų',
 			'secure'    => 'Saugus atsiskaitymas. Nieko nenuimama, kol nebaigiate mokėjimo.',
+		),
+	);
+	return isset( $all[ $group ] ) ? $all[ $group ] : $all['en'];
+}
+
+/**
+ * One-time in-session help after a guest priced shipping and stayed.
+ *
+ * @param string $locale Locale.
+ * @return array{kicker:string,title:string,body:string,chat:string,checkout:string,dismiss:string,close:string}
+ */
+function nh_cr_help_popup_copy( $locale ) {
+	$group = nh_cr_locale_group( $locale );
+	$all   = array(
+		'en' => array(
+			'kicker'   => 'You checked delivery to %s',
+			'title'    => 'Need help with the shipping price?',
+			'body'     => 'Delivery for bulky greenhouse parts can look high at first. We can explain the rate or look at a cheaper option — no obligation.',
+			'chat'     => 'Chat with us',
+			'checkout' => 'Continue to checkout',
+			'dismiss'  => 'No thanks',
+			'close'    => 'Close',
+		),
+		'sv' => array(
+			'kicker'   => 'Du kollade frakt till %s',
+			'title'    => 'Behöver du hjälp med fraktpriset?',
+			'body'     => 'Frakt på skrymmande växthusdelar kan se högt ut först. Vi kan förklara priset eller titta på ett billigare alternativ — utan förpliktelse.',
+			'chat'     => 'Chatta med oss',
+			'checkout' => 'Fortsätt till kassan',
+			'dismiss'  => 'Nej tack',
+			'close'    => 'Stäng',
+		),
+		'nb' => array(
+			'kicker'   => 'Du sjekket frakt til %s',
+			'title'    => 'Trenger du hjelp med fraktprisen?',
+			'body'     => 'Frakt på store drivhusdeler kan virke høyt ved første øyekast. Vi kan forklare prisen eller se på et rimeligere alternativ — uten forpliktelse.',
+			'chat'     => 'Chat med oss',
+			'checkout' => 'Fortsett til kassen',
+			'dismiss'  => 'Nei takk',
+			'close'    => 'Lukk',
+		),
+		'da' => array(
+			'kicker'   => 'Du tjekkede fragt til %s',
+			'title'    => 'Har du brug for hjælp til fragtprisen?',
+			'body'     => 'Fragt på store drivhusdele kan se højt ud først. Vi kan forklare prisen eller se på et billigere alternativ — uden forpligtelse.',
+			'chat'     => 'Chat med os',
+			'checkout' => 'Fortsæt til kassen',
+			'dismiss'  => 'Nej tak',
+			'close'    => 'Luk',
+		),
+		'fi' => array(
+			'kicker'   => 'Tarkistit toimituksen postinumeroon %s',
+			'title'    => 'Tarvitsetko apua toimitushintaan?',
+			'body'     => 'Kasvihuoneosien toimitus voi näyttää kalliilta ensi silmäyksellä. Selitämme hinnan tai etsimme edullisemman vaihtoehdon — ilman velvoitetta.',
+			'chat'     => 'Juttele kanssamme',
+			'checkout' => 'Jatka kassalle',
+			'dismiss'  => 'Ei kiitos',
+			'close'    => 'Sulje',
+		),
+		'de' => array(
+			'kicker'   => 'Sie haben die Lieferung nach %s geprüft',
+			'title'    => 'Hilfe beim Versandpreis?',
+			'body'     => 'Versand für sperrige Gewächshausteile wirkt zuerst oft hoch. Wir erklären den Preis oder prüfen eine günstigere Option — unverbindlich.',
+			'chat'     => 'Mit uns chatten',
+			'checkout' => 'Weiter zur Kasse',
+			'dismiss'  => 'Nein danke',
+			'close'    => 'Schließen',
+		),
+		'lt' => array(
+			'kicker'   => 'Tikrinote pristatymą į %s',
+			'title'    => 'Reikia pagalbos dėl pristatymo kainos?',
+			'body'     => 'Didelių šiltnamio dalių pristatymas iš pradžių gali atrodyti brangus. Paaiškinsime kainą arba parinksime pigesnį variantą — be įsipareigojimų.',
+			'chat'     => 'Rašykite mums',
+			'checkout' => 'Tęsti į atsiskaitymą',
+			'dismiss'  => 'Ne, ačiū',
+			'close'    => 'Uždaryti',
 		),
 	);
 	return isset( $all[ $group ] ) ? $all[ $group ] : $all['en'];
