@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class NH_CR_Store {
 
-	const DB_VERSION = '1.2.0';
+	const DB_VERSION = '1.3.0';
 
 	/**
 	 * @return string
@@ -38,6 +38,8 @@ class NH_CR_Store {
 			city varchar(100) NOT NULL DEFAULT '',
 			country varchar(2) NOT NULL DEFAULT '',
 			phone varchar(40) NOT NULL DEFAULT '',
+			device varchar(16) NOT NULL DEFAULT '',
+			user_agent varchar(191) NOT NULL DEFAULT '',
 			cart longtext NULL,
 			cart_hash varchar(64) NOT NULL DEFAULT '',
 			order_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -54,6 +56,7 @@ class NH_CR_Store {
 			KEY session_key (session_key),
 			KEY email (email),
 			KEY postcode (postcode),
+			KEY device (device),
 			KEY status_updated (status, updated_at),
 			KEY order_id (order_id),
 			KEY status_emails (status, emails_sent)
@@ -101,6 +104,8 @@ class NH_CR_Store {
 			'city'               => '',
 			'country'            => '',
 			'phone'              => '',
+			'device'             => '',
+			'user_agent'         => '',
 			'cart'               => '[]',
 			'cart_hash'          => '',
 			'order_id'           => 0,
@@ -315,6 +320,7 @@ class NH_CR_Store {
 		global $wpdb;
 		$status = isset( $args['status'] ) ? sanitize_key( $args['status'] ) : '';
 		$signal = isset( $args['signal'] ) ? sanitize_key( $args['signal'] ) : '';
+		$device = isset( $args['device'] ) ? sanitize_key( $args['device'] ) : '';
 		$paged  = isset( $args['paged'] ) ? max( 1, (int) $args['paged'] ) : 1;
 		$per    = isset( $args['per_page'] ) ? max( 5, min( 50, (int) $args['per_page'] ) ) : 20;
 		$where  = '1=1';
@@ -329,6 +335,10 @@ class NH_CR_Store {
 			$where .= " AND postcode <> ''";
 		} elseif ( $signal === 'anonymous' ) {
 			$where .= " AND email = '' AND postcode = ''";
+		}
+		if ( $device !== '' && in_array( $device, nh_cr_device_keys(), true ) ) {
+			$where   .= ' AND device = %s';
+			$params[] = $device;
 		}
 		$offset = ( $paged - 1 ) * $per;
 		$table  = self::table();
