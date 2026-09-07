@@ -992,6 +992,9 @@ msgstr "Delsumma"
 msgid "Shipping"
 msgstr "Frakt"
 
+msgid "Shipment"
+msgstr "Frakt"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
@@ -1854,6 +1857,12 @@ msgstr "Betala direkt till vårt bankkonto. Ange ordernumret som referens. Order
 
 msgid "Place order"
 msgstr "Lägg order"
+
+msgid "Payment"
+msgstr "Betalning"
+
+msgid "Your order"
+msgstr "Din beställning"
 
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
