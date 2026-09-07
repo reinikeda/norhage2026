@@ -81,7 +81,7 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 				</button>
 			</div>
 
-			<section class="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
+			<section class="nh-checkout-payment" id="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
 				<button type="button" class="nh-checkout-back" id="nh-checkout-back">
 					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
 				</button>
