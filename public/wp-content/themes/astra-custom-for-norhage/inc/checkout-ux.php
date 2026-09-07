@@ -3104,6 +3104,8 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout .kco-select-another-method,'
 		. 'html body.woocommerce-checkout a.sco-change-payment-method{display:none!important}'
 		. '@media(max-width:959px){'
+		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__main{order:-1!important}'
+		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__aside{order:2!important}'
 		. 'html body.woocommerce-checkout .site-content>.ast-container,'
 		. 'html body.woocommerce-checkout.ast-separate-container .ast-container,'
 		. 'html body.woocommerce-checkout.ast-plain-container .ast-container{padding-left:10px!important;padding-right:10px!important}'

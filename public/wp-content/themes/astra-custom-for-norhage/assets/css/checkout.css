@@ -125,6 +125,16 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-layout__main {
   min-width: 0;
 }
 
+@media (max-width: 959px) {
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__main {
+    order: -1 !important;
+  }
+
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__aside {
+    order: 2 !important;
+  }
+}
+
 body.woocommerce-checkout.nh-checkout-form #customer_details.col2-set,
 body.woocommerce-checkout.nh-checkout-form #customer_details .col-1,
 body.woocommerce-checkout.nh-checkout-form #customer_details .col-2 {
@@ -1054,50 +1064,64 @@ body.woocommerce-checkout.nh-checkout-form #payment .form-row.place-order {
 }
 
 body.woocommerce-checkout.nh-checkout-form #place_order,
-body.woocommerce-checkout.nh-checkout-form #payment #place_order {
-  display: flex;
+body.woocommerce-checkout.nh-checkout-form #payment #place_order,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-next {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   float: none !important;
   width: 100%;
-  min-height: 52px;
-  margin: 0.5rem 0 0;
-  padding: 0.85rem 1rem;
+  min-height: 56px;
+  padding: 0.95rem 1.15rem;
   background: var(--nh-green, #00704a) !important;
   color: #fff !important;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
   text-decoration: none !important;
-}
-
-body.woocommerce-checkout.nh-checkout-form #place_order:hover,
-body.woocommerce-checkout.nh-checkout-form #place_order:focus-visible {
-  background: var(--nh-forest, #1e3932) !important;
+  box-shadow: 0 4px 0 #1e3932, 0 10px 22px rgba(0, 112, 74, 0.28);
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-next {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 52px;
   margin: 1rem 0 0;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 1.05rem;
   cursor: pointer;
-  background: var(--nh-green, #00704a) !important;
-  color: #fff !important;
-  border: 0;
-  text-decoration: none !important;
 }
 
+body.woocommerce-checkout.nh-checkout-form #place_order,
+body.woocommerce-checkout.nh-checkout-form #payment #place_order {
+  margin: 0.5rem 0 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form #place_order:hover,
+body.woocommerce-checkout.nh-checkout-form #place_order:focus-visible,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-next:hover,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-next:focus-visible {
   background: var(--nh-forest, #1e3932) !important;
+  box-shadow: 0 4px 0 #0f1f1b, 0 12px 24px rgba(30, 57, 50, 0.32);
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-next::after,
+body.woocommerce-checkout.nh-checkout-form #place_order::after {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-next::after {
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M13.2 5.2 19 11H3v2h16l-5.8 5.8 1.4 1.4L23 12 14.6 3.8z'/></svg>") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M13.2 5.2 19 11H3v2h16l-5.8 5.8 1.4 1.4L23 12 14.6 3.8z'/></svg>") center / contain no-repeat;
+}
+
+body.woocommerce-checkout.nh-checkout-form #place_order::after {
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3z'/></svg>") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3z'/></svg>") center / contain no-repeat;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-back {
@@ -1172,7 +1196,7 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
 
 @media (max-width: 959px) {
   body.woocommerce-checkout.nh-checkout-form {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px));
   }
 
   body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet {
@@ -1184,13 +1208,13 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 40;
+    z-index: 2147483000;
     width: 100%;
     margin: 0;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
     background: #fff;
-    border-top: 1px solid var(--nh-mint, #c3e8c6);
-    box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
+    border-top: 2px solid var(--nh-green, #00704a);
+    box-shadow: 0 -12px 28px rgba(30, 57, 50, 0.16);
   }
 
   body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-details .nh-checkout-step-actions--details {
@@ -1198,13 +1222,13 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 40;
+    z-index: 2147483000;
     width: 100%;
     margin: 0;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
     background: #fff;
-    border-top: 1px solid var(--nh-mint, #c3e8c6);
-    box-shadow: 0 -10px 24px rgba(30, 57, 50, 0.1);
+    border-top: 2px solid var(--nh-green, #00704a);
+    box-shadow: 0 -12px 28px rgba(30, 57, 50, 0.16);
   }
 
   body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-details .nh-checkout-next {
@@ -1225,6 +1249,20 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
 
   body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure {
     display: none;
+  }
+
+  /* Crisp sits above a z-index:40 bar; hide it while checkout CTAs are sticky. */
+  body.woocommerce-checkout .crisp-client,
+  body.woocommerce-checkout #crisp-chatbox,
+  body.woocommerce-checkout .crisp-client-wrapper {
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment,
+  body.woocommerce-checkout.nh-checkout-form #nh-checkout-iframe {
+    scroll-margin-top: 12px;
   }
 }
 
@@ -1274,6 +1312,7 @@ body.woocommerce-checkout.nh-checkout-form:not(.nh-checkout--snippet) .nh-checko
 
 body.woocommerce-checkout .nh-checkout-iframe {
   margin-top: 1rem;
+  scroll-margin-top: 12px;
 }
 
 body.woocommerce-checkout .nh-checkout-iframe iframe {
