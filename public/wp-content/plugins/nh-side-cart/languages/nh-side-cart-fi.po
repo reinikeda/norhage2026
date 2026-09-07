@@ -46,8 +46,14 @@ msgstr "Määrä"
 msgid "Calculate shipping"
 msgstr "Laske toimituskulut"
 
+msgid "How much is delivery?"
+msgstr "Paljonko toimitus maksaa?"
+
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Syötä postinumerosi nähdäksesi toimituskulut."
+
+msgid "Enter your postcode and we will show the price here."
+msgstr "Syötä postinumero, niin näytämme hinnan tässä."
 
 msgid "Country / region"
 msgstr "Maa / alue"
@@ -58,8 +64,14 @@ msgstr "Valitse maa / alue…"
 msgid "Postcode / ZIP"
 msgstr "Postinumero"
 
+msgid "Your postcode"
+msgstr "Postinumerosi"
+
 msgid "Show shipping cost"
 msgstr "Näytä toimituskulut"
+
+msgid "See price"
+msgstr "Näytä hinta"
 
 msgid "Free pickup from the warehouse is also available."
 msgstr "Ilmainen noutaminen varastolta on myös mahdollista."
@@ -87,6 +99,9 @@ msgstr "Yhteensä"
 
 msgid "Enter postcode"
 msgstr "Syötä postinumero"
+
+msgid "Add postcode"
+msgstr "Lisää postinumero"
 
 msgid "View basket"
 msgstr "Näytä ostoskori"

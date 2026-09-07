@@ -202,8 +202,8 @@ final class NH_Side_Cart_Render {
 		?>
 		<section class="nh-sc__shipping" aria-labelledby="nh-sc-shipping-title">
 			<div class="nh-sc__shipping-head">
-				<h3 id="nh-sc-shipping-title" class="nh-sc__shipping-title"><?php esc_html_e( 'Calculate shipping', NH_SC_TD ); ?></h3>
-				<p class="nh-sc__shipping-hint"><?php esc_html_e( 'Enter your postcode to see the shipping cost.', NH_SC_TD ); ?></p>
+				<h3 id="nh-sc-shipping-title" class="nh-sc__shipping-title"><?php esc_html_e( 'How much is delivery?', NH_SC_TD ); ?></h3>
+				<p class="nh-sc__shipping-hint"><?php esc_html_e( 'Enter your postcode and we will show the price here.', NH_SC_TD ); ?></p>
 			</div>
 
 			<form class="nh-sc__shipping-form" data-nh-sc-shipping="1">
@@ -221,23 +221,24 @@ final class NH_Side_Cart_Render {
 					<input type="hidden" name="calc_shipping_country" value="<?php echo esc_attr( $current_country ); ?>" />
 				<?php endif; ?>
 
-				<p class="nh-sc__field">
-					<label for="nh_sc_shipping_postcode"><?php esc_html_e( 'Postcode / ZIP', NH_SC_TD ); ?></label>
-					<input
-						type="text"
-						id="nh_sc_shipping_postcode"
-						name="calc_shipping_postcode"
-						value="<?php echo esc_attr( $postcode ); ?>"
-						placeholder="<?php esc_attr_e( 'Postcode / ZIP', NH_SC_TD ); ?>"
-						autocomplete="postal-code"
-						inputmode="text"
-						enterkeyhint="done"
-					/>
-				</p>
-
-				<button type="submit" class="nh-sc__btn nh-sc__btn--secondary">
-					<?php esc_html_e( 'Show shipping cost', NH_SC_TD ); ?>
-				</button>
+				<div class="nh-sc__shipping-row">
+					<p class="nh-sc__field">
+						<label class="nh-sc__sr-only" for="nh_sc_shipping_postcode"><?php esc_html_e( 'Postcode / ZIP', NH_SC_TD ); ?></label>
+						<input
+							type="text"
+							id="nh_sc_shipping_postcode"
+							name="calc_shipping_postcode"
+							value="<?php echo esc_attr( $postcode ); ?>"
+							placeholder="<?php esc_attr_e( 'Your postcode', NH_SC_TD ); ?>"
+							autocomplete="postal-code"
+							inputmode="text"
+							enterkeyhint="go"
+						/>
+					</p>
+					<button type="submit" class="nh-sc__btn nh-sc__btn--secondary nh-sc__shipping-submit">
+						<?php esc_html_e( 'See price', NH_SC_TD ); ?>
+					</button>
+				</div>
 			</form>
 
 			<?php if ( $has_rates ) : ?>
@@ -391,7 +392,7 @@ final class NH_Side_Cart_Render {
 		}
 
 		if ( ! $calculated ) {
-			return esc_html__( 'Enter postcode', NH_SC_TD );
+			return '<button type="button" class="nh-sc__postcode-cta" data-nh-sc-focus-postcode>' . esc_html__( 'Add postcode', NH_SC_TD ) . '</button>';
 		}
 
 		return $cart->get_cart_shipping_total();

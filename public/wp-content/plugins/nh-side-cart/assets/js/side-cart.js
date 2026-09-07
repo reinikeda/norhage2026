@@ -267,6 +267,22 @@
       });
     });
 
+    $(document).on('click.nhSc', '[data-nh-sc-focus-postcode]', function () {
+      var input = $root.find('#nh_sc_shipping_postcode').get(0);
+      if (!input) {
+        return;
+      }
+      if (typeof input.scrollIntoView === 'function') {
+        input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+      window.setTimeout(function () {
+        input.focus();
+        if (typeof input.select === 'function') {
+          input.select();
+        }
+      }, 80);
+    });
+
     $(document).on('change.nhSc', '.nh-sc__method-input', function () {
       var methods = {};
       $root.find('.nh-sc__method-input:checked').each(function () {

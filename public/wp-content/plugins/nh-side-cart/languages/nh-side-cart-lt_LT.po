@@ -46,8 +46,14 @@ msgstr "Kiekis"
 msgid "Calculate shipping"
 msgstr "Skaičiuoti pristatymą"
 
+msgid "How much is delivery?"
+msgstr "Kiek kainuoja pristatymas?"
+
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Įveskite pašto kodą, kad pamatytumėte pristatymo kainą."
+
+msgid "Enter your postcode and we will show the price here."
+msgstr "Įveskite pašto kodą – kainą parodysime čia."
 
 msgid "Country / region"
 msgstr "Šalis / regionas"
@@ -58,8 +64,14 @@ msgstr "Pasirinkite šalį / regioną…"
 msgid "Postcode / ZIP"
 msgstr "Pašto kodas"
 
+msgid "Your postcode"
+msgstr "Jūsų pašto kodas"
+
 msgid "Show shipping cost"
 msgstr "Rodyti pristatymo kainą"
+
+msgid "See price"
+msgstr "Žiūrėti kainą"
 
 msgid "Free pickup from the warehouse is also available."
 msgstr "Galimas ir nemokamas atsiėmimas iš sandėlio."
@@ -87,6 +99,9 @@ msgstr "Iš viso"
 
 msgid "Enter postcode"
 msgstr "Įveskite pašto kodą"
+
+msgid "Add postcode"
+msgstr "Įvesti pašto kodą"
 
 msgid "View basket"
 msgstr "Peržiūrėti krepšelį"
