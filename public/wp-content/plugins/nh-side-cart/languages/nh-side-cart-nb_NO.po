@@ -46,8 +46,14 @@ msgstr "Antall"
 msgid "Calculate shipping"
 msgstr "Beregn frakt"
 
+msgid "How much is delivery?"
+msgstr "Hva koster frakten?"
+
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Skriv inn postnummeret ditt for å se fraktkostnaden."
+
+msgid "Enter your postcode and we will show the price here."
+msgstr "Skriv inn postnummeret, så viser vi prisen her."
 
 msgid "Country / region"
 msgstr "Land / region"
@@ -58,8 +64,14 @@ msgstr "Velg et land / en region…"
 msgid "Postcode / ZIP"
 msgstr "Postnummer"
 
+msgid "Your postcode"
+msgstr "Ditt postnummer"
+
 msgid "Show shipping cost"
 msgstr "Vis fraktkostnad"
+
+msgid "See price"
+msgstr "Se pris"
 
 msgid "Free pickup from the warehouse is also available."
 msgstr "Gratis henting fra lageret er også mulig."
@@ -87,6 +99,9 @@ msgstr "Totalt"
 
 msgid "Enter postcode"
 msgstr "Skriv inn postnummer"
+
+msgid "Add postcode"
+msgstr "Legg til postnummer"
 
 msgid "View basket"
 msgstr "Se handlekurv"

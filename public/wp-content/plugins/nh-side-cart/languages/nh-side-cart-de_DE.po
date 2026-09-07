@@ -46,8 +46,14 @@ msgstr "Menge"
 msgid "Calculate shipping"
 msgstr "Versand berechnen"
 
+msgid "How much is delivery?"
+msgstr "Was kostet die Lieferung?"
+
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Geben Sie Ihre Postleitzahl ein, um die Versandkosten zu sehen."
+
+msgid "Enter your postcode and we will show the price here."
+msgstr "Geben Sie Ihre Postleitzahl ein – wir zeigen den Preis hier."
 
 msgid "Country / region"
 msgstr "Land / Region"
@@ -58,8 +64,14 @@ msgstr "Land / Region auswählen…"
 msgid "Postcode / ZIP"
 msgstr "Postleitzahl"
 
+msgid "Your postcode"
+msgstr "Ihre Postleitzahl"
+
 msgid "Show shipping cost"
 msgstr "Versandkosten anzeigen"
+
+msgid "See price"
+msgstr "Preis anzeigen"
 
 msgid "Free pickup from the warehouse is also available."
 msgstr "Eine kostenlose Abholung im Lager ist ebenfalls möglich."
@@ -87,6 +99,9 @@ msgstr "Gesamt"
 
 msgid "Enter postcode"
 msgstr "Postleitzahl eingeben"
+
+msgid "Add postcode"
+msgstr "Postleitzahl angeben"
 
 msgid "View basket"
 msgstr "Warenkorb anzeigen"
