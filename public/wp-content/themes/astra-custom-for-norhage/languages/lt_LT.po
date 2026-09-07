@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -992,6 +992,9 @@ msgstr "Tarpinė suma"
 msgid "Shipping"
 msgstr "Pristatymas"
 
+msgid "Shipment"
+msgstr "Pristatymas"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr "Astra Custom for Norhage"
@@ -1835,7 +1838,7 @@ msgid "Other payment method"
 msgstr "Kitas mokėjimo būdas"
 
 msgid "Continue to payment"
-msgstr "Tęsti prie mokėjimo"
+msgstr "Tęsti mokėjimą"
 
 msgid "Back to details"
 msgstr "Grįžti prie duomenų"
@@ -1854,6 +1857,12 @@ msgstr "Sumokėkite tiesioginiu pavedimu į mūsų banko sąskaitą. Nurodykite 
 
 msgid "Place order"
 msgstr "Pateikti užsakymą"
+
+msgid "Payment"
+msgstr "Mokėjimas"
+
+msgid "Your order"
+msgstr "Jūsų užsakymas"
 
 #: inc/checkout-ux.php
 msgid "Please enter a first name."

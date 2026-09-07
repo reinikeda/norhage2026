@@ -992,6 +992,9 @@ msgstr "Zwischensumme"
 msgid "Shipping"
 msgstr "Versand"
 
+msgid "Shipment"
+msgstr "Versand"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
@@ -1854,6 +1857,12 @@ msgstr "Überweisen Sie den Betrag direkt auf unser Bankkonto. Geben Sie die Bes
 
 msgid "Place order"
 msgstr "Zahlungspflichtig bestellen"
+
+msgid "Payment"
+msgstr "Zahlung"
+
+msgid "Your order"
+msgstr "Ihre Bestellung"
 
 #: inc/checkout-ux.php
 msgid "Please enter a first name."

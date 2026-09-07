@@ -992,6 +992,9 @@ msgstr "Välisummaa"
 msgid "Shipping"
 msgstr "Toimitus"
 
+msgid "Shipment"
+msgstr "Toimitus"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr "Astra Custom for Norhage"
@@ -1854,6 +1857,12 @@ msgstr "Maksa suoraan pankkitilillemme. Käytä tilausnumeroa viitteenä. Toimit
 
 msgid "Place order"
 msgstr "Lähetä tilaus"
+
+msgid "Payment"
+msgstr "Maksu"
+
+msgid "Your order"
+msgstr "Tilauksesi"
 
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
