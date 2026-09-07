@@ -335,7 +335,7 @@ nh_cr_assert( 'anon subject capitalizes', strpos( $anon_parts['subject'], 'Your 
 nh_cr_assert( 'anon greeting has no name', strpos( $anon_parts['html'], 'Hi,' ) !== false );
 
 $help = nh_cr_help_popup_copy( 'nb_NO' );
-nh_cr_assert( 'nb help title', $help['title'] === 'Trenger du hjelp med fraktprisen?' );
+nh_cr_assert( 'nb help title', $help['title'] === 'Holder fraktprisen deg tilbake?' );
 nh_cr_assert( 'nb help chat', $help['chat'] !== '' );
 nh_cr_assert( 'nb help kicker placeholder', strpos( $help['kicker'], '%s' ) !== false );
 $help_en = nh_cr_help_popup_copy( 'en_GB' );

@@ -251,8 +251,8 @@ function nh_cr_help_popup_copy( $locale ) {
 	$all   = array(
 		'en' => array(
 			'kicker'   => 'You checked delivery to %s',
-			'title'    => 'Need help with the shipping price?',
-			'body'     => 'Delivery for bulky greenhouse parts can look high at first. We can explain the rate or look at a cheaper option — no obligation.',
+			'title'    => 'Delivery price holding you back?',
+			'body'     => 'Shipping calculations can sometimes be tricky. Message us below — we will double-check your location rates.',
 			'chat'     => 'Chat with us',
 			'checkout' => 'Continue to checkout',
 			'dismiss'  => 'No thanks',
@@ -260,8 +260,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'sv' => array(
 			'kicker'   => 'Du kollade frakt till %s',
-			'title'    => 'Behöver du hjälp med fraktpriset?',
-			'body'     => 'Frakt på skrymmande växthusdelar kan se högt ut först. Vi kan förklara priset eller titta på ett billigare alternativ — utan förpliktelse.',
+			'title'    => 'Är fraktpriset det som håller dig tillbaka?',
+			'body'     => 'Fraktberäkningar kan vara knepiga. Skriv till oss nedan — vi dubbelkollar priset för din ort.',
 			'chat'     => 'Chatta med oss',
 			'checkout' => 'Fortsätt till kassan',
 			'dismiss'  => 'Nej tack',
@@ -269,8 +269,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'nb' => array(
 			'kicker'   => 'Du sjekket frakt til %s',
-			'title'    => 'Trenger du hjelp med fraktprisen?',
-			'body'     => 'Frakt på store drivhusdeler kan virke høyt ved første øyekast. Vi kan forklare prisen eller se på et rimeligere alternativ — uten forpliktelse.',
+			'title'    => 'Holder fraktprisen deg tilbake?',
+			'body'     => 'Fraktberegning kan være litt knudrete. Send oss en melding under — vi dobbeltsjekker satsene for stedet ditt.',
 			'chat'     => 'Chat med oss',
 			'checkout' => 'Fortsett til kassen',
 			'dismiss'  => 'Nei takk',
@@ -278,8 +278,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'da' => array(
 			'kicker'   => 'Du tjekkede fragt til %s',
-			'title'    => 'Har du brug for hjælp til fragtprisen?',
-			'body'     => 'Fragt på store drivhusdele kan se højt ud først. Vi kan forklare prisen eller se på et billigere alternativ — uden forpligtelse.',
+			'title'    => 'Er fragtprisen det, der holder dig tilbage?',
+			'body'     => 'Fragtberegninger kan være lidt svære. Skriv til os nedenfor — vi tjekker prisen for din adresse.',
 			'chat'     => 'Chat med os',
 			'checkout' => 'Fortsæt til kassen',
 			'dismiss'  => 'Nej tak',
@@ -287,8 +287,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'fi' => array(
 			'kicker'   => 'Tarkistit toimituksen postinumeroon %s',
-			'title'    => 'Tarvitsetko apua toimitushintaan?',
-			'body'     => 'Kasvihuoneosien toimitus voi näyttää kalliilta ensi silmäyksellä. Selitämme hinnan tai etsimme edullisemman vaihtoehdon — ilman velvoitetta.',
+			'title'    => 'Jarruttaako toimitushinta?',
+			'body'     => 'Toimituskulun laskeminen voi olla hankalaa. Lähetä viesti alla — tarkistamme hinnan sijaintisi mukaan.',
 			'chat'     => 'Juttele kanssamme',
 			'checkout' => 'Jatka kassalle',
 			'dismiss'  => 'Ei kiitos',
@@ -296,8 +296,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'de' => array(
 			'kicker'   => 'Sie haben die Lieferung nach %s geprüft',
-			'title'    => 'Hilfe beim Versandpreis?',
-			'body'     => 'Versand für sperrige Gewächshausteile wirkt zuerst oft hoch. Wir erklären den Preis oder prüfen eine günstigere Option — unverbindlich.',
+			'title'    => 'Hält Sie der Versandpreis zurück?',
+			'body'     => 'Versandberechnungen sind manchmal knifflig. Schreiben Sie uns unten — wir prüfen den Tarif für Ihren Ort.',
 			'chat'     => 'Mit uns chatten',
 			'checkout' => 'Weiter zur Kasse',
 			'dismiss'  => 'Nein danke',
@@ -305,8 +305,8 @@ function nh_cr_help_popup_copy( $locale ) {
 		),
 		'lt' => array(
 			'kicker'   => 'Tikrinote pristatymą į %s',
-			'title'    => 'Reikia pagalbos dėl pristatymo kainos?',
-			'body'     => 'Didelių šiltnamio dalių pristatymas iš pradžių gali atrodyti brangus. Paaiškinsime kainą arba parinksime pigesnį variantą — be įsipareigojimų.',
+			'title'    => 'Stabdo pristatymo kaina?',
+			'body'     => 'Pristatymo skaičiavimai kartais būna painūs. Parašykite mums žemiau — patikrinsime tarifą jūsų vietovei.',
 			'chat'     => 'Rašykite mums',
 			'checkout' => 'Tęsti į atsiskaitymą',
 			'dismiss'  => 'Ne, ačiū',
