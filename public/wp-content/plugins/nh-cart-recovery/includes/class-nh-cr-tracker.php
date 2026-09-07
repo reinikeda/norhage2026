@@ -26,6 +26,8 @@ class NH_CR_Tracker {
 		add_action( 'template_redirect', array( __CLASS__, 'maybe_restore' ), 1 );
 		add_action( 'template_redirect', array( __CLASS__, 'maybe_unsubscribe' ), 1 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ), 40 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_help_popup' ), 41 );
+		add_action( 'wp_footer', array( __CLASS__, 'render_help_popup' ), 30 );
 		add_action( 'wc_ajax_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
 		add_action( 'wp_ajax_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
 		add_action( 'wp_ajax_nopriv_nh_cr_sync', array( __CLASS__, 'ajax_sync' ) );
@@ -477,6 +479,107 @@ class NH_CR_Tracker {
 				'ajax'  => $ajax,
 			)
 		);
+	}
+
+	/**
+	 * Guest priced shipping, never gave an email, still browsing with items in the cart.
+	 *
+	 * @return bool
+	 */
+	public static function should_offer_help_popup() {
+		$settings = nh_cr_get_settings();
+		if ( empty( $settings['help_popup'] ) ) {
+			return false;
+		}
+		if ( is_admin() || wp_doing_ajax() ) {
+			return false;
+		}
+		if ( ! function_exists( 'WC' ) || ! WC()->cart || WC()->cart->is_empty() ) {
+			return false;
+		}
+		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+			return false;
+		}
+		if ( function_exists( 'is_cart' ) && is_cart() ) {
+			return false;
+		}
+		if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+			return false;
+		}
+		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+			return false;
+		}
+		if ( nh_cr_classify_client( nh_cr_request_user_agent() ) === 'bot' ) {
+			return false;
+		}
+		$profile = self::customer_profile();
+		return $profile['email'] === '';
+	}
+
+	public static function enqueue_help_popup() {
+		if ( ! self::should_offer_help_popup() ) {
+			return;
+		}
+		$settings = nh_cr_get_settings();
+		$profile  = self::customer_profile();
+		$copy     = nh_cr_help_popup_copy( nh_cr_shop_locale() );
+		wp_enqueue_style(
+			'nh-cart-recovery-help',
+			NH_CR_URL . 'assets/css/help-popup.css',
+			array(),
+			NH_CR_VERSION
+		);
+		wp_enqueue_script(
+			'nh-cart-recovery-help',
+			NH_CR_URL . 'assets/js/help-popup.js',
+			array(),
+			NH_CR_VERSION,
+			true
+		);
+		wp_localize_script(
+			'nh-cart-recovery-help',
+			'nhCartHelp',
+			array(
+				'delay'     => max( 20, min( 180, (int) $settings['help_popup_seconds'] ) ) * 1000,
+				'priced'    => $profile['postcode'] !== '',
+				'postcode'  => $profile['postcode'],
+				'checkout'  => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/' ),
+				'copy'      => $copy,
+			)
+		);
+	}
+
+	public static function render_help_popup() {
+		if ( ! self::should_offer_help_popup() ) {
+			return;
+		}
+		$copy     = nh_cr_help_popup_copy( nh_cr_shop_locale() );
+		$postcode = self::customer_profile()['postcode'];
+		$kicker   = $postcode !== '' ? sprintf( $copy['kicker'], $postcode ) : '';
+		?>
+		<div id="nh-cr-help" class="nh-cr-help" hidden>
+			<div class="nh-cr-help__scrim" data-nh-cr-help-dismiss></div>
+			<div class="nh-cr-help__card" role="dialog" aria-modal="true" aria-labelledby="nh-cr-help-title" tabindex="-1">
+				<button type="button" class="nh-cr-help__x" data-nh-cr-help-dismiss aria-label="<?php echo esc_attr( $copy['close'] ); ?>">&times;</button>
+				<p class="nh-cr-help__kicker" data-nh-cr-help-kicker<?php echo $kicker === '' ? ' hidden' : ''; ?>>
+					<?php echo esc_html( $kicker ); ?>
+				</p>
+				<h2 id="nh-cr-help-title" class="nh-cr-help__title"><?php echo esc_html( $copy['title'] ); ?></h2>
+				<p class="nh-cr-help__body"><?php echo esc_html( $copy['body'] ); ?></p>
+				<div class="nh-cr-help__actions">
+					<button type="button" class="nh-cr-help__chat" data-nh-cr-help-chat>
+						<?php echo esc_html( $copy['chat'] ); ?>
+					</button>
+					<a class="nh-cr-help__checkout" data-nh-cr-help-checkout href="<?php echo esc_url( function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/' ) ); ?>">
+						<?php echo esc_html( $copy['checkout'] ); ?>
+					</a>
+					<button type="button" class="nh-cr-help__dismiss" data-nh-cr-help-dismiss>
+						<?php echo esc_html( $copy['dismiss'] ); ?>
+					</button>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 
 	public static function ajax_sync() {
