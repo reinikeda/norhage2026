@@ -299,11 +299,16 @@ class NH_CR_Admin {
 	private static function render_list() {
 		$status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( (string) $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$signal = isset( $_GET['signal'] ) ? sanitize_key( wp_unslash( (string) $_GET['signal'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$device = isset( $_GET['device'] ) ? sanitize_key( wp_unslash( (string) $_GET['device'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $device !== '' && ! in_array( $device, nh_cr_device_keys(), true ) ) {
+			$device = '';
+		}
 		$paged  = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$data   = NH_CR_Store::query(
 			array(
 				'status' => $status,
 				'signal' => $signal,
+				'device' => $device,
 				'paged'  => $paged,
 			)
 		);
@@ -315,6 +320,8 @@ class NH_CR_Admin {
 
 		echo '<p class="nh-cr-help">';
 		echo esc_html__( 'Each card is one WooCommerce browser session. Open a card to see every item in the latest cart snapshot. Recovery emails are only sent when an email is known. Postcode appears after the customer calculates shipping or fills checkout.', NH_CR_TD );
+		echo ' ';
+		echo esc_html__( 'This list is often larger than GA4 add_to_cart: the plugin saves on the server as soon as Woo adds an item, including crawlers and people who never load analytics. Use the device filter to separate phones, desktops, and likely bots.', NH_CR_TD );
 		echo '</p>';
 
 		echo '<div class="nh-cr-filters" role="navigation" aria-label="' . esc_attr__( 'Status', NH_CR_TD ) . '">';
@@ -329,7 +336,7 @@ class NH_CR_Admin {
 			) as $key => $label
 		) {
 			self::chip(
-				add_query_arg( array_merge( $base, array( 'status' => $key, 'signal' => $signal ) ), admin_url( 'admin.php' ) ),
+				add_query_arg( array_merge( $base, array( 'status' => $key, 'signal' => $signal, 'device' => $device ) ), admin_url( 'admin.php' ) ),
 				$label,
 				$status === $key
 			);
@@ -345,9 +352,27 @@ class NH_CR_Admin {
 			) as $key => $label
 		) {
 			self::chip(
-				add_query_arg( array_merge( $base, array( 'status' => $status, 'signal' => $key ) ), admin_url( 'admin.php' ) ),
+				add_query_arg( array_merge( $base, array( 'status' => $status, 'signal' => $key, 'device' => $device ) ), admin_url( 'admin.php' ) ),
 				$label,
 				$signal === $key
+			);
+		}
+		echo '</div>';
+		echo '<div class="nh-cr-filters" role="navigation" aria-label="' . esc_attr__( 'Device', NH_CR_TD ) . '">';
+		foreach (
+			array(
+				''        => __( 'Any device', NH_CR_TD ),
+				'desktop' => __( 'Desktop', NH_CR_TD ),
+				'mobile'  => __( 'Mobile', NH_CR_TD ),
+				'tablet'  => __( 'Tablet', NH_CR_TD ),
+				'bot'     => __( 'Likely bot', NH_CR_TD ),
+				'unknown' => __( 'Unknown', NH_CR_TD ),
+			) as $key => $label
+		) {
+			self::chip(
+				add_query_arg( array_merge( $base, array( 'status' => $status, 'signal' => $signal, 'device' => $key ) ), admin_url( 'admin.php' ) ),
+				$label,
+				$device === $key
 			);
 		}
 		echo '</div>';
@@ -388,6 +413,7 @@ class NH_CR_Admin {
 						array(
 							'status' => $status,
 							'signal' => $signal,
+							'device' => $device,
 							'paged'  => $i,
 						)
 					),
@@ -427,6 +453,10 @@ class NH_CR_Admin {
 		$emailed  = nh_cr_format_when( isset( $row->emailed_at ) ? $row->emailed_at : '' );
 		$sent     = NH_CR_Store::emails_sent_count( $row );
 		$total    = nh_cr_cart_grand_total( $items );
+		$device   = isset( $row->device ) ? (string) $row->device : '';
+		$ua       = isset( $row->user_agent ) ? (string) $row->user_agent : '';
+		$dev_key  = in_array( $device, nh_cr_device_keys(), true ) ? $device : 'unknown';
+		$dev_label = nh_cr_device_label( $dev_key );
 
 		echo '<details class="nh-cr-card">';
 		echo '<summary>';
@@ -436,6 +466,7 @@ class NH_CR_Admin {
 		echo '<span class="nh-cr-card__id">#' . esc_html( (string) $row->id ) . '</span>';
 		echo '<span class="nh-cr-badge nh-cr-badge--' . esc_attr( $status ) . '">' . esc_html( $status ) . '</span>';
 		echo '<span class="nh-cr-badge nh-cr-badge--' . esc_attr( $type ) . '">' . esc_html( $type ) . '</span>';
+		echo '<span class="nh-cr-badge nh-cr-badge--device nh-cr-badge--' . esc_attr( $dev_key ) . '"' . ( $ua !== '' ? ' title="' . esc_attr( $ua ) . '"' : '' ) . '>' . esc_html( $dev_label ) . '</span>';
 		echo '</div>';
 		echo '<div class="nh-cr-card__meta">';
 		echo '<span>' . esc_html( $who ) . '</span>';
@@ -472,6 +503,8 @@ class NH_CR_Admin {
 		self::fact( __( 'Name', NH_CR_TD ), $name !== '' ? $name : '—' );
 		self::fact( __( 'Phone', NH_CR_TD ), $phone !== '' ? $phone : '—' );
 		self::fact( __( 'Location', NH_CR_TD ), $location !== '' ? $location : '—' );
+		self::fact( __( 'Device', NH_CR_TD ), $dev_label );
+		self::fact( __( 'User agent', NH_CR_TD ), $ua !== '' ? $ua : '—' );
 		self::fact( __( 'Emails sent', NH_CR_TD ), (string) $sent );
 		self::fact( __( 'Last emailed', NH_CR_TD ), $emailed !== '' ? $emailed : '—' );
 		echo '</dl>';

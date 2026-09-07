@@ -190,6 +190,31 @@
 	color: #1e3932;
 }
 
+.nh-cr-badge--desktop {
+	background: #e8f0fe;
+	color: #174ea6;
+}
+
+.nh-cr-badge--mobile {
+	background: #e6f4ea;
+	color: #137333;
+}
+
+.nh-cr-badge--tablet {
+	background: #f3e8fd;
+	color: #7627bb;
+}
+
+.nh-cr-badge--bot {
+	background: #fce8e6;
+	color: #c5221f;
+}
+
+.nh-cr-badge--unknown {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
 .nh-cr-card__body {
 	border-top: 1px solid #f1e6d6;
 	padding: 4px 16px 14px;

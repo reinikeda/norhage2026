@@ -276,6 +276,47 @@ nh_cr_assert(
 );
 nh_cr_assert( 'obfuscated helper', nh_cr_looks_obfuscated( 'a***@klarna.com' ) === true );
 
+nh_cr_assert( 'empty ua is unknown', nh_cr_classify_client( '' ) === 'unknown' );
+nh_cr_assert(
+	'chrome desktop',
+	nh_cr_classify_client( 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' ) === 'desktop'
+);
+nh_cr_assert(
+	'mac safari desktop',
+	nh_cr_classify_client( 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15' ) === 'desktop'
+);
+nh_cr_assert(
+	'iphone is mobile',
+	nh_cr_classify_client( 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' ) === 'mobile'
+);
+nh_cr_assert(
+	'android phone is mobile',
+	nh_cr_classify_client( 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' ) === 'mobile'
+);
+nh_cr_assert(
+	'ipad is tablet',
+	nh_cr_classify_client( 'Mozilla/5.0 (iPad; CPU OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1' ) === 'tablet'
+);
+nh_cr_assert(
+	'android tablet without mobile is tablet',
+	nh_cr_classify_client( 'Mozilla/5.0 (Linux; Android 12; SM-T870) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' ) === 'tablet'
+);
+nh_cr_assert(
+	'googlebot is bot not desktop',
+	nh_cr_classify_client( 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' ) === 'bot'
+);
+nh_cr_assert(
+	'googlebot smartphone is bot not mobile',
+	nh_cr_classify_client( 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' ) === 'bot'
+);
+nh_cr_assert( 'facebook preview is bot', nh_cr_classify_client( 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' ) === 'bot' );
+nh_cr_assert( 'curl is bot', nh_cr_classify_client( 'curl/8.0.1' ) === 'bot' );
+nh_cr_assert( 'python requests is bot', nh_cr_classify_client( 'python-requests/2.31.0' ) === 'bot' );
+nh_cr_assert( 'bingpreview is bot', nh_cr_classify_client( 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b' ) === 'bot' );
+nh_cr_assert( 'device label bot', nh_cr_device_label( 'bot' ) === 'Likely bot' );
+nh_cr_assert( 'device keys include bot', in_array( 'bot', nh_cr_device_keys(), true ) );
+nh_cr_assert( 'ua truncated to 191', strlen( nh_cr_truncate_user_agent( str_repeat( 'a', 300 ) ) ) === 191 );
+
 $pal = nh_cr_palette();
 nh_cr_assert( 'palette green', $pal['green'] === '#00704A' );
 nh_cr_assert( 'palette gold', $pal['gold'] === '#C89F63' );

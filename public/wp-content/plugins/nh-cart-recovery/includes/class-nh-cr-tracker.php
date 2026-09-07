@@ -45,6 +45,9 @@ class NH_CR_Tracker {
 	}
 
 	/**
+	 * Woo session id. Forcing a cookie here means GET ?add-to-cart= and crawlers
+	 * that hit product forms also get a recovery row, even with no GA4 JS.
+	 *
 	 * @return string
 	 */
 	public static function session_key() {
@@ -55,6 +58,32 @@ class NH_CR_Tracker {
 			WC()->session->set_customer_session_cookie( true );
 		}
 		return (string) WC()->session->get_customer_id();
+	}
+
+	/**
+	 * Device and User-Agent from this request.
+	 *
+	 * @return array{device:string,user_agent:string}
+	 */
+	public static function fresh_client_meta() {
+		$ua = nh_cr_request_user_agent();
+		return array(
+			'device'     => nh_cr_classify_client( $ua ),
+			'user_agent' => $ua,
+		);
+	}
+
+	/**
+	 * Fill device only when the row has none. Do not overwrite a stored phone with a later desktop restore.
+	 *
+	 * @param object|null $row Existing open row.
+	 * @return array{device:string,user_agent:string}|null
+	 */
+	public static function client_meta( $row = null ) {
+		if ( $row && ! empty( $row->device ) ) {
+			return null;
+		}
+		return self::fresh_client_meta();
 	}
 
 	/**
@@ -145,10 +174,14 @@ class NH_CR_Tracker {
 			$sent = NH_CR_Store::emails_sent_count( $row );
 			$max  = (int) nh_cr_get_settings()['max_emails'];
 			if ( $sent >= $max ) {
-				$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+				$insert           = array_merge( NH_CR_Store::blank_row(), $data, self::fresh_client_meta() );
 				$insert['status'] = 'open';
 				NH_CR_Store::insert( $insert );
 				return;
+			}
+			$fill = self::client_meta( $row );
+			if ( $fill ) {
+				$data = array_merge( $data, $fill );
 			}
 			if ( $row->status === 'open' ) {
 				$data['status'] = 'open';
@@ -160,7 +193,7 @@ class NH_CR_Tracker {
 			return;
 		}
 
-		$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+		$insert           = array_merge( NH_CR_Store::blank_row(), $data, self::fresh_client_meta() );
 		$insert['status'] = 'open';
 		NH_CR_Store::insert( $insert );
 	}
@@ -393,6 +426,10 @@ class NH_CR_Tracker {
 		);
 
 		if ( $row ) {
+			$fill = self::client_meta( $row );
+			if ( $fill ) {
+				$data = array_merge( $data, $fill );
+			}
 			if ( $already < 1 ) {
 				$data['status'] = 'open';
 			}
@@ -403,7 +440,7 @@ class NH_CR_Tracker {
 			return;
 		}
 
-		$insert           = array_merge( NH_CR_Store::blank_row(), $data );
+		$insert           = array_merge( NH_CR_Store::blank_row(), $data, self::fresh_client_meta() );
 		$insert['status'] = 'open';
 		$id               = NH_CR_Store::insert( $insert );
 		NH_CR_Mailer::send_row( NH_CR_Store::get( $id ), 1 );

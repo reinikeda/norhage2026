@@ -1159,6 +1159,177 @@ function nh_cr_format_location( $row ) {
 }
 
 /**
+ * Stored device values.
+ *
+ * @return array<int, string>
+ */
+function nh_cr_device_keys() {
+	return array( 'desktop', 'tablet', 'mobile', 'bot', 'unknown' );
+}
+
+/**
+ * User-Agent from the current request, truncated to the DB column.
+ *
+ * @return string
+ */
+function nh_cr_request_user_agent() {
+	$ua = '';
+	if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) && is_scalar( $_SERVER['HTTP_USER_AGENT'] ) ) {
+		$ua = (string) $_SERVER['HTTP_USER_AGENT'];
+		if ( function_exists( 'wp_unslash' ) ) {
+			$ua = (string) wp_unslash( $ua );
+		}
+		if ( function_exists( 'sanitize_text_field' ) ) {
+			$ua = sanitize_text_field( $ua );
+		} else {
+			$ua = trim( $ua );
+		}
+	}
+	return nh_cr_truncate_user_agent( $ua );
+}
+
+/**
+ * @param string $ua Raw user agent.
+ * @param int    $max Column length.
+ * @return string
+ */
+function nh_cr_truncate_user_agent( $ua, $max = 191 ) {
+	$ua  = trim( (string) $ua );
+	$max = max( 1, (int) $max );
+	if ( function_exists( 'mb_substr' ) ) {
+		return mb_substr( $ua, 0, $max );
+	}
+	return substr( $ua, 0, $max );
+}
+
+/**
+ * Classify a User-Agent as desktop, tablet, mobile, bot, or unknown.
+ * Bots are checked first so Googlebot-smartphone is not stored as mobile.
+ *
+ * @param string $ua User-Agent.
+ * @return string
+ */
+function nh_cr_classify_client( $ua ) {
+	$ua = trim( (string) $ua );
+	if ( $ua === '' ) {
+		return 'unknown';
+	}
+	$lower = strtolower( $ua );
+	if ( nh_cr_user_agent_looks_like_bot( $lower ) ) {
+		return 'bot';
+	}
+	if (
+		strpos( $lower, 'ipad' ) !== false
+		|| strpos( $lower, 'tablet' ) !== false
+		|| strpos( $lower, 'playbook' ) !== false
+		|| strpos( $lower, 'silk' ) !== false
+		|| ( strpos( $lower, 'android' ) !== false && strpos( $lower, 'mobile' ) === false )
+	) {
+		return 'tablet';
+	}
+	if (
+		strpos( $lower, 'iphone' ) !== false
+		|| strpos( $lower, 'ipod' ) !== false
+		|| strpos( $lower, 'android' ) !== false
+		|| strpos( $lower, 'windows phone' ) !== false
+		|| strpos( $lower, 'blackberry' ) !== false
+		|| strpos( $lower, 'iemobile' ) !== false
+		|| strpos( $lower, 'opera mini' ) !== false
+		|| strpos( $lower, 'mobile' ) !== false
+	) {
+		return 'mobile';
+	}
+	return 'desktop';
+}
+
+/**
+ * @param string $lower Lowercased user agent.
+ * @return bool
+ */
+function nh_cr_user_agent_looks_like_bot( $lower ) {
+	$lower = (string) $lower;
+	if ( $lower === '' ) {
+		return false;
+	}
+	$needles = array(
+		'bot',
+		'crawl',
+		'spider',
+		'slurp',
+		'bingpreview',
+		'facebookexternalhit',
+		'facebot',
+		'twitterbot',
+		'linkedinbot',
+		'slackbot',
+		'discordbot',
+		'telegrambot',
+		'applebot',
+		'storebot-google',
+		'adsbot-google',
+		'gptbot',
+		'claudebot',
+		'chatgpt-user',
+		'bytespider',
+		'semrush',
+		'ahrefs',
+		'dotbot',
+		'mj12bot',
+		'petalbot',
+		'yandex',
+		'duckduckbot',
+		'ia_archiver',
+		'headlesschrome',
+		'phantomjs',
+		'puppeteer',
+		'playwright',
+		'lighthouse',
+		'pagespeed',
+		'screaming frog',
+		'wget',
+		'curl/',
+		'python-requests',
+		'python-urllib',
+		'libwww-perl',
+		'go-http-client',
+		'scrapy',
+		'http.rb',
+		'okhttp',
+		'java/',
+		'pingdom',
+		'uptimerobot',
+		'statuscake',
+	);
+	foreach ( $needles as $needle ) {
+		if ( strpos( $lower, $needle ) !== false ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Admin label for a stored device value.
+ *
+ * @param string $device Device key.
+ * @return string
+ */
+function nh_cr_device_label( $device ) {
+	switch ( (string) $device ) {
+		case 'desktop':
+			return 'Desktop';
+		case 'tablet':
+			return 'Tablet';
+		case 'mobile':
+			return 'Mobile';
+		case 'bot':
+			return 'Likely bot';
+		default:
+			return 'Unknown';
+	}
+}
+
+/**
  * Woo internals that must not be fed back into add_to_cart().
  *
  * @return array<int, string>
