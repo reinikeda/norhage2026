@@ -174,6 +174,8 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_payment_method_session', 999 );
@@ -2341,6 +2343,33 @@ function nh_checkout_translate_gateway_text( $text ) {
 		}
 	}
 	return $original;
+}
+
+/**
+ * Woo package titles and some shipping method labels are stored in English (Shipping / Shipment).
+ *
+ * @param string $name    Package name.
+ * @param int    $index   Package index.
+ * @param array  $package Package.
+ * @return string
+ */
+function nh_checkout_translate_shipping_package_name( $name, $index = 0, $package = array() ) {
+	unset( $index, $package );
+	$plain = trim( wp_strip_all_tags( (string) $name ) );
+	if ( $plain === '' ) {
+		return $name;
+	}
+	if ( preg_match( '/^(Shipping|Shipment)(?:\s+(\d+))?$/i', $plain, $m ) ) {
+		$label = ( strtolower( $m[1] ) === 'shipment' )
+			? __( 'Shipment', 'nh-theme' )
+			: __( 'Shipping', 'nh-theme' );
+		if ( ! empty( $m[2] ) && (int) $m[2] > 1 ) {
+			return $label . ' ' . (int) $m[2];
+		}
+		return $label;
+	}
+	$translated = nh_checkout_translate_gateway_text( $plain );
+	return $translated !== $plain ? $translated : $name;
 }
 
 /**

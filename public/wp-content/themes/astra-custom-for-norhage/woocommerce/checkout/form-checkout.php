@@ -39,7 +39,7 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 				</button>
 
 				<div id="nh-checkout-summary-body" class="nh-checkout-summary__body">
-					<h3 id="order_review_heading"><?php esc_html_e( 'Your order', 'woocommerce' ); ?></h3>
+					<h3 id="order_review_heading"><?php esc_html_e( 'Your order', 'nh-theme' ); ?></h3>
 
 					<?php do_action( 'woocommerce_checkout_before_order_review' ); ?>
 
@@ -81,11 +81,11 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 				</button>
 			</div>
 
-			<section class="nh-checkout-payment" id="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'woocommerce' ); ?>">
+			<section class="nh-checkout-payment" id="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'nh-theme' ); ?>">
 				<button type="button" class="nh-checkout-back" id="nh-checkout-back">
 					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
 				</button>
-				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'woocommerce' ); ?></h3>
+				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'nh-theme' ); ?></h3>
 				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay', 'nh-theme' ); ?></p>
 				<?php do_action( 'nh_checkout_payment' ); ?>
 				<?php

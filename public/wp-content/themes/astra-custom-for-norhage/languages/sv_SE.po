@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:24+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -992,6 +992,9 @@ msgstr "Delsumma"
 msgid "Shipping"
 msgstr "Frakt"
 
+msgid "Shipment"
+msgstr "Frakt"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
@@ -1755,7 +1758,6 @@ msgstr "Kunde inte lägga till prov i varukorgen."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Kunde inte ansluta till WooCommerce. Försök igen."
 
-
 #: woocommerce/cart/shipping-calculator.php
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Ange ditt postnummer för att se fraktkostnaden."
@@ -1855,6 +1857,12 @@ msgstr "Betala direkt till vårt bankkonto. Ange ordernumret som referens. Order
 msgid "Place order"
 msgstr "Lägg order"
 
+msgid "Payment"
+msgstr "Betalning"
+
+msgid "Your order"
+msgstr "Din beställning"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Ange ett förnamn."
@@ -1876,32 +1884,6 @@ msgstr "Ange en giltig kontakt-e-postadress."
 
 msgid "Please enter a valid phone number."
 msgstr "Ange ett giltigt telefonnummer."
-
-#~ msgid "Contact Us"
-#~ msgstr "Kontakt"
-
-#~ msgid "Customize"
-#~ msgstr "Anpassa"
-
-#~ msgid "Customize “%s”"
-#~ msgstr "Anpassa “%s”"
-
-#~ msgid "%d item has been added to your basket"
-#~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "%d vara har lagts till i varukorgen"
-#~ msgstr[1] "%d varor har lagts till i varukorgen"
-
-#~ msgid "View basket"
-#~ msgstr "Visa varukorg"
-
-#~ msgid "Buy a complete set"
-#~ msgstr "Köp ett komplett set"
-
-#~ msgid "Only %d left in stock"
-#~ msgstr "Endast %d kvar i lager"
-
-#~ msgid "Max per bundle: %d"
-#~ msgstr "Max antal per paket: %d"
 
 msgid "Breadcrumbs"
 msgstr "Länkstig"
@@ -1983,3 +1965,28 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#~ msgid "Contact Us"
+#~ msgstr "Kontakt"
+
+#~ msgid "Customize"
+#~ msgstr "Anpassa"
+
+#~ msgid "Customize “%s”"
+#~ msgstr "Anpassa “%s”"
+
+#~ msgid "%d item has been added to your basket"
+#~ msgid_plural "%d items have been added to your basket"
+#~ msgstr[0] "%d vara har lagts till i varukorgen"
+#~ msgstr[1] "%d varor har lagts till i varukorgen"
+
+#~ msgid "View basket"
+#~ msgstr "Visa varukorg"
+
+#~ msgid "Buy a complete set"
+#~ msgstr "Köp ett komplett set"
+
+#~ msgid "Only %d left in stock"
+#~ msgstr "Endast %d kvar i lager"
+
+#~ msgid "Max per bundle: %d"
+#~ msgstr "Max antal per paket: %d"

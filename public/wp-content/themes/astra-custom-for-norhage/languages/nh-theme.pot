@@ -976,6 +976,9 @@ msgstr ""
 msgid "Shipping"
 msgstr ""
 
+msgid "Shipment"
+msgstr ""
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
@@ -1082,6 +1085,12 @@ msgid "Make your payment directly into our bank account. Please use your Order I
 msgstr ""
 
 msgid "Place order"
+msgstr ""
+
+msgid "Payment"
+msgstr ""
+
+msgid "Your order"
 msgstr ""
 
 #: inc/checkout-ux.php

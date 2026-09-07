@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-05 15:00+0300\n"
+"PO-Revision-Date: 2026-09-07 15:24+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -992,6 +992,9 @@ msgstr "Delsum"
 msgid "Shipping"
 msgstr "Frakt"
 
+msgid "Shipment"
+msgstr "Frakt"
+
 #. Theme Name of the plugin/theme
 msgid "Astra Custom for Norhage"
 msgstr ""
@@ -1755,7 +1758,6 @@ msgstr "Kunne ikke legge vareprøve i handlekurven."
 msgid "Could not connect to WooCommerce. Please try again."
 msgstr "Kunne ikke koble til WooCommerce. Vennligst prøv igjen."
 
-
 #: woocommerce/cart/shipping-calculator.php
 msgid "Enter your postcode to see the shipping cost."
 msgstr "Skriv inn postnummeret ditt for å se fraktkostnaden."
@@ -1855,6 +1857,12 @@ msgstr "Betal direkte til vår bankkonto. Bruk ordrenummeret som merknad. Vi sen
 msgid "Place order"
 msgstr "Fullfør ordre"
 
+msgid "Payment"
+msgstr "Betaling"
+
+msgid "Your order"
+msgstr "Din bestilling"
+
 #: inc/checkout-ux.php
 msgid "Please enter a first name."
 msgstr "Skriv inn et fornavn."
@@ -1876,38 +1884,6 @@ msgstr "Skriv inn en gyldig kontakt-e-postadresse."
 
 msgid "Please enter a valid phone number."
 msgstr "Skriv inn et gyldig telefonnummer."
-
-#~ msgid "Contact Us"
-#~ msgstr "Kontakt"
-
-#~ msgid "Customize"
-#~ msgstr "Tilpass"
-
-#~ msgid "Customize “%s”"
-#~ msgstr "Tilpass “%s”"
-
-#~ msgid "%d item has been added to your basket"
-#~ msgid_plural "%d items have been added to your basket"
-#~ msgstr[0] "%d vare er lagt til i handlekurven"
-#~ msgstr[1] "%d varer er lagt til i handlekurven"
-
-#~ msgid "View basket"
-#~ msgstr "Se handlekurv"
-
-#~ msgid "Buy a complete set"
-#~ msgstr "Kjøp et komplett sett"
-
-#~ msgid "Only %d left in stock"
-#~ msgstr "Bare %d igjen på lager"
-
-#~ msgid "Max per bundle: %d"
-#~ msgstr "Maks. per pakke: %d"
-
-#~ msgid "Minus Quantity"
-#~ msgstr "Trekk antall"
-
-#~ msgid "Plus Quantity"
-#~ msgstr "Pluss Antall"
 
 msgid "Breadcrumbs"
 msgstr "Brødsmuler"
@@ -1989,3 +1965,34 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#~ msgid "Contact Us"
+#~ msgstr "Kontakt"
+
+#~ msgid "Customize"
+#~ msgstr "Tilpass"
+
+#~ msgid "Customize “%s”"
+#~ msgstr "Tilpass “%s”"
+
+#~ msgid "%d item has been added to your basket"
+#~ msgid_plural "%d items have been added to your basket"
+#~ msgstr[0] "%d vare er lagt til i handlekurven"
+#~ msgstr[1] "%d varer er lagt til i handlekurven"
+
+#~ msgid "View basket"
+#~ msgstr "Se handlekurv"
+
+#~ msgid "Buy a complete set"
+#~ msgstr "Kjøp et komplett sett"
+
+#~ msgid "Only %d left in stock"
+#~ msgstr "Bare %d igjen på lager"
+
+#~ msgid "Max per bundle: %d"
+#~ msgstr "Maks. per pakke: %d"
+
+#~ msgid "Minus Quantity"
+#~ msgstr "Trekk antall"
+
+#~ msgid "Plus Quantity"
+#~ msgstr "Pluss Antall"
