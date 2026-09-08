@@ -470,15 +470,10 @@ body.nhf-lock .nhf-mobilebar {
 }
 
 /* Keep Crisp on the left from covering the filter drawer/actions. */
-html.nhf-lock .crisp-client,
-body.nhf-lock .crisp-client,
-html.nhf-lock .crisp-client-wrapper,
-body.nhf-lock .crisp-client-wrapper,
-html.nhf-lock #crisp-chatbox,
-body.nhf-lock #crisp-chatbox,
-html.nhf-lock #crisp-chatbox-wrapper,
-body.nhf-lock #crisp-chatbox-wrapper {
-  display: none !important;
+html.nhf-lock:not(.nh-crisp-open) .crisp-client,
+body.nhf-lock:not(.nh-crisp-open) .crisp-client,
+html.nhf-lock:not(.nh-crisp-open) .crisp-client-wrapper,
+body.nhf-lock:not(.nh-crisp-open) .crisp-client-wrapper {
   visibility: hidden !important;
   pointer-events: none !important;
   opacity: 0 !important;

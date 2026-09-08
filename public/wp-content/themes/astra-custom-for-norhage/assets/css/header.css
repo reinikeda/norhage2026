@@ -60,6 +60,18 @@ body.has-fixed-masthead #content.site-content {
 
 body.drawer-open { overflow: hidden; }
 
+/* Open Crisp must stay visible. Hiding #crisp-chatbox on mobile makes Android
+   paint a blank white overlay instead of the conversation. */
+body.nh-crisp-open .crisp-client,
+body.nh-crisp-open .crisp-client-wrapper,
+body.nh-crisp-open #crisp-chatbox,
+body.nh-crisp-open #crisp-chatbox-wrapper {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  display: block !important;
+}
+
 /* =========================================================
    4) MAIN HEADER BASE
    ========================================================= */

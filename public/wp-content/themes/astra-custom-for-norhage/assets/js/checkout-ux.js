@@ -1158,6 +1158,13 @@
     if (window.matchMedia('(min-width: 960px)').matches) {
       return;
     }
+    if (document.body.classList.contains('nh-crisp-open')) {
+      return;
+    }
+    if (window.nhCrisp) {
+      window.nhCrisp.hideLauncher();
+      return;
+    }
     window.$crisp = window.$crisp || [];
     try {
       window.$crisp.push(['do', 'chat:hide']);

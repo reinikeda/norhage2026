@@ -1251,10 +1251,9 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure::before {
     display: none;
   }
 
-  /* Crisp sits above a z-index:40 bar; hide it while checkout CTAs are sticky. */
-  body.woocommerce-checkout .crisp-client,
-  body.woocommerce-checkout #crisp-chatbox,
-  body.woocommerce-checkout .crisp-client-wrapper {
+  /* Crisp sits above a z-index:40 bar; hide the launcher only. */
+  body.woocommerce-checkout:not(.nh-crisp-open) .crisp-client,
+  body.woocommerce-checkout:not(.nh-crisp-open) .crisp-client-wrapper {
     visibility: hidden !important;
     pointer-events: none !important;
     opacity: 0 !important;

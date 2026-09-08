@@ -124,8 +124,8 @@ body.nh-cr-help-open {
   overflow: hidden;
 }
 
-body.nh-cr-help-open .crisp-client,
-body.nh-cr-help-open #crisp-chatbox {
+body.nh-cr-help-open:not(.nh-crisp-open) .crisp-client,
+body.nh-cr-help-open:not(.nh-crisp-open) #crisp-chatbox {
   visibility: hidden !important;
   pointer-events: none !important;
   opacity: 0 !important;
