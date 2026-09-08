@@ -384,6 +384,7 @@ require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/cart-ux.php';
 require_once get_stylesheet_directory() . '/inc/checkout-ux.php';
 require_once get_stylesheet_directory() . '/inc/order-attributes.php';
+require_once get_stylesheet_directory() . '/inc/woocommerce-emails.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
 require_once get_stylesheet_directory() . '/inc/services.php';
