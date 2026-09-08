@@ -12,6 +12,9 @@
  *     Applebot-Extended, Amazonbot, Bytespider, CCBot, meta-externalagent.
  *     WordPress cannot override that block. Allow those bots in Cloudflare if
  *     AI citation / AI-overview access is wanted. Content-Signal ai-train=no can stay.
+ *   - Complianz cookie-banner CSS templates are Disallowed via robots_txt below.
+ *     If a shop uses a fully custom Yoast robots.txt file and the Disallow is
+ *     missing after deploy, add: Disallow: /wp-content/uploads/complianz/
  *   - Guest HTML cache (live cf-cache-status: DYNAMIC) for Core Web Vitals.
  *   - After deploy: regenerate Yoast llms.txt; keep Cart/Wishlist out of its page list.
  *
@@ -671,6 +674,51 @@ function nh_seo_wpseo_robots( $robots ) {
 	return implode( ', ', $parts );
 }
 add_filter( 'wpseo_robots', 'nh_seo_wpseo_robots', 20 );
+
+/**
+ * Complianz prints a JS template URL on every page:
+ *   /wp-content/uploads/complianz/css/banner-{banner_id}-{type}.css?v=123
+ * Googlebot extracts that string as a real URL. The placeholders are never
+ * replaced in HTML, so the request 404s. The ?v= value changes whenever
+ * the banner is saved, which floods GSC with unique 404s on every shop.
+ *
+ * Blocking the uploads/complianz folder does not hide site layout CSS; it
+ * only hides cookie-banner assets Google does not need to index.
+ *
+ * @param string $output Robots.txt body.
+ * @return string
+ */
+function nh_seo_append_complianz_robots_txt( $output ) {
+	if ( ! is_string( $output ) ) {
+		$output = '';
+	}
+
+	if ( false !== strpos( $output, '/wp-content/uploads/complianz/' ) ) {
+		return $output;
+	}
+
+	$output  = rtrim( $output ) . "\n\n";
+	$output .= "# Complianz banner CSS is a JS template, not a real file\n";
+	$output .= "Disallow: /wp-content/uploads/complianz/\n";
+
+	return $output;
+}
+
+/**
+ * Append after Yoast's robots.txt filter (priority 99999).
+ *
+ * @param string $output Robots.txt body.
+ * @param bool   $public Whether the blog is public.
+ * @return string
+ */
+function nh_seo_filter_robots_txt( $output, $public ) {
+	if ( ! $public ) {
+		return $output;
+	}
+
+	return nh_seo_append_complianz_robots_txt( $output );
+}
+add_filter( 'robots_txt', 'nh_seo_filter_robots_txt', 100000, 2 );
 
 /**
  * Fallback JSON-LD when Yoast is not active (local/dev).
