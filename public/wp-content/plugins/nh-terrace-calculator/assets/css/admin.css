@@ -1,0 +1,12 @@
+.nh-tc-admin .form-table input[type="number"] {
+  width: 7rem;
+}
+
+.nh-tc-sheet-table {
+  max-width: 720px;
+  margin: 12px 0 24px;
+}
+
+.nh-tc-sheet-table th {
+  text-align: left;
+}
