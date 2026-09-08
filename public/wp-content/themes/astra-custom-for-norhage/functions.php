@@ -177,6 +177,14 @@ function norhage_enqueue_assets() {
 	}
 
 	wp_enqueue_script(
+		'nh-crisp',
+		get_stylesheet_directory_uri() . '/assets/js/nh-crisp.js',
+		array(),
+		norhage_asset_version( '/assets/js/nh-crisp.js' ),
+		norhage_script_args()
+	);
+
+	wp_enqueue_script(
 		'norhage-header-dynamic',
 		get_stylesheet_directory_uri() . '/assets/js/header-dynamic.js',
 		array(),

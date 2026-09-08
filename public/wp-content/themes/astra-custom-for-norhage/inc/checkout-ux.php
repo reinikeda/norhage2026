@@ -1127,6 +1127,9 @@ function nh_checkout_ux_assets() {
 	if ( wp_script_is( 'wc-checkout', 'registered' ) || wp_script_is( 'wc-checkout', 'enqueued' ) ) {
 		$script_deps[] = 'wc-checkout';
 	}
+	if ( wp_script_is( 'nh-crisp', 'registered' ) ) {
+		$script_deps[] = 'nh-crisp';
+	}
 
 	wp_enqueue_script(
 		'nh-checkout-ux',

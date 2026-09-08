@@ -1778,9 +1778,9 @@ h2.nh-in-title::after,
         opacity: 0.55;
     }
 
-    /* Hide the launcher while the bar is up — Crisp z-index is otherwise above everything */
-    body.has-nh-sticky-atc .crisp-client,
-    body.has-nh-sticky-atc #crisp-chatbox {
+    /* Hide the launcher while the bar is up. Never hide an open chat —
+       Android then shows a blank white screen. */
+    body.has-nh-sticky-atc:not(.nh-crisp-open) .crisp-client {
         visibility: hidden !important;
         pointer-events: none !important;
         opacity: 0 !important;

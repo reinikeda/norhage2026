@@ -68,6 +68,17 @@
   }
 
   function setCrisp(show) {
+    if (window.nhCrisp) {
+      if (show) {
+        window.nhCrisp.showLauncher();
+      } else {
+        window.nhCrisp.hideLauncher();
+      }
+      return;
+    }
+    if (!show && document.body.classList.contains('nh-crisp-open')) {
+      return;
+    }
     window.$crisp = window.$crisp || [];
     try {
       window.$crisp.push(['do', show ? 'chat:show' : 'chat:hide']);
@@ -77,13 +88,24 @@
   }
 
   function openCrisp() {
+    if (window.nhCrisp && typeof window.nhCrisp.open === 'function') {
+      window.nhCrisp.open();
+      return;
+    }
+    document.body.classList.add('nh-crisp-open');
     window.$crisp = window.$crisp || [];
     try {
       window.$crisp.push(['do', 'chat:show']);
-      window.$crisp.push(['do', 'chat:open']);
     } catch (e) {
       /* Crisp not present */
     }
+    window.setTimeout(function () {
+      try {
+        window.$crisp.push(['do', 'chat:open']);
+      } catch (e2) {
+        /* Crisp not present */
+      }
+    }, 180);
   }
 
   function updateKicker() {
@@ -156,14 +178,16 @@
     }, 30);
   }
 
-  function hide() {
+  function hide(skipLauncher) {
     if (!root) {
       return;
     }
     root.hidden = true;
     root.classList.remove('is-open');
     document.body.classList.remove('nh-cr-help-open');
-    setCrisp(true);
+    if (!skipLauncher) {
+      setCrisp(true);
+    }
     if (lastFocus && typeof lastFocus.focus === 'function') {
       lastFocus.focus({ preventScroll: true });
     }
@@ -191,7 +215,7 @@
       }
       if (t.closest('[data-nh-cr-help-chat]')) {
         e.preventDefault();
-        hide();
+        hide(true);
         openCrisp();
         return;
       }

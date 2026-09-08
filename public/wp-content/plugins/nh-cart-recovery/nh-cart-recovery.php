@@ -3,7 +3,7 @@
  * Plugin Name: Norhage Cart Recovery
  * Description: Abandoned cart and unfinished checkout emails via wp_mail (WP Mail SMTP / Brevo). Captures email from Svea/Kustom iframes and postcode from the shipping calculator.
  * Author: Daiva Reinike
- * Version: 1.7.1
+ * Version: 1.7.2
  * Requires Plugins: woocommerce
  * Text Domain: nh-cart-recovery
  * Domain Path: /languages
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_CR_VERSION', '1.7.1' );
+define( 'NH_CR_VERSION', '1.7.2' );
 define( 'NH_CR_FILE', __FILE__ );
 define( 'NH_CR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_CR_URL', plugin_dir_url( __FILE__ ) );

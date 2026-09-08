@@ -532,7 +532,7 @@ class NH_CR_Tracker {
 		wp_enqueue_script(
 			'nh-cart-recovery-help',
 			NH_CR_URL . 'assets/js/help-popup.js',
-			array(),
+			wp_script_is( 'nh-crisp', 'registered' ) ? array( 'nh-crisp' ) : array(),
 			NH_CR_VERSION,
 			true
 		);
