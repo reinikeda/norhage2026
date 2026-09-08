@@ -19,7 +19,7 @@ function nh_sticky_atc_assets() {
 	wp_enqueue_script(
 		'nh-sticky-atc',
 		get_stylesheet_directory_uri() . '/assets/js/nh-sticky-atc.js',
-		array(),
+		array( 'nh-crisp' ),
 		norhage_asset_version( '/assets/js/nh-sticky-atc.js' ),
 		function_exists( 'norhage_script_args' ) ? norhage_script_args() : true
 	);

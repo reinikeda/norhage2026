@@ -116,6 +116,17 @@
     }
 
     function setCrispLauncher(show) {
+      if (window.nhCrisp) {
+        if (show) {
+          window.nhCrisp.showLauncher();
+        } else {
+          window.nhCrisp.hideLauncher();
+        }
+        return;
+      }
+      if (!show && document.body.classList.contains('nh-crisp-open')) {
+        return;
+      }
       window.$crisp = window.$crisp || [];
       try {
         window.$crisp.push(['do', show ? 'chat:show' : 'chat:hide']);
