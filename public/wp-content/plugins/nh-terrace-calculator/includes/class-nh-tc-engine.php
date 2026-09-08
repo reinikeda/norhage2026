@@ -41,7 +41,10 @@ class NH_TC_Engine {
 
 		$recommended_cc = self::recommended_cc( $thk, $settings );
 		if ( $cc <= 0 ) {
-			$cc = $recommended_cc;
+			$cc = isset( $settings['default_cc_mm'] ) ? (int) $settings['default_cc_mm'] : 600;
+			if ( $cc <= 0 ) {
+				$cc = 600;
+			}
 		}
 
 		$sheets = ( 'overlap' === $layout )
@@ -166,7 +169,7 @@ class NH_TC_Engine {
 			),
 		);
 
-		if ( $connecting_count > 0 ) {
+		if ( $connecting_count > 0 && 'h_plastic' !== (string) $input['connecting_profile'] ) {
 			$lines[] = array(
 				'role' => 'end_cap',
 				'qty'  => $connecting_count * 2,

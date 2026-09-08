@@ -414,20 +414,17 @@ class NH_TC_Catalog {
 		if ( ! is_array( $map ) ) {
 			return '';
 		}
+		if ( 'f_profile' === $key1 && ! isset( $map[ $key1 ] ) && isset( $map['f_aluminium'] ) ) {
+			$key1 = 'f_aluminium';
+		}
 		if ( null === $key2 ) {
-			if ( isset( $map[ $key1 ] ) && is_string( $map[ $key1 ] ) ) {
-				return $map[ $key1 ];
-			}
-			$first = reset( $map );
-			return is_string( $first ) ? $first : '';
+			return ( isset( $map[ $key1 ] ) && is_string( $map[ $key1 ] ) ) ? $map[ $key1 ] : '';
 		}
 		if ( isset( $map[ $key1 ] ) && is_array( $map[ $key1 ] ) ) {
 			$inner = $map[ $key1 ];
-			if ( isset( $inner[ $key2 ] ) ) {
+			if ( isset( $inner[ $key2 ] ) && $inner[ $key2 ] !== '' ) {
 				return (string) $inner[ $key2 ];
 			}
-			$first = reset( $inner );
-			return is_string( $first ) ? $first : '';
 		}
 		return '';
 	}
@@ -441,27 +438,39 @@ class NH_TC_Catalog {
 			return '';
 		}
 		$row = $sheets[ $material ][ $thickness ];
-		if ( isset( $row[ $colour ] ) ) {
+		if ( isset( $row[ $colour ] ) && $row[ $colour ] !== '' ) {
 			return (string) $row[ $colour ];
 		}
-		$first = reset( $row );
-		return is_string( $first ) ? $first : '';
+		return '';
+	}
+
+	/**
+	 * Resolve a saved SKU or product ID to a WooCommerce product.
+	 *
+	 * @return WC_Product|null
+	 */
+	public static function product_by_ref( $ref ) {
+		$ref = trim( (string) $ref );
+		if ( $ref === '' ) {
+			return null;
+		}
+		$id = wc_get_product_id_by_sku( $ref );
+		if ( $id ) {
+			$p = wc_get_product( $id );
+			return $p instanceof WC_Product ? $p : null;
+		}
+		if ( ctype_digit( $ref ) ) {
+			$p = wc_get_product( (int) $ref );
+			return $p instanceof WC_Product ? $p : null;
+		}
+		return null;
 	}
 
 	/**
 	 * @return WC_Product|null
 	 */
 	public static function product_by_sku( $sku ) {
-		$sku = trim( (string) $sku );
-		if ( $sku === '' ) {
-			return null;
-		}
-		$id = wc_get_product_id_by_sku( $sku );
-		if ( ! $id ) {
-			return null;
-		}
-		$p = wc_get_product( $id );
-		return $p instanceof WC_Product ? $p : null;
+		return self::product_by_ref( $sku );
 	}
 
 	/**
@@ -515,8 +524,45 @@ class NH_TC_Catalog {
 		$tree = array();
 		foreach ( $settings['sheets'] as $material => $thicknesses ) {
 			$tree[ $material ] = array();
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
 			foreach ( $thicknesses as $thk => $colours ) {
-				$tree[ $material ][ (string) $thk ] = array_keys( $colours );
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				$available = array();
+				foreach ( $colours as $colour => $ref ) {
+					if ( '' !== trim( (string) $ref ) ) {
+						$available[] = (string) $colour;
+					}
+				}
+				if ( $available ) {
+					$tree[ $material ][ (string) $thk ] = $available;
+				}
+			}
+		}
+		return $tree;
+	}
+
+	/**
+	 * @param array<string, mixed> $map
+	 * @return array<string, string[]>
+	 */
+	public static function color_tree( array $map ) {
+		$tree = array();
+		foreach ( $map as $type => $colours ) {
+			if ( ! is_array( $colours ) ) {
+				continue;
+			}
+			$available = array();
+			foreach ( $colours as $colour => $ref ) {
+				if ( '' !== trim( (string) $ref ) ) {
+					$available[] = (string) $colour;
+				}
+			}
+			if ( $available ) {
+				$tree[ (string) $type ] = $available;
 			}
 		}
 		return $tree;

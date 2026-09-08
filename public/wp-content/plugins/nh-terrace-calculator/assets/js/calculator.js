@@ -21,29 +21,35 @@
   var colSel = form.querySelector('[name="colour"]');
   var matSel = form.querySelector('[name="material"]');
   var ccInput = form.querySelector('[name="cc_mm"]');
+  var connectSel = form.querySelector('[name="connecting_profile"]');
+  var connectCol = form.querySelector('[name="connecting_color"]');
+  var finishSel = form.querySelector('[name="finish_profile"]');
+  var finishCol = form.querySelector('[name="finish_color"]');
 
   var timer = null;
   var lastPayload = null;
   var posting = false;
-
-  var colourLabels = {
-    clear: 'Clear',
-    bronze: 'Bronze',
-    opal: 'Opal',
-    anthracite: 'Anthracite'
-  };
+  var defaultCc = Number(cfg.defaultCc) || 600;
 
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
   }
 
-  function fillSelect(sel, values, labels, preferred) {
+  function labelFor(value, fallbackMap) {
+    return i18n(value, fallbackMap && fallbackMap[value] ? fallbackMap[value] : value);
+  }
+
+  function fillSelect(sel, values, preferred) {
+    if (!sel) return;
     var current = sel.value;
     sel.innerHTML = '';
     values.forEach(function (v) {
       var opt = document.createElement('option');
       opt.value = v;
-      opt.textContent = labels && labels[v] ? labels[v] : v;
+      opt.textContent = labelFor(v);
+      if (/^\d+$/.test(String(v))) {
+        opt.textContent = v + ' mm';
+      }
       sel.appendChild(opt);
     });
     if (preferred && values.indexOf(preferred) !== -1) sel.value = preferred;
@@ -53,24 +59,41 @@
 
   function syncSheetOptions() {
     var tree = cfg.tree || {};
-    var material = matSel.value;
-    var thkMap = tree[material] || {};
-    var thicknesses = Object.keys(thkMap);
-    if (thicknesses.indexOf('10') !== -1) {
-      thicknesses.sort(function (a, b) { return Number(a) - Number(b); });
+    var materials = Object.keys(tree);
+    if (matSel && materials.length) {
+      fillSelect(matSel, materials, 'multiwall');
     }
-    fillSelect(thkSel, thicknesses, null, '10');
+    var material = matSel ? matSel.value : 'multiwall';
+    var thkMap = tree[material] || {};
+    var thicknesses = Object.keys(thkMap).sort(function (a, b) {
+      return Number(a) - Number(b);
+    });
+    fillSelect(thkSel, thicknesses, '10');
     var colours = thkMap[thkSel.value] || [];
-    fillSelect(colSel, colours, colourLabels, 'clear');
+    fillSelect(colSel, colours, 'clear');
     updateRecCc();
   }
 
-  function updateRecCc() {
-    var rec = (cfg.recCc && cfg.recCc[thkSel.value]) || 600;
-    if (recEl) recEl.textContent = i18n('recCc', 'Recommended CC: %s mm').replace('%s', rec);
-    if (ccInput && (!ccInput.dataset.touched || ccInput.dataset.touched === '0')) {
-      ccInput.value = rec;
+  function syncProfileOptions() {
+    var connectTree = cfg.connectTree || {};
+    var finishTree = cfg.finishTree || {};
+    var connectTypes = Object.keys(connectTree);
+    var finishTypes = Object.keys(finishTree).filter(function (t) {
+      return t !== 'f_profile' || !finishTree.f_aluminium;
+    });
+    if (connectTypes.length) {
+      fillSelect(connectSel, connectTypes, 'clamping');
     }
+    fillSelect(connectCol, connectTree[connectSel.value] || [], 'silver');
+    if (finishTypes.length) {
+      fillSelect(finishSel, finishTypes, 'f_aluminium');
+    }
+    fillSelect(finishCol, finishTree[finishSel.value] || [], 'silver');
+  }
+
+  function updateRecCc() {
+    var rec = (cfg.recCc && thkSel && cfg.recCc[thkSel.value]) || defaultCc;
+    if (recEl) recEl.textContent = i18n('recCc', 'Leave empty to use %s mm').replace('%s', String(defaultCc || rec));
   }
 
   function fmt(n) {
@@ -115,6 +138,14 @@
     statusEl.classList.toggle('is-ok', kind === 'ok');
   }
 
+  function unitAmount(item, taxDisplay) {
+    return taxDisplay === 'excl' ? item.unit_ex : item.unit_inc;
+  }
+
+  function lineAmount(item, taxDisplay) {
+    return taxDisplay === 'excl' ? item.line_ex : item.line_inc;
+  }
+
   function render(payload) {
     lastPayload = payload;
     var items = (payload && payload.items) || [];
@@ -128,6 +159,8 @@
       return;
     }
 
+    var taxDisplay = payload.tax_display || cfg.taxDisplay || 'incl';
+
     function addRow(item, isMissing) {
       var li = document.createElement('li');
       if (isMissing) li.className = 'is-missing';
@@ -137,11 +170,11 @@
       var spec = document.createElement('div');
       spec.className = 'nh-tc__item-spec';
       var qtyLabel = i18n('pcs', '%s pcs').replace('%s', item.qty);
-      spec.textContent = [qtyLabel, item.spec].filter(Boolean).join(' · ');
+      var each = isMissing ? '' : i18n('each', '%s each').replace('%s', fmt(unitAmount(item, taxDisplay)));
+      spec.textContent = [qtyLabel, each, item.spec].filter(Boolean).join(' · ');
       var price = document.createElement('div');
       price.className = 'nh-tc__item-price';
-      var taxDisplay = payload.tax_display || cfg.taxDisplay || 'incl';
-      price.textContent = isMissing ? '—' : fmt(taxDisplay === 'excl' ? item.line_ex : item.line_inc);
+      price.textContent = isMissing ? '—' : fmt(lineAmount(item, taxDisplay));
       li.appendChild(name);
       li.appendChild(price);
       li.appendChild(spec);
@@ -158,7 +191,7 @@
     if (payload.totals) {
       totalsEl.hidden = false;
       taxEl.textContent = fmt(payload.totals.tax);
-      totalEl.textContent = fmt(payload.totals.inc);
+      totalEl.textContent = fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
     }
 
     atc.disabled = items.length === 0;
@@ -239,24 +272,40 @@
       });
   }
 
-  matSel.addEventListener('change', function () {
-    syncSheetOptions();
-    schedule();
-  });
-  thkSel.addEventListener('change', function () {
-    var tree = cfg.tree || {};
-    var thkMap = tree[matSel.value] || {};
-    fillSelect(colSel, thkMap[thkSel.value] || [], colourLabels, 'clear');
-    updateRecCc();
-    schedule();
-  });
-  ccInput.addEventListener('input', function () {
-    ccInput.dataset.touched = '1';
-  });
+  if (matSel) {
+    matSel.addEventListener('change', function () {
+      syncSheetOptions();
+      schedule();
+    });
+  }
+  if (thkSel) {
+    thkSel.addEventListener('change', function () {
+      var tree = cfg.tree || {};
+      var thkMap = tree[matSel.value] || {};
+      fillSelect(colSel, thkMap[thkSel.value] || [], 'clear');
+      updateRecCc();
+      schedule();
+    });
+  }
+  if (connectSel) {
+    connectSel.addEventListener('change', function () {
+      var connectTree = cfg.connectTree || {};
+      fillSelect(connectCol, connectTree[connectSel.value] || [], 'silver');
+      schedule();
+    });
+  }
+  if (finishSel) {
+    finishSel.addEventListener('change', function () {
+      var finishTree = cfg.finishTree || {};
+      fillSelect(finishCol, finishTree[finishSel.value] || [], 'silver');
+      schedule();
+    });
+  }
   form.addEventListener('input', schedule);
   form.addEventListener('change', schedule);
   atc.addEventListener('click', addToCart);
 
   syncSheetOptions();
+  syncProfileOptions();
   quote();
 })();
