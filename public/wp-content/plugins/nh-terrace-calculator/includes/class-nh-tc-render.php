@@ -15,10 +15,43 @@ class NH_TC_Render {
 
 	public static function init() {
 		add_shortcode( 'nh_terrace_calculator', array( __CLASS__, 'shortcode' ) );
-		add_action( 'woocommerce_after_single_product_summary', array( __CLASS__, 'inject_product' ), 8 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'maybe_enqueue' ), 30 );
+		// After product tabs (10). Nested output buffering keeps this safe inside nh-tax-switcher's summary buffer.
+		add_action( 'woocommerce_after_single_product_summary', array( __CLASS__, 'inject_product' ), 12 );
+		add_action( 'woocommerce_after_single_product', array( __CLASS__, 'inject_product' ), 5 );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'cart_item_data' ), 15, 2 );
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'unique_kit_line' ), 20, 1 );
+	}
+
+	/**
+	 * @param int $product_id
+	 */
+	public static function should_display( $product_id = 0 ) {
+		$s    = NH_TC_Defaults::settings();
+		$mode = isset( $s['display_mode'] ) ? $s['display_mode'] : 'all_products';
+
+		if ( 'all_products' === $mode ) {
+			return true;
+		}
+
+		$product_id = absint( $product_id );
+		if ( ! $product_id && function_exists( 'is_product' ) && is_product() ) {
+			$product_id = get_queried_object_id();
+		}
+
+		if ( 'selected' === $mode ) {
+			$ids = array_map( 'absint', (array) ( $s['display_product_ids'] ?? array() ) );
+			return $product_id && in_array( $product_id, $ids, true );
+		}
+
+		return $product_id && '1' === (string) get_post_meta( $product_id, NH_TC_Defaults::META_ENABLED, true );
+	}
+
+	public static function maybe_enqueue() {
+		if ( function_exists( 'is_product' ) && is_product() && self::should_display( get_queried_object_id() ) ) {
+			self::enqueue();
+		}
 	}
 
 	/**
@@ -37,11 +70,10 @@ class NH_TC_Render {
 	}
 
 	public static function inject_product() {
-		if ( ! is_product() ) {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
-		$id = get_queried_object_id();
-		if ( ! $id || '1' !== (string) get_post_meta( $id, NH_TC_Defaults::META_ENABLED, true ) ) {
+		if ( ! self::should_display( get_queried_object_id() ) ) {
 			return;
 		}
 		echo self::markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -61,10 +93,8 @@ class NH_TC_Render {
 		self::$printed = true;
 		self::enqueue();
 
-		$s      = NH_TC_Defaults::settings();
-		$tree   = NH_TC_Catalog::option_tree( $s );
-		$locale = function_exists( 'get_locale' ) ? get_locale() : 'en_US';
-		$cc     = $s['recommended_cc']['10'];
+		$s  = NH_TC_Defaults::settings();
+		$cc = isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600;
 
 		ob_start();
 		?>
@@ -130,6 +160,7 @@ class NH_TC_Render {
 								<span><?php esc_html_e( 'Material', NH_TC_TD ); ?></span>
 								<select name="material">
 									<option value="multiwall" selected><?php esc_html_e( 'Multiwall polycarbonate', NH_TC_TD ); ?></option>
+									<option value="solid"><?php esc_html_e( 'Solid polycarbonate', NH_TC_TD ); ?></option>
 								</select>
 							</label>
 							<label>
@@ -141,19 +172,12 @@ class NH_TC_Render {
 								<select name="colour"></select>
 							</label>
 							<label>
-								<span><?php esc_html_e( 'Centre-to-centre (CC)', NH_TC_TD ); ?></span>
+								<span><?php esc_html_e( 'Frame support spacing (CC)', NH_TC_TD ); ?></span>
 								<span class="nh-tc__input">
-									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="10" value="<?php echo esc_attr( $cc ); ?>">
+									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="10" placeholder="<?php echo esc_attr( (string) $cc ); ?>" value="">
 									<span>mm</span>
 								</span>
 								<small class="nh-tc__hint" data-rec-cc></small>
-							</label>
-							<label>
-								<span><?php esc_html_e( 'Sheet layout', NH_TC_TD ); ?></span>
-								<select name="sheet_layout">
-									<option value="per_cc" selected><?php esc_html_e( 'One sheet per CC (cut to rafter spacing)', NH_TC_TD ); ?></option>
-									<option value="overlap"><?php esc_html_e( 'Fewer wide sheets, overlapping', NH_TC_TD ); ?></option>
-								</select>
 							</label>
 						</div>
 					</fieldset>
@@ -164,7 +188,8 @@ class NH_TC_Render {
 							<label>
 								<span><?php esc_html_e( 'Connecting profile', NH_TC_TD ); ?></span>
 								<select name="connecting_profile">
-									<option value="clamping" selected><?php esc_html_e( 'Clamping profile with gaskets', NH_TC_TD ); ?></option>
+									<option value="clamping" selected><?php esc_html_e( 'Clamping profile', NH_TC_TD ); ?></option>
+									<option value="clamping_lid"><?php esc_html_e( 'Clamping profile with lid', NH_TC_TD ); ?></option>
 									<option value="h_plastic"><?php esc_html_e( 'Plastic H-profile', NH_TC_TD ); ?></option>
 								</select>
 							</label>
@@ -172,19 +197,17 @@ class NH_TC_Render {
 								<span><?php esc_html_e( 'Connecting colour', NH_TC_TD ); ?></span>
 								<select name="connecting_color">
 									<option value="silver" selected><?php esc_html_e( 'Silver', NH_TC_TD ); ?></option>
-									<option value="brown"><?php esc_html_e( 'Brown', NH_TC_TD ); ?></option>
-									<option value="anthracite"><?php esc_html_e( 'Anthracite', NH_TC_TD ); ?></option>
 									<option value="clear"><?php esc_html_e( 'Clear', NH_TC_TD ); ?></option>
-									<option value="bronze"><?php esc_html_e( 'Bronze', NH_TC_TD ); ?></option>
+									<option value="brown"><?php esc_html_e( 'Brown', NH_TC_TD ); ?></option>
 								</select>
 							</label>
 							<label>
 								<span><?php esc_html_e( 'Finish profile', NH_TC_TD ); ?></span>
 								<select name="finish_profile">
-									<option value="f_profile" selected><?php esc_html_e( 'F-profile', NH_TC_TD ); ?></option>
-									<option value="u_plastic"><?php esc_html_e( 'U plastic profile', NH_TC_TD ); ?></option>
-									<option value="u_aluminium"><?php esc_html_e( 'U aluminium profile', NH_TC_TD ); ?></option>
-									<option value="l_aluminium"><?php esc_html_e( 'L aluminium profile', NH_TC_TD ); ?></option>
+									<option value="f_aluminium" selected><?php esc_html_e( 'F aluminium', NH_TC_TD ); ?></option>
+									<option value="u_plastic"><?php esc_html_e( 'U plastic', NH_TC_TD ); ?></option>
+									<option value="u_aluminium"><?php esc_html_e( 'U aluminium', NH_TC_TD ); ?></option>
+									<option value="l_aluminium"><?php esc_html_e( 'L aluminium', NH_TC_TD ); ?></option>
 								</select>
 							</label>
 							<label>
@@ -193,7 +216,6 @@ class NH_TC_Render {
 									<option value="silver" selected><?php esc_html_e( 'Silver', NH_TC_TD ); ?></option>
 									<option value="brown"><?php esc_html_e( 'Brown', NH_TC_TD ); ?></option>
 									<option value="clear"><?php esc_html_e( 'Clear', NH_TC_TD ); ?></option>
-									<option value="bronze"><?php esc_html_e( 'Bronze', NH_TC_TD ); ?></option>
 								</select>
 							</label>
 						</div>
@@ -202,7 +224,7 @@ class NH_TC_Render {
 
 				<aside class="nh-tc__offer" aria-live="polite">
 					<div class="nh-tc__offer-card">
-						<h3><?php esc_html_e( 'Selected offer', NH_TC_TD ); ?></h3>
+						<h3><?php esc_html_e( 'Offer summary', NH_TC_TD ); ?></h3>
 						<p class="nh-tc__offer-meta" data-offer-meta></p>
 						<ul class="nh-tc__items" data-offer-items>
 							<li class="nh-tc__empty"><?php esc_html_e( 'Enter a size to see the kit.', NH_TC_TD ); ?></li>
@@ -221,7 +243,6 @@ class NH_TC_Render {
 			</div>
 		</section>
 		<?php
-		unset( $locale );
 		return ob_get_clean();
 	}
 
@@ -244,21 +265,41 @@ class NH_TC_Render {
 			'nh-tc',
 			'NH_TC',
 			array(
-				'quote'     => WC_AJAX::get_endpoint( 'nh_tc_quote' ),
-				'add'       => WC_AJAX::get_endpoint( 'nh_tc_add_to_cart' ),
-				'nonce'     => wp_create_nonce( 'nh_tc' ),
-				'tree'      => NH_TC_Catalog::option_tree( $s ),
-				'recCc'     => $s['recommended_cc'],
-				'currency'  => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
-				'taxDisplay'=> get_option( 'woocommerce_tax_display_shop', 'incl' ),
-				'i18n'      => array(
-					'recCc'     => __( 'Recommended CC: %s mm', NH_TC_TD ),
-					'sheets'    => __( '%d sheets', NH_TC_TD ),
-					'missing'   => __( 'Some items are not in this shop (SKU not found). The rest can still be added.', NH_TC_TD ),
-					'adding'    => __( 'Adding kit…', NH_TC_TD ),
-					'error'     => __( 'Could not add the kit. Please try again.', NH_TC_TD ),
-					'pcs'       => __( '%s pcs', NH_TC_TD ),
-					'loading'   => __( 'Updating prices…', NH_TC_TD ),
+				'quote'      => WC_AJAX::get_endpoint( 'nh_tc_quote' ),
+				'add'        => WC_AJAX::get_endpoint( 'nh_tc_add_to_cart' ),
+				'nonce'      => wp_create_nonce( 'nh_tc' ),
+				'tree'       => NH_TC_Catalog::option_tree( $s ),
+				'connectTree'=> NH_TC_Catalog::color_tree( $s['connecting'] ),
+				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
+				'recCc'      => $s['recommended_cc'],
+				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
+				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
+				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
+				'i18n'       => array(
+					'recCc'         => __( 'Leave empty to use %s mm', NH_TC_TD ),
+					'sheets'        => __( '%d sheets', NH_TC_TD ),
+					'missing'       => __( 'Some items are not in this shop (SKU not found). The rest can still be added.', NH_TC_TD ),
+					'adding'        => __( 'Adding kit…', NH_TC_TD ),
+					'error'         => __( 'Could not add the kit. Please try again.', NH_TC_TD ),
+					'pcs'           => __( '%s pcs', NH_TC_TD ),
+					'each'          => __( '%s each', NH_TC_TD ),
+					'loading'       => __( 'Updating prices…', NH_TC_TD ),
+					'multiwall'     => __( 'Multiwall polycarbonate', NH_TC_TD ),
+					'solid'         => __( 'Solid polycarbonate', NH_TC_TD ),
+					'clamping'      => __( 'Clamping profile', NH_TC_TD ),
+					'clamping_lid'  => __( 'Clamping profile with lid', NH_TC_TD ),
+					'h_plastic'     => __( 'Plastic H-profile', NH_TC_TD ),
+					'f_aluminium'   => __( 'F aluminium', NH_TC_TD ),
+					'f_profile'     => __( 'F aluminium', NH_TC_TD ),
+					'u_plastic'     => __( 'U plastic', NH_TC_TD ),
+					'u_aluminium'   => __( 'U aluminium', NH_TC_TD ),
+					'l_aluminium'   => __( 'L aluminium', NH_TC_TD ),
+					'silver'        => __( 'Silver', NH_TC_TD ),
+					'clear'         => __( 'Clear', NH_TC_TD ),
+					'bronze'        => __( 'Bronze', NH_TC_TD ),
+					'opal'          => __( 'Opal', NH_TC_TD ),
+					'anthracite'    => __( 'Anthracite', NH_TC_TD ),
+					'brown'         => __( 'Brown', NH_TC_TD ),
 				),
 			)
 		);

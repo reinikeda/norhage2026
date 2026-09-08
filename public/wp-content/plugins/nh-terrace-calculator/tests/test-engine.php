@@ -38,6 +38,7 @@ $settings = array(
 	'profile_stock_mm'        => array( 1000, 1500, 2000, 3000, 4000, 5000, 6000 ),
 	'recommended_cc'          => array( '10' => 600, '6' => 500 ),
 	'screw_size'              => array( '10' => '5-mm-x-60-mm', '6' => '5-mm-x-50-mm' ),
+	'default_cc_mm'           => 600,
 );
 
 $input = array(
@@ -93,6 +94,21 @@ nh_tc_assert( 'gable 9 beams', 9 === (int) $gbom['meta']['beam_count'] );
 nh_tc_assert( 'parse 1,5 m', 1500 === NH_TC_Engine::parse_size_to_mm( '1,5 m' ) );
 nh_tc_assert( 'parse 5 m', 5000 === NH_TC_Engine::parse_size_to_mm( '5 m' ) );
 nh_tc_assert( 'parse 25 mm', 25 === NH_TC_Engine::parse_size_to_mm( '25 mm' ) );
+
+$empty_cc = $input;
+$empty_cc['cc_mm'] = 0;
+$empty_cc['thickness'] = 6;
+$empty_bom = NH_TC_Engine::calculate( $empty_cc, $settings );
+nh_tc_assert( 'empty CC uses 600 not recommended 500', ! empty( $empty_bom['ok'] ) && 600 === (int) $empty_bom['meta']['cc_mm'] );
+
+$h_in = $input;
+$h_in['connecting_profile'] = 'h_plastic';
+$h_bom = NH_TC_Engine::calculate( $h_in, $settings );
+$h_roles = array();
+foreach ( $h_bom['lines'] as $line ) {
+	$h_roles[ $line['role'] ] = $line;
+}
+nh_tc_assert( 'H-profile has no clamping end caps', ! isset( $h_roles['end_cap'] ) );
 
 $bad = NH_TC_Engine::calculate( array_merge( $input, array( 'width_mm' => 10 ) ), $settings );
 nh_tc_assert( 'rejects tiny width', empty( $bad['ok'] ) );

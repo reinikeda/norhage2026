@@ -39,49 +39,83 @@ class NH_TC_Defaults {
 			'tape_roll_mm'           => 5000,
 			'show_discount'          => 0,
 			'show_postcode'          => 1,
+			'default_cc_mm'          => 600,
+			'display_mode'           => 'all_products',
+			'display_product_ids'    => array(),
 			'profile_stock_mm'       => array( 1000, 1500, 2000, 3000, 4000, 5000, 6000 ),
 			'recommended_cc'         => array(
+				'2'  => 400,
+				'3'  => 400,
 				'4'  => 400,
+				'5'  => 450,
 				'6'  => 500,
 				'8'  => 550,
 				'10' => 600,
+				'12' => 650,
 				'16' => 700,
 				'20' => 800,
+				'25' => 800,
+				'32' => 900,
+				'40' => 1000,
 			),
 			'screw_size'             => array(
+				'2'  => '5-mm-x-50-mm',
+				'3'  => '5-mm-x-50-mm',
 				'4'  => '5-mm-x-50-mm',
+				'5'  => '5-mm-x-50-mm',
 				'6'  => '5-mm-x-50-mm',
 				'8'  => '5-mm-x-60-mm',
 				'10' => '5-mm-x-60-mm',
+				'12' => '5-mm-x-60-mm',
 				'16' => '6-mm-x-80-mm',
 				'20' => '6-mm-x-80-mm',
+				'25' => '6-mm-x-80-mm',
+				'32' => '6-mm-x-80-mm',
+				'40' => '6-mm-x-80-mm',
 			),
 			'sheets'                 => self::sheet_skus(),
 			'connecting'             => array(
 				'clamping' => array(
-					'silver'     => '70371704C',
-					'brown'      => '70371613',
-					'anthracite' => '70371806',
+					'silver' => '70371704C',
+					'clear'  => '',
+					'brown'  => '70371613',
+				),
+				'clamping_lid' => array(
+					'silver' => '',
+					'clear'  => '',
+					'brown'  => '70371813',
 				),
 				'h_plastic' => array(
+					'silver' => '',
 					'clear'  => '70421501C',
-					'bronze' => '70421502C',
+					'brown'  => '70421502C',
 				),
 			),
 			'finish'                 => array(
+				'f_aluminium' => array(
+					'silver' => '70381404C',
+					'brown'  => '70381413C',
+					'clear'  => '',
+				),
 				'f_profile' => array(
 					'silver' => '70381404C',
 					'brown'  => '70381413C',
+					'clear'  => '',
 				),
 				'u_plastic' => array(
+					'silver' => '',
+					'brown'  => '',
 					'clear'  => '70391501C',
-					'bronze' => '70391502C',
 				),
 				'u_aluminium' => array(
 					'silver' => '703914',
+					'brown'  => '',
+					'clear'  => '',
 				),
 				'l_aluminium' => array(
 					'silver' => '70431404',
+					'brown'  => '',
+					'clear'  => '',
 				),
 			),
 			'hardware'               => array(
@@ -102,39 +136,73 @@ class NH_TC_Defaults {
 	}
 
 	/**
-	 * Custom-cut multiwall sheet SKUs (…C suffix).
+	 * Thicknesses offered in the form (2–40 mm). Empty admin slots stay hidden on the front.
+	 *
+	 * @return int[]
+	 */
+	public static function thicknesses() {
+		return array( 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 25, 32, 40 );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public static function colours() {
+		return array( 'clear', 'bronze', 'opal', 'anthracite' );
+	}
+
+	/**
+	 * Custom-cut sheet SKUs. Every thickness/colour slot exists so admin can pick a product.
 	 *
 	 * @return array<string, array<string, array<string, string>>>
 	 */
 	public static function sheet_skus() {
+		$empty = array(
+			'clear'      => '',
+			'bronze'     => '',
+			'opal'       => '',
+			'anthracite' => '',
+		);
+		$multi = array();
+		$solid = array();
+		foreach ( self::thicknesses() as $thk ) {
+			$multi[ (string) $thk ] = $empty;
+			$solid[ (string) $thk ] = $empty;
+		}
+
+		$multi['4']['clear']       = '4010401C';
+		$multi['6']['clear']       = '4010601C';
+		$multi['6']['bronze']      = '4010602C';
+		$multi['6']['opal']        = '4010603C';
+		$multi['8']['clear']       = '4010801C';
+		$multi['8']['bronze']      = '4010802C';
+		$multi['10']['clear']      = '4011001C';
+		$multi['10']['bronze']     = '4011002C';
+		$multi['10']['opal']       = '4011003C';
+		$multi['10']['anthracite'] = '4011006C';
+		$multi['16']['clear']      = '4011601C';
+		$multi['16']['bronze']     = '4011602C';
+		$multi['16']['opal']       = '4011603C';
+		$multi['20']['clear']      = '4002001C';
+		$multi['20']['opal']       = '4012003C';
+
+		$solid['2']['clear']  = '3010201C';
+		$solid['3']['clear']  = '3010301C';
+		$solid['3']['bronze'] = '3050302C';
+		$solid['3']['opal']   = '3010303C';
+		$solid['4']['clear']  = '3010401C';
+		$solid['4']['bronze'] = '3050402C';
+		$solid['5']['clear']  = '3010501C';
+		$solid['5']['bronze'] = '3050502C';
+		$solid['6']['clear']  = '3010601C';
+		$solid['6']['bronze'] = '3050602C';
+		$solid['8']['clear']  = '3010801C';
+		$solid['8']['bronze'] = '3050802C';
+		$solid['10']['clear'] = '3011001C';
+
 		return array(
-			'multiwall' => array(
-				'4'  => array( 'clear' => '4010401C' ),
-				'6'  => array(
-					'clear'  => '4010601C',
-					'bronze' => '4010602C',
-					'opal'   => '4010603C',
-				),
-				'8'  => array(
-					'clear'  => '4010801C',
-					'bronze' => '4010802C',
-				),
-				'10' => array(
-					'clear'      => '4011001C',
-					'bronze'     => '4011002C',
-					'opal'       => '4011003C',
-					'anthracite' => '4011006C',
-				),
-				'16' => array(
-					'clear'  => '4011601C',
-					'bronze' => '4011602C',
-					'opal'   => '4011603C',
-				),
-				'20' => array(
-					'clear' => '4002001C',
-					'opal'  => '4012003C',
-				),
-			),
+			'multiwall' => $multi,
+			'solid'     => $solid,
 		);
 	}
 
