@@ -55,6 +55,8 @@
 !/public/wp-content/plugins/nh-side-cart/**
 !/public/wp-content/plugins/nh-cart-recovery/
 !/public/wp-content/plugins/nh-cart-recovery/**
+!/public/wp-content/plugins/nh-terrace-calculator/
+!/public/wp-content/plugins/nh-terrace-calculator/**
 
 # Uploads
 /public/wp-content/uploads/
