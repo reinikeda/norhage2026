@@ -182,6 +182,8 @@ function nh_checkout_ux_init() {
 	add_action( 'wc_ajax_sco_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 	add_action( 'wc_ajax_kco_wc_change_payment_method', 'nh_checkout_keep_payment_step_on_snippet_ajax', 1 );
 	add_action( 'wc_ajax_sco_checkout_order', 'nh_checkout_svea_serialize_woo_order', 1 );
+	add_action( 'wc_ajax_refresh_sco_snippet', 'nh_checkout_svea_lock_snippet_refresh', 0 );
+	add_action( 'wc_ajax_nopriv_refresh_sco_snippet', 'nh_checkout_svea_lock_snippet_refresh', 0 );
 
 	add_filter( 'woocommerce_default_address_fields', 'nh_checkout_default_address_fields', 20 );
 	add_filter( 'woocommerce_get_country_locale', 'nh_checkout_country_locale', 20 );
@@ -464,6 +466,83 @@ function nh_checkout_svea_remember_placed_order( $order_id ) {
 		return;
 	}
 	set_transient( nh_checkout_svea_place_lock_key( $sco_id ), absint( $order_id ), 120 );
+}
+
+/**
+ * Svea checkout create/update has no lock. Several refresh_sco_snippet
+ * requests at once all see an empty sco_order_id and each call Svea Create.
+ * The log then shows 4–6 "Creating order" lines in the same second, two
+ * Svea IDs, and "Received push for order we don't have yet. Standing by".
+ * Woo stays pending-payment because the Final push is not replayed.
+ *
+ * @return void
+ */
+function nh_checkout_svea_lock_snippet_refresh() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$option = nh_checkout_svea_snippet_lock_option();
+	$ttl    = 20;
+	$start  = time();
+	$got    = false;
+
+	while ( ( time() - $start ) < $ttl ) {
+		$existing = get_option( $option );
+		if ( is_numeric( $existing ) && (int) $existing < ( time() - $ttl ) ) {
+			delete_option( $option );
+		}
+		if ( add_option( $option, (string) time(), '', 'no' ) ) {
+			$got = true;
+			break;
+		}
+		usleep( 250000 );
+	}
+
+	if ( ! $got ) {
+		delete_option( $option );
+		add_option( $option, (string) time(), '', 'no' );
+	}
+
+	$release = static function () use ( $option ) {
+		delete_option( $option );
+	};
+
+	add_action( 'woocommerce_sco_after_refresh_sco_snippet', $release, 999 );
+	add_action( 'shutdown', $release, 0 );
+}
+
+/**
+ * @return string
+ */
+function nh_checkout_svea_snippet_lock_option() {
+	$sid = '';
+	if ( function_exists( 'WC' ) && WC()->session && is_callable( array( WC()->session, 'get_customer_id' ) ) ) {
+		$sid = (string) WC()->session->get_customer_id();
+	}
+	if ( $sid === '' ) {
+		$sid = (string) wp_get_session_token();
+	}
+	return 'nh_sco_snippet_lock_' . md5( $sid );
+}
+
+/**
+ * Recreate the Svea session only when Woo and Svea both have a value and they differ.
+ * An empty Svea field means "not identified yet" — update the existing checkout
+ * (presets). Treating empty as a mismatch created a second Svea order (see NO-3167:
+ * 118339342 then 118339347 three seconds later).
+ *
+ * @param string $woo Woo form value.
+ * @param string $sco Svea checkout value.
+ * @return bool
+ */
+function nh_checkout_svea_identity_conflict( $woo, $sco ) {
+	$woo = trim( (string) $woo );
+	$sco = trim( (string) $sco );
+	if ( $woo === '' || $sco === '' ) {
+		return false;
+	}
+	return strcasecmp( $woo, $sco ) !== 0;
 }
 
 /**
@@ -958,13 +1037,13 @@ function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
 
 	$email = isset( $identity['billing_email'] ) ? sanitize_email( $identity['billing_email'] ) : '';
 	$sco_email = sanitize_email( nh_checkout_svea_checkout_field( $checkout_data, 'EmailAddress' ) );
-	if ( $email !== '' && strcasecmp( $email, $sco_email ) !== 0 ) {
+	if ( nh_checkout_svea_identity_conflict( $email, $sco_email ) ) {
 		return true;
 	}
 
 	$phone = isset( $identity['billing_phone'] ) ? trim( (string) $identity['billing_phone'] ) : '';
 	$sco_phone = trim( nh_checkout_svea_checkout_field( $checkout_data, 'PhoneNumber' ) );
-	if ( $phone !== '' && $sco_phone === '' ) {
+	if ( nh_checkout_svea_identity_conflict( $phone, $sco_phone ) ) {
 		return true;
 	}
 
@@ -973,14 +1052,14 @@ function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
 	if ( $sco_zip === '' && ! empty( $checkout_data['BillingAddress']['PostalCode'] ) ) {
 		$sco_zip = nh_checkout_usable_postcode( $checkout_data['BillingAddress']['PostalCode'] );
 	}
-	if ( $zip !== '' && $sco_zip === '' ) {
+	if ( nh_checkout_svea_identity_conflict( $zip, $sco_zip ) ) {
 		return true;
 	}
 
 	$type = isset( $identity['billing_customer_type'] ) ? $identity['billing_customer_type'] : nh_checkout_posted_type_from_request();
 	$reg  = isset( $identity['billing_company_reg'] ) ? trim( (string) $identity['billing_company_reg'] ) : '';
 	$sco_nid = nh_checkout_svea_checkout_field( $checkout_data, 'NationalId' );
-	if ( 'business' === $type && $reg !== '' && $sco_nid === '' ) {
+	if ( 'business' === $type && nh_checkout_svea_identity_conflict( $reg, $sco_nid ) ) {
 		return true;
 	}
 

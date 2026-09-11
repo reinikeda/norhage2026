@@ -547,18 +547,41 @@
   }
 
   var scoPlaceInFlight = null;
+  var scoOrderPlaced = false;
+  var scoRefreshInFlight = null;
 
   $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
     if (!options || !options.url) {
       return;
     }
     var url = String(options.url);
+    if (/refresh_sco_snippet/i.test(url)) {
+      if (scoOrderPlaced) {
+        jqXHR.abort();
+        return;
+      }
+      if (scoRefreshInFlight && scoRefreshInFlight !== jqXHR) {
+        try {
+          scoRefreshInFlight.abort();
+        } catch (err) { /* already finished */ }
+      }
+      scoRefreshInFlight = jqXHR;
+      jqXHR.always(function () {
+        if (scoRefreshInFlight === jqXHR) {
+          scoRefreshInFlight = null;
+        }
+      });
+      return;
+    }
     if (/sco_checkout_order/i.test(url)) {
       if (scoPlaceInFlight) {
         jqXHR.abort();
         return;
       }
       scoPlaceInFlight = jqXHR;
+      jqXHR.done(function () {
+        scoOrderPlaced = true;
+      });
       jqXHR.always(function () {
         if (scoPlaceInFlight === jqXHR) {
           scoPlaceInFlight = null;
