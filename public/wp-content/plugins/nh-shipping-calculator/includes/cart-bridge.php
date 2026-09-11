@@ -13,6 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $product_id, $variation_id ){
 
+	unset( $product_id, $variation_id );
+
+	if ( ! empty( $cart_item_data['norhage_sample'] ) ) {
+		return $cart_item_data;
+	}
+
 	// Dimension keys (shared)
 	$w_key = NHGP_Custom_Cut::WIDTH_KEY;   // nh_width_mm
 	$h_key = NHGP_Custom_Cut::HEIGHT_KEY;  // nh_length_mm

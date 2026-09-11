@@ -1,0 +1,28 @@
+.nh-tc-admin .form-table input[type="number"] {
+  width: 7rem;
+}
+
+.nh-tc-sheet-table,
+.nh-tc-map {
+  margin: 12px 0 24px;
+}
+
+.nh-tc-sheet-table th,
+.nh-tc-map th {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.nh-tc-map td {
+  min-width: 180px;
+  vertical-align: middle;
+}
+
+.nh-tc-product-search {
+  display: block;
+  min-width: 180px;
+}
+
+.nh-tc-admin .select2-container {
+  min-width: 180px !important;
+}

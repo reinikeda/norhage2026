@@ -21,9 +21,49 @@ class NHGP_Custom_Cut {
 	const HEIGHT_KEY_ALT    = 'nh_height_mm';
 
 	/* ------------------------------------------------------------
+	 * Shared sample shipping class slug (same on every shop)
+	 * ------------------------------------------------------------ */
+	const SAMPLE_SHIPPING_CLASS_SLUG = 'xs';
+
+	/**
+	 * True when this cart line is a product sample, not a full custom-cut.
+	 *
+	 * Samples are added by the theme (norhage_sample / cutting_type=sample)
+	 * and must never inherit the parent product's catalog shipping class.
+	 *
+	 * @param array $item Cart item.
+	 * @return bool
+	 */
+	public static function is_sample_item( $item ) {
+		if ( ! is_array( $item ) ) {
+			return false;
+		}
+
+		if ( ! empty( $item['norhage_sample'] ) ) {
+			return true;
+		}
+
+		if ( isset( $item['cutting_type'] ) && 'sample' === $item['cutting_type'] ) {
+			return true;
+		}
+
+		if ( function_exists( 'nh_is_sample_cart_item' ) ) {
+			return (bool) nh_is_sample_cart_item( $item );
+		}
+
+		return false;
+	}
+
+	/* ------------------------------------------------------------
 	 * Check if item is custom-cut
 	 * ------------------------------------------------------------ */
 	public static function is_custom_item( $item, $product, $cs ) {
+
+		// Samples are small fixed pieces. Never treat them as custom-cut
+		// sheets (editor class / size rules would assign XL etc.).
+		if ( self::is_sample_item( $item ) ) {
+			return false;
+		}
 
 		// 1) Theme's structured custom size: nh_custom_size[width_mm/length_mm OR height_mm]
 		if ( ! empty( $item['nh_custom_size'] ) && is_array( $item['nh_custom_size'] ) ) {
@@ -101,6 +141,13 @@ class NHGP_Custom_Cut {
 		$w = (float) str_replace( ',', '.', (string) $w );
 		$h = (float) str_replace( ',', '.', (string) $h );
 
+		if ( $w <= 0 && isset( $item['custom_width_mm'] ) ) {
+			$w = (float) $item['custom_width_mm'];
+		}
+		if ( $h <= 0 && isset( $item['custom_length_mm'] ) ) {
+			$h = (float) $item['custom_length_mm'];
+		}
+
 		return array( $w, $h );
 	}
 
@@ -176,9 +223,11 @@ class NHGP_Custom_Cut {
 	/**
 	 * Shipping class slug this cart line should use.
 	 *
-	 * A shipping class set on the product (or variation / parent) in the
-	 * WooCommerce editor always wins. Size-based plugin rules are used only
-	 * when that catalog class is empty.
+	 * Samples always use the shared "xs" slug, including simple, variable,
+	 * and custom-cut products. A shipping class set on the product (or
+	 * variation / parent) in the WooCommerce editor always wins for real
+	 * custom-cut lines. Size-based plugin rules are used only when that
+	 * catalog class is empty.
 	 *
 	 * @param array            $item    Cart item.
 	 * @param WC_Product|null  $product Line product.
@@ -186,6 +235,10 @@ class NHGP_Custom_Cut {
 	 * @return string
 	 */
 	public static function mapped_class_slug_for_item( $item, $product, $cs ) {
+		if ( self::is_sample_item( $item ) ) {
+			return self::SAMPLE_SHIPPING_CLASS_SLUG;
+		}
+
 		if ( ! self::is_custom_item( $item, $product, $cs ) ) {
 			return '';
 		}

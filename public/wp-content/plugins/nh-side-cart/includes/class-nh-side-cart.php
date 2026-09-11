@@ -474,6 +474,7 @@ final class NH_Side_Cart {
 
 		self::ensure_shipping_calculated();
 		self::prefer_delivery_method();
+		WC()->cart->calculate_totals();
 
 		$count = (int) WC()->cart->get_cart_contents_count();
 

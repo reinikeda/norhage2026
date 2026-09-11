@@ -109,7 +109,12 @@ final class NH_Side_Cart_Render {
 		$min           = max( 1, (int) $product->get_min_purchase_quantity() );
 		$max           = (int) $product->get_max_purchase_quantity();
 		$max_attr      = $max > 0 ? $max : '';
-		$subtotal      = WC()->cart->get_product_subtotal( $product, $qty );
+		$subtotal      = apply_filters(
+			'woocommerce_cart_item_subtotal',
+			WC()->cart->get_product_subtotal( $product, $qty ),
+			$cart_item,
+			$cart_item_key
+		);
 		$remove_url    = wc_get_cart_remove_url( $cart_item_key );
 		$name          = $product->get_name();
 		?>
