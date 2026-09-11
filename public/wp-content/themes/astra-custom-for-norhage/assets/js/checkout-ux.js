@@ -764,6 +764,7 @@
     snippetOtherPayment().addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
 
     keepShipToSameAddress();
+    syncTermsGate();
   }
 
   function keepShipToSameAddress() {
@@ -1062,6 +1063,164 @@
     enhancePaymentCards();
     syncSnippetCheckout();
     syncKcoPrevent();
+    syncTermsGate();
+  }
+
+  function termsCheckbox() {
+    return document.querySelector('#terms, input[name="terms"]');
+  }
+
+  function termsWrapper() {
+    return document.querySelector('.woocommerce-terms-and-conditions-wrapper');
+  }
+
+  function termsAgreed() {
+    var box = termsCheckbox();
+    return !box || box.checked;
+  }
+
+  function ensureTermsErrorEl(wrap) {
+    if (!wrap || wrap.querySelector('.nh-checkout-terms-error')) {
+      return;
+    }
+    var p = document.createElement('p');
+    p.className = 'nh-checkout-terms-error';
+    p.setAttribute('role', 'alert');
+    p.textContent = i18n.termsRequired || 'Please agree to the website terms and conditions to continue.';
+    wrap.appendChild(p);
+  }
+
+  function clearTermsError() {
+    var wrap = termsWrapper();
+    if (wrap) {
+      wrap.classList.remove('nh-checkout-terms--error', 'woocommerce-invalid');
+      wrap.querySelectorAll('.form-row').forEach(function (row) {
+        row.classList.remove('woocommerce-invalid', 'woocommerce-invalid-required-field');
+      });
+    }
+    var gate = document.getElementById('nh-checkout-terms-gate');
+    if (gate) {
+      gate.classList.remove('is-error');
+    }
+  }
+
+  function markTermsError() {
+    var wrap = termsWrapper();
+    var box = termsCheckbox();
+    if (!wrap || !box) {
+      return false;
+    }
+    ensureTermsErrorEl(wrap);
+    wrap.classList.add('nh-checkout-terms', 'nh-checkout-terms--error', 'woocommerce-invalid');
+    var row = box.closest('.form-row');
+    if (row) {
+      row.classList.add('woocommerce-invalid', 'woocommerce-invalid-required-field');
+    }
+    var gate = document.getElementById('nh-checkout-terms-gate');
+    if (gate) {
+      gate.classList.add('is-error');
+    }
+    if (wrap.scrollIntoView) {
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    try {
+      box.focus({ preventScroll: true });
+    } catch (err) {
+      box.focus();
+    }
+    return false;
+  }
+
+  function enforceTermsOrHighlight() {
+    if (termsAgreed()) {
+      clearTermsError();
+      return true;
+    }
+    markTermsError();
+    return false;
+  }
+
+  function syncTermsGate() {
+    var wrap = termsWrapper();
+    var box = termsCheckbox();
+    var iframe = document.getElementById('nh-checkout-iframe');
+    var gate = document.getElementById('nh-checkout-terms-gate');
+
+    if (wrap) {
+      wrap.classList.add('nh-checkout-terms');
+      ensureTermsErrorEl(wrap);
+    }
+
+    var needGate = checkoutStep() === 'payment' && iframeMarkupPresent() && box && !box.checked;
+    if (!needGate) {
+      if (gate) {
+        gate.remove();
+      }
+      return;
+    }
+    if (!iframe) {
+      return;
+    }
+    if (!gate) {
+      gate = document.createElement('button');
+      gate.type = 'button';
+      gate.id = 'nh-checkout-terms-gate';
+      gate.className = 'nh-checkout-terms-gate';
+      gate.textContent = i18n.termsRequired || 'Please agree to the website terms and conditions to continue.';
+      gate.addEventListener('click', function (e) {
+        e.preventDefault();
+        markTermsError();
+      });
+      iframe.appendChild(gate);
+    } else if (!gate.textContent) {
+      gate.textContent = i18n.termsRequired || 'Please agree to the website terms and conditions to continue.';
+    }
+  }
+
+  function bindTermsAgreement() {
+    if (document.body.getAttribute('data-nh-terms-gate') === '1') {
+      return;
+    }
+    document.body.setAttribute('data-nh-terms-gate', '1');
+
+    $(document.body).on('change.nhTerms', '#terms, input[name="terms"]', function () {
+      if (this.checked) {
+        clearTermsError();
+      }
+      syncTermsGate();
+    });
+
+    $(document.body).on('checkout_error.nhTerms', function () {
+      if (!termsAgreed()) {
+        markTermsError();
+      }
+    });
+
+    $('form.checkout').on('checkout_place_order.nhTerms', function () {
+      return enforceTermsOrHighlight();
+    });
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('#place_order') : null;
+      if (!btn || termsAgreed()) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      markTermsError();
+    }, true);
+
+    $(document).on('ajaxComplete.nhTerms', function (e, xhr, settings) {
+      var url = settings && settings.url ? String(settings.url) : '';
+      if (!/sco_checkout_order/i.test(url)) {
+        return;
+      }
+      if (!termsAgreed()) {
+        markTermsError();
+      }
+    });
+
+    syncTermsGate();
   }
 
   function validateDetailsStep() {
@@ -1333,6 +1492,11 @@
         e.preventDefault();
         e.stopPropagation();
         window.alert(i18n.selectPayment || 'Please choose a payment method.');
+        return;
+      }
+      if (!enforceTermsOrHighlight()) {
+        e.preventDefault();
+        e.stopPropagation();
       }
     }, true);
 
@@ -1626,6 +1790,7 @@
     bindPostcodeShippingUpdate();
     bindIframeZipShipping();
     bindCheckoutSteps();
+    bindTermsAgreement();
     refreshCheckoutChrome();
     hideCrispOnMobileCheckout();
     if (document.body.getAttribute('data-nh-crisp-hide') !== '1') {

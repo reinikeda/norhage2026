@@ -1848,6 +1848,9 @@ msgstr "Wählen Sie, wie Sie bezahlen möchten"
 msgid "Please choose a payment method."
 msgstr "Bitte wählen Sie eine Zahlungsmethode."
 
+msgid "Please agree to the website terms and conditions to continue."
+msgstr "Bitte stimmen Sie den Allgemeinen Geschäftsbedingungen zu, um fortzufahren."
+
 msgid "Direct bank transfer"
 msgstr "Direktüberweisung"
 
