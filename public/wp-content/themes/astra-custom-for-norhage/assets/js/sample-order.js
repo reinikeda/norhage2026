@@ -22,7 +22,30 @@ jQuery(function ($) {
         .done(function (response) {
             if (response.success) {
                 $btn.text(i18n.added || 'Added');
-                $(document.body).trigger('wc_fragment_refresh');
+
+                var fragments = response.data && response.data.fragments;
+                var cartHash = response.data && response.data.cart_hash;
+
+                // Apply fragments from THIS request (sample price already on
+                // the product). A later wc_fragment_refresh would rebuild from
+                // the catalog product and flash the wrong line price.
+                if (fragments) {
+                    $.each(fragments, function (selector, html) {
+                        $(selector).replaceWith(html);
+                    });
+                    try {
+                        var params = window.wc_cart_fragments_params || {};
+                        var key = params.cart_hash_key || 'wc_cart_hash';
+                        if (cartHash && window.sessionStorage) {
+                            sessionStorage.setItem(key, String(cartHash));
+                        }
+                    } catch (err) { /* private mode */ }
+                    $(document.body).trigger('added_to_cart', [fragments, cartHash, $btn]);
+                    $(document.body).trigger('wc_fragments_refreshed');
+                } else {
+                    $(document.body).trigger('wc_fragment_refresh');
+                }
+
                 $(document.body).trigger('nh_side_cart_open');
 
                 setTimeout(function () {
