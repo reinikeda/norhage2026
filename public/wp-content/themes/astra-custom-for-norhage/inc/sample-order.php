@@ -8,9 +8,12 @@
  * OWNERSHIP NOTE:
  * This file is the single source of truth for:
  * - detecting samples (nh_is_sample_cart_item / nh_is_sample_order_item)
- * - sample price, quantity, shipping class
+ * - sample price, quantity, shipping class (always slug "xs" on every shop)
  * - saving sample order-item meta at checkout
  * - stripping weight from samples (cart, order, PDF)
+ *
+ * Simple, variable, and custom-cut products can all offer samples.
+ * Custom-cut cart/price logic in product-customize.php must skip samples.
  *
  * It does NOT touch woocommerce_get_item_data (cart display) or
  * woocommerce_order_item_get_formatted_meta_data (order display).
@@ -20,6 +23,14 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
+ * Shipping class slug forced onto every sample cart line.
+ * All shops share this slug (term IDs differ per site).
+ */
+if ( ! defined( 'NH_SAMPLE_SHIPPING_CLASS_SLUG' ) ) {
+    define( 'NH_SAMPLE_SHIPPING_CLASS_SLUG', 'xs' );
+}
 
 /** ------------------------------------------------------------------
  * 0. Shared helpers — single source of truth for "is this a sample?"
@@ -148,7 +159,7 @@ function norhage_sample_assets() {
         'norhage-sample-order',
         get_stylesheet_directory_uri() . '/assets/js/sample-order.js',
         array( 'jquery' ),
-        '1.0',
+        '1.1',
         true
     );
 
@@ -166,12 +177,12 @@ function norhage_sample_assets() {
 }
 
 /** ------------------------------------------------------------------
- * 5. Helper: resolve a real, purchasable variation ID for a variable
- *    product, so the sample can be added without the customer manually
- *    choosing options.
+ * 5. Helpers: resolve a real, purchasable variation for a variable
+ *    product (simple or custom-cut), so the sample can be added
+ *    without the customer filling the custom-cut form.
  * ------------------------------------------------------------------ */
 function norhage_get_default_variation_id( $product ) {
-    if ( ! $product->is_type( 'variable' ) ) {
+    if ( ! $product || ! $product->is_type( 'variable' ) ) {
         return 0;
     }
 
@@ -223,10 +234,74 @@ function norhage_get_default_variation_id( $product ) {
     return 0;
 }
 
+/**
+ * Variation attributes Woo needs to accept add_to_cart().
+ * Empty/"any" attributes are filled from the parent's first option.
+ *
+ * @param WC_Product $parent    Variable parent.
+ * @param WC_Product $variation Variation.
+ * @return array<string, string>
+ */
+function norhage_sample_variation_attributes( $parent, $variation ) {
+    $attributes = array();
+
+    if ( ! $parent || ! $variation || ! is_callable( array( $variation, 'get_variation_attributes' ) ) ) {
+        return $attributes;
+    }
+
+    $variation_attrs = $variation->get_variation_attributes();
+    $parent_attrs    = is_callable( array( $parent, 'get_variation_attributes' ) )
+        ? $parent->get_variation_attributes()
+        : array();
+
+    foreach ( $parent_attrs as $attribute_name => $options ) {
+        $key   = 'attribute_' . sanitize_title( $attribute_name );
+        $value = isset( $variation_attrs[ $key ] ) ? (string) $variation_attrs[ $key ] : '';
+
+        if ( '' === $value && is_array( $options ) && ! empty( $options ) ) {
+            $value = (string) reset( $options );
+        }
+
+        if ( '' !== $value ) {
+            $attributes[ $key ] = $value;
+        }
+    }
+
+    if ( ! empty( $attributes ) ) {
+        return $attributes;
+    }
+
+    foreach ( (array) $variation_attrs as $key => $value ) {
+        if ( '' !== $value && null !== $value ) {
+            $attributes[ $key ] = $value;
+        }
+    }
+
+    return $attributes;
+}
+
+/**
+ * Strip variation attributes from the stored sample line so cart/order
+ * views do not show Width/Length/Colour rows. Woo still received them
+ * during add_to_cart() validation.
+ *
+ * @param array $cart_item Cart item.
+ * @return array
+ */
+function norhage_strip_sample_variation_attributes( $cart_item ) {
+    if ( nh_is_sample_cart_item( $cart_item ) ) {
+        $cart_item['variation'] = array();
+    }
+
+    return $cart_item;
+}
+add_filter( 'woocommerce_add_cart_item', 'norhage_strip_sample_variation_attributes', 999 );
+
 /** ------------------------------------------------------------------
  * 6. AJAX handler: add the REAL product (or a real variation) to cart
- *    as a sample. Empty variation attributes array is intentional —
- *    see the file header note.
+ *    as a sample. Works for simple, variable, and custom-cut products.
+ *    Variation attributes are passed so Woo accepts the line, then
+ *    stripped from the stored cart item for display.
  * ------------------------------------------------------------------ */
 add_action( 'wp_ajax_norhage_add_sample', 'norhage_add_sample_to_cart' );
 add_action( 'wp_ajax_nopriv_norhage_add_sample', 'norhage_add_sample_to_cart' );
@@ -234,13 +309,26 @@ add_action( 'wp_ajax_nopriv_norhage_add_sample', 'norhage_add_sample_to_cart' );
 function norhage_add_sample_to_cart() {
     check_ajax_referer( 'norhage_add_sample', 'nonce' );
 
-    $product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-    $product    = wc_get_product( $product_id );
+    $product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
+    $variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
+    $product      = wc_get_product( $product_id );
 
     if ( ! $product ) {
         wp_send_json_error( array(
             'message' => __( 'The selected product could not be found.', 'nh-theme' ),
         ) );
+    }
+
+    if ( $product->is_type( 'variation' ) ) {
+        $variation_id = $product->get_id();
+        $product_id   = $product->get_parent_id();
+        $product      = wc_get_product( $product_id );
+
+        if ( ! $product ) {
+            wp_send_json_error( array(
+                'message' => __( 'The selected product could not be found.', 'nh-theme' ),
+            ) );
+        }
     }
 
     $enabled = get_post_meta( $product_id, '_sample_enabled', true );
@@ -266,16 +354,28 @@ function norhage_add_sample_to_cart() {
         ) );
     }
 
-    $variation_id = 0;
+    $variation_attributes = array();
 
     if ( $product->is_type( 'variable' ) ) {
-        $variation_id = norhage_get_default_variation_id( $product );
+        if ( $variation_id ) {
+            $chosen = wc_get_product( $variation_id );
+            if ( ! $chosen || (int) $chosen->get_parent_id() !== (int) $product_id || ! $chosen->is_purchasable() ) {
+                $variation_id = 0;
+            }
+        }
+
+        if ( ! $variation_id ) {
+            $variation_id = norhage_get_default_variation_id( $product );
+        }
 
         if ( ! $variation_id ) {
             wp_send_json_error( array(
                 'message' => __( 'No purchasable variation was found for this product.', 'nh-theme' ),
             ) );
         }
+
+        $variation = wc_get_product( $variation_id );
+        $variation_attributes = norhage_sample_variation_attributes( $product, $variation );
     }
 
     $cart_item_data = array(
@@ -285,13 +385,14 @@ function norhage_add_sample_to_cart() {
         'custom_length_mm' => (float) $length,
         'custom_area_m2'   => ( (float) $width * (float) $length ) / 1000000,
         'sample_price'     => (float) wc_format_decimal( $price ),
+        'sample_shipping_class' => NH_SAMPLE_SHIPPING_CLASS_SLUG,
     );
 
     $cart_item_key = WC()->cart->add_to_cart(
         $product_id,
         1,
         $variation_id,
-        array(),
+        $variation_attributes,
         $cart_item_data
     );
 
@@ -441,6 +542,11 @@ function norhage_add_sample_cart_item_class( $class, $cart_item, $cart_item_key 
 
 /** ------------------------------------------------------------------
  * 10. Force "xs" shipping class on sample cart items
+ *
+ * All shops use the same slug (xs). Term IDs differ per site, so look
+ * up by slug. This must win over the shipping calculator, which would
+ * otherwise assign the parent product's editor class to custom-cut
+ * samples.
  * ------------------------------------------------------------------ */
 function norhage_get_xs_shipping_class_id() {
     static $term_id = null;
@@ -449,11 +555,36 @@ function norhage_get_xs_shipping_class_id() {
         return $term_id;
     }
 
-    $term = get_term_by( 'slug', 'xs', 'product_shipping_class' );
+    $slug = NH_SAMPLE_SHIPPING_CLASS_SLUG;
+    if ( class_exists( 'NHGP_Custom_Cut' ) ) {
+        $slug = NHGP_Custom_Cut::SAMPLE_SHIPPING_CLASS_SLUG;
+    }
+
+    if ( class_exists( 'NHGP_Custom_Cut' ) && is_callable( array( 'NHGP_Custom_Cut', 'term_id_from_slug' ) ) ) {
+        $term_id = (int) NHGP_Custom_Cut::term_id_from_slug( $slug );
+        if ( $term_id > 0 ) {
+            return $term_id;
+        }
+    }
+
+    $term = get_term_by( 'slug', $slug, 'product_shipping_class' );
 
     $term_id = ( $term && ! is_wp_error( $term ) ) ? (int) $term->term_id : 0;
 
     return $term_id;
+}
+
+function norhage_apply_xs_shipping_class_to_product( $product ) {
+    if ( ! $product || ! is_callable( array( $product, 'set_shipping_class_id' ) ) ) {
+        return $product;
+    }
+
+    $xs_term_id = norhage_get_xs_shipping_class_id();
+    if ( $xs_term_id ) {
+        $product->set_shipping_class_id( $xs_term_id );
+    }
+
+    return $product;
 }
 
 add_action( 'woocommerce_before_calculate_totals', 'norhage_set_sample_shipping_class', 999 );
@@ -467,15 +598,9 @@ function norhage_set_sample_shipping_class( $cart ) {
         return;
     }
 
-    $xs_term_id = norhage_get_xs_shipping_class_id();
-
-    if ( ! $xs_term_id ) {
-        return;
-    }
-
     foreach ( $cart->get_cart() as $cart_item ) {
-        if ( nh_is_sample_cart_item( $cart_item ) && is_callable( array( $cart_item['data'], 'set_shipping_class_id' ) ) ) {
-            $cart_item['data']->set_shipping_class_id( $xs_term_id );
+        if ( nh_is_sample_cart_item( $cart_item ) ) {
+            norhage_apply_xs_shipping_class_to_product( $cart_item['data'] );
         }
     }
 }
@@ -483,12 +608,91 @@ function norhage_set_sample_shipping_class( $cart ) {
 add_filter( 'woocommerce_cart_item_shipping_class', 'norhage_filter_sample_shipping_class_slug', 999, 3 );
 
 function norhage_filter_sample_shipping_class_slug( $shipping_class, $cart_item, $cart_item_key ) {
+    unset( $cart_item_key );
+
     if ( nh_is_sample_cart_item( $cart_item ) ) {
-        return 'xs';
+        return NH_SAMPLE_SHIPPING_CLASS_SLUG;
     }
 
     return $shipping_class;
 }
+
+/**
+ * Re-apply xs after the shipping calculator stamps package lines
+ * (it runs on this filter at priority 20 and would otherwise restore
+ * the catalog/editor class on custom-cut samples).
+ *
+ * @param array $packages Packages.
+ * @return array
+ */
+function norhage_stamp_sample_shipping_class_on_packages( $packages ) {
+    if ( ! is_array( $packages ) ) {
+        return $packages;
+    }
+
+    foreach ( $packages as $i => $package ) {
+        $contents = isset( $package['contents'] ) && is_array( $package['contents'] )
+            ? $package['contents']
+            : array();
+
+        foreach ( $contents as $key => $item ) {
+            if ( ! nh_is_sample_cart_item( $item ) ) {
+                continue;
+            }
+
+            if ( empty( $item['data'] ) ) {
+                continue;
+            }
+
+            $packages[ $i ]['contents'][ $key ]['data'] = norhage_apply_xs_shipping_class_to_product( $item['data'] );
+        }
+    }
+
+    return $packages;
+}
+add_filter( 'woocommerce_cart_shipping_packages', 'norhage_stamp_sample_shipping_class_on_packages', 999 );
+
+/**
+ * Keep Woo Flat Rate's class buckets on xs for sample lines.
+ *
+ * @param array $found   slug => items.
+ * @param array $package Shipping package.
+ * @return array
+ */
+function norhage_remap_sample_shipping_classes( $found, $package ) {
+    if ( ! is_array( $found ) ) {
+        $found = array();
+    }
+
+    $contents = ( isset( $package['contents'] ) && is_array( $package['contents'] ) )
+        ? $package['contents']
+        : array();
+
+    $slug = NH_SAMPLE_SHIPPING_CLASS_SLUG;
+
+    foreach ( $contents as $item_id => $item ) {
+        if ( ! nh_is_sample_cart_item( $item ) ) {
+            continue;
+        }
+
+        foreach ( $found as $class => $items ) {
+            if ( isset( $items[ $item_id ] ) ) {
+                unset( $found[ $class ][ $item_id ] );
+                if ( empty( $found[ $class ] ) ) {
+                    unset( $found[ $class ] );
+                }
+            }
+        }
+
+        if ( ! isset( $found[ $slug ] ) ) {
+            $found[ $slug ] = array();
+        }
+        $found[ $slug ][ $item_id ] = $item;
+    }
+
+    return $found;
+}
+add_filter( 'woocommerce_find_shipping_classes', 'norhage_remap_sample_shipping_classes', 999, 2 );
 
 /** ------------------------------------------------------------------
  * 11. Weight: zero out for samples (cart, order, PDF)

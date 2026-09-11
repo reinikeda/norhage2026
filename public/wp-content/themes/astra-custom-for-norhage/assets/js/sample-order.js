@@ -4,6 +4,11 @@ jQuery(function ($) {
 
         var $btn = $(this);
         var productId = $btn.data('product_id');
+        var $form = $btn.closest('.product, .summary, .type-product').find('form.cart').first();
+        if (!$form.length) {
+            $form = $('form.variations_form, form.cart').first();
+        }
+        var variationId = parseInt($form.find('input[name="variation_id"]').val(), 10) || 0;
         var i18n = norhageSample.i18n || {};
 
         $btn.prop('disabled', true).text(i18n.adding || 'Adding...');
@@ -11,7 +16,8 @@ jQuery(function ($) {
         $.post(norhageSample.ajax_url, {
             action: 'norhage_add_sample',
             nonce: norhageSample.nonce,
-            product_id: productId
+            product_id: productId,
+            variation_id: variationId
         })
         .done(function (response) {
             if (response.success) {

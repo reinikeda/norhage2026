@@ -431,8 +431,13 @@ add_action( 'wp_enqueue_scripts', function () {
 /* ============================================================================
  * ADD-TO-CART VALIDATION (custom-cut simple OR variable parent)
  * ========================================================================== */
-add_filter( 'woocommerce_add_to_cart_validation', 'nh_cc_validate_custom_cut', 10, 4 );
-function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_id = 0 ) {
+add_filter( 'woocommerce_add_to_cart_validation', 'nh_cc_validate_custom_cut', 10, 6 );
+function nh_cc_validate_custom_cut( $passed, $product_id, $qty = 0, $variation_id = 0, $variations = array(), $cart_item_data = array() ) {
+	unset( $variations );
+
+	if ( ! empty( $cart_item_data['norhage_sample'] ) ) {
+		return $passed;
+	}
 
 	$p = wc_get_product( $product_id );
 	if ( ! $p instanceof WC_Product ) return $passed;
@@ -566,6 +571,10 @@ add_filter( 'woocommerce_add_to_cart_redirect', function ( $redirect_url = '', $
  * ========================================================================== */
 add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $product_id ){
 
+	if ( ! empty( $cart_item_data['norhage_sample'] ) ) {
+		return $cart_item_data;
+	}
+
 	$parent = wc_get_product( $product_id );
 	if ( ! $parent instanceof WC_Product ) return $cart_item_data;
 	if ( ! ( $parent->is_type( 'simple' ) || $parent->is_type( 'variable' ) ) ) return $cart_item_data;
@@ -611,6 +620,10 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 
 add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 
+	if ( ! empty( $cart_item['norhage_sample'] ) ) {
+		return $item_data;
+	}
+
 	if ( empty( $cart_item['nh_custom_size'] ) ) return $item_data;
 
 	$size = $cart_item['nh_custom_size'];
@@ -644,6 +657,10 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 }, 10, 2 );
 
 add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $cart_item_key, $values ) {
+
+	if ( ! empty( $values['norhage_sample'] ) ) {
+		return;
+	}
 
 	if ( empty( $values['nh_custom_size'] ) ) return;
 
@@ -737,6 +754,10 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 	if ( empty( $cart ) ) return;
 
 	foreach ( $cart->get_cart() as $cart_item_key => $item ) {
+
+		if ( ! empty( $item['norhage_sample'] ) ) {
+			continue;
+		}
 
 		if ( empty( $item['nh_custom_size'] ) ) continue;
 

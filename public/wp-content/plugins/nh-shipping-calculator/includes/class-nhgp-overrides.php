@@ -402,6 +402,10 @@ class NHGP_Overrides {
 
 					$p = $item['data'];
 
+					if ( NHGP_Custom_Cut::is_sample_item( $item ) ) {
+						continue;
+					}
+
 					if ( NHGP_Custom_Cut::is_custom_item( $item, $p, $custom ) ) {
 						continue;
 					}
