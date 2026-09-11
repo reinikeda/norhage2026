@@ -1722,6 +1722,20 @@
     api.observeEvent('identity.postalCode', function (data) {
       onIframeZip(extractSveaZip(data), $('#billing_country').val());
     });
+    api.observeEvent('identity.isCompany', function (data) {
+      var flag = false;
+      if (data === true || data === 'true' || data === 1 || data === '1') {
+        flag = true;
+      } else if (data && typeof data === 'object') {
+        flag = data.value === true || data.value === 'true' || data.isCompany === true;
+      }
+      var val = flag ? 'business' : 'private';
+      var $radio = $('input[name="billing_customer_type"][value="' + val + '"]');
+      if ($radio.length && !$radio.prop('checked')) {
+        $('input[name="billing_customer_type"]').prop('checked', false);
+        $radio.prop('checked', true);
+      }
+    });
     return true;
   }
 
