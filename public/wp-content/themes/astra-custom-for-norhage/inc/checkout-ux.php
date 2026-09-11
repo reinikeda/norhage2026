@@ -339,6 +339,7 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 
 	if ( 'details' === $step ) {
 		WC()->session->set( 'chosen_payment_method', '' );
+		nh_checkout_reset_snippet_sessions();
 		return;
 	}
 
@@ -399,6 +400,33 @@ function nh_checkout_prepare_steps() {
 	}
 	WC()->session->set( 'nh_checkout_step', 'details' );
 	WC()->session->set( 'chosen_payment_method', '' );
+	nh_checkout_reset_snippet_sessions();
+}
+
+/**
+ * Drop Svea/Kustom iframe sessions when the customer leaves the payment step.
+ * Reusing sco_order_id after "Back to details" kept the old identified
+ * checkout; the next refresh then recreated it (iframe remount) because Woo
+ * form values no longer matched.
+ *
+ * @return void
+ */
+function nh_checkout_reset_snippet_sessions() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	foreach ( array(
+		'sco_order_id',
+		'sco_nshift_name',
+		'sco_nshift_price',
+		'kco_wc_order_id',
+		'kco_update_md5',
+		'nh_kco_prefill_hash',
+		'nh_iframe_customer_type',
+	) as $key ) {
+		WC()->session->__unset( $key );
+	}
 }
 
 /**
@@ -527,25 +555,6 @@ function nh_checkout_svea_snippet_lock_option() {
 		$sid = (string) wp_get_session_token();
 	}
 	return 'nh_sco_snippet_lock_' . md5( $sid );
-}
-
-/**
- * Recreate the Svea session only when Woo and Svea both have a value and they differ.
- * An empty Svea field means "not identified yet" — update the existing checkout
- * (presets). Treating empty as a mismatch created a second Svea order (see NO-3167:
- * 118339342 then 118339347 three seconds later).
- *
- * @param string $woo Woo form value.
- * @param string $sco Svea checkout value.
- * @return bool
- */
-function nh_checkout_svea_identity_conflict( $woo, $sco ) {
-	$woo = trim( (string) $woo );
-	$sco = trim( (string) $sco );
-	if ( $woo === '' || $sco === '' ) {
-		return false;
-	}
-	return strcasecmp( $woo, $sco ) !== 0;
 }
 
 /**
@@ -1285,40 +1294,18 @@ function nh_checkout_svea_upsert_preset( $presets, $type_name, $value, $overwrit
 
 /**
  * Svea create() only accepts EmailAddress, PhoneNumber, PostalCode, IsCompany, NationalId.
- * Recreate the SCO when Woo now has identity the existing checkout session does not.
+ * Do not force a new SCO from Woo vs iframe identity; see function body.
  *
  * @param bool  $need_new      Plugin decision.
  * @param array $checkout_data Current Svea checkout payload.
  * @return bool
  */
-function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) {
-	if ( $need_new || ! is_array( $checkout_data ) ) {
-		return $need_new;
-	}
-
-	$identity = nh_checkout_merged_identity();
-
-	$email = isset( $identity['billing_email'] ) ? sanitize_email( $identity['billing_email'] ) : '';
-	$sco_email = sanitize_email( nh_checkout_svea_checkout_field( $checkout_data, 'EmailAddress' ) );
-	if ( nh_checkout_svea_identity_conflict( $email, $sco_email ) ) {
-		return true;
-	}
-
-	$phone = isset( $identity['billing_phone'] ) ? trim( (string) $identity['billing_phone'] ) : '';
-	$sco_phone = trim( nh_checkout_svea_checkout_field( $checkout_data, 'PhoneNumber' ) );
-	if ( nh_checkout_svea_identity_conflict( $phone, $sco_phone ) ) {
-		return true;
-	}
-
-	$zip = isset( $identity['billing_postcode'] ) ? nh_checkout_usable_postcode( $identity['billing_postcode'] ) : '';
-	$sco_zip = nh_checkout_usable_postcode( nh_checkout_svea_checkout_field( $checkout_data, 'PostalCode' ) );
-	if ( $sco_zip === '' && ! empty( $checkout_data['BillingAddress']['PostalCode'] ) ) {
-		$sco_zip = nh_checkout_usable_postcode( $checkout_data['BillingAddress']['PostalCode'] );
-	}
-	if ( nh_checkout_svea_identity_conflict( $zip, $sco_zip ) ) {
-		return true;
-	}
-
+function nh_checkout_svea_needs_new_for_identity( $need_new, $checkout_data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	// Do not recreate the Svea checkout because the Woo details form differs
+	// from an identified iframe (phone +47 vs national, "123 45" vs "12345",
+	// company in Svea vs private on step 1). That remounted the widget on
+	// every refresh_sco_snippet. Empty Svea fields already update in place
+	// (presets). A fresh SCO is created when the customer returns to details.
 	return $need_new;
 }
 

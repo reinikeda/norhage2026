@@ -11,6 +11,8 @@
   var snippetReloadTimer = null;
   var backReloadTimer = null;
   var FOCUS_KEY = 'nh_checkout_focus';
+  var TERMS_KEY = 'nh_checkout_terms';
+  var termsAccepted = false;
 
   function syncKcoPrevent() {
     if (!window.kco_wc) {
@@ -579,8 +581,10 @@
         return;
       }
       scoPlaceInFlight = jqXHR;
-      jqXHR.done(function () {
-        scoOrderPlaced = true;
+      jqXHR.done(function (res) {
+        if (res && res.result === 'success') {
+          scoOrderPlaced = true;
+        }
       });
       jqXHR.always(function () {
         if (scoPlaceInFlight === jqXHR) {
@@ -603,19 +607,13 @@
       return;
     }
 
-    if (iframeMarkupPresent()) {
-      jqXHR.abort();
-      return;
-    }
-
-    // Woo auto-selects the first gateway after Next. Abort that so the iframe
-    // does not boot until the customer clicks Svea/Kustom. When they have
-    // clicked, let the plugin AJAX finish — it reloads and mounts the iframe.
-    var wantsSnippet = paymentIdIsSnippet(i18n.chosenPayment || chosenPaymentId());
-    if (!allowSnippetGatewayReload || checkoutStep() !== 'payment' || !wantsSnippet) {
-      jqXHR.abort();
-      window.setTimeout(unblockCheckout, 0);
-    }
+    // Always abort plugin "switch to Svea/Kustom" AJAX. That call reloads the
+    // page on success; we already reload once via reloadForSnippetGateway().
+    // Letting both run stacked two full reloads. After the iframe is mounted,
+    // Svea still fires this on every updated_checkout — aborting that is what
+    // stops a reload loop.
+    jqXHR.abort();
+    window.setTimeout(unblockCheckout, 0);
   });
 
   $(document).on('ajaxComplete.nhSnippetUnblock', function (e, xhr, settings) {
@@ -1079,6 +1077,39 @@
     return !box || box.checked;
   }
 
+  function rememberTerms(on) {
+    termsAccepted = !!on;
+    try {
+      if (on) {
+        sessionStorage.setItem(TERMS_KEY, '1');
+      } else {
+        sessionStorage.removeItem(TERMS_KEY);
+      }
+    } catch (e) { /* private mode */ }
+  }
+
+  function rememberedTerms() {
+    if (termsAccepted) {
+      return true;
+    }
+    try {
+      return sessionStorage.getItem(TERMS_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function restoreTermsCheckbox() {
+    if (!rememberedTerms()) {
+      return;
+    }
+    var box = termsCheckbox();
+    if (box && !box.checked) {
+      box.checked = true;
+    }
+    clearTermsError();
+  }
+
   function ensureTermsErrorEl(wrap) {
     if (!wrap || wrap.querySelector('.nh-checkout-terms-error')) {
       return;
@@ -1141,6 +1172,7 @@
   }
 
   function syncTermsGate() {
+    restoreTermsCheckbox();
     var wrap = termsWrapper();
     var box = termsCheckbox();
     var iframe = document.getElementById('nh-checkout-iframe');
@@ -1184,6 +1216,7 @@
     document.body.setAttribute('data-nh-terms-gate', '1');
 
     $(document.body).on('change.nhTerms', '#terms, input[name="terms"]', function () {
+      rememberTerms(this.checked);
       if (this.checked) {
         clearTermsError();
       }
@@ -1383,6 +1416,7 @@
     try {
       sessionStorage.removeItem(FOCUS_KEY);
     } catch (e) { /* private mode */ }
+    rememberTerms(false);
     if (/nh-checkout-(iframe|payment)/.test(window.location.hash || '')) {
       if (history.replaceState) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -1557,6 +1591,9 @@
       return;
     }
     lastShipDest = key;
+    if (iframeMarkupPresent() || paymentIdIsSnippet(chosenPaymentId())) {
+      return;
+    }
     stampShippingIndexes();
     $(document.body).trigger('update_checkout', { update_shipping_method: true });
   }
