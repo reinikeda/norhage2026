@@ -1078,6 +1078,9 @@ msgstr ""
 msgid "Please choose a payment method."
 msgstr ""
 
+msgid "Please agree to the website terms and conditions to continue."
+msgstr ""
+
 msgid "Direct bank transfer"
 msgstr ""
 

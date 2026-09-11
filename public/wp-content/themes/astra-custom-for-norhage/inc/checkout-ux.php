@@ -205,6 +205,7 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_order_details_after_customer_details', 'nh_checkout_order_contact_details', 10, 1 );
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
+	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_required_hint', 5 );
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
@@ -1236,6 +1237,7 @@ function nh_checkout_ux_assets() {
 			'nextLabel'       => __( 'Continue to payment', 'nh-theme' ),
 			'backLabel'       => __( 'Back to details', 'nh-theme' ),
 			'selectPayment'   => __( 'Please choose a payment method.', 'nh-theme' ),
+			'termsRequired'   => __( 'Please agree to the website terms and conditions to continue.', 'nh-theme' ),
 			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
 			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
 		)
@@ -2400,6 +2402,16 @@ function nh_checkout_secure_note() {
 		return;
 	}
 	echo '<p class="nh-checkout-secure">' . esc_html__( 'Secure checkout', 'nh-theme' ) . '</p>';
+}
+
+/**
+ * Shown in red when the customer tries to pay without ticking terms.
+ */
+function nh_checkout_terms_required_hint() {
+	if ( ! function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) || ! wc_terms_and_conditions_checkbox_enabled() ) {
+		return;
+	}
+	echo '<p class="nh-checkout-terms-error" role="alert">' . esc_html__( 'Please agree to the website terms and conditions to continue.', 'nh-theme' ) . '</p>';
 }
 
 /**

@@ -1848,6 +1848,9 @@ msgstr "Velg hvordan du vil betale"
 msgid "Please choose a payment method."
 msgstr "Velg en betalingsmåte."
 
+msgid "Please agree to the website terms and conditions to continue."
+msgstr "Godta nettstedets vilkår og betingelser for å fortsette."
+
 msgid "Direct bank transfer"
 msgstr "Direkte bankoverføring"
 
