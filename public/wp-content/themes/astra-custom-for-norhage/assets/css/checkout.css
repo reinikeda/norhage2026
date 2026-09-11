@@ -565,6 +565,13 @@ body.woocommerce-checkout.nh-checkout-form .woocommerce-form__input-checkbox {
   accent-color: var(--nh-green, #00704a);
 }
 
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper .woocommerce-form__input-checkbox {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  margin: 1px 0 0;
+}
+
 body.woocommerce-checkout.nh-checkout-form .shipping_address {
   margin-top: 0.85rem;
 }
@@ -1043,14 +1050,116 @@ body.woocommerce-checkout.nh-checkout-form .payment_box::before {
 }
 
 body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper {
-  margin: 0 0 0.35rem;
-  padding: 0.15rem 0 0.5rem;
+  margin: 0.85rem 0 1rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 2px solid var(--nh-green, #00704a);
+  border-radius: 14px;
+  color: var(--nh-charcoal, #2c2a29);
+  scroll-margin-top: 16px;
 }
 
-body.woocommerce-checkout.nh-checkout-form .woocommerce-privacy-policy-text p,
-body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-checkbox-text {
-  font-size: 0.88rem;
+body.woocommerce-checkout.nh-checkout-form .woocommerce-privacy-policy-text {
+  margin: 0 0 0.75rem;
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-privacy-policy-text p {
+  font-size: 0.95rem;
+  font-weight: 600;
   line-height: 1.45;
+  color: var(--nh-charcoal, #2c2a29);
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-checkbox-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--nh-forest, #1e3932);
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-privacy-policy-text a,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper a {
+  color: var(--nh-green, #00704a);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper .form-row {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper .required,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper abbr.required {
+  color: #c0392b;
+  border: 0;
+  text-decoration: none;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-error {
+  display: none;
+  margin: 0.7rem 0 0;
+  color: #c0392b;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper.nh-checkout-terms--error,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper:has(.woocommerce-invalid) {
+  border-color: #c0392b;
+  background: #fff4f2;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.16);
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper.nh-checkout-terms--error label,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper.nh-checkout-terms--error .woocommerce-terms-and-conditions-checkbox-text,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper:has(.woocommerce-invalid) label,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper:has(.woocommerce-invalid) .woocommerce-terms-and-conditions-checkbox-text {
+  color: #c0392b;
+}
+
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper.nh-checkout-terms--error .nh-checkout-terms-error,
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper:has(.woocommerce-invalid) .nh-checkout-terms-error {
+  display: block;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-iframe {
+  position: relative;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-gate {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 1.25rem 1rem;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(250, 247, 242, 0.72);
+  color: var(--nh-forest, #1e3932);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  cursor: pointer;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-gate:focus-visible {
+  outline: 3px solid #c0392b;
+  outline-offset: -3px;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-gate.is-error {
+  background: rgba(255, 244, 242, 0.88);
+  color: #c0392b;
 }
 
 body.woocommerce-checkout.nh-checkout-form #payment .form-row.place-order {

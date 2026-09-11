@@ -1848,6 +1848,9 @@ msgstr "Pasirinkite, kaip norite mokėti"
 msgid "Please choose a payment method."
 msgstr "Pasirinkite mokėjimo būdą."
 
+msgid "Please agree to the website terms and conditions to continue."
+msgstr "Sutikite su svetainės taisyklėmis ir sąlygomis, kad galėtumėte tęsti."
+
 msgid "Direct bank transfer"
 msgstr "Tiesioginis banko pavedimas"
 

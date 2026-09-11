@@ -1848,6 +1848,9 @@ msgstr "Valitse, miten haluat maksaa"
 msgid "Please choose a payment method."
 msgstr "Valitse maksutapa."
 
+msgid "Please agree to the website terms and conditions to continue."
+msgstr "Hyväksy sivuston käyttöehdot jatkaaksesi."
+
 msgid "Direct bank transfer"
 msgstr "Suora pankkisiirto"
 
