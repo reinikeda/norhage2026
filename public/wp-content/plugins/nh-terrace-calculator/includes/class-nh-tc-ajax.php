@@ -84,75 +84,59 @@ class NH_TC_Ajax {
 			WC()->customer->save();
 		}
 
-		$kit_id      = wp_generate_uuid4();
-		$added_keys  = array();
-		$orig_post   = $_POST;
-		$orig_req    = $_REQUEST;
+		$kit_id     = wp_generate_uuid4();
+		$added_keys = array();
 
 		wc_clear_notices();
 
-		try {
-			foreach ( $items as $item ) {
-				$request = array(
-					'quantity' => (int) $item['qty'],
+		foreach ( $items as $item ) {
+			$cart_item_data = array(
+				'nh_terrace_kit' => array(
+					'id'     => $kit_id,
+					'width'  => (int) $bom['meta']['width_mm'],
+					'length' => (int) $bom['meta']['length_mm'],
+					'role'   => $item['role'],
+				),
+			);
+
+			// Custom-cut sheets: persist cut dimensions + calculated price on the cart line.
+			if ( ! empty( $item['custom_cut'] ) && ! empty( $item['cut'] ) ) {
+				$cart_item_data['nh_custom_cut'] = array(
+					'width_mm'   => (int) $item['cut']['width_mm'],
+					'length_mm'  => (int) $item['cut']['length_mm'],
+					'area_m2'    => isset( $item['area_m2'] ) ? (float) $item['area_m2'] : 0.0,
+					'unit_price' => isset( $item['unit_raw'] ) ? (float) $item['unit_raw'] : 0.0,
 				);
-				if ( ! empty( $item['variation_id'] ) ) {
-					$request['variation_id'] = (int) $item['variation_id'];
-				}
-				foreach ( $item['attributes'] as $key => $value ) {
-					$request[ $key ] = $value;
-				}
-				if ( ! empty( $item['custom_cut'] ) && ! empty( $item['cut'] ) ) {
-					$request['nh_custom_cutting'] = '1';
-					$request['nh_width_mm']       = (int) $item['cut']['width_mm'];
-					$request['nh_length_mm']      = (int) $item['cut']['length_mm'];
-				}
-
-				$_POST    = $request;
-				$_REQUEST = array_merge( $orig_req, $request );
-
-				$cart_item_data = array(
-					'nh_terrace_kit' => array(
-						'id'     => $kit_id,
-						'width'  => (int) $bom['meta']['width_mm'],
-						'length' => (int) $bom['meta']['length_mm'],
-						'role'   => $item['role'],
-					),
-				);
-
-				$key = WC()->cart->add_to_cart(
-					(int) $item['product_id'],
-					(int) $item['qty'],
-					(int) $item['variation_id'],
-					self::variation_attributes_for_cart( $item['attributes'] ),
-					$cart_item_data
-				);
-
-				if ( ! $key ) {
-					foreach ( array_reverse( $added_keys ) as $added ) {
-						WC()->cart->remove_cart_item( $added );
-					}
-					$message = __( 'Unable to add one of the kit items to the basket.', NH_TC_TD );
-					if ( wc_notice_count( 'error' ) ) {
-						$printed = wc_print_notices( true );
-						wp_send_json_error(
-							array(
-								'message'      => $message,
-								'notices_html' => $printed,
-							),
-							400
-						);
-					}
-					wc_add_notice( $message, 'error' );
-					wp_send_json_error( array( 'message' => $message, 'notices_html' => wc_print_notices( true ) ), 400 );
-				}
-
-				$added_keys[] = $key;
-				wc_clear_notices();
 			}
-		} finally {
-			$_POST    = $orig_post;
-			$_REQUEST = $orig_req;
+
+			$key = WC()->cart->add_to_cart(
+				(int) $item['product_id'],
+				(int) $item['qty'],
+				(int) $item['variation_id'],
+				self::variation_attributes_for_cart( $item['attributes'] ),
+				$cart_item_data
+			);
+
+			if ( ! $key ) {
+				foreach ( array_reverse( $added_keys ) as $added ) {
+					WC()->cart->remove_cart_item( $added );
+				}
+				$message = __( 'Unable to add one of the kit items to the basket.', NH_TC_TD );
+				if ( wc_notice_count( 'error' ) ) {
+					wp_send_json_error(
+						array(
+							'message'      => $message,
+							'notices_html' => wc_print_notices( true ),
+						),
+						400
+					);
+				}
+				wc_add_notice( $message, 'error' );
+				wp_send_json_error( array( 'message' => $message, 'notices_html' => wc_print_notices( true ) ), 400 );
+			}
+
+			$added_keys[] = $key;
+			wc_clear_notices();
 		}
 
 		if ( method_exists( WC()->cart, 'calculate_totals' ) ) {
@@ -211,7 +195,6 @@ class NH_TC_Ajax {
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
-			'discount_pct'        => isset( $src['discount_pct'] ) ? (float) $src['discount_pct'] : 0.0,
 		);
 	}
 

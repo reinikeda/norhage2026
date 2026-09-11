@@ -17,45 +17,39 @@ class NH_TC_Catalog {
 	 * @return array<string, mixed>
 	 */
 	public static function price_bom( array $bom, array $settings ) {
-		$meta    = $bom['meta'];
-		$offer   = array();
-		$missing = array();
-		$sub_ex  = 0.0;
-		$sub_in  = 0.0;
+			$meta    = $bom['meta'];
+			$offer   = array();
+			$missing = array();
+			$sub_ex  = 0.0;
+			$sub_in  = 0.0;
 
-		foreach ( $bom['lines'] as $line ) {
-			$resolved = self::resolve_line( $line, $meta, $settings );
-			foreach ( $resolved as $item ) {
-				if ( empty( $item['product_id'] ) ) {
-					$missing[] = $item;
-					continue;
+			foreach ( $bom['lines'] as $line ) {
+				$resolved = self::resolve_line( $line, $meta, $settings );
+				foreach ( $resolved as $item ) {
+					if ( empty( $item['product_id'] ) ) {
+						$missing[] = $item;
+						continue;
+					}
+					$offer[] = $item;
+					$sub_ex += (float) $item['line_ex'];
+					$sub_in += (float) $item['line_inc'];
 				}
-				$offer[] = $item;
-				$sub_ex += (float) $item['line_ex'];
-				$sub_in += (float) $item['line_inc'];
 			}
+
+			return array(
+				'ok'          => true,
+				'meta'        => $meta,
+				'items'       => $offer,
+				'missing'     => $missing,
+				'totals'      => array(
+					'ex'  => $sub_ex,
+					'inc' => $sub_in,
+					'tax' => $sub_in - $sub_ex,
+				),
+				'currency'    => self::currency_payload(),
+				'tax_display' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
+			);
 		}
-
-		$discount_pct = max( 0.0, min( 90.0, (float) $meta['discount_pct'] ) );
-		$show_disc    = ! empty( $settings['show_discount'] ) && $discount_pct > 0;
-		$factor       = $show_disc ? ( 1 - ( $discount_pct / 100 ) ) : 1;
-
-		return array(
-			'ok'          => true,
-			'meta'        => $meta,
-			'items'       => $offer,
-			'missing'     => $missing,
-			'totals'      => array(
-				'ex'         => $sub_ex * $factor,
-				'inc'        => $sub_in * $factor,
-				'tax'        => ( $sub_in - $sub_ex ) * $factor,
-				'discount'   => $show_disc ? ( $sub_in * ( $discount_pct / 100 ) ) : 0.0,
-				'factor'     => $factor,
-			),
-			'currency'    => self::currency_payload(),
-			'tax_display' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
-		);
-	}
 
 	/**
 	 * @param array<string, mixed> $line
@@ -124,16 +118,22 @@ class NH_TC_Catalog {
 			return $empty;
 		}
 
+		// Sheet products are priced per 1 m²; the kit line is cut to size.
+		$priced = self::custom_cut_unit_price( $product, (int) $cut['width_mm'], (int) $cut['length_mm'] );
+
 		$item = self::build_item( $product, 0, array(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ) );
-		$item['cut'] = $cut;
+		$item['cut']        = $cut;
 		$item['custom_cut'] = 1;
-		$item['spec'] = sprintf(
-			'%d × %d mm',
+		$item['area_m2']    = $priced['area'];
+		$item['unit_raw']   = $priced['raw'];
+		$item['spec']       = sprintf(
+			/* translators: 1: cut width in mm, 2: cut length in mm, 3: area in square metres */
+			__( '%1$d × %2$d mm (%3$s m²)', NH_TC_TD ),
 			(int) $cut['width_mm'],
-			(int) $cut['length_mm']
+			(int) $cut['length_mm'],
+			number_format_i18n( $priced['area'], 2 )
 		);
 
-		$priced = self::custom_cut_unit_price( $product, (int) $cut['width_mm'], (int) $cut['length_mm'] );
 		$item['unit_ex']  = $priced['ex'];
 		$item['unit_inc'] = $priced['inc'];
 		$item['line_ex']  = $priced['ex'] * $qty;
@@ -389,21 +389,23 @@ class NH_TC_Catalog {
 	}
 
 	/**
-	 * @return array{ex:float,inc:float}
+	 * @return array{ex:float,inc:float,raw:float,area:float}
 	 */
 	public static function custom_cut_unit_price( WC_Product $product, $width_mm, $length_mm ) {
-		$area = ( $width_mm / 1000 ) * ( $length_mm / 1000 );
-		$base = (float) $product->get_price();
+		$area = ( (float) $width_mm / 1000 ) * ( (float) $length_mm / 1000 );
+		$base = (float) $product->get_price(); // Catalogue price = price per 1 m².
 		$fee  = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
 		$raw  = ( $area * $base ) + max( 0, $fee );
+		$raw  = round( $raw, (int) wc_get_price_decimals() );
 
 		$ex  = (float) wc_get_price_excluding_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
 		$inc = (float) wc_get_price_including_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
 
 		return array(
-			'ex'  => $ex,
-			'inc' => $inc,
-			'raw' => $raw,
+			'ex'   => $ex,
+			'inc'  => $inc,
+			'raw'  => $raw,
+			'area' => $area,
 		);
 	}
 

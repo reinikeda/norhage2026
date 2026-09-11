@@ -21,6 +21,8 @@ class NH_TC_Render {
 		add_action( 'woocommerce_after_single_product', array( __CLASS__, 'inject_product' ), 5 );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		add_filter( 'woocommerce_get_item_data', array( __CLASS__, 'cart_item_data' ), 15, 2 );
+		add_action( 'woocommerce_before_calculate_totals', array( __CLASS__, 'apply_cut_price' ), 20 );
+		add_action( 'woocommerce_checkout_create_order_line_item', array( __CLASS__, 'order_item_meta' ), 10, 4 );
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'unique_kit_line' ), 20, 1 );
 	}
 
@@ -136,12 +138,6 @@ class NH_TC_Render {
 						<label>
 							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
 							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
-						</label>
-						<?php endif; ?>
-						<?php if ( ! empty( $s['show_discount'] ) ) : ?>
-						<label>
-							<span><?php esc_html_e( 'Discount %', NH_TC_TD ); ?></span>
-							<input type="number" name="discount_pct" min="0" max="90" step="0.5" value="0">
 						</label>
 						<?php endif; ?>
 					</fieldset>
@@ -311,6 +307,25 @@ class NH_TC_Render {
 	 * @return array<int, array<string, mixed>>
 	 */
 	public static function cart_item_data( $item_data, $cart_item ) {
+		// Custom-cut sheets: show the cut dimensions as line attributes.
+		if ( ! empty( $cart_item['nh_custom_cut'] ) && is_array( $cart_item['nh_custom_cut'] ) ) {
+			$cut = $cart_item['nh_custom_cut'];
+			$item_data[] = array(
+				'name'  => __( 'Cut width', NH_TC_TD ),
+				'value' => sprintf( '%d mm', (int) $cut['width_mm'] ),
+			);
+			$item_data[] = array(
+				'name'  => __( 'Cut length', NH_TC_TD ),
+				'value' => sprintf( '%d mm', (int) $cut['length_mm'] ),
+			);
+			if ( ! empty( $cut['area_m2'] ) ) {
+				$item_data[] = array(
+					'name'  => __( 'Area', NH_TC_TD ),
+					'value' => sprintf( '%s m²', number_format_i18n( (float) $cut['area_m2'], 2 ) ),
+				);
+			}
+		}
+
 		if ( empty( $cart_item['nh_terrace_kit'] ) || ! is_array( $cart_item['nh_terrace_kit'] ) ) {
 			return $item_data;
 		}
@@ -326,6 +341,58 @@ class NH_TC_Render {
 		return $item_data;
 	}
 
+	/**
+	 * Custom-cut sheets carry their own calculated price (area × per-m² price).
+	 *
+	 * @param WC_Cart $cart Cart object.
+	 */
+	public static function apply_cut_price( $cart ) {
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+			return;
+		}
+		if ( ! $cart instanceof WC_Cart ) {
+			return;
+		}
+
+		foreach ( $cart->get_cart() as $cart_item ) {
+			if ( empty( $cart_item['nh_custom_cut'] ) || ! is_array( $cart_item['nh_custom_cut'] ) ) {
+				continue;
+			}
+			$price = isset( $cart_item['nh_custom_cut']['unit_price'] ) ? (float) $cart_item['nh_custom_cut']['unit_price'] : 0.0;
+			if ( $price <= 0 ) {
+				continue;
+			}
+			$cart_item['data']->set_price( $price );
+		}
+	}
+
+	/**
+	 * Persist cut size + kit info on the order line items (works with HPOS).
+	 *
+	 * @param WC_Order_Item_Product $item          Order item.
+	 * @param string                $cart_item_key Cart item key.
+	 * @param array<string, mixed>  $values        Cart item data.
+	 * @param WC_Order              $order         Order object.
+	 */
+	public static function order_item_meta( $item, $cart_item_key, $values, $order ) {
+		if ( ! empty( $values['nh_custom_cut'] ) && is_array( $values['nh_custom_cut'] ) ) {
+			$cut = $values['nh_custom_cut'];
+			$item->add_meta_data( __( 'Cut width', NH_TC_TD ), sprintf( '%d mm', (int) $cut['width_mm'] ), true );
+			$item->add_meta_data( __( 'Cut length', NH_TC_TD ), sprintf( '%d mm', (int) $cut['length_mm'] ), true );
+			if ( ! empty( $cut['area_m2'] ) ) {
+				$item->add_meta_data( __( 'Area', NH_TC_TD ), sprintf( '%s m²', number_format_i18n( (float) $cut['area_m2'], 2 ) ), true );
+			}
+		}
+		if ( ! empty( $values['nh_terrace_kit'] ) && is_array( $values['nh_terrace_kit'] ) ) {
+			$kit = $values['nh_terrace_kit'];
+			$item->add_meta_data(
+				__( 'Terrace roof kit', NH_TC_TD ),
+				sprintf( '%d × %d mm', (int) $kit['width'], (int) $kit['length'] ),
+				true
+			);
+		}
+	}
+	
 	/**
 	 * Keep kit lines from merging with identical catalogue items.
 	 *

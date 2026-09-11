@@ -77,7 +77,6 @@ class NH_TC_Admin {
 		}
 
 		$out['silicon_metres_per_tube'] = isset( $input['silicon_metres_per_tube'] ) ? (float) $input['silicon_metres_per_tube'] : $defaults['silicon_metres_per_tube'];
-		$out['show_discount']           = empty( $input['show_discount'] ) ? 0 : 1;
 		$out['show_postcode']           = empty( $input['show_postcode'] ) ? 0 : 1;
 		$out['display_mode']            = in_array( $input['display_mode'] ?? '', array( 'all_products', 'selected', 'flagged' ), true )
 			? $input['display_mode']
@@ -261,10 +260,6 @@ class NH_TC_Admin {
 					<tr>
 						<th><?php esc_html_e( 'Show postcode field', NH_TC_TD ); ?></th>
 						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_postcode]" value="1" <?php checked( $s['show_postcode'] ); ?>> <?php esc_html_e( 'Saved to the customer when the kit is added, so shipping can be quoted in the basket.', NH_TC_TD ); ?></label></td>
-					</tr>
-					<tr>
-						<th><?php esc_html_e( 'Show discount %', NH_TC_TD ); ?></th>
-						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_discount]" value="1" <?php checked( $s['show_discount'] ); ?>> <?php esc_html_e( 'Display-only on the quote. Cart prices stay as in the catalogue (use a coupon for real discounts).', NH_TC_TD ); ?></label></td>
 					</tr>
 				</table>
 

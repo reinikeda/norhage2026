@@ -212,7 +212,6 @@ class NH_TC_Engine {
 				'tape_width_mm'        => $tape_width,
 				'gasket_m'             => $gasket_m,
 				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
-				'discount_pct'         => isset( $input['discount_pct'] ) ? (float) $input['discount_pct'] : 0.0,
 			),
 			'lines' => $lines,
 		);
