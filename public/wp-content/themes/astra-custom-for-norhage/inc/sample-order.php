@@ -9,6 +9,7 @@
  * This file is the single source of truth for:
  * - detecting samples (nh_is_sample_cart_item / nh_is_sample_order_item)
  * - sample price, quantity, shipping class (always slug "xs" on every shop)
+ * - applying sample price on add-to-cart and session restore (side cart line price)
  * - saving sample order-item meta at checkout
  * - stripping weight from samples (cart, order, PDF)
  *
@@ -159,7 +160,7 @@ function norhage_sample_assets() {
         'norhage-sample-order',
         get_stylesheet_directory_uri() . '/assets/js/sample-order.js',
         array( 'jquery' ),
-        '1.1',
+        '1.2',
         true
     );
 
@@ -297,6 +298,56 @@ function norhage_strip_sample_variation_attributes( $cart_item ) {
 }
 add_filter( 'woocommerce_add_cart_item', 'norhage_strip_sample_variation_attributes', 999 );
 
+/**
+ * Put the sample price on the in-memory product immediately.
+ *
+ * Cart totals already use woocommerce_before_calculate_totals. Line HTML
+ * (side cart, mini-cart) often reads $product->get_price() on a later
+ * fragment request, after session restore recreates the catalog product.
+ *
+ * @param array $cart_item Cart item.
+ * @return array
+ */
+function norhage_apply_sample_price_to_cart_item( $cart_item ) {
+    if ( ! is_array( $cart_item ) || ! nh_is_sample_cart_item( $cart_item ) || ! isset( $cart_item['sample_price'] ) ) {
+        return $cart_item;
+    }
+
+    if ( empty( $cart_item['data'] ) || ! is_object( $cart_item['data'] ) ) {
+        return $cart_item;
+    }
+
+    $sample_price = (float) $cart_item['sample_price'];
+    $product      = $cart_item['data'];
+
+    if ( is_callable( array( $product, 'set_price' ) ) ) {
+        $product->set_price( $sample_price );
+    }
+    if ( is_callable( array( $product, 'set_regular_price' ) ) ) {
+        $product->set_regular_price( $sample_price );
+    }
+    if ( is_callable( array( $product, 'set_sale_price' ) ) ) {
+        $product->set_sale_price( '' );
+    }
+
+    return $cart_item;
+}
+add_filter( 'woocommerce_add_cart_item', 'norhage_apply_sample_price_to_cart_item', 20 );
+
+/**
+ * Session restore rebuilds the product from the catalog. Re-apply sample
+ * price so fragment refreshes do not flash the parent product price.
+ *
+ * @param array $cart_item Cart item.
+ * @param array $values    Session values.
+ * @return array
+ */
+function norhage_apply_sample_price_from_session( $cart_item, $values ) {
+    unset( $values );
+    return norhage_apply_sample_price_to_cart_item( $cart_item );
+}
+add_filter( 'woocommerce_get_cart_item_from_session', 'norhage_apply_sample_price_from_session', 20, 2 );
+
 /** ------------------------------------------------------------------
  * 6. AJAX handler: add the REAL product (or a real variation) to cart
  *    as a sample. Works for simple, variable, and custom-cut products.
@@ -419,6 +470,8 @@ function norhage_add_sample_to_cart() {
     wp_send_json_success( array(
         'message'       => __( 'Sample added to cart.', 'nh-theme' ),
         'cart_item_key' => $cart_item_key,
+        'fragments'     => apply_filters( 'woocommerce_add_to_cart_fragments', array() ),
+        'cart_hash'     => WC()->cart->get_cart_hash(),
     ) );
 }
 
@@ -436,15 +489,44 @@ function norhage_set_sample_price( $cart ) {
         return;
     }
 
-    foreach ( $cart->get_cart() as $cart_item ) {
-        if ( nh_is_sample_cart_item( $cart_item ) && isset( $cart_item['sample_price'] ) ) {
-            $sample_price = (float) $cart_item['sample_price'];
-
-            $cart_item['data']->set_price( $sample_price );
-            $cart_item['data']->set_regular_price( $sample_price );
-            $cart_item['data']->set_sale_price( '' );
-        }
+    foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
+        unset( $cart_item_key );
+        norhage_apply_sample_price_to_cart_item( $cart_item );
     }
+}
+
+add_filter( 'woocommerce_cart_item_price', 'norhage_filter_sample_cart_item_price', 20, 3 );
+add_filter( 'woocommerce_cart_item_subtotal', 'norhage_filter_sample_cart_item_subtotal', 20, 3 );
+
+/**
+ * @param string $html       Price HTML.
+ * @param array  $cart_item  Cart item.
+ * @param string $cart_item_key Key.
+ * @return string
+ */
+function norhage_filter_sample_cart_item_price( $html, $cart_item, $cart_item_key ) {
+    unset( $cart_item_key );
+    $cart_item = norhage_apply_sample_price_to_cart_item( $cart_item );
+    if ( ! nh_is_sample_cart_item( $cart_item ) || empty( $cart_item['data'] ) || ! WC()->cart ) {
+        return $html;
+    }
+    return WC()->cart->get_product_price( $cart_item['data'] );
+}
+
+/**
+ * @param string $html       Subtotal HTML.
+ * @param array  $cart_item  Cart item.
+ * @param string $cart_item_key Key.
+ * @return string
+ */
+function norhage_filter_sample_cart_item_subtotal( $html, $cart_item, $cart_item_key ) {
+    unset( $cart_item_key );
+    $cart_item = norhage_apply_sample_price_to_cart_item( $cart_item );
+    if ( ! nh_is_sample_cart_item( $cart_item ) || empty( $cart_item['data'] ) || ! WC()->cart ) {
+        return $html;
+    }
+    $qty = isset( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1;
+    return WC()->cart->get_product_subtotal( $cart_item['data'], $qty );
 }
 
 /** ------------------------------------------------------------------
