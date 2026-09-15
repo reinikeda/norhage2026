@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-07 15:24+0300\n"
+"PO-Revision-Date: 2026-09-15 10:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nb_NO\n"
@@ -1887,6 +1887,206 @@ msgstr "Skriv inn en gyldig kontakt-e-postadresse."
 
 msgid "Please enter a valid phone number."
 msgstr "Skriv inn et gyldig telefonnummer."
+
+#: inc/checkout-ux.php
+msgid "Contact information"
+msgstr "Kontaktinformasjon"
+
+#: inc/checkout-ux.php
+msgid "Delivery address"
+msgstr "Leveringsadresse"
+
+#: inc/checkout-ux.php
+msgid "Delivery method"
+msgstr "Leveringsmåte"
+
+#: inc/checkout-ux.php
+msgid "Payment method"
+msgstr "Betalingsmåte"
+
+#: inc/checkout-ux.php
+msgid "View order summary"
+msgstr "Vis ordreoppsummering"
+
+#: inc/checkout-ux.php
+msgid "Choose how you want to pay. You can complete your details above first."
+msgstr "Velg hvordan du vil betale. Du kan fylle ut opplysningene over først."
+
+#: inc/checkout-ux.php
+msgid "Review order"
+msgstr "Se over bestillingen"
+
+#: inc/checkout-ux.php
+msgid "Add apartment, suite, etc."
+msgstr "Legg til leilighet, etasje osv."
+
+#: inc/checkout-ux.php
+msgid "Add contact person"
+msgstr "Legg til kontaktperson"
+
+#: inc/checkout-ux.php
+msgid "Please fill in this field."
+msgstr "Fyll ut dette feltet."
+
+#: inc/checkout-ux.php
+#. translators: %s: formatted order total
+msgid "Pay %s"
+msgstr "Betal %s"
+
+#: inc/checkout-ux.php
+msgid "Continue to SVEA"
+msgstr "Fortsett til SVEA"
+
+#: inc/checkout-ux.php
+msgid "Continue to Kustom"
+msgstr "Fortsett til Kustom"
+
+#: inc/checkout-ux.php
+msgid "Continue to PayPal"
+msgstr "Fortsett til PayPal"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in SVEA"
+msgstr "Fullfør betalingen i SVEA"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in Kustom"
+msgstr "Fullfør betalingen i Kustom"
+
+#: inc/checkout-ux.php
+msgid "Processing your order…"
+msgstr "Behandler bestillingen din…"
+
+#: inc/checkout-ux.php
+msgid "Please do not close this page."
+msgstr "Ikke lukk denne siden."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure SVEA payment…"
+msgstr "Forbereder sikker SVEA-betaling…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in SVEA’s secure payment window."
+msgstr "Du fortsetter i SVEAs sikre betalingsvindu."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure Kustom payment…"
+msgstr "Forbereder sikker Kustom-betaling…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in Kustom’s secure payment window."
+msgstr "Du fortsetter i Kustoms sikre betalingsvindu."
+
+#: inc/checkout-ux.php
+msgid "Taking you securely to PayPal…"
+msgstr "Tar deg sikkert til PayPal…"
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed."
+msgstr "Betalingen ble ikke fullført."
+
+#: inc/checkout-ux.php
+msgid "Your order details are still saved. You can try again or choose another payment method."
+msgstr "Ordreopplysningene dine er fortsatt lagret. Du kan prøve igjen eller velge en annen betalingsmåte."
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled."
+msgstr "Betalingen ble avbrutt."
+
+#: inc/checkout-ux.php
+msgid "Choose another payment method or try again."
+msgstr "Velg en annen betalingsmåte eller prøv igjen."
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d product"
+msgstr "%d produkt"
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d products"
+msgstr "%d produkter"
+
+#: inc/checkout-ux.php
+msgid "1 product"
+msgstr "1 produkt"
+
+#: inc/checkout-ux.php
+msgid "By placing this order, you agree to the applicable purchase terms."
+msgstr "Ved å legge inn denne bestillingen godtar du gjeldende kjøpsvilkår."
+
+#: inc/checkout-ux.php
+msgid "You will continue securely to SVEA to complete payment."
+msgstr "Du fortsetter sikkert til SVEA for å fullføre betalingen."
+
+#: inc/checkout-ux.php
+msgid "You will be taken to PayPal to log in and confirm the payment."
+msgstr "Du blir tatt til PayPal for å logge inn og bekrefte betalingen."
+
+#: inc/checkout-ux.php
+msgid "Pay by bank transfer. We send payment details after you place the order."
+msgstr "Betal med bankoverføring. Vi sender betalingsopplysninger etter at du har lagt inn bestillingen."
+
+#: inc/checkout-ux.php
+msgid "Loading secure payment…"
+msgstr "Laster sikker betaling…"
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Betalingen ble avbrutt. Ordreopplysningene dine er fortsatt lagret. Du kan prøve igjen eller velge en annen betalingsmåte."
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Betalingen ble ikke fullført. Ordreopplysningene dine er fortsatt lagret. Du kan prøve igjen eller velge en annen betalingsmåte."
+
+#: inc/checkout-ux.php
+msgid "We are waiting for payment confirmation. You will receive an email when it is complete."
+msgstr "Vi venter på betalingsbekreftelse. Du får en e-post når den er klar."
+
+#: inc/checkout-ux.php
+#. translators: %s: customer first name
+msgid "Thank you, %s. Your order has been received."
+msgstr "Takk, %s. Vi har mottatt bestillingen din."
+
+#: inc/checkout-ux.php
+msgid "Thank you. Your order has been received."
+msgstr "Takk. Vi har mottatt bestillingen din."
+
+#: inc/checkout-ux.php
+msgid "Try payment again"
+msgstr "Prøv å betale på nytt"
+
+#: inc/checkout-ux.php
+msgid "Paid with:"
+msgstr "Betalt med:"
+
+#: inc/checkout-ux.php
+msgid "Confirmation sent to:"
+msgstr "Bekreftelse sendt til:"
+
+#: inc/checkout-ux.php
+msgid "Your invoice will be sent to your email address."
+msgstr "Fakturaen sendes til e-postadressen din."
+
+#: inc/checkout-ux.php
+msgid "What happens next"
+msgstr "Hva skjer videre"
+
+#: inc/checkout-ux.php
+msgid "We confirm your order."
+msgstr "Vi bekrefter bestillingen din."
+
+#: inc/checkout-ux.php
+msgid "We prepare your shipment."
+msgstr "Vi klargjør sendingen din."
+
+#: inc/checkout-ux.php
+msgid "You receive delivery updates."
+msgstr "Du får oppdateringer om leveringen."
+
+#: inc/checkout-ux.php
+msgid "Continue shopping"
+msgstr "Fortsett å handle"
 
 msgid "Breadcrumbs"
 msgstr "Brødsmuler"

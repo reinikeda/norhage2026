@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
-"POT-Creation-Date: 2026-07-08 10:01+0300\n"
+"POT-Creation-Date: 2026-09-15 10:00+00:00\n"
 "PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1116,6 +1116,206 @@ msgid "Please enter a valid contact email."
 msgstr ""
 
 msgid "Please enter a valid phone number."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Contact information"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Delivery address"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Delivery method"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Payment method"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "View order summary"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Choose how you want to pay. You can complete your details above first."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Review order"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Add apartment, suite, etc."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Add contact person"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Please fill in this field."
+msgstr ""
+
+#: inc/checkout-ux.php
+#. translators: %s: formatted order total
+msgid "Pay %s"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Continue to SVEA"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Continue to Kustom"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Continue to PayPal"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Complete payment in SVEA"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Complete payment in Kustom"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Processing your order…"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Please do not close this page."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Preparing secure SVEA payment…"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "You will continue in SVEA’s secure payment window."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Preparing secure Kustom payment…"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "You will continue in Kustom’s secure payment window."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Taking you securely to PayPal…"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Your order details are still saved. You can try again or choose another payment method."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Choose another payment method or try again."
+msgstr ""
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d product"
+msgstr ""
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d products"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "1 product"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "By placing this order, you agree to the applicable purchase terms."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "You will continue securely to SVEA to complete payment."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "You will be taken to PayPal to log in and confirm the payment."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Pay by bank transfer. We send payment details after you place the order."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Loading secure payment…"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled. Your order details are still saved. You can try again or choose another payment method."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed. Your order details are still saved. You can try again or choose another payment method."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "We are waiting for payment confirmation. You will receive an email when it is complete."
+msgstr ""
+
+#: inc/checkout-ux.php
+#. translators: %s: customer first name
+msgid "Thank you, %s. Your order has been received."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Thank you. Your order has been received."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Try payment again"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Paid with:"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Confirmation sent to:"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Your invoice will be sent to your email address."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "What happens next"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "We confirm your order."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "We prepare your shipment."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "You receive delivery updates."
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Continue shopping"
 msgstr ""
 
 msgid "This link is from our previous shop or is no longer available. Search for a product, or continue from a category below."
