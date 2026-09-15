@@ -2008,12 +2008,8 @@ function nh_checkout_calling_code_options() {
 	);
 	$codes = array_unique( array_values( nh_checkout_calling_codes() ) );
 	sort( $codes, SORT_NUMERIC );
-	$flags = nh_checkout_calling_code_flag_map();
 	foreach ( $codes as $code ) {
-		$iso   = isset( $flags[ $code ] ) ? $flags[ $code ] : '';
-		$flag  = nh_checkout_flag_emoji( $iso );
-		$label = trim( $flag . ' +' . $code );
-		$options[ $code ] = $label !== '' ? $label : ( '+' . $code );
+		$options[ $code ] = '+' . $code;
 	}
 	return $options;
 }
@@ -2093,24 +2089,17 @@ function nh_checkout_national_digit_limits() {
 }
 
 /**
- * Whether a stored +XXXXXXXX number has a plausible national length.
+ * Whether national digits fit a calling code.
  *
- * @param string $phone Normalised E.164-like number.
+ * @param string $code     Dialling digits without +.
+ * @param string $national National significant number.
  * @return bool
  */
-function nh_checkout_phone_number_is_valid( $phone ) {
-	$phone = trim( (string) $phone );
-	if ( $phone === '' ) {
-		return false;
-	}
-
-	list( $code, $national ) = nh_checkout_split_phone( $phone );
+function nh_checkout_national_is_valid_for_code( $code, $national ) {
+	$code     = preg_replace( '/\D/', '', (string) $code );
 	$national = preg_replace( '/\D/', '', (string) $national );
-
 	if ( $code === '' || $national === '' ) {
-		$digits = preg_replace( '/\D/', '', $phone );
-		$len    = strlen( (string) $digits );
-		return $len >= 8 && $len <= 15;
+		return false;
 	}
 
 	$limits = nh_checkout_national_digit_limits();
@@ -2123,6 +2112,118 @@ function nh_checkout_phone_number_is_valid( $phone ) {
 
 	$len = strlen( $national );
 	return $len >= $min && $len <= $max;
+}
+
+/**
+ * Longest matching calling code whose remainder has a valid national length.
+ *
+ * @param string $digits Digits only.
+ * @return array{0:string,1:string}|null [ code, national ] or null.
+ */
+function nh_checkout_match_calling_code( $digits ) {
+	$digits = preg_replace( '/\D/', '', (string) $digits );
+	if ( $digits === '' ) {
+		return null;
+	}
+
+	$options = array_keys( nh_checkout_calling_code_options() );
+	usort(
+		$options,
+		function ( $a, $b ) {
+			return strlen( (string) $b ) - strlen( (string) $a );
+		}
+	);
+
+	foreach ( $options as $code ) {
+		$code = (string) $code;
+		if ( $code === '' ) {
+			continue;
+		}
+		if ( 0 !== strpos( $digits, $code ) ) {
+			continue;
+		}
+		$national = substr( $digits, strlen( $code ) );
+		if ( nh_checkout_national_is_valid_for_code( $code, $national ) ) {
+			return array( $code, $national );
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Split typed/pasted phone input into calling code and national number.
+ *
+ * Accepts +47…, 0047…, or a full international number without + (37062774873).
+ * A number that is already valid for the selected code stays national.
+ *
+ * @param string $raw           Raw input.
+ * @param string $selected_code Currently selected calling-code digits.
+ * @return array{0:string,1:string} [ code digits, national remainder ]
+ */
+function nh_checkout_parse_phone_input( $raw, $selected_code = '' ) {
+	$raw = trim( (string) $raw );
+	if ( $raw === '' ) {
+		return array( '', '' );
+	}
+
+	if ( 0 === strpos( $raw, '00' ) ) {
+		$raw = '+' . substr( $raw, 2 );
+	}
+
+	$has_plus      = ( 0 === strpos( $raw, '+' ) );
+	$digits        = preg_replace( '/\D/', '', $raw );
+	$selected_code = nh_checkout_sanitize_calling_code( $selected_code );
+	$matched       = nh_checkout_match_calling_code( $digits );
+
+	if ( $digits === '' ) {
+		return array( $selected_code, '' );
+	}
+
+	if ( $has_plus ) {
+		return $matched ? $matched : array( $selected_code, $digits );
+	}
+
+	if ( $selected_code && nh_checkout_national_is_valid_for_code( $selected_code, $digits ) ) {
+		return array( $selected_code, $digits );
+	}
+
+	if ( $matched ) {
+		return $matched;
+	}
+
+	if ( $selected_code && 0 === strpos( $digits, $selected_code ) ) {
+		$rest = substr( $digits, strlen( $selected_code ) );
+		if ( nh_checkout_national_is_valid_for_code( $selected_code, $rest ) ) {
+			return array( $selected_code, $rest );
+		}
+	}
+
+	return array( $selected_code, $digits );
+}
+
+/**
+ * Whether a stored +XXXXXXXX number has a plausible national length.
+ *
+ * @param string $phone Normalised E.164-like number.
+ * @return bool
+ */
+function nh_checkout_phone_number_is_valid( $phone ) {
+	$phone = trim( (string) $phone );
+	if ( $phone === '' ) {
+		return false;
+	}
+
+	list( $code, $national ) = nh_checkout_parse_phone_input( $phone, '' );
+	$national = preg_replace( '/\D/', '', (string) $national );
+
+	if ( $code === '' || $national === '' ) {
+		$digits = preg_replace( '/\D/', '', $phone );
+		$len    = strlen( (string) $digits );
+		return $len >= 8 && $len <= 15;
+	}
+
+	return nh_checkout_national_is_valid_for_code( $code, $national );
 }
 
 /**
@@ -2166,31 +2267,26 @@ function nh_checkout_sanitize_calling_code( $code ) {
  * @return string
  */
 function nh_checkout_normalize_phone( $number, $code ) {
-	$number = preg_replace( '/[^\d+]/', '', (string) $number );
+	$number = trim( (string) $number );
 	$code   = nh_checkout_sanitize_calling_code( $code );
 
 	if ( '' === $number ) {
 		return '';
 	}
 
-	if ( 0 === strpos( $number, '00' ) ) {
-		$number = '+' . substr( $number, 2 );
+	list( $parsed_code, $national ) = nh_checkout_parse_phone_input( $number, $code );
+	$national = preg_replace( '/\D/', '', (string) $national );
+	$use_code = $parsed_code ? $parsed_code : $code;
+
+	if ( $use_code && 0 === strpos( $national, '0' ) ) {
+		$national = ltrim( $national, '0' );
 	}
 
-	if ( 0 === strpos( $number, '+' ) ) {
-		$digits = preg_replace( '/\D/', '', substr( $number, 1 ) );
-		return $digits === '' ? '' : '+' . $digits;
+	if ( $use_code && $national !== '' ) {
+		return '+' . $use_code . $national;
 	}
 
-	if ( $code && 0 === strpos( $number, '0' ) ) {
-		$number = ltrim( $number, '0' );
-	}
-
-	if ( $code && $number !== '' ) {
-		return '+' . $code . $number;
-	}
-
-	return $number;
+	return $national;
 }
 
 /**
@@ -2200,34 +2296,7 @@ function nh_checkout_normalize_phone( $number, $code ) {
  * @return array{0:string,1:string} [ code digits, national remainder ]
  */
 function nh_checkout_split_phone( $phone ) {
-	$phone = (string) $phone;
-	if ( 0 === strpos( $phone, '00' ) ) {
-		$phone = '+' . substr( $phone, 2 );
-	}
-	if ( 0 !== strpos( $phone, '+' ) ) {
-		return array( '', $phone );
-	}
-	$digits  = preg_replace( '/\D/', '', substr( $phone, 1 ) );
-	$options = array_keys( nh_checkout_calling_code_options() );
-	usort(
-		$options,
-		function ( $a, $b ) {
-			return strlen( $b ) - strlen( $a );
-		}
-	);
-	foreach ( $options as $code ) {
-		if ( $code === '' || ! is_string( $code ) && ! is_int( $code ) ) {
-			continue;
-		}
-		$code = (string) $code;
-		if ( $code === '' ) {
-			continue;
-		}
-		if ( 0 === strpos( $digits, $code ) ) {
-			return array( $code, substr( $digits, strlen( $code ) ) );
-		}
-	}
-	return array( '', $phone );
+	return nh_checkout_parse_phone_input( (string) $phone, '' );
 }
 
 /**
@@ -2249,10 +2318,10 @@ function nh_checkout_phone_field_html( $field, $key, $args, $value ) { // phpcs:
 
 	$code_name   = $key . '_code';
 	$posted_code = isset( $_POST[ $code_name ] ) ? wc_clean( wp_unslash( $_POST[ $code_name ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-	list( $split_code, $national ) = nh_checkout_split_phone( (string) $value );
+	list( $split_code, $national ) = nh_checkout_parse_phone_input( (string) $value, $posted_code );
 
 	$selected = nh_checkout_sanitize_calling_code( $posted_code ? $posted_code : $split_code );
-	$display  = $split_code ? $national : (string) $value;
+	$display  = $national !== '' ? $national : (string) $value;
 
 	$input = $match[0];
 	if ( preg_match( '/\svalue="/', $input ) ) {
