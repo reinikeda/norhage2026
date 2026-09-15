@@ -18,7 +18,7 @@
     if (!window.kco_wc) {
       return;
     }
-    window.kco_wc.preventPaymentMethodChange = checkoutStep() !== 'payment' || ignoreAutoPaymentClick || !allowSnippetGatewayReload;
+    window.kco_wc.preventPaymentMethodChange = !snippetReady() || ignoreAutoPaymentClick || !allowSnippetGatewayReload;
   }
 
   function unblockCheckout() {
@@ -50,6 +50,7 @@
         'billing_company_reg_field',
         'billing_email_field',
         'billing_phone_field',
+        'nh_section_delivery_field',
         'billing_country_field',
         'billing_postcode_field',
         'billing_address_1_field',
@@ -69,6 +70,7 @@
       'billing_last_name_field',
       'billing_email_field',
       'billing_phone_field',
+      'nh_section_delivery_field',
       'billing_country_field',
       'billing_postcode_field',
       'billing_address_1_field',
@@ -488,11 +490,25 @@
     return data;
   }
 
-  function isSnippetCheckoutPage() {
-    if (checkoutStep() !== 'payment') {
-      return false;
+  function snippetReady() {
+    var $input = $('#nh_checkout_snippet_ready');
+    if ($input.length) {
+      return $input.val() === '1';
     }
-    return paymentIdIsSnippet(chosenPaymentId()) || snippetCheckoutPresent();
+    return !!i18n.snippetReady;
+  }
+
+  function setSnippetReady(on) {
+    var $input = $('#nh_checkout_snippet_ready');
+    if ($input.length) {
+      $input.val(on ? '1' : '');
+    }
+    i18n.snippetReady = on ? '1' : '';
+    i18n.snippetCheckout = !!on;
+  }
+
+  function isSnippetCheckoutPage() {
+    return snippetReady() && (paymentIdIsSnippet(chosenPaymentId()) || snippetCheckoutPresent());
   }
 
   function stampShippingIndexes() {
@@ -513,24 +529,17 @@
   });
 
   function checkoutStep() {
-    var $input = $('#nh_checkout_step');
-    if ($input.length) {
-      return $input.val() === 'payment' ? 'payment' : 'details';
-    }
-    return i18n.checkoutStep === 'payment' ? 'payment' : 'details';
+    return snippetReady() ? 'payment' : 'details';
   }
 
   function shouldKeepPaymentSelection() {
-    if (checkoutStep() !== 'payment') {
-      return false;
-    }
     if (paymentChosenByCustomer) {
       return true;
     }
     if (i18n.chosenPayment) {
       return true;
     }
-    if (i18n.snippetCheckout) {
+    if (snippetReady()) {
       return true;
     }
     return false;
@@ -725,13 +734,7 @@
     if (iframeMarkupPresent()) {
       return true;
     }
-    if (checkoutStep() !== 'payment') {
-      return false;
-    }
-    if (paymentIdIsSnippet(chosenPaymentId())) {
-      return true;
-    }
-    return !!(i18n.snippetCheckout && snippetCheckoutPresent());
+    return snippetReady() && (paymentIdIsSnippet(chosenPaymentId()) || snippetCheckoutPresent());
   }
 
   function syncSnippetCheckout() {
@@ -763,6 +766,11 @@
 
     keepShipToSameAddress();
     syncTermsGate();
+    var status = document.getElementById('nh-checkout-iframe-status');
+    var wrap = document.getElementById('nh-checkout-iframe');
+    if (status && wrap) {
+      status.hidden = !!wrap.querySelector('iframe');
+    }
   }
 
   function keepShipToSameAddress() {
@@ -847,16 +855,8 @@
       }
     }
     if (aside && main) {
-      if (wide) {
-        aside.style.removeProperty('order');
-        main.style.removeProperty('order');
-      } else if (checkoutStep() === 'payment') {
-        main.style.setProperty('order', '-1', 'important');
-        aside.style.setProperty('order', '2', 'important');
-      } else {
-        aside.style.setProperty('order', '0', 'important');
-        main.style.setProperty('order', '1', 'important');
-      }
+      aside.style.setProperty('order', '0', 'important');
+      main.style.setProperty('order', '1', 'important');
     }
     [review, document.getElementById('order_review_heading')].forEach(function (el) {
       if (!el) {
@@ -947,6 +947,26 @@
     if ($ship.length) {
       $ship.html(shippingLabelHtml());
     }
+    var $sticky = $('.nh-checkout-sticky__amount');
+    if ($src.length && $sticky.length) {
+      $sticky.html(amountHtmlFromTotalCell($src));
+    }
+    var $compact = $('.nh-checkout-summary-toggle__label');
+    if ($compact.length) {
+      var count = 0;
+      $('#order_review tbody .cart_item').each(function () {
+        var qty = parseInt($(this).find('.product-quantity').text().replace(/\D/g, ''), 10);
+        count += qty > 0 ? qty : 1;
+      });
+      if (!count && i18n.productsCount) {
+        count = 0;
+      }
+      var totalText = $src.length ? $.trim($('<div/>').html(amountHtmlFromTotalCell($src)).text()) : '';
+      var items = count === 1
+        ? (i18n.productsCount ? i18n.productsCount.replace('%d', '1') : '1 product')
+        : (i18n.productsCountMany ? i18n.productsCountMany.replace('%d', String(count)) : (count + ' products'));
+      $compact.text(totalText ? (items + ' · ' + totalText) : items);
+    }
   }
 
   function bindSummaryToggle() {
@@ -957,7 +977,7 @@
 
     if (document.body.getAttribute('data-nh-summary-init') !== '1') {
       document.body.setAttribute('data-nh-summary-init', '1');
-      var startClosed = !window.matchMedia('(min-width: 960px)').matches && checkoutStep() === 'payment';
+      var startClosed = !window.matchMedia('(min-width: 960px)').matches;
       $summary.toggleClass('is-open', !startClosed);
     }
 
@@ -1021,47 +1041,41 @@
   }
 
   function applyCheckoutStep() {
-    var step = checkoutStep();
-    var onPayment = step === 'payment';
-    $('body')
-      .toggleClass('nh-checkout--step-payment', onPayment)
-      .toggleClass('nh-checkout--step-details', !onPayment);
-    $('form.checkout')
-      .toggleClass('nh-checkout--step-payment', onPayment)
-      .toggleClass('nh-checkout--step-details', !onPayment);
-
     var $radios = $('input[name="payment_method"]');
-    if (!onPayment) {
-      paymentChosenByCustomer = false;
-      $radios.prop('checked', false).prop('disabled', true);
-      if (!iframeMarkupPresent()) {
-        $('body, form.checkout').removeClass(
-          'nh-checkout--snippet nh-checkout--has-method wc-svea-checkout-page svea-checkout kco-checkout'
-        );
-      }
-    } else {
-      $radios.prop('disabled', false);
-      var keep = String(i18n.chosenPayment || '').trim();
-      if (!keep && shouldKeepPaymentSelection()) {
-        keep = chosenPaymentId();
-      }
-      if (keep) {
-        var $keep = $radios.filter(function () {
-          return String(this.value) === keep;
-        });
-        if ($keep.length) {
-          $radios.prop('checked', false);
-          $keep.prop('checked', true);
-        }
-      } else if (!iframeMarkupPresent()) {
+    $radios.prop('disabled', false);
+
+    var keep = String(i18n.chosenPayment || '').trim();
+    if (!keep && shouldKeepPaymentSelection()) {
+      keep = chosenPaymentId();
+    }
+    if (keep && keep !== 'nh_none') {
+      var $keep = $radios.filter(function () {
+        return String(this.value) === keep;
+      });
+      if ($keep.length && !$keep.prop('checked')) {
+        ignoreAutoPaymentClick = true;
         $radios.prop('checked', false);
+        $keep.prop('checked', true);
+        window.setTimeout(function () {
+          ignoreAutoPaymentClick = false;
+        }, 80);
       }
+    } else if (!iframeMarkupPresent() && !paymentChosenByCustomer) {
+      $radios.prop('checked', false);
+    }
+
+    if (!snippetReady() && !iframeMarkupPresent()) {
+      $('body, form.checkout').removeClass(
+        'nh-checkout--snippet wc-svea-checkout-page svea-checkout kco-checkout'
+      );
     }
 
     enhancePaymentCards();
     syncSnippetCheckout();
     syncKcoPrevent();
     syncTermsGate();
+    syncStickyBar();
+    syncPaypalButtons();
   }
 
   function termsCheckbox() {
@@ -1183,7 +1197,7 @@
       ensureTermsErrorEl(wrap);
     }
 
-    var needGate = checkoutStep() === 'payment' && iframeMarkupPresent() && box && !box.checked;
+    var needGate = snippetReady() && iframeMarkupPresent() && box && !box.checked;
     if (!needGate) {
       if (gate) {
         gate.remove();
@@ -1256,45 +1270,123 @@
     syncTermsGate();
   }
 
-  function validateDetailsStep() {
+  function fieldRowIsRequired($row) {
+    if (!$row.length || $row.hasClass('nh-checkout-field--hidden') || !$row.is(':visible')) {
+      return false;
+    }
+    return $row.hasClass('validate-required');
+  }
+
+  function fieldRowValue($row) {
+    var $inputs = $row.find('input, select, textarea').filter(':visible').not('[type=hidden]').not(':disabled');
+    if (!$inputs.length) {
+      return { empty: true, $input: $() };
+    }
+    var type = String($inputs.first().attr('type') || '').toLowerCase();
+    if (type === 'radio') {
+      return { empty: !$row.find('input[type=radio]:checked').length, $input: $inputs.first() };
+    }
+    if (type === 'checkbox') {
+      return { empty: !$inputs.first().is(':checked'), $input: $inputs.first() };
+    }
+    return { empty: $.trim($inputs.first().val() || '') === '', $input: $inputs.first() };
+  }
+
+  function emailLooksValid(value) {
+    value = $.trim(value || '');
+    return value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function setFieldError($row, message) {
+    var $hint = $row.find('.nh-field-hint');
+    if (!$hint.length) {
+      $hint = $('<span class="nh-field-hint" role="status"></span>');
+      $row.append($hint);
+    }
+    $row.addClass('woocommerce-invalid woocommerce-invalid-required-field');
+    $row.removeClass('woocommerce-validated');
+    $hint.text(message || i18n.fieldRequired || 'Please fill in this field.');
+  }
+
+  function clearFieldError($row) {
+    $row.removeClass('woocommerce-invalid woocommerce-invalid-required-field');
+    $row.find('.nh-field-hint').text('');
+    if ($.trim($row.find('input, select, textarea').first().val() || '') !== '') {
+      $row.addClass('woocommerce-validated');
+    }
+  }
+
+  function validateFieldRow($row, show) {
+    if (!$row.length || $row.hasClass('nh-checkout-field--hidden')) {
+      return true;
+    }
+    var $email = $row.find('input[type=email], #billing_email, #billing_contact_email');
+    if ($email.length) {
+      var mail = $.trim($email.first().val() || '');
+      if (mail !== '' && !emailLooksValid(mail)) {
+        if (show) {
+          setFieldError($row, i18n.emailInvalid || 'Please enter a valid email address.');
+        }
+        return false;
+      }
+    }
+    if (!fieldRowIsRequired($row)) {
+      if (show) {
+        clearFieldError($row);
+      }
+      return true;
+    }
+    var info = fieldRowValue($row);
+    if (info.empty) {
+      if (show) {
+        setFieldError($row, i18n.fieldRequired || 'Please fill in this field.');
+      }
+      return false;
+    }
+    if (show) {
+      clearFieldError($row);
+    }
+    return true;
+  }
+
+  function validateDetailsStep(show) {
+    if (typeof show === 'undefined') {
+      show = true;
+    }
     var ok = true;
     var $first = $();
-    $('#customer_details p.validate-required:visible').not('.nh-checkout-field--hidden').each(function () {
+    $('#customer_details p.form-row, #customer_details .form-row').not('.nh-checkout-field--hidden').each(function () {
       var $row = $(this);
-      var $inputs = $row.find('input, select, textarea').filter(':visible').not('[type=hidden]').not(':disabled');
-      if (!$inputs.length) {
-        return;
-      }
-      var type = String($inputs.first().attr('type') || '').toLowerCase();
-      var empty = false;
-      if (type === 'radio') {
-        empty = !$row.find('input[type=radio]:checked').length;
-      } else if (type === 'checkbox') {
-        empty = !$inputs.first().is(':checked');
-      } else {
-        empty = $.trim($inputs.first().val() || '') === '';
-      }
-      if (empty) {
-        $row.addClass('woocommerce-invalid woocommerce-invalid-required-field');
+      if (!validateFieldRow($row, show)) {
         ok = false;
         if (!$first.length) {
-          $first = $inputs.first();
+          $first = fieldRowValue($row).$input;
         }
       }
     });
-    if (!validateAllPhones(true)) {
+    if (!validateAllPhones(show)) {
       ok = false;
       if (!$first.length) {
         $first = $('.woocommerce-invalid-phone:visible').find('input').first();
       }
     }
-    if (!ok && $first.length) {
+    if (show && !ok && $first.length) {
       $first.trigger('focus');
       if ($first[0].scrollIntoView) {
         $first[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
     return ok;
+  }
+
+  function bindFieldValidation() {
+    if (document.body.getAttribute('data-nh-field-validate') === '1') {
+      return;
+    }
+    document.body.setAttribute('data-nh-field-validate', '1');
+    $(document.body).on('blur.nhFieldValidate change.nhFieldValidate', '#customer_details .input-text, #customer_details select, #customer_details textarea', function () {
+      validateFieldRow($(this).closest('.form-row'), true);
+    });
   }
 
   function collapseSummaryOnMobile() {
@@ -1386,58 +1478,199 @@
     } catch (e) { /* Crisp not ready */ }
   }
 
-  function goToPayment() {
-    if (!validateDetailsStep()) {
-      return;
+  function paymentKind(id) {
+    id = String(id || chosenPaymentId() || '').toLowerCase();
+    if (paymentIdIsSnippet(id)) {
+      if (/kco|kustom|klarna/.test(id)) {
+        return 'kustom';
+      }
+      return 'svea';
     }
-    paymentChosenByCustomer = false;
-    ignoreAutoPaymentClick = true;
-    allowSnippetGatewayReload = false;
-    i18n.chosenPayment = '';
-    i18n.snippetCheckout = false;
-    $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
-    $('#nh_checkout_step').val('payment');
-    i18n.checkoutStep = 'payment';
-    $('body, form.checkout').removeClass('nh-checkout--step-details').addClass('nh-checkout--step-payment');
-    markPaymentFocus('payment');
-    $(document.body).one('updated_checkout.nhPayFocus', function () {
-      schedulePaymentFocus('payment');
-    });
-    $(document.body).trigger('update_checkout');
-    schedulePaymentFocus('payment');
+    if (/paypal|ppcp|ppec|paypal_express|paypalcp/.test(id)) {
+      return 'paypal';
+    }
+    if (id === 'bacs') {
+      return 'bacs';
+    }
+    return 'other';
   }
 
-  function goBackToDetails() {
-    paymentChosenByCustomer = false;
-    ignoreAutoPaymentClick = false;
-    allowSnippetGatewayReload = false;
-    i18n.chosenPayment = '';
-    i18n.snippetCheckout = false;
-    try {
-      sessionStorage.removeItem(FOCUS_KEY);
-    } catch (e) { /* private mode */ }
-    rememberTerms(false);
-    if (/nh-checkout-(iframe|payment)/.test(window.location.hash || '')) {
-      if (history.replaceState) {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
+  function hasInlinePaypal() {
+    return !!(
+      document.querySelector(
+        '#ppc-button, .paypal-buttons, .paypal-button-container, #paypal-button-container, .wc-ppcp-pay-later, iframe[name^="paypal"]'
+      )
+    );
+  }
+
+  function formattedTotal() {
+    var html = $('.nh-checkout-sticky__amount').first().text() ||
+      $('.nh-checkout-summary-toggle__amount').first().text() ||
+      $('#order_review .order-total td').first().text();
+    return $.trim(html || '');
+  }
+
+  function stickyButtonLabel() {
+    var kind = paymentKind();
+    var total = formattedTotal();
+    if (!chosenPaymentId()) {
+      return i18n.reviewLabel || 'Review order';
+    }
+    if (kind === 'svea') {
+      return iframeMarkupPresent() ? (i18n.completeInSvea || 'Complete payment in SVEA') : (i18n.continueSvea || 'Continue to SVEA');
+    }
+    if (kind === 'kustom') {
+      return iframeMarkupPresent() ? (i18n.completeInKustom || 'Complete payment in Kustom') : (i18n.continueKustom || 'Continue to Kustom');
+    }
+    if (kind === 'paypal') {
+      return hasInlinePaypal()
+        ? (i18n.payLabel ? i18n.payLabel.replace('%s', total) : ('Pay ' + total))
+        : (i18n.continuePaypal || 'Continue to PayPal');
+    }
+    if (total) {
+      return i18n.payLabel ? i18n.payLabel.replace('%s', total) : ('Pay ' + total);
+    }
+    return i18n.reviewLabel || 'Review order';
+  }
+
+  function checkoutIsReadyToPay() {
+    return validateDetailsStep(false) && !!chosenPaymentId() && termsAgreed();
+  }
+
+  function showCheckoutStatus(title, text, kind) {
+    var el = document.getElementById('nh-checkout-status');
+    if (!el) {
+      return;
+    }
+    el.hidden = false;
+    el.classList.add('is-visible');
+    if (kind) {
+      el.setAttribute('data-kind', kind);
+    }
+    var t = document.getElementById('nh-checkout-status-title');
+    var p = document.getElementById('nh-checkout-status-text');
+    if (t) {
+      t.textContent = title || '';
+    }
+    if (p) {
+      p.textContent = text || '';
+    }
+  }
+
+  function hideCheckoutStatus() {
+    var el = document.getElementById('nh-checkout-status');
+    if (!el) {
+      return;
+    }
+    el.hidden = true;
+    el.classList.remove('is-visible');
+  }
+
+  function syncStickyBar() {
+    var $amount = $('.nh-checkout-sticky__amount');
+    var $src = $('#order_review .order-total td').first();
+    if ($amount.length && $src.length) {
+      $amount.html(amountHtmlFromTotalCell($src));
+    }
+    var $btn = $('#nh-checkout-sticky-btn');
+    if (!$btn.length) {
+      return;
+    }
+    var ready = checkoutIsReadyToPay();
+    $btn.text(ready ? stickyButtonLabel() : (i18n.reviewLabel || 'Review order'));
+    $btn.toggleClass('is-ready', ready);
+    $('body').toggleClass('nh-checkout--ready', ready);
+    if (chosenPaymentId()) {
+      $('#place_order').text(stickyButtonLabel());
+    }
+  }
+
+  function syncPaypalButtons() {
+    var allow = termsAgreed() && validateDetailsStep(false);
+    var $paypal = $(
+      '#ppc-button, .paypal-buttons, .paypal-button-container, #paypal-button-container, #place_order_paypal'
+    );
+    $paypal.toggleClass('nh-paypal-blocked', !allow);
+    $('body').toggleClass('nh-checkout--paypal-blocked', paymentKind() === 'paypal' && !allow);
+  }
+
+  function placeShippingMethods() {
+    var $mount = $('#nh-checkout-shipping-mount');
+    var $row = $('#order_review tr.woocommerce-shipping-totals, #order_review tr.shipping').first();
+    if (!$mount.length || !$row.length) {
+      return;
+    }
+    var $cell = $row.find('td').first();
+    var $methods = $cell.find('ul#shipping_method, ul.woocommerce-shipping-methods, select.shipping_method').first();
+    if (!$methods.length) {
+      return;
+    }
+    if ($mount.length && $methods.length && $mount[0].contains($methods[0])) {
+      return;
+    }
+    var chosen = $.trim(
+      $methods.find('input:checked').closest('li').clone().children('input, .woocommerce-Price-amount').remove().end().text() ||
+      $methods.find('option:selected').text() ||
+      ''
+    );
+    $mount.empty().append($methods);
+    if (chosen && !$cell.find('.nh-summary-ship-chosen').length) {
+      $cell.append($('<span class="nh-summary-ship-chosen"></span>').text(chosen));
+    } else if (chosen) {
+      $cell.find('.nh-summary-ship-chosen').text(chosen);
+    }
+  }
+
+  function enhanceOptionalRows() {
+    function bindOptional($row, labelKey, fallback) {
+      if (!$row.length || $row.data('nhOptional')) {
+        return;
+      }
+      $row.data('nhOptional', true);
+      if ($.trim($row.find('input, textarea').val() || '') !== '') {
+        return;
+      }
+      var $btn = $('<button type="button" class="nh-optional-toggle"></button>');
+      $btn.text(i18n[labelKey] || fallback);
+      $row.addClass('nh-checkout-field--hidden');
+      $btn.insertBefore($row);
+      $btn.on('click', function () {
+        $row.removeClass('nh-checkout-field--hidden');
+        $btn.remove();
+        $row.find('input, textarea').trigger('focus');
+      });
+    }
+    bindOptional($('#billing_address_2_field'), 'address2Label', 'Add apartment, suite, etc.');
+    if (selectedType() === 'business') {
+      var $email = $('#billing_contact_email_field');
+      var $phone = $('#billing_contact_phone_field');
+      var extraFilled = $.trim($email.find('input').val() || '') !== '' || $.trim($phone.find('input').val() || '') !== '';
+      if (!extraFilled && $email.length && !$email.data('nhOptional')) {
+        $email.data('nhOptional', true);
+        $phone.data('nhOptional', true);
+        var $btn = $('<button type="button" class="nh-optional-toggle"></button>');
+        $btn.text(i18n.contactExtra || 'Add contact person');
+        $email.addClass('nh-checkout-field--hidden');
+        $phone.addClass('nh-checkout-field--hidden');
+        $btn.insertBefore($email);
+        $btn.on('click', function () {
+          $email.removeClass('nh-checkout-field--hidden');
+          $phone.removeClass('nh-checkout-field--hidden');
+          $btn.remove();
+          $email.find('input').trigger('focus');
+        });
       }
     }
-    $('input[name="payment_method"]').prop('checked', false).prop('disabled', true);
-    $('#nh_checkout_step').val('details');
-    i18n.checkoutStep = 'details';
-    var hadIframe = iframeMarkupPresent() || snippetCheckoutPresent();
-    applyCheckoutStep();
-    $(document.body).trigger('update_checkout');
-    if (hadIframe) {
-      window.clearTimeout(backReloadTimer);
-      $(document.body).one('updated_checkout.nhBack', function () {
-        window.clearTimeout(backReloadTimer);
-        window.location.reload();
-      });
-      backReloadTimer = window.setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+  }
+
+  function lockStickyAboveKeyboard() {
+    var bar = document.getElementById('nh-checkout-sticky');
+    if (!bar || !window.visualViewport) {
+      return;
     }
+    var vv = window.visualViewport;
+    var overlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    bar.style.bottom = overlap ? overlap + 'px' : '';
   }
 
   function reloadCheckoutToPayment() {
@@ -1450,13 +1683,13 @@
 
   function reloadForSnippetGateway() {
     if (iframeMarkupPresent()) {
+      hideCheckoutStatus();
       schedulePaymentFocus('iframe');
       return;
     }
     allowSnippetGatewayReload = true;
     syncKcoPrevent();
-    $('#nh_checkout_step').val('payment');
-    i18n.checkoutStep = 'payment';
+    setSnippetReady(true);
     window.clearTimeout(snippetReloadTimer);
     $(document.body).off('updated_checkout.nhSnippetPrefill');
     $(document.body).one('updated_checkout.nhSnippetPrefill', function () {
@@ -1469,46 +1702,115 @@
     }, 2000);
   }
 
+  function continueToSnippet() {
+    if (!validateDetailsStep(true)) {
+      return false;
+    }
+    if (!chosenPaymentId()) {
+      window.alert(i18n.selectPayment || 'Please choose a payment method.');
+      scrollToPaymentFocus('payment');
+      return false;
+    }
+    if (!enforceTermsOrHighlight()) {
+      return false;
+    }
+    var kind = paymentKind();
+    if (kind === 'svea') {
+      showCheckoutStatus(i18n.sveaPreparing, i18n.sveaPreparingText, 'svea');
+    } else if (kind === 'kustom') {
+      showCheckoutStatus(i18n.kustomPreparing, i18n.kustomPreparingText, 'kustom');
+    } else {
+      showCheckoutStatus(i18n.processingTitle, i18n.processingText, 'processing');
+    }
+    reloadForSnippetGateway();
+    return false;
+  }
+
+  function leaveSnippetIfNeeded(id) {
+    if (!(snippetCheckoutPresent() || iframeMarkupPresent() || snippetReady())) {
+      return;
+    }
+    if (paymentIdIsSnippet(id)) {
+      return;
+    }
+    showCheckoutStatus(i18n.processingTitle, i18n.processingText, 'processing');
+    setSnippetReady(false);
+    allowSnippetGatewayReload = false;
+    $(document.body).one('updated_checkout.nhLeaveIframe', function () {
+      window.location.reload();
+    });
+    window.setTimeout(function () {
+      window.location.reload();
+    }, 1600);
+  }
+
+  function runFinalAction() {
+    if (!validateDetailsStep(true)) {
+      return;
+    }
+    if (!chosenPaymentId()) {
+      window.alert(i18n.selectPayment || 'Please choose a payment method.');
+      scrollToPaymentFocus('payment');
+      return;
+    }
+    if (!enforceTermsOrHighlight()) {
+      return;
+    }
+    var kind = paymentKind();
+    if ((kind === 'svea' || kind === 'kustom') && !iframeMarkupPresent()) {
+      continueToSnippet();
+      return;
+    }
+    if ((kind === 'svea' || kind === 'kustom') && iframeMarkupPresent()) {
+      schedulePaymentFocus('iframe');
+      return;
+    }
+    if (kind === 'paypal' && hasInlinePaypal()) {
+      var paypal = document.querySelector('#ppc-button, .paypal-buttons, .paypal-button-container, #paypal-button-container');
+      if (paypal && paypal.scrollIntoView) {
+        paypal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    if (kind === 'paypal') {
+      showCheckoutStatus(i18n.paypalRedirect, '', 'paypal');
+    } else {
+      showCheckoutStatus(i18n.processingTitle, i18n.processingText, 'processing');
+    }
+    $('#place_order').trigger('click');
+  }
+
   function bindCheckoutSteps() {
     if (document.body.getAttribute('data-nh-checkout-steps') === '1') {
       return;
     }
     document.body.setAttribute('data-nh-checkout-steps', '1');
     syncKcoPrevent();
+    bindFieldValidation();
 
-    $(document.body).on('click.nhCheckoutNext', '#nh-checkout-next, .nh-checkout-next', function (e) {
+    $(document.body).on('click.nhSticky', '#nh-checkout-sticky-btn', function (e) {
       e.preventDefault();
-      goToPayment();
+      runFinalAction();
     });
-    $(document.body).on('click.nhCheckoutBack', '#nh-checkout-back, .nh-checkout-back', function (e) {
-      e.preventDefault();
-      goBackToDetails();
-    });
+
     $(document.body).on('click.nhPayMethod change.nhPayMethod', 'input[name="payment_method"]', function (e) {
-      if (checkoutStep() !== 'payment' || ignoreAutoPaymentClick) {
+      if (ignoreAutoPaymentClick) {
         return;
       }
-      // Woo auto-clicks the first gateway (Svea on NO/SE/DK) when none is checked.
-      // Kustom shops do not reload because preventPaymentMethodChange blocks that JS.
       if (!e.originalEvent) {
         return;
       }
       paymentChosenByCustomer = true;
       var id = String(this.value || '');
       i18n.chosenPayment = id;
-      applyCheckoutStep();
-      if (paymentIdIsSnippet(id)) {
-        reloadForSnippetGateway();
-        return;
+      if (!paymentIdIsSnippet(id)) {
+        setSnippetReady(false);
       }
+      applyCheckoutStep();
       allowSnippetGatewayReload = false;
       syncKcoPrevent();
       $(document.body).trigger('update_checkout');
-      if (snippetCheckoutPresent() || iframeMarkupPresent()) {
-        $(document.body).one('updated_checkout.nhLeaveIframe', function () {
-          window.location.reload();
-        });
-      }
+      leaveSnippetIfNeeded(id);
     });
 
     document.addEventListener('submit', function (e) {
@@ -1516,10 +1818,9 @@
       if (!form || !form.classList || !form.classList.contains('checkout')) {
         return;
       }
-      if (checkoutStep() !== 'payment') {
+      if (!validateDetailsStep(true)) {
         e.preventDefault();
         e.stopPropagation();
-        goToPayment();
         return;
       }
       if (!$('input[name="payment_method"]:checked').not(':disabled').length) {
@@ -1531,8 +1832,37 @@
       if (!enforceTermsOrHighlight()) {
         e.preventDefault();
         e.stopPropagation();
+        return;
+      }
+      var kind = paymentKind();
+      if ((kind === 'svea' || kind === 'kustom') && !iframeMarkupPresent()) {
+        e.preventDefault();
+        e.stopPropagation();
+        continueToSnippet();
       }
     }, true);
+
+    document.addEventListener('click', function (e) {
+      var paypal = e.target && e.target.closest
+        ? e.target.closest('#ppc-button, .paypal-buttons, .paypal-button-container, #paypal-button-container')
+        : null;
+      if (!paypal) {
+        return;
+      }
+      if (termsAgreed() && validateDetailsStep(true)) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      if (!termsAgreed()) {
+        markTermsError();
+      }
+    }, true);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', lockStickyAboveKeyboard);
+      window.visualViewport.addEventListener('scroll', lockStickyAboveKeyboard);
+    }
 
     if (i18n.chosenPayment || i18n.snippetCheckout || iframeMarkupPresent()) {
       paymentChosenByCustomer = true;
@@ -1556,9 +1886,14 @@
     keepPhoneCodeNative();
     hydratePhoneCombos();
     enhanceNotes();
+    enhanceOptionalRows();
+    placeShippingMethods();
     applyCheckoutStep();
     forcePairClasses();
     syncPairedAddressRows();
+    syncStickyBar();
+    syncPaypalButtons();
+    lockStickyAboveKeyboard();
   }
 
   var postcodeShipTimer = null;
@@ -1915,12 +2250,13 @@
     }, 80);
   });
   $(document.body).on('payment_method_selected', function () {
-    if (ignoreAutoPaymentClick || checkoutStep() !== 'payment') {
+    if (ignoreAutoPaymentClick) {
       applyCheckoutStep();
       return;
     }
     syncSnippetCheckout();
     enhancePaymentCards();
+    syncStickyBar();
     window.setTimeout(syncSnippetCheckout, 300);
   });
   $(document.body).on('country_to_state_changing country_to_state_changed', function () {

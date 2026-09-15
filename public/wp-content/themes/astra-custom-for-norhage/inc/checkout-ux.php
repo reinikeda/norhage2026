@@ -1,9 +1,10 @@
 <?php
 /**
- * Classic checkout UX: mobile-first layout, private/business details,
- * and field rules that work with SVEA, MakeCommerce, Kustom, PayPal, BASC.
+ * Classic checkout UX: one-page mobile-first form, private/business details,
+ * and field rules that work with SVEA, MakeCommerce, Kustom, PayPal, BACS.
  *
  * Checkout Blocks are not used. Those gateways need the shortcode checkout.
+ * Payment cards are always visible; SVEA/Kustom iframes load only after Continue.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -53,9 +54,6 @@ function nh_checkout_posted_payment_method() {
 }
 
 function nh_checkout_chosen_payment_method() {
-	if ( ! nh_checkout_is_payment_step() ) {
-		return '';
-	}
 	$posted = nh_checkout_posted_payment_method();
 	if ( $posted !== '' ) {
 		return $posted;
@@ -71,33 +69,33 @@ function nh_checkout_chosen_payment_method() {
 }
 
 /**
- * Details first, then payment. Empty until the customer clicks Next.
+ * Customer explicitly continued to a SVEA/Kustom iframe (not merely selected the card).
  *
  * @return bool
  */
-function nh_checkout_is_payment_step() {
-	$step = '';
-	if ( isset( $_POST['nh_checkout_step'] ) && is_scalar( $_POST['nh_checkout_step'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$step = sanitize_text_field( wp_unslash( (string) $_POST['nh_checkout_step'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+function nh_checkout_posted_snippet_ready() {
+	$raw = '';
+	if ( isset( $_POST['nh_checkout_snippet_ready'] ) && is_scalar( $_POST['nh_checkout_snippet_ready'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw = sanitize_text_field( wp_unslash( (string) $_POST['nh_checkout_snippet_ready'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	} elseif ( isset( $_POST['post_data'] ) && is_string( $_POST['post_data'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$form = array();
 		parse_str( wp_unslash( $_POST['post_data'] ), $form ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! empty( $form['nh_checkout_step'] ) && is_scalar( $form['nh_checkout_step'] ) ) {
-			$step = sanitize_text_field( (string) $form['nh_checkout_step'] );
+		if ( isset( $form['nh_checkout_snippet_ready'] ) && is_scalar( $form['nh_checkout_snippet_ready'] ) ) {
+			$raw = sanitize_text_field( (string) $form['nh_checkout_snippet_ready'] );
 		}
 	} elseif ( function_exists( 'WC' ) && WC()->session ) {
-		$step = (string) WC()->session->get( 'nh_checkout_step' );
+		$raw = (string) WC()->session->get( 'nh_checkout_snippet_ready' );
 	}
-	return 'payment' === $step;
+	return '1' === $raw || 'yes' === $raw || 'true' === $raw;
 }
 
 /**
- * Load Svea/Kustom iframe only after the customer is on the payment step and picked that method.
+ * Load Svea/Kustom iframe only after Continue to SVEA/Kustom, with that method selected.
  *
  * @return bool
  */
 function nh_checkout_should_load_iframe() {
-	return nh_checkout_is_payment_step() && nh_checkout_is_snippet_gateway();
+	return nh_checkout_posted_snippet_ready() && nh_checkout_is_snippet_gateway();
 }
 
 /**
@@ -173,7 +171,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
 	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
-	add_filter( 'woocommerce_order_button_text', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_order_button_text', 'nh_checkout_place_order_button_text', 30, 1 );
 	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
@@ -208,6 +206,12 @@ function nh_checkout_ux_init() {
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_required_hint', 5 );
+	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_place_order_note', 8 );
+	add_action( 'template_redirect', 'nh_checkout_handle_cancelled_payment_request', 21 );
+	add_filter( 'woocommerce_paypal_args', 'nh_checkout_paypal_cancel_args', 20 );
+	add_filter( 'woocommerce_paypal_express_checkout_available_args', 'nh_checkout_paypal_cancel_args', 20 );
+	add_action( 'woocommerce_thankyou', 'nh_checkout_thankyou_next_steps', 20 );
+	add_filter( 'woocommerce_thankyou_order_received_text', 'nh_checkout_thankyou_received_text', 20, 2 );
 	add_action( 'wp_footer', 'nh_checkout_layout_lock_css', 1 );
 	add_action( 'wp_footer', 'nh_checkout_shipping_index_boot_script', 1 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sanitize_posted_shipping', 1 );
@@ -281,12 +285,18 @@ function nh_checkout_no_default_gateway( $gateways ) {
 	if ( ! nh_is_classic_checkout_form() && ! ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) ) {
 		return $gateways;
 	}
-	if ( nh_checkout_is_payment_step() && nh_checkout_chosen_payment_method() !== '' ) {
+
+	$chosen = nh_checkout_chosen_payment_method();
+	if ( $chosen !== '' && isset( $gateways[ $chosen ] ) ) {
+		foreach ( $gateways as $id => $gateway ) {
+			if ( is_object( $gateway ) ) {
+				$gateway->chosen = ( (string) $id === $chosen );
+			}
+		}
 		return $gateways;
 	}
-	if ( nh_checkout_is_payment_step() ) {
-		nh_checkout_lock_empty_payment_choice();
-	}
+
+	nh_checkout_lock_empty_payment_choice();
 	foreach ( $gateways as $gateway ) {
 		if ( is_object( $gateway ) ) {
 			$gateway->chosen = false;
@@ -314,7 +324,7 @@ function nh_checkout_force_woo_form_until_iframe( $template, $template_name ) {
 }
 
 /**
- * Persist details vs payment step from the checkout form.
+ * Persist selected method and whether the SVEA/Kustom iframe may mount.
  *
  * @param string $post_data Serialized form.
  */
@@ -323,33 +333,26 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 		return;
 	}
 
-	$step = 'details';
-	if ( isset( $_POST['nh_checkout_step'] ) && is_scalar( $_POST['nh_checkout_step'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$step = sanitize_text_field( wp_unslash( (string) $_POST['nh_checkout_step'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-	} elseif ( is_string( $post_data ) && $post_data !== '' ) {
-		$form = array();
-		parse_str( $post_data, $form );
-		if ( ! empty( $form['nh_checkout_step'] ) && is_scalar( $form['nh_checkout_step'] ) ) {
-			$step = sanitize_text_field( (string) $form['nh_checkout_step'] );
-		}
-	}
-
-	$step = ( 'payment' === $step ) ? 'payment' : 'details';
-	WC()->session->set( 'nh_checkout_step', $step );
-
-	if ( 'details' === $step ) {
-		WC()->session->set( 'chosen_payment_method', '' );
-		nh_checkout_reset_snippet_sessions();
-		return;
-	}
-
 	$method = nh_checkout_posted_payment_method();
 	if ( $method !== '' ) {
 		WC()->session->set( 'chosen_payment_method', $method );
-		return;
+	} else {
+		$method = (string) WC()->session->get( 'chosen_payment_method' );
+		if ( $method === 'nh_none' || $method === 'undefined' ) {
+			$method = '';
+		}
+		if ( $method === '' ) {
+			nh_checkout_lock_empty_payment_choice();
+		}
 	}
 
-	nh_checkout_lock_empty_payment_choice();
+	$was_ready = ( '1' === (string) WC()->session->get( 'nh_checkout_snippet_ready' ) );
+	$ready     = nh_checkout_posted_snippet_ready() && nh_checkout_is_snippet_gateway( $method );
+	WC()->session->set( 'nh_checkout_snippet_ready', $ready ? '1' : '' );
+
+	if ( ( $was_ready && ! $ready ) || ! nh_checkout_is_snippet_gateway( $method ) ) {
+		nh_checkout_reset_snippet_sessions();
+	}
 }
 
 /**
@@ -357,9 +360,6 @@ function nh_checkout_sync_checkout_step( $post_data ) {
  */
 function nh_checkout_sync_payment_method_session() {
 	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
-		return;
-	}
-	if ( ! nh_checkout_is_payment_step() ) {
 		return;
 	}
 	$method = nh_checkout_posted_payment_method();
@@ -386,7 +386,7 @@ function nh_checkout_lock_empty_payment_choice() {
 }
 
 /**
- * Fresh checkout visit starts on the details step with no payment method selected.
+ * Fresh checkout visit: no default method, no iframe until Continue to SVEA/Kustom.
  */
 function nh_checkout_prepare_steps() {
 	if ( ! nh_is_classic_checkout_form() || wp_doing_ajax() ) {
@@ -395,12 +395,22 @@ function nh_checkout_prepare_steps() {
 	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
 		return;
 	}
-	if ( nh_checkout_is_payment_step() ) {
-		return;
+
+	$method = (string) WC()->session->get( 'chosen_payment_method' );
+	if ( $method === '' || $method === 'undefined' ) {
+		nh_checkout_lock_empty_payment_choice();
+		$method = '';
+	} elseif ( $method === 'nh_none' ) {
+		$method = '';
 	}
-	WC()->session->set( 'nh_checkout_step', 'details' );
-	WC()->session->set( 'chosen_payment_method', '' );
-	nh_checkout_reset_snippet_sessions();
+
+	$ready = ( '1' === (string) WC()->session->get( 'nh_checkout_snippet_ready' ) );
+	if ( ! $ready || ! nh_checkout_is_snippet_gateway( $method ) ) {
+		WC()->session->set( 'nh_checkout_snippet_ready', '' );
+		if ( ! nh_checkout_is_snippet_gateway( $method ) ) {
+			nh_checkout_reset_snippet_sessions();
+		}
+	}
 }
 
 /**
@@ -435,7 +445,7 @@ function nh_checkout_reset_snippet_sessions() {
  */
 function nh_checkout_keep_payment_step_on_snippet_ajax() {
 	if ( function_exists( 'WC' ) && WC()->session ) {
-		WC()->session->set( 'nh_checkout_step', 'payment' );
+		WC()->session->set( 'nh_checkout_snippet_ready', '1' );
 	}
 }
 
@@ -1405,10 +1415,12 @@ function nh_checkout_ux_body_class( $classes ) {
 	}
 	if ( nh_is_classic_checkout_form() ) {
 		$classes[] = 'nh-checkout-form';
-		$classes[] = nh_checkout_is_payment_step() ? 'nh-checkout--step-payment' : 'nh-checkout--step-details';
 	}
 	if ( nh_checkout_should_load_iframe() ) {
 		$classes[] = 'nh-checkout--snippet';
+	}
+	if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+		$classes[] = 'nh-checkout-thankyou';
 	}
 	return $classes;
 }
@@ -1467,21 +1479,44 @@ function nh_checkout_ux_assets() {
 		array(
 			'contactHeading' => __( 'Contact person', 'nh-theme' ),
 			'noteLabel'      => __( 'Add a note (optional)', 'nh-theme' ),
+			'address2Label'  => __( 'Add apartment, suite, etc.', 'nh-theme' ),
+			'contactExtra'   => __( 'Add contact person', 'nh-theme' ),
 			'summaryLabel'   => __( 'Order summary', 'nh-theme' ),
+			'summaryView'    => __( 'View order summary', 'nh-theme' ),
 			'phoneIsoCodes'   => nh_checkout_calling_codes(),
 			'phoneCodeFlags'  => nh_checkout_calling_code_flag_map(),
 			'phoneLengths'    => nh_checkout_national_digit_limits(),
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
+			'emailInvalid'    => __( 'Please enter a valid email address.', 'nh-theme' ),
+			'fieldRequired'   => __( 'Please fill in this field.', 'nh-theme' ),
 			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
 			'snippetCheckout' => nh_checkout_should_load_iframe(),
-			'checkoutStep'    => nh_checkout_is_payment_step() ? 'payment' : 'details',
+			'snippetReady'    => nh_checkout_should_load_iframe() ? '1' : '',
 			'chosenPayment'   => nh_checkout_chosen_payment_method(),
-			'nextLabel'       => __( 'Continue to payment', 'nh-theme' ),
-			'backLabel'       => __( 'Back to details', 'nh-theme' ),
+			'reviewLabel'     => __( 'Review order', 'nh-theme' ),
+			'payLabel'        => __( 'Pay %s', 'nh-theme' ),
+			'continueSvea'    => __( 'Continue to SVEA', 'nh-theme' ),
+			'continueKustom'  => __( 'Continue to Kustom', 'nh-theme' ),
+			'continuePaypal'  => __( 'Continue to PayPal', 'nh-theme' ),
+			'completeInSvea'  => __( 'Complete payment in SVEA', 'nh-theme' ),
+			'completeInKustom'=> __( 'Complete payment in Kustom', 'nh-theme' ),
 			'selectPayment'   => __( 'Please choose a payment method.', 'nh-theme' ),
 			'termsRequired'   => __( 'Please agree to the website terms and conditions to continue.', 'nh-theme' ),
+			'processingTitle' => __( 'Processing your order…', 'nh-theme' ),
+			'processingText'  => __( 'Please do not close this page.', 'nh-theme' ),
+			'sveaPreparing'   => __( 'Preparing secure SVEA payment…', 'nh-theme' ),
+			'sveaPreparingText'=> __( 'You will continue in SVEA’s secure payment window.', 'nh-theme' ),
+			'kustomPreparing' => __( 'Preparing secure Kustom payment…', 'nh-theme' ),
+			'kustomPreparingText'=> __( 'You will continue in Kustom’s secure payment window.', 'nh-theme' ),
+			'paypalRedirect'  => __( 'Taking you securely to PayPal…', 'nh-theme' ),
+			'paymentFailed'   => __( 'The payment was not completed.', 'nh-theme' ),
+			'paymentFailedText'=> __( 'Your order details are still saved. You can try again or choose another payment method.', 'nh-theme' ),
+			'paymentCancelled'=> __( 'Payment was cancelled.', 'nh-theme' ),
+			'paymentCancelledText'=> __( 'Choose another payment method or try again.', 'nh-theme' ),
 			'applyZipNonce'   => wp_create_nonce( 'nh-snippet-apply-zip' ),
 			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
+			'productsCount'   => __( '%d product', 'nh-theme' ),
+			'productsCountMany' => __( '%d products', 'nh-theme' ),
 		)
 	);
 }
@@ -1738,6 +1773,14 @@ function nh_checkout_fields( $fields ) {
 		),
 	) );
 
+	$billing['nh_section_delivery'] = array(
+		'type'     => 'nh_section',
+		'label'    => __( 'Delivery address', 'nh-theme' ),
+		'required' => false,
+		'class'    => array( 'nh-checkout-field--delivery-heading' ),
+		'priority' => 38,
+	);
+
 	nh_checkout_set_field( $billing, 'billing_country', array(
 		'class'        => array( 'form-row-first', 'nh-checkout-pair-start', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'country',
@@ -1748,6 +1791,9 @@ function nh_checkout_fields( $fields ) {
 		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'postal-code',
 		'priority'     => 50,
+		'custom_attributes' => array(
+			'inputmode' => 'numeric',
+		),
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_address_1', array(
@@ -2676,6 +2722,251 @@ function nh_checkout_terms_required_hint() {
 }
 
 /**
+ * One consent note for every payment method, directly above the final action.
+ */
+function nh_checkout_terms_place_order_note() {
+	echo '<p class="nh-checkout-place-note">' . esc_html__( 'By placing this order, you agree to the applicable purchase terms.', 'nh-theme' ) . '</p>';
+}
+
+/**
+ * @param string $gateway_id Gateway id.
+ * @return string svea|kustom|paypal|bacs|other
+ */
+function nh_checkout_gateway_kind( $gateway_id = '' ) {
+	$id = strtolower( (string) ( $gateway_id !== '' ? $gateway_id : nh_checkout_chosen_payment_method() ) );
+	if ( $id === '' ) {
+		return 'other';
+	}
+	if ( nh_checkout_is_snippet_gateway( $id ) ) {
+		if ( preg_match( '/kco|kustom|klarna/', $id ) ) {
+			return 'kustom';
+		}
+		return 'svea';
+	}
+	if ( preg_match( '/paypal|ppcp|ppec|paypal_express|paypalcp/', $id ) ) {
+		return 'paypal';
+	}
+	if ( $id === 'bacs' ) {
+		return 'bacs';
+	}
+	return 'other';
+}
+
+/**
+ * Short explanation shown on every payment card.
+ *
+ * @param WC_Payment_Gateway $gateway Gateway.
+ * @return string
+ */
+function nh_checkout_gateway_blurb( $gateway ) {
+	if ( ! is_object( $gateway ) ) {
+		return '';
+	}
+	$kind = nh_checkout_gateway_kind( $gateway->id );
+	if ( 'svea' === $kind ) {
+		return __( 'You will continue securely to SVEA to complete payment.', 'nh-theme' );
+	}
+	if ( 'kustom' === $kind ) {
+		return __( 'You will continue in Kustom’s secure payment window.', 'nh-theme' );
+	}
+	if ( 'paypal' === $kind ) {
+		return __( 'You will be taken to PayPal to log in and confirm the payment.', 'nh-theme' );
+	}
+	if ( 'bacs' === $kind ) {
+		return __( 'Pay by bank transfer. We send payment details after you place the order.', 'nh-theme' );
+	}
+	$description = is_callable( array( $gateway, 'get_description' ) ) ? wp_strip_all_tags( (string) $gateway->get_description() ) : '';
+	return nh_checkout_translate_gateway_text( $description );
+}
+
+/**
+ * Provider-specific final button label.
+ *
+ * @param string $text Default Woo button text.
+ * @return string
+ */
+function nh_checkout_place_order_button_text( $text ) {
+	$kind  = nh_checkout_gateway_kind();
+	$total = '';
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		$total = wp_strip_all_tags( (string) WC()->cart->get_total() );
+	}
+
+	if ( 'svea' === $kind ) {
+		return __( 'Continue to SVEA', 'nh-theme' );
+	}
+	if ( 'kustom' === $kind ) {
+		return __( 'Continue to Kustom', 'nh-theme' );
+	}
+	if ( 'paypal' === $kind ) {
+		return __( 'Continue to PayPal', 'nh-theme' );
+	}
+	if ( $total !== '' ) {
+		return sprintf(
+			/* translators: %s: formatted order total */
+			__( 'Pay %s', 'nh-theme' ),
+			$total
+		);
+	}
+
+	return nh_checkout_translate_gateway_text( $text );
+}
+
+/**
+ * Cart line count for the compact mobile summary.
+ *
+ * @return int
+ */
+function nh_checkout_cart_item_count() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return 0;
+	}
+	return (int) WC()->cart->get_cart_contents_count();
+}
+
+/**
+ * Compact summary line: "2 products · €49.90".
+ *
+ * @return string
+ */
+function nh_checkout_summary_compact_label() {
+	$count = nh_checkout_cart_item_count();
+	$total = ( function_exists( 'WC' ) && WC()->cart ) ? wp_strip_all_tags( (string) WC()->cart->get_total() ) : '';
+	if ( $count === 1 ) {
+		$items = __( '1 product', 'nh-theme' );
+	} else {
+		$items = sprintf(
+			/* translators: %d: number of products */
+			__( '%d products', 'nh-theme' ),
+			$count
+		);
+	}
+	if ( $total === '' ) {
+		return $items;
+	}
+	return $items . ' · ' . $total;
+}
+
+/**
+ * PayPal (and similar) cancel must return to checkout, not an empty cart.
+ *
+ * @param array $args PayPal args.
+ * @return array
+ */
+function nh_checkout_paypal_cancel_args( $args ) {
+	if ( ! is_array( $args ) ) {
+		return $args;
+	}
+	$cancel = add_query_arg( 'nh_payment_cancelled', 'paypal', wc_get_checkout_url() );
+	foreach ( array( 'cancel_return', 'cancel_url', 'cancelled_return_url' ) as $key ) {
+		if ( isset( $args[ $key ] ) ) {
+			$args[ $key ] = $cancel;
+		}
+	}
+	if ( ! isset( $args['cancel_return'] ) ) {
+		$args['cancel_return'] = $cancel;
+	}
+	return $args;
+}
+
+/**
+ * Restore checkout after PayPal/SVEA/Kustom cancellation and show a recoverable notice.
+ */
+function nh_checkout_handle_cancelled_payment_request() {
+	$cancelled = isset( $_GET['nh_payment_cancelled'] ) || isset( $_GET['cancel_order'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! $cancelled ) {
+		return;
+	}
+
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		wp_safe_redirect( add_query_arg( 'nh_payment_cancelled', '1', wc_get_checkout_url() ) );
+		exit;
+	}
+
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+	if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+		return;
+	}
+
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'nh_checkout_snippet_ready', '' );
+	}
+
+	if ( function_exists( 'wc_has_notice' ) && function_exists( 'wc_add_notice' ) ) {
+		$message = __( 'Payment was cancelled. Your order details are still saved. You can try again or choose another payment method.', 'nh-theme' );
+		if ( ! wc_has_notice( $message, 'notice' ) ) {
+			wc_add_notice( $message, 'notice' );
+		}
+	}
+}
+
+/**
+ * Do not thank the customer if payment did not succeed.
+ *
+ * @param string        $text  Default text.
+ * @param WC_Order|null $order Order.
+ * @return string
+ */
+function nh_checkout_thankyou_received_text( $text, $order ) {
+	if ( ! $order instanceof WC_Order ) {
+		return $text;
+	}
+	if ( $order->has_status( array( 'failed', 'cancelled' ) ) ) {
+		return __( 'The payment was not completed. Your order details are still saved. You can try again or choose another payment method.', 'nh-theme' );
+	}
+	if ( $order->has_status( 'pending' ) && $order->needs_payment() && 'bacs' !== $order->get_payment_method() ) {
+		return __( 'We are waiting for payment confirmation. You will receive an email when it is complete.', 'nh-theme' );
+	}
+	$name = trim( (string) $order->get_billing_first_name() );
+	if ( $name !== '' ) {
+		return sprintf(
+			/* translators: %s: customer first name */
+			__( 'Thank you, %s. Your order has been received.', 'nh-theme' ),
+			$name
+		);
+	}
+	return __( 'Thank you. Your order has been received.', 'nh-theme' );
+}
+
+/**
+ * Confirmation extras: method, email, what happens next.
+ *
+ * @param int $order_id Order id.
+ */
+function nh_checkout_thankyou_next_steps( $order_id ) {
+	$order = wc_get_order( $order_id );
+	if ( ! $order instanceof WC_Order ) {
+		return;
+	}
+	if ( $order->has_status( array( 'failed', 'cancelled' ) ) ) {
+		$pay = $order->get_checkout_payment_url();
+		echo '<p class="nh-thankyou-retry"><a class="button alt" href="' . esc_url( $pay ) . '">' . esc_html__( 'Try payment again', 'nh-theme' ) . '</a></p>';
+		return;
+	}
+
+	$title = $order->get_payment_method_title();
+	$email = $order->get_billing_email();
+	echo '<div class="nh-thankyou-panel">';
+	if ( $title ) {
+		echo '<p class="nh-thankyou-paid"><strong>' . esc_html__( 'Paid with:', 'nh-theme' ) . '</strong> ' . esc_html( $title ) . '</p>';
+	}
+	if ( $email ) {
+		echo '<p class="nh-thankyou-email"><strong>' . esc_html__( 'Confirmation sent to:', 'nh-theme' ) . '</strong> ' . esc_html( $email ) . '</p>';
+	}
+	echo '<p class="nh-thankyou-invoice">' . esc_html__( 'Your invoice will be sent to your email address.', 'nh-theme' ) . '</p>';
+	echo '<h2 class="nh-thankyou-next">' . esc_html__( 'What happens next', 'nh-theme' ) . '</h2>';
+	echo '<ol class="nh-thankyou-steps">';
+	echo '<li>' . esc_html__( 'We confirm your order.', 'nh-theme' ) . '</li>';
+	echo '<li>' . esc_html__( 'We prepare your shipment.', 'nh-theme' ) . '</li>';
+	echo '<li>' . esc_html__( 'You receive delivery updates.', 'nh-theme' ) . '</li>';
+	echo '</ol>';
+	echo '<p class="nh-thankyou-continue"><a class="button" href="' . esc_url( wc_get_page_permalink( 'shop' ) ) . '">' . esc_html__( 'Continue shopping', 'nh-theme' ) . '</a></p>';
+	echo '</div>';
+}
+
+/**
  * Gateway titles/descriptions are stored in Woo settings in English and skip gettext.
  * Run them through WooCommerce and theme translations on checkout.
  *
@@ -3387,17 +3678,12 @@ function nh_checkout_form_classes() {
 		$classes[] = 'nh-checkout--business';
 	}
 
-	if ( nh_checkout_is_payment_step() ) {
-		$classes[] = 'nh-checkout--step-payment';
+	if ( nh_checkout_should_load_iframe() ) {
+		$classes[] = 'nh-checkout--snippet';
 	} else {
-		$classes[] = 'nh-checkout--step-details';
-	}
-
-	if ( ! nh_checkout_should_load_iframe() ) {
 		return implode( ' ', array_unique( $classes ) );
 	}
 
-	$classes[] = 'nh-checkout--snippet';
 	$method    = strtolower( (string) nh_checkout_chosen_payment_method() );
 	if ( $method === 'svea_checkout' || $method === 'sco' || $method === 'sveacheckout' || preg_match( '/svea.?checkout/', $method ) ) {
 		$classes[] = 'svea-checkout';
@@ -3427,6 +3713,7 @@ function nh_checkout_render_gateway_iframe() {
 	$is_svea = ( $method === 'svea_checkout' || $method === 'sco' || $method === 'sveacheckout' || (bool) preg_match( '/svea.?checkout/', $method ) );
 
 	echo '<div class="nh-checkout-iframe" id="nh-checkout-iframe">';
+	echo '<p class="nh-checkout-iframe__status" id="nh-checkout-iframe-status">' . esc_html__( 'Loading secure payment…', 'nh-theme' ) . '</p>';
 
 	if ( $is_kco && function_exists( 'kco_wc_show_snippet' ) ) {
 		nh_checkout_kustom_maybe_recreate_for_identity( $identity );
@@ -3492,8 +3779,6 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout .kco-select-another-method,'
 		. 'html body.woocommerce-checkout a.sco-change-payment-method{display:none!important}'
 		. '@media(max-width:959px){'
-		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__main{order:-1!important}'
-		. 'html body.woocommerce-checkout.nh-checkout-form.nh-checkout--step-payment .nh-checkout-layout__aside{order:2!important}'
 		. 'html body.woocommerce-checkout .site-content>.ast-container,'
 		. 'html body.woocommerce-checkout.ast-separate-container .ast-container,'
 		. 'html body.woocommerce-checkout.ast-plain-container .ast-container{padding-left:10px!important;padding-right:10px!important}'
