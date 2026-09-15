@@ -188,6 +188,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_billing_fields', 'nh_checkout_billing_fields', 20 );
 	add_filter( 'woocommerce_checkout_fields', 'nh_checkout_fields', 999 );
 	add_filter( 'woocommerce_form_field_args', 'nh_checkout_form_field_args', 99, 3 );
+	add_filter( 'woocommerce_form_field', 'nh_checkout_fix_field_labels', 20, 4 );
 	add_filter( 'woocommerce_form_field_nh_section', 'nh_checkout_section_field', 10, 4 );
 	add_filter( 'woocommerce_form_field_tel', 'nh_checkout_phone_field_html', 10, 4 );
 	add_filter( 'woocommerce_checkout_get_value', 'nh_checkout_get_value', 10, 2 );
@@ -1948,6 +1949,54 @@ function nh_checkout_form_field_args( $args, $key, $value ) { // phpcs:ignore Ge
 	$args['class'] = $class;
 
 	return $args;
+}
+
+/**
+ * Chrome flags <label for> when the target is missing or is input[type=hidden]
+ * (hidden inputs are not labelable). Woo does this for country state fields
+ * and for the radio-group heading on customer type.
+ *
+ * @param string $field Field HTML.
+ * @param string $key   Field key.
+ * @param array  $args  Field args.
+ * @param mixed  $value Unused.
+ * @return string
+ */
+function nh_checkout_fix_field_labels( $field, $key, $args, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	if ( ! is_string( $field ) || $field === '' ) {
+		return $field;
+	}
+
+	if ( isset( $args['type'] ) && 'radio' === $args['type'] && ! empty( $args['options'] ) && is_array( $args['options'] ) ) {
+		$keys = array_keys( $args['options'] );
+		if ( isset( $keys[0] ) ) {
+			$base = isset( $args['id'] ) && $args['id'] !== '' ? (string) $args['id'] : (string) $key;
+			$first_id = $base . '_' . $keys[0];
+			$field    = preg_replace(
+				'/(<label\b[^>]*?)\sfor=(["\'])' . preg_quote( $first_id, '/' ) . '\2/',
+				'$1',
+				$field,
+				1
+			);
+		}
+	}
+
+	if ( ! preg_match_all( '/<input\b[^>]*\btype=(["\'])hidden\1[^>]*>/i', $field, $inputs ) ) {
+		return $field;
+	}
+
+	foreach ( $inputs[0] as $input_html ) {
+		if ( ! preg_match( '/\bid=(["\'])([^"\']+)\1/i', $input_html, $id_match ) ) {
+			continue;
+		}
+		$field = preg_replace(
+			'/(<label\b[^>]*?)\sfor=(["\'])' . preg_quote( $id_match[2], '/' ) . '\2/i',
+			'$1',
+			$field
+		);
+	}
+
+	return $field;
 }
 
 /**

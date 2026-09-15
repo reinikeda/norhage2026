@@ -1344,7 +1344,20 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods ul {
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 8px;
   margin: 0 0 0.5rem;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods input.shipping_method {
+  position: static !important;
+  float: none !important;
+  margin: 3px 0 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  opacity: 1 !important;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery:not(:has(.shipping_method)):not(:has(li)) {
