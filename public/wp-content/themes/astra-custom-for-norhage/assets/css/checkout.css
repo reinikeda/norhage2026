@@ -469,12 +469,12 @@ body.woocommerce-checkout.nh-checkout-form .nh-phone-combo {
 body.woocommerce-checkout.nh-checkout-form .nh-phone-prefix {
   display: flex;
   align-items: center;
-  flex: 0 0 7.75rem;
-  width: 7.75rem;
-  max-width: 7.75rem;
-  min-width: 7.75rem;
+  flex: 0 0 7.25rem;
+  width: 7.25rem;
+  max-width: 7.25rem;
+  min-width: 7.25rem;
   min-height: 48px;
-  padding: 0 0.2rem 0 0.55rem;
+  padding: 0 0.15rem 0 0.5rem;
   border: 1px solid #d7e6d8;
   border-radius: 10px;
   background: #fff;

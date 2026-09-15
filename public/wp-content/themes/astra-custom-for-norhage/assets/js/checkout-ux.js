@@ -201,22 +201,73 @@
     return '';
   }
 
-  function splitInternationalPhone(value) {
-    var raw = String(value || '').trim();
-    if (raw.indexOf('00') === 0) {
-      raw = '+' + raw.slice(2);
+  function phoneLimits(code) {
+    var map = i18n.phoneLengths || {};
+    if (map[code] && map[code].length >= 2) {
+      return { min: parseInt(map[code][0], 10), max: parseInt(map[code][1], 10) };
     }
-    if (raw.charAt(0) !== '+') {
+    return { min: 6, max: 15 };
+  }
+
+  function nationalValidForCode(code, national) {
+    code = String(code || '').replace(/\D/g, '');
+    national = String(national || '').replace(/\D/g, '');
+    if (!code || !national) {
+      return false;
+    }
+    var limits = phoneLimits(code);
+    return national.length >= limits.min && national.length <= limits.max;
+  }
+
+  function matchCallingCode(digits) {
+    digits = String(digits || '').replace(/\D/g, '');
+    if (!digits) {
       return null;
     }
-    var digits = raw.replace(/\D/g, '');
     var codes = longestCallingCodes();
     for (var i = 0; i < codes.length; i++) {
-      if (digits.indexOf(codes[i]) === 0) {
-        return { code: codes[i], national: digits.slice(codes[i].length) };
+      if (digits.indexOf(codes[i]) !== 0) {
+        continue;
+      }
+      var national = digits.slice(codes[i].length);
+      if (nationalValidForCode(codes[i], national)) {
+        return { code: codes[i], national: national };
       }
     }
     return null;
+  }
+
+  function parsePhoneInput(value, selectedCode) {
+    var raw = String(value || '').trim();
+    if (!raw) {
+      return null;
+    }
+    if (raw.indexOf('00') === 0) {
+      raw = '+' + raw.slice(2);
+    }
+    var plus = raw.charAt(0) === '+';
+    var digits = raw.replace(/\D/g, '');
+    selectedCode = String(selectedCode || '').replace(/\D/g, '');
+    if (!digits) {
+      return { code: selectedCode, national: '' };
+    }
+    var matched = matchCallingCode(digits);
+    if (plus) {
+      return matched || { code: selectedCode, national: digits };
+    }
+    if (selectedCode && nationalValidForCode(selectedCode, digits)) {
+      return { code: selectedCode, national: digits };
+    }
+    if (matched) {
+      return matched;
+    }
+    if (selectedCode && digits.indexOf(selectedCode) === 0) {
+      var rest = digits.slice(selectedCode.length);
+      if (nationalValidForCode(selectedCode, rest)) {
+        return { code: selectedCode, national: rest };
+      }
+    }
+    return { code: selectedCode, national: digits };
   }
 
   function updatePhonePrefixUI($select) {
@@ -228,40 +279,33 @@
     $select.toggleClass('is-empty', !code);
   }
 
-  function extractDialFromInput($input, $select) {
-    if (!$input.length || !$select.length) {
-      return;
-    }
-    var parsed = splitInternationalPhone($input.val());
+  function applyParsedPhone($input, $select, parsed) {
     if (!parsed) {
       return;
     }
-    if ($select.find('option[value="' + parsed.code + '"]').length) {
+    if (parsed.code && $select.find('option[value="' + parsed.code + '"]').length) {
       $select.val(parsed.code);
     }
-    if (String($input.val()) !== String(parsed.national)) {
+    if (parsed.national !== undefined && String($input.val()) !== String(parsed.national)) {
       $input.val(parsed.national);
     }
     updatePhonePrefixUI($select);
   }
 
-  function phoneLimits(code) {
-    var map = i18n.phoneLengths || {};
-    if (map[code] && map[code].length >= 2) {
-      return { min: parseInt(map[code][0], 10), max: parseInt(map[code][1], 10) };
+  function extractDialFromInput($input, $select) {
+    if (!$input.length || !$select.length) {
+      return;
     }
-    return { min: 6, max: 15 };
+    var parsed = parsePhoneInput($input.val(), $select.val());
+    if (!parsed || !parsed.code || !nationalValidForCode(parsed.code, parsed.national)) {
+      return;
+    }
+    applyParsedPhone($input, $select, parsed);
   }
 
   function applyPhoneMaxlength($combo) {
-    var $select = $combo.find('select.nh-phone-code');
     var $input = $combo.find('input.input-text, input[type="tel"]');
-    var raw = String($input.val() || '');
-    if (raw.charAt(0) === '+' || raw.indexOf('00') === 0) {
-      $input.attr('maxlength', 20);
-      return;
-    }
-    $input.attr('maxlength', String(phoneLimits($.trim($select.val() || '')).max));
+    $input.attr('maxlength', 16);
   }
 
   function phoneComboIsValid($combo, required) {
@@ -271,14 +315,13 @@
     if (raw === '') {
       return !required;
     }
-    var parsed = splitInternationalPhone(raw);
-    var code = parsed ? parsed.code : $.trim($select.val() || '');
-    var national = parsed ? parsed.national : raw.replace(/\D/g, '');
+    var parsed = parsePhoneInput(raw, $select.val());
+    var code = parsed && parsed.code ? parsed.code : $.trim($select.val() || '');
+    var national = parsed && parsed.national ? String(parsed.national).replace(/\D/g, '') : raw.replace(/\D/g, '');
     if (!code || !national) {
       return false;
     }
-    var limits = phoneLimits(code);
-    return national.length >= limits.min && national.length <= limits.max;
+    return nationalValidForCode(code, national);
   }
 
   function setPhoneComboState($combo, ok) {
@@ -356,14 +399,10 @@
     $(document.body).on('change.nhPhoneCode', '.nh-phone-code', function () {
       var $select = $(this);
       var $combo = $select.closest('.nh-phone-combo');
+      var $input = $combo.find('input.input-text, input[type="tel"]');
+      extractDialFromInput($input, $select);
       updatePhonePrefixUI($select);
       applyPhoneMaxlength($combo);
-      var $input = $combo.find('input.input-text, input[type="tel"]');
-      var digits = String($input.val() || '').replace(/\D/g, '');
-      var max = phoneLimits($.trim($select.val() || '')).max;
-      if (digits.length > max) {
-        $input.val(digits.slice(0, max));
-      }
       if ($.trim($input.val() || '') !== '') {
         validatePhoneCombo($combo, comboIsRequired($combo), true);
       }
@@ -376,10 +415,6 @@
       var raw = String($input.val() || '');
       if (raw.charAt(0) !== '+' && raw.indexOf('00') !== 0) {
         var digits = raw.replace(/\D/g, '');
-        var max = phoneLimits($.trim($select.val() || '')).max;
-        if (digits.length > max) {
-          digits = digits.slice(0, max);
-        }
         if (digits !== raw) {
           $input.val(digits);
         }
@@ -392,13 +427,20 @@
     $(document.body).off('blur.nhPhoneValidate', '.nh-phone-combo input');
     $(document.body).on('blur.nhPhoneValidate', '.nh-phone-combo input', function () {
       var $combo = $(this).closest('.nh-phone-combo');
+      var $select = $combo.find('select.nh-phone-code');
+      var $input = $combo.find('input.input-text, input[type="tel"]');
+      extractDialFromInput($input, $select);
       ensureCallingCodeFromCountry($combo);
       validatePhoneCombo($combo, comboIsRequired($combo), true);
     });
     $('form.checkout').off('checkout_place_order.nhPhone');
     $('form.checkout').on('checkout_place_order.nhPhone', function () {
       $('.nh-phone-combo').each(function () {
-        ensureCallingCodeFromCountry($(this));
+        var $combo = $(this);
+        var $select = $combo.find('select.nh-phone-code');
+        var $input = $combo.find('input.input-text, input[type="tel"]');
+        extractDialFromInput($input, $select);
+        ensureCallingCodeFromCountry($combo);
       });
       return validateAllPhones(true);
     });
