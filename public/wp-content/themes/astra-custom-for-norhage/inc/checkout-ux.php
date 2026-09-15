@@ -1791,9 +1791,6 @@ function nh_checkout_fields( $fields ) {
 		'class'        => array( 'form-row-last', 'nh-checkout-pair-end', 'address-field', 'update_totals_on_change' ),
 		'autocomplete' => 'postal-code',
 		'priority'     => 50,
-		'custom_attributes' => array(
-			'inputmode' => 'numeric',
-		),
 	) );
 
 	nh_checkout_set_field( $billing, 'billing_address_1', array(
