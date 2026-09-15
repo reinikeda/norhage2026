@@ -1,6 +1,6 @@
 <?php
 /**
- * Classic checkout form — details first, then payment radios and optional iframe.
+ * Classic checkout form — one page, contact then delivery then payment.
  *
  * @see     https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
@@ -18,9 +18,11 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 	return;
 }
 
-$cart_total = ( function_exists( 'WC' ) && WC()->cart ) ? WC()->cart->get_total() : '';
-$form_class = function_exists( 'nh_checkout_form_classes' ) ? nh_checkout_form_classes() : 'checkout woocommerce-checkout nh-checkout-form-el';
-$nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_is_payment_step() ) ? 'payment' : 'details';
+$cart_total     = ( function_exists( 'WC' ) && WC()->cart ) ? WC()->cart->get_total() : '';
+$form_class     = function_exists( 'nh_checkout_form_classes' ) ? nh_checkout_form_classes() : 'checkout woocommerce-checkout nh-checkout-form-el';
+$snippet_ready  = ( function_exists( 'nh_checkout_should_load_iframe' ) && nh_checkout_should_load_iframe() ) ? '1' : '';
+$compact_label  = function_exists( 'nh_checkout_summary_compact_label' ) ? nh_checkout_summary_compact_label() : wp_strip_all_tags( $cart_total );
+$item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout_cart_item_count() : 0;
 ?>
 
 <form name="checkout" method="post" class="<?php echo esc_attr( $form_class ); ?>" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" aria-label="<?php echo esc_attr__( 'Checkout', 'woocommerce' ); ?>" autocomplete="on">
@@ -31,8 +33,9 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 
 			<section class="nh-checkout-summary is-open" aria-labelledby="order_review_heading">
 				<button type="button" class="nh-checkout-summary-toggle" aria-expanded="true" aria-controls="nh-checkout-summary-body">
-					<span class="nh-checkout-summary-toggle__label"><?php esc_html_e( 'Order summary', 'nh-theme' ); ?></span>
+					<span class="nh-checkout-summary-toggle__label"><?php echo esc_html( $compact_label ); ?></span>
 					<span class="nh-checkout-summary-toggle__meta">
+						<span class="nh-checkout-summary-toggle__view"><?php esc_html_e( 'View order summary', 'nh-theme' ); ?></span>
 						<span class="nh-checkout-summary-toggle__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
 						<span class="nh-checkout-summary-toggle__shipping"><?php echo wp_kses_post( function_exists( 'nh_checkout_summary_shipping_html' ) ? nh_checkout_summary_shipping_html() : '' ); ?></span>
 					</span>
@@ -71,22 +74,18 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 
 			<?php endif; ?>
 
+			<section class="nh-checkout-delivery" id="nh-checkout-delivery" aria-labelledby="nh-checkout-delivery-title">
+				<h3 class="nh-checkout-section__title" id="nh-checkout-delivery-title"><?php esc_html_e( 'Delivery method', 'nh-theme' ); ?></h3>
+				<div class="nh-checkout-delivery__methods" id="nh-checkout-shipping-mount"></div>
+			</section>
+
 			<div id="kco-extra-checkout-fields"></div>
 
-			<input type="hidden" name="nh_checkout_step" id="nh_checkout_step" value="<?php echo esc_attr( $nh_step ); ?>" />
-
-			<div class="nh-checkout-step-actions nh-checkout-step-actions--details">
-				<button type="button" class="button alt nh-checkout-next" id="nh-checkout-next">
-					<?php esc_html_e( 'Continue to payment', 'nh-theme' ); ?>
-				</button>
-			</div>
+			<input type="hidden" name="nh_checkout_snippet_ready" id="nh_checkout_snippet_ready" value="<?php echo esc_attr( $snippet_ready ); ?>" />
 
 			<section class="nh-checkout-payment" id="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'nh-theme' ); ?>">
-				<button type="button" class="nh-checkout-back" id="nh-checkout-back">
-					<?php esc_html_e( 'Back to details', 'nh-theme' ); ?>
-				</button>
-				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment', 'nh-theme' ); ?></h3>
-				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay', 'nh-theme' ); ?></p>
+				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment method', 'nh-theme' ); ?></h3>
+				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay. You can complete your details above first.', 'nh-theme' ); ?></p>
 				<?php do_action( 'nh_checkout_payment' ); ?>
 				<?php
 				if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
@@ -97,6 +96,24 @@ $nh_step    = ( function_exists( 'nh_checkout_is_payment_step' ) && nh_checkout_
 		</div>
 	</div>
 
+	<div class="nh-checkout-status" id="nh-checkout-status" hidden>
+		<p class="nh-checkout-status__title" id="nh-checkout-status-title"></p>
+		<p class="nh-checkout-status__text" id="nh-checkout-status-text"></p>
+	</div>
+
+	<div class="nh-checkout-sticky" id="nh-checkout-sticky">
+		<div class="nh-checkout-sticky__total">
+			<span class="nh-checkout-sticky__label"><?php esc_html_e( 'Total', 'nh-theme' ); ?></span>
+			<span class="nh-checkout-sticky__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
+		</div>
+		<button type="button" class="button alt nh-checkout-sticky__btn" id="nh-checkout-sticky-btn">
+			<?php esc_html_e( 'Review order', 'nh-theme' ); ?>
+		</button>
+	</div>
+
 </form>
 
-<?php do_action( 'woocommerce_after_checkout_form', $checkout ); ?>
+<?php
+unset( $item_count );
+do_action( 'woocommerce_after_checkout_form', $checkout );
+?>

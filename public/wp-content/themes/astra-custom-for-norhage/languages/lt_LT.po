@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-07 15:24+0300\n"
+"PO-Revision-Date: 2026-09-15 10:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -1887,6 +1887,206 @@ msgstr "Įveskite teisingą kontaktinį el. paštą."
 
 msgid "Please enter a valid phone number."
 msgstr "Įveskite teisingą telefono numerį."
+
+#: inc/checkout-ux.php
+msgid "Contact information"
+msgstr "Kontaktai"
+
+#: inc/checkout-ux.php
+msgid "Delivery address"
+msgstr "Pristatymo adresas"
+
+#: inc/checkout-ux.php
+msgid "Delivery method"
+msgstr "Pristatymo būdas"
+
+#: inc/checkout-ux.php
+msgid "Payment method"
+msgstr "Mokėjimo būdas"
+
+#: inc/checkout-ux.php
+msgid "View order summary"
+msgstr "Peržiūrėti užsakymo santrauką"
+
+#: inc/checkout-ux.php
+msgid "Choose how you want to pay. You can complete your details above first."
+msgstr "Pasirinkite, kaip norite mokėti. Pirmiausia galite užpildyti duomenis aukščiau."
+
+#: inc/checkout-ux.php
+msgid "Review order"
+msgstr "Peržiūrėti užsakymą"
+
+#: inc/checkout-ux.php
+msgid "Add apartment, suite, etc."
+msgstr "Pridėti butą, korpusą ir pan."
+
+#: inc/checkout-ux.php
+msgid "Add contact person"
+msgstr "Pridėti kontaktinį asmenį"
+
+#: inc/checkout-ux.php
+msgid "Please fill in this field."
+msgstr "Užpildykite šį lauką."
+
+#: inc/checkout-ux.php
+#. translators: %s: formatted order total
+msgid "Pay %s"
+msgstr "Mokėti %s"
+
+#: inc/checkout-ux.php
+msgid "Continue to SVEA"
+msgstr "Tęsti su SVEA"
+
+#: inc/checkout-ux.php
+msgid "Continue to Kustom"
+msgstr "Tęsti su Kustom"
+
+#: inc/checkout-ux.php
+msgid "Continue to PayPal"
+msgstr "Tęsti su PayPal"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in SVEA"
+msgstr "Užbaikite mokėjimą SVEA"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in Kustom"
+msgstr "Užbaikite mokėjimą Kustom"
+
+#: inc/checkout-ux.php
+msgid "Processing your order…"
+msgstr "Apdorojame jūsų užsakymą…"
+
+#: inc/checkout-ux.php
+msgid "Please do not close this page."
+msgstr "Neuždarykite šio puslapio."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure SVEA payment…"
+msgstr "Ruošiame saugų SVEA mokėjimą…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in SVEA’s secure payment window."
+msgstr "Tęsite SVEA saugiame mokėjimo lange."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure Kustom payment…"
+msgstr "Ruošiame saugų Kustom mokėjimą…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in Kustom’s secure payment window."
+msgstr "Tęsite Kustom saugiame mokėjimo lange."
+
+#: inc/checkout-ux.php
+msgid "Taking you securely to PayPal…"
+msgstr "Saugiai nukreipiame į PayPal…"
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed."
+msgstr "Mokėjimas nebuvo užbaigtas."
+
+#: inc/checkout-ux.php
+msgid "Your order details are still saved. You can try again or choose another payment method."
+msgstr "Jūsų užsakymo duomenys vis dar išsaugoti. Galite bandyti dar kartą arba pasirinkti kitą mokėjimo būdą."
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled."
+msgstr "Mokėjimas atšauktas."
+
+#: inc/checkout-ux.php
+msgid "Choose another payment method or try again."
+msgstr "Pasirinkite kitą mokėjimo būdą arba bandykite dar kartą."
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d product"
+msgstr "%d prekė"
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d products"
+msgstr "%d prekės"
+
+#: inc/checkout-ux.php
+msgid "1 product"
+msgstr "1 prekė"
+
+#: inc/checkout-ux.php
+msgid "By placing this order, you agree to the applicable purchase terms."
+msgstr "Pateikdami šį užsakymą sutinkate su taikomomis pirkimo sąlygomis."
+
+#: inc/checkout-ux.php
+msgid "You will continue securely to SVEA to complete payment."
+msgstr "Saugiai tęsite su SVEA, kad užbaigtumėte mokėjimą."
+
+#: inc/checkout-ux.php
+msgid "You will be taken to PayPal to log in and confirm the payment."
+msgstr "Būsite nukreipti į PayPal, kad prisijungtumėte ir patvirtintumėte mokėjimą."
+
+#: inc/checkout-ux.php
+msgid "Pay by bank transfer. We send payment details after you place the order."
+msgstr "Mokėkite banko pavedimu. Mokėjimo duomenis atsiųsime po užsakymo pateikimo."
+
+#: inc/checkout-ux.php
+msgid "Loading secure payment…"
+msgstr "Kraunamas saugus mokėjimas…"
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Mokėjimas atšauktas. Jūsų užsakymo duomenys vis dar išsaugoti. Galite bandyti dar kartą arba pasirinkti kitą mokėjimo būdą."
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Mokėjimas nebuvo užbaigtas. Jūsų užsakymo duomenys vis dar išsaugoti. Galite bandyti dar kartą arba pasirinkti kitą mokėjimo būdą."
+
+#: inc/checkout-ux.php
+msgid "We are waiting for payment confirmation. You will receive an email when it is complete."
+msgstr "Laukiame mokėjimo patvirtinimo. Kai jis bus gautas, gausite el. laišką."
+
+#: inc/checkout-ux.php
+#. translators: %s: customer first name
+msgid "Thank you, %s. Your order has been received."
+msgstr "Ačiū, %s. Jūsų užsakymas gautas."
+
+#: inc/checkout-ux.php
+msgid "Thank you. Your order has been received."
+msgstr "Ačiū. Jūsų užsakymas gautas."
+
+#: inc/checkout-ux.php
+msgid "Try payment again"
+msgstr "Bandyti mokėti dar kartą"
+
+#: inc/checkout-ux.php
+msgid "Paid with:"
+msgstr "Apmokėta:"
+
+#: inc/checkout-ux.php
+msgid "Confirmation sent to:"
+msgstr "Patvirtinimas išsiųstas:"
+
+#: inc/checkout-ux.php
+msgid "Your invoice will be sent to your email address."
+msgstr "Sąskaita bus išsiųsta jūsų el. pašto adresu."
+
+#: inc/checkout-ux.php
+msgid "What happens next"
+msgstr "Kas vyks toliau"
+
+#: inc/checkout-ux.php
+msgid "We confirm your order."
+msgstr "Patvirtiname jūsų užsakymą."
+
+#: inc/checkout-ux.php
+msgid "We prepare your shipment."
+msgstr "Ruošiame siuntą."
+
+#: inc/checkout-ux.php
+msgid "You receive delivery updates."
+msgstr "Gausite pristatymo naujienas."
+
+#: inc/checkout-ux.php
+msgid "Continue shopping"
+msgstr "Tęsti apsipirkimą"
 
 msgid "Breadcrumbs"
 msgstr "Naršymo kelias"

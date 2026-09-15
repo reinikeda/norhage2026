@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-07 15:24+0300\n"
+"PO-Revision-Date: 2026-09-15 10:00+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: \n"
 "Language: fi\n"
@@ -1887,6 +1887,206 @@ msgstr "Anna kelvollinen yhteyssähköposti."
 
 msgid "Please enter a valid phone number."
 msgstr "Anna kelvollinen puhelinnumero."
+
+#: inc/checkout-ux.php
+msgid "Contact information"
+msgstr "Yhteystiedot"
+
+#: inc/checkout-ux.php
+msgid "Delivery address"
+msgstr "Toimitusosoite"
+
+#: inc/checkout-ux.php
+msgid "Delivery method"
+msgstr "Toimitustapa"
+
+#: inc/checkout-ux.php
+msgid "Payment method"
+msgstr "Maksutapa"
+
+#: inc/checkout-ux.php
+msgid "View order summary"
+msgstr "Näytä tilauksen yhteenveto"
+
+#: inc/checkout-ux.php
+msgid "Choose how you want to pay. You can complete your details above first."
+msgstr "Valitse, miten haluat maksaa. Voit täyttää tietosi yllä ensin."
+
+#: inc/checkout-ux.php
+msgid "Review order"
+msgstr "Tarkista tilaus"
+
+#: inc/checkout-ux.php
+msgid "Add apartment, suite, etc."
+msgstr "Lisää huoneisto, kerros jne."
+
+#: inc/checkout-ux.php
+msgid "Add contact person"
+msgstr "Lisää yhteyshenkilö"
+
+#: inc/checkout-ux.php
+msgid "Please fill in this field."
+msgstr "Täytä tämä kenttä."
+
+#: inc/checkout-ux.php
+#. translators: %s: formatted order total
+msgid "Pay %s"
+msgstr "Maksa %s"
+
+#: inc/checkout-ux.php
+msgid "Continue to SVEA"
+msgstr "Jatka SVEAan"
+
+#: inc/checkout-ux.php
+msgid "Continue to Kustom"
+msgstr "Jatka Kustomiin"
+
+#: inc/checkout-ux.php
+msgid "Continue to PayPal"
+msgstr "Jatka PayPaliin"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in SVEA"
+msgstr "Viimeistele maksu SVEAssa"
+
+#: inc/checkout-ux.php
+msgid "Complete payment in Kustom"
+msgstr "Viimeistele maksu Kustomissa"
+
+#: inc/checkout-ux.php
+msgid "Processing your order…"
+msgstr "Käsittelemme tilaustasi…"
+
+#: inc/checkout-ux.php
+msgid "Please do not close this page."
+msgstr "Älä sulje tätä sivua."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure SVEA payment…"
+msgstr "Valmistellaan turvallista SVEA-maksua…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in SVEA’s secure payment window."
+msgstr "Jatkat SVEAn turvallisessa maksuikkunassa."
+
+#: inc/checkout-ux.php
+msgid "Preparing secure Kustom payment…"
+msgstr "Valmistellaan turvallista Kustom-maksua…"
+
+#: inc/checkout-ux.php
+msgid "You will continue in Kustom’s secure payment window."
+msgstr "Jatkat Kustomin turvallisessa maksuikkunassa."
+
+#: inc/checkout-ux.php
+msgid "Taking you securely to PayPal…"
+msgstr "Siirryt turvallisesti PayPaliin…"
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed."
+msgstr "Maksua ei suoritettu."
+
+#: inc/checkout-ux.php
+msgid "Your order details are still saved. You can try again or choose another payment method."
+msgstr "Tilaustietosi on tallennettu. Voit yrittää uudelleen tai valita toisen maksutavan."
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled."
+msgstr "Maksu peruttiin."
+
+#: inc/checkout-ux.php
+msgid "Choose another payment method or try again."
+msgstr "Valitse toinen maksutapa tai yritä uudelleen."
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d product"
+msgstr "%d tuote"
+
+#: inc/checkout-ux.php
+#. translators: %d: product quantity
+msgid "%d products"
+msgstr "%d tuotetta"
+
+#: inc/checkout-ux.php
+msgid "1 product"
+msgstr "1 tuote"
+
+#: inc/checkout-ux.php
+msgid "By placing this order, you agree to the applicable purchase terms."
+msgstr "Tekemällä tämän tilauksen hyväksyt voimassa olevat ostoehdot."
+
+#: inc/checkout-ux.php
+msgid "You will continue securely to SVEA to complete payment."
+msgstr "Jatkat turvallisesti SVEAan viimeistelemään maksun."
+
+#: inc/checkout-ux.php
+msgid "You will be taken to PayPal to log in and confirm the payment."
+msgstr "Sinut ohjataan PayPaliin kirjautumaan ja vahvistamaan maksu."
+
+#: inc/checkout-ux.php
+msgid "Pay by bank transfer. We send payment details after you place the order."
+msgstr "Maksa tilisiirrolla. Lähetämme maksutiedot, kun olet tehnyt tilauksen."
+
+#: inc/checkout-ux.php
+msgid "Loading secure payment…"
+msgstr "Ladataan turvallista maksua…"
+
+#: inc/checkout-ux.php
+msgid "Payment was cancelled. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Maksu peruttiin. Tilaustietosi on tallennettu. Voit yrittää uudelleen tai valita toisen maksutavan."
+
+#: inc/checkout-ux.php
+msgid "The payment was not completed. Your order details are still saved. You can try again or choose another payment method."
+msgstr "Maksua ei suoritettu. Tilaustietosi on tallennettu. Voit yrittää uudelleen tai valita toisen maksutavan."
+
+#: inc/checkout-ux.php
+msgid "We are waiting for payment confirmation. You will receive an email when it is complete."
+msgstr "Odotamme maksun vahvistusta. Saat sähköpostin, kun se on valmis."
+
+#: inc/checkout-ux.php
+#. translators: %s: customer first name
+msgid "Thank you, %s. Your order has been received."
+msgstr "Kiitos, %s. Tilauksesi on vastaanotettu."
+
+#: inc/checkout-ux.php
+msgid "Thank you. Your order has been received."
+msgstr "Kiitos. Tilauksesi on vastaanotettu."
+
+#: inc/checkout-ux.php
+msgid "Try payment again"
+msgstr "Yritä maksua uudelleen"
+
+#: inc/checkout-ux.php
+msgid "Paid with:"
+msgstr "Maksettu:"
+
+#: inc/checkout-ux.php
+msgid "Confirmation sent to:"
+msgstr "Vahvistus lähetetty osoitteeseen:"
+
+#: inc/checkout-ux.php
+msgid "Your invoice will be sent to your email address."
+msgstr "Lasku lähetetään sähköpostiosoitteeseesi."
+
+#: inc/checkout-ux.php
+msgid "What happens next"
+msgstr "Mitä tapahtuu seuraavaksi"
+
+#: inc/checkout-ux.php
+msgid "We confirm your order."
+msgstr "Vahvistamme tilauksesi."
+
+#: inc/checkout-ux.php
+msgid "We prepare your shipment."
+msgstr "Valmistelemme lähetyksesi."
+
+#: inc/checkout-ux.php
+msgid "You receive delivery updates."
+msgstr "Saat päivityksiä toimituksesta."
+
+#: inc/checkout-ux.php
+msgid "Continue shopping"
+msgstr "Jatka ostoksia"
 
 msgid "Breadcrumbs"
 msgstr "Murupolku"
