@@ -170,7 +170,8 @@ function nh_checkout_ux_init() {
 	add_action( 'wp', 'nh_checkout_restore_identity_on_checkout', 6 );
 	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
 	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
-	add_filter( 'woocommerce_gateway_description', 'nh_checkout_translate_gateway_text', 20, 1 );
+	add_filter( 'woocommerce_gateway_description', 'nh_checkout_gateway_description', 20, 2 );
+	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_prepare_payment_gateway_copy', 1000 );
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_place_order_button_text', 30, 1 );
 	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
@@ -2868,6 +2869,64 @@ function nh_checkout_gateway_kind( $gateway_id = '' ) {
 }
 
 /**
+ * Copy shown on the SVEA card and in its payment box.
+ *
+ * Replaces the plugin default (“Pay with Svea Checkout. Redirecting…”) which
+ * makes it look like SVEA is already loading. The iframe only appears after
+ * Continue to SVEA.
+ *
+ * @return string
+ */
+function nh_checkout_svea_payment_copy() {
+	return __( 'You will continue securely to SVEA to complete payment.', 'nh-theme' );
+}
+
+/**
+ * Gateway description on the checkout payment box.
+ *
+ * @param string $description Gateway description.
+ * @param string $gateway_id  Gateway id.
+ * @return string
+ */
+function nh_checkout_gateway_description( $description, $gateway_id = '' ) {
+	if ( 'svea' === nh_checkout_gateway_kind( $gateway_id ) ) {
+		return nh_checkout_svea_payment_copy();
+	}
+	return nh_checkout_translate_gateway_text( $description );
+}
+
+/**
+ * Keep SVEA’s stored description/button in sync so payment_fields() cannot
+ * still print “Redirecting…”, and so WooCommerce’s data-order_button_text
+ * stays “Continue to SVEA” after a method change.
+ *
+ * @param array<string, WC_Payment_Gateway> $gateways Available gateways.
+ * @return array<string, WC_Payment_Gateway>
+ */
+function nh_checkout_prepare_payment_gateway_copy( $gateways ) {
+	if ( ! is_array( $gateways ) ) {
+		return $gateways;
+	}
+
+	foreach ( $gateways as $id => $gateway ) {
+		if ( ! is_object( $gateway ) ) {
+			continue;
+		}
+		$kind = nh_checkout_gateway_kind( is_string( $id ) ? $id : $gateway->id );
+		if ( 'svea' === $kind ) {
+			$gateway->description       = nh_checkout_svea_payment_copy();
+			$gateway->order_button_text = __( 'Continue to SVEA', 'nh-theme' );
+		} elseif ( 'kustom' === $kind ) {
+			$gateway->order_button_text = __( 'Continue to Kustom', 'nh-theme' );
+		} elseif ( 'paypal' === $kind ) {
+			$gateway->order_button_text = __( 'Continue to PayPal', 'nh-theme' );
+		}
+	}
+
+	return $gateways;
+}
+
+/**
  * Short explanation shown on every payment card.
  *
  * @param WC_Payment_Gateway $gateway Gateway.
@@ -2879,7 +2938,7 @@ function nh_checkout_gateway_blurb( $gateway ) {
 	}
 	$kind = nh_checkout_gateway_kind( $gateway->id );
 	if ( 'svea' === $kind ) {
-		return __( 'You will continue securely to SVEA to complete payment.', 'nh-theme' );
+		return nh_checkout_svea_payment_copy();
 	}
 	if ( 'kustom' === $kind ) {
 		return __( 'You will continue in Kustom’s secure payment window.', 'nh-theme' );
