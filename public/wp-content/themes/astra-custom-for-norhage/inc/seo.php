@@ -7,6 +7,12 @@
  *
  * Yoast SEO is installed on the servers (not in this repo). Filters no-op if Yoast is off.
  *
+ * Checkout /kasse/ → cart /handlekurv/ is WooCommerce core, not Cloudflare,
+ * robots.txt, or “Redirect to the cart page after successful addition”.
+ * An empty cart (crawlers, first visit) 302s checkout via wp_safe_redirect().
+ * That 302 must stay temporary: a 301 would teach caches/browsers that
+ * checkout permanently moved to cart. Do not “fix” it by changing the status.
+ *
  * Server-side (not in git) still required for full SEO:
  *   - Cloudflare Managed robots.txt Disallows GPTBot, ClaudeBot, Google-Extended,
  *     Applebot-Extended, Amazonbot, Bytespider, CCBot, meta-externalagent.
@@ -444,6 +450,26 @@ function nh_seo_filter_llmstxt_link_description( $description, $post_id = 0, $po
 add_filter( 'wpseo_llmstxt_link_description', 'nh_seo_filter_llmstxt_link_description', 10, 3 );
 
 /**
+ * WooCommerce / wishlist page IDs that must not be advertised to crawlers.
+ *
+ * @return int[]
+ */
+function nh_seo_utility_page_ids() {
+	$ids = array(
+		(int) get_option( 'yith_wcwl_wishlist_page_id' ),
+		(int) get_option( 'tinvwl-page' ),
+	);
+
+	if ( function_exists( 'wc_get_page_id' ) ) {
+		$ids[] = (int) wc_get_page_id( 'cart' );
+		$ids[] = (int) wc_get_page_id( 'checkout' );
+		$ids[] = (int) wc_get_page_id( 'myaccount' );
+	}
+
+	return array_values( array_unique( array_filter( $ids ) ) );
+}
+
+/**
  * Cart / checkout / account / wishlist should not be recommended to LLMs or crawlers as content.
  *
  * @param WP_Post $post Post.
@@ -459,32 +485,116 @@ function nh_seo_is_utility_page( $post ) {
 		return true;
 	}
 
-	$wishlist_ids = array_filter(
-		array(
-			(int) get_option( 'yith_wcwl_wishlist_page_id' ),
-			(int) get_option( 'tinvwl-page' ),
-		)
-	);
-	if ( in_array( (int) $post->ID, $wishlist_ids, true ) ) {
-		return true;
+	return in_array( (int) $post->ID, nh_seo_utility_page_ids(), true );
+}
+
+/**
+ * Public URL paths for utility pages (leading slash, trailing slash).
+ *
+ * @return string[]
+ */
+function nh_seo_utility_disallow_paths() {
+	$paths = array();
+
+	foreach ( nh_seo_utility_page_ids() as $id ) {
+		$url  = get_permalink( $id );
+		$path = $url ? (string) wp_parse_url( $url, PHP_URL_PATH ) : '';
+		$path = untrailingslashit( $path );
+		if ( $path === '' || $path === '/' ) {
+			continue;
+		}
+		$paths[] = $path . '/';
 	}
 
-	if ( function_exists( 'wc_get_page_id' ) ) {
-		$page_id = (int) $post->ID;
-		$ids     = array_filter(
-			array(
-				(int) wc_get_page_id( 'cart' ),
-				(int) wc_get_page_id( 'checkout' ),
-				(int) wc_get_page_id( 'myaccount' ),
-			)
-		);
-		if ( in_array( $page_id, $ids, true ) ) {
-			return true;
+	return array_values( array_unique( $paths ) );
+}
+
+/**
+ * Keep cart / checkout / account / wishlist out of robots.txt crawls.
+ *
+ * Empty checkout 302s to cart (Woo core). Disallowing the URLs stops audit
+ * bots from following sitewide leftovers into that redirect.
+ *
+ * @param string $output Robots.txt body.
+ * @param bool   $public Whether the blog is public.
+ * @return string
+ */
+function nh_seo_robots_txt( $output, $public ) {
+	if ( ! $public ) {
+		return $output;
+	}
+
+	$paths = nh_seo_utility_disallow_paths();
+	if ( empty( $paths ) ) {
+		return $output;
+	}
+
+	$block = array( '', '# WooCommerce cart / checkout / account (session pages, not content)' );
+	foreach ( $paths as $path ) {
+		$line = 'Disallow: ' . $path;
+		if ( false === strpos( $output, $line ) ) {
+			$block[] = $line;
 		}
 	}
 
-	return false;
+	if ( count( $block ) < 3 ) {
+		return $output;
+	}
+
+	return rtrim( (string) $output ) . "\n" . implode( "\n", $block ) . "\n";
 }
+add_filter( 'robots_txt', 'nh_seo_robots_txt', 20, 2 );
+
+/**
+ * Astra Header Builder still prints a CSS-hidden mobile nav. With no menu
+ * assigned it falls back to listing every published page, including Checkout.
+ * Crawlers then request empty /kasse/ and WooCommerce 302s to the cart.
+ *
+ * @param array<string, mixed> $args wp_nav_menu args.
+ * @return array<string, mixed>
+ */
+function nh_seo_disable_page_list_menu_fallback( $args ) {
+	if ( ! is_array( $args ) ) {
+		return $args;
+	}
+
+	$cb = isset( $args['fallback_cb'] ) ? $args['fallback_cb'] : 'wp_page_menu';
+	if ( $cb === false || $cb === '' || $cb === '__return_empty_string' || $cb === '__return_false' ) {
+		return $args;
+	}
+
+	$name = '';
+	if ( is_string( $cb ) ) {
+		$name = $cb;
+	} elseif ( is_array( $cb ) && isset( $cb[0], $cb[1] ) ) {
+		$class = is_object( $cb[0] ) ? get_class( $cb[0] ) : (string) $cb[0];
+		$name  = $class . '::' . (string) $cb[1];
+	}
+
+	$blocked = array(
+		'wp_page_menu',
+		'Astra_Walker_Page::fallback',
+		'astra_fallback_menu',
+	);
+	if ( in_array( $name, $blocked, true ) || false !== stripos( $name, 'Walker_Page' ) ) {
+		$args['fallback_cb'] = false;
+	}
+
+	return $args;
+}
+add_filter( 'wp_nav_menu_args', 'nh_seo_disable_page_list_menu_fallback', 99 );
+
+/**
+ * If a page list still renders, never include cart / checkout / account.
+ *
+ * @param int[] $exclude Excluded page IDs.
+ * @return int[]
+ */
+function nh_seo_exclude_utility_pages_from_page_list( $exclude ) {
+	$exclude = is_array( $exclude ) ? $exclude : array();
+	return array_values( array_unique( array_merge( $exclude, nh_seo_utility_page_ids() ) ) );
+}
+add_filter( 'wp_list_pages_excludes', 'nh_seo_exclude_utility_pages_from_page_list' );
 
 /**
  * Keep cart/checkout/account/wishlist out of Yoast llms.txt when the filter exists.
