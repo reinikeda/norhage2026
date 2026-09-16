@@ -29,7 +29,13 @@ $blurb = function_exists( 'nh_checkout_gateway_blurb' ) ? nh_checkout_gateway_bl
 	</label>
 	<?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
 		<div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" <?php if ( ! $gateway->chosen ) : ?>style="display:none;"<?php endif; ?>>
-			<?php $gateway->payment_fields(); ?>
+			<?php
+			if ( 'svea' === $kind && $blurb !== '' ) {
+				echo wpautop( esc_html( $blurb ) );
+			} else {
+				$gateway->payment_fields();
+			}
+			?>
 		</div>
 	<?php endif; ?>
 </li>
