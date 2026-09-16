@@ -591,7 +591,13 @@ add_filter( 'woocommerce_product_categories_widget_args', function( $args ) {
 	return $args;
 } );
 
-/** Disable Astra Header Builder (we use our own header) */
+/**
+ * Disable Astra Header Builder (we use our own header).
+ *
+ * Astra 4 hooks these as class methods, so the string callbacks often no-op.
+ * The leftover CSS-hidden mobile nav then falls back to listing every page
+ * (including Checkout). nh_seo_disable_page_list_menu_fallback() stops that.
+ */
 add_action( 'wp', function() {
 	remove_action( 'astra_header', 'astra_header_builder_markup' );
 	remove_action( 'astra_header', 'astra_mobile_header_markup' );
