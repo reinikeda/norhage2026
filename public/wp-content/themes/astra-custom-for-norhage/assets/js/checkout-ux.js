@@ -1871,6 +1871,8 @@
         return;
       }
       e.preventDefault();
+      // DPD Baltic also toggles .active on this click; stop it or the list opens and closes in one gesture.
+      e.stopPropagation();
       $list.toggleClass('active');
     });
 
@@ -1936,8 +1938,8 @@
     $mount.find('.nh-dpd-pickup').show();
     var $li = $mount.find('input.shipping_method:checked').closest('li');
     if ($own.length) {
-      if ($li.length && !$li[0].contains($own[0])) {
-        $li.append($own);
+      if ($li.length && $own.prev()[0] !== $li[0]) {
+        $li.after($own);
       }
       bindDpdPickupUi($own);
       return;
@@ -1965,7 +1967,7 @@
     );
     $wrap.find('.selected-option').text(choose);
     $wrap.find('.js--nh-pudo-search').attr('placeholder', search);
-    $li.append($wrap);
+    $li.after($wrap);
     bindDpdPickupUi($wrap);
     $wrap.find('.js--nh-pudo-search').trigger('input');
   }
@@ -2005,7 +2007,7 @@
       });
       var $chosenLi = $mount.find('input.shipping_method:checked').closest('li');
       if ($chosenLi.length) {
-        $chosenLi.append($wrap);
+        $chosenLi.after($wrap);
       } else {
         $mount.append($wrap);
       }
