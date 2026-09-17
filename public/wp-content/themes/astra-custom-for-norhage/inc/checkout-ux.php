@@ -27,10 +27,84 @@ function nh_is_classic_checkout_form() {
 }
 
 /**
- * Chosen payment method from this request, then the Woo session.
+ * True on the classic checkout page and during Woo update_order_review AJAX.
  *
+ * @return bool
+ */
+function nh_checkout_is_order_review_context() {
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+			return false;
+		}
+		if ( function_exists( 'is_checkout_pay_page' ) && is_checkout_pay_page() ) {
+			return false;
+		}
+		return true;
+	}
+	if ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) {
+		return true;
+	}
+	$ajax = isset( $_REQUEST['wc-ajax'] ) ? sanitize_text_field( wp_unslash( (string) $_REQUEST['wc-ajax'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	return in_array( $ajax, array( 'update_order_review', 'checkout' ), true );
+}
+
+/**
+ * Strip table markup so DPD’s pickup row can live inside a shipping method <li>.
+ *
+ * @param string $html Raw DPD template HTML.
  * @return string
  */
+function nh_checkout_dpd_inner_html( $html ) {
+	$html = preg_replace( '/<\/?t(?:able|head|body|foot|r|h|d)[^>]*>/i', '', $html );
+	return is_string( $html ) ? $html : '';
+}
+
+/**
+ * DPD Baltic prints pickup points as a <tr> after shipping in #order_review.
+ * That row never reaches the delivery methods list. Render it under the DPD rate
+ * so it moves with #shipping_method.
+ *
+ * @param object $method Shipping rate.
+ * @param int    $index  Package index.
+ */
+function nh_checkout_dpd_pickup_under_method( $method, $index ) {
+	if ( ! nh_checkout_is_order_review_context() || ! is_object( $method ) ) {
+		return;
+	}
+	$id = isset( $method->id ) ? (string) $method->id : '';
+	if ( strpos( $id, 'dpd_parcels' ) !== 0 && strpos( $id, 'dpd_sameday_parcels' ) !== 0 ) {
+		return;
+	}
+
+	$chosen    = ( function_exists( 'WC' ) && WC()->session ) ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array();
+	$chosen_id = isset( $chosen[ (int) $index ] ) ? (string) $chosen[ (int) $index ] : '';
+	if ( $chosen_id !== '' && $chosen_id !== $id ) {
+		return;
+	}
+
+	global $is_hook_executed;
+	if ( ! empty( $is_hook_executed ) ) {
+		return;
+	}
+
+	static $running = false;
+	if ( $running ) {
+		return;
+	}
+	$running = true;
+	ob_start();
+	do_action( 'woocommerce_review_order_after_shipping' );
+	$html = trim( (string) ob_get_clean() );
+	$running = false;
+	if ( $html === '' ) {
+		return;
+	}
+
+	echo '<div class="nh-checkout-shipping-extra nh-dpd-pickup">';
+	echo nh_checkout_dpd_inner_html( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- DPD plugin markup.
+	echo '</div>';
+}
+
 /**
  * Payment method posted on this request (not the Woo session).
  *
@@ -175,6 +249,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_place_order_button_text', 30, 1 );
 	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
+	add_action( 'woocommerce_after_shipping_rate', 'nh_checkout_dpd_pickup_under_method', 20, 2 );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_payment_method_session', 999 );

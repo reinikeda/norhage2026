@@ -1351,6 +1351,12 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li {
   margin: 0 0 0.5rem;
 }
 
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .nh-checkout-shipping-extra,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .custom-dropdown,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .nh-dpd-pickup {
+  grid-column: 1 / -1;
+}
+
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods input.shipping_method {
   position: static !important;
   float: none !important;
