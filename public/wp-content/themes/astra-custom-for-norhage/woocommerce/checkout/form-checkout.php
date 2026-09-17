@@ -107,7 +107,7 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 			<span class="nh-checkout-sticky__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
 		</div>
 		<button type="button" class="button alt nh-checkout-sticky__btn" id="nh-checkout-sticky-btn">
-			<?php esc_html_e( 'Review order', 'nh-theme' ); ?>
+			<?php echo esc_html( function_exists( 'nh_checkout_place_order_button_text' ) ? nh_checkout_place_order_button_text( __( 'Review order', 'nh-theme' ) ) : __( 'Review order', 'nh-theme' ) ); ?>
 		</button>
 	</div>
 

@@ -12,7 +12,9 @@
   var backReloadTimer = null;
   var FOCUS_KEY = 'nh_checkout_focus';
   var TERMS_KEY = 'nh_checkout_terms';
+  var DRAFT_KEY = 'nh_checkout_draft';
   var termsAccepted = false;
+  var draftTimer = null;
 
   function syncKcoPrevent() {
     if (!window.kco_wc) {
@@ -1531,10 +1533,59 @@
     if (/paypal|ppcp|ppec|paypal_express|paypalcp/.test(id)) {
       return 'paypal';
     }
+    if (/makecommerce|maksekeskus/.test(id)) {
+      return 'makecommerce';
+    }
     if (id === 'bacs') {
       return 'bacs';
     }
     return 'other';
+  }
+
+  function paymentIdIsMakecommerce(id) {
+    return paymentKind(id) === 'makecommerce';
+  }
+
+  function makecommerceMethodValue() {
+    var value = '';
+    $('[name^="PRESELECTED_METHOD_"], [name^="preselected_method_"]').each(function () {
+      var $el = $(this);
+      var current = '';
+      if ($el.is('[type=radio], [type=checkbox]')) {
+        if ($el.is(':checked')) {
+          current = $.trim($el.val() || '');
+        }
+      } else {
+        current = $.trim($el.val() || '');
+      }
+      if (current) {
+        value = current;
+        return false;
+      }
+    });
+    if (value) {
+      return value;
+    }
+    var selected = document.querySelector('.makecommerce-banklink-picker.selected, .makecommerce_payment_option.selected');
+    return selected ? String(selected.getAttribute('banklink_id') || selected.id || '') : '';
+  }
+
+  function makecommerceNeedsNestedMethod() {
+    return !!(
+      document.querySelector(
+        '[name^="PRESELECTED_METHOD_"], [name^="preselected_method_"], .makecommerce-banklink-picker, .makecommerce_payment_option'
+      )
+    );
+  }
+
+  function makecommerceMethodSelected() {
+    if (!paymentIdIsMakecommerce()) {
+      return true;
+    }
+    if (!makecommerceNeedsNestedMethod()) {
+      return true;
+    }
+    return makecommerceMethodValue() !== '';
   }
 
   function hasInlinePaypal() {
@@ -1553,9 +1604,10 @@
   }
 
   function stickyButtonLabel() {
+    var $checked = $('input[name="payment_method"]:checked').not(':disabled');
     var kind = paymentKind();
     var total = formattedTotal();
-    if (!chosenPaymentId()) {
+    if (!$checked.length) {
       return i18n.reviewLabel || 'Review order';
     }
     if (kind === 'svea') {
@@ -1568,6 +1620,13 @@
       return hasInlinePaypal()
         ? (i18n.payLabel ? i18n.payLabel.replace('%s', total) : ('Pay ' + total))
         : (i18n.continuePaypal || 'Continue to PayPal');
+    }
+    if (kind === 'makecommerce') {
+      return i18n.payViaMakecommerce || 'Pay via MakeCommerce';
+    }
+    var gatewayLabel = $.trim($checked.attr('data-order_button_text') || '');
+    if (gatewayLabel) {
+      return gatewayLabel;
     }
     if (total) {
       return i18n.payLabel ? i18n.payLabel.replace('%s', total) : ('Pay ' + total);
@@ -1606,6 +1665,142 @@
     }
     el.hidden = true;
     el.classList.remove('is-visible');
+    el.removeAttribute('data-kind');
+  }
+
+  function scrollToCheckoutError() {
+    var err = document.querySelector('.woocommerce-error, .woocommerce-NoticeGroup-checkout, .woocommerce-notices-wrapper .woocommerce-error');
+    if (err && err.scrollIntoView) {
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function checkoutDraftSkipName(name) {
+    name = String(name || '');
+    return !name ||
+      /nonce|password|card.?number|cvv|cvc|card.?exp/i.test(name) ||
+      name.indexOf('shipping_method') === 0;
+  }
+
+  function checkoutDraftFields() {
+    var data = {};
+    $('form.checkout').find('input, select, textarea').each(function () {
+      var $el = $(this);
+      var name = $el.attr('name');
+      if (checkoutDraftSkipName(name) || $el.is('[type=file]')) {
+        return;
+      }
+      if ($el.is('[type=radio], [type=checkbox]')) {
+        if ($el.is(':checked')) {
+          data[name] = $el.val();
+        }
+        return;
+      }
+      data[name] = $el.val();
+    });
+    return data;
+  }
+
+  function saveCheckoutDraft() {
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(checkoutDraftFields()));
+    } catch (e) { /* private mode */ }
+  }
+
+  function scheduleCheckoutDraft() {
+    window.clearTimeout(draftTimer);
+    draftTimer = window.setTimeout(saveCheckoutDraft, 200);
+  }
+
+  function restoreMakecommerceMethod() {
+    var raw;
+    try {
+      raw = sessionStorage.getItem(DRAFT_KEY);
+    } catch (e) {
+      return;
+    }
+    if (!raw) {
+      return;
+    }
+    var data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      return;
+    }
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+    Object.keys(data).forEach(function (name) {
+      if (name.indexOf('PRESELECTED_METHOD_') !== 0 && name.indexOf('preselected_method_') !== 0) {
+        return;
+      }
+      var val = String(data[name] || '');
+      if (!val) {
+        return;
+      }
+      var $el = $('[name="' + name.replace(/"/g, '\\"') + '"]');
+      if ($el.is('select') || $el.is('[type=hidden]')) {
+        $el.val(val);
+      }
+      $el.filter(function () {
+        return ($(this).is('[type=radio]') || $(this).is('[type=checkbox]')) && String(this.value) === val;
+      }).prop('checked', true);
+      $('.makecommerce-banklink-picker').filter(function () {
+        return String($(this).attr('banklink_id') || this.id || '') === val;
+      }).addClass('selected');
+    });
+  }
+
+  function restoreCheckoutDraft() {
+    var raw;
+    try {
+      raw = sessionStorage.getItem(DRAFT_KEY);
+    } catch (e) {
+      return;
+    }
+    if (!raw) {
+      return;
+    }
+    var data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      return;
+    }
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+    Object.keys(data).forEach(function (name) {
+      if (checkoutDraftSkipName(name)) {
+        return;
+      }
+      var $els = $('form.checkout').find('[name="' + String(name).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"]');
+      if (!$els.length) {
+        return;
+      }
+      var val = data[name];
+      if ($els.is('[type=radio]')) {
+        var $match = $els.filter(function () {
+          return String(this.value) === String(val);
+        });
+        if ($match.length) {
+          $match.prop('checked', true);
+          if (name === 'payment_method') {
+            paymentChosenByCustomer = true;
+            i18n.chosenPayment = String(val);
+          }
+        }
+        return;
+      }
+      if ($els.is('[type=checkbox]')) {
+        $els.prop('checked', true);
+        return;
+      }
+      if ($.trim($els.val() || '') === '' && val != null && val !== '') {
+        $els.val(val);
+      }
+    });
   }
 
   function syncStickyBar() {
@@ -1619,11 +1814,12 @@
       return;
     }
     var ready = checkoutIsReadyToPay();
-    $btn.text(ready ? stickyButtonLabel() : (i18n.reviewLabel || 'Review order'));
+    var label = stickyButtonLabel();
+    $btn.text(label);
     $btn.toggleClass('is-ready', ready);
     $('body').toggleClass('nh-checkout--ready', ready);
     if (chosenPaymentId()) {
-      $('#place_order').text(stickyButtonLabel());
+      $('#place_order').text(label);
     }
   }
 
@@ -1795,6 +1991,13 @@
       scrollToPaymentFocus('payment');
       return;
     }
+    if (paymentIdIsMakecommerce() && !makecommerceMethodSelected()) {
+      hideCheckoutStatus();
+      window.alert(i18n.selectMakecommerce || i18n.selectPayment || 'Please choose a payment method.');
+      scrollToPaymentFocus('payment');
+      $('body').addClass('nh-checkout--need-mc-method');
+      return;
+    }
     if (!enforceTermsOrHighlight()) {
       return;
     }
@@ -1819,6 +2022,7 @@
     } else {
       showCheckoutStatus(i18n.processingTitle, i18n.processingText, 'processing');
     }
+    saveCheckoutDraft();
     $('#place_order').trigger('click');
   }
 
@@ -1833,6 +2037,33 @@
     $(document.body).on('click.nhSticky', '#nh-checkout-sticky-btn', function (e) {
       e.preventDefault();
       runFinalAction();
+    });
+
+    $(document.body).on('click.nhMcMethod', '.makecommerce-banklink-picker, .makecommerce_payment_option, [name^="PRESELECTED_METHOD_"], [name^="preselected_method_"]', function () {
+      $('body').removeClass('nh-checkout--need-mc-method');
+      window.setTimeout(function () {
+        saveCheckoutDraft();
+        syncStickyBar();
+      }, 0);
+    });
+
+    $(document.body).on('checkout_error.nhStatus', function () {
+      hideCheckoutStatus();
+      unblockCheckout();
+      saveCheckoutDraft();
+      window.setTimeout(scrollToCheckoutError, 50);
+    });
+
+    $(document.body).on('click.nhStatus', '#nh-checkout-status', function () {
+      hideCheckoutStatus();
+    });
+
+    $(document.body).on('input.nhDraft change.nhDraft', 'form.checkout', scheduleCheckoutDraft);
+    window.addEventListener('pagehide', saveCheckoutDraft);
+    window.addEventListener('pageshow', function () {
+      restoreCheckoutDraft();
+      applyCheckoutStep();
+      hideCheckoutStatus();
     });
 
     $(document.body).on('click.nhPayMethod change.nhPayMethod', 'input[name="payment_method"]', function (e) {
@@ -1871,6 +2102,16 @@
         window.alert(i18n.selectPayment || 'Please choose a payment method.');
         return;
       }
+      if (paymentIdIsMakecommerce() && !makecommerceMethodSelected()) {
+        e.preventDefault();
+        e.stopPropagation();
+        hideCheckoutStatus();
+        window.alert(i18n.selectMakecommerce || i18n.selectPayment || 'Please choose a payment method.');
+        scrollToPaymentFocus('payment');
+        $('body').addClass('nh-checkout--need-mc-method');
+        return;
+      }
+      saveCheckoutDraft();
       if (!enforceTermsOrHighlight()) {
         e.preventDefault();
         e.stopPropagation();
@@ -2217,6 +2458,7 @@
     bindCallingCode();
     bindPostcodeShippingUpdate();
     bindIframeZipShipping();
+    restoreCheckoutDraft();
     bindCheckoutSteps();
     bindTermsAgreement();
     refreshCheckoutChrome();
@@ -2283,13 +2525,16 @@
     initSveaCheckoutOnce();
     hideCrispOnMobileCheckout();
     window.setTimeout(function () {
+      restoreMakecommerceMethod();
       applyCheckoutStep();
       unblockCheckout();
     }, 0);
     window.setTimeout(function () {
+      restoreMakecommerceMethod();
       applyCheckoutStep();
       ignoreAutoPaymentClick = false;
-    }, 80);
+      syncStickyBar();
+    }, 120);
   });
   $(document.body).on('payment_method_selected', function () {
     if (ignoreAutoPaymentClick) {

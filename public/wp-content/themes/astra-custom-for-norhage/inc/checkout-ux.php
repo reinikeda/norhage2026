@@ -589,6 +589,8 @@ function nh_checkout_identity_field_map() {
 		'billing_country'     => 'wc_clean',
 		'billing_state'       => 'wc_clean',
 		'billing_customer_type' => 'wc_clean',
+		'billing_contact_email' => 'sanitize_email',
+		'billing_contact_phone' => 'wc_clean',
 	);
 }
 
@@ -695,11 +697,19 @@ function nh_checkout_identity_from_customer() {
 	if ( method_exists( $customer, 'get_meta' ) ) {
 		$reg  = wc_clean( (string) $customer->get_meta( 'billing_company_reg' ) );
 		$type = wc_clean( (string) $customer->get_meta( 'billing_customer_type' ) );
+		$cmail = sanitize_email( (string) $customer->get_meta( 'billing_contact_email' ) );
+		$cphone = wc_clean( (string) $customer->get_meta( 'billing_contact_phone' ) );
 		if ( $reg !== '' ) {
 			$values['billing_company_reg'] = $reg;
 		}
 		if ( in_array( $type, array( 'private', 'business' ), true ) ) {
 			$values['billing_customer_type'] = $type;
+		}
+		if ( $cmail !== '' ) {
+			$values['billing_contact_email'] = $cmail;
+		}
+		if ( $cphone !== '' ) {
+			$values['billing_contact_phone'] = $cphone;
 		}
 	}
 
@@ -781,6 +791,12 @@ function nh_checkout_apply_identity_to_customer( $identity, $save = false ) {
 			}
 			if ( ! empty( $identity['billing_customer_type'] ) ) {
 				$customer->update_meta_data( 'billing_customer_type', $identity['billing_customer_type'] );
+			}
+			if ( ! empty( $identity['billing_contact_email'] ) ) {
+				$customer->update_meta_data( 'billing_contact_email', $identity['billing_contact_email'] );
+			}
+			if ( ! empty( $identity['billing_contact_phone'] ) ) {
+				$customer->update_meta_data( 'billing_contact_phone', $identity['billing_contact_phone'] );
 			}
 		}
 		if ( $save && method_exists( $customer, 'save' ) ) {
@@ -1500,9 +1516,11 @@ function nh_checkout_ux_assets() {
 			'continueSvea'    => __( 'Continue to SVEA', 'nh-theme' ),
 			'continueKustom'  => __( 'Continue to Kustom', 'nh-theme' ),
 			'continuePaypal'  => __( 'Continue to PayPal', 'nh-theme' ),
+			'payViaMakecommerce' => __( 'Pay via MakeCommerce', 'nh-theme' ),
 			'completeInSvea'  => __( 'Complete payment in SVEA', 'nh-theme' ),
 			'completeInKustom'=> __( 'Complete payment in Kustom', 'nh-theme' ),
 			'selectPayment'   => __( 'Please choose a payment method.', 'nh-theme' ),
+			'selectMakecommerce' => __( 'Please choose a bank or card in MakeCommerce.', 'nh-theme' ),
 			'termsRequired'   => __( 'Please agree to the website terms and conditions to continue.', 'nh-theme' ),
 			'processingTitle' => __( 'Processing your order…', 'nh-theme' ),
 			'processingText'  => __( 'Please do not close this page.', 'nh-theme' ),
@@ -2846,11 +2864,11 @@ function nh_checkout_terms_place_order_note() {
 
 /**
  * @param string $gateway_id Gateway id.
- * @return string svea|kustom|paypal|bacs|other
+ * @return string svea|kustom|paypal|bacs|makecommerce|other
  */
 function nh_checkout_gateway_kind( $gateway_id = '' ) {
 	$id = strtolower( (string) ( $gateway_id !== '' ? $gateway_id : nh_checkout_chosen_payment_method() ) );
-	if ( $id === '' ) {
+	if ( $id === '' || $id === 'nh_none' ) {
 		return 'other';
 	}
 	if ( nh_checkout_is_snippet_gateway( $id ) ) {
@@ -2862,10 +2880,54 @@ function nh_checkout_gateway_kind( $gateway_id = '' ) {
 	if ( preg_match( '/paypal|ppcp|ppec|paypal_express|paypalcp/', $id ) ) {
 		return 'paypal';
 	}
+	if ( preg_match( '/makecommerce|maksekeskus/', $id ) ) {
+		return 'makecommerce';
+	}
 	if ( $id === 'bacs' ) {
 		return 'bacs';
 	}
 	return 'other';
+}
+
+/**
+ * Sticky / place-order label for a gateway.
+ *
+ * @param string $gateway_id Gateway id.
+ * @return string
+ */
+function nh_checkout_gateway_action_label( $gateway_id = '' ) {
+	$id = strtolower( (string) $gateway_id );
+	if ( $id === '' || $id === 'nh_none' ) {
+		return __( 'Review order', 'nh-theme' );
+	}
+
+	$kind  = nh_checkout_gateway_kind( $id );
+	$total = '';
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		$total = wp_strip_all_tags( (string) WC()->cart->get_total() );
+	}
+
+	if ( 'svea' === $kind ) {
+		return __( 'Continue to SVEA', 'nh-theme' );
+	}
+	if ( 'kustom' === $kind ) {
+		return __( 'Continue to Kustom', 'nh-theme' );
+	}
+	if ( 'paypal' === $kind ) {
+		return __( 'Continue to PayPal', 'nh-theme' );
+	}
+	if ( 'makecommerce' === $kind ) {
+		return __( 'Pay via MakeCommerce', 'nh-theme' );
+	}
+	if ( $total !== '' ) {
+		return sprintf(
+			/* translators: %s: formatted order total */
+			__( 'Pay %s', 'nh-theme' ),
+			$total
+		);
+	}
+
+	return __( 'Review order', 'nh-theme' );
 }
 
 /**
@@ -2896,9 +2958,8 @@ function nh_checkout_gateway_description( $description, $gateway_id = '' ) {
 }
 
 /**
- * Keep SVEA’s stored description/button in sync so payment_fields() cannot
- * still print “Redirecting…”, and so WooCommerce’s data-order_button_text
- * stays “Continue to SVEA” after a method change.
+ * Keep gateway descriptions and data-order_button_text in the shop language.
+ * Woo copies that attribute onto #place_order after a method change.
  *
  * @param array<string, WC_Payment_Gateway> $gateways Available gateways.
  * @return array<string, WC_Payment_Gateway>
@@ -2920,6 +2981,10 @@ function nh_checkout_prepare_payment_gateway_copy( $gateways ) {
 			$gateway->order_button_text = __( 'Continue to Kustom', 'nh-theme' );
 		} elseif ( 'paypal' === $kind ) {
 			$gateway->order_button_text = __( 'Continue to PayPal', 'nh-theme' );
+		} elseif ( 'makecommerce' === $kind ) {
+			$gateway->order_button_text = __( 'Pay via MakeCommerce', 'nh-theme' );
+		} else {
+			$gateway->order_button_text = nh_checkout_gateway_action_label( is_string( $id ) ? $id : $gateway->id );
 		}
 	}
 
@@ -2949,6 +3014,9 @@ function nh_checkout_gateway_blurb( $gateway ) {
 	if ( 'bacs' === $kind ) {
 		return __( 'Pay by bank transfer. We send payment details after you place the order.', 'nh-theme' );
 	}
+	if ( 'makecommerce' === $kind ) {
+		return __( 'Choose a bank or card, then pay securely with MakeCommerce.', 'nh-theme' );
+	}
 	$description = is_callable( array( $gateway, 'get_description' ) ) ? wp_strip_all_tags( (string) $gateway->get_description() ) : '';
 	return nh_checkout_translate_gateway_text( $description );
 }
@@ -2960,30 +3028,8 @@ function nh_checkout_gateway_blurb( $gateway ) {
  * @return string
  */
 function nh_checkout_place_order_button_text( $text ) {
-	$kind  = nh_checkout_gateway_kind();
-	$total = '';
-	if ( function_exists( 'WC' ) && WC()->cart ) {
-		$total = wp_strip_all_tags( (string) WC()->cart->get_total() );
-	}
-
-	if ( 'svea' === $kind ) {
-		return __( 'Continue to SVEA', 'nh-theme' );
-	}
-	if ( 'kustom' === $kind ) {
-		return __( 'Continue to Kustom', 'nh-theme' );
-	}
-	if ( 'paypal' === $kind ) {
-		return __( 'Continue to PayPal', 'nh-theme' );
-	}
-	if ( $total !== '' ) {
-		return sprintf(
-			/* translators: %s: formatted order total */
-			__( 'Pay %s', 'nh-theme' ),
-			$total
-		);
-	}
-
-	return nh_checkout_translate_gateway_text( $text );
+	$label = nh_checkout_gateway_action_label( nh_checkout_chosen_payment_method() );
+	return $label !== '' ? $label : nh_checkout_translate_gateway_text( $text );
 }
 
 /**
@@ -3129,7 +3175,10 @@ function nh_checkout_thankyou_next_steps( $order_id ) {
 	if ( $email ) {
 		echo '<p class="nh-thankyou-email"><strong>' . esc_html__( 'Confirmation sent to:', 'nh-theme' ) . '</strong> ' . esc_html( $email ) . '</p>';
 	}
-	echo '<p class="nh-thankyou-invoice">' . esc_html__( 'Your invoice will be sent to your email address.', 'nh-theme' ) . '</p>';
+	$method = strtolower( (string) $order->get_payment_method() );
+	if ( in_array( $method, array( 'bacs', 'cheque' ), true ) ) {
+		echo '<p class="nh-thankyou-invoice">' . esc_html__( 'Your invoice will be sent to your email address.', 'nh-theme' ) . '</p>';
+	}
 	echo '<h2 class="nh-thankyou-next">' . esc_html__( 'What happens next', 'nh-theme' ) . '</h2>';
 	echo '<ol class="nh-thankyou-steps">';
 	echo '<li>' . esc_html__( 'We confirm your order.', 'nh-theme' ) . '</li>';

@@ -1847,6 +1847,9 @@ msgstr "Pasirinkite, kaip norite mokėti"
 
 msgid "Please choose a payment method."
 msgstr "Pasirinkite mokėjimo būdą."
+msgid "Please choose a bank or card in MakeCommerce."
+msgstr "Pasirinkite banką arba kortelę MakeCommerce."
+
 
 msgid "Please agree to the website terms and conditions to continue."
 msgstr "Sutikite su svetainės taisyklėmis ir sąlygomis, kad galėtumėte tęsti."
@@ -1946,6 +1949,10 @@ msgid "Continue to PayPal"
 msgstr "Tęsti su PayPal"
 
 #: inc/checkout-ux.php
+msgid "Pay via MakeCommerce"
+msgstr "Mokėti per MakeCommerce"
+
+#: inc/checkout-ux.php
 msgid "Complete payment in SVEA"
 msgstr "Užbaikite mokėjimą SVEA"
 
@@ -2026,6 +2033,9 @@ msgstr "Būsite nukreipti į PayPal, kad prisijungtumėte ir patvirtintumėte mo
 #: inc/checkout-ux.php
 msgid "Pay by bank transfer. We send payment details after you place the order."
 msgstr "Mokėkite banko pavedimu. Mokėjimo duomenis atsiųsime po užsakymo pateikimo."
+msgid "Choose a bank or card, then pay securely with MakeCommerce."
+msgstr "Pasirinkite banką arba kortelę ir saugiai sumokėkite per MakeCommerce."
+
 
 #: inc/checkout-ux.php
 msgid "Loading secure payment…"
