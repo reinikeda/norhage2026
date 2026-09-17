@@ -94,7 +94,7 @@ nh_dpd_assert( 'checkout css kills dpd height 100 collapse', strpos( $css, 'heig
 nh_dpd_assert( 'checkout css spaces sibling pickup block', strpos( $css, '> ul > .nh-dpd-pickup' ) !== false );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/checkout-ux.js' );
-nh_dpd_assert( 'js stops dpd plugin from double-toggling the list', strpos( $js, 'e.stopPropagation()' ) !== false );
+nh_dpd_assert( 'js stops dpd plugin from double-toggling the list', strpos( $js, 'stopImmediatePropagation' ) !== false );
 nh_dpd_assert( 'js places pickup after the method row', strpos( $js, '$li.after($own)' ) !== false );
 
 if ( $failures > 0 ) {

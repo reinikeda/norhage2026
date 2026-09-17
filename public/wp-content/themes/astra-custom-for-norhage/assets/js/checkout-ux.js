@@ -1855,25 +1855,47 @@
     return (i18n && i18n.dpdAjax) || (window.wc_checkout_params && wc_checkout_params.ajax_url) || '/wp-admin/admin-ajax.php';
   }
 
+  function bindDpdPickupOpenCapture() {
+    if (document.documentElement.getAttribute('data-nh-dpd-open') === '1') {
+      return;
+    }
+    document.documentElement.setAttribute('data-nh-dpd-open', '1');
+    document.addEventListener(
+      'click',
+      function (e) {
+        var opt = e.target && e.target.closest && e.target.closest('.nh-dpd-pickup .selected-option');
+        if (!opt) {
+          return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var list = opt.parentNode ? opt.parentNode.querySelector('.dropdown-list') : null;
+        if (list) {
+          list.classList.toggle('active');
+        }
+      },
+      true
+    );
+  }
+
   function bindDpdPickupUi($root) {
     if (!$root || !$root.length || $root.data('nhDpdBound')) {
       return;
     }
     $root.data('nhDpdBound', true);
     $(document.body).off('click', '.custom-dropdown .selected-option');
+    bindDpdPickupOpenCapture();
     var $list = $root.find('.dropdown-list').first();
     var $results = $root.find('.dropdown-list-search-list').first();
     var $hidden = $root.find('input[type=hidden]').first();
     var $selected = $root.find('.selected-option').first();
     var searchTimer = null;
 
-    $selected.on('click.nhDpd keydown.nhDpd', function (e) {
-      if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') {
+    $selected.on('keydown.nhDpd', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') {
         return;
       }
       e.preventDefault();
-      // DPD Baltic also toggles .active on this click; stop it or the list opens and closes in one gesture.
-      e.stopPropagation();
       $list.toggleClass('active');
     });
 
