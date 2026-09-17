@@ -1860,6 +1860,7 @@
       return;
     }
     $root.data('nhDpdBound', true);
+    $(document.body).off('click', '.custom-dropdown .selected-option');
     var $list = $root.find('.dropdown-list').first();
     var $results = $root.find('.dropdown-list-search-list').first();
     var $hidden = $root.find('input[type=hidden]').first();

@@ -86,6 +86,7 @@ nh_dpd_assert( 'pickup markup keeps selected-option in flow', strpos( $pickup, '
 
 $template = file_get_contents( dirname( __DIR__ ) . '/woocommerce/cart/cart-shipping.php' );
 nh_dpd_assert( 'shipping template wraps radio and label', strpos( $template, 'nh-shipping-method-row' ) !== false );
+nh_dpd_assert( 'shipping template prints DPD picker after the method li', strpos( $template, 'nh_checkout_dpd_pickup_under_method' ) !== false && strpos( $template, '</li>' ) !== false );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/checkout.css' );
 nh_dpd_assert( 'checkout css stacks methods in a column', strpos( $css, 'flex-direction: column' ) !== false && strpos( $css, 'nh-shipping-method-row' ) !== false );

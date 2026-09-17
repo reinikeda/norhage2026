@@ -44,6 +44,11 @@ $calculator_text          = '';
 						</div>
 						<?php do_action( 'woocommerce_after_shipping_rate', $method, $index ); ?>
 					</li>
+						<?php
+						if ( function_exists( 'nh_checkout_dpd_pickup_under_method' ) ) {
+							nh_checkout_dpd_pickup_under_method( $method, $index );
+						}
+						?>
 				<?php endforeach; ?>
 			</ul>
 			<?php if ( is_cart() ) : ?>
