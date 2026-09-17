@@ -399,6 +399,7 @@ require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
 require_once get_stylesheet_directory() . '/inc/sample-order.php';
 require_once get_stylesheet_directory() . '/inc/seo.php';
+require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';
 require_once get_stylesheet_directory() . '/inc/404.php';
 
 /* --------------------------------------------------------------------------
@@ -428,13 +429,6 @@ add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $arg
         esc_html( $text )
     );
 }, 999, 3 );
-
-/**
- * 2. Strip any leftover rel="nofollow" from loop buttons
- */
-add_filter( 'woocommerce_loop_add_to_cart_link', function( $html ) {
-    return str_replace( 'rel="nofollow"', '', $html );
-}, 9999 );
 
 /* --------------------------------------------------------------------------
  * Secondary product title + optional logo
