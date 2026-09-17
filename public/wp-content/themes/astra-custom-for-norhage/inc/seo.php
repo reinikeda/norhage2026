@@ -487,6 +487,45 @@ function nh_seo_robots_txt( $output, $public ) {
 add_filter( 'robots_txt', 'nh_seo_robots_txt', 20, 2 );
 
 /**
+ * GET ?add-to-cart= on archives is a leftover Woo loop URL, not a real page.
+ *
+ * Simple-product add_to_cart_url() is the current category URL plus
+ * ?add-to-cart=ID. Crawlers request it; Woo adds (or fails) and wp_safe_redirect()
+ * 302s to the product when there is no referer. That is a permanent destination,
+ * so use 301 and skip adding to cart (crawlers should not create sessions).
+ *
+ * Checkout empty-cart 302s to cart must stay 302 — do not copy this pattern there.
+ */
+function nh_seo_redirect_get_add_to_cart() {
+	if ( is_admin() || wp_doing_ajax() || ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) ) {
+		return;
+	}
+
+	$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) : '';
+	if ( $method !== 'GET' ) {
+		return;
+	}
+
+	if ( empty( $_GET['add-to-cart'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+
+	$id = absint( wp_unslash( $_GET['add-to-cart'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $id <= 0 || get_post_type( $id ) !== 'product' ) {
+		return;
+	}
+
+	$permalink = get_permalink( $id );
+	if ( ! $permalink || is_wp_error( $permalink ) ) {
+		return;
+	}
+
+	wp_safe_redirect( $permalink, 301 );
+	exit;
+}
+add_action( 'wp_loaded', 'nh_seo_redirect_get_add_to_cart', 9 );
+
+/**
  * Astra Header Builder still prints a CSS-hidden mobile nav. With no menu
  * assigned it falls back to listing every published page, including Checkout.
  * Crawlers then request empty /kasse/ and WooCommerce 302s to the cart.
