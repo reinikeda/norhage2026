@@ -48,11 +48,13 @@ if ($q->have_posts()) {
         }
 
         $thumb_id = (int) get_post_thumbnail_id($sid);
+        $media_alt = trim(wp_strip_all_tags((string) get_post_meta($thumb_id, '_wp_attachment_image_alt', true)));
         $slides[] = [
             'title'      => get_the_title($sid),
             'desc_full'  => $desktop_raw,
             'desc_short' => $mobile_raw,
             'thumb_id'   => $thumb_id,
+            'alt'        => $media_alt !== '' ? $media_alt : get_the_title($sid),
             'btn_text'   => __('Read More', 'nhhb'),
             'btn_url'    => get_permalink($sid),
         ];
@@ -81,7 +83,7 @@ $uid = 'nhhb-svc-' . wp_unique_id();
               if (!empty($s['thumb_id'])) {
                   echo nhhb_attachment_image((int) $s['thumb_id'], '1536x1536', [
                       'class' => 'nhhb-svc-img',
-                      'alt'   => $s['title'],
+                      'alt'   => $s['alt'],
                       'sizes' => '100vw',
                   ]);
               }

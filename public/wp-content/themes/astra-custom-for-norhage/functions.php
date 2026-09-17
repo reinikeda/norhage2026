@@ -374,6 +374,7 @@ add_action( 'woocommerce_after_shop_loop', function () {
 /* --------------------------------------------------------------------------
  * Feature modules (keep functions.php light)
  * ----------------------------------------------------------------------- */
+require_once get_stylesheet_directory() . '/inc/attachment-alt.php';
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
@@ -533,7 +534,7 @@ function nh_secondary_title_html( $post_id ) {
     if ( $logo_id ) {
         $logo_html = wp_get_attachment_image( $logo_id, [ 999, 36 ], false, [
             'class' => 'product-secondary-title__logo',
-            'alt'   => '',
+            'alt'   => nh_get_attachment_alt( $logo_id, $secondary ),
         ] );
     }
 

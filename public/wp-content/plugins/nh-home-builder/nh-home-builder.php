@@ -21,7 +21,13 @@ function nhhb_attachment_image($id, $size = 'woocommerce_thumbnail', $attrs = []
         return '<div class="nhhb-ph-img" aria-hidden="true"></div>';
     }
 
-    $attrs = array_merge(['loading' => 'lazy', 'decoding' => 'async', 'alt' => ''], $attrs);
+    $attrs = array_merge(['loading' => 'lazy', 'decoding' => 'async'], $attrs);
+    if (!isset($attrs['alt']) || $attrs['alt'] === '') {
+        $media_alt = trim(wp_strip_all_tags((string) get_post_meta((int) $id, '_wp_attachment_image_alt', true)));
+        if ($media_alt !== '') {
+            $attrs['alt'] = $media_alt;
+        }
+    }
     return wp_get_attachment_image((int) $id, $size, false, $attrs);
 }
 
