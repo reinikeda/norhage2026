@@ -20,9 +20,18 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 				aria-hidden="<?php echo 0 === $index ? 'false' : 'true'; ?>"
 			>
 				<?php
+				$slide_title = isset( $slide['title'] ) ? (string) $slide['title'] : '';
+				$slide_alt   = $slide_title !== '' ? $slide_title : $sr_title;
+				if ( ! empty( $slide['image_id'] ) && function_exists( 'nh_get_attachment_alt' ) ) {
+					$slide_alt = nh_get_attachment_alt( (int) $slide['image_id'], $slide_alt );
+				}
+				if ( $slide_alt === '' ) {
+					$slide_alt = get_bloginfo( 'name' );
+				}
+
 				$img_attrs = array(
 					'class'    => 'nhhb-hero-slide__img',
-					'alt'      => '',
+					'alt'      => $slide_alt,
 					'decoding' => 'async',
 					'sizes'    => '100vw',
 				);
@@ -37,8 +46,9 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 					echo wp_get_attachment_image( (int) $slide['image_id'], '1536x1536', false, $img_attrs );
 				} elseif ( ! empty( $slide['image'] ) ) {
 					printf(
-						'<img class="nhhb-hero-slide__img" src="%s" alt="" decoding="async" %s sizes="100vw"%s>',
+						'<img class="nhhb-hero-slide__img" src="%s" alt="%s" decoding="async" %s sizes="100vw"%s>',
 						esc_url( $slide['image'] ),
+						esc_attr( $slide_alt ),
 						0 === $index ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"',
 						! empty( $slide['srcset'] ) ? ' srcset="' . esc_attr( $slide['srcset'] ) . '"' : ''
 					);
