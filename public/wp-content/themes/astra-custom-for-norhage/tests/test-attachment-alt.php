@@ -10,8 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $nh_test_alts = array(
-	12 => 'Thunderstorm icon',
-	13 => '  ',
+	12  => 'Thunderstorm icon',
+	13  => '  ',
+	633 => 'Trustpilot logo',
 );
 
 if ( ! function_exists( 'get_post_meta' ) ) {
@@ -58,6 +59,19 @@ nh_alt_assert(
 nh_alt_assert(
 	'missing attachment uses fallback',
 	nh_get_attachment_alt( 0, 'Storm warranty' ) === 'Storm warranty'
+);
+
+$trustpilot = '<div class="wp-block-media-text"><figure class="wp-block-media-text__media"><img fetchpriority="high" decoding="async" width="500" height="281" src="https://norhage.eu/wp-content/uploads/2026/07/trustpilot-logo.png" alt="" class="wp-image-633 size-full"></figure></div>';
+$filled     = nh_fill_empty_img_alts_in_html( $trustpilot );
+nh_alt_assert(
+	'empty Gutenberg alt is replaced from media library',
+	strpos( $filled, 'alt="Trustpilot logo"' ) !== false
+);
+
+$kept = nh_fill_empty_img_alts_in_html( '<img class="wp-image-633" alt="Custom caption" src="x.png">' );
+nh_alt_assert(
+	'non-empty block alt is left unchanged',
+	strpos( $kept, 'alt="Custom caption"' ) !== false
 );
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
