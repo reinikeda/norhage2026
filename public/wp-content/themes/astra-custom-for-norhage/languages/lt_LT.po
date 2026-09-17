@@ -1928,6 +1928,18 @@ msgid "Add contact person"
 msgstr "Pridėti kontaktinį asmenį"
 
 #: inc/checkout-ux.php
+msgid "Choose a Pickup Point"
+msgstr "Pasirinkite DPD Pickup paštomatą"
+
+#: inc/checkout-ux.php
+msgid "Search pickup point"
+msgstr "Ieškoti atsiėmimo taško"
+
+#: inc/checkout-ux.php
+msgid "The Pickup Point is empty"
+msgstr "Atsiėmimo taškų nėra"
+
+#: inc/checkout-ux.php
 msgid "Please fill in this field."
 msgstr "Užpildykite šį lauką."
 

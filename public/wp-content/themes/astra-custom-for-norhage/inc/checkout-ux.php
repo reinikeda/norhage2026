@@ -49,20 +49,208 @@ function nh_checkout_is_order_review_context() {
 }
 
 /**
- * Strip table markup so DPD’s pickup row can live inside a shipping method <li>.
+ * DPD Baltic pickup (parcel locker) shipping method.
  *
- * @param string $html Raw DPD template HTML.
+ * @param string $method_id Rate id, e.g. dpd_parcels:7.
+ * @return bool
+ */
+function nh_checkout_dpd_is_parcels_method( $method_id ) {
+	$id = (string) $method_id;
+	return strpos( $id, 'dpd_parcels' ) === 0 || strpos( $id, 'dpd_sameday_parcels' ) === 0;
+}
+
+/**
+ * Hidden input name DPD Baltic validates on checkout.
+ *
+ * @param string $method_id Rate id.
  * @return string
  */
-function nh_checkout_dpd_inner_html( $html ) {
-	$html = preg_replace( '/<\/?t(?:able|head|body|foot|r|h|d)[^>]*>/i', '', $html );
-	return is_string( $html ) ? $html : '';
+function nh_checkout_dpd_field_name( $method_id ) {
+	if ( strpos( (string) $method_id, 'dpd_sameday_parcels' ) === 0 ) {
+		return 'wc_shipping_dpd_sameday_parcels_terminal';
+	}
+	return 'wc_shipping_dpd_parcels_terminal';
+}
+
+/**
+ * Checkout shipping country for DPD terminal lookup.
+ *
+ * @return string
+ */
+function nh_checkout_dpd_shipping_country() {
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return '';
+	}
+	$country = (string) WC()->customer->get_shipping_country();
+	if ( $country === '' ) {
+		$country = (string) WC()->customer->get_billing_country();
+	}
+	return $country;
+}
+
+/**
+ * DPD terminals table name, or empty when the plugin table is missing.
+ *
+ * @return string
+ */
+function nh_checkout_dpd_terminals_table() {
+	global $wpdb;
+	if ( ! $wpdb ) {
+		return '';
+	}
+	static $table = null;
+	if ( $table !== null ) {
+		return $table;
+	}
+	$name  = $wpdb->prefix . 'dpd_terminals';
+	$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $name ) );
+	$table = ( $found === $name ) ? $name : '';
+	return $table;
+}
+
+/**
+ * Pickup points from DPD Baltic’s terminals table.
+ *
+ * @param string $search Search text.
+ * @param int    $limit  Max rows.
+ * @return array<int,object>
+ */
+function nh_checkout_dpd_terminals( $search = '', $limit = 80 ) {
+	global $wpdb;
+	$table = nh_checkout_dpd_terminals_table();
+	if ( $table === '' || ! $wpdb ) {
+		return array();
+	}
+
+	$limit   = max( 1, min( 200, (int) $limit ) );
+	$country = nh_checkout_dpd_shipping_country();
+	$allowed = get_option( 'dpd_parcels_countries', array( 'LT', 'LV', 'EE' ) );
+	if ( ! is_array( $allowed ) ) {
+		$allowed = array( 'LT', 'LV', 'EE' );
+	}
+	$search = trim( (string) $search );
+
+	$sql    = "SELECT parcelshop_id, company, street, city, country, pcode, cod, status FROM {$table} WHERE status = 1";
+	$params = array();
+	if ( $country !== '' ) {
+		if ( ! in_array( $country, $allowed, true ) ) {
+			return array();
+		}
+		$sql     .= ' AND country = %s';
+		$params[] = $country;
+	}
+	if ( $search !== '' ) {
+		$like     = '%' . $wpdb->esc_like( $search ) . '%';
+		$city     = $wpdb->esc_like( $search ) . '%';
+		$sql     .= ' AND (company LIKE %s OR city LIKE %s OR street LIKE %s OR pcode LIKE %s)';
+		$params[] = $like;
+		$params[] = $city;
+		$params[] = $like;
+		$params[] = $like;
+	}
+	$sql     .= ' ORDER BY city ASC, company ASC LIMIT %d';
+	$params[] = $limit;
+
+	$rows = $wpdb->get_results( $wpdb->prepare( $sql, $params ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is prefix-safe; query is prepared.
+	return is_array( $rows ) ? $rows : array();
+}
+
+/**
+ * One pickup-point row label.
+ *
+ * @param object $terminal Terminal row.
+ * @return string
+ */
+function nh_checkout_dpd_terminal_label( $terminal ) {
+	if ( ! is_object( $terminal ) ) {
+		return '';
+	}
+	$company = isset( $terminal->company ) ? trim( (string) $terminal->company ) : '';
+	$street  = isset( $terminal->street ) ? trim( (string) $terminal->street ) : '';
+	$city    = isset( $terminal->city ) ? trim( (string) $terminal->city ) : '';
+	$pcode   = isset( $terminal->pcode ) ? trim( (string) $terminal->pcode ) : '';
+	$parts   = array_filter( array( $company, $street, $city, $pcode ) );
+	return implode( ', ', $parts );
+}
+
+/**
+ * HTML list items for pickup points.
+ *
+ * @param array  $terminals Terminal rows.
+ * @param string $selected  Selected parcelshop id.
+ * @return string
+ */
+function nh_checkout_dpd_points_html( $terminals, $selected = '' ) {
+	if ( ! is_array( $terminals ) || ! $terminals ) {
+		return '<div class="pudo nh-dpd-pickup__empty" data-value="">' . esc_html__( 'The Pickup Point is empty', 'nh-theme' ) . '</div>';
+	}
+
+	$html       = '';
+	$last_city  = null;
+	$selected   = (string) $selected;
+	foreach ( $terminals as $terminal ) {
+		if ( ! is_object( $terminal ) || ( isset( $terminal->status ) && (string) $terminal->status !== '1' ) ) {
+			continue;
+		}
+		$city = isset( $terminal->city ) ? (string) $terminal->city : '';
+		if ( $city !== '' && $city !== $last_city ) {
+			$html     .= '<div class="group-pudo">' . esc_html( $city ) . '</div>';
+			$last_city = $city;
+		}
+		$id    = isset( $terminal->parcelshop_id ) ? (string) $terminal->parcelshop_id : '';
+		$cod   = isset( $terminal->cod ) ? (string) $terminal->cod : '';
+		$label = nh_checkout_dpd_terminal_label( $terminal );
+		$class = 'pudo';
+		if ( $selected !== '' && $selected === $id ) {
+			$class .= ' is-selected';
+		}
+		$html .= '<div class="' . esc_attr( $class ) . '" data-cod="' . esc_attr( $cod ) . '" data-value="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</div>';
+	}
+	if ( $html === '' ) {
+		return '<div class="pudo nh-dpd-pickup__empty" data-value="">' . esc_html__( 'The Pickup Point is empty', 'nh-theme' ) . '</div>';
+	}
+	return $html;
+}
+
+/**
+ * Pickup-point dropdown markup that lives inside the DPD shipping method <li>.
+ *
+ * @param string $method_id Rate id.
+ * @param string $selected  Selected parcelshop id.
+ * @return string
+ */
+function nh_checkout_dpd_pickup_markup( $method_id, $selected = '' ) {
+	$field     = nh_checkout_dpd_field_name( $method_id );
+	$selected  = (string) $selected;
+	$terminals = nh_checkout_dpd_terminals( '', 80 );
+	$label     = __( 'Choose a Pickup Point', 'nh-theme' );
+	$current   = $label;
+	if ( $selected !== '' ) {
+		foreach ( $terminals as $terminal ) {
+			if ( is_object( $terminal ) && isset( $terminal->parcelshop_id ) && (string) $terminal->parcelshop_id === $selected ) {
+				$current = nh_checkout_dpd_terminal_label( $terminal );
+				break;
+			}
+		}
+	}
+
+	$html  = '<div class="nh-checkout-shipping-extra nh-dpd-pickup" data-nh-dpd-pickup="1">';
+	$html .= '<p class="nh-checkout-shipping-extra__label">' . esc_html( $label ) . ' <abbr class="required" title="required">*</abbr></p>';
+	$html .= '<div class="custom-dropdown nh-dpd-pickup__dropdown">';
+	$html .= '<div class="selected-option" role="button" tabindex="0">' . esc_html( $current ) . '</div>';
+	$html .= '<div class="dropdown-list">';
+	$html .= '<div class="dropdown-list-search-input"><input type="search" class="js--nh-pudo-search" autocomplete="off" placeholder="' . esc_attr__( 'Search pickup point', 'nh-theme' ) . '"></div>';
+	$html .= '<div class="dropdown-list-search-list">' . nh_checkout_dpd_points_html( $terminals, $selected ) . '</div>';
+	$html .= '</div></div>';
+	$html .= '<input type="hidden" name="' . esc_attr( $field ) . '" id="' . esc_attr( $field ) . '" value="' . esc_attr( $selected ) . '" />';
+	$html .= '</div>';
+	return $html;
 }
 
 /**
  * DPD Baltic prints pickup points as a <tr> after shipping in #order_review.
- * That row never reaches the delivery methods list. Render it under the DPD rate
- * so it moves with #shipping_method.
+ * That row never reaches the delivery methods list. Render a real picker under
+ * the DPD rate (and stop the plugin from emitting the leftover table row).
  *
  * @param object $method Shipping rate.
  * @param int    $index  Package index.
@@ -72,7 +260,7 @@ function nh_checkout_dpd_pickup_under_method( $method, $index ) {
 		return;
 	}
 	$id = isset( $method->id ) ? (string) $method->id : '';
-	if ( strpos( $id, 'dpd_parcels' ) !== 0 && strpos( $id, 'dpd_sameday_parcels' ) !== 0 ) {
+	if ( ! nh_checkout_dpd_is_parcels_method( $id ) ) {
 		return;
 	}
 
@@ -82,27 +270,79 @@ function nh_checkout_dpd_pickup_under_method( $method, $index ) {
 		return;
 	}
 
+	static $printed = false;
+	if ( $printed ) {
+		return;
+	}
+	$printed = true;
+
+	// DPD Baltic skips its after-shipping <tr> when this global is set. That <tr>
+	// cannot live in #nh-checkout-shipping-mount, so print our picker instead.
 	global $is_hook_executed;
-	if ( ! empty( $is_hook_executed ) ) {
-		return;
+	$is_hook_executed = true;
+
+	$field    = nh_checkout_dpd_field_name( $id );
+	$selected = '';
+	if ( function_exists( 'WC' ) && WC()->session ) {
+		$selected = (string) WC()->session->get( $field );
+		if ( $selected === '' ) {
+			$selected = (string) WC()->session->get( 'terminal' );
+		}
 	}
 
-	static $running = false;
-	if ( $running ) {
-		return;
-	}
-	$running = true;
-	ob_start();
-	do_action( 'woocommerce_review_order_after_shipping' );
-	$html = trim( (string) ob_get_clean() );
-	$running = false;
-	if ( $html === '' ) {
-		return;
-	}
+	echo nh_checkout_dpd_pickup_markup( $id, $selected ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper.
+}
 
-	echo '<div class="nh-checkout-shipping-extra nh-dpd-pickup">';
-	echo nh_checkout_dpd_inner_html( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- DPD plugin markup.
-	echo '</div>';
+/**
+ * DPD’s classic search posts search_value, but the plugin reads $_REQUEST['q'].
+ */
+function nh_checkout_fix_dpd_search_query() {
+	$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( (string) $_REQUEST['action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $action !== 'search_pudo' ) {
+		return;
+	}
+	$q = isset( $_REQUEST['q'] ) ? trim( (string) wp_unslash( $_REQUEST['q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( $q !== '' ) {
+		return;
+	}
+	$alt = isset( $_REQUEST['search_value'] ) ? sanitize_text_field( wp_unslash( (string) $_REQUEST['search_value'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $alt === '' ) {
+		return;
+	}
+	$_REQUEST['q'] = $alt;
+	$_POST['q']    = $alt;
+	$_GET['q']     = $alt;
+}
+
+/**
+ * Theme AJAX: search DPD lockers without depending on the plugin’s q/search_value mix-up.
+ */
+function nh_checkout_ajax_search_dpd_pudo() {
+	$q = '';
+	if ( isset( $_REQUEST['q'] ) && is_scalar( $_REQUEST['q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$q = sanitize_text_field( wp_unslash( (string) $_REQUEST['q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	} elseif ( isset( $_REQUEST['search_value'] ) && is_scalar( $_REQUEST['search_value'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$q = sanitize_text_field( wp_unslash( (string) $_REQUEST['search_value'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
+	$terminals = nh_checkout_dpd_terminals( $q, 100 );
+	wp_send_json(
+		array(
+			'terminals' => $terminals,
+			'html'      => nh_checkout_dpd_points_html( $terminals ),
+		)
+	);
+}
+
+/**
+ * Persist the selected locker so DPD Baltic’s checkout validator sees it.
+ */
+function nh_checkout_ajax_set_dpd_terminal() {
+	$id = isset( $_POST['selected_value'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['selected_value'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( $id !== '' && function_exists( 'WC' ) && WC()->session ) {
+		WC()->session->set( 'terminal', $id );
+		WC()->session->set( 'wc_shipping_dpd_parcels_terminal', $id );
+	}
+	wp_send_json_success( array( 'id' => $id ) );
 }
 
 /**
@@ -250,6 +490,11 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
 	add_action( 'woocommerce_after_shipping_rate', 'nh_checkout_dpd_pickup_under_method', 20, 2 );
+	nh_checkout_fix_dpd_search_query();
+	add_action( 'wp_ajax_nh_search_dpd_pudo', 'nh_checkout_ajax_search_dpd_pudo' );
+	add_action( 'wp_ajax_nopriv_nh_search_dpd_pudo', 'nh_checkout_ajax_search_dpd_pudo' );
+	add_action( 'wp_ajax_nh_set_dpd_terminal', 'nh_checkout_ajax_set_dpd_terminal' );
+	add_action( 'wp_ajax_nopriv_nh_set_dpd_terminal', 'nh_checkout_ajax_set_dpd_terminal' );
 	add_filter( 'wc_get_template', 'nh_checkout_force_woo_form_until_iframe', 1000, 2 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_checkout_step', 0 );
 	add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_sync_payment_method_session', 999 );
@@ -1612,6 +1857,10 @@ function nh_checkout_ux_assets() {
 			'inclShipping'    => __( 'Shipping: %s', 'nh-theme' ),
 			'productsCount'   => __( '%d product', 'nh-theme' ),
 			'productsCountMany' => __( '%d products', 'nh-theme' ),
+			'dpdChoose'       => __( 'Choose a Pickup Point', 'nh-theme' ),
+			'dpdSearch'       => __( 'Search pickup point', 'nh-theme' ),
+			'dpdEmpty'        => __( 'The Pickup Point is empty', 'nh-theme' ),
+			'dpdAjax'         => admin_url( 'admin-ajax.php' ),
 		)
 	);
 }

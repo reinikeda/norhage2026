@@ -35,12 +35,14 @@ $calculator_text          = '';
 			<ul id="shipping_method" class="woocommerce-shipping-methods">
 				<?php foreach ( $available_methods as $method ) : ?>
 					<li>
+						<div class="nh-shipping-method-row">
 						<?php
 						$is_chosen = ( $method->id === $chosen_method ) || ( 1 === count( $available_methods ) );
 						printf( '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%3$s" class="shipping_method" %4$s />', $index, esc_attr( sanitize_title( $method->id ) ), esc_attr( $method->id ), checked( $is_chosen, true, false ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- %1$d normalizes the package index; the remaining values are escaped or safe attribute markup.
 						printf( '<label for="shipping_method_%1$d_%2$s">%3$s</label>', $index, esc_attr( sanitize_title( $method->id ) ), wc_cart_totals_shipping_method_label( $method ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- %1$d normalizes the package index; the shipping method label is intentionally filterable HTML.
-						do_action( 'woocommerce_after_shipping_rate', $method, $index );
 						?>
+						</div>
+						<?php do_action( 'woocommerce_after_shipping_rate', $method, $index ); ?>
 					</li>
 				<?php endforeach; ?>
 			</ul>
