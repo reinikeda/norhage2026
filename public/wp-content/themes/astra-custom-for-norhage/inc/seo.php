@@ -1,9 +1,9 @@
 <?php
 /**
- * Technical SEO: hreflang, schema, crawler signals, Yoast quality filters.
+ * Technical SEO: schema, crawler signals, Yoast quality filters.
  *
  * Live shops (same theme, per-domain language):
- *   norhage.eu (en, x-default), .de, .dk, .se, .no, .fi, .lt
+ *   norhage.eu, .de, .dk, .se, .no, .fi, .lt
  *
  * Yoast SEO is installed on the servers (not in this repo). Filters no-op if Yoast is off.
  *
@@ -29,13 +29,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Shop network used for homepage hreflang.
+ * Shop network used for per-domain context (areaServed, contact point, return policy).
  *
- * Homepage hreflang is host-based (complete, reciprocal, no SKU lookup).
- * Product SKU hreflang is disabled: catalogs do not overlap, so partial
- * clusters confused crawlers more than having no product annotations.
- *
- * @return array<string, array{host:string, hreflang:string, x_default:bool, area:string, country:string}>
+ * @return array<string, array{host:string, area:string, country:string}>
  */
 function nh_seo_shop_network() {
 	static $shops = null;
@@ -45,53 +41,39 @@ function nh_seo_shop_network() {
 
 	$shops = array(
 		'eu' => array(
-			'host'      => 'norhage.eu',
-			'hreflang'  => 'en',
-			'x_default' => true,
-			'area'      => 'EU',
-			'country'   => 'DE',
+			'host'    => 'norhage.eu',
+			'area'    => 'EU',
+			'country' => 'DE',
 		),
 		'de' => array(
-			'host'      => 'norhage.de',
-			'hreflang'  => 'de-DE',
-			'x_default' => false,
-			'area'      => 'DE',
-			'country'   => 'DE',
+			'host'    => 'norhage.de',
+			'area'    => 'DE',
+			'country' => 'DE',
 		),
 		'dk' => array(
-			'host'      => 'norhage.dk',
-			'hreflang'  => 'da-DK',
-			'x_default' => false,
-			'area'      => 'DK',
-			'country'   => 'DK',
+			'host'    => 'norhage.dk',
+			'area'    => 'DK',
+			'country' => 'DK',
 		),
 		'se' => array(
-			'host'      => 'norhage.se',
-			'hreflang'  => 'sv-SE',
-			'x_default' => false,
-			'area'      => 'SE',
-			'country'   => 'SE',
+			'host'    => 'norhage.se',
+			'area'    => 'SE',
+			'country' => 'SE',
 		),
 		'no' => array(
-			'host'      => 'norhage.no',
-			'hreflang'  => 'nb-NO',
-			'x_default' => false,
-			'area'      => 'NO',
-			'country'   => 'NO',
+			'host'    => 'norhage.no',
+			'area'    => 'NO',
+			'country' => 'NO',
 		),
 		'fi' => array(
-			'host'      => 'norhage.fi',
-			'hreflang'  => 'fi-FI',
-			'x_default' => false,
-			'area'      => 'FI',
-			'country'   => 'FI',
+			'host'    => 'norhage.fi',
+			'area'    => 'FI',
+			'country' => 'FI',
 		),
 		'lt' => array(
-			'host'      => 'norhage.lt',
-			'hreflang'  => 'lt-LT',
-			'x_default' => false,
-			'area'      => 'LT',
-			'country'   => 'LT',
+			'host'    => 'norhage.lt',
+			'area'    => 'LT',
+			'country' => 'LT',
 		),
 	);
 
@@ -117,7 +99,7 @@ function nh_seo_current_host() {
 /**
  * Current shop row from the network map, or null.
  *
- * @return array{host:string, hreflang:string, x_default:bool, area:string, country:string}|null
+ * @return array{host:string, area:string, country:string}|null
  */
 function nh_seo_current_shop() {
 	$host = nh_seo_current_host();
@@ -141,53 +123,12 @@ function nh_seo_jsonld( $data ) {
 }
 
 /**
- * Print llms.txt discovery link and homepage hreflang cluster.
+ * Print llms.txt discovery link.
  */
 function nh_seo_print_head_links() {
 	echo '<link rel="alternate" type="text/plain" title="llms.txt" href="' . esc_url( home_url( '/llms.txt' ) ) . '" />' . "\n";
-
-	$cluster = nh_seo_hreflang_cluster();
-	if ( empty( $cluster ) ) {
-		return;
-	}
-
-	$x_default = '';
-	foreach ( $cluster as $row ) {
-		if ( empty( $row['hreflang'] ) || empty( $row['url'] ) ) {
-			continue;
-		}
-		echo '<link rel="alternate" hreflang="' . esc_attr( $row['hreflang'] ) . '" href="' . esc_url( $row['url'] ) . '" />' . "\n";
-		if ( ! empty( $row['x_default'] ) ) {
-			$x_default = $row['url'];
-		}
-	}
-
-	if ( $x_default !== '' ) {
-		echo '<link rel="alternate" hreflang="x-default" href="' . esc_url( $x_default ) . '" />' . "\n";
-	}
 }
 add_action( 'wp_head', 'nh_seo_print_head_links', 2 );
-
-/**
- * Hreflang rows for the current request.
- *
- * @return array<int, array{hreflang:string, url:string, x_default:bool}>
- */
-function nh_seo_hreflang_cluster() {
-	if ( is_front_page() ) {
-		$rows = array();
-		foreach ( nh_seo_shop_network() as $shop ) {
-			$rows[] = array(
-				'hreflang'  => $shop['hreflang'],
-				'url'       => 'https://' . $shop['host'] . '/',
-				'x_default' => ! empty( $shop['x_default'] ),
-			);
-		}
-		return $rows;
-	}
-
-	return array();
-}
 
 /**
  * Organization details shared with JSON-LD.
