@@ -147,11 +147,11 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 
 	if ( $show_icons === '1' ) {
 		$svg_width = '<span class="nh-dim-icon nh-dim-icon--width" aria-hidden="true">'
-			. '<img src="' . esc_url( $icon_base . 'multiwall-width.svg' ) . '" alt="" width="48" height="48">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-width.svg' ) . '" alt="' . esc_attr__( 'Width', 'nh-theme' ) . '" width="48" height="48">'
 			. '</span>';
 
 		$svg_length = '<span class="nh-dim-icon nh-dim-icon--length" aria-hidden="true">'
-			. '<img src="' . esc_url( $icon_base . 'multiwall-length.svg' ) . '" alt="" width="48" height="48">'
+			. '<img src="' . esc_url( $icon_base . 'multiwall-length.svg' ) . '" alt="' . esc_attr__( 'Length', 'nh-theme' ) . '" width="48" height="48">'
 			. '</span>';
 	}
 

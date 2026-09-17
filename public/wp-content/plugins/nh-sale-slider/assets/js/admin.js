@@ -13,6 +13,7 @@ jQuery(function ($) {
     frame.on('select', function () {
       var att = frame.state().get('selection').first().toJSON();
       $wrap.find('input.nhss-url').val(att.url).trigger('change');
+      $wrap.find('input.nhss-id').val(att.id || '');
       $wrap.find('img.nhss-preview').attr('src', att.url).show();
     });
 
@@ -23,6 +24,12 @@ jQuery(function ($) {
     e.preventDefault();
     var $wrap = $(this).closest('.nhss-media-wrap');
     $wrap.find('input.nhss-url').val('').trigger('change');
+    $wrap.find('input.nhss-id').val('');
     $wrap.find('img.nhss-preview').attr('src', '').hide();
+  });
+
+  // Manual URL edits are no longer tied to the previously selected attachment.
+  $(document).on('input', 'input.nhss-url', function () {
+    $(this).closest('.nhss-media-wrap').find('input.nhss-id').val('');
   });
 });

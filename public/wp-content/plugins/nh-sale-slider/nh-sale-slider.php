@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sale Slider
  * Description: Admin-managed date-ranged image slider shown on WooCommerce product category archives.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: Daiva Reinike
  * Text Domain: nh-sale-slider
  */
@@ -31,6 +31,88 @@ function nhss_get_slides_raw() {
     $slides = get_option(NH_SALE_SLIDER_OPT, []);
     return is_array($slides) ? $slides : [];
 }
+
+/**
+ * Relative uploads path from a full attachment URL.
+ * Strips query strings and WordPress size suffixes (-800x600, -scaled).
+ *
+ * @param string $url
+ * @return string
+ */
+function nhss_uploads_relative_path($url) {
+    $url = (string) $url;
+    $qpos = strpos($url, '?');
+    if ($qpos !== false) {
+        $url = substr($url, 0, $qpos);
+    }
+    if ($url === '') {
+        return '';
+    }
+
+    if (!preg_match('#/uploads/(.+)$#', $url, $m)) {
+        return '';
+    }
+
+    $path = ltrim(rawurldecode($m[1]), '/');
+    $path = preg_replace('/-\d+x\d+(?=\.[a-z0-9]+$)/i', '', $path);
+    $path = preg_replace('/-scaled(?=\.[a-z0-9]+$)/i', '', $path);
+
+    return $path ?: '';
+}
+
+/**
+ * Resolve a media-library attachment ID from a stored image URL.
+ *
+ * @param string $url
+ * @return int
+ */
+function nhss_attachment_id_from_url($url) {
+    $url = trim((string) $url);
+    if ($url === '') {
+        return 0;
+    }
+
+    $id = attachment_url_to_postid($url);
+    if ($id) {
+        return (int) $id;
+    }
+
+    $path = nhss_uploads_relative_path($url);
+    if ($path === '') {
+        return 0;
+    }
+
+    global $wpdb;
+    $found = $wpdb->get_var($wpdb->prepare(
+        "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value = %s LIMIT 1",
+        $path
+    ));
+
+    return $found ? (int) $found : 0;
+}
+
+/**
+ * Media-library alt for a slide, with a translatable fallback.
+ *
+ * @param array $slide
+ * @return string
+ */
+function nhss_slide_alt($slide) {
+    $id = !empty($slide['image_id']) ? (int) $slide['image_id'] : 0;
+    if (!$id && !empty($slide['image'])) {
+        $id = nhss_attachment_id_from_url($slide['image']);
+    }
+
+    if ($id) {
+        $alt = trim(wp_strip_all_tags((string) get_post_meta($id, '_wp_attachment_image_alt', true)));
+        if ($alt !== '') {
+            return $alt;
+        }
+    }
+
+    return __('Sale', 'nh-sale-slider');
+}
+
 function nhss_get_active_slides() {
     $slides = nhss_get_slides_raw();
     if (empty($slides)) return [];
@@ -97,12 +179,32 @@ function nhss_settings_page() {
 
         foreach (range(0, 4) as $i) {
             $slide = isset($raw[$i]) && is_array($raw[$i]) ? $raw[$i] : [];
+            $image   = esc_url_raw($slide['image']   ?? '');
+            $image_m = esc_url_raw($slide['image_m'] ?? '');
+            $image_id   = absint($slide['image_id']   ?? 0);
+            $image_m_id = absint($slide['image_m_id'] ?? 0);
+
+            if ($image && !$image_id) {
+                $image_id = nhss_attachment_id_from_url($image);
+            }
+            if ($image_m && !$image_m_id) {
+                $image_m_id = nhss_attachment_id_from_url($image_m);
+            }
+            if ($image === '') {
+                $image_id = 0;
+            }
+            if ($image_m === '') {
+                $image_m_id = 0;
+            }
+
             $clean[$i] = [
-                'image'   => esc_url_raw($slide['image']   ?? ''),
-                'image_m' => esc_url_raw($slide['image_m'] ?? ''), // optional
-                'url'     => esc_url_raw($slide['url']     ?? ''),
-                'start'   => preg_replace('~[^0-9\-]~', '', $slide['start'] ?? ''),
-                'end'     => preg_replace('~[^0-9\-]~', '', $slide['end']   ?? ''),
+                'image'      => $image,
+                'image_m'    => $image_m,
+                'image_id'   => $image_id,
+                'image_m_id' => $image_m_id,
+                'url'        => esc_url_raw($slide['url'] ?? ''),
+                'start'      => preg_replace('~[^0-9\-]~', '', $slide['start'] ?? ''),
+                'end'        => preg_replace('~[^0-9\-]~', '', $slide['end']   ?? ''),
             ];
         }
 
@@ -119,7 +221,7 @@ function nhss_settings_page() {
             <table class="form-table" role="presentation">
                 <tbody>
                 <?php for ($i = 0; $i < 5; $i++):
-                    $defaults = ['image'=>'','image_m'=>'','url'=>'','start'=>'','end'=>''];
+                    $defaults = ['image'=>'','image_m'=>'','image_id'=>0,'image_m_id'=>0,'url'=>'','start'=>'','end'=>''];
                     $s = isset($slides[$i]) && is_array($slides[$i]) ? array_merge($defaults, $slides[$i]) : $defaults;
 
                     $desk = esc_attr($s['image']);
@@ -131,6 +233,7 @@ function nhss_settings_page() {
                             <div class="nhss-media-wrap">
                                 <label><strong><?php esc_html_e('Image URL (Desktop, 3:1)', 'nh-sale-slider'); ?></strong></label><br>
                                 <input class="nhss-url" type="text" name="sale_slider_data[<?php echo $i; ?>][image]" value="<?php echo $desk; ?>" style="width:100%;" />
+                                <input class="nhss-id" type="hidden" name="sale_slider_data[<?php echo $i; ?>][image_id]" value="<?php echo esc_attr((int) $s['image_id']); ?>" />
                                 <div class="nhss-controls">
                                     <button type="button" class="button nhss-media-select"><?php esc_html_e('Select image', 'nh-sale-slider'); ?></button>
                                     <button type="button" class="button nhss-media-remove"><?php esc_html_e('Remove', 'nh-sale-slider'); ?></button>
@@ -144,6 +247,7 @@ function nhss_settings_page() {
                             <div class="nhss-media-wrap">
                                 <label><strong><?php esc_html_e('Image URL (Mobile, optional, 4:3)', 'nh-sale-slider'); ?></strong></label><br>
                                 <input class="nhss-url" type="text" name="sale_slider_data[<?php echo $i; ?>][image_m]" value="<?php echo $mob; ?>" style="width:100%;" />
+                                <input class="nhss-id" type="hidden" name="sale_slider_data[<?php echo $i; ?>][image_m_id]" value="<?php echo esc_attr((int) $s['image_m_id']); ?>" />
                                 <div class="nhss-controls">
                                     <button type="button" class="button nhss-media-select"><?php esc_html_e('Select image', 'nh-sale-slider'); ?></button>
                                     <button type="button" class="button nhss-media-remove"><?php esc_html_e('Remove', 'nh-sale-slider'); ?></button>
@@ -188,12 +292,13 @@ add_action('woocommerce_after_shop_loop', function () {
         $url        = !empty($s['url']) ? esc_url($s['url']) : '#';
         $img_desktop= esc_url($s['image'] ?? '');
         $img_mobile = !empty($s['image_m']) ? esc_url($s['image_m']) : '';
+        $alt        = esc_attr(nhss_slide_alt($s));
 
         echo '<div class="swiper-slide">';
-        echo   '<a class="sale-slide-link" href="'.$url.'" aria-label="'.esc_attr__('Sale slide', 'nh-sale-slider').'">';
+        echo   '<a class="sale-slide-link" href="'.$url.'">';
         echo     '<picture>';
         if ($img_mobile) echo '<source media="(max-width: 640px)" srcset="'.$img_mobile.'">';
-        echo       '<img src="'.$img_desktop.'" alt="" loading="lazy" decoding="async" />';
+        echo       '<img src="'.$img_desktop.'" alt="'.$alt.'" loading="lazy" decoding="async" />';
         echo     '</picture>';
         echo   '</a>';
         echo '</div>';
