@@ -1337,24 +1337,69 @@ body.woocommerce-checkout.nh-checkout-form .nh-field-hint:empty {
   display: none;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods ul {
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul#shipping_method,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul.woocommerce-shipping-methods {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li {
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "radio label"
+    "extra extra";
   align-items: start;
-  gap: 8px;
-  margin: 0 0 0.5rem;
+  column-gap: 10px;
+  row-gap: 10px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: visible;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .nh-checkout-shipping-extra,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .custom-dropdown,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods li .nh-dpd-pickup {
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > input.shipping_method {
+  grid-area: radio;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > label {
+  grid-area: label;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > .nh-checkout-shipping-extra,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > .nh-dpd-pickup {
+  grid-area: extra;
   grid-column: 1 / -1;
+  position: relative;
+  z-index: auto;
+  width: 100%;
+  min-width: 0;
+  margin: 2px 0 0;
+  height: auto !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .dpd-carrier-icon-image-holder {
+  margin-left: auto;
+  flex: 0 0 auto;
+  line-height: 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .dpd_carrier_icon {
+  display: block;
+  max-width: 72px;
+  max-height: 28px;
+  width: auto;
+  height: auto;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods input.shipping_method {
@@ -1379,8 +1424,8 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-shipping-extra {
   position: relative;
   display: block;
   width: 100%;
-  margin-top: 0.85rem;
-  z-index: 3;
+  margin-top: 0;
+  z-index: auto;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-shipping-extra__label {
@@ -1390,45 +1435,82 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-shipping-extra__label {
   font-weight: 700;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown {
-  display: block;
-  position: relative;
-  width: 100%;
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup,
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .custom-dropdown {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown .selected-option {
   display: block;
   width: 100%;
   box-sizing: border-box;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 10px;
+  background: #fff;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown .dropdown-list {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 20;
+  position: static !important;
+  left: auto;
+  right: auto;
+  z-index: 1;
   display: none;
-  max-height: min(420px, 70vh);
+  max-height: min(280px, 50vh);
   overflow-y: auto;
+  margin-top: 6px;
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 10px;
+  background: #fff;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown .dropdown-list.active {
-  display: block;
+  display: block !important;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .nh-checkout-shipping-extra ul,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown ul {
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .js--nh-pudo-search {
   display: block;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0;
-  padding: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 10px 10px 0 0;
+  font-size: 1rem;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .nh-checkout-shipping-extra li,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown li {
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .group-pudo,
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .pudo {
   display: block;
-  grid-template-columns: none;
   margin: 0;
-  padding: 10px;
+  padding: 10px 14px;
+  line-height: 1.35;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .group-pudo {
+  font-weight: 700;
+  color: var(--nh-forest, #1e3932);
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .pudo {
+  cursor: pointer;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .pudo.is-selected,
+body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .pudo:hover {
+  background: #f3faf6;
+}
+
+body.woocommerce-checkout.nh-checkout-form:has(#nh-checkout-shipping-mount .nh-dpd-pickup) #order_review table.shop_table tr.wc_shipping_dpd_terminals,
+body.woocommerce-checkout.nh-checkout-form:has(#nh-checkout-shipping-mount .nh-dpd-pickup) #order_review table.shop_table tr[class*="wc_shipping_dpd"] {
+  display: none !important;
 }
 
 body.woocommerce-checkout.nh-checkout-form #order_review tr.wc_shipping_dpd_terminals,
