@@ -213,7 +213,7 @@ function nh_checkout_dpd_points_html( $terminals, $selected = '' ) {
 }
 
 /**
- * Pickup-point dropdown markup that lives inside the DPD shipping method <li>.
+ * Pickup-point dropdown markup that sits under the DPD shipping method.
  *
  * @param string $method_id Rate id.
  * @param string $selected  Selected parcelshop id.
@@ -249,8 +249,8 @@ function nh_checkout_dpd_pickup_markup( $method_id, $selected = '' ) {
 
 /**
  * DPD Baltic prints pickup points as a <tr> after shipping in #order_review.
- * That row never reaches the delivery methods list. Render a real picker under
- * the DPD rate (and stop the plugin from emitting the leftover table row).
+ * That row never reaches the delivery methods list. Render a real picker after
+ * the DPD rate <li> (and stop the plugin from emitting the leftover table row).
  *
  * @param object $method Shipping rate.
  * @param int    $index  Package index.
@@ -489,7 +489,6 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_order_button_text', 'nh_checkout_place_order_button_text', 30, 1 );
 	add_filter( 'woocommerce_shipping_rate_label', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_shipping_package_name', 'nh_checkout_translate_shipping_package_name', 20, 3 );
-	add_action( 'woocommerce_after_shipping_rate', 'nh_checkout_dpd_pickup_under_method', 20, 2 );
 	nh_checkout_fix_dpd_search_query();
 	add_action( 'wp_ajax_nh_search_dpd_pudo', 'nh_checkout_ajax_search_dpd_pudo' );
 	add_action( 'wp_ajax_nopriv_nh_search_dpd_pudo', 'nh_checkout_ajax_search_dpd_pudo' );
