@@ -1844,13 +1844,52 @@
     });
   }
 
+  function dpdPickupSelected() {
+    var val = String(
+      $('#nh-checkout-shipping-mount input.shipping_method:checked, form.checkout input.shipping_method:checked').first().val() || ''
+    );
+    return val.indexOf('parcels') !== -1;
+  }
+
+  function ensureDpdPickupUi($mount) {
+    if (!dpdPickupSelected()) {
+      return;
+    }
+    if ($(
+      '#wc_shipping_dpd_parcels_terminal, #wc_shipping_dpd_sameday_parcels_terminal, .custom-dropdown, #dpd-show-parcel-modal'
+    ).length) {
+      return;
+    }
+    var $li = $mount.find('input.shipping_method:checked').closest('li');
+    if (!$li.length) {
+      return;
+    }
+    var $wrap = $('<div class="nh-checkout-shipping-extra nh-dpd-pickup"></div>');
+    $wrap.append($('<p class="nh-checkout-shipping-extra__label"></p>').text('Choose a Pickup Point'));
+    $wrap.append(
+      '<div class="custom-dropdown">' +
+        '<div class="selected-option">Choose a Pickup Point</div>' +
+        '<ul class="dropdown-list">' +
+          '<div class="dropdown-list-search-input"><input type="text" class="js--pudo-search" style="width:100%;padding:1rem;" placeholder="Search"></div>' +
+          '<div class="dropdown-list-search-list"></div>' +
+        '</ul>' +
+      '</div>' +
+      '<input type="hidden" name="wc_shipping_dpd_parcels_terminal" id="wc_shipping_dpd_parcels_terminal" value="" />'
+    );
+    $li.append($wrap);
+    window.setTimeout(function () {
+      $wrap.find('.js--pudo-search').trigger('input');
+    }, 50);
+  }
+
   function placeShippingExtras($mount) {
     var $extras = shippingExtraRows();
     if (!$extras.length) {
-      $mount.find('.nh-checkout-shipping-extra').remove();
+      $mount.children('.nh-checkout-shipping-extra').remove();
+      ensureDpdPickupUi($mount);
       return;
     }
-    $mount.find('.nh-checkout-shipping-extra').remove();
+    $mount.children('.nh-checkout-shipping-extra').remove();
     $extras.each(function () {
       var $tr = $(this);
       var label = $.trim(
@@ -1861,7 +1900,12 @@
         $wrap.append($('<p class="nh-checkout-shipping-extra__label"></p>').text(label));
       }
       $wrap.append($tr.children('td').contents());
-      $mount.append($wrap);
+      var $chosenLi = $mount.find('input.shipping_method:checked').closest('li');
+      if ($chosenLi.length) {
+        $chosenLi.append($wrap);
+      } else {
+        $mount.append($wrap);
+      }
       $tr.remove();
     });
   }
@@ -1876,7 +1920,8 @@
     var $methods = $cell.find('ul#shipping_method, ul.woocommerce-shipping-methods, select.shipping_method').first();
     if ($methods.length && !$mount[0].contains($methods[0])) {
       var chosen = $.trim(
-        $methods.find('input:checked').closest('li').clone().children('input, .woocommerce-Price-amount').remove().end().text() ||
+        $methods.find('input:checked').closest('li').find('label').first().clone()
+          .find('.woocommerce-Price-amount, .dpd-carrier-icon-image-holder, .nh-checkout-shipping-extra').remove().end().text() ||
         $methods.find('option:selected').text() ||
         ''
       );
