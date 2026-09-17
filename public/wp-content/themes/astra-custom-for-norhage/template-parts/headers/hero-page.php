@@ -24,9 +24,18 @@ if ( $fallback === '' && ! empty( $hero['bg'] ) ) {
 	$fallback = $hero['bg'];
 }
 
+// Theme-bundled fallback is not in the media library, so alt is set here.
+$hero_alt = $title;
+if ( $thumb_id && function_exists( 'nh_get_attachment_alt' ) ) {
+	$hero_alt = nh_get_attachment_alt( $thumb_id, $title );
+}
+if ( $hero_alt === '' ) {
+	$hero_alt = get_bloginfo( 'name' );
+}
+
 $img_attr = array(
 	'class'          => 'nhhb-hero__media skip-lazy no-lazyload',
-	'alt'            => '',
+	'alt'            => $hero_alt,
 	'loading'        => 'eager',
 	'fetchpriority'  => 'high',
 	'decoding'       => 'async',
@@ -47,7 +56,7 @@ $img_attr = array(
 		<img
 			class="<?php echo esc_attr( $img_attr['class'] ); ?>"
 			src="<?php echo esc_url( $fallback ); ?>"
-			alt=""
+			alt="<?php echo esc_attr( $hero_alt ); ?>"
 			width="1920"
 			height="640"
 			loading="eager"
