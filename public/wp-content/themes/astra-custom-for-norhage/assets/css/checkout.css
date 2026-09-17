@@ -1344,30 +1344,36 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul.w
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "radio label"
-    "extra extra";
-  align-items: start;
-  column-gap: 10px;
-  row-gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
   margin: 0;
   padding: 0;
   position: relative;
   overflow: visible;
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > input.shipping_method {
-  grid-area: radio;
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .nh-shipping-method-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: 10px;
+  row-gap: 8px;
 }
 
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .nh-shipping-method-row > input.shipping_method,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > input.shipping_method {
+  flex: 0 0 auto;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .nh-shipping-method-row > label,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > label {
-  grid-area: label;
+  flex: 1 1 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1378,14 +1384,19 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul >
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > .nh-checkout-shipping-extra,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li > .nh-dpd-pickup {
-  grid-area: extra;
-  grid-column: 1 / -1;
+  display: block;
   position: relative;
-  z-index: auto;
+  z-index: 1;
   width: 100%;
   min-width: 0;
-  margin: 2px 0 0;
+  margin: 0;
+  padding: 0 0 4px;
   height: auto !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods > ul > li:has(.nh-dpd-pickup) + li {
+  position: relative;
+  z-index: 0;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .dpd-carrier-icon-image-holder {
@@ -1439,14 +1450,20 @@ body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup,
 body.woocommerce-checkout.nh-checkout-form .nh-dpd-pickup .custom-dropdown {
   display: block !important;
   position: relative !important;
+  float: none !important;
+  inset: auto !important;
   width: 100% !important;
   height: auto !important;
   max-height: none !important;
+  min-height: 0 !important;
   overflow: visible !important;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown .selected-option {
   display: block;
+  position: relative !important;
+  float: none !important;
+  inset: auto !important;
   width: 100%;
   box-sizing: border-box;
   min-height: 48px;
@@ -1458,8 +1475,10 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custo
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery__methods .custom-dropdown .dropdown-list {
   position: static !important;
-  left: auto;
-  right: auto;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
   z-index: 1;
   display: none;
   max-height: min(280px, 50vh);

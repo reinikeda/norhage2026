@@ -80,6 +80,17 @@ $html = nh_checkout_dpd_points_html( array( $terminal ), 'LT100' );
 nh_dpd_assert( 'points use div not li', strpos( $html, '<li' ) === false && strpos( $html, '<div class="pudo is-selected"' ) !== false );
 nh_dpd_assert( 'points include city group', strpos( $html, 'Klaipėda' ) !== false );
 
+$pickup = nh_checkout_dpd_pickup_markup( 'dpd_parcels:7', 'LT100' );
+nh_dpd_assert( 'pickup markup uses divs not lis', strpos( $pickup, '<li' ) === false && strpos( $pickup, '<ul' ) === false );
+nh_dpd_assert( 'pickup markup keeps selected-option in flow', strpos( $pickup, 'selected-option' ) !== false && strpos( $pickup, 'nh-dpd-pickup' ) !== false );
+
+$template = file_get_contents( dirname( __DIR__ ) . '/woocommerce/cart/cart-shipping.php' );
+nh_dpd_assert( 'shipping template wraps radio and label', strpos( $template, 'nh-shipping-method-row' ) !== false );
+
+$css = file_get_contents( dirname( __DIR__ ) . '/assets/css/checkout.css' );
+nh_dpd_assert( 'checkout css stacks methods in a column', strpos( $css, 'flex-direction: column' ) !== false && strpos( $css, 'nh-shipping-method-row' ) !== false );
+nh_dpd_assert( 'checkout css kills dpd height 100 collapse', strpos( $css, 'height: auto !important' ) !== false );
+
 if ( $failures > 0 ) {
 	exit( 1 );
 }

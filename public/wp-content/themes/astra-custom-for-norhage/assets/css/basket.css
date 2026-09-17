@@ -1065,6 +1065,10 @@ html body.woocommerce-cart.nh-cart-ux .nh-cart-layout ul#shipping_method li,
   position: relative;
 }
 
+.nh-cart-layout ul#shipping_method .nh-shipping-method-row {
+  display: contents;
+}
+
 .nh-cart-layout ul#shipping_method li:has(input:checked) {
   border-color: var(--nh-green, #00704a);
   background: #f3faf6;
