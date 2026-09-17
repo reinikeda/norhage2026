@@ -1375,6 +1375,7 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-status {
   padding: 1.5rem;
   background: rgba(250, 247, 242, 0.92);
   text-align: center;
+  cursor: pointer;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-status[hidden] {
@@ -1507,6 +1508,12 @@ body.woocommerce-order-received.nh-checkout-ux .woocommerce-thankyou-order-recei
 
 body.woocommerce-order-received .nh-thankyou-panel {
   margin-top: 1.25rem;
+}
+
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--need-mc-method .makecommerce-banklink-picker,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--need-mc-method .makecommerce_payment_option {
+  outline: 2px solid #b42318;
+  outline-offset: 2px;
 }
 
 body.woocommerce-order-received .nh-thankyou-paid,

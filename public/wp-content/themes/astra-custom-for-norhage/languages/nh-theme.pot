@@ -1078,6 +1078,10 @@ msgstr ""
 msgid "Please choose a payment method."
 msgstr ""
 
+#: inc/checkout-ux.php
+msgid "Please choose a bank or card in MakeCommerce."
+msgstr ""
+
 msgid "Please agree to the website terms and conditions to continue."
 msgstr ""
 
@@ -1173,6 +1177,14 @@ msgstr ""
 
 #: inc/checkout-ux.php
 msgid "Continue to PayPal"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Pay via MakeCommerce"
+msgstr ""
+
+#: inc/checkout-ux.php
+msgid "Choose a bank or card, then pay securely with MakeCommerce."
 msgstr ""
 
 #: inc/checkout-ux.php
