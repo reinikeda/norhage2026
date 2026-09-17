@@ -47,5 +47,14 @@ nh_nofollow_assert(
 	nh_strip_rel_nofollow( '' ) === ''
 );
 
+$astra = '<a href="https://norhage.eu/product-category/greenhouses/?add-to-cart=627" data-quantity="1" class="ast-on-card-button ast-select-options-trigger add_to_cart_button" rel="nofollow">';
+$fixed = nh_rewrite_on_card_button_href( $astra, 'https://norhage.eu/product/plastic-corner-profile-clear-6-10mm/' );
+
+nh_nofollow_assert(
+	'on-card href is rewritten to the product permalink',
+	strpos( $fixed, 'https://norhage.eu/product/plastic-corner-profile-clear-6-10mm/' ) !== false
+		&& strpos( $fixed, 'add-to-cart=627' ) === false
+);
+
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
