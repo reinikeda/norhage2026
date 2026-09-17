@@ -45,6 +45,32 @@ add_action( 'init', function () {
 /** Flush rewrites on theme switch (kept close to CPT) */
 add_action( 'after_switch_theme', function(){ flush_rewrite_rules(); } );
 
+/**
+ * Use the service title when a featured image has no media-library alt.
+ */
+add_filter( 'wp_get_attachment_image_attributes', function( $attr, $attachment ) {
+	if ( ! empty( $attr['alt'] ) ) {
+		return $attr;
+	}
+
+	$post_id = get_the_ID();
+	if ( ! $post_id || get_post_type( $post_id ) !== 'service' ) {
+		return $attr;
+	}
+
+	$attachment_id = is_object( $attachment ) ? (int) $attachment->ID : (int) $attachment;
+	if ( $attachment_id <= 0 || (int) get_post_thumbnail_id( $post_id ) !== $attachment_id ) {
+		return $attr;
+	}
+
+	$title = get_the_title( $post_id );
+	if ( $title !== '' ) {
+		$attr['alt'] = $title;
+	}
+
+	return $attr;
+}, 20, 2 );
+
 /** ===== Services archive title + remove Astra duplicate header ===== */
 add_filter( 'get_the_archive_title', function( $title ){
 	if ( is_post_type_archive( 'service' ) ) {
@@ -112,7 +138,14 @@ add_action( 'astra_primary_content_bottom', function () {
 		echo '<section class="nh-related"><h3>' . esc_html__( 'Other services', 'nh-theme' ) . '</h3><div class="nh-related__grid">';
 		while ( $q->have_posts() ) { $q->the_post();
 			echo '<article class="nh-related__item"><a class="nh-related__thumb" href="' . esc_url( get_permalink() ) . '">';
-			if ( has_post_thumbnail() ) the_post_thumbnail( 'medium' );
+			if ( has_post_thumbnail() ) {
+				$thumb_id = (int) get_post_thumbnail_id();
+				the_post_thumbnail( 'medium', array(
+					'alt' => function_exists( 'nh_get_attachment_alt' )
+						? nh_get_attachment_alt( $thumb_id, get_the_title() )
+						: get_the_title(),
+				) );
+			}
 			echo '</a><h4 class="nh-related__title"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4></article>';
 		}
 		echo '</div></section>';
