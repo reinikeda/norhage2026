@@ -1,9 +1,9 @@
 /* NH Home Builder – Browse by Category (mobile first) */
 
 .nhhb-browse-cats {
-  padding: 16px 14px 14px;
+  padding: 18px 14px 16px;
   background: linear-gradient(160deg, #f4faf6 0%, var(--nhhb-cream, #F1E6D6) 100%);
-  border-radius: var(--nhhb-radius, 12px);
+  border-radius: var(--nhhb-radius, 16px);
   border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
   position: relative;
   overflow: hidden;
@@ -45,6 +45,7 @@
   padding: 0;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(30, 57, 50, 0.08);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .nhhb-cat-prev:hover,
@@ -94,6 +95,7 @@
   background: #fff;
   border: 2px solid rgba(30, 57, 50, 0.08);
   box-shadow: 0 4px 14px rgba(30, 57, 50, 0.10);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .nhhb-cat-figure img {
@@ -117,6 +119,18 @@
   padding: 10px 0;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .nhhb-cat:hover .nhhb-cat-figure {
+    transform: translateY(-3px);
+    border-color: var(--nhhb-green, #00704A);
+    box-shadow: var(--nhhb-shadow-hover, 0 14px 32px rgba(30, 57, 50, 0.16));
+  }
+
+  .nhhb-cat:hover .nhhb-cat-name {
+    color: var(--nhhb-green, #00704A);
+  }
+}
+
 @media (min-width: 600px) {
   .nhhb-browse-cats { padding: 22px 20px 18px; }
   .nhhb-cat { width: 132px; }
@@ -128,15 +142,4 @@
   .nhhb-browse-cats { padding: 28px; }
   .nhhb-cat { width: 150px; }
   .nhhb-cat-figure { width: 120px; height: 120px; }
-}
-
-/* ===== Reduced motion ===== */
-@media (prefers-reduced-motion: reduce){
-  .nhhb-cat-figure,
-  .nhhb-cat-figure img,
-  .nhhb-cat-name,
-  .nhhb-cat-prev,
-  .nhhb-cat-next{
-    transition: none;
-  }
 }
