@@ -343,6 +343,18 @@ msgstr ""
 msgid "Paragraph"
 msgstr ""
 
+#: inc/meta-boxes.php:470
+msgid "Button text"
+msgstr ""
+
+#: inc/meta-boxes.php:483
+msgid "Button URL"
+msgstr ""
+
+#: inc/meta-boxes.php:493
+msgid "Leave empty to use the shop page"
+msgstr ""
+
 #: inc/meta-boxes.php:642
 msgid "Watch video"
 msgstr ""

@@ -1,4 +1,4 @@
-/* NH Home Builder – shared tokens (aligned with the Astra child theme) */
+/* NH Home Builder – shared tokens and homepage rhythm */
 
 :root {
   --nhhb-green: #00704A;
@@ -8,18 +8,26 @@
   --nhhb-charcoal: #2C2A29;
   --nhhb-muted: #5f6d67;
   --nhhb-white: #ffffff;
+  --nhhb-gold: #c89f63;
   --nhhb-line: rgba(30, 57, 50, 0.12);
-  --nhhb-radius: 12px;
-  --nhhb-radius-sm: 8px;
+  --nhhb-radius: 16px;
+  --nhhb-radius-sm: 10px;
   --nhhb-shadow: 0 8px 24px rgba(30, 57, 50, 0.10);
-  --nhhb-shadow-hover: 0 12px 28px rgba(30, 57, 50, 0.14);
+  --nhhb-shadow-hover: 0 14px 32px rgba(30, 57, 50, 0.16);
   --nhhb-space: 16px;
   --nhhb-tap: 48px;
   --nhhb-font: inherit;
+  --nhhb-gap: 20px;
 }
 
 .home .site-content {
   background-color: var(--nhhb-offwhite);
+}
+
+.home .entry-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nhhb-gap);
 }
 
 .nhhb-top-features,
@@ -31,7 +39,7 @@
 .nhhb-offers-hero,
 .nhhb-b2b-wrap,
 .nhhb-reviews {
-  margin-block: 20px;
+  margin-block: 0;
   font-family: var(--nhhb-font);
 }
 
@@ -53,7 +61,7 @@
 .nhhb-svc-section-title,
 .nhhb-rev-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -83,6 +91,23 @@
   cursor: pointer;
   touch-action: manipulation;
   box-sizing: border-box;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.nhhb-na-viewall,
+.nhhb-rev-viewall {
+  background: transparent;
+  color: var(--nhhb-forest);
+  border: 1.5px solid var(--nhhb-forest);
+  padding: 0 16px;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+
+.nhhb-na-viewall:hover,
+.nhhb-rev-viewall:hover {
+  background: var(--nhhb-forest);
+  color: #fff;
 }
 
 .nhhb-btn:focus-visible,
@@ -136,24 +161,14 @@
 .nh-nl-msg.is-error { color: #ffd2c2; }
 
 @media (min-width: 768px) {
-  .nhhb-top-features,
-  .nhhb-promo-trio,
-  .nhhb-browse-cats,
-  .nhhb-new-arrivals,
-  .nhhb-newsletter,
-  .nhhb-services,
-  .nhhb-offers-hero,
-  .nhhb-b2b-wrap,
-  .nhhb-reviews {
-    margin-block: 32px;
-  }
+  :root { --nhhb-gap: 36px; }
 
   .nhhb-section-title,
   .nhhb-cats-title,
   .nhhb-na-title,
   .nhhb-svc-section-title,
   .nhhb-rev-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 }
 

@@ -106,8 +106,10 @@ if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 					}
 					$srcset = (string) wp_get_attachment_image_srcset( $image_id, '1536x1536' );
 				}
-				$title = isset( $row['title'] ) ? trim( (string) $row['title'] ) : '';
-				$text  = isset( $row['text'] ) ? trim( (string) $row['text'] ) : '';
+				$title    = isset( $row['title'] ) ? trim( (string) $row['title'] ) : '';
+				$text     = isset( $row['text'] ) ? trim( (string) $row['text'] ) : '';
+				$btn_text = isset( $row['btn_text'] ) ? trim( (string) $row['btn_text'] ) : '';
+				$btn_url  = isset( $row['btn_url'] ) ? trim( (string) $row['btn_url'] ) : '';
 
 				if ( $image === '' && $title === '' && $text === '' ) {
 					continue;
@@ -119,6 +121,8 @@ if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 					'srcset'   => $srcset,
 					'title'    => $title,
 					'text'     => $text,
+					'btn_text' => $btn_text,
+					'btn_url'  => $btn_url,
 				];
 			}
 		}
@@ -130,6 +134,8 @@ if ( ! function_exists( 'nhhb_get_home_hero_slides' ) ) {
 				'srcset'   => '',
 				'title'    => nhhb_get_hero_title(),
 				'text'     => '',
+				'btn_text' => '',
+				'btn_url'  => '',
 			];
 		}
 

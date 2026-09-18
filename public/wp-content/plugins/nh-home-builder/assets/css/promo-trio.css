@@ -1,4 +1,4 @@
-/* NH Home Builder – Promo Trio (mobile first) */
+/* NH Home Builder – Promo Trio (mobile first: stack, then 2-up, then hero+stack) */
 
 .nhhb-pt-grid {
   display: grid;
@@ -9,7 +9,7 @@
 .nhhb-pt-card {
   position: relative;
   overflow: hidden;
-  border-radius: var(--nhhb-radius, 12px);
+  border-radius: var(--nhhb-radius, 16px);
   display: block;
   text-decoration: none;
   color: inherit;
@@ -17,7 +17,7 @@
   box-shadow: var(--nhhb-shadow, 0 8px 24px rgba(30, 57, 50, 0.10));
 }
 
-.nhhb-pt-hero { min-height: 220px; }
+.nhhb-pt-hero { min-height: 240px; }
 .nhhb-pt-small { min-height: 168px; }
 
 .nhhb-pt-media {
@@ -34,11 +34,7 @@
   object-fit: cover;
 }
 
-.nhhb-pt-hero:hover .nhhb-pt-img{
-  transform: scale(1.04);
-}
-
-.nhhb-pt-hero::after{
+.nhhb-pt-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -93,70 +89,82 @@
 
 .nhhb-pt-btn {
   align-self: flex-start;
-  background: #fff;
-  color: var(--nhhb-forest, #1E3932) !important;
+  background: var(--nhhb-green, #00704A);
+  color: #fff !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
 
 a.nhhb-pt-card:hover .nhhb-pt-btn {
-  background: var(--nhhb-green, #00704A);
+  background: #025c3d;
   color: #fff !important;
   text-decoration: none;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0,0,0,.22);
 }
 
-/* ===== Placeholder (no image) ===== */
-.nhhb-pt-ph{
+.nhhb-pt-ph {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #e8f4ee, #d4ece0);
 }
 
-/* ===== Focus / Accessibility ===== */
-.nhhb-pt-btn:focus-visible{
-  outline: 3px solid rgba(255,255,255,.60);
-  outline-offset: 3px;
+@media (min-width: 640px) {
+  .nhhb-pt-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nhhb-pt-hero {
+    grid-column: 1 / -1;
+    min-height: 300px;
+  }
+
+  .nhhb-pt-small {
+    min-height: 200px;
+  }
 }
 
-/* ===== Responsive – tablet ===== */
-@media (max-width: 900px){
-  .nhhb-pt-grid{
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+@media (min-width: 980px) {
+  .nhhb-pt-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+    min-height: 440px;
   }
 
   .nhhb-pt-hero {
     grid-column: 1;
     grid-row: 1 / 3;
-    min-height: 380px;
+    min-height: 0;
+    height: 100%;
   }
 
   .nhhb-pt-small {
-    grid-column: 2;
     min-height: 0;
   }
 
   .nhhb-pt-card::after {
     background: linear-gradient(
-      to right,
-      rgba(17, 32, 28, 0.74) 0%,
-      rgba(17, 32, 28, 0.40) 52%,
-      rgba(17, 32, 28, 0.06) 100%
+      90deg,
+      rgba(17, 32, 28, 0.78) 0%,
+      rgba(17, 32, 28, 0.36) 48%,
+      rgba(17, 32, 28, 0.08) 100%
     );
   }
 
-  .nhhb-pt-hero .nhhb-pt-copy {
-    padding: 32px 36px;
-    height: 100%;
+  .nhhb-pt-copy {
+    justify-content: center;
+    max-width: 78%;
+    padding: 28px 24px;
   }
+
+  .nhhb-pt-h2 { font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
+  .nhhb-pt-h3 { font-size: 1.25rem; }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .nhhb-pt-card:hover {
     box-shadow: var(--nhhb-shadow-hover, 0 12px 28px rgba(30, 57, 50, 0.14));
   }
+
   .nhhb-pt-card:hover .nhhb-pt-img {
     transform: scale(1.04);
     transition: transform 0.35s ease;

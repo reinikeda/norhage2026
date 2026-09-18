@@ -65,6 +65,9 @@ $uid = 'nhhb-na-' . wp_unique_id();
           ?>
         <a class="nhhb-na-card" href="<?php the_permalink(); ?>">
           <span class="nhhb-na-media">
+            <?php if ($product->is_on_sale()) : ?>
+              <span class="nhhb-na-badge"><?php esc_html_e('Sale!', 'woocommerce'); ?></span>
+            <?php endif; ?>
             <span class="nhhb-na-img"><?php echo nhhb_attachment_image($thumb_id, 'woocommerce_thumbnail', ['alt' => $name]); ?></span>
           </span>
           <span class="nhhb-na-name"><?php echo esc_html($name); ?></span>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Home Builder
  * Description: Homepage sections for Norhage shops. Order and copy are managed in wp-admin → Home Builder and inserted on the homepage automatically.
- * Version: 0.4.0
+ * Version: 0.4.1
  * Author: Daiva Reinike
  * Text Domain: nhhb
  * Domain Path: /languages
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) exit;
 
 define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
-define('NHHB_VER', '0.4.0');
+define('NHHB_VER', '0.4.1');
 
 /**
  * Shared photo helper. Named separately from older per-file nhhb_img()
