@@ -127,3 +127,40 @@ msgstr "%s avatar"
 msgid "Customer avatar"
 msgstr "Kundavatar"
 
+msgid "Top Offers"
+msgstr "Topperbjudanden"
+
+msgid "Discounts and Clearance"
+msgstr "Rea och utförsäljning"
+
+msgid "Newsletter"
+msgstr "Nyhetsbrev"
+
+msgid "Shop now"
+msgstr "Handla nu"
+
+msgid "100% Secure Payments"
+msgstr "100% säkra betalningar"
+
+msgid "Pay safely with all major payment methods."
+msgstr "Betala tryggt med alla vanliga betalsätt."
+
+msgid "Expert Support"
+msgstr "Expertstöd"
+
+msgid "Friendly assistance and advice directly from our experts."
+msgstr "Vänlig hjälp och rådgivning direkt från våra experter."
+
+msgid "Certified Quality"
+msgstr "Certifierad kvalitet"
+
+msgid "We use only high-quality, certified materials."
+msgstr "Vi använder endast högkvalitativa, certifierade material."
+
+msgid "From European Warehouses"
+msgstr "Från europeiska lager"
+
+msgid "Orders are shipped quickly from our European warehouses."
+msgstr "Beställningar skickas snabbt från våra europeiska lager."
+
+

@@ -7,18 +7,13 @@ if (!defined('ABSPATH')) {
 wp_enqueue_style('nhhb-reviews');
 wp_enqueue_script('nhhb-reviews');
 
-$title = isset($data['title']) ? trim((string) $data['title']) : '';
-if ($title === '') {
-    $title = __('Customer reviews', 'nhhb');
-} else {
-    $title = __($title, 'nhhb');
-}
+$title = nhhb_maybe_translate($data['title'] ?? '', 'Customer reviews');
 
 $count = isset($data['count']) ? max(1, min(24, (int) $data['count'])) : 8;
 $view_label = isset($data['view_label']) ? trim((string) $data['view_label']) : '';
 $view_url   = isset($data['view_url']) ? (string) $data['view_url'] : '';
 if ($view_label !== '') {
-    $view_label = __($view_label, 'nhhb');
+    $view_label = nhhb_maybe_translate($view_label, 'View All');
 }
 
 $reviews = nhhb_query_five_star_reviews($count);

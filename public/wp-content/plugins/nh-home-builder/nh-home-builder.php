@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Home Builder
- * Description: Homepage sections for Norhage shops. Manage in wp-admin → Home Builder. Render with [nh_section id="123"].
- * Version: 0.3.1
+ * Description: Homepage sections for Norhage shops. Order and copy are managed in wp-admin → Home Builder and inserted on the homepage automatically.
+ * Version: 0.4.0
  * Author: Daiva Reinike
  * Text Domain: nhhb
  * Domain Path: /languages
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) exit;
 
 define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
-define('NHHB_VER', '0.3.1');
+define('NHHB_VER', '0.4.0');
 
 /**
  * Shared photo helper. Named separately from older per-file nhhb_img()
@@ -101,21 +101,12 @@ function nhhb_load_textdomain() {
 add_action( 'plugins_loaded', 'nhhb_load_textdomain' );
 
 require_once NHHB_PATH . 'includes/reviews.php';
+require_once NHHB_PATH . 'includes/layout.php';
 require_once NHHB_PATH . 'includes/class-admin.php';
 
 function nhhb_render($section, $data = []) {
     if ($section === 'offers-hero') { $section = 'top-offers'; } // back-compat
-    $allowed = [
-        'top-offers',
-        'top-features',
-        'browse-cats',
-        'new-arrivals',
-        'promo-trio',
-        'newsletter',
-        'services-slider',
-        'b2b-banner',
-        'reviews-slider',
-    ];
+    $allowed = nhhb_allowed_section_types();
     if (!in_array($section, $allowed, true)) {
         return '';
     }

@@ -7,14 +7,13 @@ if (!defined('ABSPATH')) {
 wp_enqueue_style('nhhb-services');
 wp_enqueue_script('nhhb-services');
 
-$section_title = '';
+$raw_title = '';
 if (isset($data['services_title']) && trim((string) $data['services_title']) !== '') {
-    $section_title = trim((string) $data['services_title']);
+    $raw_title = trim((string) $data['services_title']);
 } elseif (isset($data['title']) && trim((string) $data['title']) !== '') {
-    $section_title = trim((string) $data['title']);
-} else {
-    $section_title = __('Our Services', 'nhhb');
+    $raw_title = trim((string) $data['title']);
 }
+$section_title = nhhb_maybe_translate($raw_title, 'Our Services');
 
 $manual = (isset($data['services']) && is_array($data['services'])) ? $data['services'] : [];
 

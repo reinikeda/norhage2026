@@ -1,31 +1,17 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+require_once NHHB_PATH . 'includes/admin-fields.php';
 
 class NHHB_Admin {
     public static function init() {
         add_action('init', [__CLASS__, 'register_section_cpt']);
         add_action('admin_menu', [__CLASS__, 'add_menu']);
-
-        add_action('add_meta_boxes', [__CLASS__, 'add_section_metabox']);
-        add_action('save_post_nh_section', [__CLASS__, 'save_section']);
-
+        add_action('admin_init', [__CLASS__, 'maybe_save']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'admin_assets']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'front_assets']);
-    }
-
-    public static function add_menu() {
-        add_menu_page(
-            'Home Builder',
-            'Home Builder',
-            'edit_pages',
-            'nhhb-sections',
-            function () {
-                wp_safe_redirect(admin_url('edit.php?post_type=nh_section'));
-                exit;
-            },
-            'dashicons-layout',
-            3
-        );
     }
 
     public static function register_section_cpt() {
@@ -33,860 +19,158 @@ class NHHB_Admin {
             'labels' => [
                 'name'          => 'Sections',
                 'singular_name' => 'Section',
-                'menu_name'     => 'Home Builder',
-                'add_new_item'  => 'Add New Section',
-                'edit_item'     => 'Edit Section',
             ],
             'public'       => false,
-            'show_ui'      => true,
+            'show_ui'      => false,
             'show_in_menu' => false,
             'supports'     => ['title'],
         ]);
     }
 
-    public static function add_section_metabox() {
-        add_meta_box('nhhb_section_fields', 'Section Settings', [__CLASS__, 'render_mb'], 'nh_section', 'normal', 'high');
+    public static function add_menu() {
+        add_menu_page(
+            __('Home Builder', 'nhhb'),
+            __('Home Builder', 'nhhb'),
+            'edit_pages',
+            'nhhb-home',
+            [__CLASS__, 'render_page'],
+            'dashicons-layout',
+            3
+        );
     }
 
-    public static function render_mb($post) {
-        wp_nonce_field('nhhb_save_section', 'nhhb_nonce');
-
-        $type = get_post_meta($post->ID, '_nhhb_type', true) ?: 'top-offers';
-        $data_raw = get_post_meta($post->ID, '_nhhb_data', true);
-        $data = is_array($data_raw) ? $data_raw : [];
-
-        // Normalize shared arrays.
-        $slides = isset($data['slides']) && is_array($data['slides']) ? $data['slides'] : [];
-        for ($i = 0; $i < 3; $i++) {
-            $slides[$i] = isset($slides[$i]) && is_array($slides[$i]) ? $slides[$i] : [];
+    public static function maybe_save() {
+        if (!isset($_POST['nhhb_save_layout'])) {
+            return;
+        }
+        if (!isset($_POST['nhhb_nonce']) || !wp_verify_nonce($_POST['nhhb_nonce'], 'nhhb_save_layout')) {
+            return;
+        }
+        if (!current_user_can('edit_pages')) {
+            return;
         }
 
-        $promos = isset($data['promos']) && is_array($data['promos']) ? $data['promos'] : [];
-        for ($i = 0; $i < 2; $i++) {
-            $promos[$i] = isset($promos[$i]) && is_array($promos[$i]) ? $promos[$i] : [];
-        }
-
-        $items = isset($data['items']) && is_array($data['items']) ? $data['items'] : [];
-        for ($i = 0; $i < 4; $i++) {
-            $items[$i] = isset($items[$i]) && is_array($items[$i]) ? $items[$i] : [];
-        }
-
-        // Defaults for "Browse by Category".
-        $bc = [
-            'title'      => $data['title'] ?? 'Browse by Category',
-            'limit'      => isset($data['limit']) ? (int) $data['limit'] : 12,
-            'orderby'    => $data['orderby'] ?? 'name',
-            'order'      => $data['order'] ?? 'ASC',
-            'hide_empty' => !empty($data['hide_empty']),
+        $raw = isset($_POST['nhhb']) && is_array($_POST['nhhb']) ? wp_unslash($_POST['nhhb']) : [];
+        $layout = [
+            'inject'  => empty($raw['inject']) ? 0 : 1,
+            'order'   => isset($raw['order']) && is_array($raw['order']) ? $raw['order'] : nhhb_default_order(),
+            'enabled' => isset($raw['enabled']) && is_array($raw['enabled']) ? $raw['enabled'] : [],
+            'data'    => isset($raw['data']) && is_array($raw['data']) ? $raw['data'] : [],
         ];
+        update_option('nhhb_home', nhhb_normalize_layout($layout), false);
 
-        // Defaults for Promo Trio.
-        $cards = isset($data['cards']) && is_array($data['cards']) ? $data['cards'] : [];
-        for ($i = 0; $i < 3; $i++) {
-            $cards[$i] = isset($cards[$i]) && is_array($cards[$i]) ? $cards[$i] : [];
-        }
-
-        // Defaults for Newsletter.
-        $nl = [
-            'title'        => $data['title'] ?? 'Don\'t Miss Out on the Latest Trends & Offers',
-            'text'         => $data['text'] ?? 'Sign up to receive news about the latest offers and discount codes.',
-            'placeholder'  => $data['placeholder'] ?? 'Enter your email address',
-            'btn_text'     => $data['btn_text'] ?? 'Subscribe',
-            'action'       => $data['action'] ?? '',
-            'method'       => isset($data['method']) ? strtoupper($data['method']) : 'POST',
-            'consent_text' => $data['consent_text'] ?? '',
-        ];
-
-        // Defaults for Services Slider (CPT-based).
-        $sv = [
-            'title'    => $data['title'] ?? 'Our Services',
-            'services' => isset($data['services']) && is_array($data['services']) ? $data['services'] : [],
-        ];
-        ?>
-        <p><strong>Section Type</strong></p>
-        <p>
-            <select name="nhhb_type" id="nhhb_type">
-                <option value="top-offers" <?php selected($type, 'top-offers'); ?>>Top Offers (slider + 2 promos)</option>
-                <option value="top-features" <?php selected($type, 'top-features'); ?>>Top Features (icons + text)</option>
-                <option value="browse-cats" <?php selected($type, 'browse-cats'); ?>>Browse by Category</option>
-                <option value="new-arrivals" <?php selected($type, 'new-arrivals'); ?>>New Arrivals (latest products)</option>
-                <option value="promo-trio" <?php selected($type, 'promo-trio'); ?>>Promo Trio (1 large + 2 small)</option>
-                <option value="newsletter" <?php selected($type, 'newsletter'); ?>>Newsletter / Subscribe</option>
-                <option value="services-slider" <?php selected($type, 'services-slider'); ?>>Services Slider (CPT: Service)</option>
-                <option value="b2b-banner" <?php selected($type, 'b2b-banner'); ?>>B2B Banner</option>
-                <option value="reviews-slider" <?php selected($type, 'reviews-slider'); ?>>Customer Reviews (5-star slider)</option>
-            </select>
-        </p>
-        <hr>
-
-        <style>
-            .nhhb-grid{display:grid;gap:16px}
-            .nhhb-2{grid-template-columns:1fr 1fr}
-            .nhhb-3{grid-template-columns:repeat(3,1fr)}
-            .nhhb-4{grid-template-columns:repeat(4,1fr)}
-            .nhhb-card{background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:12px}
-            .nhhb-thumb{width:100%;max-width:140px;height:100px;background:#f6f7f7;border:1px solid #dcdcde;display:flex;align-items:center;justify-content:center;border-radius:6px;overflow:hidden}
-            .nhhb-thumb img{max-width:100%;max-height:100%}
-            .nhhb-row{display:flex;gap:12px;align-items:flex-start}
-            .nhhb-actions{display:flex;gap:8px;margin-top:6px}
-            .nhhb-copywrap{display:inline-flex;align-items:center;gap:6px;background:#f6f7f7;border:1px solid #dcdcde;border-radius:6px;padding:4px 8px}
-            .nhhb-copywrap code{user-select:all}
-            .nhhb-hidden{display:none}
-            .nhhb-svc-grid{display:grid;gap:14px}
-            .nhhb-svc-grid .nhhb-card{padding:12px}
-            .nhhb-svc-row{display:grid;grid-template-columns:140px 1fr;gap:14px}
-            .nhhb-svc-row .widefat{width:100%}
-            .nhhb-svc-small{font-size:12px;color:#666}
-        </style>
-
-        <!-- TOP OFFERS -->
-        <div id="nhhb_fields_top_offers" class="<?php echo $type === 'top-offers' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Slider (max. 3 slides)</h3>
-            <div class="nhhb-grid nhhb-3">
-                <?php for ($i = 0; $i < 3; $i++):
-                    $s = $slides[$i];
-                    $img_id = isset($s['img']) ? absint($s['img']) : 0;
-                    $img_src = $img_id ? wp_get_attachment_image_url($img_id, 'medium') : '';
-                ?>
-                <div class="nhhb-card">
-                    <h4>Slide <?php echo $i + 1; ?></h4>
-                    <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="slide_thumb_<?php echo $i; ?>">
-                                <?php echo $img_src ? '<img src="' . esc_url($img_src) . '" alt=""/>' : 'No image'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="slide_<?php echo $i; ?>">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="slide_<?php echo $i; ?>">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[slides][<?php echo $i; ?>][img]" id="slide_<?php echo $i; ?>" value="<?php echo esc_attr($img_id); ?>">
-                        </div>
-                        <div style="flex:1">
-                            <p><label>Main Heading (H2)<br><input type="text" class="widefat" name="data[slides][<?php echo $i; ?>][h1]" value="<?php echo esc_attr($s['h1'] ?? ''); ?>"></label></p>
-                            <p><label>Brand / Subheading<br><input type="text" class="widefat" name="data[slides][<?php echo $i; ?>][h2]" value="<?php echo esc_attr($s['h2'] ?? ''); ?>"></label></p>
-                            <p><label>Description<br><input type="text" class="widefat" name="data[slides][<?php echo $i; ?>][h3]" value="<?php echo esc_attr($s['h3'] ?? ''); ?>"></label></p>
-                            <p class="nhhb-2">
-                                <label>Button Text
-                                    <input type="text" class="widefat" name="data[slides][<?php echo $i; ?>][btn_text]" value="<?php echo esc_attr($s['btn_text'] ?? ''); ?>">
-                                </label>
-                                <label>Button URL
-                                    <input type="url" class="widefat" name="data[slides][<?php echo $i; ?>][btn_url]" value="<?php echo esc_attr($s['btn_url'] ?? ''); ?>">
-                                </label>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <?php endfor; ?>
-            </div>
-
-            <hr>
-            <h3>Right-side Promos (2 cards)</h3>
-            <div class="nhhb-grid nhhb-2">
-                <?php for ($i = 0; $i < 2; $i++):
-                    $p = $promos[$i];
-                    $img_id = isset($p['img']) ? absint($p['img']) : 0;
-                    $img_src = $img_id ? wp_get_attachment_image_url($img_id, 'medium') : '';
-                ?>
-                <div class="nhhb-card">
-                    <h4>Promo <?php echo $i + 1; ?></h4>
-                    <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="promo_thumb_<?php echo $i; ?>">
-                                <?php echo $img_src ? '<img src="' . esc_url($img_src) . '" alt=""/>' : 'No image'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="promo_<?php echo $i; ?>">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="promo_<?php echo $i; ?>">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[promos][<?php echo $i; ?>][img]" id="promo_<?php echo $i; ?>" value="<?php echo esc_attr($img_id); ?>">
-                        </div>
-                        <div style="flex:1">
-                            <p><label>Title (H3, clickable)<br><input type="text" class="widefat" name="data[promos][<?php echo $i; ?>][h1]" value="<?php echo esc_attr($p['h1'] ?? ''); ?>"></label></p>
-                            <p><label>Description<br><input type="text" class="widefat" name="data[promos][<?php echo $i; ?>][h3]" value="<?php echo esc_attr($p['h3'] ?? ''); ?>"></label></p>
-                            <p><label>URL (applies to the title)<br><input type="url" class="widefat" name="data[promos][<?php echo $i; ?>][btn_url]" value="<?php echo esc_attr($p['btn_url'] ?? ''); ?>"></label></p>
-                        </div>
-                    </div>
-                </div>
-                <?php endfor; ?>
-            </div>
-        </div>
-
-        <!-- TOP FEATURES -->
-        <div id="nhhb_fields_top_features" class="<?php echo $type === 'top-features' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Top Features (max. 4)</h3>
-            <div class="nhhb-grid nhhb-4">
-                <?php for ($i = 0; $i < 4; $i++):
-                    $it = $items[$i];
-                    $icon_id = isset($it['icon']) ? absint($it['icon']) : 0;
-                    $icon_src = $icon_id ? wp_get_attachment_image_url($icon_id, 'thumbnail') : '';
-                ?>
-                <div class="nhhb-card">
-                    <h4>Feature <?php echo $i + 1; ?></h4>
-                    <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="feat_thumb_<?php echo $i; ?>">
-                                <?php echo $icon_src ? '<img src="' . esc_url($icon_src) . '" alt=""/>' : 'No icon'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="feat_<?php echo $i; ?>">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="feat_<?php echo $i; ?>">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[items][<?php echo $i; ?>][icon]" id="feat_<?php echo $i; ?>" value="<?php echo esc_attr($icon_id); ?>">
-                        </div>
-                        <div style="flex:1">
-                            <p><label>Heading (H3)<br><input type="text" class="widefat" name="data[items][<?php echo $i; ?>][title]" value="<?php echo esc_attr($it['title'] ?? ''); ?>"></label></p>
-                            <p><label>Subtext<br><input type="text" class="widefat" name="data[items][<?php echo $i; ?>][text]" value="<?php echo esc_attr($it['text'] ?? ''); ?>"></label></p>
-                        </div>
-                    </div>
-                </div>
-                <?php endfor; ?>
-            </div>
-        </div>
-
-        <!-- BROWSE CATS -->
-        <div id="nhhb_fields_browse_cats" class="<?php echo $type === 'browse-cats' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Browse by Category</h3>
-
-            <p><label>Section Title (H2)<br>
-                <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($bc['title']); ?>">
-            </label></p>
-
-            <div class="nhhb-grid nhhb-2">
-                <p><label>Max. Items<br>
-                    <input type="number" min="1" class="widefat" name="data[limit]" value="<?php echo (int) $bc['limit']; ?>">
-                </label></p>
-
-                <p><label>Order By<br>
-                    <select name="data[orderby]" class="widefat">
-                        <?php foreach (['name' => 'Name', 'slug' => 'Slug', 'count' => 'Count', 'term_id' => 'ID'] as $k => $lbl): ?>
-                            <option value="<?php echo esc_attr($k); ?>" <?php selected($bc['orderby'], $k); ?>><?php echo esc_html($lbl); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </label></p>
-            </div>
-
-            <div class="nhhb-grid nhhb-2">
-                <p><label>Order<br>
-                    <select name="data[order]" class="widefat">
-                        <option value="ASC" <?php selected($bc['order'], 'ASC'); ?>>ASC</option>
-                        <option value="DESC" <?php selected($bc['order'], 'DESC'); ?>>DESC</option>
-                    </select>
-                </label></p>
-
-                <p style="margin-top:26px;">
-                    <label><input type="checkbox" name="data[hide_empty]" value="1" <?php checked($bc['hide_empty']); ?>>
-                        Hide empty categories
-                    </label>
-                </p>
-            </div>
-        </div>
-
-        <!-- NEW ARRIVALS -->
-        <div id="nhhb_fields_new_arrivals" class="<?php echo $type === 'new-arrivals' ? '' : 'nhhb-hidden'; ?>">
-            <h3>New Arrivals</h3>
-            <?php
-            $na = [
-                'title'      => $data['title'] ?? 'New Arrivals',
-                'count'      => isset($data['count']) ? (int) $data['count'] : 8,
-                'view_label' => $data['view_label'] ?? 'View All',
-                'view_url'   => $data['view_url'] ?? '',
-            ];
-            ?>
-            <p><label>Section Title (H2)<br>
-                <input type="text" class="widefat" name="data[title]" value="<?php echo esc_attr($na['title']); ?>">
-            </label></p>
-            <div class="nhhb-grid nhhb-3">
-                <p><label>Number of products<br>
-                    <input type="number" min="1" max="24" class="widefat" name="data[count]" value="<?php echo (int) $na['count']; ?>">
-                </label></p>
-                <p><label>View All label<br>
-                    <input type="text" class="widefat" name="data[view_label]" value="<?php echo esc_attr($na['view_label']); ?>">
-                </label></p>
-                <p><label>View All URL (optional)<br>
-                    <input type="url" class="widefat" name="data[view_url]" value="<?php echo esc_attr($na['view_url']); ?>" placeholder="Defaults to shop page">
-                </label></p>
-            </div>
-        </div>
-
-        <!-- REVIEWS SLIDER -->
-        <div id="nhhb_fields_reviews_slider" class="<?php echo $type === 'reviews-slider' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Customer Reviews</h3>
-            <?php
-            $rv = [
-                'title'      => $data['title'] ?? 'Customer reviews',
-                'count'      => isset($data['count']) ? (int) $data['count'] : 8,
-                'view_label' => $data['view_label'] ?? 'View All',
-                'view_url'   => $data['view_url'] ?? '',
-            ];
-            ?>
-            <p class="description">
-                Pulls approved WooCommerce product reviews that are <strong>5 stars</strong> and include a
-                <strong>written comment</strong>. Ratings without text are skipped. Reviewer photos are
-                not collected by WooCommerce, so the slider shows initials instead of Gravatar.
-            </p>
-            <p><label>Section Title (H2)<br>
-                <input type="text" class="widefat" name="data[reviews_title]" value="<?php echo esc_attr($rv['title']); ?>">
-            </label></p>
-            <div class="nhhb-grid nhhb-3">
-                <p><label>Number of reviews<br>
-                    <input type="number" min="1" max="24" class="widefat" name="data[reviews_count]" value="<?php echo (int) $rv['count']; ?>">
-                </label></p>
-                <p><label>View All label (optional)<br>
-                    <input type="text" class="widefat" name="data[reviews_view_label]" value="<?php echo esc_attr($rv['view_label']); ?>">
-                </label></p>
-                <p><label>View All URL (optional)<br>
-                    <input type="url" class="widefat" name="data[reviews_view_url]" value="<?php echo esc_attr($rv['view_url']); ?>" placeholder="Leave empty to hide the link">
-                </label></p>
-            </div>
-        </div>
-
-        <!-- NEWSLETTER -->
-        <div id="nhhb_fields_newsletter" class="<?php echo $type === 'newsletter' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Newsletter</h3>
-            <p class="description">Headline, kicker, placeholder and button text come from the plugin translations so each shop language stays consistent.</p>
-            <p><label>Consent note (optional)<br>
-                <input type="text" class="widefat" name="data[consent_text]" value="<?php echo esc_attr($nl['consent_text']); ?>">
-            </label></p>
-        </div>
-
-        <!-- PROMO TRIO -->
-        <div id="nhhb_fields_promo_trio" class="<?php echo $type === 'promo-trio' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Promo Trio (1 large + 2 small)</h3>
-
-            <div class="nhhb-card">
-                <h4>Hero (full width)</h4>
-                <?php
-                $c = $cards[0];
-                $img_id = isset($c['img']) ? absint($c['img']) : 0;
-                $img_src = $img_id ? wp_get_attachment_image_url($img_id, 'medium') : '';
-                ?>
-                <div class="nhhb-row">
-                    <div>
-                        <div class="nhhb-thumb" id="ptr_thumb_0">
-                            <?php echo $img_src ? '<img src="' . esc_url($img_src) . '" alt=""/>' : 'No image'; ?>
-                        </div>
-                        <div class="nhhb-actions">
-                            <button type="button" class="button nhhb-upload" data-target="ptr_0">Browse</button>
-                            <button type="button" class="button-link-delete nhhb-remove" data-target="ptr_0">Remove</button>
-                        </div>
-                        <input type="hidden" name="data[cards][0][img]" id="ptr_0" value="<?php echo esc_attr($img_id); ?>">
-                    </div>
-                    <div style="flex:1">
-                        <p><label>Kicker Text<br><input type="text" class="widefat" name="data[cards][0][h3]" value="<?php echo esc_attr($c['h3'] ?? ''); ?>"></label></p>
-                        <p><label>Main Heading (H2)<br><input type="text" class="widefat" name="data[cards][0][h2]" value="<?php echo esc_attr($c['h2'] ?? ''); ?>"></label></p>
-                        <p><label>Paragraph<br><textarea class="widefat" name="data[cards][0][p]" rows="2"><?php echo esc_textarea($c['p'] ?? ''); ?></textarea></label></p>
-                        <p class="nhhb-2">
-                            <label>Button Text
-                                <input type="text" class="widefat" name="data[cards][0][btn_text]" value="<?php echo esc_attr($c['btn_text'] ?? ''); ?>">
-                            </label>
-                            <label>Button URL
-                                <input type="url" class="widefat" name="data[cards][0][btn_url]" value="<?php echo esc_attr($c['btn_url'] ?? ''); ?>">
-                            </label>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="nhhb-grid nhhb-2" style="margin-top:14px;">
-                <?php for ($i = 1; $i <= 2; $i++):
-                    $c = $cards[$i];
-                    $img_id = isset($c['img']) ? absint($c['img']) : 0;
-                    $img_src = $img_id ? wp_get_attachment_image_url($img_id, 'medium') : '';
-                ?>
-                <div class="nhhb-card">
-                    <h4>Promo <?php echo $i === 1 ? 'A' : 'B'; ?></h4>
-                    <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="ptr_thumb_<?php echo $i; ?>">
-                                <?php echo $img_src ? '<img src="' . esc_url($img_src) . '" alt=""/>' : 'No image'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="ptr_<?php echo $i; ?>">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="ptr_<?php echo $i; ?>">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[cards][<?php echo $i; ?>][img]" id="ptr_<?php echo $i; ?>" value="<?php echo esc_attr($img_id); ?>">
-                        </div>
-                        <div style="flex:1">
-                            <p><label>Kicker Text<br><input type="text" class="widefat" name="data[cards][<?php echo $i; ?>][h3]" value="<?php echo esc_attr($c['h3'] ?? ''); ?>"></label></p>
-                            <p><label>Heading (H3)<br><input type="text" class="widefat" name="data[cards][<?php echo $i; ?>][h2]" value="<?php echo esc_attr($c['h2'] ?? ''); ?>"></label></p>
-                            <p><label>Paragraph<br><textarea class="widefat" name="data[cards][<?php echo $i; ?>][p]" rows="2"><?php echo esc_textarea($c['p'] ?? ''); ?></textarea></label></p>
-                            <p class="nhhb-2">
-                                <label>Button Text
-                                    <input type="text" class="widefat" name="data[cards][<?php echo $i; ?>][btn_text]" value="<?php echo esc_attr($c['btn_text'] ?? ''); ?>">
-                                </label>
-                                <label>Button URL
-                                    <input type="url" class="widefat" name="data[cards][<?php echo $i; ?>][btn_url]" value="<?php echo esc_attr($c['btn_url'] ?? ''); ?>">
-                                </label>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <?php endfor; ?>
-            </div>
-        </div>
-
-        <hr>
-        <div style="margin-top:10px;">
-            <em>Render with shortcode:</em>
-            <?php $box_id = 'nhhb_shortcode_box_' . (int) $post->ID; ?>
-            <span id="<?php echo esc_attr($box_id); ?>" class="nhhb-copywrap">
-                <code>[nh_section id="<?php echo esc_html($post->ID); ?>"]</code>
-                <button type="button" class="button button-small nhhb-copy-btn" data-target="<?php echo esc_attr($box_id); ?>">
-                    Copy
-                </button>
-            </span>
-        </div>
-
-        <!-- B2B BANNER -->
-        <div id="nhhb_fields_b2b_banner" class="<?php echo $type === 'b2b-banner' ? '' : 'nhhb-hidden'; ?>">
-            <h3>B2B Banner</h3>
-            <?php
-            // Resolve stored data with graceful fallbacks.
-            $bb = [
-                'h2'       => $data['h2'] ?? 'For Business Customers',
-                'h3'       => $data['h3'] ?? 'Exclusive pricing and services for B2B partners.',
-                'btn_text' => $data['btn_text'] ?? 'Learn more',
-                'btn_url'  => $data['btn_url'] ?? '',
-                'logo'     => isset($data['logo']) ? absint($data['logo']) : (
-                    isset($data['logo_d']) ? absint($data['logo_d']) : (
-                        isset($data['logo_m']) ? absint($data['logo_m']) : 0
-                    )
-                ),
-            ];
-            $logo_src = $bb['logo'] ? wp_get_attachment_image_url($bb['logo'], 'medium') : '';
-            ?>
-            <div class="nhhb-grid nhhb-3">
-                <p>
-                    <label>Main Title (H2)<br>
-                        <input type="text" class="widefat" name="data[h2]" value="<?php echo esc_attr($bb['h2']); ?>">
-                    </label>
-                </p>
-                <p>
-                    <label>Subtitle (H3)<br>
-                        <input type="text" class="widefat" name="data[h3]" value="<?php echo esc_attr($bb['h3']); ?>">
-                    </label>
-                </p>
-                <p>
-                    <label>Button Text<br>
-                        <input type="text" class="widefat" name="data[btn_text]" value="<?php echo esc_attr($bb['btn_text']); ?>">
-                    </label>
-                </p>
-            </div>
-
-            <div class="nhhb-grid nhhb-2" style="align-items:end">
-                <p>
-                    <label>Button URL (opens in a new tab)<br>
-                        <input type="url" class="widefat" name="data[btn_url]" value="<?php echo esc_attr($bb['btn_url']); ?>" placeholder="https://">
-                    </label>
-                </p>
-
-                <div class="nhhb-card" style="max-width:880px">
-                    <h4>Logo (single file)</h4>
-                    <div class="nhhb-row">
-                        <div>
-                            <div class="nhhb-thumb" id="b2b_logo_thumb_single">
-                                <?php echo $logo_src ? '<img src="' . esc_url($logo_src) . '" alt=""/>' : 'No logo selected'; ?>
-                            </div>
-                            <div class="nhhb-actions">
-                                <button type="button" class="button nhhb-upload" data-target="b2b_logo_single">Browse</button>
-                                <button type="button" class="button-link-delete nhhb-remove" data-target="b2b_logo_single">Remove</button>
-                            </div>
-                            <input type="hidden" name="data[logo]" id="b2b_logo_single" value="<?php echo esc_attr($bb['logo']); ?>">
-                        </div>
-                        <p class="description" style="margin:0 0 0 10px;">
-                            Upload a <strong>single transparent PNG/SVG</strong> in your brand color. It is inverted to white on the blue banner.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SERVICES SLIDER (CPT-based, manual text per service) -->
-        <?php
-        // Saved values with sensible defaults.
-        $sv = [
-            'title'    => $data['title'] ?? 'Our Services',
-            'services' => (isset($data['services']) && is_array($data['services'])) ? $data['services'] : [],
-        ];
-
-        // Query services.
-        $services_q = new WP_Query([
-            'post_type'      => 'service',
-            'post_status'    => 'publish',
-            'posts_per_page' => 50,
-            'orderby'        => 'menu_order title',
-            'order'          => 'ASC',
-            'no_found_rows'  => true,
-        ]);
-        ?>
-        <div id="nhhb_fields_services_slider" class="<?php echo $type === 'services-slider' ? '' : 'nhhb-hidden'; ?>">
-            <h3>Services Slider</h3>
-
-            <p>
-                <label>Section Title (H2)<br>
-                    <input
-                        type="text"
-                        class="widefat"
-                        name="data[services_title]"
-                        value="<?php echo esc_attr($sv['title']); ?>"
-                        placeholder="<?php esc_attr_e('Our Services', 'nhhb'); ?>">
-                </label>
-            </p>
-
-            <?php if (!$services_q->have_posts()): ?>
-                <p class="description">No published Service posts found.</p>
-            <?php else: ?>
-                <div class="nhhb-svc-grid" style="margin-top:12px;">
-                    <?php while ($services_q->have_posts()): $services_q->the_post();
-                        $sid = get_the_ID();
-
-                        $savedDesktop = '';
-                        $savedMobile  = '';
-
-                        if (isset($sv['services'][$sid]) && is_array($sv['services'][$sid])) {
-                            $savedDesktop = (string) ($sv['services'][$sid]['desktop'] ?? '');
-                            $savedMobile  = (string) ($sv['services'][$sid]['mobile'] ?? '');
-                        }
-                    ?>
-                        <div class="nhhb-card">
-                            <div class="nhhb-svc-row">
-                                <div>
-                                    <strong><?php echo esc_html(get_the_title()); ?></strong>
-                                    <div class="nhhb-svc-small">
-                                        ID: <?php echo (int) $sid; ?> —
-                                        <a href="<?php echo esc_url(get_permalink($sid)); ?>" target="_blank" rel="noopener">View</a>
-                                    </div>
-                                </div>
-
-                                <div class="nhhb-grid nhhb-2">
-                                    <p style="margin:0;">
-                                        <label>Desktop Text<br>
-                                            <textarea class="widefat" rows="3" name="data[services][<?php echo (int) $sid; ?>][desktop]"><?php echo esc_textarea($savedDesktop); ?></textarea>
-                                        </label>
-                                    </p>
-
-                                    <p style="margin:0;">
-                                        <label>Mobile Text<br>
-                                            <textarea class="widefat" rows="3" name="data[services][<?php echo (int) $sid; ?>][mobile]"><?php echo esc_textarea($savedMobile); ?></textarea>
-                                        </label>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endwhile; wp_reset_postdata(); ?>
-                </div>
-
-                <p class="description" style="margin-top:10px;">
-                    Text is now entered manually. The slider still uses the service title, featured image, and link,
-                    but it will display the desktop/mobile text you enter here.
-                </p>
-            <?php endif; ?>
-
-            <input type="hidden" name="data[services_mode]" value="manual">
-        </div>
-
-        <script>
-        (function($){
-            function toggleFields() {
-                var t = $('#nhhb_type').val();
-                $('#nhhb_fields_top_offers').toggleClass('nhhb-hidden', t !== 'top-offers');
-                $('#nhhb_fields_top_features').toggleClass('nhhb-hidden', t !== 'top-features');
-                $('#nhhb_fields_browse_cats').toggleClass('nhhb-hidden', t !== 'browse-cats');
-                $('#nhhb_fields_new_arrivals').toggleClass('nhhb-hidden', t !== 'new-arrivals');
-                $('#nhhb_fields_promo_trio').toggleClass('nhhb-hidden', t !== 'promo-trio');
-                $('#nhhb_fields_newsletter').toggleClass('nhhb-hidden', t !== 'newsletter');
-                $('#nhhb_fields_services_slider').toggleClass('nhhb-hidden', t !== 'services-slider');
-                $('#nhhb_fields_b2b_banner').toggleClass('nhhb-hidden', t !== 'b2b-banner');
-                $('#nhhb_fields_reviews_slider').toggleClass('nhhb-hidden', t !== 'reviews-slider');
-            }
-
-            $(document).on('change', '#nhhb_type', toggleFields);
-            $(document).ready(function(){ toggleFields(); });
-
-            // Media uploader.
-            let frame;
-            $(document).on('click', '.nhhb-upload', function(e){
-                e.preventDefault();
-                const target = $(this).data('target');
-
-                if (frame) frame.close();
-
-                frame = wp.media({
-                    title: 'Select Image',
-                    button: { text: 'Use This Image' },
-                    multiple: false
-                });
-
-                frame.on('select', function(){
-                    const at = frame.state().get('selection').first().toJSON();
-                    $('#' + target).val(at.id);
-
-                    const thumb = (at.sizes && at.sizes.medium) ? at.sizes.medium.url : at.url;
-
-                    let tSel = '';
-                    if (target.indexOf('slide_') === 0) tSel = '#slide_thumb_' + target.split('_')[1];
-                    else if (target.indexOf('promo_') === 0) tSel = '#promo_thumb_' + target.split('_')[1];
-                    else if (target.indexOf('feat_') === 0) tSel = '#feat_thumb_' + target.split('_')[1];
-                    else if (target.indexOf('ptr_') === 0) tSel = '#ptr_thumb_' + target.split('_')[1];
-                    else if (target.indexOf('svc_bg_') === 0) tSel = '#svc_bg_thumb_' + target.split('_')[2];
-                    else if (target.indexOf('svc_icon_') === 0) tSel = '#svc_icon_thumb_' + target.split('_')[2];
-                    else if (target === 'b2b_logo_d') tSel = '#b2b_logo_thumb_d';
-                    else if (target === 'b2b_logo_m') tSel = '#b2b_logo_thumb_m';
-                    else if (target === 'b2b_logo_single') tSel = '#b2b_logo_thumb_single';
-
-                    if (tSel) $(tSel).html('<img src="' + thumb + '" alt="">');
-                });
-
-                frame.open();
-            });
-
-            $(document).on('click', '.nhhb-remove', function(e){
-                e.preventDefault();
-                const target = $(this).data('target');
-                $('#' + target).val('');
-
-                let tSel = '';
-                let emptyText = 'No image';
-
-                if (target.indexOf('slide_') === 0) tSel = '#slide_thumb_' + target.split('_')[1];
-                else if (target.indexOf('promo_') === 0) tSel = '#promo_thumb_' + target.split('_')[1];
-                else if (target.indexOf('feat_') === 0) tSel = '#feat_thumb_' + target.split('_')[1];
-                else if (target.indexOf('ptr_') === 0) tSel = '#ptr_thumb_' + target.split('_')[1];
-                else if (target.indexOf('svc_bg_') === 0) tSel = '#svc_bg_thumb_' + target.split('_')[2];
-                else if (target.indexOf('svc_icon_') === 0) tSel = '#svc_icon_thumb_' + target.split('_')[2];
-                else if (target === 'b2b_logo') tSel = '#b2b_logo_thumb';
-                else if (target === 'b2b_logo_single') {
-                    tSel = '#b2b_logo_thumb_single';
-                    emptyText = 'No logo selected';
-                }
-
-                if (tSel) $(tSel).text(emptyText);
-            });
-
-            // Copy shortcode.
-            $(document).on('click', '.nhhb-copy-btn', function(e){
-                e.preventDefault();
-
-                const targetId = $(this).data('target');
-                const text = $('#' + targetId).find('code').text();
-
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text);
-                } else {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                }
-
-                const btn = $(this);
-                const old = btn.text();
-                btn.text('Copied!');
-                setTimeout(() => btn.text(old), 1500);
-            });
-        })(jQuery);
-        </script>
-        <?php
+        wp_safe_redirect(add_query_arg([
+            'page'    => 'nhhb-home',
+            'updated' => '1',
+        ], admin_url('admin.php')));
+        exit;
     }
 
-    public static function save_section($post_id) {
-        if (get_post_type($post_id) !== 'nh_section') return;
-        if (!isset($_POST['nhhb_nonce']) || !wp_verify_nonce($_POST['nhhb_nonce'], 'nhhb_save_section')) return;
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-        if (!current_user_can('edit_post', $post_id)) return;
-
-        $type = isset($_POST['nhhb_type']) ? sanitize_text_field($_POST['nhhb_type']) : 'top-offers';
-        $data = (isset($_POST['data']) && is_array($_POST['data'])) ? wp_unslash($_POST['data']) : [];
-
-        $clean = [];
-
-        if ($type === 'top-offers') {
-            $slides = [];
-            if (!empty($data['slides']) && is_array($data['slides'])) {
-                foreach ($data['slides'] as $s) {
-                    $slides[] = [
-                        'img'      => isset($s['img']) ? absint($s['img']) : 0,
-                        'h1'       => sanitize_text_field($s['h1'] ?? ''),
-                        'h2'       => sanitize_text_field($s['h2'] ?? ''),
-                        'h3'       => sanitize_text_field($s['h3'] ?? ''),
-                        'btn_text' => sanitize_text_field($s['btn_text'] ?? ''),
-                        'btn_url'  => esc_url_raw($s['btn_url'] ?? ''),
-                    ];
-                }
-            }
-
-            $promos = [];
-            if (!empty($data['promos']) && is_array($data['promos'])) {
-                foreach ($data['promos'] as $p) {
-                    $promos[] = [
-                        'img'      => isset($p['img']) ? absint($p['img']) : 0,
-                        'h1'       => sanitize_text_field($p['h1'] ?? ''),
-                        'h3'       => sanitize_text_field($p['h3'] ?? ''),
-                        'btn_url'  => esc_url_raw($p['btn_url'] ?? ''),
-                    ];
-                }
-            }
-
-            $clean = ['slides' => $slides, 'promos' => $promos];
-
-        } elseif ($type === 'top-features') {
-            $items = [];
-            if (!empty($data['items']) && is_array($data['items'])) {
-                foreach ($data['items'] as $it) {
-                    $items[] = [
-                        'icon'  => isset($it['icon']) ? absint($it['icon']) : 0,
-                        'title' => sanitize_text_field($it['title'] ?? ''),
-                        'text'  => sanitize_text_field($it['text'] ?? ''),
-                    ];
-                }
-            }
-
-            $clean = ['items' => $items];
-
-        } elseif ($type === 'browse-cats') {
-            $clean = [
-                'title'      => sanitize_text_field($data['title'] ?? 'Browse by Category'),
-                'limit'      => isset($data['limit']) ? max(1, absint($data['limit'])) : 12,
-                'orderby'    => sanitize_text_field($data['orderby'] ?? 'name'),
-                'order'      => sanitize_text_field($data['order'] ?? 'ASC'),
-                'hide_empty' => !empty($data['hide_empty']) ? 1 : 0,
-            ];
-
-        } elseif ($type === 'new-arrivals') {
-            $clean = [
-                'title'      => sanitize_text_field($data['title'] ?? 'New Arrivals'),
-                'count'      => isset($data['count']) ? max(1, min(24, absint($data['count']))) : 8,
-                'view_label' => sanitize_text_field($data['view_label'] ?? 'View All'),
-                'view_url'   => esc_url_raw($data['view_url'] ?? ''),
-            ];
-
-        } elseif ($type === 'promo-trio') {
-            $cards = [];
-            if (!empty($data['cards']) && is_array($data['cards'])) {
-                foreach ($data['cards'] as $c) {
-                    $cards[] = [
-                        'img'      => isset($c['img']) ? absint($c['img']) : 0,
-                        'h2'       => sanitize_text_field($c['h2'] ?? ''),
-                        'h3'       => sanitize_text_field($c['h3'] ?? ''),
-                        'p'        => sanitize_textarea_field($c['p'] ?? ''),
-                        'btn_text' => sanitize_text_field($c['btn_text'] ?? ''),
-                        'btn_url'  => esc_url_raw($c['btn_url'] ?? ''),
-                    ];
-                }
-            }
-
-            $clean = ['cards' => $cards];
-
-        } elseif ($type === 'newsletter') {
-            $method = isset($data['method']) ? strtoupper($data['method']) : 'POST';
-            if (!in_array($method, ['GET', 'POST'], true)) $method = 'POST';
-
-            $clean = [
-                'title'        => sanitize_text_field($data['title'] ?? ''),
-                'text'         => sanitize_text_field($data['text'] ?? ''),
-                'placeholder'  => sanitize_text_field($data['placeholder'] ?? ''),
-                'btn_text'     => sanitize_text_field($data['btn_text'] ?? ''),
-                'action'       => esc_url_raw($data['action'] ?? ''),
-                'method'       => $method,
-                'consent_text' => sanitize_text_field($data['consent_text'] ?? ''),
-            ];
-
-        // Services Slider — manual text, with Service posts as the source.
-        } elseif ($type === 'services-slider') {
-            $raw_title = isset($data['services_title']) ? (string) $data['services_title'] : '';
-            if ($raw_title === '') {
-                $raw_title = __('Our Services', 'nhhb');
-            }
-
-            $services_clean = [];
-
-            if (!empty($data['services']) && is_array($data['services'])) {
-                foreach ($data['services'] as $sid => $row) {
-                    $sid = absint($sid);
-                    if (!$sid) continue;
-
-                    $desktop = sanitize_textarea_field($row['desktop'] ?? '');
-                    $mobile  = sanitize_textarea_field($row['mobile'] ?? '');
-
-                    // Store only non-empty values to keep meta smaller.
-                    if ($desktop !== '' || $mobile !== '') {
-                        $services_clean[$sid] = [
-                            'desktop' => $desktop,
-                            'mobile'  => $mobile,
-                        ];
-                    }
-                }
-            }
-
-            $clean = [
-                'title'    => sanitize_text_field($raw_title),
-                'services' => $services_clean,
-                'mode'     => 'manual',
-            ];
-
-        } elseif ($type === 'b2b-banner') {
-            $clean = [
-                'h2'       => sanitize_text_field($data['h2'] ?? ''),
-                'h3'       => sanitize_text_field($data['h3'] ?? ''),
-                'btn_text' => sanitize_text_field($data['btn_text'] ?? ''),
-                'btn_url'  => esc_url_raw($data['btn_url'] ?? ''),
-                'logo'     => isset($data['logo']) ? absint($data['logo']) : 0,
-            ];
-
-        } elseif ($type === 'reviews-slider') {
-            $clean = [
-                'title'      => sanitize_text_field($data['reviews_title'] ?? ''),
-                'count'      => isset($data['reviews_count']) ? max(1, min(24, absint($data['reviews_count']))) : 8,
-                'view_label' => sanitize_text_field($data['reviews_view_label'] ?? ''),
-                'view_url'   => esc_url_raw($data['reviews_view_url'] ?? ''),
-            ];
+    public static function render_page() {
+        if (!current_user_can('edit_pages')) {
+            return;
         }
 
-        update_post_meta($post_id, '_nhhb_type', $type);
-        update_post_meta($post_id, '_nhhb_data', $clean);
+        $layout = nhhb_get_layout();
+        $labels = nhhb_section_labels();
+        echo '<div class="wrap nhhb-admin">';
+        echo '<h1>' . esc_html__('Home Builder', 'nhhb') . '</h1>';
+        if (!empty($_GET['updated'])) {
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Homepage layout saved.', 'nhhb') . '</p></div>';
+        }
+        echo '<p>' . esc_html__('Sections are inserted on the homepage automatically, in this order. Titles and chrome use plugin translations unless you override them. Campaign images still need to be set per shop.', 'nhhb') . '</p>';
+
+        echo '<form method="post">';
+        wp_nonce_field('nhhb_save_layout', 'nhhb_nonce');
+        echo '<p><label><input type="checkbox" name="nhhb[inject]" value="1" ' . checked(!empty($layout['inject']), true, false) . '> ';
+        echo esc_html__('Insert these sections on the homepage automatically (no shortcodes needed).', 'nhhb') . '</label></p>';
+        echo '<p><button type="button" class="button nhhb-reset-order">' . esc_html__('Reset to default order', 'nhhb') . '</button></p>';
+
+        echo '<div class="nhhb-section-list" data-default-order="' . esc_attr(implode(',', nhhb_default_order())) . '">';
+        foreach ($layout['order'] as $type) {
+            $label = $labels[$type] ?? $type;
+            $on = !empty($layout['enabled'][$type]);
+            $data = $layout['data'][$type] ?? [];
+            echo '<details class="nhhb-section-card" data-type="' . esc_attr($type) . '">';
+            echo '<summary class="nhhb-section-head">';
+            echo '<span class="nhhb-section-move">';
+            echo '<button type="button" class="button nhhb-move-up" aria-label="' . esc_attr__('Move up', 'nhhb') . '">&uarr;</button>';
+            echo '<button type="button" class="button nhhb-move-down" aria-label="' . esc_attr__('Move down', 'nhhb') . '">&darr;</button>';
+            echo '</span>';
+            echo '<label class="nhhb-section-enable" onclick="event.stopPropagation();">';
+            echo '<input type="hidden" name="nhhb[enabled][' . esc_attr($type) . ']" value="0">';
+            echo '<input type="checkbox" name="nhhb[enabled][' . esc_attr($type) . ']" value="1" ' . checked($on, true, false) . '> ';
+            echo esc_html__('Enabled', 'nhhb');
+            echo '</label>';
+            echo '<strong class="nhhb-section-label">' . esc_html($label) . '</strong>';
+            echo '<input type="hidden" class="nhhb-order-input" name="nhhb[order][]" value="' . esc_attr($type) . '">';
+            echo '</summary>';
+            echo '<div class="nhhb-section-body">';
+            nhhb_admin_section_fields($type, $data);
+            echo '</div></details>';
+        }
+        echo '</div>';
+
+        submit_button(__('Save homepage', 'nhhb'), 'primary', 'nhhb_save_layout');
+        echo '</form></div>';
     }
 
     public static function admin_assets($hook) {
-        if (in_array($hook, ['post.php', 'post-new.php'], true)) {
-            $screen = get_current_screen();
-            if ($screen && $screen->post_type === 'nh_section') {
-                wp_enqueue_media();
-                wp_enqueue_script('jquery');
-            }
+        if ($hook !== 'toplevel_page_nhhb-home') {
+            return;
         }
+        wp_enqueue_media();
+        wp_enqueue_script('jquery');
+        wp_enqueue_style('nhhb-admin', NHHB_URL . 'assets/css/admin.css', [], NHHB_VER);
+        wp_enqueue_script('nhhb-admin', NHHB_URL . 'assets/js/admin.js', ['jquery'], NHHB_VER, true);
     }
 
     public static function front_assets() {
         wp_register_style('nhhb-core', NHHB_URL . 'assets/css/core.css', [], NHHB_VER);
-
         wp_register_style('nhhb-top-offers', NHHB_URL . 'assets/css/top-offers.css', ['nhhb-core'], NHHB_VER);
         wp_register_script('nhhb-top-offers', NHHB_URL . 'assets/js/top-offers.js', [], NHHB_VER, true);
-
         wp_register_style('nhhb-top-features', NHHB_URL . 'assets/css/top-features.css', ['nhhb-core'], NHHB_VER);
-
         wp_register_style('nhhb-browse-cats', NHHB_URL . 'assets/css/browse-cats.css', ['nhhb-core'], NHHB_VER);
         wp_register_script('nhhb-browse-cats', NHHB_URL . 'assets/js/browse-cats.js', [], NHHB_VER, true);
-
         wp_register_style('nhhb-new-arrivals', NHHB_URL . 'assets/css/new-arrivals.css', ['nhhb-core'], NHHB_VER);
-
-        // Promo Trio.
         wp_register_style('nhhb-promo-trio', NHHB_URL . 'assets/css/promo-trio.css', ['nhhb-core'], NHHB_VER);
-
-        // Newsletter.
         wp_register_style('nhhb-newsletter', NHHB_URL . 'assets/css/newsletter.css', ['nhhb-core'], NHHB_VER);
-
-        // Services Slider.
         wp_register_style('nhhb-services', NHHB_URL . 'assets/css/services-slider.css', ['nhhb-core'], NHHB_VER);
         wp_register_script('nhhb-services', NHHB_URL . 'assets/js/services-slider.js', [], NHHB_VER, true);
-
-        // B2B Banner.
         wp_register_style('nhhb-b2b', NHHB_URL . 'assets/css/b2b-banner.css', ['nhhb-core'], NHHB_VER);
-
-        // Customer reviews slider.
         wp_register_style('nhhb-reviews', NHHB_URL . 'assets/css/reviews-slider.css', ['nhhb-core'], NHHB_VER);
         wp_register_script('nhhb-reviews', NHHB_URL . 'assets/js/reviews-slider.js', [], NHHB_VER, true);
+
+        if (!is_front_page()) {
+            return;
+        }
+        $layout = nhhb_get_layout();
+        if (empty($layout['inject'])) {
+            return;
+        }
+        wp_enqueue_style('nhhb-core');
+        $map = [
+            'top-offers'      => ['style' => 'nhhb-top-offers', 'script' => 'nhhb-top-offers'],
+            'top-features'    => ['style' => 'nhhb-top-features'],
+            'browse-cats'     => ['style' => 'nhhb-browse-cats', 'script' => 'nhhb-browse-cats'],
+            'new-arrivals'    => ['style' => 'nhhb-new-arrivals'],
+            'reviews-slider'  => ['style' => 'nhhb-reviews', 'script' => 'nhhb-reviews'],
+            'promo-trio'      => ['style' => 'nhhb-promo-trio'],
+            'services-slider' => ['style' => 'nhhb-services', 'script' => 'nhhb-services'],
+            'newsletter'      => ['style' => 'nhhb-newsletter'],
+            'b2b-banner'      => ['style' => 'nhhb-b2b'],
+        ];
+        foreach ($layout['order'] as $type) {
+            if (empty($layout['enabled'][$type]) || empty($map[$type])) {
+                continue;
+            }
+            if (!empty($map[$type]['style'])) {
+                wp_enqueue_style($map[$type]['style']);
+            }
+            if (!empty($map[$type]['script'])) {
+                wp_enqueue_script($map[$type]['script']);
+            }
+        }
     }
 }
 
