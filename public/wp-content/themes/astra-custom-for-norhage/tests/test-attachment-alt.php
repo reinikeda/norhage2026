@@ -74,5 +74,28 @@ nh_alt_assert(
 	strpos( $kept, 'alt="Custom caption"' ) !== false
 );
 
+nh_alt_assert(
+	'review avatar uses the comment author name',
+	nh_avatar_alt( '', 'Olav Østerhus', 'Reviewer' ) === 'Olav Østerhus'
+);
+
+nh_alt_assert(
+	'existing avatar alt is kept',
+	nh_avatar_alt( 'Photo', 'Olav Østerhus', 'Reviewer' ) === 'Photo'
+);
+
+$gravatar = '<img alt="" src="https://secure.gravatar.com/avatar/abc?s=60&amp;d=mm&amp;r=g" class="avatar avatar-60 photo" height="60" width="60" decoding="async">';
+$with_alt = nh_set_img_tag_alt( $gravatar, 'Olav Østerhus' );
+nh_alt_assert(
+	'empty gravatar alt is replaced',
+	strpos( $with_alt, 'alt="Olav Østerhus"' ) !== false
+);
+
+$comment = (object) array( 'comment_author' => 'Olav Østerhus' );
+nh_alt_assert(
+	'comment object yields reviewer name',
+	nh_avatar_identity_name( $comment ) === 'Olav Østerhus'
+);
+
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
