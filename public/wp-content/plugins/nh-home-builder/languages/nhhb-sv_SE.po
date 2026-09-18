@@ -99,3 +99,31 @@ msgstr "Erbjudandebilder"
 msgid "Shop benefits"
 msgstr "Butiksfördelar"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Kundrecensioner"
+
+msgid "Previous reviews"
+msgstr "Föregående recensioner"
+
+msgid "Next reviews"
+msgstr "Nästa recensioner"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Betyg 5 av 5 stjärnor"
+
+msgid "Customer"
+msgstr "Kund"
+
+msgid "Verified purchase"
+msgstr "Verifierat köp"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Inga 5-stjärniga recensioner med en skriven kommentar ännu."
+
+msgid "%s avatar"
+msgstr "%s avatar"
+
+msgid "Customer avatar"
+msgstr "Kundavatar"
+

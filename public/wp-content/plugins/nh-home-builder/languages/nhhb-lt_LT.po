@@ -132,3 +132,31 @@ msgstr "Pasiūlymų skaidrės"
 msgid "Shop benefits"
 msgstr "Parduotuvės privalumai"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Klientų atsiliepimai"
+
+msgid "Previous reviews"
+msgstr "Ankstesni atsiliepimai"
+
+msgid "Next reviews"
+msgstr "Kiti atsiliepimai"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Įvertinta 5 iš 5 žvaigždučių"
+
+msgid "Customer"
+msgstr "Klientas"
+
+msgid "Verified purchase"
+msgstr "Patvirtintas pirkimas"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Dar nėra 5 žvaigždučių atsiliepimų su parašytu komentaru."
+
+msgid "%s avatar"
+msgstr "%s avataras"
+
+msgid "Customer avatar"
+msgstr "Kliento avataras"
+

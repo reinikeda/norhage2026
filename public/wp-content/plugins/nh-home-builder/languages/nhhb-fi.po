@@ -132,3 +132,31 @@ msgstr "Tarjousdiat"
 msgid "Shop benefits"
 msgstr "Kaupan edut"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Asiakasarvostelut"
+
+msgid "Previous reviews"
+msgstr "Edelliset arvostelut"
+
+msgid "Next reviews"
+msgstr "Seuraavat arvostelut"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Arvosana 5/5 tähteä"
+
+msgid "Customer"
+msgstr "Asiakas"
+
+msgid "Verified purchase"
+msgstr "Vahvistettu ostos"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Ei vielä 5 tähden arvosteluja, joissa on kirjoitettu kommentti."
+
+msgid "%s avatar"
+msgstr "Käyttäjän %s avatar"
+
+msgid "Customer avatar"
+msgstr "Asiakkaan avatar"
+

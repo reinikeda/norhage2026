@@ -114,6 +114,7 @@ class NHHB_Admin {
                 <option value="newsletter" <?php selected($type, 'newsletter'); ?>>Newsletter / Subscribe</option>
                 <option value="services-slider" <?php selected($type, 'services-slider'); ?>>Services Slider (CPT: Service)</option>
                 <option value="b2b-banner" <?php selected($type, 'b2b-banner'); ?>>B2B Banner</option>
+                <option value="reviews-slider" <?php selected($type, 'reviews-slider'); ?>>Customer Reviews (5-star slider)</option>
             </select>
         </p>
         <hr>
@@ -303,6 +304,38 @@ class NHHB_Admin {
                 </label></p>
                 <p><label>View All URL (optional)<br>
                     <input type="url" class="widefat" name="data[view_url]" value="<?php echo esc_attr($na['view_url']); ?>" placeholder="Defaults to shop page">
+                </label></p>
+            </div>
+        </div>
+
+        <!-- REVIEWS SLIDER -->
+        <div id="nhhb_fields_reviews_slider" class="<?php echo $type === 'reviews-slider' ? '' : 'nhhb-hidden'; ?>">
+            <h3>Customer Reviews</h3>
+            <?php
+            $rv = [
+                'title'      => $data['title'] ?? 'Customer reviews',
+                'count'      => isset($data['count']) ? (int) $data['count'] : 8,
+                'view_label' => $data['view_label'] ?? 'View All',
+                'view_url'   => $data['view_url'] ?? '',
+            ];
+            ?>
+            <p class="description">
+                Pulls approved WooCommerce product reviews that are <strong>5 stars</strong> and include a
+                <strong>written comment</strong>. Ratings without text are skipped. Reviewer photos are
+                not collected by WooCommerce, so the slider shows initials instead of Gravatar.
+            </p>
+            <p><label>Section Title (H2)<br>
+                <input type="text" class="widefat" name="data[reviews_title]" value="<?php echo esc_attr($rv['title']); ?>">
+            </label></p>
+            <div class="nhhb-grid nhhb-3">
+                <p><label>Number of reviews<br>
+                    <input type="number" min="1" max="24" class="widefat" name="data[reviews_count]" value="<?php echo (int) $rv['count']; ?>">
+                </label></p>
+                <p><label>View All label (optional)<br>
+                    <input type="text" class="widefat" name="data[reviews_view_label]" value="<?php echo esc_attr($rv['view_label']); ?>">
+                </label></p>
+                <p><label>View All URL (optional)<br>
+                    <input type="url" class="widefat" name="data[reviews_view_url]" value="<?php echo esc_attr($rv['view_url']); ?>" placeholder="Leave empty to hide the link">
                 </label></p>
             </div>
         </div>
@@ -564,6 +597,7 @@ class NHHB_Admin {
                 $('#nhhb_fields_newsletter').toggleClass('nhhb-hidden', t !== 'newsletter');
                 $('#nhhb_fields_services_slider').toggleClass('nhhb-hidden', t !== 'services-slider');
                 $('#nhhb_fields_b2b_banner').toggleClass('nhhb-hidden', t !== 'b2b-banner');
+                $('#nhhb_fields_reviews_slider').toggleClass('nhhb-hidden', t !== 'reviews-slider');
             }
 
             $(document).on('change', '#nhhb_type', toggleFields);
@@ -800,6 +834,14 @@ class NHHB_Admin {
                 'btn_url'  => esc_url_raw($data['btn_url'] ?? ''),
                 'logo'     => isset($data['logo']) ? absint($data['logo']) : 0,
             ];
+
+        } elseif ($type === 'reviews-slider') {
+            $clean = [
+                'title'      => sanitize_text_field($data['reviews_title'] ?? ''),
+                'count'      => isset($data['reviews_count']) ? max(1, min(24, absint($data['reviews_count']))) : 8,
+                'view_label' => sanitize_text_field($data['reviews_view_label'] ?? ''),
+                'view_url'   => esc_url_raw($data['reviews_view_url'] ?? ''),
+            ];
         }
 
         update_post_meta($post_id, '_nhhb_type', $type);
@@ -841,6 +883,10 @@ class NHHB_Admin {
 
         // B2B Banner.
         wp_register_style('nhhb-b2b', NHHB_URL . 'assets/css/b2b-banner.css', ['nhhb-core'], NHHB_VER);
+
+        // Customer reviews slider.
+        wp_register_style('nhhb-reviews', NHHB_URL . 'assets/css/reviews-slider.css', ['nhhb-core'], NHHB_VER);
+        wp_register_script('nhhb-reviews', NHHB_URL . 'assets/js/reviews-slider.js', [], NHHB_VER, true);
     }
 }
 

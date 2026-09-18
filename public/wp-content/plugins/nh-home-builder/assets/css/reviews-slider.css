@@ -1,0 +1,272 @@
+/* NH Home Builder – 5-star reviews slider (mobile first) */
+
+.nhhb-reviews {
+  padding: 16px 14px 14px;
+  background: linear-gradient(160deg, #f4faf6 0%, var(--nhhb-cream, #F1E6D6) 100%);
+  border-radius: var(--nhhb-radius, 12px);
+  border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
+  position: relative;
+  overflow: hidden;
+}
+
+.nhhb-rev-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.nhhb-rev-title {
+  margin: 0;
+  min-width: 0;
+}
+
+.nhhb-rev-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.nhhb-rev-viewall {
+  display: none;
+}
+
+.nhhb-rev-arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.nhhb-rev-arrows.is-idle {
+  display: none;
+}
+
+.nhhb-rev-prev,
+.nhhb-rev-next {
+  width: var(--nhhb-tap, 48px);
+  height: var(--nhhb-tap, 48px);
+  min-width: var(--nhhb-tap, 48px);
+  min-height: var(--nhhb-tap, 48px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--nhhb-white, #fff);
+  border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
+  color: var(--nhhb-forest, #1E3932);
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(30, 57, 50, 0.08);
+}
+
+.nhhb-rev-prev:hover,
+.nhhb-rev-next:hover {
+  background: var(--nhhb-forest, #1E3932);
+  color: #fff;
+  border-color: var(--nhhb-forest, #1E3932);
+}
+
+.nhhb-rev-prev[aria-disabled="true"],
+.nhhb-rev-next[aria-disabled="true"] {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
+}
+
+.nhhb-rev-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 4px 2px 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  align-items: stretch;
+}
+
+.nhhb-rev-track::-webkit-scrollbar {
+  display: none;
+}
+
+.nhhb-rev-card {
+  flex: 0 0 86%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  background: var(--nhhb-white, #fff);
+  border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
+  border-radius: var(--nhhb-radius, 12px);
+  padding: 16px 16px 14px;
+  box-shadow: 0 2px 12px rgba(30, 57, 50, 0.06);
+  box-sizing: border-box;
+}
+
+.nhhb-rev-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #c4a35a;
+  line-height: 1;
+}
+
+.nhhb-rev-star {
+  display: block;
+  flex-shrink: 0;
+}
+
+.nhhb-rev-quote {
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.nhhb-rev-quote p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--nhhb-charcoal, #2C2A29);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.nhhb-rev-byline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  min-width: 0;
+}
+
+.nhhb-rev-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.nhhb-rev-avatar[data-tone="forest"] { background: var(--nhhb-forest, #1E3932); }
+.nhhb-rev-avatar[data-tone="green"] { background: var(--nhhb-green, #00704A); }
+.nhhb-rev-avatar[data-tone="moss"] { background: #3d6b54; }
+.nhhb-rev-avatar[data-tone="pine"] { background: #245c4a; }
+
+.nhhb-rev-initials {
+  display: block;
+}
+
+.nhhb-rev-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.nhhb-rev-author {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--nhhb-forest, #1E3932);
+  line-height: 1.3;
+}
+
+.nhhb-rev-verified {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--nhhb-green, #00704A);
+  line-height: 1.3;
+}
+
+.nhhb-rev-product {
+  font-size: 0.75rem;
+  color: var(--nhhb-muted, #5f6d67);
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a.nhhb-rev-product:hover {
+  color: var(--nhhb-green, #00704A);
+  text-decoration: underline;
+}
+
+.nhhb-rev-empty {
+  margin: 0;
+  padding: 14px;
+  width: 100%;
+  border: 1px dashed var(--nhhb-line, rgba(30, 57, 50, 0.12));
+  border-radius: 8px;
+  background: #fff;
+  color: var(--nhhb-muted, #5f6d67);
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+  .nhhb-rev-card {
+    flex-basis: calc((100% - 12px) / 2);
+  }
+}
+
+@media (min-width: 768px) {
+  .nhhb-reviews {
+    padding: 28px;
+  }
+
+  .nhhb-rev-viewall {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+    color: var(--nhhb-forest, #1E3932);
+    border: 1.5px solid var(--nhhb-forest, #1E3932);
+    border-radius: var(--nhhb-radius-sm, 8px);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .nhhb-rev-viewall:hover {
+    background: var(--nhhb-forest, #1E3932);
+    color: #fff;
+  }
+
+  .nhhb-rev-card {
+    flex-basis: calc((100% - 32px) / 3);
+    padding: 18px 18px 16px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nhhb-rev-card:hover {
+    box-shadow: var(--nhhb-shadow-hover, 0 12px 28px rgba(30, 57, 50, 0.14));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nhhb-rev-track {
+    scroll-behavior: auto;
+  }
+
+  .nhhb-rev-card,
+  .nhhb-rev-viewall,
+  .nhhb-rev-prev,
+  .nhhb-rev-next {
+    transition: none;
+  }
+}

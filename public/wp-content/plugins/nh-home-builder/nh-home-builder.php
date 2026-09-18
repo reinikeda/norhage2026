@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Home Builder
  * Description: Homepage sections for Norhage shops. Manage in wp-admin → Home Builder. Render with [nh_section id="123"].
- * Version: 0.2.1
+ * Version: 0.3.0
  * Author: Daiva Reinike
  * Text Domain: nhhb
  */
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 
 define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
-define('NHHB_VER', '0.2.0');
+define('NHHB_VER', '0.3.0');
 
 /**
  * Shared photo helper. Named separately from older per-file nhhb_img()
@@ -99,6 +99,7 @@ function nhhb_load_textdomain() {
 }
 add_action( 'plugins_loaded', 'nhhb_load_textdomain' );
 
+require_once NHHB_PATH . 'includes/reviews.php';
 require_once NHHB_PATH . 'includes/class-admin.php';
 
 function nhhb_render($section, $data = []) {
@@ -112,6 +113,7 @@ function nhhb_render($section, $data = []) {
         'newsletter',
         'services-slider',
         'b2b-banner',
+        'reviews-slider',
     ];
     if (!in_array($section, $allowed, true)) {
         return '';
