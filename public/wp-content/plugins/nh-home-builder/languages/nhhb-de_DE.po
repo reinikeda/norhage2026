@@ -99,3 +99,31 @@ msgstr "Angebotsfolien"
 msgid "Shop benefits"
 msgstr "Shop-Vorteile"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Kundenbewertungen"
+
+msgid "Previous reviews"
+msgstr "Vorherige Bewertungen"
+
+msgid "Next reviews"
+msgstr "Nächste Bewertungen"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Mit 5 von 5 Sternen bewertet"
+
+msgid "Customer"
+msgstr "Kunde"
+
+msgid "Verified purchase"
+msgstr "Verifizierter Kauf"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Noch keine 5-Sterne-Bewertungen mit einem geschriebenen Kommentar."
+
+msgid "%s avatar"
+msgstr "Avatar von %s"
+
+msgid "Customer avatar"
+msgstr "Kundenavatar"
+

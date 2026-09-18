@@ -99,3 +99,31 @@ msgstr "Tilbudslysbilder"
 msgid "Shop benefits"
 msgstr "Butikkfordeler"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Kundeomtaler"
+
+msgid "Previous reviews"
+msgstr "Forrige omtaler"
+
+msgid "Next reviews"
+msgstr "Neste omtaler"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Vurdert 5 av 5 stjerner"
+
+msgid "Customer"
+msgstr "Kunde"
+
+msgid "Verified purchase"
+msgstr "Verifisert kjøp"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Ingen 5-stjerners omtaler med en skrevet kommentar ennå."
+
+msgid "%s avatar"
+msgstr "%s sin avatar"
+
+msgid "Customer avatar"
+msgstr "Kundeavatar"
+

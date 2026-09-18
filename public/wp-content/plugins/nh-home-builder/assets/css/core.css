@@ -29,7 +29,8 @@
 .nhhb-newsletter,
 .nhhb-services,
 .nhhb-offers-hero,
-.nhhb-b2b-wrap {
+.nhhb-b2b-wrap,
+.nhhb-reviews {
   margin-block: 20px;
   font-family: var(--nhhb-font);
 }
@@ -49,7 +50,8 @@
 .nhhb-section-title,
 .nhhb-cats-title,
 .nhhb-na-title,
-.nhhb-svc-section-title {
+.nhhb-svc-section-title,
+.nhhb-rev-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 800;
@@ -63,7 +65,8 @@
 .nhhb-svc-btn,
 .nhhb-nl-btn,
 .nhhb-b2b-cta,
-.nhhb-na-viewall {
+.nhhb-na-viewall,
+.nhhb-rev-viewall {
   min-height: var(--nhhb-tap);
   min-width: var(--nhhb-tap);
   display: inline-flex;
@@ -88,6 +91,10 @@
 .nhhb-nl-btn:focus-visible,
 .nhhb-b2b-cta:focus-visible,
 .nhhb-na-viewall:focus-visible,
+.nhhb-rev-viewall:focus-visible,
+.nhhb-rev-prev:focus-visible,
+.nhhb-rev-next:focus-visible,
+.nhhb-rev-product:focus-visible,
 .nhhb-cat:focus-visible,
 .nhhb-na-card:focus-visible,
 .nhhb-promo:focus-visible,
@@ -136,14 +143,16 @@
   .nhhb-newsletter,
   .nhhb-services,
   .nhhb-offers-hero,
-  .nhhb-b2b-wrap {
+  .nhhb-b2b-wrap,
+  .nhhb-reviews {
     margin-block: 32px;
   }
 
   .nhhb-section-title,
   .nhhb-cats-title,
   .nhhb-na-title,
-  .nhhb-svc-section-title {
+  .nhhb-svc-section-title,
+  .nhhb-rev-title {
     font-size: 1.5rem;
   }
 }
@@ -156,7 +165,8 @@
   .nhhb-newsletter *,
   .nhhb-services *,
   .nhhb-offers-hero *,
-  .nhhb-b2b-wrap * {
+  .nhhb-b2b-wrap *,
+  .nhhb-reviews * {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;

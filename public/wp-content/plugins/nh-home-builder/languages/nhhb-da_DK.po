@@ -99,3 +99,31 @@ msgstr "Tilbuds-dias"
 msgid "Shop benefits"
 msgstr "Shopfordele"
 
+# reviews-slider.php
+msgid "Customer reviews"
+msgstr "Kundeanmeldelser"
+
+msgid "Previous reviews"
+msgstr "Forrige anmeldelser"
+
+msgid "Next reviews"
+msgstr "Næste anmeldelser"
+
+msgid "Rated 5 out of 5 stars"
+msgstr "Bedømt 5 ud af 5 stjerner"
+
+msgid "Customer"
+msgstr "Kunde"
+
+msgid "Verified purchase"
+msgstr "Bekræftet køb"
+
+msgid "No 5-star reviews with a written comment yet."
+msgstr "Ingen 5-stjernede anmeldelser med en skrevet kommentar endnu."
+
+msgid "%s avatar"
+msgstr "%ss avatar"
+
+msgid "Customer avatar"
+msgstr "Kundeavatar"
+
