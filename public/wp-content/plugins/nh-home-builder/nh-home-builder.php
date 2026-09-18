@@ -2,15 +2,16 @@
 /**
  * Plugin Name: Home Builder
  * Description: Homepage sections for Norhage shops. Manage in wp-admin → Home Builder. Render with [nh_section id="123"].
- * Version: 0.3.0
+ * Version: 0.3.1
  * Author: Daiva Reinike
  * Text Domain: nhhb
+ * Domain Path: /languages
  */
 if (!defined('ABSPATH')) exit;
 
 define('NHHB_PATH', plugin_dir_path(__FILE__));
 define('NHHB_URL',  plugin_dir_url(__FILE__));
-define('NHHB_VER', '0.3.0');
+define('NHHB_VER', '0.3.1');
 
 /**
  * Shared photo helper. Named separately from older per-file nhhb_img()
