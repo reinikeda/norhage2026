@@ -160,3 +160,40 @@ msgstr "%s avataras"
 msgid "Customer avatar"
 msgstr "Kliento avataras"
 
+msgid "Top Offers"
+msgstr "Geriausi pasiūlymai"
+
+msgid "Discounts and Clearance"
+msgstr "Nuolaidos ir išpardavimas"
+
+msgid "Newsletter"
+msgstr "Naujienlaiškis"
+
+msgid "Shop now"
+msgstr "Pirkti dabar"
+
+msgid "100% Secure Payments"
+msgstr "100 % saugūs mokėjimai"
+
+msgid "Pay safely with all major payment methods."
+msgstr "Mokėkite saugiai visais pagrindiniais mokėjimo būdais."
+
+msgid "Expert Support"
+msgstr "Ekspertų pagalba"
+
+msgid "Friendly assistance and advice directly from our experts."
+msgstr "Draugiška pagalba ir konsultacijos tiesiogiai iš mūsų ekspertų."
+
+msgid "Certified Quality"
+msgstr "Sertifikuota kokybė"
+
+msgid "We use only high-quality, certified materials."
+msgstr "Naudojame tik aukštos kokybės, sertifikuotas medžiagas."
+
+msgid "From European Warehouses"
+msgstr "Iš Europos sandėlių"
+
+msgid "Orders are shipped quickly from our European warehouses."
+msgstr "Užsakymai greitai siunčiami iš mūsų sandėlių Europoje."
+
+

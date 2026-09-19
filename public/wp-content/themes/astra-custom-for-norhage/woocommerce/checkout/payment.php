@@ -2,7 +2,8 @@
 /**
  * Checkout Payment Section
  *
- * Terms stay in the page flow; the place-order row is the mobile sticky CTA.
+ * Terms stay above the iframe on snippet checkout; otherwise they sit before
+ * the place-order row.
  *
  * @see     https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
@@ -32,7 +33,16 @@ if ( ! wp_doing_ajax() ) {
 		</ul>
 	<?php endif; ?>
 
-	<?php wc_get_template( 'checkout/terms.php' ); ?>
+	<?php
+	// Snippet checkout renders terms above the iframe in form-checkout.php.
+	if ( ! function_exists( 'nh_checkout_should_load_iframe' ) || ! nh_checkout_should_load_iframe() ) {
+		if ( function_exists( 'nh_checkout_render_terms' ) ) {
+			nh_checkout_render_terms();
+		} else {
+			wc_get_template( 'checkout/terms.php' );
+		}
+	}
+	?>
 
 	<div class="form-row place-order">
 		<noscript>

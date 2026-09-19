@@ -405,6 +405,8 @@ if ( is_admin() ) {
 				$image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'medium_large' ) : '';
 				$title     = (string) ( $slide['title'] ?? '' );
 				$text      = (string) ( $slide['text'] ?? '' );
+				$btn_text  = (string) ( $slide['btn_text'] ?? '' );
+				$btn_url   = (string) ( $slide['btn_url'] ?? '' );
 				?>
 				<div class="nh-hero-admin-card">
 					<h3 style="margin-top:0;">
@@ -463,6 +465,34 @@ if ( is_admin() ) {
 									id="nh_home_hero_text_<?php echo esc_attr( $i ); ?>"
 									name="nh_home_hero_slides[<?php echo esc_attr( $i ); ?>][text]"
 								><?php echo esc_textarea( $text ); ?></textarea>
+							</p>
+
+							<p>
+								<label for="nh_home_hero_btn_text_<?php echo esc_attr( $i ); ?>">
+									<?php esc_html_e( 'Button text', 'nh-theme' ); ?>
+								</label>
+								<input
+									type="text"
+									class="widefat"
+									id="nh_home_hero_btn_text_<?php echo esc_attr( $i ); ?>"
+									name="nh_home_hero_slides[<?php echo esc_attr( $i ); ?>][btn_text]"
+									value="<?php echo esc_attr( $btn_text ); ?>"
+									placeholder="<?php echo esc_attr__( 'Shop now', 'woocommerce' ); ?>"
+								>
+							</p>
+
+							<p>
+								<label for="nh_home_hero_btn_url_<?php echo esc_attr( $i ); ?>">
+									<?php esc_html_e( 'Button URL', 'nh-theme' ); ?>
+								</label>
+								<input
+									type="url"
+									class="widefat"
+									id="nh_home_hero_btn_url_<?php echo esc_attr( $i ); ?>"
+									name="nh_home_hero_slides[<?php echo esc_attr( $i ); ?>][btn_url]"
+									value="<?php echo esc_attr( $btn_url ); ?>"
+									placeholder="<?php esc_attr_e( 'Leave empty to use the shop page', 'nh-theme' ); ?>"
+								>
 							</p>
 						</div>
 					</div>
@@ -855,6 +885,8 @@ if ( is_admin() ) {
 			$image_id = isset( $row['image_id'] ) ? absint( $row['image_id'] ) : 0;
 			$title    = isset( $row['title'] ) ? sanitize_text_field( $row['title'] ) : '';
 			$text     = isset( $row['text'] ) ? sanitize_textarea_field( $row['text'] ) : '';
+			$btn_text = isset( $row['btn_text'] ) ? sanitize_text_field( $row['btn_text'] ) : '';
+			$btn_url  = isset( $row['btn_url'] ) ? esc_url_raw( $row['btn_url'] ) : '';
 
 			if ( $image_id || $title !== '' || $text !== '' ) {
 				$has_content = true;
@@ -864,6 +896,8 @@ if ( is_admin() ) {
 				'image_id' => $image_id,
 				'title'    => $title,
 				'text'     => $text,
+				'btn_text' => $btn_text,
+				'btn_url'  => $btn_url,
 			];
 		}
 

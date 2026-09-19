@@ -918,6 +918,23 @@ body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-pay
   display: none !important;
 }
 
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet #customer_details,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-details,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-delivery,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-account-fields,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-shipping-fields,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-additional-fields {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet ul.wc_payment_methods > li.is-selected {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet ul.wc_payment_methods:not(:has(li:not(.is-selected))) {
+  display: none !important;
+}
+
 body.woocommerce-checkout.nh-checkout-form #payment {
   background: transparent !important;
   border: 0 !important;
@@ -1070,6 +1087,18 @@ body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wra
   border-radius: 14px;
   color: var(--nh-charcoal, #2c2a29);
   scroll-margin-top: 16px;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-block {
+  margin: 0 0 1rem;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-block .woocommerce-terms-and-conditions-wrapper {
+  margin: 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-other-methods-title {
+  margin: 1.25rem 0 0.75rem;
 }
 
 body.woocommerce-checkout.nh-checkout-form .woocommerce-privacy-policy-text {
@@ -1651,6 +1680,15 @@ body.woocommerce-checkout.nh-checkout-form .nh-paypal-blocked {
     font-size: 0.95rem;
   }
 
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-sticky,
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-sticky[hidden] {
+    display: none !important;
+  }
+
   body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure {
     display: none;
   }
@@ -1740,7 +1778,7 @@ body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fie
   display: none !important;
 }
 
-body.woocommerce-checkout .nh-checkout-other-payment,
+body.woocommerce-checkout .nh-checkout-other-payment-src,
 body.woocommerce-checkout .nh-checkout-other-payment-btn,
 body.woocommerce-checkout #klarna-checkout-select-other,
 body.woocommerce-checkout #svea-checkout-select-other,
@@ -1763,6 +1801,10 @@ body.woocommerce-checkout .nh-checkout-iframe {
   scroll-margin-top: 12px;
 }
 
+body.woocommerce-checkout .nh-checkout-terms-block + .nh-checkout-iframe {
+  margin-top: 0;
+}
+
 body.woocommerce-checkout .nh-checkout-iframe iframe {
   width: 100% !important;
   max-width: 100%;
@@ -1774,9 +1816,27 @@ body.woocommerce-checkout .nh-checkout-iframe__status {
   font-weight: 700;
 }
 
-body.woocommerce-checkout .nh-summary-ship-chosen {
-  display: block;
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen {
+  display: none;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review td:not(:has(#shipping_method)):not(:has(.woocommerce-shipping-methods)) > .nh-summary-ship-chosen {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
   font-weight: 700;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen__name {
+  min-width: 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen .woocommerce-Price-amount {
+  margin-left: auto;
+  white-space: nowrap;
+  font-weight: 800;
 }
 
 #svea-checkout-iframe-container,

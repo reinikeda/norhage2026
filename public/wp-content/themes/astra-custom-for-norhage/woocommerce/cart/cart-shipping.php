@@ -51,6 +51,16 @@ $calculator_text          = '';
 						?>
 				<?php endforeach; ?>
 			</ul>
+			<?php
+			if ( function_exists( 'is_checkout' ) && is_checkout() && ( ! function_exists( 'is_cart' ) || ! is_cart() ) ) {
+				$chosen_obj = ( $chosen_method && isset( $available_methods[ $chosen_method ] ) )
+					? $available_methods[ $chosen_method ]
+					: reset( $available_methods );
+				if ( function_exists( 'nh_checkout_chosen_shipping_summary_html' ) ) {
+					echo nh_checkout_chosen_shipping_summary_html( $chosen_obj ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped markup plus Woo price HTML.
+				}
+			}
+			?>
 			<?php if ( is_cart() ) : ?>
 				<p class="woocommerce-shipping-destination">
 					<?php

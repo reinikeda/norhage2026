@@ -1836,6 +1836,9 @@ msgstr "Säker kassa"
 msgid "Other payment method"
 msgstr "Annat betalsätt"
 
+msgid "Choose another payment method"
+msgstr "Välj ett annat betalsätt"
+
 msgid "Continue to payment"
 msgstr "Fortsätt till betalning"
 

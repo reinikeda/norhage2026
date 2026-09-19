@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $kind  = function_exists( 'nh_checkout_gateway_kind' ) ? nh_checkout_gateway_kind( $gateway->id ) : 'other';
 $blurb = function_exists( 'nh_checkout_gateway_blurb' ) ? nh_checkout_gateway_blurb( $gateway ) : wp_strip_all_tags( (string) $gateway->get_description() );
 ?>
-<li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>" data-nh-kind="<?php echo esc_attr( $kind ); ?>">
+<li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?><?php echo $gateway->chosen ? ' is-selected' : ''; ?>" data-nh-kind="<?php echo esc_attr( $kind ); ?>">
 	<input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->chosen, true ); ?> data-order_button_text="<?php echo esc_attr( $gateway->order_button_text ); ?>" data-nh-kind="<?php echo esc_attr( $kind ); ?>" />
 
 	<label class="nh-pay-card" for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">

@@ -1,10 +1,10 @@
 <?php
 /**
- * Classic checkout UX: one-page mobile-first form, private/business details,
- * and field rules that work with SVEA, MakeCommerce, Kustom, PayPal, BACS.
+ * Classic checkout UX: iframe-first when Woo’s default gateway is SVEA or Kustom.
+ * BACS / PayPal / MakeCommerce still use the Woo details form.
  *
  * Checkout Blocks are not used. Those gateways need the shortcode checkout.
- * Payment cards are always visible; SVEA/Kustom iframes load only after Continue.
+ * Other available gateways are listed under the iframe so they can be loaded directly.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -404,12 +404,49 @@ function nh_checkout_posted_snippet_ready() {
 }
 
 /**
- * Load Svea/Kustom iframe only after Continue to SVEA/Kustom, with that method selected.
+ * Load the Svea/Kustom iframe when that gateway is the chosen (or default) method.
  *
  * @return bool
  */
 function nh_checkout_should_load_iframe() {
-	return nh_checkout_posted_snippet_ready() && nh_checkout_is_snippet_gateway();
+	return nh_checkout_is_snippet_gateway();
+}
+
+/**
+ * First available gateway in Woo’s settings order.
+ *
+ * @param array<string, WC_Payment_Gateway>|null $gateways Optional prefetched list.
+ * @return string
+ */
+function nh_checkout_first_gateway_id( $gateways = null ) {
+	if ( ! is_array( $gateways ) ) {
+		if ( ! function_exists( 'WC' ) || ! WC()->payment_gateways() ) {
+			return '';
+		}
+		$gateways = WC()->payment_gateways()->get_available_payment_gateways();
+	}
+	if ( ! is_array( $gateways ) || ! $gateways ) {
+		return '';
+	}
+	foreach ( $gateways as $id => $gateway ) {
+		if ( is_object( $gateway ) ) {
+			return (string) $id;
+		}
+	}
+	return '';
+}
+
+/**
+ * How many payment methods Woo will show on checkout.
+ *
+ * @return int
+ */
+function nh_checkout_available_gateway_count() {
+	if ( ! function_exists( 'WC' ) || ! WC()->payment_gateways() ) {
+		return 0;
+	}
+	$gateways = WC()->payment_gateways()->get_available_payment_gateways();
+	return is_array( $gateways ) ? count( $gateways ) : 0;
 }
 
 /**
@@ -482,7 +519,7 @@ function nh_checkout_ux_init() {
 	add_action( 'wp', 'nh_checkout_split_review_and_payment', 20 );
 	add_action( 'wp', 'nh_checkout_prepare_steps', 5 );
 	add_action( 'wp', 'nh_checkout_restore_identity_on_checkout', 6 );
-	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_no_default_gateway', 999 );
+	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_prefer_default_gateway', 999 );
 	add_filter( 'woocommerce_gateway_title', 'nh_checkout_translate_gateway_text', 20, 1 );
 	add_filter( 'woocommerce_gateway_description', 'nh_checkout_gateway_description', 20, 2 );
 	add_filter( 'woocommerce_available_payment_gateways', 'nh_checkout_prepare_payment_gateway_copy', 1000 );
@@ -594,13 +631,13 @@ function nh_checkout_unhook_snippet_chrome() {
 }
 
 /**
- * Keep the first payment method unselected until the customer reaches the payment step and clicks one.
+ * Use Woo’s default (first) gateway on load so SVEA/Kustom/BACS open immediately.
  *
  * @param array<string, WC_Payment_Gateway> $gateways Gateways.
  * @return array<string, WC_Payment_Gateway>
  */
-function nh_checkout_no_default_gateway( $gateways ) {
-	if ( ! is_array( $gateways ) ) {
+function nh_checkout_prefer_default_gateway( $gateways ) {
+	if ( ! is_array( $gateways ) || ! $gateways ) {
 		return $gateways;
 	}
 	if ( ! nh_is_classic_checkout_form() && ! ( defined( 'WOOCOMMERCE_CHECKOUT' ) && WOOCOMMERCE_CHECKOUT ) ) {
@@ -608,19 +645,16 @@ function nh_checkout_no_default_gateway( $gateways ) {
 	}
 
 	$chosen = nh_checkout_chosen_payment_method();
-	if ( $chosen !== '' && isset( $gateways[ $chosen ] ) ) {
-		foreach ( $gateways as $id => $gateway ) {
-			if ( is_object( $gateway ) ) {
-				$gateway->chosen = ( (string) $id === $chosen );
-			}
+	if ( $chosen === '' || ! isset( $gateways[ $chosen ] ) ) {
+		$chosen = nh_checkout_first_gateway_id( $gateways );
+		if ( $chosen !== '' && function_exists( 'WC' ) && WC()->session ) {
+			WC()->session->set( 'chosen_payment_method', $chosen );
 		}
-		return $gateways;
 	}
 
-	nh_checkout_lock_empty_payment_choice();
-	foreach ( $gateways as $gateway ) {
+	foreach ( $gateways as $id => $gateway ) {
 		if ( is_object( $gateway ) ) {
-			$gateway->chosen = false;
+			$gateway->chosen = ( (string) $id === $chosen );
 		}
 	}
 	return $gateways;
@@ -668,7 +702,7 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 	}
 
 	$was_ready = ( '1' === (string) WC()->session->get( 'nh_checkout_snippet_ready' ) );
-	$ready     = nh_checkout_posted_snippet_ready() && nh_checkout_is_snippet_gateway( $method );
+	$ready     = nh_checkout_is_snippet_gateway( $method );
 	WC()->session->set( 'nh_checkout_snippet_ready', $ready ? '1' : '' );
 
 	if ( ( $was_ready && ! $ready ) || ! nh_checkout_is_snippet_gateway( $method ) ) {
@@ -677,7 +711,7 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 }
 
 /**
- * Persist BACS/PayPal (or nh_none) so Svea cannot treat an empty choice as “Svea is first”.
+ * Persist the posted method, or fall back to Woo’s first gateway.
  */
 function nh_checkout_sync_payment_method_session() {
 	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
@@ -692,7 +726,7 @@ function nh_checkout_sync_payment_method_session() {
 }
 
 /**
- * Svea is_svea() is true when chosen_payment_method is empty and Svea is the first gateway.
+ * Empty chosen_payment_method makes Svea treat itself as selected. Keep a real id.
  *
  * @return void
  */
@@ -701,13 +735,15 @@ function nh_checkout_lock_empty_payment_choice() {
 		return;
 	}
 	$current = (string) WC()->session->get( 'chosen_payment_method' );
-	if ( $current === '' ) {
-		WC()->session->set( 'chosen_payment_method', 'nh_none' );
+	if ( $current !== '' && $current !== 'nh_none' && $current !== 'undefined' ) {
+		return;
 	}
+	$first = nh_checkout_first_gateway_id();
+	WC()->session->set( 'chosen_payment_method', $first !== '' ? $first : 'nh_none' );
 }
 
 /**
- * Fresh checkout visit: no default method, no iframe until Continue to SVEA/Kustom.
+ * Fresh checkout visit: open Woo’s default gateway. SVEA/Kustom load their iframe.
  */
 function nh_checkout_prepare_steps() {
 	if ( ! nh_is_classic_checkout_form() || wp_doing_ajax() ) {
@@ -718,20 +754,21 @@ function nh_checkout_prepare_steps() {
 	}
 
 	$method = (string) WC()->session->get( 'chosen_payment_method' );
-	if ( $method === '' || $method === 'undefined' ) {
+	if ( $method === '' || $method === 'undefined' || $method === 'nh_none' ) {
 		nh_checkout_lock_empty_payment_choice();
-		$method = '';
-	} elseif ( $method === 'nh_none' ) {
-		$method = '';
-	}
-
-	$ready = ( '1' === (string) WC()->session->get( 'nh_checkout_snippet_ready' ) );
-	if ( ! $ready || ! nh_checkout_is_snippet_gateway( $method ) ) {
-		WC()->session->set( 'nh_checkout_snippet_ready', '' );
-		if ( ! nh_checkout_is_snippet_gateway( $method ) ) {
-			nh_checkout_reset_snippet_sessions();
+		$method = (string) WC()->session->get( 'chosen_payment_method' );
+		if ( $method === 'nh_none' ) {
+			$method = '';
 		}
 	}
+
+	if ( nh_checkout_is_snippet_gateway( $method ) ) {
+		WC()->session->set( 'nh_checkout_snippet_ready', '1' );
+		return;
+	}
+
+	WC()->session->set( 'nh_checkout_snippet_ready', '' );
+	nh_checkout_reset_snippet_sessions();
 }
 
 /**
@@ -1756,6 +1793,9 @@ function nh_checkout_ux_body_class( $classes ) {
 	if ( nh_checkout_should_load_iframe() ) {
 		$classes[] = 'nh-checkout--snippet';
 	}
+	if ( nh_is_classic_checkout_form() && nh_checkout_chosen_payment_method() !== '' ) {
+		$classes[] = 'nh-checkout--has-method';
+	}
 	if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
 		$classes[] = 'nh-checkout-thankyou';
 	}
@@ -1826,10 +1866,11 @@ function nh_checkout_ux_assets() {
 			'phoneInvalid'    => __( 'Please enter a valid phone number.', 'nh-theme' ),
 			'emailInvalid'    => __( 'Please enter a valid email address.', 'nh-theme' ),
 			'fieldRequired'   => __( 'Please fill in this field.', 'nh-theme' ),
-			'otherPayment'    => __( 'Other payment method', 'nh-theme' ),
+			'otherPayment'    => __( 'Choose another payment method', 'nh-theme' ),
 			'snippetCheckout' => nh_checkout_should_load_iframe(),
 			'snippetReady'    => nh_checkout_should_load_iframe() ? '1' : '',
 			'chosenPayment'   => nh_checkout_chosen_payment_method(),
+			'gatewayCount'    => nh_checkout_available_gateway_count(),
 			'reviewLabel'     => __( 'Review order', 'nh-theme' ),
 			'payLabel'        => __( 'Pay %s', 'nh-theme' ),
 			'continueSvea'    => __( 'Continue to SVEA', 'nh-theme' ),
@@ -1862,6 +1903,49 @@ function nh_checkout_ux_assets() {
 			'dpdAjax'         => admin_url( 'admin-ajax.php' ),
 		)
 	);
+}
+
+/**
+ * Compact chosen-method + price for the checkout order summary.
+ *
+ * @param string $label       Method title, without a trailing colon.
+ * @param string $amount_html Formatted price HTML (or empty).
+ * @return string
+ */
+function nh_checkout_format_shipping_summary_html( $label, $amount_html ) {
+	$label       = preg_replace( '/:\s*$/', '', wp_strip_all_tags( (string) $label ) );
+	$amount_html = (string) $amount_html;
+	if ( $label === '' && $amount_html === '' ) {
+		return '';
+	}
+
+	$html = '<span class="nh-summary-ship-chosen">';
+	if ( $label !== '' ) {
+		$html .= '<span class="nh-summary-ship-chosen__name">' . esc_html( $label ) . '</span>';
+	}
+	$html .= $amount_html;
+	$html .= '</span>';
+	return $html;
+}
+
+/**
+ * Chosen shipping row markup used after the method radios are moved out of the summary.
+ *
+ * @param object|null $method Chosen Woo shipping rate.
+ * @return string
+ */
+function nh_checkout_chosen_shipping_summary_html( $method = null ) {
+	$label = '';
+	if ( is_object( $method ) && method_exists( $method, 'get_label' ) ) {
+		$label = (string) $method->get_label();
+	}
+
+	$amount = '';
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		$amount = (string) WC()->cart->get_cart_shipping_total();
+	}
+
+	return nh_checkout_format_shipping_summary_html( $label, $amount );
 }
 
 /**
@@ -2895,14 +2979,21 @@ function nh_checkout_validate_fields( $data, $errors ) {
 		$errors->remove( 'billing_contact_phone' );
 		$errors->remove( 'billing_company' );
 		$errors->remove( 'billing_company_reg' );
+		$errors->remove( 'billing_email' );
+		$errors->remove( 'billing_phone' );
+		$errors->remove( 'billing_first_name' );
+		$errors->remove( 'billing_last_name' );
+		$errors->remove( 'billing_address_1' );
+		$errors->remove( 'billing_postcode' );
+		$errors->remove( 'billing_city' );
 	}
 
-	if ( $email === '' ) {
+	if ( ! $snippet && $email === '' ) {
 		$errors->add( 'billing_email', __( 'Please enter a valid email address.', 'nh-theme' ) );
 	}
-	if ( $phone === '' ) {
+	if ( ! $snippet && $phone === '' ) {
 		$errors->add( 'billing_phone', __( 'Please enter a phone number.', 'nh-theme' ) );
-	} elseif ( ! nh_checkout_phone_number_is_valid( $phone ) ) {
+	} elseif ( $phone !== '' && ! nh_checkout_phone_number_is_valid( $phone ) ) {
 		$errors->add( 'billing_phone', __( 'Please enter a valid phone number.', 'nh-theme' ) );
 	}
 
@@ -2942,12 +3033,6 @@ function nh_checkout_validate_fields( $data, $errors ) {
 	}
 	if ( $last === '' && ! $snippet ) {
 		$errors->add( 'billing_last_name', __( 'Please enter a last name.', 'nh-theme' ) );
-	}
-	if ( $snippet && $first === '' && $last === '' ) {
-		$company = isset( $data['billing_company'] ) ? trim( (string) $data['billing_company'] ) : '';
-		if ( $company === '' ) {
-			$errors->add( 'billing_first_name', __( 'Please enter a first name.', 'nh-theme' ) );
-		}
 	}
 }
 
@@ -4243,9 +4328,17 @@ function nh_checkout_form_classes() {
 }
 
 /**
- * Svea / Kustom iframe under the payment radios. Kept outside #payment so
+ * Woo terms checkbox. In snippet checkout this sits above the iframe.
+ */
+function nh_checkout_render_terms() {
+	if ( function_exists( 'wc_get_template' ) ) {
+		wc_get_template( 'checkout/terms.php' );
+	}
+}
+
+/**
+ * Svea / Kustom iframe after the terms block. Kept outside #payment so
  * Woo's update_checkout fragment does not replace a live iframe.
- * Not printed until the customer is on the payment step and picked that method.
  */
 function nh_checkout_render_gateway_iframe() {
 	if ( ! nh_checkout_should_load_iframe() ) {
@@ -4317,7 +4410,14 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields{display:none!important}'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet #payment .form-row.place-order{display:none!important}'
-		. 'html body.woocommerce-checkout .nh-checkout-other-payment,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-sticky{display:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet #customer_details,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-details,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-delivery,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-shipping-fields{display:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet ul.wc_payment_methods>li.is-selected{display:none!important}'
+		. 'html body.woocommerce-checkout .nh-checkout-other-payment-src,'
 		. 'html body.woocommerce-checkout .nh-checkout-other-payment-btn,'
 		. 'html body.woocommerce-checkout #klarna-checkout-select-other,'
 		. 'html body.woocommerce-checkout #svea-checkout-select-other,'

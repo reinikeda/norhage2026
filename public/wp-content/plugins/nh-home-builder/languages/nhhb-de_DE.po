@@ -127,3 +127,40 @@ msgstr "Avatar von %s"
 msgid "Customer avatar"
 msgstr "Kundenavatar"
 
+msgid "Top Offers"
+msgstr "Top-Angebote"
+
+msgid "Discounts and Clearance"
+msgstr "Angebote und Restposten"
+
+msgid "Newsletter"
+msgstr "Newsletter"
+
+msgid "Shop now"
+msgstr "Jetzt kaufen"
+
+msgid "100% Secure Payments"
+msgstr "100 % sichere Zahlungen"
+
+msgid "Pay safely with all major payment methods."
+msgstr "Zahlen Sie sicher mit allen gängigen Zahlungsmethoden."
+
+msgid "Expert Support"
+msgstr "Experten-Support"
+
+msgid "Friendly assistance and advice directly from our experts."
+msgstr "Freundliche Hilfe und Beratung direkt von unseren Experten."
+
+msgid "Certified Quality"
+msgstr "Zertifizierte Qualität"
+
+msgid "We use only high-quality, certified materials."
+msgstr "Wir verwenden nur hochwertige, zertifizierte Materialien."
+
+msgid "From European Warehouses"
+msgstr "Aus europäischen Lagern"
+
+msgid "Orders are shipped quickly from our European warehouses."
+msgstr "Bestellungen werden schnell aus unseren europäischen Lagern versendet."
+
+

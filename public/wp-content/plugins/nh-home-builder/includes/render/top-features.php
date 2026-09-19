@@ -14,14 +14,15 @@ $items = array_values(array_filter($items_raw, function ($it) {
 $items = array_slice($items, 0, 4);
 
 if (!$items) {
-    return;
+    $items = nhhb_default_features();
 }
 
-foreach ($items as &$it) {
+foreach ($items as $index => &$it) {
     $it = [
         'icon'  => $it['icon'] ?? 0,
-        'title' => $it['title'] ?? '',
-        'text'  => $it['text'] ?? '',
+        'title' => nhhb_maybe_translate($it['title'] ?? '', ''),
+        'text'  => nhhb_maybe_translate($it['text'] ?? '', ''),
+        'index' => $index,
     ];
 }
 unset($it);
@@ -31,7 +32,13 @@ unset($it);
   <div class="nhhb-features-grid">
     <?php foreach ($items as $it) : ?>
       <article class="nhhb-feature">
-        <div class="nhhb-icon" aria-hidden="true"><?php echo nhhb_inline_svg($it['icon']); ?></div>
+        <div class="nhhb-icon" aria-hidden="true"><?php
+            if (!empty($it['icon'])) {
+                echo nhhb_inline_svg($it['icon']);
+            } else {
+                echo nhhb_default_feature_svg((int) $it['index']);
+            }
+        ?></div>
         <div class="nhhb-copy">
           <?php if ($it['title']) : ?><h3 class="nhhb-feature-title"><?php echo esc_html($it['title']); ?></h3><?php endif; ?>
           <?php if ($it['text']) : ?><p class="nhhb-feature-sub"><?php echo esc_html($it['text']); ?></p><?php endif; ?>

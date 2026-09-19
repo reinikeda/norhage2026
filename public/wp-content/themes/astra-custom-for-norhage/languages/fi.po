@@ -1836,6 +1836,9 @@ msgstr "Turvallinen kassa"
 msgid "Other payment method"
 msgstr "Muu maksutapa"
 
+msgid "Choose another payment method"
+msgstr "Valitse toinen maksutapa"
+
 msgid "Continue to payment"
 msgstr "Jatka maksamaan"
 
