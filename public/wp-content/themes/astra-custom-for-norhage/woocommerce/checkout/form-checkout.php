@@ -84,19 +84,30 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 			<input type="hidden" name="nh_checkout_snippet_ready" id="nh_checkout_snippet_ready" value="<?php echo esc_attr( $snippet_ready ); ?>" />
 
 			<section class="nh-checkout-payment" id="nh-checkout-payment" aria-label="<?php echo esc_attr__( 'Payment', 'nh-theme' ); ?>">
+				<?php
+				$gateway_count = function_exists( 'nh_checkout_available_gateway_count' ) ? nh_checkout_available_gateway_count() : 0;
+				if ( $snippet_ready ) :
+					echo '<div class="nh-checkout-terms-block">';
+					if ( function_exists( 'nh_checkout_render_terms' ) ) {
+						nh_checkout_render_terms();
+					} elseif ( function_exists( 'wc_get_template' ) ) {
+						wc_get_template( 'checkout/terms.php' );
+					}
+					echo '</div>';
+					if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
+						nh_checkout_render_gateway_iframe();
+					}
+					if ( $gateway_count > 1 ) :
+						?>
+				<h3 class="nh-checkout-section__title nh-checkout-other-methods-title"><?php esc_html_e( 'Choose another payment method', 'nh-theme' ); ?></h3>
+						<?php
+					endif;
+					do_action( 'nh_checkout_payment' );
+				else :
+					?>
 				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment method', 'nh-theme' ); ?></h3>
 				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay. You can complete your details above first.', 'nh-theme' ); ?></p>
-				<?php do_action( 'nh_checkout_payment' ); ?>
-				<?php
-				if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
-					nh_checkout_render_gateway_iframe();
-				}
-				$gateway_count = function_exists( 'nh_checkout_available_gateway_count' ) ? nh_checkout_available_gateway_count() : 0;
-				if ( $gateway_count > 1 ) :
-					?>
-				<button type="button" class="nh-checkout-other-payment" id="nh-checkout-other-payment">
-					<?php esc_html_e( 'Choose another payment method', 'nh-theme' ); ?>
-				</button>
+					<?php do_action( 'nh_checkout_payment' ); ?>
 				<?php endif; ?>
 			</section>
 		</div>

@@ -77,6 +77,7 @@ nh_iframe_first_assert( 'svea-first shop defaults to svea', nh_checkout_first_ga
 
 $bacs_only = array( 'bacs' => $bacs );
 nh_iframe_first_assert( 'bacs-only shop defaults to bacs', nh_checkout_first_gateway_id( $bacs_only ) === 'bacs' );
+nh_iframe_first_assert( 'terms helper is registered', function_exists( 'nh_checkout_render_terms' ) );
 
 if ( $failures > 0 ) {
 	exit( 1 );

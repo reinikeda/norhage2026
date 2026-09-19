@@ -804,13 +804,6 @@
       $('#nh-checkout-iframe').toggle(false);
     }
 
-    var picking = document.body.classList.contains('nh-checkout--pick-method');
-    var $ours = $('.nh-checkout-other-payment');
-    if (Number(i18n.gatewayCount) > 1 && !picking) {
-      $ours.removeAttr('hidden');
-    } else {
-      $ours.attr('hidden', 'hidden');
-    }
     snippetOtherPayment().addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
 
     keepShipToSameAddress();
@@ -2716,15 +2709,6 @@
     }
     $page.sveaCheckout();
   }
-
-  $(document).on('click', '.nh-checkout-other-payment', function (e) {
-    e.preventDefault();
-    $('body, form.checkout').addClass('nh-checkout--pick-method');
-    $(this).attr('hidden', 'hidden');
-    enhancePaymentCards();
-    syncSnippetCheckout();
-    scrollToPaymentFocus('payment');
-  });
 
   stampShippingIndexes();
 

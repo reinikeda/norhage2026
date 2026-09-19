@@ -4,7 +4,7 @@
  * BACS / PayPal / MakeCommerce still use the Woo details form.
  *
  * Checkout Blocks are not used. Those gateways need the shortcode checkout.
- * A “Choose another payment method” control appears when more than one gateway is on.
+ * Other available gateways are listed under the iframe so they can be loaded directly.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -4285,7 +4285,16 @@ function nh_checkout_form_classes() {
 }
 
 /**
- * Svea / Kustom iframe under the payment radios. Kept outside #payment so
+ * Woo terms checkbox. In snippet checkout this sits above the iframe.
+ */
+function nh_checkout_render_terms() {
+	if ( function_exists( 'wc_get_template' ) ) {
+		wc_get_template( 'checkout/terms.php' );
+	}
+}
+
+/**
+ * Svea / Kustom iframe after the terms block. Kept outside #payment so
  * Woo's update_checkout fragment does not replace a live iframe.
  */
 function nh_checkout_render_gateway_iframe() {
@@ -4363,7 +4372,7 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-delivery,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-account-fields,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .woocommerce-shipping-fields{display:none!important}'
-		. 'html body.woocommerce-checkout.nh-checkout--snippet:not(.nh-checkout--pick-method) ul.wc_payment_methods{display:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet ul.wc_payment_methods>li.is-selected{display:none!important}'
 		. 'html body.woocommerce-checkout .nh-checkout-other-payment-src,'
 		. 'html body.woocommerce-checkout .nh-checkout-other-payment-btn,'
 		. 'html body.woocommerce-checkout #klarna-checkout-select-other,'

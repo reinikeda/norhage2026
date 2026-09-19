@@ -14,9 +14,27 @@ define( 'CHILD_THEME_ASTRA_CUSTOM_FOR_NORHAGE_VERSION', '1.0.0' );
  * Core setup
  * ----------------------------------------------------------------------- */
 
-/** Load textdomain */
+/** Load textdomain, including fi ↔ fi_FI fallbacks. */
 add_action( 'after_setup_theme', function () {
-	load_theme_textdomain( 'nh-theme', get_stylesheet_directory() . '/languages' );
+	$domain = 'nh-theme';
+	$dir    = get_stylesheet_directory() . '/languages';
+	load_theme_textdomain( $domain, $dir );
+
+	$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+	$try    = array( $locale );
+	if ( strpos( $locale, '_' ) !== false ) {
+		$try[] = substr( $locale, 0, strpos( $locale, '_' ) );
+	} elseif ( 'fi' === $locale ) {
+		$try[] = 'fi_FI';
+	}
+
+	foreach ( array_unique( $try ) as $code ) {
+		$mofile = $dir . '/' . $code . '.mo';
+		if ( is_readable( $mofile ) ) {
+			load_textdomain( $domain, $mofile );
+			return;
+		}
+	}
 } );
 
 /** Register menus */
