@@ -601,7 +601,6 @@
     return val === true || val === 1 || val === '1' || onValues.indexOf(String(val).toLowerCase()) !== -1;
   }
 
-  var scoPlaceInFlight = null;
   var scoOrderPlaced = false;
   var scoRefreshInFlight = null;
 
@@ -629,19 +628,9 @@
       return;
     }
     if (/sco_checkout_order/i.test(url)) {
-      if (scoPlaceInFlight) {
-        jqXHR.abort();
-        return;
-      }
-      scoPlaceInFlight = jqXHR;
       jqXHR.done(function (res) {
         if (res && res.result === 'success') {
           scoOrderPlaced = true;
-        }
-      });
-      jqXHR.always(function () {
-        if (scoPlaceInFlight === jqXHR) {
-          scoPlaceInFlight = null;
         }
       });
       return;
@@ -1209,7 +1198,7 @@
   }
 
   function ensureTermsErrorEl(wrap) {
-    if (!wrap || wrap.querySelector('.nh-checkout-terms-error')) {
+    if (!wrap || !termsCheckbox() || wrap.querySelector('.nh-checkout-terms-error')) {
       return;
     }
     var p = document.createElement('p');
@@ -1278,7 +1267,9 @@
 
     if (wrap) {
       wrap.classList.add('nh-checkout-terms');
-      ensureTermsErrorEl(wrap);
+      if (box) {
+        ensureTermsErrorEl(wrap);
+      }
     }
 
     var needGate = snippetReady() && iframeMarkupPresent() && box && !box.checked;
@@ -2614,6 +2605,7 @@
         placeShippingMethods();
         syncSummaryTotal();
         lockSummaryLayout();
+        $(document).trigger('sco_refresh_data');
       }
     });
   }
