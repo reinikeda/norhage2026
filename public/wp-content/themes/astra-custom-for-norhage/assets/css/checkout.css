@@ -1680,6 +1680,15 @@ body.woocommerce-checkout.nh-checkout-form .nh-paypal-blocked {
     font-size: 0.95rem;
   }
 
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-sticky,
+  body.woocommerce-checkout.nh-checkout-form .nh-checkout-sticky[hidden] {
+    display: none !important;
+  }
+
   body.woocommerce-checkout.nh-checkout-form .nh-checkout-secure {
     display: none;
   }

@@ -1602,6 +1602,16 @@
     return $.trim(html || '');
   }
 
+  function shouldShowStickyBar() {
+    if (iframeMarkupPresent() || isSnippetMode()) {
+      return false;
+    }
+    if (paymentKind() === 'paypal' && hasInlinePaypal()) {
+      return false;
+    }
+    return true;
+  }
+
   function stickyButtonLabel() {
     var $checked = $('input[name="payment_method"]:checked').not(':disabled');
     var kind = paymentKind();
@@ -1811,6 +1821,12 @@
     if ($amount.length && $src.length) {
       $amount.html(amountHtmlFromTotalCell($src));
     }
+    var show = shouldShowStickyBar();
+    var bar = document.getElementById('nh-checkout-sticky');
+    if (bar) {
+      bar.hidden = !show;
+    }
+    $('body').toggleClass('nh-checkout--need-sticky', show);
     var $btn = $('#nh-checkout-sticky-btn');
     if (!$btn.length) {
       return;
@@ -1820,7 +1836,7 @@
     $btn.text(label);
     $btn.toggleClass('is-ready', ready);
     $('body').toggleClass('nh-checkout--ready', ready);
-    if (chosenPaymentId()) {
+    if (chosenPaymentId() && show) {
       $('#place_order').text(label);
     }
   }

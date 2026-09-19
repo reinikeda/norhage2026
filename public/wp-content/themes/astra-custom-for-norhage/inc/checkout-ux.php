@@ -4367,6 +4367,7 @@ function nh_checkout_layout_lock_css() {
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .nh-notes,'
 		. 'html body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fields{display:none!important}'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet #payment .form-row.place-order{display:none!important}'
+		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-sticky{display:none!important}'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet #customer_details,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-details,'
 		. 'html body.woocommerce-checkout.nh-checkout--snippet .nh-checkout-delivery,'

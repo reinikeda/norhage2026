@@ -118,7 +118,7 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 		<p class="nh-checkout-status__text" id="nh-checkout-status-text"></p>
 	</div>
 
-	<div class="nh-checkout-sticky" id="nh-checkout-sticky">
+	<div class="nh-checkout-sticky" id="nh-checkout-sticky"<?php echo $snippet_ready ? ' hidden' : ''; ?>>
 		<div class="nh-checkout-sticky__total">
 			<span class="nh-checkout-sticky__label"><?php esc_html_e( 'Total', 'nh-theme' ); ?></span>
 			<span class="nh-checkout-sticky__amount"><?php echo wp_kses_post( $cart_total ); ?></span>
