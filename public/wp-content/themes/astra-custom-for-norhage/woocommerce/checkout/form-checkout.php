@@ -91,7 +91,13 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 				if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
 					nh_checkout_render_gateway_iframe();
 				}
-				?>
+				$gateway_count = function_exists( 'nh_checkout_available_gateway_count' ) ? nh_checkout_available_gateway_count() : 0;
+				if ( $gateway_count > 1 ) :
+					?>
+				<button type="button" class="nh-checkout-other-payment" id="nh-checkout-other-payment">
+					<?php esc_html_e( 'Choose another payment method', 'nh-theme' ); ?>
+				</button>
+				<?php endif; ?>
 			</section>
 		</div>
 	</div>

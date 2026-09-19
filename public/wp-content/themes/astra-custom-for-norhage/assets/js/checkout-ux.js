@@ -804,8 +804,13 @@
       $('#nh-checkout-iframe').toggle(false);
     }
 
+    var picking = document.body.classList.contains('nh-checkout--pick-method');
     var $ours = $('.nh-checkout-other-payment');
-    $ours.attr('hidden', 'hidden');
+    if (Number(i18n.gatewayCount) > 1 && !picking) {
+      $ours.removeAttr('hidden');
+    } else {
+      $ours.attr('hidden', 'hidden');
+    }
     snippetOtherPayment().addClass('nh-checkout-other-payment-src').attr('hidden', 'hidden');
 
     keepShipToSameAddress();
@@ -1104,8 +1109,6 @@
           ignoreAutoPaymentClick = false;
         }, 80);
       }
-    } else if (!iframeMarkupPresent() && !paymentChosenByCustomer) {
-      $radios.prop('checked', false);
     }
 
     if (!snippetReady() && !iframeMarkupPresent()) {
@@ -1397,6 +1400,9 @@
     if (typeof show === 'undefined') {
       show = true;
     }
+    if (isSnippetMode()) {
+      return true;
+    }
     var ok = true;
     var $first = $();
     $('#customer_details p.form-row, #customer_details .form-row').not('.nh-checkout-field--hidden').each(function () {
@@ -1635,6 +1641,9 @@
   }
 
   function checkoutIsReadyToPay() {
+    if (isSnippetMode()) {
+      return termsAgreed();
+    }
     return validateDetailsStep(false) && !!chosenPaymentId() && termsAgreed();
   }
 
@@ -2281,14 +2290,21 @@
         return;
       }
       paymentChosenByCustomer = true;
+      var prev = String(i18n.chosenPayment || '');
       var id = String(this.value || '');
       i18n.chosenPayment = id;
       if (!paymentIdIsSnippet(id)) {
         setSnippetReady(false);
+      } else {
+        setSnippetReady(true);
       }
       applyCheckoutStep();
       allowSnippetGatewayReload = false;
       syncKcoPrevent();
+      if (paymentIdIsSnippet(id) && (!iframeMarkupPresent() || (prev !== '' && prev !== id))) {
+        reloadForSnippetGateway();
+        return;
+      }
       $(document.body).trigger('update_checkout');
       leaveSnippetIfNeeded(id);
     });
@@ -2703,23 +2719,11 @@
 
   $(document).on('click', '.nh-checkout-other-payment', function (e) {
     e.preventDefault();
-    var $plugin = snippetOtherPayment();
-    if ($plugin.length) {
-      var el = $plugin.get(0);
-      if (el && typeof el.click === 'function') {
-        el.click();
-      } else {
-        $plugin.trigger('click');
-      }
-      return;
-    }
-    var $fallback = $('input[name="payment_method"]').filter(function () {
-      return !paymentIdIsSnippet(this.value);
-    }).first();
-    if ($fallback.length) {
-      $fallback.prop('checked', true).trigger('click');
-      $(document.body).trigger('update_checkout');
-    }
+    $('body, form.checkout').addClass('nh-checkout--pick-method');
+    $(this).attr('hidden', 'hidden');
+    enhancePaymentCards();
+    syncSnippetCheckout();
+    scrollToPaymentFocus('payment');
   });
 
   stampShippingIndexes();

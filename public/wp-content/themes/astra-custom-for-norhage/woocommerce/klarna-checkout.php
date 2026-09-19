@@ -2,8 +2,7 @@
 /**
  * Kustom Checkout template override.
  *
- * Uses the same Woo form as classic checkout so customers fill details first.
- * kco_wc_show_snippet() still runs in the payment section (required by KCO).
+ * Uses the same classic checkout shell. The Kustom iframe loads when Kustom is the chosen method.
  *
  * @package astra-custom-for-norhage
  */

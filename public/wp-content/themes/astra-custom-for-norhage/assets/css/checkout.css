@@ -918,6 +918,24 @@ body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-pay
   display: none !important;
 }
 
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet #customer_details,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-details,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .nh-checkout-delivery,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-account-fields,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-shipping-fields,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet .woocommerce-additional-fields {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet:not(.nh-checkout--pick-method) ul.wc_payment_methods,
+body.woocommerce-checkout.nh-checkout-form.nh-checkout--snippet:not(.nh-checkout--pick-method) .nh-checkout-payment > .nh-checkout-section__title {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form:not(.nh-checkout--snippet):not(.nh-checkout--pick-method) ul.wc_payment_methods > li:not(.is-selected) {
+  display: none !important;
+}
+
 body.woocommerce-checkout.nh-checkout-form #payment {
   background: transparent !important;
   border: 0 !important;
@@ -1740,7 +1758,7 @@ body.woocommerce-checkout .nh-checkout-layout__aside .woocommerce-additional-fie
   display: none !important;
 }
 
-body.woocommerce-checkout .nh-checkout-other-payment,
+body.woocommerce-checkout .nh-checkout-other-payment-src,
 body.woocommerce-checkout .nh-checkout-other-payment-btn,
 body.woocommerce-checkout #klarna-checkout-select-other,
 body.woocommerce-checkout #svea-checkout-select-other,
@@ -1748,6 +1766,32 @@ body.woocommerce-checkout #sco-change-payment,
 body.woocommerce-checkout .kco-select-another-method,
 body.woocommerce-checkout a.sco-change-payment-method {
   display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-other-payment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin: 1rem 0 0;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  color: var(--nh-forest, #1e3932);
+  border: 1px solid var(--nh-mint, #c3e8c6);
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-other-payment[hidden] {
+  display: none !important;
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-other-payment:hover,
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-other-payment:focus-visible {
+  border-color: var(--nh-green, #00704a);
+  color: var(--nh-green, #00704a);
 }
 
 body.woocommerce-checkout.nh-checkout--snippet #payment .form-row.place-order {

@@ -1836,6 +1836,9 @@ msgstr "Saugus atsiskaitymas"
 msgid "Other payment method"
 msgstr "Kitas mokėjimo būdas"
 
+msgid "Choose another payment method"
+msgstr "Pasirinkite kitą mokėjimo būdą"
+
 msgid "Continue to payment"
 msgstr "Tęsti mokėjimą"
 
