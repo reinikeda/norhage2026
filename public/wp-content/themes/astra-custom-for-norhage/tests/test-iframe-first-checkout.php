@@ -84,10 +84,34 @@ nh_iframe_first_assert( 'svea-first shop defaults to svea', nh_checkout_first_ga
 $bacs_only = array( 'bacs' => $bacs );
 nh_iframe_first_assert( 'bacs-only shop defaults to bacs', nh_checkout_first_gateway_id( $bacs_only ) === 'bacs' );
 nh_iframe_first_assert( 'terms helper is registered', function_exists( 'nh_checkout_render_terms' ) );
+nh_iframe_first_assert( 'terms restore helper is registered', function_exists( 'nh_checkout_restore_woo_terms_hooks' ) );
 
 $ship_html = nh_checkout_format_shipping_summary_html( 'Flat sats (Medium):', '<span class="woocommerce-Price-amount">99&nbsp;kr</span>' );
 nh_iframe_first_assert( 'shipping summary keeps the method name', strpos( $ship_html, 'Flat sats (Medium)' ) !== false && strpos( $ship_html, 'Flat sats (Medium):' ) === false );
 nh_iframe_first_assert( 'shipping summary keeps the price html', strpos( $ship_html, 'woocommerce-Price-amount' ) !== false && strpos( $ship_html, '99' ) !== false );
+
+$copied = nh_checkout_copy_billing_to_shipping_if_empty(
+	array(
+		'billing_first_name' => 'Ola',
+		'billing_last_name'  => 'Nordmann',
+		'billing_postcode'   => '0150',
+		'billing_city'       => 'Oslo',
+		'shipping_city'      => '',
+	)
+);
+nh_iframe_first_assert( 'empty shipping first name is copied from billing', $copied['shipping_first_name'] === 'Ola' );
+nh_iframe_first_assert( 'empty shipping postcode is copied from billing', $copied['shipping_postcode'] === '0150' );
+
+$posted = nh_checkout_posted_data_prefer_iframe(
+	array(
+		'payment_method'            => 'svea_checkout',
+		'ship_to_different_address' => 1,
+		'billing_first_name'        => 'Kari',
+		'billing_address_1'         => 'Karl Johans gate 1',
+	)
+);
+nh_iframe_first_assert( 'snippet checkout does not ship to a different address', empty( $posted['ship_to_different_address'] ) );
+nh_iframe_first_assert( 'snippet checkout copies billing street to shipping', $posted['shipping_address_1'] === 'Karl Johans gate 1' );
 
 if ( $failures > 0 ) {
 	exit( 1 );

@@ -1089,6 +1089,10 @@ body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wra
   scroll-margin-top: 16px;
 }
 
+body.woocommerce-checkout.nh-checkout-form .woocommerce-terms-and-conditions-wrapper:not(:has(.woocommerce-privacy-policy-text, .form-row, label, input, a, .woocommerce-terms-and-conditions)) {
+  display: none;
+}
+
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-block {
   margin: 0 0 1rem;
 }
