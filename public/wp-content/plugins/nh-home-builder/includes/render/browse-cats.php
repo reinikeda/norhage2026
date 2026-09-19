@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 wp_enqueue_style('nhhb-browse-cats');
 wp_enqueue_script('nhhb-browse-cats');
 
-$title      = isset($data['title']) ? sanitize_text_field($data['title']) : __('Browse by Category', 'nhhb');
+$title      = nhhb_maybe_translate($data['title'] ?? '', 'Browse by Category');
 $parent_id  = isset($data['parent']) ? absint($data['parent']) : 0;
 $limit      = isset($data['limit']) ? max(1, absint($data['limit'])) : 12;
 $orderby    = isset($data['orderby']) ? sanitize_text_field($data['orderby']) : 'name';

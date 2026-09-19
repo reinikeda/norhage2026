@@ -1,9 +1,9 @@
 /* NH Home Builder – 5-star reviews slider (mobile first) */
 
 .nhhb-reviews {
-  padding: 16px 14px 14px;
+  padding: 18px 14px 16px;
   background: linear-gradient(160deg, #f4faf6 0%, var(--nhhb-cream, #F1E6D6) 100%);
-  border-radius: var(--nhhb-radius, 12px);
+  border-radius: var(--nhhb-radius, 16px);
   border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
   position: relative;
   overflow: hidden;
@@ -60,6 +60,7 @@
   padding: 0;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(30, 57, 50, 0.08);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .nhhb-rev-prev:hover,
@@ -101,7 +102,7 @@
   min-width: 0;
   background: var(--nhhb-white, #fff);
   border: 1px solid var(--nhhb-line, rgba(30, 57, 50, 0.12));
-  border-radius: var(--nhhb-radius, 12px);
+  border-radius: var(--nhhb-radius, 16px);
   padding: 16px 16px 14px;
   box-shadow: 0 2px 12px rgba(30, 57, 50, 0.06);
   box-sizing: border-box;
@@ -110,7 +111,7 @@
 .nhhb-rev-stars {
   display: inline-flex;
   gap: 2px;
-  color: #c4a35a;
+  color: var(--nhhb-gold, #c89f63);
   line-height: 1;
 }
 
@@ -216,6 +217,10 @@ a.nhhb-rev-product:hover {
 }
 
 @media (min-width: 600px) {
+  .nhhb-rev-viewall {
+    display: inline-flex;
+  }
+
   .nhhb-rev-card {
     flex-basis: calc((100% - 12px) / 2);
   }
@@ -224,26 +229,6 @@ a.nhhb-rev-product:hover {
 @media (min-width: 768px) {
   .nhhb-reviews {
     padding: 28px;
-  }
-
-  .nhhb-rev-viewall {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 7px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    background: transparent;
-    color: var(--nhhb-forest, #1E3932);
-    border: 1.5px solid var(--nhhb-forest, #1E3932);
-    border-radius: var(--nhhb-radius-sm, 8px);
-    white-space: nowrap;
-    text-decoration: none;
-  }
-
-  .nhhb-rev-viewall:hover {
-    background: var(--nhhb-forest, #1E3932);
-    color: #fff;
   }
 
   .nhhb-rev-card {
@@ -255,18 +240,5 @@ a.nhhb-rev-product:hover {
 @media (hover: hover) and (pointer: fine) {
   .nhhb-rev-card:hover {
     box-shadow: var(--nhhb-shadow-hover, 0 12px 28px rgba(30, 57, 50, 0.14));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nhhb-rev-track {
-    scroll-behavior: auto;
-  }
-
-  .nhhb-rev-card,
-  .nhhb-rev-viewall,
-  .nhhb-rev-prev,
-  .nhhb-rev-next {
-    transition: none;
   }
 }

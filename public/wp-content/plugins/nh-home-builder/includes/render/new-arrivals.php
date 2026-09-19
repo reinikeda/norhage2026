@@ -6,9 +6,9 @@ if (!defined('ABSPATH')) {
 
 wp_enqueue_style('nhhb-new-arrivals');
 
-$title      = isset($data['title']) ? sanitize_text_field($data['title']) : __('New Arrivals', 'nhhb');
+$title      = nhhb_maybe_translate($data['title'] ?? '', 'New Arrivals');
 $count      = isset($data['count']) ? max(1, min(24, (int) $data['count'])) : 8;
-$view_label = isset($data['view_label']) ? sanitize_text_field($data['view_label']) : __('View All', 'nhhb');
+$view_label = nhhb_maybe_translate($data['view_label'] ?? '', 'View All');
 
 if (function_exists('wc_get_page_permalink')) {
     $default_shop_url = wc_get_page_permalink('shop');
@@ -65,6 +65,9 @@ $uid = 'nhhb-na-' . wp_unique_id();
           ?>
         <a class="nhhb-na-card" href="<?php the_permalink(); ?>">
           <span class="nhhb-na-media">
+            <?php if ($product->is_on_sale()) : ?>
+              <span class="nhhb-na-badge"><?php esc_html_e('Sale!', 'woocommerce'); ?></span>
+            <?php endif; ?>
             <span class="nhhb-na-img"><?php echo nhhb_attachment_image($thumb_id, 'woocommerce_thumbnail', ['alt' => $name]); ?></span>
           </span>
           <span class="nhhb-na-name"><?php echo esc_html($name); ?></span>

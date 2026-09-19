@@ -160,3 +160,40 @@ msgstr "Käyttäjän %s avatar"
 msgid "Customer avatar"
 msgstr "Asiakkaan avatar"
 
+msgid "Top Offers"
+msgstr "Parhaat tarjoukset"
+
+msgid "Discounts and Clearance"
+msgstr "Alennukset ja poistomyynti"
+
+msgid "Newsletter"
+msgstr "Uutiskirje"
+
+msgid "Shop now"
+msgstr "Osta nyt"
+
+msgid "100% Secure Payments"
+msgstr "100 % turvalliset maksut"
+
+msgid "Pay safely with all major payment methods."
+msgstr "Maksa turvallisesti kaikilla yleisillä maksutavoilla."
+
+msgid "Expert Support"
+msgstr "Asiantuntijatuki"
+
+msgid "Friendly assistance and advice directly from our experts."
+msgstr "Ystävällistä apua ja neuvontaa suoraan asiantuntijoiltamme."
+
+msgid "Certified Quality"
+msgstr "Sertifioitu laatu"
+
+msgid "We use only high-quality, certified materials."
+msgstr "Käytämme vain korkealaatuisia, sertifioituja materiaaleja."
+
+msgid "From European Warehouses"
+msgstr "Euroopan varastoista"
+
+msgid "Orders are shipped quickly from our European warehouses."
+msgstr "Tilaukset lähetetään nopeasti Euroopan varastoistamme."
+
+

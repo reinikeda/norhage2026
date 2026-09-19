@@ -62,6 +62,22 @@ $sr_title = function_exists( 'nhhb_get_hero_title' ) ? nhhb_get_hero_title() : g
 					<?php if ( ! empty( $slide['text'] ) ) : ?>
 						<p class="nhhb-hero__subtitle"><?php echo esc_html( $slide['text'] ); ?></p>
 					<?php endif; ?>
+
+					<?php
+					$btn_text = isset( $slide['btn_text'] ) ? trim( (string) $slide['btn_text'] ) : '';
+					$btn_url  = isset( $slide['btn_url'] ) ? trim( (string) $slide['btn_url'] ) : '';
+					if ( $btn_text === '' ) {
+						$btn_text = __( 'Shop now', 'woocommerce' );
+					}
+					if ( $btn_url === '' ) {
+						$btn_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
+					}
+					?>
+					<?php if ( $btn_url ) : ?>
+						<a class="nhhb-hero__cta" href="<?php echo esc_url( $btn_url ); ?>">
+							<?php echo esc_html( $btn_text ); ?>
+						</a>
+					<?php endif; ?>
 				</div>
 			</article>
 		<?php endforeach; ?>

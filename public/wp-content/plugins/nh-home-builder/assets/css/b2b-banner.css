@@ -1,9 +1,5 @@
 /* NH Home Builder – B2B Banner (mobile first) */
 
-.nhhb-b2b-wrap {
-  margin-bottom: 40px;
-}
-
 .nhhb-b2b {
   position: relative;
   overflow: hidden;
@@ -12,8 +8,8 @@
   justify-items: center;
   text-align: center;
   gap: 14px;
-  padding: 24px 18px;
-  border-radius: var(--nhhb-radius, 12px);
+  padding: 28px 18px;
+  border-radius: var(--nhhb-radius, 16px);
   color: #fff;
   background:
     radial-gradient(ellipse 70% 120% at 0% 0%, rgba(26, 143, 193, 0.22) 0%, transparent 65%),
@@ -74,19 +70,8 @@
 }
 
 .nhhb-b2b-cta:hover {
-  background: var(--b2b-accent) !important;
+  background: #1A8FC1;
   color: #fff !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(26,143,193,.45);
-}
-
-.nhhb-b2b-cta:hover::after {
-  transform: translateX(3px);
-}
-
-.nhhb-b2b-cta:focus-visible {
-  outline: 3px solid rgba(255,255,255,.40);
-  outline-offset: 3px;
 }
 
 @media (min-width: 768px) {
@@ -100,7 +85,7 @@
   }
 
   .nhhb-b2b-content { align-items: flex-start; }
-  .nhhb-b2b-cta { width: auto; min-width: 160px; }
+  .nhhb-b2b-cta { width: auto; min-width: 168px; }
   .nhhb-b2b-title { font-size: clamp(1.35rem, 2.2vw, 1.75rem); }
   .nhhb-b2b-logo img.nhhb-b2b-logo-img { width: min(100%, 120px); }
 }

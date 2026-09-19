@@ -7,15 +7,18 @@ if (!defined('ABSPATH')) {
 wp_enqueue_style('nhhb-b2b');
 
 $defaults = [
-    'h2'       => __('For Business Customers', 'nhhb'),
-    'h3'       => __('Exclusive pricing and services for B2B partners.', 'nhhb'),
-    'btn_text' => __('Learn more', 'nhhb'),
+    'h2'       => '',
+    'h3'       => '',
+    'btn_text' => '',
     'btn_url'  => '',
     'logo'     => 0,
     'logo_d'   => 0,
     'logo_m'   => 0,
 ];
 $data = is_array($data ?? null) ? array_merge($defaults, $data) : $defaults;
+$data['h2']       = nhhb_maybe_translate($data['h2'], 'For Business Customers');
+$data['h3']       = nhhb_maybe_translate($data['h3'], 'Exclusive pricing and services for B2B partners.');
+$data['btn_text'] = nhhb_maybe_translate($data['btn_text'], 'Learn more');
 
 $kicker = __('🤝 Business Solutions', 'nhhb');
 

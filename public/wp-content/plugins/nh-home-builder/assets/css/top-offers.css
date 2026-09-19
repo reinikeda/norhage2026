@@ -1,48 +1,9 @@
-/* ===== Home Builder – Top Offers (fixed + mobile single-column + slider stability) ===== */
+/* NH Home Builder – Top Offers (mobile first) */
 
-/* =========================
-   Variables / tokens
-   ========================= */
-:root{
-  /* Brand / ink */
-  --nhhb-primary:            var(--nh-green, #2EA26F);
-  --nhhb-primary-dark:       var(--nh-forest, #1E3932);
-  --nhhb-ink:                var(--nh-charcoal, #222222);
-  --nhhb-ink-sub:            #6f746f;
-
-  /* Bold contrast promo card surfaces */
-  --nhhb-surface-1:          #1E3932;
-  --nhhb-surface-2:          #222222;
-  --nhhb-surface-border:     rgba(255, 255, 255, 0.10);
-
---nhhb-promo-ink:          #ffffff;
-  --nhhb-promo-ink-sub:      rgba(255, 255, 255, 0.72);
-  --nhhb-promo-title-hover:  #2EA26F;
-
-  /* Shadows */
-  --nhhb-hero-shadow:        0 10px 24px rgba(17, 32, 28, 0.12);
-  --nhhb-card-shadow:        0 6px 18px rgba(17, 32, 28, 0.08);
-  --nhhb-card-shadow-hover:  0 10px 24px rgba(17, 32, 28, 0.12);
-
-  /* Radius */
-  --nhhb-radius-lg:          12px;
-  --nhhb-radius-md:          12px;
-
-  /* Dots */
-  --nhhb-dot-bg:             rgba(255,255,255,.48);
-  --nhhb-dot-active:         var(--nhhb-primary);
-
-  /* Hero min height token (used for robust mobile sizing) */
-  --nhhb-hero-min-h:         320px;
-}
-
-/* =========================
-   Layout — grid structure
-   ========================= */
-.nhhb-offers-hero{
+.nhhb-offers-hero {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -50,7 +11,7 @@
 
 .nhhb-slider {
   position: relative;
-  min-height: 280px;
+  min-height: 340px;
 }
 
 .nhhb-slides {
@@ -58,8 +19,8 @@
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  border-radius: var(--nhhb-radius, 12px);
-  min-height: 280px;
+  border-radius: var(--nhhb-radius, 16px);
+  min-height: 340px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -69,11 +30,11 @@
 .nhhb-slide {
   flex: 0 0 100%;
   width: 100%;
-  min-height: 280px;
+  min-height: 340px;
   position: relative;
   overflow: hidden;
   scroll-snap-align: start;
-  background: #f4f1ea;
+  background: var(--nhhb-forest, #1E3932);
 }
 
 .nhhb-slide-bg,
@@ -93,7 +54,7 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(to top, rgba(30, 57, 50, 0.72) 0%, rgba(30, 57, 50, 0.22) 48%, rgba(30, 57, 50, 0.06) 100%);
+    linear-gradient(to top, rgba(14, 28, 24, 0.82) 0%, rgba(14, 28, 24, 0.28) 52%, rgba(14, 28, 24, 0.08) 100%);
 }
 
 .nhhb-slide-copy {
@@ -101,7 +62,7 @@
   z-index: 2;
   left: 16px;
   right: 16px;
-  bottom: 52px;
+  bottom: 56px;
   color: #fff;
   max-width: 36rem;
 }
@@ -122,38 +83,42 @@
 
 .nhhb-h2 {
   margin: 0 0 8px;
-  font-size: 1.5rem;
-  line-height: 1.1;
+  font-size: clamp(1.4rem, 6vw, 1.85rem);
+  line-height: 1.12;
   font-weight: 800;
   color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.28);
 }
 
 .nhhb-h3 {
-  margin: 0 0 14px;
-  font-size: 0.9375rem;
+  margin: 0 0 16px;
+  font-size: 0.95rem;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .nhhb-offers-hero .nhhb-btn {
-  background: var(--nhhb-forest, #1E3932);
+  background: var(--nhhb-green, #00704A);
   color: #fff !important;
+  min-width: 168px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
 .nhhb-offers-hero .nhhb-btn:hover {
-  background: var(--nhhb-green, #00704A);
+  background: #025c3d;
 }
 
 .nhhb-dots {
   position: absolute;
-  right: 12px;
+  left: 50%;
   bottom: 12px;
   z-index: 4;
   display: flex;
   gap: 4px;
   padding: 4px 6px;
   border-radius: 999px;
-  background: rgba(30, 57, 50, 0.28);
+  background: rgba(30, 57, 50, 0.34);
+  transform: translateX(-50%);
 }
 
 .nhhb-dot {
@@ -183,7 +148,7 @@
 
 .nhhb-hero-side {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -191,8 +156,8 @@
   display: block;
   position: relative;
   overflow: hidden;
-  min-height: 148px;
-  border-radius: var(--nhhb-radius, 12px);
+  min-height: 132px;
+  border-radius: var(--nhhb-radius, 16px);
   text-decoration: none;
   color: inherit;
 }
@@ -207,13 +172,13 @@
   object-fit: cover;
 }
 
-.nhhb-promo::after{
+.nhhb-promo::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(30, 57, 50, 0.86) 0%, rgba(30, 57, 50, 0.4) 55%, rgba(30, 57, 50, 0.08) 100%);
+  background: linear-gradient(180deg, rgba(14, 28, 24, 0.08) 0%, rgba(14, 28, 24, 0.78) 100%);
 }
 
 .nhhb-promo-body {
@@ -221,101 +186,54 @@
   z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 148px;
-  padding: 16px;
-  max-width: 78%;
+  justify-content: flex-end;
+  min-height: 132px;
+  padding: 14px;
   color: #fff;
 }
 
 .nhhb-p2 {
   margin: 0;
-  font-size: 1.0625rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #fff;
 }
 
 .nhhb-p3 {
-  margin: 8px 0 0;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.82);
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.86);
 }
 
-.nhhb-link-title:hover{
-  color: var(--nhhb-promo-title-hover);
-  text-decoration-color: var(--nhhb-promo-title-hover);
-}
-
-/* ===== Placeholder ===== */
-.nhhb-ph-img{
-  width: 100%;
-  height: 100%;
-  min-height: 100px;
-  border: 1px dashed rgba(30, 57, 50, 0.16);
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,.10)), #f8f4ec;
-}
-
-/* ===== Focus ===== */
-.nhhb-btn:focus-visible,
-.nhhb-dot:focus-visible,
-.nhhb-link-title:focus-visible{
-  outline: 2px solid var(--nhhb-primary);
-  outline-offset: 2px;
-}
-
-/* I'll re-include only the important additions below for mobile stability */
-
-/* =========================
-   Responsive — desktop -> tablet
-   ========================= */
-@media (max-width: 1200px){
-  .nhhb-offers-hero > .nhhb-hero-col:first-child{
-    min-height: 440px;
-  }
-
-  .nhhb-slide-copy{
-    max-width: min(580px, 80%);
-  }
-}
-
-@media (max-width: 980px){
-  .nhhb-offers-hero{
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .nhhb-offers-hero > .nhhb-hero-col:first-child{
-    min-height: 400px;
-  }
-
-  .nhhb-hero-side {
-    grid-template-columns: 1fr 1fr;
-  }
-
+@media (min-width: 768px) {
+  .nhhb-offers-hero { gap: 14px; }
+  .nhhb-slider,
+  .nhhb-slides,
+  .nhhb-slide { min-height: 420px; }
   .nhhb-slide-copy {
     left: 28px;
     right: 28px;
-    bottom: 36px;
+    bottom: 40px;
   }
-
-  .nhhb-h2 { font-size: 2.125rem; }
-  .nhhb-dots { left: 50%; right: auto; transform: translateX(-50%); }
+  .nhhb-h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+  .nhhb-hero-side { grid-template-columns: 1fr 1fr; }
+  .nhhb-promo,
+  .nhhb-promo-body { min-height: 180px; }
 }
 
 @media (min-width: 980px) {
   .nhhb-offers-hero {
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-    gap: 18px;
+    gap: 16px;
     align-items: stretch;
   }
 
   .nhhb-hero-col:first-child,
   .nhhb-slider,
   .nhhb-slides,
-  .nhhb-slide { min-height: 460px; height: 100%; }
+  .nhhb-slide { min-height: 480px; height: 100%; }
 
   .nhhb-hero-side {
     grid-template-columns: 1fr;
@@ -327,6 +245,18 @@
 
   .nhhb-slide::after {
     background:
-      linear-gradient(90deg, rgba(30, 57, 50, 0.5) 0%, rgba(30, 57, 50, 0.18) 48%, rgba(30, 57, 50, 0) 78%);
+      linear-gradient(90deg, rgba(14, 28, 24, 0.72) 0%, rgba(14, 28, 24, 0.28) 46%, rgba(14, 28, 24, 0) 78%);
   }
+
+  .nhhb-promo::after {
+    background: linear-gradient(90deg, rgba(14, 28, 24, 0.82) 0%, rgba(14, 28, 24, 0.28) 70%, rgba(14, 28, 24, 0.06) 100%);
+  }
+
+  .nhhb-promo-body {
+    justify-content: center;
+    max-width: 78%;
+    padding: 20px;
+  }
+
+  .nhhb-p2 { font-size: 1.125rem; }
 }
