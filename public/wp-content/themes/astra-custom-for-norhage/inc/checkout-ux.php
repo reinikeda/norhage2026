@@ -1906,6 +1906,49 @@ function nh_checkout_ux_assets() {
 }
 
 /**
+ * Compact chosen-method + price for the checkout order summary.
+ *
+ * @param string $label       Method title, without a trailing colon.
+ * @param string $amount_html Formatted price HTML (or empty).
+ * @return string
+ */
+function nh_checkout_format_shipping_summary_html( $label, $amount_html ) {
+	$label       = preg_replace( '/:\s*$/', '', wp_strip_all_tags( (string) $label ) );
+	$amount_html = (string) $amount_html;
+	if ( $label === '' && $amount_html === '' ) {
+		return '';
+	}
+
+	$html = '<span class="nh-summary-ship-chosen">';
+	if ( $label !== '' ) {
+		$html .= '<span class="nh-summary-ship-chosen__name">' . esc_html( $label ) . '</span>';
+	}
+	$html .= $amount_html;
+	$html .= '</span>';
+	return $html;
+}
+
+/**
+ * Chosen shipping row markup used after the method radios are moved out of the summary.
+ *
+ * @param object|null $method Chosen Woo shipping rate.
+ * @return string
+ */
+function nh_checkout_chosen_shipping_summary_html( $method = null ) {
+	$label = '';
+	if ( is_object( $method ) && method_exists( $method, 'get_label' ) ) {
+		$label = (string) $method->get_label();
+	}
+
+	$amount = '';
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		$amount = (string) WC()->cart->get_cart_shipping_total();
+	}
+
+	return nh_checkout_format_shipping_summary_html( $label, $amount );
+}
+
+/**
  * Shipping line for the mobile summary bar, so the cost stays visible if the accordion is closed.
  *
  * @return string HTML

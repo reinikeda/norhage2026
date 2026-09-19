@@ -1816,9 +1816,27 @@ body.woocommerce-checkout .nh-checkout-iframe__status {
   font-weight: 700;
 }
 
-body.woocommerce-checkout .nh-summary-ship-chosen {
-  display: block;
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen {
+  display: none;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review td:not(:has(#shipping_method)):not(:has(.woocommerce-shipping-methods)) > .nh-summary-ship-chosen {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
   font-weight: 700;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen__name {
+  min-width: 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review .nh-summary-ship-chosen .woocommerce-Price-amount {
+  margin-left: auto;
+  white-space: nowrap;
+  font-weight: 800;
 }
 
 #svea-checkout-iframe-container,
