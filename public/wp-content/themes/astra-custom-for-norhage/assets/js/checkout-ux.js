@@ -2568,6 +2568,55 @@
     return '';
   }
 
+  function snippetMethodId() {
+    return String(chosenPaymentId() || i18n.chosenPayment || '').toLowerCase();
+  }
+
+  function isKustomMethod() {
+    return /kco|kustom|klarna/.test(snippetMethodId());
+  }
+
+  function withKustomApi(fn) {
+    if (typeof window._klarnaCheckout !== 'function') {
+      return false;
+    }
+    window._klarnaCheckout(function (api) {
+      fn(api);
+    });
+    return true;
+  }
+
+  function markKustomShippingKnown() {
+    if (window.kco_wc) {
+      window.kco_wc.shippingAddressKnown = true;
+    }
+  }
+
+  function suspendKustomIframe() {
+    markKustomShippingKnown();
+    return withKustomApi(function (api) {
+      if (!api || typeof api.suspend !== 'function') {
+        return;
+      }
+      if (window.kco_wc) {
+        window.kco_wc.suspended = true;
+      }
+      api.suspend({ autoResume: { enabled: false } });
+    });
+  }
+
+  function resumeKustomIframe() {
+    withKustomApi(function (api) {
+      if (!api || typeof api.resume !== 'function') {
+        return;
+      }
+      if (window.kco_wc) {
+        window.kco_wc.suspended = false;
+      }
+      api.resume();
+    });
+  }
+
   function applySnippetZipAjax(postcode, country) {
     stampShippingIndexes();
     postcode = usablePostcode(postcode);
@@ -2579,6 +2628,10 @@
     var nonce = i18n.applyZipNonce || '';
     if (!url || !nonce) {
       return;
+    }
+    var kustom = isKustomMethod();
+    if (kustom) {
+      suspendKustomIframe();
     }
     $.ajax({
       type: 'POST',
@@ -2605,7 +2658,14 @@
         placeShippingMethods();
         syncSummaryTotal();
         lockSummaryLayout();
-        $(document).trigger('sco_refresh_data');
+        if (/svea|sco/.test(snippetMethodId()) && !kustom) {
+          $(document).trigger('sco_refresh_data');
+        }
+      },
+      complete: function () {
+        if (kustom) {
+          resumeKustomIframe();
+        }
       }
     });
   }
@@ -2711,29 +2771,30 @@
     );
   }
 
-  function bindKustomZip() {
-    if (window._nhKustomZipBound) {
-      return true;
+  function onKustomPostalChange(data) {
+    var zip = extractZipFromUnknown(data);
+    if (!zip) {
+      return;
     }
+    markKustomShippingKnown();
+    onIframeZip(zip, extractCountryFromUnknown(data) || $('#billing_country').val());
+  }
+
+  function bindKustomZip() {
     if (typeof window._klarnaCheckout !== 'function') {
       return false;
     }
-    window._nhKustomZipBound = true;
+    // Register only `change`. A later api.on() for the same event replaces
+    // that event; KCO's complete-address handlers must stay in place.
+    // Postcode edits after a logged-in address already exists fire `change`
+    // and often do not fire the complete-address events, so checkout stayed
+    // on the old shipping while the cart drawer (fresh fragments) updated.
     window._klarnaCheckout(function (api) {
       if (!api || typeof api.on !== 'function') {
         return;
       }
-      function onKlarnaAddr(data) {
-        var zip = extractZipFromUnknown(data);
-        if (!zip) {
-          return;
-        }
-        onIframeZip(zip, extractCountryFromUnknown(data) || $('#billing_country').val());
-      }
       api.on({
-        change: onKlarnaAddr,
-        shipping_address_change: onKlarnaAddr,
-        billing_address_change: onKlarnaAddr
+        change: onKustomPostalChange
       });
     });
     return true;

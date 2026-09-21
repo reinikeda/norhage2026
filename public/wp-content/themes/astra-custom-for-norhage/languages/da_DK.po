@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Astra Custom for Norhage 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra-custom-for-norhage\n"
 "POT-Creation-Date: 2026-05-18 13:47:13+00:00\n"
-"PO-Revision-Date: 2026-09-15 10:00+0300\n"
+"PO-Revision-Date: 2026-09-21 10:28+0300\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -1360,7 +1360,7 @@ msgstr "Hvor lang frist har jeg til at returnere en vare?"
 
 #: inc/faq-data.php
 msgid "Our return period follows local consumer protection laws. Please check our <a href=\"https://norhage.eu/refund-and-returns-policy/\">Returns & Refunds</a> page for the specific timeframe applicable in your region."
-msgstr "Vores returfrist følger lokal forbrugerlovgivning. Tjek venligst vores side for <a href=\"https://norhage.dk/retur-og-refusionspolitik/\">Retur og refundering</a> for de specifikke tidsfrister, der gælder for din region."
+msgstr "Vores returfrist følger lokal forbrugerlovgivning. Tjek venligst vores side for <a href=\"https://norhage.dk/retur-og-refunderingspolitik/\">Retur og refundering</a> for de specifikke tidsfrister, der gælder for din region."
 
 #. return-condition
 #: inc/faq-data.php
@@ -1638,7 +1638,7 @@ msgstr "Hvor finder jeg en trin-for-trin-guide til montering af et kanalplasttag
 
 #: inc/faq-data.php
 msgid "Our <a href=\"https://norhage.eu/blog/\">polycarbonate roof installation guide</a> explains the main stages of the project, including planning the structure, preparing the sheets, fitting profiles, sealing sheet ends and finishing the roof. Use the guide together with the instructions supplied for your specific sheet and installation system."
-msgstr "Vores <a href=\"https://norhage.dk/montering-af-kanalplasttag-trin-for-trin/\">guide til montering af kanalplasttag</a> forklarer projektets hovedfaser, herunder planlægning af konstruktionen, klargøring af plader, montering af profiler, forsegling af pladeender og færdiggørelse af taget. Brug guiden sammen med den vejledning, der følger med dit specifikke plade- og monteringssystem."
+msgstr "Vores <a href=\"https://norhage.dk/kanalplast-montering-trin-for-trin-til-et-perfekt-tag/\">guide til montering af kanalplasttag</a> forklarer projektets hovedfaser, herunder planlægning af konstruktionen, klargøring af plader, montering af profiler, forsegling af pladeender og færdiggørelse af taget. Brug guiden sammen med den vejledning, der følger med dit specifikke plade- og monteringssystem."
 
 #. installation-greenhouse-guide
 #: inc/faq-data.php
@@ -1850,9 +1850,9 @@ msgstr "Vælg, hvordan du vil betale"
 
 msgid "Please choose a payment method."
 msgstr "Vælg en betalingsmetode."
+
 msgid "Please choose a bank or card in MakeCommerce."
 msgstr "Vælg bank eller kort i MakeCommerce."
-
 
 msgid "Please agree to the website terms and conditions to continue."
 msgstr "Acceptér webstedets vilkår og betingelser for at fortsætte."
@@ -1934,8 +1934,8 @@ msgstr "Tilføj kontaktperson"
 msgid "Please fill in this field."
 msgstr "Udfyld dette felt."
 
-#: inc/checkout-ux.php
 #. translators: %s: formatted order total
+#: inc/checkout-ux.php
 msgid "Pay %s"
 msgstr "Betal %s"
 
@@ -2007,13 +2007,13 @@ msgstr "Betalingen blev annulleret."
 msgid "Choose another payment method or try again."
 msgstr "Vælg en anden betalingsmetode eller prøv igen."
 
-#: inc/checkout-ux.php
 #. translators: %d: product quantity
+#: inc/checkout-ux.php
 msgid "%d product"
 msgstr "%d produkt"
 
-#: inc/checkout-ux.php
 #. translators: %d: product quantity
+#: inc/checkout-ux.php
 msgid "%d products"
 msgstr "%d produkter"
 
@@ -2036,9 +2036,9 @@ msgstr "Du bliver sendt til PayPal for at logge ind og bekræfte betalingen."
 #: inc/checkout-ux.php
 msgid "Pay by bank transfer. We send payment details after you place the order."
 msgstr "Betal med bankoverførsel. Vi sender betalingsoplysninger, efter du har afgivet ordren."
+
 msgid "Choose a bank or card, then pay securely with MakeCommerce."
 msgstr "Vælg bank eller kort, og betal sikkert med MakeCommerce."
-
 
 #: inc/checkout-ux.php
 msgid "Loading secure payment…"
@@ -2056,8 +2056,8 @@ msgstr "Betalingen blev ikke gennemført. Dine ordreoplysninger er stadig gemt. 
 msgid "We are waiting for payment confirmation. You will receive an email when it is complete."
 msgstr "Vi venter på betalingsbekræftelse. Du får en e-mail, når den er gennemført."
 
-#: inc/checkout-ux.php
 #. translators: %s: customer first name
+#: inc/checkout-ux.php
 msgid "Thank you, %s. Your order has been received."
 msgstr "Tak, %s. Vi har modtaget din ordre."
 

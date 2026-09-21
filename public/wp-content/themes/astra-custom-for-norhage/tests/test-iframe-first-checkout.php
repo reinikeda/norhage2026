@@ -47,6 +47,18 @@ if ( ! function_exists( 'esc_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sanitize_text_field' ) ) {
+	function sanitize_text_field( $text ) {
+		return trim( (string) $text );
+	}
+}
+
+if ( ! function_exists( 'wp_unslash' ) ) {
+	function wp_unslash( $value ) {
+		return $value;
+	}
+}
+
 require_once dirname( __DIR__ ) . '/inc/checkout-ux.php';
 
 $failures = 0;
@@ -112,6 +124,27 @@ $posted = nh_checkout_posted_data_prefer_iframe(
 );
 nh_iframe_first_assert( 'snippet checkout does not ship to a different address', empty( $posted['ship_to_different_address'] ) );
 nh_iframe_first_assert( 'snippet checkout copies billing street to shipping', $posted['shipping_address_1'] === 'Karl Johans gate 1' );
+
+nh_iframe_first_assert( 'live kustom order id is kept', ! nh_checkout_kustom_should_drop_session_order( 'abc123' ) );
+nh_iframe_first_assert( 'empty kustom order id may be created', nh_checkout_kustom_should_drop_session_order( '' ) );
+nh_iframe_first_assert( 'leaving kustom resets the iframe session', nh_checkout_should_reset_snippet_sessions( true, 'bacs' ) );
+nh_iframe_first_assert( 'staying on kustom keeps the iframe session', ! nh_checkout_should_reset_snippet_sessions( true, 'kco' ) );
+nh_iframe_first_assert( 'bacs checkout does not reset a kustom session that was never ready', ! nh_checkout_should_reset_snippet_sessions( false, 'bacs' ) );
+nh_iframe_first_assert( 'kustom sync helper exists', function_exists( 'nh_checkout_kustom_sync_live_order' ) );
+nh_iframe_first_assert( 'kustom sync without Woo session is a no-op', nh_checkout_kustom_sync_live_order() === false );
+
+$_REQUEST['wc-ajax'] = 'nh_snippet_apply_zip';
+nh_iframe_first_assert( 'zip ajax is treated as checkout for kustom', nh_checkout_kustom_ajax_is_checkout( false ) === true );
+$_REQUEST['wc-ajax'] = 'update_order_review';
+nh_iframe_first_assert( 'other ajax does not fake checkout', nh_checkout_kustom_ajax_is_checkout( false ) === false );
+unset( $_REQUEST['wc-ajax'] );
+
+$js = file_get_contents( dirname( __DIR__ ) . '/assets/js/checkout-ux.js' );
+nh_iframe_first_assert( 'kustom zip does not replace complete-address handlers', strpos( $js, 'shipping_address_change: onKlarnaAddr' ) === false && strpos( $js, 'shipping_address_change:' ) === false );
+nh_iframe_first_assert( 'kustom zip listens to klarna change', strpos( $js, 'change: onKustomPostalChange' ) !== false );
+nh_iframe_first_assert( 'kustom zip suspends the iframe before the order patch', strpos( $js, 'api.suspend({ autoResume: { enabled: false } })' ) !== false );
+nh_iframe_first_assert( 'kustom zip resumes the iframe after the order patch', strpos( $js, 'api.resume()' ) !== false );
+nh_iframe_first_assert( 'svea zip still refreshes the svea snippet', strpos( $js, "trigger('sco_refresh_data')" ) !== false );
 
 if ( $failures > 0 ) {
 	exit( 1 );
