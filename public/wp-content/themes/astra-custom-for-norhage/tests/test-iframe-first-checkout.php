@@ -140,7 +140,8 @@ nh_iframe_first_assert( 'other ajax does not fake checkout', nh_checkout_kustom_
 unset( $_REQUEST['wc-ajax'] );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/checkout-ux.js' );
-nh_iframe_first_assert( 'kustom zip does not replace klarna api.on handlers', strpos( $js, 'shipping_address_change: onKlarnaAddr' ) === false );
+nh_iframe_first_assert( 'kustom zip does not replace complete-address handlers', strpos( $js, 'shipping_address_change: onKlarnaAddr' ) === false && strpos( $js, 'shipping_address_change:' ) === false );
+nh_iframe_first_assert( 'kustom zip listens to klarna change', strpos( $js, 'change: onKustomPostalChange' ) !== false );
 nh_iframe_first_assert(
 	'kustom zip success triggers update_checkout',
 	strpos( $js, 'if (/kco|kustom|klarna/.test(method))' ) !== false
