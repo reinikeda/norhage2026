@@ -4484,8 +4484,11 @@ function nh_checkout_ajax_snippet_apply_zip() {
 	wp_send_json_success(
 		array(
 			'fragments' => array(
-				'.woocommerce-checkout-review-order' => $html,
+				'.woocommerce-checkout-review-order'      => $html,
+				'.nh-checkout-summary-toggle__amount'     => WC()->cart ? WC()->cart->get_total() : '',
+				'.nh-checkout-summary-toggle__shipping'   => nh_checkout_summary_shipping_html(),
 			),
+			'postcode'  => $zip,
 		)
 	);
 }

@@ -2717,19 +2717,34 @@
     );
   }
 
-  function bindKustomZip() {
-    if (window._nhKustomZipBound) {
-      return true;
+  function onKustomPostalChange(data) {
+    if (window.kco_wc && data && data.country && data.postal_code) {
+      window.kco_wc.shippingAddressKnown = true;
     }
+    var zip = extractZipFromUnknown(data);
+    if (!zip) {
+      return;
+    }
+    onIframeZip(zip, extractCountryFromUnknown(data) || $('#billing_country').val());
+  }
+
+  function bindKustomZip() {
     if (typeof window._klarnaCheckout !== 'function') {
       return false;
     }
-    // Do not call api.on() here. Kustom Checkout for WooCommerce already
-    // registers shipping_address_change / billing_address_change / change.
-    // A second api.on() replaces those handlers, so Woo never PATCHes the
-    // live Kustom order (shipping missing until after pay) and
-    // getKlarnaOrder can fail with an empty Fehlercode.
-    window._nhKustomZipBound = true;
+    // Register only `change`. A later api.on() for the same event replaces
+    // that event; KCO's complete-address handlers must stay in place.
+    // Postcode edits after a logged-in address already exists fire `change`
+    // and often do not fire the complete-address events, so checkout stayed
+    // on the old shipping while the cart drawer (fresh fragments) updated.
+    window._klarnaCheckout(function (api) {
+      if (!api || typeof api.on !== 'function') {
+        return;
+      }
+      api.on({
+        change: onKustomPostalChange
+      });
+    });
     return true;
   }
 
