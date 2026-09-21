@@ -2568,6 +2568,55 @@
     return '';
   }
 
+  function snippetMethodId() {
+    return String(chosenPaymentId() || i18n.chosenPayment || '').toLowerCase();
+  }
+
+  function isKustomMethod() {
+    return /kco|kustom|klarna/.test(snippetMethodId());
+  }
+
+  function withKustomApi(fn) {
+    if (typeof window._klarnaCheckout !== 'function') {
+      return false;
+    }
+    window._klarnaCheckout(function (api) {
+      fn(api);
+    });
+    return true;
+  }
+
+  function markKustomShippingKnown() {
+    if (window.kco_wc) {
+      window.kco_wc.shippingAddressKnown = true;
+    }
+  }
+
+  function suspendKustomIframe() {
+    markKustomShippingKnown();
+    return withKustomApi(function (api) {
+      if (!api || typeof api.suspend !== 'function') {
+        return;
+      }
+      if (window.kco_wc) {
+        window.kco_wc.suspended = true;
+      }
+      api.suspend({ autoResume: { enabled: false } });
+    });
+  }
+
+  function resumeKustomIframe() {
+    withKustomApi(function (api) {
+      if (!api || typeof api.resume !== 'function') {
+        return;
+      }
+      if (window.kco_wc) {
+        window.kco_wc.suspended = false;
+      }
+      api.resume();
+    });
+  }
+
   function applySnippetZipAjax(postcode, country) {
     stampShippingIndexes();
     postcode = usablePostcode(postcode);
@@ -2579,6 +2628,10 @@
     var nonce = i18n.applyZipNonce || '';
     if (!url || !nonce) {
       return;
+    }
+    var kustom = isKustomMethod();
+    if (kustom) {
+      suspendKustomIframe();
     }
     $.ajax({
       type: 'POST',
@@ -2605,12 +2658,13 @@
         placeShippingMethods();
         syncSummaryTotal();
         lockSummaryLayout();
-        var method = String(chosenPaymentId() || i18n.chosenPayment || '').toLowerCase();
-        if (/svea|sco/.test(method) && !/kco|kustom|klarna/.test(method)) {
+        if (/svea|sco/.test(snippetMethodId()) && !kustom) {
           $(document).trigger('sco_refresh_data');
         }
-        if (/kco|kustom|klarna/.test(method)) {
-          $(document.body).trigger('update_checkout', { update_shipping_method: true });
+      },
+      complete: function () {
+        if (kustom) {
+          resumeKustomIframe();
         }
       }
     });
@@ -2718,13 +2772,11 @@
   }
 
   function onKustomPostalChange(data) {
-    if (window.kco_wc && data && data.country && data.postal_code) {
-      window.kco_wc.shippingAddressKnown = true;
-    }
     var zip = extractZipFromUnknown(data);
     if (!zip) {
       return;
     }
+    markKustomShippingKnown();
     onIframeZip(zip, extractCountryFromUnknown(data) || $('#billing_country').val());
   }
 

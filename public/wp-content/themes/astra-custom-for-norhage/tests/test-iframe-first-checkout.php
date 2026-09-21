@@ -142,11 +142,8 @@ unset( $_REQUEST['wc-ajax'] );
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/checkout-ux.js' );
 nh_iframe_first_assert( 'kustom zip does not replace complete-address handlers', strpos( $js, 'shipping_address_change: onKlarnaAddr' ) === false && strpos( $js, 'shipping_address_change:' ) === false );
 nh_iframe_first_assert( 'kustom zip listens to klarna change', strpos( $js, 'change: onKustomPostalChange' ) !== false );
-nh_iframe_first_assert(
-	'kustom zip success triggers update_checkout',
-	strpos( $js, 'if (/kco|kustom|klarna/.test(method))' ) !== false
-	&& strpos( $js, "trigger('update_checkout', { update_shipping_method: true })" ) !== false
-);
+nh_iframe_first_assert( 'kustom zip suspends the iframe before the order patch', strpos( $js, 'api.suspend({ autoResume: { enabled: false } })' ) !== false );
+nh_iframe_first_assert( 'kustom zip resumes the iframe after the order patch', strpos( $js, 'api.resume()' ) !== false );
 nh_iframe_first_assert( 'svea zip still refreshes the svea snippet', strpos( $js, "trigger('sco_refresh_data')" ) !== false );
 
 if ( $failures > 0 ) {
