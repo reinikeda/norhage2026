@@ -583,6 +583,7 @@ function nh_checkout_ux_init() {
 	add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'nh_checkout_ready_to_calc_shipping', 999 );
 	add_filter( 'woocommerce_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
 	add_filter( 'woocommerce_cart_no_shipping_available_html', 'nh_checkout_snippet_no_shipping_html' );
+	add_filter( 'woocommerce_is_checkout', 'nh_checkout_kustom_ajax_is_checkout' );
 	add_action( 'wc_ajax_nh_snippet_apply_zip', 'nh_checkout_ajax_snippet_apply_zip' );
 	add_filter( 'kco_ignored_checkout_fields', 'nh_checkout_snippet_ignored_fields' );
 	add_filter( 'kco_wc_ignored_order_fields', 'nh_checkout_snippet_ignored_fields' );
@@ -701,6 +702,10 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 		}
 		if ( $method === '' ) {
 			nh_checkout_lock_empty_payment_choice();
+			$method = (string) WC()->session->get( 'chosen_payment_method' );
+			if ( $method === 'nh_none' || $method === 'undefined' ) {
+				$method = '';
+			}
 		}
 	}
 
@@ -708,9 +713,22 @@ function nh_checkout_sync_checkout_step( $post_data ) {
 	$ready     = nh_checkout_is_snippet_gateway( $method );
 	WC()->session->set( 'nh_checkout_snippet_ready', $ready ? '1' : '' );
 
-	if ( ( $was_ready && ! $ready ) || ! nh_checkout_is_snippet_gateway( $method ) ) {
+	if ( nh_checkout_should_reset_snippet_sessions( $was_ready, $method ) ) {
 		nh_checkout_reset_snippet_sessions();
 	}
+}
+
+/**
+ * Drop SVEA/Kustom sessions only when leaving that gateway. An empty posted
+ * payment_method during update_checkout used to wipe kco_wc_order_id while
+ * the iframe was still open, so getKlarnaOrder failed with no Fehlercode.
+ *
+ * @param bool   $was_snippet_ready Previous nh_checkout_snippet_ready flag.
+ * @param string $method            Chosen payment method id.
+ * @return bool
+ */
+function nh_checkout_should_reset_snippet_sessions( $was_snippet_ready, $method ) {
+	return (bool) $was_snippet_ready && ! nh_checkout_is_snippet_gateway( $method );
 }
 
 /**
@@ -1259,8 +1277,25 @@ function nh_checkout_prepare_snippet_identity() {
 }
 
 /**
- * Drop a leftover empty Kustom session so create() can send Woo billing_address.
- * Klarna ignores most address updates after the first iframe order exists.
+ * True when there is no live Kustom iframe order to keep.
+ *
+ * Recreating (unsetting kco_wc_order_id) while the iframe is open makes
+ * KCO getKlarnaOrder return success:false — the customer sees
+ * "Failed to get the order from Kustom" / "Fehlercode:" with no code.
+ *
+ * @param string $order_id Current session kco_wc_order_id.
+ * @return bool
+ */
+function nh_checkout_kustom_should_drop_session_order( $order_id ) {
+	return trim( (string) $order_id ) === '';
+}
+
+/**
+ * Remember Woo identity for the next Kustom create(). Do not drop a live order.
+ *
+ * Iframe-first checkout fills address inside Kustom. Klarna still ignores
+ * most address updates on an existing session, but replacing the order id
+ * desyncs Woo from the iframe the customer is paying in.
  *
  * @param array<string, string> $identity Identity fields.
  */
@@ -1279,13 +1314,66 @@ function nh_checkout_kustom_maybe_recreate_for_identity( $identity ) {
 
 	$hash     = nh_checkout_identity_prefill_hash( $identity );
 	$previous = (string) WC()->session->get( 'nh_kco_prefill_hash', '' );
-	if ( $previous === $hash && WC()->session->get( 'kco_wc_order_id' ) ) {
+	$order_id = (string) WC()->session->get( 'kco_wc_order_id' );
+	if ( $previous === $hash && $order_id !== '' ) {
+		return;
+	}
+
+	if ( ! nh_checkout_kustom_should_drop_session_order( $order_id ) ) {
+		WC()->session->set( 'nh_kco_prefill_hash', $hash );
 		return;
 	}
 
 	WC()->session->__unset( 'kco_wc_order_id' );
 	WC()->session->__unset( 'kco_update_md5' );
 	WC()->session->set( 'nh_kco_prefill_hash', $hash );
+}
+
+/**
+ * KCO update_klarna_order bails unless is_checkout() is true. Zip AJAX is not
+ * the checkout page, so treat it as checkout so shipping reaches Kustom.
+ *
+ * @param bool $is Current is_checkout() result.
+ * @return bool
+ */
+function nh_checkout_kustom_ajax_is_checkout( $is ) {
+	if ( $is ) {
+		return $is;
+	}
+	return nh_checkout_is_snippet_zip_ajax();
+}
+
+/**
+ * @return bool
+ */
+function nh_checkout_is_snippet_zip_ajax() {
+	$ajax = isset( $_REQUEST['wc-ajax'] ) ? sanitize_text_field( wp_unslash( (string) $_REQUEST['wc-ajax'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	return $ajax === 'nh_snippet_apply_zip';
+}
+
+/**
+ * PATCH the live Kustom order with the current Woo cart (shipping + totals).
+ *
+ * @return bool
+ */
+function nh_checkout_kustom_sync_live_order() {
+	if ( ! function_exists( 'KCO_WC' ) || ! function_exists( 'WC' ) || ! WC()->session ) {
+		return false;
+	}
+	$id = (string) WC()->session->get( 'kco_wc_order_id' );
+	if ( $id === '' ) {
+		return false;
+	}
+	$api = ( KCO_WC() && isset( KCO_WC()->api ) ) ? KCO_WC()->api : null;
+	if ( ! is_object( $api ) || ! method_exists( $api, 'update_klarna_order' ) ) {
+		return false;
+	}
+	try {
+		$updated = $api->update_klarna_order( $id, null, true );
+	} catch ( Throwable $e ) {
+		return false;
+	}
+	return ! empty( $updated );
 }
 
 /**
@@ -4382,6 +4470,7 @@ function nh_checkout_ajax_snippet_apply_zip() {
 
 	WC()->cart->calculate_shipping();
 	WC()->cart->calculate_totals();
+	nh_checkout_kustom_sync_live_order();
 
 	$template = function_exists( 'wc_locate_template' ) ? wc_locate_template( 'checkout/review-order.php' ) : '';
 	ob_start();
