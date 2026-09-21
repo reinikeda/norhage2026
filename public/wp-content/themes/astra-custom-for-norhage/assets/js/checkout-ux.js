@@ -2605,7 +2605,13 @@
         placeShippingMethods();
         syncSummaryTotal();
         lockSummaryLayout();
-        $(document).trigger('sco_refresh_data');
+        var method = String(chosenPaymentId() || i18n.chosenPayment || '').toLowerCase();
+        if (/svea|sco/.test(method) && !/kco|kustom|klarna/.test(method)) {
+          $(document).trigger('sco_refresh_data');
+        }
+        if (/kco|kustom|klarna/.test(method)) {
+          $(document.body).trigger('update_checkout', { update_shipping_method: true });
+        }
       }
     });
   }
@@ -2718,24 +2724,12 @@
     if (typeof window._klarnaCheckout !== 'function') {
       return false;
     }
+    // Do not call api.on() here. Kustom Checkout for WooCommerce already
+    // registers shipping_address_change / billing_address_change / change.
+    // A second api.on() replaces those handlers, so Woo never PATCHes the
+    // live Kustom order (shipping missing until after pay) and
+    // getKlarnaOrder can fail with an empty Fehlercode.
     window._nhKustomZipBound = true;
-    window._klarnaCheckout(function (api) {
-      if (!api || typeof api.on !== 'function') {
-        return;
-      }
-      function onKlarnaAddr(data) {
-        var zip = extractZipFromUnknown(data);
-        if (!zip) {
-          return;
-        }
-        onIframeZip(zip, extractCountryFromUnknown(data) || $('#billing_country').val());
-      }
-      api.on({
-        change: onKlarnaAddr,
-        shipping_address_change: onKlarnaAddr,
-        billing_address_change: onKlarnaAddr
-      });
-    });
     return true;
   }
 
