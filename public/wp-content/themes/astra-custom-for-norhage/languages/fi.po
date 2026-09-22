@@ -2241,3 +2241,6 @@ msgstr " / m²"
 
 #~ msgid "Use this to enable custom cutting on a Simple product. Standard-size variants are best kept on a separate Variable product."
 #~ msgstr "Käytä tätä, jos haluat ottaa mittatilausleikkauksen käyttöön yksinkertaisessa tuotteessa. Vakiokokoiset vaihtoehdot kannattaa pitää erillisessä muunnelmatuotteessa."
+
+msgid "Product information"
+msgstr "Tuotetiedot"

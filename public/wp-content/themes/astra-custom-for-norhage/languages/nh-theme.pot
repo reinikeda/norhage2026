@@ -1356,3 +1356,6 @@ msgstr ""
 msgid "Browse the shop"
 msgstr ""
 
+
+msgid "Product information"
+msgstr ""

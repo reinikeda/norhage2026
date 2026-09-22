@@ -424,6 +424,7 @@ require_once get_stylesheet_directory() . '/inc/feature-box-admin.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
 require_once get_stylesheet_directory() . '/inc/product-breadcrumb.php';
 require_once get_stylesheet_directory() . '/inc/product-summary-order.php';
+require_once get_stylesheet_directory() . '/inc/product-content-sections.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
