@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.9.0
+ * Version: 1.9.1
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -38,7 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.9.0'
+		'1.9.1'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -46,7 +46,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.9.0',
+		'1.9.1',
 		true
 	);
 
@@ -425,9 +425,9 @@ function nhf_render_range_filter( $label, $param_key, array $rows, array $select
 	echo '  <div class="nhf-filter-body" aria-hidden="' . ( $active ? 'false' : 'true' ) . '">';
 	echo '    <div class="nhf-range" data-nhf-range>';
 	echo '      <div class="nhf-range__readout">';
-	echo '        <span data-nhf-range-from-label>' . esc_html( $from_label ) . '</span>';
+	echo '        <span class="nhf-range__value" data-nhf-range-from-label>' . esc_html( $from_label ) . '</span>';
 	echo '        <span class="nhf-range__sep" aria-hidden="true">–</span>';
-	echo '        <span data-nhf-range-to-label>' . esc_html( $to_label ) . '</span>';
+	echo '        <span class="nhf-range__value" data-nhf-range-to-label>' . esc_html( $to_label ) . '</span>';
 	echo '      </div>';
 	echo '      <div class="nhf-range__control">';
 	echo '        <div class="nhf-range__rail" aria-hidden="true"><span class="nhf-range__fill" data-nhf-range-fill></span></div>';

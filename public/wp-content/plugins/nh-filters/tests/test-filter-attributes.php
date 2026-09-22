@@ -97,6 +97,10 @@ $plugin = file_get_contents( dirname( __DIR__ ) . '/nh-filters.php' );
 nhf_assert( 'sidebar skips attributes that are not ticked', false !== strpos( $plugin, 'nhf_attribute_is_visible' ) );
 nhf_assert( 'admin screen is loaded in wp-admin', false !== strpos( $plugin, '/includes/admin.php' ) );
 nhf_assert( 'sidebar renders a range for numeric attributes', false !== strpos( $plugin, 'nhf_render_range_filter' ) );
+nhf_assert( 'range values use visible chips', false !== strpos( $plugin, 'nhf-range__value' ) );
+
+$js = file_get_contents( dirname( __DIR__ ) . '/assets/js/nhf.js' );
+nhf_assert( 'mobile clone rebinds the range slider', false !== strpos( $js, 'delete box.dataset.nhfRangeReady' ) );
 
 nhf_assert( 'comma decimals parse as fractions', 1.05 === nhf_parse_numeric_value( '1,05 m' ) );
 nhf_assert( 'dot decimals still parse', 2.1 === nhf_parse_numeric_value( '2.1 m' ) );

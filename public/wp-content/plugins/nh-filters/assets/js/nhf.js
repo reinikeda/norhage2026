@@ -136,6 +136,11 @@ const nhfT = (key, fallback) =>
         if (!(e.target instanceof Element)) return;
         if (!e.target.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
 
+        qsa('.nhf-range__input', box).forEach((el) => {
+          el.style.zIndex = '2';
+        });
+        e.target.style.zIndex = '4';
+
         const fromEl = qs('[data-nhf-range-from]', box);
         const toEl = qs('[data-nhf-range-to]', box);
         const from = parseInt(fromEl.value, 10);
@@ -321,6 +326,10 @@ const nhfT = (key, fallback) =>
     );
 
     filtersFormClone = originalForm.cloneNode(true);
+
+    qsa('[data-nhf-range]', filtersFormClone).forEach((box) => {
+      delete box.dataset.nhfRangeReady;
+    });
 
     qsa('.nhf-applybar', filtersFormClone).forEach((el) => el.remove());
 
