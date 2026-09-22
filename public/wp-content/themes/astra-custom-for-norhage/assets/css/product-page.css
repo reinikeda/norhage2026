@@ -1157,7 +1157,8 @@
 }
 
 /* ==========================================================================
-   7) Image gallery note /
+   7) Image gallery — phone: swipe dots, one thumb row, short caption
+   Desktop gallery (flexslider, zoom, lightbox, sale badge) stays as it is.
    ========================================================================== */
 
 .single-product .woocommerce-product-gallery .nh-product-image-note{
@@ -1173,6 +1174,141 @@
   font-size: 13px;
   line-height: 1.5;
   color: #6f7b76;
+}
+
+.nh-gallery-dots,
+.nh-bc-short{
+  display: none;
+}
+
+@media (max-width: 921px){
+  .single-product div.product div.images .flex-control-nav.flex-control-thumbs{
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 0 0 2px;
+  }
+
+  .single-product div.product div.images .flex-control-nav.flex-control-thumbs::-webkit-scrollbar{
+    display: none;
+  }
+
+  .single-product div.product div.images .flex-control-thumbs li{
+    float: none;
+    flex: 0 0 56px;
+    width: 56px;
+    margin: 0;
+  }
+
+  .single-product div.product div.images .flex-control-thumbs li img{
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    opacity: 0.55;
+    float: none;
+  }
+
+  .single-product div.product div.images .flex-control-thumbs li img.flex-active{
+    opacity: 1;
+    box-shadow: inset 0 0 0 2px var(--nh-green, #00704A);
+  }
+
+  .single-product .nh-gallery-dots{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 6px 0 0;
+  }
+
+  .single-product .nh-gallery-dots__btn{
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .single-product .nh-gallery-dots__btn::before{
+    content: "";
+    display: block;
+    width: 7px;
+    height: 7px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: #c5d0cb;
+  }
+
+  .single-product .nh-gallery-dots__btn.is-active::before{
+    background: var(--nh-green, #00704A);
+  }
+
+  .single-product .nh-product-image-note,
+  .single-product .woocommerce-product-gallery .nh-product-image-note{
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #8a9691;
+  }
+
+  .single-product .summary .woocommerce-breadcrumb.nh-bc{
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
+    margin: 0 0 8px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .single-product .summary .nh-bc-item,
+  .single-product .summary .nh-bc-sep,
+  .single-product .summary .nh-bc-short{
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .single-product .summary .nh-bc-item.is-current{
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .single-product .summary .nh-bc[data-nh-truncate="1"] .nh-bc-item:not(.is-current):not(.is-collapsed){
+    max-width: 46%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .single-product .summary .nh-bc[data-nh-truncate="1"] .is-collapsed{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .single-product .summary .nh-bc[data-nh-truncate="1"] .nh-bc-short{
+    display: inline;
+  }
 }
 
 .single-product .woocommerce-product-gallery .nh-product-image-note p{
