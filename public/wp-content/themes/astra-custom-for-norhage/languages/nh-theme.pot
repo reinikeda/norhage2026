@@ -110,7 +110,7 @@ msgid "Ask an expert"
 msgstr ""
 
 #: functions.php:881
-msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
+msgid "Photo is a guide. Color and shape may vary."
 msgstr ""
 
 #: inc/basket-customize.php:75 inc/basket-customize.php:84

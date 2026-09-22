@@ -111,8 +111,8 @@ msgid "Ask an expert"
 msgstr "Spør en ekspert"
 
 #: functions.php:881
-msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
-msgstr "Produktbilder er kun til referanse. Faktisk produktfarge, form eller andre egenskaper kan avvike."
+msgid "Photo is a guide. Color and shape may vary."
+msgstr "Bildet er veiledende. Farge og form kan variere."
 
 #: inc/basket-customize.php:75 inc/basket-customize.php:84
 #: inc/order-attributes.php:96 inc/order-attributes.php:311

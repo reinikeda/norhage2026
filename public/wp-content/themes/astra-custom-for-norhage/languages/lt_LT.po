@@ -111,8 +111,8 @@ msgid "Ask an expert"
 msgstr "Klausti eksperto"
 
 #: functions.php:881
-msgid "Image is for illustrative purposes only. Actual product color, shape, or other features may vary."
-msgstr "Prekės nuotraukos yra tik informacinio pobūdžio. Faktinė prekės spalva, forma ar kitos savybės gali skirtis."
+msgid "Photo is a guide. Color and shape may vary."
+msgstr "Nuotrauka yra orientacinė. Spalva ir forma gali skirtis."
 
 #: inc/basket-customize.php:75 inc/basket-customize.php:84
 #: inc/order-attributes.php:96 inc/order-attributes.php:311

@@ -1045,7 +1045,7 @@ function nh_single_product_image_note() {
 	}
 
 	echo '<div class="nh-product-image-note" role="note" aria-label="Product image note">';
-	echo '<p>' . esc_html__( 'Image is for illustrative purposes only. Actual product color, shape, or other features may vary.', 'nh-theme' ) . '</p>';	echo '</div>';
+	echo '<p>' . esc_html__( 'Photo is a guide. Color and shape may vary.', 'nh-theme' ) . '</p>';	echo '</div>';
 }
 
 /**
