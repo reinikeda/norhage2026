@@ -61,8 +61,106 @@ const nhfT = (key, fallback) =>
   }
 
   function initializeFilterSections(root) {
+    initRangeFilters(root);
     qsa('.nhf-filter', root).forEach((section) => {
       syncFilterSectionState(section, { openIfActive: true });
+    });
+  }
+
+  function updateRangeFill(box, from, to, last) {
+    const fill = qs('[data-nhf-range-fill]', box);
+    if (!fill || last <= 0) return;
+
+    const left = (from / last) * 100;
+    fill.style.left = left + '%';
+    fill.style.width = ((to - from) / last) * 100 + '%';
+  }
+
+  function applyRange(box, submit) {
+    const fromEl = qs('[data-nhf-range-from]', box);
+    const toEl = qs('[data-nhf-range-to]', box);
+    const checks = qsa('input[data-nhf-range-index]', box);
+    if (!fromEl || !toEl || !checks.length) return;
+
+    let from = parseInt(fromEl.value, 10);
+    let to = parseInt(toEl.value, 10);
+    if (Number.isNaN(from) || Number.isNaN(to)) return;
+
+    if (from > to) {
+      const swap = from;
+      from = to;
+      to = swap;
+      fromEl.value = String(from);
+      toEl.value = String(to);
+    }
+
+    const last = checks.length - 1;
+    const fromLabel = checks[from]?.getAttribute('data-nhf-range-label') || '';
+    const toLabel = checks[to]?.getAttribute('data-nhf-range-label') || '';
+    const fromOut = qs('[data-nhf-range-from-label]', box);
+    const toOut = qs('[data-nhf-range-to-label]', box);
+
+    if (fromOut) fromOut.textContent = fromLabel;
+    if (toOut) toOut.textContent = toLabel;
+    fromEl.setAttribute('aria-valuetext', fromLabel);
+    toEl.setAttribute('aria-valuetext', toLabel);
+    updateRangeFill(box, from, to, last);
+
+    const full = from === 0 && to === last;
+    box.dataset.nhfSyncing = '1';
+    checks.forEach((cb) => {
+      const index = parseInt(cb.getAttribute('data-nhf-range-index'), 10);
+      cb.checked = !full && index >= from && index <= to;
+    });
+    delete box.dataset.nhfSyncing;
+
+    updateSectionFromInput(fromEl);
+
+    if (filtersDrawer && filtersDrawer.contains(box)) {
+      updateBadge();
+    }
+
+    if (submit && !mq.matches) {
+      box.closest('#nhf-sidebar .nhf-form')?.submit();
+    }
+  }
+
+  function initRangeFilters(root) {
+    qsa('[data-nhf-range]', root).forEach((box) => {
+      if (box.dataset.nhfRangeReady === '1') return;
+      box.dataset.nhfRangeReady = '1';
+
+      applyRange(box, false);
+
+      box.addEventListener('input', (e) => {
+        if (!(e.target instanceof Element)) return;
+        if (!e.target.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
+
+        qsa('.nhf-range__input', box).forEach((el) => {
+          el.style.zIndex = '2';
+        });
+        e.target.style.zIndex = '4';
+
+        const fromEl = qs('[data-nhf-range-from]', box);
+        const toEl = qs('[data-nhf-range-to]', box);
+        const from = parseInt(fromEl.value, 10);
+        const to = parseInt(toEl.value, 10);
+
+        if (e.target === fromEl && from > to) {
+          fromEl.value = String(to);
+        }
+        if (e.target === toEl && to < from) {
+          toEl.value = String(from);
+        }
+
+        applyRange(box, false);
+      });
+
+      box.addEventListener('change', (e) => {
+        if (!(e.target instanceof Element)) return;
+        if (!e.target.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
+        applyRange(box, true);
+      });
     });
   }
 
@@ -229,6 +327,10 @@ const nhfT = (key, fallback) =>
 
     filtersFormClone = originalForm.cloneNode(true);
 
+    qsa('[data-nhf-range]', filtersFormClone).forEach((box) => {
+      delete box.dataset.nhfRangeReady;
+    });
+
     qsa('.nhf-applybar', filtersFormClone).forEach((el) => el.remove());
 
     initializeFilterSections(filtersFormClone);
@@ -346,7 +448,11 @@ const nhfT = (key, fallback) =>
         updateBadge();
       }
 
-      if (!mq.matches && target.matches('#nhf-sidebar .nhf-form input[type="checkbox"]')) {
+      if (
+        !mq.matches &&
+        target.matches('#nhf-sidebar .nhf-form input[type="checkbox"]') &&
+        !target.closest('[data-nhf-range]')
+      ) {
         target.form?.submit();
       }
     });

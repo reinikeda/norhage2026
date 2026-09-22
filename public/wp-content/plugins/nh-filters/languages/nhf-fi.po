@@ -65,3 +65,30 @@ msgstr "Tyhjennä"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Käytä"
+
+msgid "Catalog filters"
+msgstr "Luettelosuodattimet"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Valitse, mitkä tuoteominaisuudet näkyvät suodattimissa. Ennen tämän sivun tallennusta luettelo näyttää edelleen kaikki ominaisuudet. Varasto ja ale pysyvät käytössä."
+
+msgid "Show in filters"
+msgstr "Näytä suodattimissa"
+
+msgid "Attribute"
+msgstr "Ominaisuus"
+
+msgid "Slug"
+msgstr "Tunnus"
+
+msgid "No product attributes found."
+msgstr "Tuoteominaisuuksia ei löytynyt."
+
+msgid "From %s"
+msgstr "Alkaen %s"
+
+msgid "To %s"
+msgstr "Asti %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Nimi (numeerinen) -järjestyksessä olevat ominaisuudet näkyvät välinä."

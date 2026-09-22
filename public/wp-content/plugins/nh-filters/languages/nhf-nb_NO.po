@@ -64,3 +64,30 @@ msgstr "Tilbakestill"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Bruk"
+
+msgid "Catalog filters"
+msgstr "Katalogfiltre"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Velg hvilke produktegenskaper som vises i filtermenyen. Til du lagrer denne siden, viser katalogen fortsatt alle egenskaper. På lager og tilbud blir værende."
+
+msgid "Show in filters"
+msgstr "Vis i filtre"
+
+msgid "Attribute"
+msgstr "Egenskap"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "No product attributes found."
+msgstr "Ingen produktegenskaper funnet."
+
+msgid "From %s"
+msgstr "Fra %s"
+
+msgid "To %s"
+msgstr "Til %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Egenskaper med rekkefølgen Navn (numerisk) vises som et fra–til-intervall."

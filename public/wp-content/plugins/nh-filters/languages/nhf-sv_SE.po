@@ -64,3 +64,30 @@ msgstr "Återställ"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Använd"
+
+msgid "Catalog filters"
+msgstr "Katalogfilter"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Välj vilka produktattribut som visas i filtermenyn. Tills du sparar den här sidan visar katalogen fortfarande alla attribut. Lager och rea finns kvar."
+
+msgid "Show in filters"
+msgstr "Visa i filter"
+
+msgid "Attribute"
+msgstr "Attribut"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "No product attributes found."
+msgstr "Inga produktattribut hittades."
+
+msgid "From %s"
+msgstr "Från %s"
+
+msgid "To %s"
+msgstr "Till %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Attribut med ordningen Namn (numerisk) visas som ett från–till-intervall."

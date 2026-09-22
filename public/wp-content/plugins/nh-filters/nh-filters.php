@@ -3,12 +3,17 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.7.2
+ * Version: 1.9.1
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+require_once __DIR__ . '/includes/attributes.php';
+if ( is_admin() ) {
+	require_once __DIR__ . '/includes/admin.php';
+}
 
 /**
  * Load plugin textdomain
@@ -33,7 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.7.2'
+		'1.9.1'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,7 +46,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.7.2',
+		'1.9.1',
 		true
 	);
 
@@ -396,6 +401,56 @@ function nhf_render_categories() {
 	echo '</ul>';
 }
 
+/**
+ * From–to range for Name (numeric) attributes.
+ *
+ * @param string                                              $label
+ * @param string                                              $param_key
+ * @param array<int, array{term:WP_Term,value:float}>         $rows
+ * @param string[]                                            $selected
+ */
+function nhf_render_range_filter( $label, $param_key, array $rows, array $selected ) {
+	$last = count( $rows ) - 1;
+	if ( $last < 1 ) {
+		return;
+	}
+
+	list( $from, $to, $active ) = nhf_range_selection( $rows, $selected );
+	$from_label = $rows[ $from ]['term']->name;
+	$to_label   = $rows[ $to ]['term']->name;
+	$open_class = $active ? ' is-open is-active-group' : '';
+
+	echo '<section class="nhf-filter nhf-filter--attribute nhf-filter--range' . esc_attr( $open_class ) . '">';
+	echo '  <button type="button" class="nhf-filter-toggle" aria-expanded="' . ( $active ? 'true' : 'false' ) . '">' . esc_html( $label ) . ' <span class="nhf-icon"></span></button>';
+	echo '  <div class="nhf-filter-body" aria-hidden="' . ( $active ? 'false' : 'true' ) . '">';
+	echo '    <div class="nhf-range" data-nhf-range>';
+	echo '      <div class="nhf-range__readout">';
+	echo '        <span class="nhf-range__value" data-nhf-range-from-label>' . esc_html( $from_label ) . '</span>';
+	echo '        <span class="nhf-range__sep" aria-hidden="true">–</span>';
+	echo '        <span class="nhf-range__value" data-nhf-range-to-label>' . esc_html( $to_label ) . '</span>';
+	echo '      </div>';
+	echo '      <div class="nhf-range__control">';
+	echo '        <div class="nhf-range__rail" aria-hidden="true"><span class="nhf-range__fill" data-nhf-range-fill></span></div>';
+	echo '        <input type="range" class="nhf-range__input nhf-range__input--from" min="0" max="' . esc_attr( (string) $last ) . '" step="1" value="' . esc_attr( (string) $from ) . '" data-nhf-range-from aria-label="' . esc_attr( sprintf( __( 'From %s', 'nhf' ), $label ) ) . '">';
+	echo '        <input type="range" class="nhf-range__input nhf-range__input--to" min="0" max="' . esc_attr( (string) $last ) . '" step="1" value="' . esc_attr( (string) $to ) . '" data-nhf-range-to aria-label="' . esc_attr( sprintf( __( 'To %s', 'nhf' ), $label ) ) . '">';
+	echo '      </div>';
+	echo '      <div class="nhf-range__terms">';
+
+	foreach ( $rows as $index => $row ) {
+		$term    = $row['term'];
+		$checked = ( $active && $index >= $from && $index <= $to ) ? ' checked' : '';
+		echo '<label>';
+		echo '<input type="checkbox" name="' . esc_attr( $param_key ) . '[]" value="' . esc_attr( $term->slug ) . '" data-nhf-range-index="' . esc_attr( (string) $index ) . '" data-nhf-range-label="' . esc_attr( $term->name ) . '"' . $checked . '>';
+		echo esc_html( $term->name );
+		echo '</label>';
+	}
+
+	echo '      </div>';
+	echo '    </div>';
+	echo '  </div>';
+	echo '</section>';
+}
+
 /* ------------------------------------------------------------
  *  Shortcode: [nh_filters_sidebar]
  * ------------------------------------------------------------ */
@@ -440,6 +495,13 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			if ( ! taxonomy_exists( $tax ) ) continue;
 
 			$selected = nhf_get_selected_attr_slugs( $tax );
+
+			if ( ! nhf_attribute_is_visible( $attr->attribute_name ) ) {
+				if ( ! empty( $selected ) ) {
+					echo '<input type="hidden" name="' . esc_attr( $param_key ) . '" value="' . esc_attr( implode( ',', $selected ) ) . '">';
+				}
+				continue;
+			}
 			$label    = wc_attribute_label( $tax );
 
 			$term_args = [
@@ -465,6 +527,12 @@ add_shortcode( 'nh_filters_sidebar', function() {
 				if ( ! empty( $selected ) ) {
 					echo '<input type="hidden" name="' . esc_attr( $param_key ) . '" value="' . esc_attr( implode( ',', $selected ) ) . '">';
 				}
+				continue;
+			}
+
+			$numeric = nhf_attribute_uses_range( $attr ) ? nhf_numeric_terms( $terms ) : array();
+			if ( ! empty( $numeric ) ) {
+				nhf_render_range_filter( $label, $param_key, $numeric, $selected );
 				continue;
 			}
 

@@ -66,3 +66,30 @@ msgstr "Išvalyti"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Taikyti"
+
+msgid "Catalog filters"
+msgstr "Katalogo filtrai"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Pasirinkite, kurie produkto atributai rodomi katalogo šoninėje juostoje. Kol neišsaugosite šio puslapio, kataloge vis dar rodomi visi atributai. Likutis ir išpardavimas lieka."
+
+msgid "Show in filters"
+msgstr "Rodyti filtruose"
+
+msgid "Attribute"
+msgstr "Atributas"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "No product attributes found."
+msgstr "Produktų atributų nerasta."
+
+msgid "From %s"
+msgstr "Nuo %s"
+
+msgid "To %s"
+msgstr "Iki %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Atributai su rikiavimu Pavadinimas (skaitinis) rodomi kaip intervalas."
