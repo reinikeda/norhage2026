@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Cutting Type Toggle
  * Description: Adds the "Standard / Cut to custom size" toggle between linked products.
- * Version: 1.6
+ * Version: 1.7
  * Author: Daiva Reinike
  * Text Domain: nh-cutting-toggle
  * Domain Path: /languages
@@ -165,15 +165,16 @@ function nhctt_render_toggle() : void {
 	$printed = true;
 }
 
-/** Place immediately after the features box when available */
-add_action( 'nh_after_feature_box', function () {
+/**
+ * Above the variation buttons and the custom-size fields.
+ *
+ * Do not hook nh_after_feature_box. The feature chips render below
+ * the add-to-cart button, and this toggle must stay with the options.
+ * nhctt_render_toggle() prints once, including the #cutting-type anchor.
+ */
+add_action( 'woocommerce_before_add_to_cart_form', function () {
 	nhctt_render_toggle();
-}, 10 );
-
-/** Fallback: inside the summary, between excerpt (20) and add-to-cart (30) */
-add_action( 'woocommerce_single_product_summary', function () {
-	nhctt_render_toggle();
-}, 26 );
+}, 5 );
 
 /** ------------------------------------------------------------------------
  *  Styles
@@ -185,7 +186,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		'nh-cutting-toggle',
 		plugin_dir_url( __FILE__ ) . 'css/cutting-toggle.css',
 		[],
-		'1.6'
+		'1.7'
 	);
 } );
 

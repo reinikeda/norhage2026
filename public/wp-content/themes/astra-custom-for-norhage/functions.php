@@ -922,9 +922,9 @@ function nh_get_help_form_id_by_host() : int {
 }
 
 /**
- * 1) CTA under Add to basket (inside cart form) — OK
+ * Ask an expert sits under the feature chips and above the bundle box.
+ * Sample strip is 5, features are 8, this block is 12, bundle is 20.
  */
-
 add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
@@ -965,7 +965,20 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 	</div>
 	<?php
 
-}, 20 );
+}, 12 );
+
+/**
+ * Short description below the bundle, so it does not sit above the
+ * cutting toggle and the add-to-cart button.
+ */
+add_action( 'wp', function () {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+	add_action( 'woocommerce_after_add_to_cart_form', 'woocommerce_template_single_excerpt', 25 );
+} );
 
 /**
  * Fix /page/1/ pagination URLs for archives and WooCommerce
