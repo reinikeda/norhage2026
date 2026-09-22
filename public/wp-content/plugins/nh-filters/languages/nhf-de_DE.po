@@ -82,3 +82,12 @@ msgstr "Slug"
 
 msgid "No product attributes found."
 msgstr "Keine Produktattribute gefunden."
+
+msgid "From %s"
+msgstr "Von %s"
+
+msgid "To %s"
+msgstr "Bis %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Attribute mit der Reihenfolge Name (numerisch) werden als Von–Bis-Bereich angezeigt."

@@ -82,3 +82,12 @@ msgstr "Slug"
 
 msgid "No product attributes found."
 msgstr "Inga produktattribut hittades."
+
+msgid "From %s"
+msgstr "Från %s"
+
+msgid "To %s"
+msgstr "Till %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Attribut med ordningen Namn (numerisk) visas som ett från–till-intervall."

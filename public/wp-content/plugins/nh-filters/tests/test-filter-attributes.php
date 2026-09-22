@@ -35,6 +35,12 @@ if ( ! function_exists( 'wc_get_attribute_taxonomies' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	function wp_strip_all_tags( $text ) {
+		return strip_tags( (string) $text );
+	}
+}
+
 require_once dirname( __DIR__ ) . '/includes/attributes.php';
 
 $failures = 0;
@@ -90,6 +96,38 @@ nhf_assert( 'an empty saved list hides width', ! nhf_attribute_is_visible( 'bred
 $plugin = file_get_contents( dirname( __DIR__ ) . '/nh-filters.php' );
 nhf_assert( 'sidebar skips attributes that are not ticked', false !== strpos( $plugin, 'nhf_attribute_is_visible' ) );
 nhf_assert( 'admin screen is loaded in wp-admin', false !== strpos( $plugin, '/includes/admin.php' ) );
+nhf_assert( 'sidebar renders a range for numeric attributes', false !== strpos( $plugin, 'nhf_render_range_filter' ) );
+
+nhf_assert( 'comma decimals parse as fractions', 1.05 === nhf_parse_numeric_value( '1,05 m' ) );
+nhf_assert( 'dot decimals still parse', 2.1 === nhf_parse_numeric_value( '2.1 m' ) );
+nhf_assert( 'whole millimetres parse', 10.0 === nhf_parse_numeric_value( '10 mm' ) );
+nhf_assert( 'plain text has no number', null === nhf_parse_numeric_value( 'Klar' ) );
+
+$width = (object) array( 'attribute_orderby' => 'name_num' );
+$color = (object) array( 'attribute_orderby' => 'name' );
+nhf_assert( 'Name (numeric) uses a range', nhf_attribute_uses_range( $width ) );
+nhf_assert( 'Name order stays as checkboxes', ! nhf_attribute_uses_range( $color ) );
+
+$term_a = (object) array( 'name' => '2,1 m', 'slug' => '2-1-m' );
+$term_b = (object) array( 'name' => '0,9 m', 'slug' => '0-9-m' );
+$term_c = (object) array( 'name' => '1,05 m', 'slug' => '1-05-m' );
+$sorted = nhf_numeric_terms( array( $term_a, $term_b, $term_c ) );
+nhf_assert( 'numeric terms sort from smallest', '0-9-m' === $sorted[0]['term']->slug );
+nhf_assert( 'numeric terms sort the middle value', '1-05-m' === $sorted[1]['term']->slug );
+nhf_assert( 'numeric terms sort the largest last', '2-1-m' === $sorted[2]['term']->slug );
+
+$full = nhf_range_selection( $sorted, array() );
+nhf_assert( 'an empty selection covers the full span', array( 0, 2, false ) === $full );
+$part = nhf_range_selection( $sorted, array( '1-05-m', '2-1-m' ) );
+nhf_assert( 'a partial selection starts at the first hit', 1 === $part[0] && 2 === $part[1] && true === $part[2] );
+
+$mixed = nhf_numeric_terms(
+	array(
+		$term_a,
+		(object) array( 'name' => 'Klar', 'slug' => 'klar' ),
+	)
+);
+nhf_assert( 'a mixed list falls back to checkboxes', array() === $mixed );
 
 if ( $failures > 0 ) {
 	echo "{$failures} failed\n";

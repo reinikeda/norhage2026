@@ -83,3 +83,12 @@ msgstr "Tunnus"
 
 msgid "No product attributes found."
 msgstr "Tuoteominaisuuksia ei löytynyt."
+
+msgid "From %s"
+msgstr "Alkaen %s"
+
+msgid "To %s"
+msgstr "Asti %s"
+
+msgid "Attributes ordered as Name (numeric) use a from–to range."
+msgstr "Nimi (numeerinen) -järjestyksessä olevat ominaisuudet näkyvät välinä."

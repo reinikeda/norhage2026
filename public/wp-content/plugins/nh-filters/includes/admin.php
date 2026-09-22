@@ -44,6 +44,7 @@ function nhf_render_admin_page() {
 		<h1><?php echo esc_html__( 'Catalog filters', 'nhf' ); ?></h1>
 		<p>
 			<?php echo esc_html__( 'Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available.', 'nhf' ); ?>
+			<?php echo ' ' . esc_html__( 'Attributes ordered as Name (numeric) use a from–to range.', 'nhf' ); ?>
 		</p>
 
 		<form method="post" action="options.php">

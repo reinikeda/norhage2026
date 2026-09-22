@@ -134,3 +134,112 @@ function nhf_sanitize_filter_attributes( $input ) {
 		'slugs' => $slugs,
 	);
 }
+
+/**
+ * First number in a term label. Comma and dot both count as decimals.
+ *
+ * @param string $text Term name.
+ * @return float|null
+ */
+function nhf_parse_numeric_value( $text ) {
+	$text = trim( wp_strip_all_tags( (string) $text ) );
+	if ( '' === $text ) {
+		return null;
+	}
+
+	if ( ! preg_match( '/[-+]?\d+(?:[.,]\d+)?/', $text, $match ) ) {
+		return null;
+	}
+
+	$raw = str_replace( ',', '.', $match[0] );
+	if ( ! is_numeric( $raw ) ) {
+		return null;
+	}
+
+	return (float) $raw;
+}
+
+/**
+ * Whether this attribute uses a from–to range in the catalog.
+ *
+ * @param object $attr Attribute taxonomy row from WooCommerce.
+ */
+function nhf_attribute_uses_range( $attr ) : bool {
+	return is_object( $attr )
+		&& isset( $attr->attribute_orderby )
+		&& 'name_num' === $attr->attribute_orderby;
+}
+
+/**
+ * Sort terms by numeric value. Empty when any name cannot be parsed.
+ *
+ * @param WP_Term[] $terms Attribute terms.
+ * @return array<int, array{term:WP_Term,value:float}>
+ */
+function nhf_numeric_terms( $terms ) {
+	if ( ! is_array( $terms ) || count( $terms ) < 2 ) {
+		return array();
+	}
+
+	$rows = array();
+	foreach ( $terms as $term ) {
+		if ( ! is_object( $term ) || ! isset( $term->name, $term->slug ) ) {
+			return array();
+		}
+		$value = nhf_parse_numeric_value( $term->name );
+		if ( null === $value ) {
+			return array();
+		}
+		$rows[] = array(
+			'term'  => $term,
+			'value' => $value,
+		);
+	}
+
+	usort(
+		$rows,
+		static function ( $a, $b ) {
+			if ( $a['value'] === $b['value'] ) {
+				return strnatcasecmp( (string) $a['term']->name, (string) $b['term']->name );
+			}
+			return $a['value'] <=> $b['value'];
+		}
+	);
+
+	return $rows;
+}
+
+/**
+ * Indexes covered by the current selection. Full span when nothing is selected.
+ *
+ * @param array<int, array{term:WP_Term,value:float}> $rows
+ * @param string[]                                    $selected Slugs.
+ * @return array{0:int,1:int,2:bool} From index, to index, whether the range is active.
+ */
+function nhf_range_selection( array $rows, array $selected ) : array {
+	$last = count( $rows ) - 1;
+	if ( $last < 1 ) {
+		return array( 0, 0, false );
+	}
+
+	if ( empty( $selected ) ) {
+		return array( 0, $last, false );
+	}
+
+	$hits = array();
+	foreach ( $rows as $index => $row ) {
+		if ( in_array( $row['term']->slug, $selected, true ) ) {
+			$hits[] = $index;
+		}
+	}
+
+	if ( empty( $hits ) ) {
+		return array( 0, $last, false );
+	}
+
+	$from   = min( $hits );
+	$to     = max( $hits );
+	$active = ( 0 !== $from || $to !== $last || count( $hits ) !== count( $rows ) );
+
+	return array( $from, $to, $active );
+}
