@@ -2270,8 +2270,8 @@ h2.nh-in-title::after,
   padding: 10px 0;
   background: linear-gradient(
     180deg,
-    var(--nh-offwhite, #faf7f2) 70%,
-    rgba(250, 247, 242, 0)
+    #ffffff 72%,
+    rgba(255, 255, 255, 0)
   );
 }
 
