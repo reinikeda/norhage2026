@@ -94,6 +94,30 @@ nh_pcs_assert(
 	false !== strpos( $functions, "/inc/product-content-sections.php'" )
 );
 
+$sample = '<p>Intro copy about the greenhouse.</p>'
+	. '<div class="nh-important-notes"><div class="nh-in-txt"><strong>UV</strong> Merk UV-siden.</div></div>'
+	. '<section id="nh-mb-extra-1" class="nh-mb-product-extra"><h2>Bruksområder og kompatibilitet</h2><div class="nh-mb-columns"><div class="nh-mb-column">Ideell</div></div></section>';
+
+$split = nh_pcs_split_description_highlights( $sample );
+nh_pcs_assert( 'sales copy stays in the description body', false !== strpos( $split['body'], 'Intro copy' ) );
+nh_pcs_assert( 'important notes leave the clamped body', false === strpos( $split['body'], 'nh-important-notes' ) );
+nh_pcs_assert( 'use cases leave the clamped body', false === strpos( $split['body'], 'nh-mb-product-extra' ) );
+nh_pcs_assert( 'important notes stay in highlights', false !== strpos( $split['highlights'], 'Merk UV-siden' ) );
+nh_pcs_assert( 'use cases stay in highlights', false !== strpos( $split['highlights'], 'Bruksområder og kompatibilitet' ) );
+nh_pcs_assert(
+	'important notes stay before use cases',
+	strpos( $split['highlights'], 'nh-important-notes' ) < strpos( $split['highlights'], 'nh-mb-product-extra' )
+);
+
+$plain = '<p>Only the story.</p>';
+$plain_split = nh_pcs_split_description_highlights( $plain );
+nh_pcs_assert( 'description without those blocks is unchanged', $plain === $plain_split['body'] && '' === $plain_split['highlights'] );
+
+nh_pcs_assert(
+	'template prints highlights outside the clamp',
+	false !== strpos( $template, 'nh-pcs-highlights' )
+);
+
 if ( $failures > 0 ) {
 	echo "{$failures} failed\n";
 	exit( 1 );

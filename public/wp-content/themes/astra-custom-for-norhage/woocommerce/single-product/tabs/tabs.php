@@ -62,6 +62,12 @@ $section_count = count( $product_tabs );
 				call_user_func( $product_tab['callback'], $key, $product_tab );
 			}
 			$panel_html = ob_get_clean();
+			$highlights = '';
+			if ( $uses_clamp ) {
+				$split      = nh_pcs_split_description_highlights( $panel_html );
+				$panel_html = $split['body'];
+				$highlights = $split['highlights'];
+			}
 			?>
 
 			<?php if ( $is_static ) : ?>
@@ -92,6 +98,11 @@ $section_count = count( $product_tabs );
 								<?php echo esc_html__( 'Read more', 'nh-theme' ); ?>
 							</button>
 						</div>
+						<?php if ( '' !== $highlights ) : ?>
+							<div class="nh-pcs-highlights">
+								<?php echo $highlights; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- same tab HTML, moved out of the clamp. ?>
+							</div>
+						<?php endif; ?>
 					</div>
 				</section>
 			<?php else : ?>

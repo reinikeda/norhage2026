@@ -49,6 +49,138 @@ function nh_pcs_section_uses_clamp( $key ) : bool {
 }
 
 /**
+ * Byte length of a balanced element starting at an opening tag.
+ *
+ * @param string $html   Full HTML.
+ * @param int    $offset Offset of the opening "<".
+ * @return array{0:int,1:int}|null Start and end offsets, end exclusive.
+ */
+function nh_pcs_balanced_element_range( $html, $offset ) {
+	$slice = substr( $html, $offset );
+	if ( ! preg_match( '/\A<([a-z0-9]+)\b[^>]*>/i', $slice, $open ) ) {
+		return null;
+	}
+
+	$tag   = strtolower( $open[1] );
+	$depth = 1;
+	$i     = $offset + strlen( $open[0] );
+	$len   = strlen( $html );
+
+	while ( $i < $len && $depth > 0 ) {
+		$next_open  = stripos( $html, '<' . $tag, $i );
+		$next_close = stripos( $html, '</' . $tag, $i );
+
+		if ( false === $next_close ) {
+			return null;
+		}
+
+		$open_is_tag = false;
+		if ( false !== $next_open && $next_open < $next_close ) {
+			$after = substr( $html, $next_open + strlen( $tag ) + 1, 1 );
+			$open_is_tag = ( '' === $after || '>' === $after || '/' === $after || ctype_space( $after ) );
+		}
+
+		if ( $open_is_tag ) {
+			$depth++;
+			$i = $next_open + strlen( $tag ) + 1;
+			continue;
+		}
+
+		$gt = strpos( $html, '>', $next_close );
+		if ( false === $gt ) {
+			return null;
+		}
+
+		$depth--;
+		$i = $gt + 1;
+	}
+
+	if ( $depth !== 0 ) {
+		return null;
+	}
+
+	return array( $offset, $i );
+}
+
+/**
+ * Pull important notes and the use-cases block out of the description HTML.
+ *
+ * The sales copy stays in "body" so Read more can clamp it. The two blocks
+ * stay in "highlights", in their original order, so they remain visible.
+ *
+ * @param string $html Description panel HTML.
+ * @return array{body:string,highlights:string}
+ */
+function nh_pcs_split_description_highlights( $html ) : array {
+	$html = (string) $html;
+	$empty = array(
+		'body'       => $html,
+		'highlights' => '',
+	);
+
+	if ( '' === $html ) {
+		return $empty;
+	}
+
+	if ( false === strpos( $html, 'nh-important-notes' ) && false === strpos( $html, 'nh-mb-product-extra' ) ) {
+		return $empty;
+	}
+
+	$pattern = '/<(div|section)\b[^>]*class=(["\'])[^"\']*\b(?:nh-important-notes|nh-mb-product-extra)\b[^"\']*\2[^>]*>/i';
+	if ( ! preg_match_all( $pattern, $html, $matches, PREG_OFFSET_CAPTURE ) ) {
+		return $empty;
+	}
+
+	$ranges = array();
+	foreach ( $matches[0] as $match ) {
+		$start = (int) $match[1];
+		$range = nh_pcs_balanced_element_range( $html, $start );
+		if ( null === $range ) {
+			continue;
+		}
+
+		$inside = false;
+		foreach ( $ranges as $existing ) {
+			if ( $start > $existing[0] && $start < $existing[1] ) {
+				$inside = true;
+				break;
+			}
+		}
+		if ( $inside ) {
+			continue;
+		}
+
+		$ranges[] = $range;
+	}
+
+	if ( empty( $ranges ) ) {
+		return $empty;
+	}
+
+	usort(
+		$ranges,
+		static function ( $a, $b ) {
+			return $a[0] <=> $b[0];
+		}
+	);
+
+	$highlights = '';
+	foreach ( $ranges as $range ) {
+		$highlights .= substr( $html, $range[0], $range[1] - $range[0] );
+	}
+
+	$body = $html;
+	foreach ( array_reverse( $ranges ) as $range ) {
+		$body = substr( $body, 0, $range[0] ) . substr( $body, $range[1] );
+	}
+
+	return array(
+		'body'       => $body,
+		'highlights' => $highlights,
+	);
+}
+
+/**
  * Sorted product tabs for the current product.
  *
  * @return array<string, array>

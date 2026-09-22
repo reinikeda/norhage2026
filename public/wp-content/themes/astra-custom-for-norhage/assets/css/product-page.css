@@ -2487,6 +2487,15 @@ h2.nh-in-title::after,
   display: none !important;
 }
 
+.nh-pcs-highlights {
+  margin-top: 8px;
+}
+
+.nh-pcs-highlights .nh-important-notes,
+.nh-pcs-highlights .nh-mb-product-extra {
+  margin-top: 16px;
+}
+
 /* Keep Astra vertical-tab layout from splitting the stack */
 .single-product.nh-product-sections.ast-product-tabs-layout-vertical .woocommerce-tabs .panel,
 .single-product.nh-product-sections .woocommerce-tabs .panel {
