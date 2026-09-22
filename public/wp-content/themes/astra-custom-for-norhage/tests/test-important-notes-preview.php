@@ -88,6 +88,12 @@ nh_notes_assert( 'every note stays in the html', substr_count( $long, 'class="nh
 $visible = strstr( $long, '<details', true );
 nh_notes_assert( 'only three notes sit above the expander', substr_count( $visible, 'class="nh-in-item"' ) === 3 );
 
+$css = file_get_contents( dirname( __DIR__ ) . '/assets/css/product-page.css' );
+nh_notes_assert(
+	'open notes move the collapse control below the list',
+	false !== strpos( $css, '.nh-in-more[open] > .nh-in-more__summary' ) && false !== strpos( $css, 'order: 2' )
+);
+
 if ( $failures > 0 ) {
 	echo "{$failures} failed\n";
 	exit( 1 );
