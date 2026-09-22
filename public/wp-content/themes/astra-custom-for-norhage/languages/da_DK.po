@@ -2212,3 +2212,9 @@ msgstr " / m²"
 
 #~ msgid "Plus Quantity"
 #~ msgstr "Læg antal til"
+
+msgid "Product information"
+msgstr "Produktinformation"
+
+msgid "Show %d more"
+msgstr "Vis %d mere"

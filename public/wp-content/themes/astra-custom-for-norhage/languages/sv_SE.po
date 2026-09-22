@@ -2206,3 +2206,9 @@ msgstr " / m²"
 
 #~ msgid "Max per bundle: %d"
 #~ msgstr "Max antal per paket: %d"
+
+msgid "Product information"
+msgstr "Produktinformation"
+
+msgid "Show %d more"
+msgstr "Visa %d till"
