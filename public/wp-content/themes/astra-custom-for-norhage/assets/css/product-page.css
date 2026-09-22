@@ -1280,13 +1280,22 @@
   }
 
   .single-product .summary .nh-bc-item.is-current{
+    flex: 1 1 auto;
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .single-product .summary .nh-bc[data-nh-truncate="1"] .nh-bc-item:not(.is-current):not(.is-collapsed){
+    max-width: 46%;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .single-product .summary .nh-bc[data-nh-truncate="1"] .is-collapsed{
     position: absolute;
+    left: 0;
+    top: 0;
     width: 1px;
     height: 1px;
     padding: 0;
