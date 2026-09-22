@@ -2459,7 +2459,7 @@ h2.nh-in-title::after,
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0),
-    var(--nh-offwhite, #faf7f2) 90%
+    #ffffff 90%
   );
 }
 
