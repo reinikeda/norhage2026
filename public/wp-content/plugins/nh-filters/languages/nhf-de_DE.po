@@ -64,3 +64,21 @@ msgstr "Zurücksetzen"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Anwenden"
+
+msgid "Catalog filters"
+msgstr "Katalogfilter"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Wählen Sie, welche Produktattribute in der Filterleiste erscheinen. Bis Sie diese Seite speichern, zeigt der Katalog weiterhin alle Attribute. Lager und Sale bleiben verfügbar."
+
+msgid "Show in filters"
+msgstr "In Filtern anzeigen"
+
+msgid "Attribute"
+msgstr "Attribut"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "No product attributes found."
+msgstr "Keine Produktattribute gefunden."

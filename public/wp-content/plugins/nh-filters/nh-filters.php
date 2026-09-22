@@ -3,12 +3,17 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.7.2
+ * Version: 1.8.0
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+require_once __DIR__ . '/includes/attributes.php';
+if ( is_admin() ) {
+	require_once __DIR__ . '/includes/admin.php';
+}
 
 /**
  * Load plugin textdomain
@@ -33,7 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.7.2'
+		'1.8.0'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -41,7 +46,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.7.2',
+		'1.8.0',
 		true
 	);
 
@@ -440,6 +445,13 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			if ( ! taxonomy_exists( $tax ) ) continue;
 
 			$selected = nhf_get_selected_attr_slugs( $tax );
+
+			if ( ! nhf_attribute_is_visible( $attr->attribute_name ) ) {
+				if ( ! empty( $selected ) ) {
+					echo '<input type="hidden" name="' . esc_attr( $param_key ) . '" value="' . esc_attr( implode( ',', $selected ) ) . '">';
+				}
+				continue;
+			}
 			$label    = wc_attribute_label( $tax );
 
 			$term_args = [

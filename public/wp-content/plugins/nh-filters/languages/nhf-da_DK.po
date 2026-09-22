@@ -64,3 +64,21 @@ msgstr "Nulstil"
 #: assets/js/nhf.js
 msgid "Apply"
 msgstr "Anvend"
+
+msgid "Catalog filters"
+msgstr "Katalogfiltre"
+
+msgid "Choose which product attributes appear in the catalog sidebar. Until you save this page, the catalog still shows every attribute. Stock and sale stay available."
+msgstr "Vælg hvilke produktattributter der vises i filterpanelet. Indtil du gemmer denne side, viser kataloget stadig alle attributter. Lager og tilbud forbliver."
+
+msgid "Show in filters"
+msgstr "Vis i filtre"
+
+msgid "Attribute"
+msgstr "Attribut"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "No product attributes found."
+msgstr "Ingen produktattributter fundet."
