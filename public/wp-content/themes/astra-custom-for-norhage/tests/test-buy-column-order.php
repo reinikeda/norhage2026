@@ -80,6 +80,20 @@ nh_order_assert(
 	'short description moves below the bundle',
 	strpos( $functions, "add_action( 'woocommerce_after_add_to_cart_form', 'woocommerce_template_single_excerpt', 25 )" ) !== false
 );
+nh_order_assert(
+	'Astra structure no longer prints a second short description',
+	strpos( $functions, "add_filter( 'astra_woo_single_product_structure', 'nh_strip_short_desc_from_astra_structure' )" ) !== false
+);
+
+require_once dirname( __DIR__ ) . '/inc/product-summary-order.php';
+nh_order_assert(
+	'Astra short_desc key is removed',
+	nh_strip_short_desc_from_astra_structure( array( 'title', 'price', 'short_desc', 'add_cart' ) ) === array( 'title', 'price', 'add_cart' )
+);
+nh_order_assert(
+	'non-array Astra structure is left alone',
+	nh_strip_short_desc_from_astra_structure( 'short_desc' ) === 'short_desc'
+);
 
 $bundle = file_get_contents( dirname( __DIR__ ) . '/inc/bundle-box.php' );
 nh_order_assert(

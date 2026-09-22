@@ -422,6 +422,7 @@ require_once get_stylesheet_directory() . '/inc/feature-box.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-admin.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
 require_once get_stylesheet_directory() . '/inc/product-breadcrumb.php';
+require_once get_stylesheet_directory() . '/inc/product-summary-order.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
@@ -968,9 +969,14 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 }, 12 );
 
 /**
- * Short description below the bundle, so it does not sit above the
- * cutting toggle and the add-to-cart button.
+ * One short description, below the bundle.
+ *
+ * Astra ignores WooCommerce's excerpt hook and prints short_desc from
+ * its product structure, under the price. Delivery is then moved under
+ * that price, so the Astra copy sits under the delivery line. Strip
+ * that copy and print the description once after the bundle.
  */
+add_filter( 'astra_woo_single_product_structure', 'nh_strip_short_desc_from_astra_structure' );
 add_action( 'wp', function () {
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 		return;
