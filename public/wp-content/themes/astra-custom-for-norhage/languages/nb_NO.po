@@ -2215,3 +2215,6 @@ msgstr " / m²"
 
 msgid "Product information"
 msgstr "Produktinformasjon"
+
+msgid "Show %d more"
+msgstr "Vis %d til"

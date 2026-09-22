@@ -137,7 +137,21 @@
     });
   }
 
+  function initNoteMore() {
+    document.querySelectorAll('.nh-in-more').forEach(function (box) {
+      var label = box.querySelector('.nh-in-more__label');
+      if (!label) return;
+      var more = label.getAttribute('data-more') || label.textContent;
+      var less = label.getAttribute('data-less') || 'Show less';
+      var sync = function () {
+        label.textContent = box.open ? less : more;
+      };
+      box.addEventListener('toggle', sync);
+    });
+  }
+
   ready(function () {
+    initNoteMore();
     var root = document.querySelector('[data-nh-pcs]');
     if (!root) return;
     initClamp(root);

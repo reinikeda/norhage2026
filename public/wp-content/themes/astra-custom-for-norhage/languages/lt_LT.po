@@ -2270,3 +2270,6 @@ msgstr " / m²"
 
 msgid "Product information"
 msgstr "Produkto informacija"
+
+msgid "Show %d more"
+msgstr "Rodyti dar %d"

@@ -109,6 +109,39 @@ function nh_get_important_note( $key ) {
 }
 
 /**
+ * How many important notes stay visible before "Show more".
+ *
+ * @return int
+ */
+function nh_important_notes_preview_count() {
+    return 3;
+}
+
+/**
+ * One important-note row.
+ *
+ * @param array $note Note with title, text, and icon.
+ * @return string
+ */
+function nh_important_note_item_html( $note ) {
+    ob_start();
+    ?>
+    <li class="nh-in-item">
+        <div class="nh-in-ico-wrap">
+            <span class="nh-in-ico">
+                <?php echo $note['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme SVG. ?>
+            </span>
+        </div>
+        <div class="nh-in-txt">
+            <strong><?php echo esc_html( $note['title'] ); ?></strong>
+            <span><?php echo esc_html( $note['text'] ); ?></span>
+        </div>
+    </li>
+    <?php
+    return ob_get_clean();
+}
+
+/**
  * Build the HTML output for a product's important notes.
  *
  * @param int $product_id Product ID.
@@ -133,7 +166,27 @@ function nh_get_important_notes_html( $product_id = 0 ) {
     }
 
     $notes = nh_get_important_notes();
-    $found = false;
+    $items = array();
+
+    foreach ( $keys as $key ) {
+        if ( isset( $notes[ $key ] ) ) {
+            $items[] = $notes[ $key ];
+        }
+    }
+
+    if ( empty( $items ) ) {
+        return '';
+    }
+
+    $preview = nh_important_notes_preview_count();
+    $visible = array_slice( $items, 0, $preview );
+    $extra   = array_slice( $items, $preview );
+    $more    = sprintf(
+        /* translators: %d: number of hidden notes */
+        __( 'Show %d more', 'nh-theme' ),
+        count( $extra )
+    );
+    $less = __( 'Show less', 'nh-theme' );
 
     ob_start();
     ?>
@@ -149,30 +202,23 @@ function nh_get_important_notes_html( $product_id = 0 ) {
             <h2 class="nh-in-title"><?php echo esc_html__( 'Important information', 'nh-theme' ); ?></h2>
         </div>
         <ul class="nh-in-list">
-            <?php foreach ( $keys as $key ) : ?>
-                <?php
-                if ( ! isset( $notes[ $key ] ) ) {
-                    continue;
-                }
-                $found = true;
-                $note = $notes[ $key ];
-                ?>
-                <li class="nh-in-item">
-                    <div class="nh-in-ico-wrap">
-                        <span class="nh-in-ico">
-                            <?php echo $notes[ $key ]['icon']; ?>
-                        </span>
-                    </div>
-                    <div class="nh-in-txt">
-                        <strong><?php echo esc_html( $note['title'] ); ?></strong> 
-                        <?php echo esc_html( $note['text'] ); ?>
-                    </div>
-                </li>
+            <?php foreach ( $visible as $note ) : ?>
+                <?php echo nh_important_note_item_html( $note ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endforeach; ?>
         </ul>
+        <?php if ( ! empty( $extra ) ) : ?>
+            <details class="nh-in-more">
+                <summary class="nh-in-more__summary">
+                    <span class="nh-in-more__label" data-more="<?php echo esc_attr( $more ); ?>" data-less="<?php echo esc_attr( $less ); ?>"><?php echo esc_html( $more ); ?></span>
+                </summary>
+                <ul class="nh-in-list nh-in-list--more">
+                    <?php foreach ( $extra as $note ) : ?>
+                        <?php echo nh_important_note_item_html( $note ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <?php endforeach; ?>
+                </ul>
+            </details>
+        <?php endif; ?>
     </div>
     <?php
-    $html = ob_get_clean();
-
-    return $found ? $html : '';
+    return ob_get_clean();
 }
