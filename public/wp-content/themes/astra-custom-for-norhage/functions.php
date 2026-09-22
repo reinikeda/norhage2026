@@ -405,6 +405,7 @@ require_once get_stylesheet_directory() . '/inc/attachment-alt.php';
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
+require_once get_stylesheet_directory() . '/inc/product-brand.php';
 require_once get_stylesheet_directory() . '/inc/sticky-atc.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
