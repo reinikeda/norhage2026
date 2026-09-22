@@ -170,9 +170,18 @@ function norhage_enqueue_assets() {
 		wp_enqueue_script(
 			'nh-product-gallery-note',
 			get_stylesheet_directory_uri() . '/assets/js/product-gallery-note.js',
-			array(),
+			array( 'jquery', 'wc-single-product' ),
 			norhage_asset_version( '/assets/js/product-gallery-note.js' ),
 			norhage_script_args()
+		);
+
+		wp_localize_script(
+			'nh-product-gallery-note',
+			'nhGallery',
+			array(
+				'imagesLabel' => __( 'Product images', 'nh-theme' ),
+				'imageLabel'  => __( 'Image %1$d of %2$d', 'nh-theme' ),
+			)
 		);
 	}
 
@@ -412,6 +421,7 @@ require_once get_stylesheet_directory() . '/inc/important-notes-output.php';
 require_once get_stylesheet_directory() . '/inc/feature-box.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-admin.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
+require_once get_stylesheet_directory() . '/inc/product-breadcrumb.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
