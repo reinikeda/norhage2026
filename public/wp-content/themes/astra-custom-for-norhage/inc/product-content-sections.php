@@ -254,3 +254,18 @@ function nh_pcs_body_class( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'nh_pcs_body_class' );
+
+/**
+ * WooCommerce prints its own "Description" H2 inside the tab.
+ * The jump link already names that block, and the product text has the real heading.
+ *
+ * @param string $heading Default heading.
+ * @return string
+ */
+function nh_pcs_hide_description_heading( $heading ) {
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		return '';
+	}
+	return $heading;
+}
+add_filter( 'woocommerce_product_description_heading', 'nh_pcs_hide_description_heading' );

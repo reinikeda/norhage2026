@@ -75,11 +75,8 @@ $section_count = count( $product_tabs );
 					id="tab-<?php echo esc_attr( $key ); ?>"
 					class="nh-pcs-section nh-pcs-section--static nh-pcs-section--<?php echo esc_attr( $key ); ?> nh-pcs-section--clamp"
 					data-nh-pcs-section="<?php echo esc_attr( $key ); ?>"
-					aria-labelledby="<?php echo esc_attr( $heading_id ); ?>"
+					aria-label="<?php echo esc_attr( nh_pcs_nav_label( $title ) ); ?>"
 				>
-					<h2 class="nh-pcs-section__title nh-pcs-section__title--static" id="<?php echo esc_attr( $heading_id ); ?>">
-						<?php echo wp_kses_post( $title ); ?>
-					</h2>
 					<div
 						class="nh-pcs-section__panel woocommerce-Tabs-panel woocommerce-Tabs-panel--<?php echo esc_attr( $key ); ?> panel entry-content"
 						id="<?php echo esc_attr( $panel_id ); ?>"

@@ -2412,12 +2412,6 @@ h2.nh-in-title::after,
   letter-spacing: -0.01em;
 }
 
-.nh-pcs-section__title--static {
-  margin: 0;
-  padding: 16px 0 10px;
-  color: var(--nh-forest, #1e3932);
-}
-
 .nh-pcs-section--static {
   border-bottom: 1px solid #e2e8e4;
 }
@@ -2561,10 +2555,6 @@ h2.nh-in-title::after,
 
   .nh-pcs-section__title {
     font-size: 1.15rem;
-  }
-
-  .nh-pcs-section__title--static {
-    padding-top: 18px;
   }
 
   .nh-pcs-clamp.is-clamped .nh-pcs-clamp__content {

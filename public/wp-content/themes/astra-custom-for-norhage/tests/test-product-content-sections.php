@@ -78,6 +78,8 @@ $template = file_get_contents( dirname( __DIR__ ) . '/woocommerce/single-product
 nh_pcs_assert( 'template uses details for collapsible sections', false !== strpos( $template, '<details' ) );
 nh_pcs_assert( 'template keeps tab ids for deep links', false !== strpos( $template, 'id="tab-' ) );
 nh_pcs_assert( 'template prints a jump nav', false !== strpos( $template, 'nh-pcs-toc' ) );
+nh_pcs_assert( 'description does not repeat its name as a heading', false === strpos( $template, 'nh-pcs-section__title--static' ) );
+nh_pcs_assert( 'description section keeps an accessible name', false !== strpos( $template, 'aria-label=' ) );
 nh_pcs_assert( 'template keeps full panel HTML in the page', false !== strpos( $template, '$panel_html' ) );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/product-page.css' );
