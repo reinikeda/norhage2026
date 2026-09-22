@@ -422,6 +422,7 @@ require_once get_stylesheet_directory() . '/inc/feature-box.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-admin.php';
 require_once get_stylesheet_directory() . '/inc/feature-box-output.php';
 require_once get_stylesheet_directory() . '/inc/product-breadcrumb.php';
+require_once get_stylesheet_directory() . '/inc/product-summary-order.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
@@ -922,9 +923,9 @@ function nh_get_help_form_id_by_host() : int {
 }
 
 /**
- * 1) CTA under Add to basket (inside cart form) — OK
+ * Ask an expert sits under the feature chips and above the bundle box.
+ * Sample strip is 5, features are 8, this block is 12, bundle is 20.
  */
-
 add_action( 'woocommerce_after_add_to_cart_form', function () {
 
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
@@ -965,7 +966,25 @@ add_action( 'woocommerce_after_add_to_cart_form', function () {
 	</div>
 	<?php
 
-}, 20 );
+}, 12 );
+
+/**
+ * One short description, below the bundle.
+ *
+ * Astra ignores WooCommerce's excerpt hook and prints short_desc from
+ * its product structure, under the price. Delivery is then moved under
+ * that price, so the Astra copy sits under the delivery line. Strip
+ * that copy and print the description once after the bundle.
+ */
+add_filter( 'astra_woo_single_product_structure', 'nh_strip_short_desc_from_astra_structure' );
+add_action( 'wp', function () {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+	add_action( 'woocommerce_after_add_to_cart_form', 'woocommerce_template_single_excerpt', 25 );
+} );
 
 /**
  * Fix /page/1/ pagination URLs for archives and WooCommerce

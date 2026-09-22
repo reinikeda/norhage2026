@@ -2,9 +2,8 @@
 /**
  * NH Feature Box — Frontend Output
  *
- * Mirrors the original plugin render logic exactly:
- * - In-stock: before add-to-cart (so custom-cut hook fires after).
- * - Out-of-stock: appended to short description.
+ * - In stock: below the add-to-cart button, above Ask an expert.
+ * - Out of stock: appended to the short description, unchanged.
  *
  * Text domain: nh-theme
  */
@@ -17,9 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 $nh_feature_box_rendered = false;
 
 /**
- * IN-STOCK: render before add-to-cart / custom-cut form.
+ * In stock: after the cart form (priority 8), before Ask an expert (12)
+ * and the bundle box (20). The function name is kept so existing
+ * remove_action() calls still find it.
  */
-add_action( 'woocommerce_before_add_to_cart_form', 'nh_render_feature_box_before_cart', 1 );
+add_action( 'woocommerce_after_add_to_cart_form', 'nh_render_feature_box_before_cart', 8 );
 function nh_render_feature_box_before_cart() {
     global $nh_feature_box_rendered, $product;
 
@@ -39,7 +40,6 @@ function nh_render_feature_box_before_cart() {
     }
 
     echo $html;
-    do_action( 'nh_after_feature_box', $product->get_id() );
     $nh_feature_box_rendered = true;
 }
 
