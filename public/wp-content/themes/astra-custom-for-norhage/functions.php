@@ -217,6 +217,15 @@ function norhage_enqueue_assets() {
 		);
 	}
 
+	if ( function_exists( 'nh_about_is_about_page' ) && nh_about_is_about_page() ) {
+		wp_enqueue_style(
+			'norhage-about',
+			get_stylesheet_directory_uri() . '/assets/css/about.css',
+			array( 'astra-custom-for-norhage-theme-css' ),
+			norhage_asset_version( '/assets/css/about.css' )
+		);
+	}
+
 	if ( $is_cartish ) {
 		wp_enqueue_style(
 			'custom-basket-css',
@@ -440,6 +449,7 @@ require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
 require_once get_stylesheet_directory() . '/inc/services.php';
 require_once get_stylesheet_directory() . '/inc/contact-page.php';
+require_once get_stylesheet_directory() . '/inc/about-page.php';
 require_once get_stylesheet_directory() . '/inc/important-notes.php';
 require_once get_stylesheet_directory() . '/inc/important-notes-admin.php';
 require_once get_stylesheet_directory() . '/inc/important-notes-output.php';
