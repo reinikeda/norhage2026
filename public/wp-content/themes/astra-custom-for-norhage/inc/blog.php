@@ -71,6 +71,15 @@ add_filter( 'astra_blog_post_meta', function( $markup ){
 	return $markup;
 }, 25 );
 
+/** Astra prints Previous / Next from its own text domain, which stays English here. */
+add_filter( 'astra_default_strings', function( $strings ) {
+	return nh_blog_navigation_strings(
+		$strings,
+		__( 'Previous', 'nh-theme' ),
+		__( 'Next', 'nh-theme' )
+	);
+} );
+
 /** ===== Blog archive: change "Read Post »" → "Read More »" ===== */
 add_filter( 'astra_post_read_more', function( $label ){
 	if ( is_home() || is_category() || is_tag() || is_author() || is_date() ) {

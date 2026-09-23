@@ -149,6 +149,15 @@ msgstr "Atgal į %s"
 msgid "Related posts"
 msgstr "Susiję įrašai"
 
+#: inc/blog.php
+msgid "Previous"
+msgstr "Ankstesnis"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Kitas"
+
+
 #: inc/bundle-box.php:268
 msgid "In stock"
 msgstr "Turime sandėlyje"

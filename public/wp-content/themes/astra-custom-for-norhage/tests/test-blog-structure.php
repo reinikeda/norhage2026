@@ -52,5 +52,24 @@ nh_blog_assert( 'cleaning is idempotent', $twice === $clean );
 
 nh_blog_assert( 'empty markup stays empty', nh_blog_clean_meta( '   ' ) === '   ' );
 
+$nav = nh_blog_navigation_strings(
+	array(
+		'string-previous-text'              => 'Previous',
+		'string-next-text'                  => 'Next',
+		'string-blog-navigation-previous'   => '<span class="ast-left-arrow" aria-hidden="true">&larr;</span> Previous',
+		'string-blog-navigation-next'       => 'Next <span class="ast-right-arrow" aria-hidden="true">&rarr;</span>',
+		'string-single-navigation-previous' => '<span class="ast-left-arrow" aria-hidden="true">&larr;</span> Previous %s',
+		'string-single-navigation-next'     => 'Next %s <span class="ast-right-arrow" aria-hidden="true">&rarr;</span>',
+		'string-header-skip-link'           => 'Skip to content',
+	),
+	'Zurück',
+	'Weiter'
+);
+nh_blog_assert( 'single previous label is translated', $nav['string-previous-text'] === 'Zurück' );
+nh_blog_assert( 'single next label is translated', $nav['string-next-text'] === 'Weiter' );
+nh_blog_assert( 'archive previous keeps the arrow', strpos( $nav['string-blog-navigation-previous'], 'Zurück' ) !== false && strpos( $nav['string-blog-navigation-previous'], '&larr;' ) !== false && strpos( $nav['string-blog-navigation-previous'], 'Previous' ) === false );
+nh_blog_assert( 'other Astra strings stay untouched', $nav['string-header-skip-link'] === 'Skip to content' );
+nh_blog_assert( 'non-array navigation input is unchanged', nh_blog_navigation_strings( 'Previous', 'Zurück', 'Weiter' ) === 'Previous' );
+
 echo $failures === 0 ? "\nAll blog structure checks passed.\n" : "\n{$failures} failed.\n";
 exit( $failures === 0 ? 0 : 1 );

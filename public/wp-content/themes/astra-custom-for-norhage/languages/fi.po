@@ -149,6 +149,15 @@ msgstr "Takaisin kohteeseen %s"
 msgid "Related posts"
 msgstr "Aiheeseen liittyvät julkaisut"
 
+#: inc/blog.php
+msgid "Previous"
+msgstr "Edellinen"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Seuraava"
+
+
 #: inc/bundle-box.php:268
 msgid "In stock"
 msgstr "Varastossa"

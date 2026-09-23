@@ -149,6 +149,15 @@ msgstr "Zurück zu %s"
 msgid "Related posts"
 msgstr "Ähnliche Beiträge"
 
+#: inc/blog.php
+msgid "Previous"
+msgstr "Zurück"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Weiter"
+
+
 #: inc/bundle-box.php:268
 msgid "In stock"
 msgstr "Auf Lager"

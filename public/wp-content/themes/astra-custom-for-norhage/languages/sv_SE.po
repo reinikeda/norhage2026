@@ -149,6 +149,15 @@ msgstr "Tillbaka till %s"
 msgid "Related posts"
 msgstr "Relaterade inlägg"
 
+#: inc/blog.php
+msgid "Previous"
+msgstr "Föregående"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Nästa"
+
+
 #: inc/bundle-box.php:268
 msgid "In stock"
 msgstr "Finns i lager"
