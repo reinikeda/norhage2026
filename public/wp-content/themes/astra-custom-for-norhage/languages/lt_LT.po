@@ -2193,6 +2193,14 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#: archive-service.php
+msgid "No services are published yet."
+msgstr "Paslaugų dar nėra."
+
+#: single-service.php
+msgid "On this page"
+msgstr "Šiame puslapyje"
+
 #~ msgid "Contact Us"
 #~ msgstr "Susisiekite su mumis"
 
