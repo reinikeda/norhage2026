@@ -452,7 +452,7 @@ function nh_seo_service_archive_summary() {
 		'post_type'      => 'service',
 		'post_status'    => 'publish',
 		'numberposts'    => 12,
-		'orderby'        => array(
+		'orderby'        => function_exists( 'nh_service_orderby' ) ? nh_service_orderby() : array(
 			'menu_order' => 'ASC',
 			'date'       => 'DESC',
 		),

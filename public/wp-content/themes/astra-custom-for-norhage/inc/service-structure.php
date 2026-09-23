@@ -659,3 +659,83 @@ function nh_service_substr( $text, $start, $len ) {
 	}
 	return substr( $text, $start, $len );
 }
+
+/**
+ * Frontend and admin list order for services.
+ *
+ * menu_order is the editor's drag order. Date only breaks ties until that order is saved.
+ *
+ * @return array<string,string>
+ */
+function nh_service_orderby() {
+	return array(
+		'menu_order' => 'ASC',
+		'date'       => 'DESC',
+	);
+}
+
+/**
+ * Apply a dragged page of service IDs to the full list and number menu_order from zero.
+ *
+ * IDs that are not on the dragged page stay in place. The page is written into those slots
+ * in the new order, so page 2 can be sorted without moving page 1.
+ *
+ * @param int[] $full_ids Services in the current frontend order.
+ * @param int[] $page_ids Services on the admin screen, in the dropped order.
+ * @return array<int,int> Post ID => menu_order.
+ */
+function nh_service_menu_order_map( array $full_ids, array $page_ids ) {
+	$full = array();
+	foreach ( $full_ids as $id ) {
+		$id = (int) $id;
+		if ( $id > 0 ) {
+			$full[] = $id;
+		}
+	}
+
+	$page = array();
+	foreach ( $page_ids as $id ) {
+		$id = (int) $id;
+		if ( $id > 0 && ! isset( $page[ $id ] ) ) {
+			$page[ $id ] = true;
+		}
+	}
+
+	$in_full = array_fill_keys( $full, true );
+	$on_page = array();
+	foreach ( array_keys( $page ) as $id ) {
+		if ( isset( $in_full[ $id ] ) ) {
+			$on_page[ $id ] = true;
+		}
+	}
+
+	$slots = array();
+	foreach ( $full as $index => $id ) {
+		if ( isset( $on_page[ $id ] ) ) {
+			$slots[] = $index;
+		}
+	}
+
+	$ordered = $full;
+	$slot_i  = 0;
+	foreach ( array_keys( $page ) as $id ) {
+		if ( ! isset( $on_page[ $id ] ) || ! isset( $slots[ $slot_i ] ) ) {
+			continue;
+		}
+		$ordered[ $slots[ $slot_i ] ] = $id;
+		$slot_i++;
+	}
+
+	$map  = array();
+	$seen = array();
+	$n    = 0;
+	foreach ( $ordered as $id ) {
+		if ( isset( $seen[ $id ] ) ) {
+			continue;
+		}
+		$seen[ $id ] = true;
+		$map[ $id ]  = $n++;
+	}
+
+	return $map;
+}
