@@ -139,7 +139,7 @@ msgstr "Weiterlesen »"
 
 #: inc/blog.php:81
 msgid "Back to Blog"
-msgstr "Tillbaka till bloggen"
+msgstr "Zurück zum Blog"
 
 #: inc/blog.php:87
 msgid "Back to %s"

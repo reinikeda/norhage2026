@@ -143,7 +143,7 @@ msgstr "Tilbage til bloggen"
 
 #: inc/blog.php:87
 msgid "Back to %s"
-msgstr "Tilbake til %s"
+msgstr "Tilbage til %s"
 
 #: inc/blog.php:107
 msgid "Related posts"
