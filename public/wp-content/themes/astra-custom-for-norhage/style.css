@@ -1185,18 +1185,117 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   }
 }
 
+.nh-footer__fold > summary{
+  list-style:none;
+}
+
+.nh-footer__fold > summary::-webkit-details-marker{
+  display:none;
+}
+
+.nh-footer__fold > summary .nh-footer__heading{
+  margin:0;
+}
+
+@media (min-width: 721px){
+  .nh-footer__fold > summary{
+    pointer-events:none;
+  }
+
+  .nh-footer__fold:not([open]) > .nh-footer__menu{
+    display:block;
+  }
+
+  .nh-footer__fold > summary .nh-footer__heading{
+    margin:0 0 .7rem;
+  }
+}
+
 @media (max-width: 720px){
   .nh-footer__top{
     grid-template-columns:1fr;
+    gap:0;
+    padding:12px 16px 8px;
+  }
+
+  .nh-footer__brand{
+    padding-bottom:12px;
+  }
+
+  .nh-footer__heading{
+    font-size:.82rem;
+  }
+
+  .nh-footer__list li{
+    margin:.15rem 0;
+    line-height:1.45;
+  }
+
+  .nh-footer__social-wrap{
+    margin-top:10px;
+  }
+
+  .nh-footer__subheading{
+    margin-bottom:6px;
+    font-size:.82rem;
+  }
+
+  .nh-footer__fold{
+    border-top:1px solid rgba(255,255,255,.15);
+  }
+
+  .nh-footer__fold > summary{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:48px;
+    cursor:pointer;
+  }
+
+  .nh-footer__fold > summary::after{
+    content:"";
+    flex:0 0 auto;
+    width:8px;
+    height:8px;
+    margin-right:4px;
+    border-right:2px solid currentColor;
+    border-bottom:2px solid currentColor;
+    transform:translateY(-2px) rotate(45deg);
+  }
+
+  .nh-footer__fold[open] > summary::after{
+    transform:translateY(2px) rotate(225deg);
+  }
+
+  .nh-footer__menu{
+    columns:1;
+    padding:0 0 8px;
+  }
+
+  .nh-footer__menu > li{
+    margin:0;
+  }
+
+  .nh-footer__menu a{
+    display:flex;
+    align-items:center;
+    min-height:40px;
+  }
+
+  .nh-footer__newsletter{
+    padding-top:16px;
+  }
+
+  .nh-footer__text{
+    margin:0 0 8px;
   }
 
   .nh-footer__bottom{
     flex-direction:column;
     align-items:flex-start;
-  }
-
-  .nh-footer__menu{
-    columns:1;
+    gap:10px;
+    padding:12px 16px;
   }
 
   .nh-footer__social{
