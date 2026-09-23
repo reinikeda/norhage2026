@@ -244,5 +244,16 @@ nh_service_assert(
 $untouched = nh_service_menu_order_map( array( 10, 20, 20 ), array() );
 nh_service_assert( 'an empty drag keeps the current order once', $untouched === array( 10 => 0, 20 => 1 ) );
 
+$services_css = file_get_contents( dirname( __DIR__ ) . '/assets/css/services.css' );
+nh_service_assert(
+	'mobile service layout can shrink inside the screen',
+	strpos( $services_css, ".nh-service__layout > * {\n  min-width: 0;" ) !== false
+);
+nh_service_assert(
+	'service body text can break long words',
+	strpos( $services_css, "body.single-service .nh-service__content.entry-content" ) !== false
+		&& strpos( $services_css, 'overflow-wrap: break-word;' ) !== false
+);
+
 echo $failures === 0 ? "All service structure tests passed\n" : "{$failures} failed\n";
 exit( $failures === 0 ? 0 : 1 );
