@@ -1,0 +1,204 @@
+/**
+ * About page. Mobile first.
+ * The hero owns the H1. This file styles the article under it.
+ */
+
+body.nh-about-page .site-content > .ast-container,
+body.nh-about-page.ast-plain-container .site-content > .ast-container,
+body.nh-about-page.ast-separate-container .site-content > .ast-container {
+  display: block;
+  width: 100%;
+  max-width: 1120px;
+}
+
+body.nh-about-page #primary {
+  width: 100%;
+  max-width: none;
+  float: none;
+}
+
+.nh-about {
+  padding: clamp(36px, 5vw, 64px) 12px 56px;
+  color: var(--nh-charcoal, #2c2a29);
+}
+
+.nh-about__lead {
+  margin: 0 0 18px;
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+.nh-about__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nh-about__nav-label {
+  margin: 0 0 8px;
+  color: var(--nh-green, #00704a);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nh-about__nav ol {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+.nh-about__nav a {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid rgba(30, 57, 50, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--nh-forest, #1e3932);
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nh-about__nav a:hover,
+.nh-about__nav a:focus-visible {
+  background: var(--nh-forest, #1e3932);
+  border-color: var(--nh-forest, #1e3932);
+  color: #fff;
+}
+
+.nh-about__main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nh-about-section,
+.nh-about-trust {
+  scroll-margin-top: calc(var(--masthead-h, 96px) + 16px);
+  background: #fff;
+  border: 1px solid rgba(30, 57, 50, 0.08);
+  border-radius: 16px;
+  padding: 18px 16px 8px;
+  box-shadow: 0 8px 22px rgba(30, 57, 50, 0.04);
+}
+
+.nh-about-section h2,
+.nh-about-section h3 {
+  margin: 0 0 10px;
+  color: var(--nh-forest, #1e3932);
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.nh-about-section p,
+.nh-about-trust p {
+  margin: 0 0 12px;
+  line-height: 1.65;
+}
+
+.nh-about-section ul,
+.nh-about-section ol {
+  margin: 0 0 14px;
+  padding-left: 1.15rem;
+}
+
+.nh-about-section li {
+  margin: 0 0 8px;
+  line-height: 1.55;
+}
+
+.nh-about-section a {
+  color: var(--nh-green, #00704a);
+  font-weight: 700;
+}
+
+.nh-about-section img,
+.nh-about-trust img {
+  max-width: 180px;
+  height: auto;
+}
+
+.nh-about-trust .wp-block-media-text {
+  display: flex !important;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  grid-template-columns: none !important;
+}
+
+.nh-about-trust a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--nh-forest, #1e3932);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nh-about-trust a:hover,
+.nh-about-trust a:focus-visible {
+  background: var(--nh-green, #00704a);
+  color: #fff;
+}
+
+.nh-about a:focus-visible {
+  outline: 2px solid var(--nh-green, #00704a);
+  outline-offset: 2px;
+}
+
+@media (min-width: 800px) {
+  .nh-about {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .nh-about-section,
+  .nh-about-trust {
+    padding: 26px 28px 14px;
+  }
+}
+
+@media (min-width: 960px) {
+  .nh-about__layout:has(.nh-about__nav) {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .nh-about__nav {
+    position: sticky;
+    top: calc(var(--masthead-h, 96px) + 16px);
+  }
+
+  .nh-about__nav ol {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .nh-about__nav a {
+    white-space: normal;
+  }
+
+  .nh-about-trust .wp-block-media-text {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+}
