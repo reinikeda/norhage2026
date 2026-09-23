@@ -18,7 +18,8 @@ body.nh-contact-page #primary {
 }
 
 .nh-contact {
-  padding: 8px 12px 56px;
+  /* The hero zeros the content padding, so this top space is the gap under the photo. */
+  padding: clamp(36px, 5vw, 64px) 12px 56px;
   color: var(--nh-charcoal, #2c2a29);
 }
 
@@ -29,7 +30,7 @@ body.nh-contact-page #primary {
 }
 
 .nh-contact__lead {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 1.05rem;
   line-height: 1.6;
 }
