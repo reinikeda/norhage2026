@@ -37,6 +37,22 @@ add_action( 'after_setup_theme', function () {
 	}
 } );
 
+/**
+ * Scroll to top is useful on long pages. Astra's own switch is off in the
+ * customizer, and the default corner sits under the filter pill and the
+ * sticky add-to-cart, cart, and checkout bars.
+ */
+add_filter( 'astra_get_option_scroll-to-top-enable', '__return_true' );
+add_filter( 'astra_get_option_scroll-to-top-on-devices', function () {
+	return 'both';
+} );
+add_filter( 'gettext', function ( $translated, $text, $domain ) {
+	if ( 'astra' === $domain && 'Scroll to Top' === $text ) {
+		return __( 'Scroll to Top', 'nh-theme' );
+	}
+	return $translated;
+}, 10, 3 );
+
 /** Register menus */
 function norhage_register_menus() {
 	register_nav_menus( array(

@@ -1262,3 +1262,39 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   html { scroll-behavior: auto; }
 }
 
+/* =========================================================
+   Scroll to top
+   Astra pins #ast-scroll-top to the bottom-right corner.
+   Lift it above the mobile bars that already use that corner.
+   ========================================================= */
+#ast-scroll-top {
+  --nh-scroll-top-gap: 30px;
+  bottom: calc(var(--nh-scroll-top-gap) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 1023px) {
+  #ast-scroll-top {
+    --nh-scroll-top-gap: 16px;
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    right: calc(16px + env(safe-area-inset-right, 0px));
+  }
+
+  /* Filter pill sits in the same corner on shop archives. */
+  body:has(.nhf-mobilebar) #ast-scroll-top {
+    --nh-scroll-top-gap: 76px;
+  }
+
+  body.has-nh-sticky-atc #ast-scroll-top,
+  body.woocommerce-cart.nh-cart-ux #ast-scroll-top {
+    --nh-scroll-top-gap: 96px;
+  }
+}
+
+@media (max-width: 959px) {
+  body.woocommerce-checkout.nh-checkout-form:not(.nh-checkout--snippet) #ast-scroll-top {
+    --nh-scroll-top-gap: 108px;
+  }
+}
+
