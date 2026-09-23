@@ -157,6 +157,11 @@ msgstr "Ankstesnis"
 msgid "Next"
 msgstr "Kitas"
 
+#: functions.php
+msgid "Scroll to Top"
+msgstr "Į viršų"
+
+
 
 #: inc/bundle-box.php:268
 msgid "In stock"

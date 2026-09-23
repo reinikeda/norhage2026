@@ -156,6 +156,11 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
+#: functions.php
+msgid "Scroll to Top"
+msgstr ""
+
+
 
 #: inc/bundle-box.php:268
 msgid "In stock"

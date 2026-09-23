@@ -157,6 +157,11 @@ msgstr "Edellinen"
 msgid "Next"
 msgstr "Seuraava"
 
+#: functions.php
+msgid "Scroll to Top"
+msgstr "Ylös"
+
+
 
 #: inc/bundle-box.php:268
 msgid "In stock"
