@@ -1,11 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+require_once get_stylesheet_directory() . '/inc/blog-structure.php';
+
 /** ===== Blog top category nav (archives only) ===== */
 add_action( 'astra_primary_content_top', function () {
 	if ( is_home() || is_category() ) {
 		$current_cat_id = get_queried_object_id();
-		echo '<div class="blog-category-nav"><ul>';
+		echo '<nav class="blog-category-nav" aria-label="' . esc_attr__( 'Blog', 'nh-theme' ) . '"><ul>';
 
 		$all_class  = is_home() ? 'active' : '';
 		$posts_page = (int) get_option( 'page_for_posts' );
@@ -16,7 +18,7 @@ add_action( 'astra_primary_content_top', function () {
 			echo '<li><a class="' . esc_attr( $active ) . '" href="' . esc_url( get_category_link( $cat->term_id ) ) . '">' . esc_html( $cat->name ) . '</a></li>';
 		}
 
-		echo '</ul></div>';
+		echo '</ul></nav>';
 	}
 }, 10 );
 
@@ -40,7 +42,7 @@ add_action( 'wp', function () {
 	}
 } );
 
-/** ===== Blog meta: hide author (archive + single) ===== */
+/** ===== Blog meta: hide author (archive + single). Keep the date. ===== */
 add_filter( 'astra_post_meta', function( $meta ){
 	if ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_singular('post') ) {
 		$meta = array_diff( (array) $meta, array( 'author' ) );
@@ -48,10 +50,23 @@ add_filter( 'astra_post_meta', function( $meta ){
 	return array_values( (array) $meta );
 }, 25 );
 
+add_filter( 'astra_post_author', function( $output ) {
+	if ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_singular( 'post' ) ) {
+		return '';
+	}
+	return $output;
+}, 20 );
+
 add_filter( 'astra_single_post_meta', function( $markup ){
 	if ( is_singular( 'post' ) ) {
-		// remove the author chunk (Astra prints "posted-by")
-		$markup = preg_replace( '/<span[^>]*class="[^"]*posted-by[^"]*"[^>]*>.*?<\/span>\s*/i', '', (string) $markup );
+		return nh_blog_clean_meta( $markup );
+	}
+	return $markup;
+}, 25 );
+
+add_filter( 'astra_blog_post_meta', function( $markup ){
+	if ( is_home() || is_category() || is_tag() || is_author() || is_date() ) {
+		return nh_blog_clean_meta( $markup );
 	}
 	return $markup;
 }, 25 );
@@ -89,7 +104,7 @@ add_action( 'astra_primary_content_top', function () {
 	echo '<nav class="nh-backbar"><a class="nh-backbar__link" href="' . esc_url( $back_url ) . '">← ' . esc_html( $back_text ) . '</a></nav>';
 }, 5 );
 
-add_action( 'astra_primary_content_bottom', function () {
+add_action( 'astra_entry_after', function () {
 	if ( ! is_singular( 'post' ) ) return;
 	global $post;
 
@@ -108,9 +123,12 @@ add_action( 'astra_primary_content_bottom', function () {
 		while ( $q->have_posts() ) { $q->the_post();
 			echo '<article class="nh-related__item"><a class="nh-related__thumb" href="' . esc_url( get_permalink() ) . '">';
 			if ( has_post_thumbnail() ) the_post_thumbnail( 'medium' );
-			echo '</a><h4 class="nh-related__title"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4></article>';
+			echo '</a><div class="nh-related__body">';
+			echo '<time class="nh-related__date" datetime="' . esc_attr( get_the_date( DATE_W3C ) ) . '">' . esc_html( get_the_date() ) . '</time>';
+			echo '<h4 class="nh-related__title"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h4>';
+			echo '</div></article>';
 		}
 		echo '</div></section>';
 		wp_reset_postdata();
 	}
-}, 20 );
+}, 15 );
