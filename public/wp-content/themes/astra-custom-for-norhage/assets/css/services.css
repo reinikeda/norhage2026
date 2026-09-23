@@ -3,28 +3,10 @@
  * Blog posts keep blog-style.css; this file does not target .single-post.
  */
 
-body.post-type-archive-service,
-body.single-service {
-  --ast-narrow-container-width: 1120px;
-  --wp--custom--ast-content-width-size: 1120px;
-  --wp--custom--ast-wide-width-size: 1120px;
-}
-
 body.post-type-archive-service .site-content > .ast-container,
-body.single-service .site-content > .ast-container,
-body.single-service.ast-narrow-container .site-content > .ast-container,
-body.single-service.ast-separate-container .site-content > .ast-container,
-body.single-service.ast-plain-container .site-content > .ast-container,
-body.single-service .ast-container--narrow {
+body.single-service .site-content > .ast-container {
   display: block;
-  width: 100%;
   max-width: 1120px;
-}
-
-body.single-service #primary {
-  width: 100%;
-  max-width: none;
-  float: none;
 }
 
 /* Dates and authors belong on blog posts, not services. */
@@ -334,14 +316,7 @@ body.single-service .post-navigation {
 
 .nh-service__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
-}
-
-.nh-service__toc,
-.nh-service__main {
-  width: 100%;
-  min-width: 0;
 }
 
 .nh-service__toc {
@@ -389,18 +364,9 @@ body.single-service .post-navigation {
   color: var(--nh-forest, #1e3932);
 }
 
-/* Astra single posts and blog-style.css cap this column at 720–750px.
-   The archive does not, so a service should use the same width. */
-body.single-service .nh-service__content.entry-content,
-body.single-service .entry-content[data-ast-blocks-layout] > *,
-body.single-service .entry-content[ast-blocks-layout] > *,
-body.single-service .nh-service-sections,
-body.single-service .nh-service-section,
-body.single-service .nh-service-contact {
-  max-width: none !important;
-  width: 100%;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+body.single-service .nh-service__content.entry-content {
+  max-width: none;
+  margin: 0;
 }
 
 .nh-service-sections {
@@ -529,20 +495,31 @@ body.single-service .nh-service-section > p:first-of-type {
   .nh-service-related__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+@media (min-width: 960px) {
+  .nh-service__layout {
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .nh-service__toc {
+    position: sticky;
+    top: calc(var(--masthead-h, 96px) + 16px);
+  }
 
   .nh-service__toc ol {
-    flex-wrap: wrap;
+    flex-direction: column;
     overflow: visible;
   }
 
   .nh-service__toc a {
     white-space: normal;
   }
-}
 
-@media (min-width: 960px) {
   .nh-service-section {
-    padding: 28px 36px 12px;
+    padding: 26px 28px 10px;
   }
 }
 
