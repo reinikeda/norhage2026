@@ -51,7 +51,8 @@ function nh_footer_menu_block($title, $locations){
   if (!$chosen) return;
 
   echo '<nav class="nh-footer__nav" aria-label="' . esc_attr($title) . '">';
-  echo '<h3 class="nh-footer__heading">' . esc_html($title) . '</h3>';
+  echo '<details class="nh-footer__fold">';
+  echo '<summary><h3 class="nh-footer__heading">' . esc_html($title) . '</h3></summary>';
   wp_nav_menu([
     'theme_location' => $chosen,
     'container'      => false,
@@ -59,7 +60,7 @@ function nh_footer_menu_block($title, $locations){
     'depth'          => 1,
     'fallback_cb'    => '__return_empty_string',
   ]);
-  echo '</nav>';
+  echo '</details></nav>';
 }
 ?>
 
