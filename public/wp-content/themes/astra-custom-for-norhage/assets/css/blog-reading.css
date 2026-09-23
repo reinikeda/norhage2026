@@ -417,9 +417,18 @@ body.single-post .entry-content .wp-block-table thead td {
 }
 
 @media (max-width: 700px) {
+  body.single-post .entry-content figure.wp-block-table,
+  body.single-post .entry-content .wp-block-table {
+    display: block !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+
   body.single-post .entry-content .wp-block-table table,
   body.single-post .entry-content .wp-block-table table.has-fixed-layout {
-    min-width: 560px;
+    width: 560px !important;
+    min-width: 560px !important;
   }
 
   body.single-post .entry-content .wp-block-table th,
