@@ -148,6 +148,15 @@ msgstr ""
 msgid "Related posts"
 msgstr ""
 
+#: inc/blog.php
+msgid "Previous"
+msgstr ""
+
+#: inc/blog.php
+msgid "Next"
+msgstr ""
+
+
 #: inc/bundle-box.php:268
 msgid "In stock"
 msgstr ""

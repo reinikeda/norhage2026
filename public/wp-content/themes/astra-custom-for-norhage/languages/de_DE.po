@@ -139,7 +139,7 @@ msgstr "Weiterlesen »"
 
 #: inc/blog.php:81
 msgid "Back to Blog"
-msgstr "Tillbaka till bloggen"
+msgstr "Zurück zum Blog"
 
 #: inc/blog.php:87
 msgid "Back to %s"
@@ -148,6 +148,15 @@ msgstr "Zurück zu %s"
 #: inc/blog.php:107
 msgid "Related posts"
 msgstr "Ähnliche Beiträge"
+
+#: inc/blog.php
+msgid "Previous"
+msgstr "Zurück"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Weiter"
+
 
 #: inc/bundle-box.php:268
 msgid "In stock"

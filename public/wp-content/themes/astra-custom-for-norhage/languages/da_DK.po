@@ -143,11 +143,20 @@ msgstr "Tilbage til bloggen"
 
 #: inc/blog.php:87
 msgid "Back to %s"
-msgstr "Tilbake til %s"
+msgstr "Tilbage til %s"
 
 #: inc/blog.php:107
 msgid "Related posts"
 msgstr "Relaterede indlæg"
+
+#: inc/blog.php
+msgid "Previous"
+msgstr "Forrige"
+
+#: inc/blog.php
+msgid "Next"
+msgstr "Næste"
+
 
 #: inc/bundle-box.php:268
 msgid "In stock"

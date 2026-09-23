@@ -195,6 +195,15 @@ function norhage_enqueue_assets() {
 		);
 	}
 
+	if ( $is_blog ) {
+		wp_enqueue_style(
+			'norhage-blog-reading',
+			get_stylesheet_directory_uri() . '/assets/css/blog-reading.css',
+			array( 'astra-custom-for-norhage-theme-css', 'blog-custom-style' ),
+			norhage_asset_version( '/assets/css/blog-reading.css' )
+		);
+	}
+
 	if ( $is_service ) {
 		$service_deps = array( 'astra-custom-for-norhage-theme-css' );
 		if ( is_singular( 'service' ) ) {
