@@ -243,3 +243,50 @@ function nhf_range_selection( array $rows, array $selected ) : array {
 
 	return array( $from, $to, $active );
 }
+
+/**
+ * How many checkbox values stay visible before "Show more".
+ *
+ * @return int
+ */
+function nhf_checkbox_preview_count() {
+	return 6;
+}
+
+/**
+ * Split terms into the first visible rows and the rest.
+ *
+ * @param array $terms Term objects.
+ * @return array{0:array,1:array}
+ */
+function nhf_split_checkbox_terms( $terms ) {
+	if ( ! is_array( $terms ) ) {
+		return array( array(), array() );
+	}
+
+	$preview = nhf_checkbox_preview_count();
+	return array(
+		array_slice( $terms, 0, $preview ),
+		array_slice( $terms, $preview ),
+	);
+}
+
+/**
+ * Whether any of these terms is already selected.
+ *
+ * @param array    $terms    Term objects.
+ * @param string[] $selected Slugs.
+ */
+function nhf_terms_have_selection( $terms, array $selected ) : bool {
+	if ( empty( $terms ) || empty( $selected ) ) {
+		return false;
+	}
+
+	foreach ( $terms as $term ) {
+		if ( is_object( $term ) && isset( $term->slug ) && in_array( $term->slug, $selected, true ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}

@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.9.1
+ * Version: 1.9.2
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -38,7 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.9.1'
+		'1.9.2'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -46,7 +46,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.9.1',
+		'1.9.2',
 		true
 	);
 
@@ -451,6 +451,63 @@ function nhf_render_range_filter( $label, $param_key, array $rows, array $select
 	echo '</section>';
 }
 
+/**
+ * Checkbox list, with extra values behind Show more.
+ *
+ * @param string   $param_key
+ * @param array    $terms
+ * @param string[] $selected
+ */
+function nhf_render_checkbox_terms( $param_key, $terms, array $selected ) {
+	list( $visible, $extra ) = nhf_split_checkbox_terms( $terms );
+
+	foreach ( $visible as $term ) {
+		nhf_render_checkbox_term( $param_key, $term, $selected );
+	}
+
+	if ( empty( $extra ) ) {
+		return;
+	}
+
+	$more = sprintf(
+		/* translators: %d: number of hidden values */
+		__( 'Show %d more', 'nhf' ),
+		count( $extra )
+	);
+	$open = nhf_terms_have_selection( $extra, $selected ) ? ' open' : '';
+
+	echo '<details class="nhf-more"' . $open . '>';
+	echo '<summary class="nhf-more__summary">';
+	echo '<span class="nhf-more__more">' . esc_html( $more ) . '</span>';
+	echo '<span class="nhf-more__less">' . esc_html__( 'Show less', 'nhf' ) . '</span>';
+	echo '</summary>';
+	echo '<div class="nhf-more__list">';
+	foreach ( $extra as $term ) {
+		nhf_render_checkbox_term( $param_key, $term, $selected );
+	}
+	echo '</div>';
+	echo '</details>';
+}
+
+/**
+ * One filter checkbox.
+ *
+ * @param string   $param_key
+ * @param object   $term
+ * @param string[] $selected
+ */
+function nhf_render_checkbox_term( $param_key, $term, array $selected ) {
+	if ( ! is_object( $term ) || ! isset( $term->slug, $term->name ) ) {
+		return;
+	}
+
+	$checked = in_array( $term->slug, $selected, true ) ? ' checked' : '';
+	echo '<label>';
+	echo '<input type="checkbox" name="' . esc_attr( $param_key ) . '[]" value="' . esc_attr( $term->slug ) . '"' . $checked . '>';
+	echo esc_html( $term->name );
+	echo '</label>';
+}
+
 /* ------------------------------------------------------------
  *  Shortcode: [nh_filters_sidebar]
  * ------------------------------------------------------------ */
@@ -539,15 +596,7 @@ add_shortcode( 'nh_filters_sidebar', function() {
 			echo '<section class="nhf-filter nhf-filter--attribute">';
 			echo '  <button type="button" class="nhf-filter-toggle" aria-expanded="false">' . esc_html( $label ) . ' <span class="nhf-icon"></span></button>';
 			echo '  <div class="nhf-filter-body" aria-hidden="true">';
-
-			foreach ( $terms as $t ) {
-				$checked = in_array( $t->slug, $selected, true ) ? ' checked' : '';
-				echo '<label>';
-				echo '  <input type="checkbox" name="' . esc_attr( $param_key ) . '[]" value="' . esc_attr( $t->slug ) . '"' . $checked . '>';
-				echo    esc_html( $t->name );
-				echo '</label>';
-			}
-
+			nhf_render_checkbox_terms( $param_key, $terms, $selected );
 			echo '  </div>';
 			echo '</section>';
 		}

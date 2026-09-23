@@ -91,3 +91,9 @@ msgstr "Bis %s"
 
 msgid "Attributes ordered as Name (numeric) use a from–to range."
 msgstr "Attribute mit der Reihenfolge Name (numerisch) werden als Von–Bis-Bereich angezeigt."
+
+msgid "Show %d more"
+msgstr "%d weitere anzeigen"
+
+msgid "Show less"
+msgstr "Weniger anzeigen"

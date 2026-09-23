@@ -91,3 +91,9 @@ msgstr "Til %s"
 
 msgid "Attributes ordered as Name (numeric) use a from–to range."
 msgstr "Egenskaper med rekkefølgen Navn (numerisk) vises som et fra–til-intervall."
+
+msgid "Show %d more"
+msgstr "Vis %d til"
+
+msgid "Show less"
+msgstr "Vis mindre"

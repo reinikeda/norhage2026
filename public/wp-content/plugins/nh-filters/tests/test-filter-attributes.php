@@ -133,6 +133,23 @@ $mixed = nhf_numeric_terms(
 );
 nhf_assert( 'a mixed list falls back to checkboxes', array() === $mixed );
 
+nhf_assert( 'checkbox lists preview six values', 6 === nhf_checkbox_preview_count() );
+
+$names = array();
+for ( $i = 1; $i <= 9; $i++ ) {
+	$names[] = (object) array(
+		'name' => 'Color ' . $i,
+		'slug' => 'color-' . $i,
+	);
+}
+list( $visible_terms, $extra_terms ) = nhf_split_checkbox_terms( $names );
+nhf_assert( 'the first six values stay visible', 6 === count( $visible_terms ) );
+nhf_assert( 'the remaining values sit behind Show more', 3 === count( $extra_terms ) );
+nhf_assert( 'a selected extra value opens the extra list', nhf_terms_have_selection( $extra_terms, array( 'color-8' ) ) );
+nhf_assert( 'an unselected extra list stays closed', ! nhf_terms_have_selection( $extra_terms, array( 'color-1' ) ) );
+nhf_assert( 'short lists have no extra values', array() === nhf_split_checkbox_terms( array_slice( $names, 0, 4 ) )[1] );
+nhf_assert( 'checkbox overflow uses Show more', false !== strpos( $plugin, 'nhf_render_checkbox_terms' ) );
+
 if ( $failures > 0 ) {
 	echo "{$failures} failed\n";
 	exit( 1 );
