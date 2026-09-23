@@ -93,3 +93,9 @@ msgstr "Iki %s"
 
 msgid "Attributes ordered as Name (numeric) use a from–to range."
 msgstr "Atributai su rikiavimu Pavadinimas (skaitinis) rodomi kaip intervalas."
+
+msgid "Show %d more"
+msgstr "Rodyti dar %d"
+
+msgid "Show less"
+msgstr "Rodyti mažiau"

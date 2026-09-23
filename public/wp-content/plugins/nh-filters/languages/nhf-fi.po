@@ -92,3 +92,9 @@ msgstr "Asti %s"
 
 msgid "Attributes ordered as Name (numeric) use a from–to range."
 msgstr "Nimi (numeerinen) -järjestyksessä olevat ominaisuudet näkyvät välinä."
+
+msgid "Show %d more"
+msgstr "Näytä %d lisää"
+
+msgid "Show less"
+msgstr "Näytä vähemmän"
