@@ -208,6 +208,15 @@ function norhage_enqueue_assets() {
 		);
 	}
 
+	if ( function_exists( 'nh_contact_is_contact_page' ) && nh_contact_is_contact_page() ) {
+		wp_enqueue_style(
+			'norhage-contact',
+			get_stylesheet_directory_uri() . '/assets/css/contact.css',
+			array( 'astra-custom-for-norhage-theme-css' ),
+			norhage_asset_version( '/assets/css/contact.css' )
+		);
+	}
+
 	if ( $is_cartish ) {
 		wp_enqueue_style(
 			'custom-basket-css',
@@ -430,6 +439,7 @@ require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
 require_once get_stylesheet_directory() . '/inc/services.php';
+require_once get_stylesheet_directory() . '/inc/contact-page.php';
 require_once get_stylesheet_directory() . '/inc/important-notes.php';
 require_once get_stylesheet_directory() . '/inc/important-notes-admin.php';
 require_once get_stylesheet_directory() . '/inc/important-notes-output.php';

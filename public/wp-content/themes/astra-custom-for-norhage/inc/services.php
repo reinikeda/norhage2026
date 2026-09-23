@@ -236,7 +236,7 @@ function nh_service_contact_details() {
  * @return string
  */
 function nh_service_contact_url() {
-	$slugs = array( 'contacts', 'contact', 'kontakt', 'kontakter', 'yhteystiedot', 'kontaktai' );
+	$slugs = function_exists( 'nh_contact_page_slugs' ) ? nh_contact_page_slugs() : array( 'contacts', 'contact', 'kontakt', 'kontakter', 'yhteystiedot', 'kontaktai' );
 	foreach ( $slugs as $slug ) {
 		$page = get_page_by_path( $slug );
 		if ( $page instanceof WP_Post && $page->post_status === 'publish' ) {
