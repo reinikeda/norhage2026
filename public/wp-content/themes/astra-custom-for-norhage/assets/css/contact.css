@@ -1,0 +1,270 @@
+/**
+ * Contact page. Mobile first.
+ * The hero owns the H1. This file styles the article under it.
+ */
+
+body.nh-contact-page .site-content > .ast-container,
+body.nh-contact-page.ast-plain-container .site-content > .ast-container,
+body.nh-contact-page.ast-separate-container .site-content > .ast-container {
+  display: block;
+  width: 100%;
+  max-width: 1120px;
+}
+
+body.nh-contact-page #primary {
+  width: 100%;
+  max-width: none;
+  float: none;
+}
+
+.nh-contact {
+  /* The hero zeros the content padding, so this top space is the gap under the photo. */
+  padding: clamp(36px, 5vw, 64px) 12px 56px;
+  color: var(--nh-charcoal, #2c2a29);
+}
+
+.nh-contact__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nh-contact__lead {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.nh-contact-section {
+  background: #fff;
+  border: 1px solid rgba(30, 57, 50, 0.08);
+  border-radius: 16px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 8px 22px rgba(30, 57, 50, 0.04);
+}
+
+.nh-contact-section h2,
+.nh-contact-section h3 {
+  margin: 0 0 12px;
+  color: var(--nh-forest, #1e3932);
+  font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+  line-height: 1.25;
+}
+
+.nh-contact-section p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.nh-contact-section p:last-child {
+  margin-bottom: 0;
+}
+
+.nh-contact-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.nh-contact-channel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--nh-offwhite, #faf7f2);
+  color: var(--nh-forest, #1e3932);
+  text-decoration: none;
+}
+
+a.nh-contact-channel:hover,
+a.nh-contact-channel:focus-visible {
+  background: var(--nh-mint, #c3e8c6);
+  color: var(--nh-forest, #1e3932);
+}
+
+.nh-contact-channel__label {
+  color: var(--nh-green, #00704a);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nh-contact-channel__value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.nh-contact-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nh-contact-social a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid rgba(30, 57, 50, 0.14);
+  border-radius: 999px;
+  background: var(--nh-offwhite, #faf7f2);
+  color: var(--nh-forest, #1e3932);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nh-contact-social a:hover,
+.nh-contact-social a:focus-visible {
+  background: var(--nh-forest, #1e3932);
+  border-color: var(--nh-forest, #1e3932);
+  color: #fff;
+}
+
+.nh-contact .wpforms-container {
+  margin: 0;
+}
+
+.nh-contact .wpforms-field-container {
+  display: grid;
+  gap: 12px;
+}
+
+.nh-contact .wpforms-field {
+  padding: 0;
+}
+
+.nh-contact .wpforms-field-label {
+  margin: 0 0 6px;
+  color: var(--nh-forest, #1e3932);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.nh-contact .wpforms-field input:not([type="hidden"]),
+.nh-contact .wpforms-field textarea,
+.nh-contact .wpforms-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid rgba(30, 57, 50, 0.18);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--nh-charcoal, #2c2a29);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.nh-contact .wpforms-field textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.nh-contact .wpforms-field input[type="number"] {
+  appearance: textfield;
+}
+
+.nh-contact .wpforms-field input[type="number"]::-webkit-outer-spin-button,
+.nh-contact .wpforms-field input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.nh-contact .wpforms-submit-container {
+  margin-top: 14px;
+  padding: 0;
+}
+
+.nh-contact .wpforms-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--nh-forest, #1e3932);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nh-contact .wpforms-submit:hover,
+.nh-contact .wpforms-submit:focus-visible {
+  background: var(--nh-green, #00704a);
+  color: #fff;
+}
+
+.nh-contact a:focus-visible,
+.nh-contact .wpforms-submit:focus-visible,
+.nh-contact input:focus-visible,
+.nh-contact textarea:focus-visible,
+.nh-contact select:focus-visible {
+  outline: 2px solid var(--nh-green, #00704a);
+  outline-offset: 2px;
+}
+
+@media (min-width: 800px) {
+  .nh-contact {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .nh-contact__layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.86fr) minmax(0, 1.14fr);
+    grid-template-areas:
+      "lead form"
+      "reach form"
+      "social form";
+    column-gap: 28px;
+    row-gap: 16px;
+    align-items: start;
+  }
+
+  .nh-contact__lead {
+    grid-area: lead;
+  }
+
+  .nh-contact-section--reach {
+    grid-area: reach;
+  }
+
+  .nh-contact-section--form {
+    grid-area: form;
+  }
+
+  .nh-contact-section--social {
+    grid-area: social;
+  }
+
+  .nh-contact-section--form {
+    padding: 28px 28px 24px;
+  }
+
+  .nh-contact .wpforms-field-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nh-contact .wpforms-field-textarea,
+  .nh-contact .wpforms-field-content,
+  .nh-contact .wpforms-recaptcha-container {
+    grid-column: 1 / -1;
+  }
+
+  .nh-contact .wpforms-submit {
+    width: auto;
+    min-width: 180px;
+  }
+}
