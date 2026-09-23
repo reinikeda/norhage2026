@@ -1362,3 +1362,12 @@ msgstr ""
 
 msgid "Show %d more"
 msgstr ""
+
+#: archive-service.php
+msgid "No services are published yet."
+msgstr ""
+
+#: single-service.php
+msgid "On this page"
+msgstr ""
+

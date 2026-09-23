@@ -149,7 +149,8 @@ function norhage_enqueue_assets() {
 
 	$is_product = function_exists( 'is_product' ) && is_product();
 	$is_cartish = function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() );
-	$is_blog    = is_home() || is_singular( 'post' ) || ( is_archive() && ! is_post_type_archive( 'product' ) && ! ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() ) );
+	$is_service = is_singular( 'service' ) || is_post_type_archive( 'service' );
+	$is_blog    = is_home() || is_singular( 'post' ) || ( is_archive() && ! $is_service && ! is_post_type_archive( 'product' ) && ! ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() ) );
 
 	if ( $is_product ) {
 		wp_enqueue_style(
@@ -185,12 +186,25 @@ function norhage_enqueue_assets() {
 		);
 	}
 
-	if ( $is_blog ) {
+	if ( $is_blog || is_singular( 'service' ) ) {
 		wp_enqueue_style(
 			'blog-custom-style',
 			get_stylesheet_directory_uri() . '/assets/css/blog-style.css',
 			array( 'astra-custom-for-norhage-theme-css' ),
 			norhage_asset_version( '/assets/css/blog-style.css' )
+		);
+	}
+
+	if ( $is_service ) {
+		$service_deps = array( 'astra-custom-for-norhage-theme-css' );
+		if ( is_singular( 'service' ) ) {
+			$service_deps[] = 'blog-custom-style';
+		}
+		wp_enqueue_style(
+			'norhage-services',
+			get_stylesheet_directory_uri() . '/assets/css/services.css',
+			$service_deps,
+			norhage_asset_version( '/assets/css/services.css' )
 		);
 	}
 

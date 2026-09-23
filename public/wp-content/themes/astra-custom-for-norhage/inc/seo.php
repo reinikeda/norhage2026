@@ -28,6 +28,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/service-structure.php';
+
 /**
  * Shop network used for per-domain context (areaServed, contact point, return policy).
  *
@@ -281,6 +283,51 @@ function nh_seo_filter_title( $title ) {
 add_filter( 'wpseo_title', 'nh_seo_filter_title', 20 );
 
 /**
+ * Service archive titles that are only "– {site}" get the post type label.
+ * Singular service titles and blog titles are left as Yoast stored them.
+ *
+ * @param string $title Title.
+ * @return string
+ */
+function nh_seo_service_title( $title ) {
+	if ( ! is_post_type_archive( 'service' ) || ! function_exists( 'nh_service_document_title_is_empty' ) ) {
+		return $title;
+	}
+
+	$site = get_bloginfo( 'name', 'display' );
+	if ( ! nh_service_document_title_is_empty( $title, $site ) ) {
+		return $title;
+	}
+
+	$label = function_exists( 'nh_service_archive_label' ) ? nh_service_archive_label() : __( 'Services', 'nh-theme' );
+	return $site !== '' ? $label . ' – ' . $site : $label;
+}
+add_filter( 'wpseo_title', 'nh_seo_service_title', 30 );
+add_filter( 'wpseo_opengraph_title', 'nh_seo_service_title', 30 );
+add_filter( 'wpseo_twitter_title', 'nh_seo_service_title', 30 );
+
+/**
+ * Document title when Yoast is off.
+ *
+ * @param array<string,string> $parts Title parts.
+ * @return array<string,string>
+ */
+function nh_seo_service_document_title_parts( $parts ) {
+	if ( ! is_array( $parts ) || ! is_post_type_archive( 'service' ) || ! function_exists( 'nh_service_archive_label' ) ) {
+		return $parts;
+	}
+
+	$current = isset( $parts['title'] ) ? (string) $parts['title'] : '';
+	$site    = isset( $parts['site'] ) ? (string) $parts['site'] : '';
+	if ( $current === '' || ( function_exists( 'nh_service_document_title_is_empty' ) && nh_service_document_title_is_empty( $current, $site ) ) ) {
+		$parts['title'] = nh_service_archive_label();
+	}
+
+	return $parts;
+}
+add_filter( 'document_title_parts', 'nh_seo_service_document_title_parts', 20 );
+
+/**
  * Yoast archive templates like "Discover {title} at Norhage – Buy now…".
  *
  * @param string $desc Meta description.
@@ -363,6 +410,71 @@ function nh_seo_filter_metadesc( $desc ) {
 	return $desc;
 }
 add_filter( 'wpseo_metadesc', 'nh_seo_filter_metadesc', 20 );
+
+/**
+ * Replace thin service meta descriptions with text already on the page.
+ *
+ * Blog posts are unchanged. A hand-written Yoast description is kept.
+ *
+ * @param string $desc Meta description.
+ * @return string
+ */
+function nh_seo_service_metadesc( $desc ) {
+	if ( ! is_singular( 'service' ) && ! is_post_type_archive( 'service' ) ) {
+		return $desc;
+	}
+
+	if ( is_singular( 'service' ) ) {
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return $desc;
+		}
+		$subject     = get_the_title( $post );
+		$replacement = nh_service_plain_summary( $post->post_excerpt, $post->post_content, 155 );
+	} else {
+		$subject     = function_exists( 'nh_service_archive_label' ) ? nh_service_archive_label() : '';
+		$replacement = nh_seo_service_archive_summary();
+	}
+
+	return nh_service_replacement_metadesc( $desc, $subject, $replacement );
+}
+add_filter( 'wpseo_metadesc', 'nh_seo_service_metadesc', 30 );
+add_filter( 'wpseo_opengraph_desc', 'nh_seo_service_metadesc', 30 );
+add_filter( 'wpseo_twitter_description', 'nh_seo_service_metadesc', 30 );
+
+/**
+ * Archive description built from published service titles.
+ *
+ * @return string
+ */
+function nh_seo_service_archive_summary() {
+	$posts = get_posts( array(
+		'post_type'      => 'service',
+		'post_status'    => 'publish',
+		'numberposts'    => 12,
+		'orderby'        => array(
+			'menu_order' => 'ASC',
+			'date'       => 'DESC',
+		),
+		'suppress_filters' => false,
+	) );
+
+	$names = array();
+	foreach ( $posts as $post ) {
+		if ( $post instanceof WP_Post ) {
+			$title = get_the_title( $post );
+			if ( $title !== '' ) {
+				$names[] = $title;
+			}
+		}
+	}
+
+	if ( ! $names ) {
+		return function_exists( 'nh_service_archive_label' ) ? nh_service_archive_label() : '';
+	}
+
+	return nh_service_plain_summary( implode( ', ', $names ), '', 155 );
+}
 
 /**
  * Strip leftover spreadsheet/HTML from Yoast llms.txt link blurbs.
@@ -690,6 +802,155 @@ function nh_seo_output_collection_itemlist() {
 	echo '<script type="application/ld+json">' . nh_seo_jsonld( $graph ) . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 add_action( 'wp_footer', 'nh_seo_output_collection_itemlist', 20 );
+
+/**
+ * Organization reference shared by Service schema.
+ *
+ * @return array<string,string>
+ */
+function nh_seo_service_provider() {
+	$profile = nh_seo_organization_profile();
+
+	return array(
+		'id'         => home_url( '/#organization' ),
+		'name'       => isset( $profile['name'] ) ? (string) $profile['name'] : '',
+		'url'        => home_url( '/' ),
+		'areaServed' => isset( $profile['areaServed'] ) ? (string) $profile['areaServed'] : '',
+	);
+}
+
+/**
+ * Service JSON-LD on a single service, ItemList on the archive.
+ *
+ * Dates are omitted on purpose. Blog posts keep Article dates via Yoast.
+ */
+function nh_seo_output_service_schema() {
+	if ( is_singular( 'service' ) ) {
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return;
+		}
+
+		$thumb = (int) get_post_thumbnail_id( $post );
+		$graph = nh_service_jsonld_graph(
+			array(
+				'title'       => get_the_title( $post ),
+				'url'         => get_permalink( $post ),
+				'description' => nh_service_plain_summary( $post->post_excerpt, $post->post_content, 300 ),
+				'image'       => $thumb ? (string) wp_get_attachment_image_url( $thumb, 'large' ) : '',
+			),
+			nh_seo_service_provider()
+		);
+		echo '<script type="application/ld+json">' . nh_seo_jsonld( $graph ) . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
+
+	if ( ! is_post_type_archive( 'service' ) ) {
+		return;
+	}
+
+	global $wp_query;
+	if ( empty( $wp_query->posts ) || ! is_array( $wp_query->posts ) ) {
+		return;
+	}
+
+	$items = array();
+	foreach ( $wp_query->posts as $post ) {
+		if ( count( $items ) >= 24 ) {
+			break;
+		}
+		if ( ! $post instanceof WP_Post ) {
+			continue;
+		}
+		$thumb   = (int) get_post_thumbnail_id( $post );
+		$items[] = array(
+			'title'       => get_the_title( $post ),
+			'url'         => get_permalink( $post ),
+			'description' => nh_service_teaser( $post->post_excerpt, $post->post_content, 200 ),
+			'image'       => $thumb ? (string) wp_get_attachment_image_url( $thumb, 'large' ) : '',
+		);
+	}
+
+	if ( ! $items ) {
+		return;
+	}
+
+	$paged = max( 1, (int) get_query_var( 'paged' ) );
+	$url   = get_pagenum_link( $paged );
+	if ( ! is_string( $url ) || $url === '' ) {
+		$url = get_post_type_archive_link( 'service' );
+	}
+
+	$graph = nh_service_itemlist_jsonld(
+		function_exists( 'nh_service_archive_label' ) ? nh_service_archive_label() : __( 'Services', 'nh-theme' ),
+		(string) $url,
+		$items,
+		nh_seo_service_provider()
+	);
+
+	echo '<script type="application/ld+json">' . nh_seo_jsonld( $graph ) . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+add_action( 'wp_footer', 'nh_seo_output_service_schema', 20 );
+
+/**
+ * CollectionPage name should be the services label, not a bare site separator.
+ *
+ * @param array<string,mixed> $data Schema piece.
+ * @return array<string,mixed>
+ */
+function nh_seo_service_webpage_schema( $data ) {
+	if ( ! is_array( $data ) ) {
+		return $data;
+	}
+
+	if ( is_post_type_archive( 'service' ) && function_exists( 'nh_service_archive_label' ) ) {
+		$label = nh_service_archive_label();
+		$name  = isset( $data['name'] ) ? (string) $data['name'] : '';
+		$site  = get_bloginfo( 'name', 'display' );
+		$plain = trim( wp_strip_all_tags( html_entity_decode( $name, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+		if ( $plain === '' || nh_service_document_title_is_empty( $name, $site ) || stripos( $plain, $label ) === false ) {
+			$data['name'] = $label;
+		}
+	}
+
+	$desc = isset( $data['description'] ) ? (string) $data['description'] : '';
+	if ( ( is_singular( 'service' ) || is_post_type_archive( 'service' ) ) && function_exists( 'nh_seo_service_metadesc' ) ) {
+		$data['description'] = nh_seo_service_metadesc( $desc );
+	}
+
+	return $data;
+}
+add_filter( 'wpseo_schema_webpage', 'nh_seo_service_webpage_schema', 20 );
+
+/**
+ * ReadAction is a blog signal. Services are not posts.
+ *
+ * @param array<int,mixed> $graph   Yoast graph.
+ * @param mixed            $context Context (unused).
+ * @return array<int,mixed>
+ */
+function nh_seo_service_strip_read_action( $graph, $context = null ) {
+	unset( $context );
+	if ( ! is_array( $graph ) || ( ! is_singular( 'service' ) && ! is_post_type_archive( 'service' ) ) ) {
+		return $graph;
+	}
+
+	$out = array();
+	foreach ( $graph as $piece ) {
+		if ( ! is_array( $piece ) ) {
+			$out[] = $piece;
+			continue;
+		}
+		$type = isset( $piece['@type'] ) ? (array) $piece['@type'] : array();
+		if ( in_array( 'ReadAction', $type, true ) ) {
+			continue;
+		}
+		$out[] = $piece;
+	}
+
+	return $out;
+}
+add_filter( 'wpseo_schema_graph', 'nh_seo_service_strip_read_action', 20 );
 
 /**
  * Whether this request should be kept out of the index.

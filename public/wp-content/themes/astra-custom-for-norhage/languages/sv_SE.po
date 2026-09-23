@@ -2181,6 +2181,14 @@ msgctxt "price unit"
 msgid " / m²"
 msgstr " / m²"
 
+#: archive-service.php
+msgid "No services are published yet."
+msgstr "Inga tjänster är publicerade ännu."
+
+#: single-service.php
+msgid "On this page"
+msgstr "På den här sidan"
+
 #~ msgid "Contact Us"
 #~ msgstr "Kontakt"
 
