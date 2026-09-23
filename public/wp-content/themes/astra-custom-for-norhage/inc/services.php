@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/service-structure.php';
+require_once __DIR__ . '/service-order.php';
 
 /** ===== Services CPT (with localized slug) ===== */
 if ( ! function_exists( 'nh_get_services_slug' ) ) {
@@ -95,11 +96,7 @@ function nh_service_archive_query( $query ) {
 	}
 
 	$query->set( 'posts_per_page', 24 );
-	// menu_order when an editor sets it; otherwise keep the current newest-first list.
-	$query->set( 'orderby', array(
-		'menu_order' => 'ASC',
-		'date'       => 'DESC',
-	) );
+	$query->set( 'orderby', nh_service_orderby() );
 }
 add_action( 'pre_get_posts', 'nh_service_archive_query' );
 
@@ -317,10 +314,7 @@ function nh_service_related_markup( $current_id ) {
 		'post_type'           => 'service',
 		'posts_per_page'      => 3,
 		'post__not_in'        => array( (int) $current_id ),
-		'orderby'             => array(
-			'menu_order' => 'ASC',
-			'date'       => 'DESC',
-		),
+		'orderby'             => nh_service_orderby(),
 		'no_found_rows'       => true,
 		'ignore_sticky_posts' => true,
 	) );

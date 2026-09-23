@@ -228,5 +228,21 @@ nh_service_assert( 'archive schema positions start at 1', $list['itemListElement
 nh_service_assert( 'archive schema counts the services', $list['numberOfItems'] === 2 );
 nh_service_assert( 'archive schema has no dates', strpos( wp_json_encode( $list ), 'datePublished' ) === false );
 
+$order = nh_service_orderby();
+nh_service_assert( 'service order is menu order, then newest', $order['menu_order'] === 'ASC' && $order['date'] === 'DESC' );
+
+$reordered = nh_service_menu_order_map( array( 10, 20, 30, 40, 50 ), array( 30, 10, 20 ) );
+nh_service_assert(
+	'dragging the first page leaves later services in place',
+	$reordered === array( 30 => 0, 10 => 1, 20 => 2, 40 => 3, 50 => 4 )
+);
+$second_page = nh_service_menu_order_map( array( 10, 20, 30, 40, 50 ), array( 50, 40 ) );
+nh_service_assert(
+	'dragging a later page does not move the earlier services',
+	$second_page === array( 10 => 0, 20 => 1, 30 => 2, 50 => 3, 40 => 4 )
+);
+$untouched = nh_service_menu_order_map( array( 10, 20, 20 ), array() );
+nh_service_assert( 'an empty drag keeps the current order once', $untouched === array( 10 => 0, 20 => 1 ) );
+
 echo $failures === 0 ? "All service structure tests passed\n" : "{$failures} failed\n";
 exit( $failures === 0 ? 0 : 1 );

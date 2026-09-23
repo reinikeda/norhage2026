@@ -207,8 +207,10 @@ function nhhb_admin_fields_services($data) {
         'post_type'      => 'service',
         'post_status'    => 'publish',
         'posts_per_page' => 50,
-        'orderby'        => 'menu_order title',
-        'order'          => 'ASC',
+        'orderby'        => function_exists( 'nh_service_orderby' ) ? nh_service_orderby() : array(
+            'menu_order' => 'ASC',
+            'date'       => 'DESC',
+        ),
         'no_found_rows'  => true,
     ]);
     if (!$q->have_posts()) {

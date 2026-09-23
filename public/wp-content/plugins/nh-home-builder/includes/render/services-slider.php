@@ -21,8 +21,10 @@ $q = new WP_Query([
     'post_type'           => 'service',
     'posts_per_page'      => 24,
     'post_status'         => 'publish',
-    'orderby'             => 'menu_order title',
-    'order'               => 'ASC',
+    'orderby'             => function_exists( 'nh_service_orderby' ) ? nh_service_orderby() : array(
+        'menu_order' => 'ASC',
+        'date'       => 'DESC',
+    ),
     'no_found_rows'       => true,
     'ignore_sticky_posts' => true,
 ]);
