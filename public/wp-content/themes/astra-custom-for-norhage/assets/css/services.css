@@ -319,6 +319,15 @@ body.single-service .post-navigation {
   gap: 16px;
 }
 
+/*
+ * On a phone the contents list is one scrolling row of nowrap chips.
+ * Without a zero minimum, that row sets the grid column width, the
+ * article lays out wider than the screen, and the text is clipped.
+ */
+.nh-service__layout > * {
+  min-width: 0;
+}
+
 .nh-service__toc {
   background: #fff;
   border: 1px solid rgba(30, 57, 50, 0.08);
@@ -367,6 +376,7 @@ body.single-service .post-navigation {
 body.single-service .nh-service__content.entry-content {
   max-width: none;
   margin: 0;
+  overflow-wrap: break-word;
 }
 
 .nh-service-sections {
