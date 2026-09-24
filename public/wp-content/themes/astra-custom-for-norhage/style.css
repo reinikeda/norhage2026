@@ -1202,6 +1202,16 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
     pointer-events:none;
   }
 
+  /*
+   * A closed details element hides its body with
+   * ::details-content { content-visibility: hidden }.
+   * Showing the list alone leaves the desktop links unpainted.
+   */
+  .nh-footer__fold::details-content{
+    content-visibility:visible;
+    display:block;
+  }
+
   .nh-footer__fold:not([open]) > .nh-footer__menu{
     display:block;
   }
