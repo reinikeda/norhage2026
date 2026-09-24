@@ -142,27 +142,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl-email">
 			<?php wp_nonce_field( 'nh_wl' ); ?>
 			<input type="hidden" name="action" value="nh_wl">
-			<input type="hidden" name="nh_wl_do" value="email">
+			<input type="hidden" name="nh_wl_do" value="quote">
 			<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
 			<fieldset>
-				<legend><?php esc_html_e( 'Send by email', 'nh-wishlist' ); ?></legend>
-				<label class="nh-wl-email__choice">
-					<input type="radio" name="target" value="recipient" checked>
-					<?php esc_html_e( 'Recipient', 'nh-wishlist' ); ?>
-				</label>
-				<label>
-					<span><?php esc_html_e( 'Recipient email', 'nh-wishlist' ); ?></span>
-					<input type="email" name="email" autocomplete="email" placeholder="name@example.com">
-				</label>
-				<label class="nh-wl-email__choice">
-					<input type="radio" name="target" value="service">
-					<?php esc_html_e( 'Customer service', 'nh-wishlist' ); ?>
-				</label>
+				<legend><?php esc_html_e( 'Send a quote', 'nh-wishlist' ); ?></legend>
+				<p class="nh-wl-email__to"><?php esc_html_e( 'Customer service', 'nh-wishlist' ); ?></p>
 				<label>
 					<span><?php esc_html_e( 'Comment', 'nh-wishlist' ); ?></span>
 					<textarea name="comment" rows="4" maxlength="2000"></textarea>
 				</label>
-				<button type="submit" class="nh-wl__button"><?php esc_html_e( 'Send', 'nh-wishlist' ); ?></button>
+				<button type="submit" class="nh-wl__button"><?php esc_html_e( 'Send a quote', 'nh-wishlist' ); ?></button>
 			</fieldset>
 		</form>
 	<?php endif; ?>

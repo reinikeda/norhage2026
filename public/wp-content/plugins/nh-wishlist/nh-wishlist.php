@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Norhage Wishlist
- * Description: Wishlists that keep the selected variation and custom-cut dimensions. Guests are stored with a cookie. Lists can be added to the basket, emailed, or saved as PDF.
+ * Description: Wishlists that keep the selected variation and custom-cut dimensions. Guests are stored with a cookie. Lists can be added to the basket, saved as PDF, or sent as a quote to customer service.
  * Author: Norhage
  * Version: 1.0.0
  * Requires Plugins: woocommerce

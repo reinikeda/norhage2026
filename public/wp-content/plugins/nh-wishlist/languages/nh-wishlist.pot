@@ -213,3 +213,15 @@ msgstr ""
 
 msgid "Your wishlist is empty."
 msgstr ""
+
+msgid "A customer asked for a quote."
+msgstr ""
+
+msgid "Quote request"
+msgstr ""
+
+msgid "Quote sent."
+msgstr ""
+
+msgid "Send a quote"
+msgstr ""

@@ -214,3 +214,15 @@ msgstr "Du kan oprette op til 20 ønskelister."
 
 msgid "Your wishlist is empty."
 msgstr "Din ønskeliste er tom."
+
+msgid "A customer asked for a quote."
+msgstr "En kunde har bedt om et tilbud."
+
+msgid "Quote request"
+msgstr "Tilbudsforespørgsel"
+
+msgid "Quote sent."
+msgstr "Tilbudsforespørgsel sendt."
+
+msgid "Send a quote"
+msgstr "Bed om tilbud"

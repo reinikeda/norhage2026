@@ -214,3 +214,15 @@ msgstr "Galite sukurti iki 20 pageidavimų sąrašų."
 
 msgid "Your wishlist is empty."
 msgstr "Jūsų pageidavimų sąrašas tuščias."
+
+msgid "A customer asked for a quote."
+msgstr "Klientas paprašė pasiūlymo."
+
+msgid "Quote request"
+msgstr "Pasiūlymo užklausa"
+
+msgid "Quote sent."
+msgstr "Pasiūlymo užklausa išsiųsta."
+
+msgid "Send a quote"
+msgstr "Prašyti pasiūlymo"

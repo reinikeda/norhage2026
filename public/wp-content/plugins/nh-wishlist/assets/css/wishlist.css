@@ -425,10 +425,9 @@ ul.products li.product,
   gap: 10px;
 }
 
-.nh-wl-email__choice {
-  display: flex !important;
-  align-items: center;
-  gap: 8px;
+.nh-wl-email__to {
+  margin: 0;
+  font-weight: 700;
 }
 
 .nh-wl__empty {

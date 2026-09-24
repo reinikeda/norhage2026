@@ -214,3 +214,15 @@ msgstr "Sie können bis zu 20 Wunschlisten erstellen."
 
 msgid "Your wishlist is empty."
 msgstr "Ihre Wunschliste ist leer."
+
+msgid "A customer asked for a quote."
+msgstr "Ein Kunde hat ein Angebot angefragt."
+
+msgid "Quote request"
+msgstr "Angebotsanfrage"
+
+msgid "Quote sent."
+msgstr "Angebot gesendet."
+
+msgid "Send a quote"
+msgstr "Angebot anfragen"

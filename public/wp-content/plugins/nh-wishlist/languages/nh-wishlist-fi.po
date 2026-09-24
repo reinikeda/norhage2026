@@ -214,3 +214,15 @@ msgstr "Voit luoda enintään 20 toivelistaa."
 
 msgid "Your wishlist is empty."
 msgstr "Toivelistasi on tyhjä."
+
+msgid "A customer asked for a quote."
+msgstr "Asiakas pyysi tarjouksen."
+
+msgid "Quote request"
+msgstr "Tarjouspyyntö"
+
+msgid "Quote sent."
+msgstr "Tarjouspyyntö lähetetty."
+
+msgid "Send a quote"
+msgstr "Pyydä tarjous"

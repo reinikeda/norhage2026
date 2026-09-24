@@ -697,8 +697,8 @@ class NH_WL_Actions {
 			case 'cart_all':
 				self::add_all( $state, $list_id );
 				break;
-			case 'email':
-				self::send_email( $state, $list_id );
+			case 'quote':
+				self::send_quote( $state, $list_id );
 				break;
 			default:
 				wc_add_notice( __( 'Please try again.', 'nh-wishlist' ), 'error' );
@@ -798,34 +798,29 @@ class NH_WL_Actions {
 	}
 
 	/**
+	 * Quote mail goes only to customer service. A posted address is never used.
+	 *
 	 * @param array<string,mixed> $state State.
 	 * @param string              $list_id List id.
 	 * @return void
 	 */
-	private static function send_email( $state, $list_id ) {
+	private static function send_quote( $state, $list_id ) {
 		$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? preg_replace( '/[^0-9a-fA-F:.]/', '', (string) $_SERVER['REMOTE_ADDR'] ) : '0';
-		$key   = 'nh_wl_mail_' . md5( $ip );
+		$key   = 'nh_wl_quote_' . md5( $ip );
 		$count = (int) get_transient( $key );
-		if ( $count >= 8 ) {
+		if ( $count >= 3 ) {
 			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
 		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
-		$target  = isset( $_POST['target'] ) ? sanitize_key( wp_unslash( $_POST['target'] ) ) : 'recipient';
 		$comment = nh_wl_sanitize_comment( isset( $_POST['comment'] ) ? wp_unslash( $_POST['comment'] ) : '' );
 		$view    = nh_wl_prepare_view( $state, $list_id );
-		if ( 'service' === $target ) {
-			$to      = nh_wl_service_email();
-			$subject = __( 'Wishlist for customer service', 'nh-wishlist' );
-			$intro   = __( 'A customer sent this wishlist.', 'nh-wishlist' );
-		} else {
-			$to = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-			if ( ! is_email( $to ) ) {
-				wc_add_notice( __( 'Enter an email address.', 'nh-wishlist' ), 'error' );
-				return;
-			}
-			$subject = __( 'A wishlist for you', 'nh-wishlist' );
-			$intro   = '';
+		$to      = nh_wl_service_email();
+		$subject = __( 'Quote request', 'nh-wishlist' );
+		$intro   = __( 'A customer asked for a quote.', 'nh-wishlist' );
+		if ( ! is_email( $to ) ) {
+			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
+			return;
 		}
 		$rows = array();
 		foreach ( $view['items'] as $item ) {
@@ -840,7 +835,7 @@ class NH_WL_Actions {
 		$html    = nh_wl_email_html(
 			array(
 				'site_name'     => $view['site_name'],
-				'heading'       => __( 'Wishlist', 'nh-wishlist' ),
+				'heading'       => __( 'Quote request', 'nh-wishlist' ),
 				'list_name'     => $view['label'],
 				'intro'         => $intro,
 				'comment'       => $comment,
@@ -861,7 +856,7 @@ class NH_WL_Actions {
 			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
-		wc_add_notice( __( 'Wishlist sent.', 'nh-wishlist' ), 'success' );
+		wc_add_notice( __( 'Quote sent.', 'nh-wishlist' ), 'success' );
 	}
 
 	/**
