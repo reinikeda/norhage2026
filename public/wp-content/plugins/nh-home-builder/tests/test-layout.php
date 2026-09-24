@@ -89,6 +89,14 @@ $stripped = nhhb_strip_section_shortcodes('<p>[nh_section id="9"]</p><!-- wp:sho
 nhhb_layout_assert('homepage shortcodes are stripped', strpos($stripped, 'nh_section') === false);
 nhhb_layout_assert('other homepage copy is kept', strpos($stripped, 'Hello') !== false);
 
+$with_rule = "<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->\n<!-- wp:paragraph -->\n<p>Hello</p>\n<!-- /wp:paragraph -->";
+$without_rule = nhhb_strip_section_shortcodes($with_rule);
+nhhb_layout_assert('homepage separator block is removed', strpos($without_rule, 'wp-block-separator') === false && strpos($without_rule, 'wp:separator') === false);
+nhhb_layout_assert('copy after the separator is kept', strpos($without_rule, 'Hello') !== false);
+
+$raw_rule = nhhb_strip_section_shortcodes('<hr class="wp-block-separator has-alpha-channel-opacity" />Keep');
+nhhb_layout_assert('rendered separator tag is removed', strpos($raw_rule, '<hr') === false && strpos($raw_rule, 'Keep') !== false);
+
 nhhb_layout_assert('empty title uses fallback', nhhb_maybe_translate('', 'New Arrivals') === 'New Arrivals');
 nhhb_layout_assert('stored English title is translated', nhhb_maybe_translate('Customer reviews', 'Customer reviews') === 'Kundrecensioner');
 nhhb_layout_assert('custom title is kept', nhhb_maybe_translate('Summer picks', 'New Arrivals') === 'Summer picks');

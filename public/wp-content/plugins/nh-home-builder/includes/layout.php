@@ -466,6 +466,10 @@ function nhhb_strip_section_shortcodes($content) {
     $content = (string) $content;
     $content = preg_replace('/<!--\s*wp:shortcode\s*-->\s*\[nh_section[^\]]*\]\s*<!--\s*\/wp:shortcode\s*-->/i', '', $content);
     $content = preg_replace('/\[nh_section[^\]]*\]/', '', $content);
+    // The static homepage still stores a Gutenberg separator above the old shortcodes.
+    // Home Builder now owns the spacing, so that rule would sit under the hero.
+    $content = preg_replace('/<!--\s*wp:separator\b.*?<!--\s*\/wp:separator\s*-->/is', '', $content);
+    $content = preg_replace('/<hr\b[^>]*\bwp-block-separator\b[^>]*>/i', '', $content);
     $content = preg_replace('/<p>(\s|&nbsp;)*<\/p>/i', '', $content);
     return is_string($content) ? $content : '';
 }

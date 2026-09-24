@@ -15,8 +15,13 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
+  min-width: 0;
   position: relative;
   z-index: 1;
+}
+
+.nhhb-cats-title {
+  min-width: 0;
 }
 
 .nhhb-cats-arrows {
@@ -65,6 +70,9 @@
 .nhhb-cats-track {
   display: flex;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;

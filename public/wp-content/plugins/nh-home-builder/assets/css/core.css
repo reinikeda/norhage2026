@@ -30,6 +30,17 @@
   gap: var(--nhhb-gap);
 }
 
+/* Sliders are flex rows. A flex item's default min-width is the row's
+   full width, which pushes reviews, categories, and services past the phone. */
+.home .entry-content[data-ast-blocks-layout] > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.home .entry-content > hr.wp-block-separator {
+  display: none;
+}
+
 .nhhb-top-features,
 .nhhb-promo-trio,
 .nhhb-browse-cats,
@@ -40,6 +51,8 @@
 .nhhb-b2b-wrap,
 .nhhb-reviews {
   margin-block: 0;
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--nhhb-font);
 }
 
