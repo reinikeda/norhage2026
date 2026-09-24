@@ -468,10 +468,48 @@ function nhhb_strip_section_shortcodes($content) {
     $content = preg_replace('/\[nh_section[^\]]*\]/', '', $content);
     // The static homepage still stores a Gutenberg separator above the old shortcodes.
     // Home Builder now owns the spacing, so that rule would sit under the hero.
-    $content = preg_replace('/<!--\s*wp:separator\b.*?<!--\s*\/wp:separator\s*-->/is', '', $content);
+    $content = preg_replace('/<!--\s*wp:separator\b[^>]*-->\s*(?:<hr\b[^>]*>\s*)?<!--\s*\/wp:separator\s*-->/i', '', $content);
     $content = preg_replace('/<hr\b[^>]*\bwp-block-separator\b[^>]*>/i', '', $content);
     $content = preg_replace('/<p>(\s|&nbsp;)*<\/p>/i', '', $content);
     return is_string($content) ? $content : '';
+}
+
+/**
+ * Injected section HTML has real line breaks. WordPress runs wpautop on
+ * the_content unless the string still contains a block. After the shortcodes
+ * are removed, the separator is often the only block left — deleting it (or
+ * stripping it here) lets wpautop turn those line breaks into <br> tags and
+ * the homepage falls apart. Skip wpautop for this one pass.
+ */
+function nhhb_suspend_content_autop() {
+    if (!function_exists('has_filter') || !function_exists('remove_filter') || !function_exists('add_filter') || !function_exists('doing_filter')) {
+        return;
+    }
+    if (!doing_filter('the_content')) {
+        return;
+    }
+    $priority = has_filter('the_content', 'wpautop');
+    if (false === $priority) {
+        return;
+    }
+    remove_filter('the_content', 'wpautop', $priority);
+    $restore = function_exists('_restore_wpautop_hook') ? '_restore_wpautop_hook' : 'nhhb_restore_content_autop';
+    add_filter('the_content', $restore, (int) $priority + 1);
+}
+
+/**
+ * Fallback when WordPress has not defined _restore_wpautop_hook.
+ *
+ * @param string $content
+ * @return string
+ */
+function nhhb_restore_content_autop($content) {
+    $current = has_filter('the_content', 'nhhb_restore_content_autop');
+    if (false !== $current) {
+        add_filter('the_content', 'wpautop', (int) $current - 1);
+        remove_filter('the_content', 'nhhb_restore_content_autop', $current);
+    }
+    return $content;
 }
 
 /**
@@ -492,6 +530,7 @@ function nhhb_inject_home_sections($content) {
     if ($sections === '') {
         return $stripped;
     }
+    nhhb_suspend_content_autop();
     $trimmed = trim($stripped);
     return $trimmed === '' ? $sections : $trimmed . $sections;
 }
