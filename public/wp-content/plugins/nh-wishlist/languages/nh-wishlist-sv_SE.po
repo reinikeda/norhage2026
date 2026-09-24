@@ -1,0 +1,216 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr "%d produkter måste anpassas innan de kan läggas i varukorgen."
+
+msgid "A customer sent this wishlist."
+msgstr "En kund skickade den här önskelistan."
+
+msgid "A wishlist for you"
+msgstr "En önskelista till dig"
+
+msgid "Add all to basket"
+msgstr "Lägg alla i varukorgen"
+
+msgid "Add to basket"
+msgstr "Lägg i varukorgen"
+
+msgid "Add to wishlist"
+msgstr "Spara på önskelistan"
+
+msgid "Added %d products to the basket."
+msgstr "%d produkter har lagts i varukorgen."
+
+msgid "Added to the basket."
+msgstr "Tillagd i varukorgen."
+
+msgid "Choose a wishlist"
+msgstr "Välj önskelista"
+
+msgid "Close"
+msgstr "Stäng"
+
+msgid "Comment"
+msgstr "Kommentar"
+
+msgid "Comment:"
+msgstr "Kommentar:"
+
+msgid "Continue shopping"
+msgstr "Fortsätt handla"
+
+msgid "Could not add this product to the basket."
+msgstr "Produkten kunde inte läggas i varukorgen."
+
+msgid "Could not send the email. Please try again."
+msgstr "E-postmeddelandet kunde inte skickas. Försök igen."
+
+msgid "Create"
+msgstr "Skapa"
+
+msgid "Create a list"
+msgstr "Skapa en lista"
+
+msgid "Customer service"
+msgstr "Kundtjänst"
+
+msgid "Customize"
+msgstr "Anpassa"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Delete list"
+msgstr "Ta bort lista"
+
+msgid "Enter a list name."
+msgstr "Ange ett listnamn."
+
+msgid "Enter an email address."
+msgstr "Ange en e-postadress."
+
+msgid "In wishlist"
+msgstr "På önskelistan"
+
+msgid "Invalid wishlist."
+msgstr "Ogiltig önskelista."
+
+msgid "Length"
+msgstr "Längd"
+
+msgid "List created."
+msgstr "Lista skapad."
+
+msgid "List deleted."
+msgstr "Lista borttagen."
+
+msgid "List name"
+msgstr "Listnamn"
+
+msgid "List renamed."
+msgstr "Listan har bytt namn."
+
+msgid "New list"
+msgstr "Ny lista"
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr "Norhage Wishlist behöver WooCommerce."
+
+msgid "Open product"
+msgstr "Öppna produkt"
+
+msgid "Please try again."
+msgstr "Försök igen."
+
+msgid "Quantity"
+msgstr "Antal"
+
+msgid "Quantity updated."
+msgstr "Antal uppdaterat."
+
+msgid "Quantity: %d"
+msgstr "Antal: %d"
+
+msgid "Recipient"
+msgstr "Mottagare"
+
+msgid "Recipient email"
+msgstr "Mottagarens e-post"
+
+msgid "Remove"
+msgstr "Ta bort"
+
+msgid "Remove from %s"
+msgstr "Ta bort från %s"
+
+msgid "Removed from the wishlist."
+msgstr "Borttagen från önskelistan."
+
+msgid "Rename"
+msgstr "Byt namn"
+
+msgid "SKU"
+msgstr "Artikelnummer"
+
+msgid "Save as PDF"
+msgstr "Spara som PDF"
+
+msgid "Save to %s"
+msgstr "Spara i %s"
+
+msgid "Saved on your account."
+msgstr "Sparad på ditt konto."
+
+msgid "Saved to %s."
+msgstr "Sparad i %s."
+
+msgid "Saved with selected options"
+msgstr "Sparad med valda alternativ"
+
+msgid "Send"
+msgstr "Skicka"
+
+msgid "Send by email"
+msgstr "Skicka med e-post"
+
+msgid "Sign in"
+msgstr "Logga in"
+
+msgid "That name is already used."
+msgstr "Det namnet används redan."
+
+msgid "The only wishlist cannot be deleted."
+msgstr "Den enda önskelistan kan inte tas bort."
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr "Önskelistan sparas i en cookie i den här webbläsaren. Logga in för att behålla den på ditt konto."
+
+msgid "This product is no longer available."
+msgstr "Den här produkten är inte längre tillgänglig."
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr "Den här produkten måste anpassas innan den kan läggas i varukorgen."
+
+msgid "This wishlist is full."
+msgstr "Den här önskelistan är full."
+
+msgid "Update"
+msgstr "Uppdatera"
+
+msgid "View wishlist"
+msgstr "Visa önskelista"
+
+msgid "Width"
+msgstr "Bredd"
+
+msgid "Wishlist"
+msgstr "Önskelista"
+
+msgid "Wishlist for customer service"
+msgstr "Önskelista till kundtjänst"
+
+msgid "Wishlist sent."
+msgstr "Önskelistan har skickats."
+
+msgid "Wishlists"
+msgstr "Önskelistor"
+
+msgid "You can create up to 20 wishlists."
+msgstr "Du kan skapa upp till 20 önskelistor."
+
+msgid "Your wishlist is empty."
+msgstr "Din önskelista är tom."

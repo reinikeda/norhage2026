@@ -1,0 +1,216 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: Lithuanian\n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=9 && (n%100<11 || n%100>19) ? 1 : 2);\n"
+"X-Generator: Norhage\n"
+
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr "%d produktus reikia pritaikyti, kad juos būtų galima dėti į krepšelį."
+
+msgid "A customer sent this wishlist."
+msgstr "Klientas atsiuntė šį pageidavimų sąrašą."
+
+msgid "A wishlist for you"
+msgstr "Pageidavimų sąrašas jums"
+
+msgid "Add all to basket"
+msgstr "Viską į krepšelį"
+
+msgid "Add to basket"
+msgstr "Į krepšelį"
+
+msgid "Add to wishlist"
+msgstr "Įtraukti į pageidavimų sąrašą"
+
+msgid "Added %d products to the basket."
+msgstr "Į krepšelį įdėta produktų: %d."
+
+msgid "Added to the basket."
+msgstr "Įdėta į krepšelį."
+
+msgid "Choose a wishlist"
+msgstr "Pasirinkite pageidavimų sąrašą"
+
+msgid "Close"
+msgstr "Uždaryti"
+
+msgid "Comment"
+msgstr "Komentaras"
+
+msgid "Comment:"
+msgstr "Komentaras:"
+
+msgid "Continue shopping"
+msgstr "Tęsti apsipirkimą"
+
+msgid "Could not add this product to the basket."
+msgstr "Šio produkto į krepšelį įdėti nepavyko."
+
+msgid "Could not send the email. Please try again."
+msgstr "El. laiško išsiųsti nepavyko. Bandykite dar kartą."
+
+msgid "Create"
+msgstr "Sukurti"
+
+msgid "Create a list"
+msgstr "Sukurti sąrašą"
+
+msgid "Customer service"
+msgstr "Klientų aptarnavimas"
+
+msgid "Customize"
+msgstr "Pritaikyti"
+
+msgid "Default"
+msgstr "Numatytasis"
+
+msgid "Delete list"
+msgstr "Ištrinti sąrašą"
+
+msgid "Enter a list name."
+msgstr "Įveskite sąrašo pavadinimą."
+
+msgid "Enter an email address."
+msgstr "Įveskite el. pašto adresą."
+
+msgid "In wishlist"
+msgstr "Pageidavimų sąraše"
+
+msgid "Invalid wishlist."
+msgstr "Netinkamas sąrašas."
+
+msgid "Length"
+msgstr "Ilgis"
+
+msgid "List created."
+msgstr "Sąrašas sukurtas."
+
+msgid "List deleted."
+msgstr "Sąrašas ištrintas."
+
+msgid "List name"
+msgstr "Sąrašo pavadinimas"
+
+msgid "List renamed."
+msgstr "Sąrašas pervadintas."
+
+msgid "New list"
+msgstr "Naujas sąrašas"
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr "Norhage Wishlist reikia WooCommerce."
+
+msgid "Open product"
+msgstr "Atidaryti produktą"
+
+msgid "Please try again."
+msgstr "Bandykite dar kartą."
+
+msgid "Quantity"
+msgstr "Kiekis"
+
+msgid "Quantity updated."
+msgstr "Kiekis atnaujintas."
+
+msgid "Quantity: %d"
+msgstr "Kiekis: %d"
+
+msgid "Recipient"
+msgstr "Gavėjas"
+
+msgid "Recipient email"
+msgstr "Gavėjo el. paštas"
+
+msgid "Remove"
+msgstr "Pašalinti"
+
+msgid "Remove from %s"
+msgstr "Pašalinti iš %s"
+
+msgid "Removed from the wishlist."
+msgstr "Pašalinta iš pageidavimų sąrašo."
+
+msgid "Rename"
+msgstr "Pervadinti"
+
+msgid "SKU"
+msgstr "Prekės kodas"
+
+msgid "Save as PDF"
+msgstr "Išsaugoti kaip PDF"
+
+msgid "Save to %s"
+msgstr "Išsaugoti į %s"
+
+msgid "Saved on your account."
+msgstr "Išsaugota jūsų paskyroje."
+
+msgid "Saved to %s."
+msgstr "Išsaugota į %s."
+
+msgid "Saved with selected options"
+msgstr "Išsaugota su pasirinktomis parinktimis"
+
+msgid "Send"
+msgstr "Siųsti"
+
+msgid "Send by email"
+msgstr "Siųsti el. paštu"
+
+msgid "Sign in"
+msgstr "Prisijungti"
+
+msgid "That name is already used."
+msgstr "Toks pavadinimas jau naudojamas."
+
+msgid "The only wishlist cannot be deleted."
+msgstr "Vienintelio sąrašo ištrinti negalima."
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr "Pageidavimų sąrašas šiame naršyklėje išsaugomas slapuke. Prisijunkite, kad jis liktų jūsų paskyroje."
+
+msgid "This product is no longer available."
+msgstr "Šio produkto nebėra."
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr "Prieš dedant į krepšelį produktą reikia pritaikyti."
+
+msgid "This wishlist is full."
+msgstr "Šis sąrašas pilnas."
+
+msgid "Update"
+msgstr "Atnaujinti"
+
+msgid "View wishlist"
+msgstr "Peržiūrėti pageidavimų sąrašą"
+
+msgid "Width"
+msgstr "Plotis"
+
+msgid "Wishlist"
+msgstr "Pageidavimų sąrašas"
+
+msgid "Wishlist for customer service"
+msgstr "Pageidavimų sąrašas klientų aptarnavimui"
+
+msgid "Wishlist sent."
+msgstr "Pageidavimų sąrašas išsiųstas."
+
+msgid "Wishlists"
+msgstr "Pageidavimų sąrašai"
+
+msgid "You can create up to 20 wishlists."
+msgstr "Galite sukurti iki 20 pageidavimų sąrašų."
+
+msgid "Your wishlist is empty."
+msgstr "Jūsų pageidavimų sąrašas tuščias."
