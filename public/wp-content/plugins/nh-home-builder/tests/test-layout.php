@@ -10,8 +10,38 @@ if (!defined('ABSPATH')) {
 }
 
 if (!function_exists('add_filter')) {
+    $GLOBALS['nhhb_filters'] = [];
     function add_filter($hook, $cb, $priority = 10, $accepted_args = 1) {
-        unset($hook, $cb, $priority, $accepted_args);
+        unset($accepted_args);
+        $GLOBALS['nhhb_filters'][$hook][(int) $priority][] = $cb;
+    }
+    function has_filter($hook, $cb = false) {
+        if (empty($GLOBALS['nhhb_filters'][$hook])) {
+            return false;
+        }
+        if ($cb === false) {
+            return true;
+        }
+        foreach ($GLOBALS['nhhb_filters'][$hook] as $priority => $cbs) {
+            if (in_array($cb, $cbs, true)) {
+                return (int) $priority;
+            }
+        }
+        return false;
+    }
+    function remove_filter($hook, $cb, $priority = 10) {
+        if (empty($GLOBALS['nhhb_filters'][$hook][(int) $priority])) {
+            return;
+        }
+        $GLOBALS['nhhb_filters'][$hook][(int) $priority] = array_values(array_filter(
+            $GLOBALS['nhhb_filters'][$hook][(int) $priority],
+            static function ($item) use ($cb) {
+                return $item !== $cb;
+            }
+        ));
+    }
+    function doing_filter($hook) {
+        return !empty($GLOBALS['nhhb_doing_filter']) && $GLOBALS['nhhb_doing_filter'] === $hook;
     }
 }
 
@@ -88,6 +118,24 @@ nhhb_layout_assert('shortcode ids parsed in order without dupes', $ids === [12, 
 $stripped = nhhb_strip_section_shortcodes('<p>[nh_section id="9"]</p><!-- wp:shortcode -->[nh_section id="10"]<!-- /wp:shortcode --><p></p>Hello');
 nhhb_layout_assert('homepage shortcodes are stripped', strpos($stripped, 'nh_section') === false);
 nhhb_layout_assert('other homepage copy is kept', strpos($stripped, 'Hello') !== false);
+
+$with_rule = "<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->\n<!-- wp:paragraph -->\n<p>Hello</p>\n<!-- /wp:paragraph -->";
+$without_rule = nhhb_strip_section_shortcodes($with_rule);
+nhhb_layout_assert('homepage separator block is removed', strpos($without_rule, 'wp-block-separator') === false && strpos($without_rule, 'wp:separator') === false);
+nhhb_layout_assert('copy after the separator is kept', strpos($without_rule, 'Hello') !== false);
+
+$raw_rule = nhhb_strip_section_shortcodes('<hr class="wp-block-separator has-alpha-channel-opacity" />Keep');
+nhhb_layout_assert('rendered separator tag is removed', strpos($raw_rule, '<hr') === false && strpos($raw_rule, 'Keep') !== false);
+
+$only_markers = nhhb_strip_section_shortcodes("<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->\n<!-- wp:shortcode -->\n[nh_section id=\"4\"]\n<!-- /wp:shortcode -->");
+nhhb_layout_assert('separator plus shortcodes leave no block marker', strpos($only_markers, '<!-- wp:') === false);
+
+add_filter('the_content', 'wpautop', 10);
+$GLOBALS['nhhb_doing_filter'] = 'the_content';
+nhhb_suspend_content_autop();
+nhhb_layout_assert('injected homepage skips wpautop', has_filter('the_content', 'wpautop') === false);
+nhhb_layout_assert('wpautop comes back after this content', has_filter('the_content', 'nhhb_restore_content_autop') === 11);
+$GLOBALS['nhhb_doing_filter'] = '';
 
 nhhb_layout_assert('empty title uses fallback', nhhb_maybe_translate('', 'New Arrivals') === 'New Arrivals');
 nhhb_layout_assert('stored English title is translated', nhhb_maybe_translate('Customer reviews', 'Customer reviews') === 'Kundrecensioner');

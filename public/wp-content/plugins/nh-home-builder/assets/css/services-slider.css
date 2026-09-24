@@ -4,8 +4,16 @@
   margin: 0 0 12px;
 }
 
+.nhhb-services {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .nhhb-services .nhhb-services-swiper {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 320px;
   height: clamp(320px, 72vw, 420px);
   border-radius: var(--nhhb-radius, 16px);
@@ -22,6 +30,10 @@
   align-items: stretch;
   overflow: hidden;
   height: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .nhhb-svc-bg {
@@ -65,6 +77,8 @@
   line-height: 1.15;
   font-weight: 800;
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .nhhb-svc-desc {
