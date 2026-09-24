@@ -136,7 +136,10 @@ class NH_TC_Render {
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">2</span><?php esc_html_e( 'Polycarbonate', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--3">
+						<div class="nh-tc__select-row">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="sheet">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Material', NH_TC_TD ); ?></span>
 								<select name="material">
@@ -153,7 +156,6 @@ class NH_TC_Render {
 								<select name="colour"></select>
 							</label>
 						</div>
-						<div class="nh-tc__picks" data-sheet-pick hidden></div>
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
@@ -227,7 +229,10 @@ class NH_TC_Render {
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--2">
+						<div class="nh-tc__select-row nh-tc__select-row--pair">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Connecting profile', NH_TC_TD ); ?></span>
 								<select name="connecting_profile">
@@ -244,6 +249,11 @@ class NH_TC_Render {
 									<option value="brown"><?php esc_html_e( 'Brown', NH_TC_TD ); ?></option>
 								</select>
 							</label>
+						</div>
+						<div class="nh-tc__select-row nh-tc__select-row--pair">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="finish">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Finish profile', NH_TC_TD ); ?></span>
 								<select name="finish_profile">
@@ -262,7 +272,6 @@ class NH_TC_Render {
 								</select>
 							</label>
 						</div>
-						<div class="nh-tc__picks" data-profile-picks hidden></div>
 					</fieldset>
 				</form>
 

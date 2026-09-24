@@ -259,45 +259,51 @@
   font-size: 0.8rem;
 }
 
-.nh-tc__picks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  margin-top: 0.85rem;
+.nh-tc__select-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.25fr) minmax(0, 0.75fr) minmax(0, 0.85fr);
+  gap: 0.45rem 0.5rem;
+  align-items: end;
 }
 
-.nh-tc__picks[hidden] {
-  display: none;
+.nh-tc__select-row + .nh-tc__select-row {
+  margin-top: 0.75rem;
 }
 
-.nh-tc__pick {
+.nh-tc__select-row--pair {
+  grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.nh-tc__inline-thumb {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  flex: 1 1 9.5rem;
-  min-width: 0;
-  margin: 0;
-  padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--tc-mint);
-  border-radius: 10px;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.nh-tc__inline-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.nh-tc__inline-thumb.is-empty {
   background: var(--tc-bg);
 }
 
-.nh-tc__pick img {
-  width: 52px;
-  height: 52px;
-  flex: none;
-  object-fit: contain;
-  border-radius: 6px;
-  background: #fff;
+.nh-tc__inline-thumb.is-empty img {
+  visibility: hidden;
 }
 
-.nh-tc__pick figcaption {
-  min-width: 0;
-  color: var(--tc-forest);
-  font-size: 0.78rem;
-  font-weight: 650;
-  line-height: 1.3;
+a.nh-tc__inline-thumb[href]:focus-visible {
+  outline: 2px solid var(--tc-green);
+  outline-offset: 2px;
 }
 
 .nh-tc__offer {
@@ -364,6 +370,22 @@
   grid-column: 1;
   font-weight: 650;
   color: var(--tc-forest);
+}
+
+a.nh-tc__item-name {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a.nh-tc__item-name:hover,
+a.nh-tc__item-name:focus-visible {
+  color: var(--tc-green);
+}
+
+a.nh-tc__thumb-link {
+  grid-row: 1 / span 2;
+  display: block;
+  line-height: 0;
 }
 
 .nh-tc__items li.has-thumb .nh-tc__item-name,
@@ -475,6 +497,20 @@ body.nh-tc-hide-default-cart .product .summary form.cart {
 
   .nh-tc__choice-art svg {
     max-width: 88px;
+  }
+
+  .nh-tc__select-row {
+    grid-template-columns: 56px minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 0.85fr);
+    gap: 0.7rem 0.85rem;
+  }
+
+  .nh-tc__select-row--pair {
+    grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .nh-tc__inline-thumb {
+    width: 56px;
+    height: 56px;
   }
 }
 

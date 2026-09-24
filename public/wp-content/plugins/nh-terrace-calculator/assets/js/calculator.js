@@ -18,8 +18,11 @@
   var statusEl = root.querySelector('[data-offer-status]');
   var recEl = root.querySelector('[data-rec-cc]');
   var planEl = root.querySelector('[data-sheet-plan]');
-  var sheetPickEl = root.querySelector('[data-sheet-pick]');
-  var profilePickEl = root.querySelector('[data-profile-picks]');
+  var inlineThumbs = {
+    sheet: root.querySelector('[data-inline-thumb="sheet"]'),
+    connecting: root.querySelector('[data-inline-thumb="connecting"]'),
+    finish: root.querySelector('[data-inline-thumb="finish"]')
+  };
   var thkSel = form.querySelector('[name="thickness"]');
   var colSel = form.querySelector('[name="colour"]');
   var matSel = form.querySelector('[name="material"]');
@@ -160,7 +163,7 @@
       itemsEl.innerHTML = '<li class="nh-tc__empty">' + i18n('loading', 'Enter a size to see the kit.') + '</li>';
       atc.disabled = true;
       totalsEl.hidden = true;
-      drawPicks([]);
+      drawInlineThumbs([]);
       return;
     }
 
@@ -170,12 +173,23 @@
       var li = document.createElement('li');
       if (isMissing) li.className = 'is-missing';
       var thumb = productThumb(item);
+      var productUrl = safeUrl(item.permalink);
       if (thumb) {
         li.classList.add('has-thumb');
-        li.appendChild(thumb);
+        if (productUrl) {
+          var thumbLink = document.createElement('a');
+          thumbLink.className = 'nh-tc__thumb-link';
+          thumbLink.href = productUrl;
+          thumbLink.setAttribute('aria-label', item.name || item.label || '');
+          thumbLink.appendChild(thumb);
+          li.appendChild(thumbLink);
+        } else {
+          li.appendChild(thumb);
+        }
       }
-      var name = document.createElement('div');
+      var name = document.createElement(productUrl ? 'a' : 'div');
       name.className = 'nh-tc__item-name';
+      if (productUrl) name.href = productUrl;
       name.textContent = item.name || item.label || '';
       var spec = document.createElement('div');
       spec.className = 'nh-tc__item-spec';
@@ -198,7 +212,7 @@
       metaEl.textContent = i18n('sheets', '%d sheets').replace('%d', payload.meta.sheet_count);
     }
     drawPlan(payload.meta);
-    drawPicks(items.concat(missing));
+    drawInlineThumbs(items.concat(missing));
 
     if (payload.totals) {
       totalsEl.hidden = false;
@@ -229,7 +243,7 @@
         if (!json || !json.success) {
           atc.disabled = true;
           drawPlan(null);
-          drawPicks([]);
+          drawInlineThumbs([]);
           setStatus((json && json.data && json.data.message) || i18n('error'), 'error');
           return;
         }
@@ -269,6 +283,13 @@
     return img;
   }
 
+  function safeUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    var value = url.trim();
+    if (!value || value.indexOf('javascript:') === 0) return '';
+    return value;
+  }
+
   function firstWithImage(items, role) {
     for (var i = 0; i < items.length; i++) {
       if (items[i].role === role && items[i].image) return items[i];
@@ -276,38 +297,29 @@
     return null;
   }
 
-  function fillPicks(container, picks) {
-    if (!container) return;
-    container.innerHTML = '';
-    var shown = picks.filter(Boolean);
-    if (!shown.length) {
-      container.hidden = true;
+  function setInlineThumb(el, item) {
+    if (!el) return;
+    var img = el.querySelector('img');
+    var url = item ? safeUrl(item.permalink) : '';
+    if (!item || !item.image) {
+      el.classList.add('is-empty');
+      el.removeAttribute('href');
+      if (img) img.removeAttribute('src');
       return;
     }
-    container.hidden = false;
-    shown.forEach(function (item) {
-      var fig = document.createElement('figure');
-      fig.className = 'nh-tc__pick';
-      var img = document.createElement('img');
+    el.classList.remove('is-empty');
+    if (img) {
       img.src = item.image;
-      img.alt = '';
-      img.width = 52;
-      img.height = 52;
-      img.decoding = 'async';
-      var cap = document.createElement('figcaption');
-      cap.textContent = item.name || item.label || '';
-      fig.appendChild(img);
-      fig.appendChild(cap);
-      container.appendChild(fig);
-    });
+      img.alt = item.name || item.label || '';
+    }
+    if (url) el.href = url;
+    else el.removeAttribute('href');
   }
 
-  function drawPicks(items) {
-    fillPicks(sheetPickEl, [firstWithImage(items, 'sheet')]);
-    fillPicks(profilePickEl, [
-      firstWithImage(items, 'connecting'),
-      firstWithImage(items, 'finish')
-    ]);
+  function drawInlineThumbs(items) {
+    setInlineThumb(inlineThumbs.sheet, firstWithImage(items, 'sheet'));
+    setInlineThumb(inlineThumbs.connecting, firstWithImage(items, 'connecting'));
+    setInlineThumb(inlineThumbs.finish, firstWithImage(items, 'finish'));
   }
 
   function drawPlan(meta) {
