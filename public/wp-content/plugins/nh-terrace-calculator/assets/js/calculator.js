@@ -18,6 +18,8 @@
   var statusEl = root.querySelector('[data-offer-status]');
   var recEl = root.querySelector('[data-rec-cc]');
   var planEl = root.querySelector('[data-sheet-plan]');
+  var sheetPickEl = root.querySelector('[data-sheet-pick]');
+  var profilePickEl = root.querySelector('[data-profile-picks]');
   var thkSel = form.querySelector('[name="thickness"]');
   var colSel = form.querySelector('[name="colour"]');
   var matSel = form.querySelector('[name="material"]');
@@ -158,6 +160,7 @@
       itemsEl.innerHTML = '<li class="nh-tc__empty">' + i18n('loading', 'Enter a size to see the kit.') + '</li>';
       atc.disabled = true;
       totalsEl.hidden = true;
+      drawPicks([]);
       return;
     }
 
@@ -166,6 +169,11 @@
     function addRow(item, isMissing) {
       var li = document.createElement('li');
       if (isMissing) li.className = 'is-missing';
+      var thumb = productThumb(item);
+      if (thumb) {
+        li.classList.add('has-thumb');
+        li.appendChild(thumb);
+      }
       var name = document.createElement('div');
       name.className = 'nh-tc__item-name';
       name.textContent = item.name || item.label || '';
@@ -190,6 +198,7 @@
       metaEl.textContent = i18n('sheets', '%d sheets').replace('%d', payload.meta.sheet_count);
     }
     drawPlan(payload.meta);
+    drawPicks(items.concat(missing));
 
     if (payload.totals) {
       totalsEl.hidden = false;
@@ -220,6 +229,7 @@
         if (!json || !json.success) {
           atc.disabled = true;
           drawPlan(null);
+          drawPicks([]);
           setStatus((json && json.data && json.data.message) || i18n('error'), 'error');
           return;
         }
@@ -243,6 +253,61 @@
       var next = values.shift();
       return next;
     });
+  }
+
+  var visualRoles = { sheet: 1, connecting: 1, finish: 1, wall: 1, ridge: 1 };
+
+  function productThumb(item) {
+    if (!item || !item.image || !visualRoles[item.role]) return null;
+    var img = document.createElement('img');
+    img.className = 'nh-tc__thumb';
+    img.src = item.image;
+    img.alt = '';
+    img.width = 48;
+    img.height = 48;
+    img.decoding = 'async';
+    return img;
+  }
+
+  function firstWithImage(items, role) {
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].role === role && items[i].image) return items[i];
+    }
+    return null;
+  }
+
+  function fillPicks(container, picks) {
+    if (!container) return;
+    container.innerHTML = '';
+    var shown = picks.filter(Boolean);
+    if (!shown.length) {
+      container.hidden = true;
+      return;
+    }
+    container.hidden = false;
+    shown.forEach(function (item) {
+      var fig = document.createElement('figure');
+      fig.className = 'nh-tc__pick';
+      var img = document.createElement('img');
+      img.src = item.image;
+      img.alt = '';
+      img.width = 52;
+      img.height = 52;
+      img.decoding = 'async';
+      var cap = document.createElement('figcaption');
+      cap.textContent = item.name || item.label || '';
+      fig.appendChild(img);
+      fig.appendChild(cap);
+      container.appendChild(fig);
+    });
+  }
+
+  function drawPicks(items) {
+    fillPicks(sheetPickEl, [firstWithImage(items, 'sheet')]);
+    fillPicks(profilePickEl, [
+      firstWithImage(items, 'connecting'),
+      firstWithImage(items, 'finish')
+    ]);
   }
 
   function drawPlan(meta) {

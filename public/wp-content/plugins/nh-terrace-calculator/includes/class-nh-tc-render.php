@@ -153,6 +153,7 @@ class NH_TC_Render {
 								<select name="colour"></select>
 							</label>
 						</div>
+						<div class="nh-tc__picks" data-sheet-pick hidden></div>
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
@@ -261,6 +262,7 @@ class NH_TC_Render {
 								</select>
 							</label>
 						</div>
+						<div class="nh-tc__picks" data-profile-picks hidden></div>
 					</fieldset>
 				</form>
 
