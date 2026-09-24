@@ -254,6 +254,14 @@ nh_service_assert(
 	strpos( $services_css, "body.single-service .nh-service__content.entry-content" ) !== false
 		&& strpos( $services_css, 'overflow-wrap: break-word;' ) !== false
 );
+$toc_list = substr( $services_css, (int) strpos( $services_css, ".nh-service__toc ol {\n  display: flex;" ), 80 );
+$toc_link = substr( $services_css, (int) strpos( $services_css, '.nh-service__toc a {' ), 420 );
+nh_service_assert(
+	'phone contents list stacks full headings',
+	strpos( $toc_list, 'flex-direction: column;' ) !== false
+		&& strpos( $toc_link, 'white-space: normal;' ) !== false
+		&& strpos( $toc_link, 'nowrap' ) === false
+);
 
 echo $failures === 0 ? "All service structure tests passed\n" : "{$failures} failed\n";
 exit( $failures === 0 ? 0 : 1 );

@@ -320,9 +320,9 @@ body.single-service .post-navigation {
 }
 
 /*
- * On a phone the contents list is one scrolling row of nowrap chips.
- * Without a zero minimum, that row sets the grid column width, the
- * article lays out wider than the screen, and the text is clipped.
+ * Grid children must be allowed to shrink. A wide image or a long
+ * heading would otherwise stretch the column past the phone, and the
+ * page clips that overflow.
  */
 .nh-service__layout > * {
   min-width: 0;
@@ -346,14 +346,13 @@ body.single-service .post-navigation {
 
 .nh-service__toc ol {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   padding-bottom: 4px;
 }
 
 .nh-service__toc a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   min-height: 44px;
   padding: 8px 12px;
@@ -364,7 +363,7 @@ body.single-service .post-navigation {
   font-size: 0.92rem;
   line-height: 1.35;
   text-decoration: none;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .nh-service__toc a:hover,
