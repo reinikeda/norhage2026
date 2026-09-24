@@ -54,6 +54,8 @@ $input = array(
 	'finish_profile'     => 'f_profile',
 	'finish_color'       => 'silver',
 	'sheet_layout'       => 'per_cc',
+	'support_mm'         => 50,
+	'overhang_mm'        => 50,
 );
 
 $bom = NH_TC_Engine::calculate( $input, $settings );
@@ -64,7 +66,20 @@ foreach ( $bom['lines'] as $line ) {
 	$by_role[ $line['role'] ] = $line;
 }
 
-nh_tc_assert( '7 sheets of 600 x 4700', isset( $by_role['sheet'] ) && 7 === (int) $by_role['sheet']['qty'] && 600 === (int) $by_role['sheet']['cut']['width_mm'] && 4700 === (int) $by_role['sheet']['cut']['length_mm'] );
+$sheet_lines = array();
+foreach ( $bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$sheet_lines[] = $line;
+	}
+}
+nh_tc_assert( 'three cut widths', 3 === count( $sheet_lines ) );
+nh_tc_assert( 'outer 620 x 4750', 1 === (int) $sheet_lines[0]['qty'] && 620 === (int) $sheet_lines[0]['cut']['width_mm'] && 4750 === (int) $sheet_lines[0]['cut']['length_mm'] );
+nh_tc_assert( 'middle 590 x 5', 5 === (int) $sheet_lines[1]['qty'] && 590 === (int) $sheet_lines[1]['cut']['width_mm'] && 4750 === (int) $sheet_lines[1]['cut']['length_mm'] );
+nh_tc_assert( 'short outer 570 x 4750', 1 === (int) $sheet_lines[2]['qty'] && 570 === (int) $sheet_lines[2]['cut']['width_mm'] );
+$covered = 620 + ( 590 * 5 ) + 570 + ( 6 * 10 );
+nh_tc_assert( 'sheet widths plus 10 mm joints equal the frame', 4200 === $covered );
+nh_tc_assert( 'outer sheets are 30 mm wider than a full middle sheet', 30 === (int) $bom['meta']['side_extra_mm'] );
+nh_tc_assert( '7 sheets still', 7 === (int) $bom['meta']['sheet_count'] );
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
 nh_tc_assert( 'F-profile 3×2 m + 3×3 m', isset( $by_role['finish']['packed']['2-m'], $by_role['finish']['packed']['3-m'] ) && 3 === (int) $by_role['finish']['packed']['2-m'] && 3 === (int) $by_role['finish']['packed']['3-m'] );
 nh_tc_assert( '150 screws → 3 packs of 5x60', isset( $by_role['screw'] ) && 150 === (int) $by_role['screw']['qty_raw'] && 3 === (int) $by_role['screw']['qty'] && '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions'] );
@@ -78,8 +93,29 @@ nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
 nh_tc_assert( 'recommended CC 600', 600 === (int) $bom['meta']['recommended_cc_mm'] );
 nh_tc_assert( 'overlap min sheets is 3', 3 === NH_TC_Engine::overlap_sheet_count( 4200, $settings ) );
 
-$uneven = NH_TC_Engine::per_cc_sheets( 4000, 4700, 600 );
-nh_tc_assert( 'uneven last sheet 400 mm', 2 === count( $uneven ) && 6 === (int) $uneven[0]['qty'] && 400 === (int) $uneven[1]['width_mm'] );
+$even = NH_TC_Engine::framed_sheet_plan( 4250, 4000, 700, 50, 10, 0 );
+nh_tc_assert(
+	'full bays: two outers 720 and four middles 690',
+	6 === count( $even )
+	&& 720 === (int) $even[0]['width_mm']
+	&& 690 === (int) $even[1]['width_mm']
+	&& 690 === (int) $even[4]['width_mm']
+	&& 720 === (int) $even[5]['width_mm']
+	&& 4000 === (int) $even[0]['length_mm']
+);
+$even_sum = 0;
+foreach ( $even as $sheet ) {
+	$even_sum += (int) $sheet['width_mm'];
+}
+nh_tc_assert( '4250 frame closes', 4250 === $even_sum + ( 5 * 10 ) );
+
+$odd = NH_TC_Engine::framed_sheet_plan( 2100, 2000, 1000, 51, 10, 0 );
+$odd_sum = 0;
+foreach ( $odd as $sheet ) {
+	$odd_sum += (int) $sheet['width_mm'];
+}
+nh_tc_assert( 'odd 51 mm beam still closes the frame', 3 === count( $odd ) && 2100 === $odd_sum + ( 2 * 10 ) );
+nh_tc_assert( 'right end keeps the extra millimetre', 70 === (int) $odd[2]['width_mm'] && 1020 === (int) $odd[0]['width_mm'] );
 
 $gable = $input;
 $gable['construction'] = 'gable';
@@ -112,6 +148,28 @@ nh_tc_assert( 'H-profile has no clamping end caps', ! isset( $h_roles['end_cap']
 
 $bad = NH_TC_Engine::calculate( array_merge( $input, array( 'width_mm' => 10 ) ), $settings );
 nh_tc_assert( 'rejects tiny width', empty( $bad['ok'] ) );
+
+$wide = NH_TC_Engine::calculate(
+	array_merge( $input, array( 'width_mm' => 2150, 'support_mm' => 150, 'cc_mm' => 2000, 'overhang_mm' => 0 ) ),
+	$settings
+);
+nh_tc_assert( 'rejects a sheet wider than 2100 mm stock', empty( $wide['ok'] ) && in_array( 'sheet_width', $wide['errors'], true ) );
+
+$sliver = NH_TC_Engine::calculate(
+	array_merge( $input, array( 'width_mm' => 1251, 'support_mm' => 50, 'cc_mm' => 600, 'overhang_mm' => 0 ) ),
+	$settings
+);
+nh_tc_assert( 'rejects a sliver end sheet', empty( $sliver['ok'] ) && in_array( 'sheet_narrow', $sliver['errors'], true ) );
+
+$flush = $input;
+$flush['overhang_mm'] = 0;
+$flush_bom = NH_TC_Engine::calculate( $flush, $settings );
+nh_tc_assert( 'zero overhang keeps the frame length', ! empty( $flush_bom['ok'] ) && 4700 === (int) $flush_bom['meta']['sheet_length_mm'] );
+
+$implied = $input;
+unset( $implied['support_mm'], $implied['overhang_mm'] );
+$implied_bom = NH_TC_Engine::calculate( $implied, $settings );
+nh_tc_assert( 'missing beam width and overhang use 50 mm', ! empty( $implied_bom['ok'] ) && 50 === (int) $implied_bom['meta']['support_mm'] && 50 === (int) $implied_bom['meta']['overhang_mm'] );
 
 if ( $failures ) {
 	echo "\n{$failures} failed\n";

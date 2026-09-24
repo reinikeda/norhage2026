@@ -17,6 +17,7 @@
   var atc = root.querySelector('[data-offer-atc]');
   var statusEl = root.querySelector('[data-offer-status]');
   var recEl = root.querySelector('[data-rec-cc]');
+  var planEl = root.querySelector('[data-sheet-plan]');
   var thkSel = form.querySelector('[name="thickness"]');
   var colSel = form.querySelector('[name="colour"]');
   var matSel = form.querySelector('[name="material"]');
@@ -93,7 +94,7 @@
 
   function updateRecCc() {
     var rec = (cfg.recCc && thkSel && cfg.recCc[thkSel.value]) || defaultCc;
-    if (recEl) recEl.textContent = i18n('recCc', 'Leave empty to use %s mm').replace('%s', String(defaultCc || rec));
+    if (recEl) recEl.textContent = i18n('recCc', 'Recommended centre spacing for this thickness: %s mm.').replace('%s', String(rec || defaultCc));
   }
 
   function fmt(n) {
@@ -120,6 +121,7 @@
     var data = {};
     Array.prototype.forEach.call(form.elements, function (el) {
       if (!el.name || el.disabled) return;
+      if ((el.type === 'radio' || el.type === 'checkbox') && !el.checked) return;
       data[el.name] = el.value;
     });
     return data;
@@ -187,6 +189,7 @@
     if (metaEl && payload.meta) {
       metaEl.textContent = i18n('sheets', '%d sheets').replace('%d', payload.meta.sheet_count);
     }
+    drawPlan(payload.meta);
 
     if (payload.totals) {
       totalsEl.hidden = false;
@@ -216,6 +219,7 @@
         root.classList.remove('is-loading');
         if (!json || !json.success) {
           atc.disabled = true;
+          drawPlan(null);
           setStatus((json && json.data && json.data.message) || i18n('error'), 'error');
           return;
         }
@@ -231,6 +235,87 @@
   function schedule() {
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
+  }
+
+  function fillTemplate(template, values) {
+    return String(template).replace(/%(\d+)\$d|%d/g, function (match, index) {
+      if (index) return values[Number(index) - 1];
+      var next = values.shift();
+      return next;
+    });
+  }
+
+  function drawPlan(meta) {
+    if (!planEl) return;
+    if (!meta || !meta.sheet_plan || !meta.sheet_plan.length) {
+      planEl.innerHTML = '<p class="nh-tc__plan-note">' + i18n('planWait', 'The cut diagram appears once the size is valid.') + '</p>';
+      return;
+    }
+
+    var plan = meta.sheet_plan;
+    var row = document.createElement('div');
+    row.className = 'nh-tc__sheets';
+    row.setAttribute('role', 'img');
+    row.setAttribute('aria-label', i18n('sheets', '%d sheets').replace('%d', plan.length));
+
+    plan.forEach(function (sheet) {
+      var cell = document.createElement('div');
+      cell.className = 'nh-tc__sheet is-' + (sheet.edge === 'side' ? 'side' : 'middle');
+      cell.style.flexGrow = String(Math.max(1, sheet.width_mm));
+      var label = document.createElement('span');
+      label.textContent = sheet.width_mm;
+      cell.appendChild(label);
+      row.appendChild(cell);
+    });
+
+    var groups = [];
+    plan.forEach(function (sheet) {
+      var found = null;
+      groups.forEach(function (group) {
+        if (group.width_mm === sheet.width_mm && group.edge === sheet.edge) found = group;
+      });
+      if (!found) {
+        found = { width_mm: sheet.width_mm, qty: 0, edge: sheet.edge };
+        groups.push(found);
+      }
+      found.qty += 1;
+    });
+
+    var cutBits = groups.map(function (group) {
+      var kind = group.edge === 'side' ? i18n('outer', 'outer') : i18n('middle', 'middle');
+      var size = i18n('mm', '%d mm').replace('%d', group.width_mm);
+      return group.qty > 1 ? group.qty + ' × ' + size + ' ' + kind : size + ' ' + kind;
+    });
+
+    var halfGap = Math.round((Number(meta.profile_gap_mm) || 10) / 2);
+    var hasMiddle = plan.some(function (sheet) { return sheet.edge !== 'side'; });
+    var note = document.createElement('p');
+    note.className = 'nh-tc__plan-note';
+    if (!hasMiddle) {
+      note.textContent = fillTemplate(
+        i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
+        [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+      );
+    } else {
+      note.textContent = fillTemplate(
+        i18n('planExtra', 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).'),
+        [meta.side_extra_mm, meta.support_mm, halfGap, meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+      );
+    }
+
+    var cuts = document.createElement('p');
+    cuts.className = 'nh-tc__plan-cuts';
+    cuts.textContent = i18n('planCuts', 'Cut widths: %s.').replace('%s', cutBits.join(', '));
+
+    var legend = document.createElement('p');
+    legend.className = 'nh-tc__legend';
+    legend.innerHTML = '<span><i class="is-side"></i>' + i18n('outer', 'outer') + '</span><span><i class="is-middle"></i>' + i18n('middle', 'middle') + '</span><span><i class="is-joint"></i>' + (meta.profile_gap_mm || 10) + ' mm</span>';
+
+    planEl.innerHTML = '';
+    planEl.appendChild(row);
+    planEl.appendChild(legend);
+    planEl.appendChild(cuts);
+    planEl.appendChild(note);
   }
 
   function addToCart() {

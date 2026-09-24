@@ -70,7 +70,7 @@ class NH_TC_Admin {
 		$input    = is_array( $input ) ? $input : array();
 		$out      = $defaults;
 
-		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
+		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
 			if ( isset( $input[ $int_key ] ) ) {
 				$out[ $int_key ] = absint( $input[ $int_key ] );
 			}
@@ -241,7 +241,22 @@ class NH_TC_Admin {
 						<th><?php esc_html_e( 'Default frame spacing (CC)', NH_TC_TD ); ?></th>
 						<td>
 							<input type="number" name="<?php echo esc_attr( $key ); ?>[default_cc_mm]" value="<?php echo esc_attr( $s['default_cc_mm'] ); ?>">
-							<p class="description"><?php esc_html_e( 'Used when the customer leaves CC empty. Standard is 600 mm.', NH_TC_TD ); ?></p>
+							<p class="description"><?php esc_html_e( 'Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Support beam and sheet overhang', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Beam width', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[default_support_mm]" value="<?php echo esc_attr( $s['default_support_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Joint gap', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[profile_gap_mm]" value="<?php echo esc_attr( $s['profile_gap_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Drip overhang', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[default_overhang_mm]" value="<?php echo esc_attr( $s['default_overhang_mm'] ); ?>"> mm
+							</label>
+							<p class="description"><?php esc_html_e( 'Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both.', NH_TC_TD ); ?></p>
 						</td>
 					</tr>
 					<tr>

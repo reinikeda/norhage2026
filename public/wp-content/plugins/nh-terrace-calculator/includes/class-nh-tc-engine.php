@@ -3,7 +3,11 @@
  * Pure geometry / BOM engine. No WooCommerce dependency.
  *
  * Quantities follow the Norhage terrace-roof spreadsheet:
- * - Per-CC layout: one sheet per rafter spacing, width = CC.
+ * - Sheets meet on the centre of each support. A joint leaves a gap (standard
+ *   10 mm) for the connecting profile, so each sheet loses half of that gap.
+ * - Outer sheets run to the end of the frame, so they are wider by half the
+ *   support width plus the half-gap the middle sheets give up.
+ * - Sheet length is the frame length plus a drip overhang (standard 50 mm).
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
  * - Wall profiles cover the wall width in 2.2 m pieces.
@@ -32,12 +36,20 @@ class NH_TC_Engine {
 			);
 		}
 
-		$width  = (int) $input['width_mm'];
-		$length = (int) $input['length_mm'];
-		$cc     = (int) $input['cc_mm'];
-		$thk    = (int) $input['thickness'];
-		$layout = (string) $input['sheet_layout'];
-		$const  = (string) $input['construction'];
+		$width    = (int) $input['width_mm'];
+		$length   = (int) $input['length_mm'];
+		$cc       = (int) $input['cc_mm'];
+		$thk      = (int) $input['thickness'];
+		$layout   = (string) $input['sheet_layout'];
+		$const    = (string) $input['construction'];
+		$support  = self::support_width( $input, $settings );
+		$overhang = self::sheet_overhang( $input, $settings );
+		$gap       = self::profile_gap( $settings );
+		$max_sheet = self::max_sheet_width( $settings );
+		$min_sheet = isset( $settings['min_sheet_mm'] ) ? (int) $settings['min_sheet_mm'] : 100;
+		if ( $min_sheet < 1 ) {
+			$min_sheet = 100;
+		}
 
 		$recommended_cc = self::recommended_cc( $thk, $settings );
 		if ( $cc <= 0 ) {
@@ -47,9 +59,28 @@ class NH_TC_Engine {
 			}
 		}
 
-		$sheets = ( 'overlap' === $layout )
-			? self::overlap_sheets( $width, $length, $settings )
-			: self::per_cc_sheets( $width, $length, $cc );
+		$sheet_length = $length + $overhang;
+		$plan         = ( 'overlap' === $layout )
+			? self::overlap_plan( $width, $sheet_length, $settings )
+			: self::framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang );
+
+		foreach ( $plan as $sheet ) {
+			$cut_w = (int) $sheet['width_mm'];
+			if ( $cut_w < $min_sheet ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'sheet_narrow' ),
+				);
+			}
+			if ( $cut_w > $max_sheet ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'sheet_width' ),
+				);
+			}
+		}
+
+		$sheets = self::group_sheets( $plan );
 
 		$sheet_count = 0;
 		foreach ( $sheets as $sheet ) {
@@ -60,10 +91,10 @@ class NH_TC_Engine {
 		$beam_count       = ( 'gable' === $const ) ? $sheet_count + 2 : $sheet_count + 1;
 
 		$finish_runs = ( 'gable' === $const )
-			? array( $length, $length, $width, $width )
-			: array( $length, $length, $width );
+			? array( $sheet_length, $sheet_length, $width, $width )
+			: array( $sheet_length, $sheet_length, $width );
 
-		$connecting_stock_mm = self::smallest_stock( $length, $settings['profile_stock_mm'] );
+		$connecting_stock_mm = self::smallest_stock( $sheet_length, $settings['profile_stock_mm'] );
 		$screws_raw          = $connecting_count * (int) ceil( $connecting_stock_mm / max( 1, (int) $settings['screw_spacing_mm'] ) );
 		$pack_size           = max( 1, (int) $settings['screw_pack_size'] );
 		$screw_packs         = (int) ceil( $screws_raw / $pack_size );
@@ -73,7 +104,7 @@ class NH_TC_Engine {
 			$end_width_mm += (int) $sheet['width_mm'] * (int) $sheet['qty'];
 		}
 
-		$perimeter_mm = 2 * ( $width + $length );
+		$perimeter_mm = 2 * ( $width + $sheet_length );
 		$gasket_m     = (int) ceil( $perimeter_mm / 1000 );
 		$silicon_qty  = max( 1, (int) ceil( ( $perimeter_mm / 1000 ) / max( 1, (float) $settings['silicon_metres_per_tube'] ) ) );
 		$tape_width   = self::tape_width_mm( $thk );
@@ -116,7 +147,7 @@ class NH_TC_Engine {
 			$lines[] = array(
 				'role'      => 'connecting',
 				'qty'       => $connecting_count,
-				'length_mm' => $length,
+				'length_mm' => $sheet_length,
 				'stock_mm'  => $connecting_stock_mm,
 				'attrs'     => array(
 					'length' => self::mm_to_length_slug( $connecting_stock_mm ),
@@ -194,6 +225,13 @@ class NH_TC_Engine {
 				'width_mm'             => $width,
 				'length_mm'            => $length,
 				'cc_mm'                => $cc,
+				'support_mm'           => $support,
+				'overhang_mm'          => $overhang,
+				'profile_gap_mm'       => $gap,
+				'sheet_length_mm'      => $sheet_length,
+				'side_extra_mm'        => self::side_extra_mm( $support, $gap ),
+				'standard_sheet_mm'    => $max_sheet,
+				'sheet_plan'           => $plan,
 				'recommended_cc_mm'    => $recommended_cc,
 				'thickness'            => $thk,
 				'construction'         => $const,
@@ -248,7 +286,76 @@ class NH_TC_Engine {
 			$errors[] = 'cc';
 		}
 
+		$support = self::support_width( $input, $settings );
+		$min_s   = isset( $settings['min_support_mm'] ) ? (int) $settings['min_support_mm'] : 20;
+		$max_s   = isset( $settings['max_support_mm'] ) ? (int) $settings['max_support_mm'] : 200;
+		if ( $support < $min_s || $support > $max_s ) {
+			$errors[] = 'support';
+		}
+
+		$overhang = self::sheet_overhang( $input, $settings );
+		$max_oh   = isset( $settings['max_overhang_mm'] ) ? (int) $settings['max_overhang_mm'] : 300;
+		if ( $overhang < 0 || $overhang > $max_oh ) {
+			$errors[] = 'overhang';
+		}
+
 		return $errors;
+	}
+
+	/**
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 */
+	public static function support_width( array $input, array $settings ) {
+		$support = isset( $input['support_mm'] ) ? (int) $input['support_mm'] : 0;
+		if ( $support <= 0 ) {
+			$support = isset( $settings['default_support_mm'] ) ? (int) $settings['default_support_mm'] : 50;
+		}
+		if ( $support <= 0 ) {
+			$support = 50;
+		}
+		return $support;
+	}
+
+	/**
+	 * Missing overhang uses the standard drip allowance. An explicit 0 is kept.
+	 *
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 */
+	public static function sheet_overhang( array $input, array $settings ) {
+		if ( ! array_key_exists( 'overhang_mm', $input ) || null === $input['overhang_mm'] || '' === $input['overhang_mm'] ) {
+			$overhang = isset( $settings['default_overhang_mm'] ) ? (int) $settings['default_overhang_mm'] : 50;
+			return $overhang >= 0 ? $overhang : 50;
+		}
+		return (int) $input['overhang_mm'];
+	}
+
+	/**
+	 * @param array<string, mixed> $settings
+	 */
+	public static function profile_gap( array $settings ) {
+		$gap = isset( $settings['profile_gap_mm'] ) ? (int) $settings['profile_gap_mm'] : 10;
+		return $gap >= 0 ? $gap : 10;
+	}
+
+	/**
+	 * @param array<string, mixed> $settings
+	 */
+	public static function max_sheet_width( array $settings ) {
+		$max = isset( $settings['standard_sheet_width_mm'] ) ? (int) $settings['standard_sheet_width_mm'] : 2100;
+		return $max > 0 ? $max : 2100;
+	}
+
+	/**
+	 * How much wider a full outer sheet is than a full middle sheet.
+	 */
+	public static function side_extra_mm( $support, $gap ) {
+		$support  = (int) $support;
+		$gap      = (int) $gap;
+		$half_gap = intdiv( $gap, 2 );
+		$half_b   = intdiv( $support, 2 );
+		return $half_b + ( $gap - $half_gap );
 	}
 
 	/**
@@ -284,57 +391,98 @@ class NH_TC_Engine {
 	}
 
 	/**
-	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 * One entry per sheet. Joints sit on beam centres.
+	 *
+	 * The distance between the outer beam centres is width − support. That span
+	 * is split into bays of CC (the last bay takes the remainder).
+	 * A middle sheet is CC minus the joint gap. An outer sheet reaches the
+	 * outer face of the end beam and is only shortened on its joint side.
+	 *
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
 	 */
-	public static function per_cc_sheets( $width, $length, $cc ) {
-		$cc    = max( 1, (int) $cc );
-		$count = (int) ceil( $width / $cc );
-		if ( $count < 1 ) {
-			$count = 1;
-		}
+	public static function framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang ) {
+		$width    = (int) $width;
+		$support  = max( 0, (int) $support );
+		$gap      = max( 0, (int) $gap );
+		$cc       = max( 1, (int) $cc );
+		$length_mm = (int) $length + max( 0, (int) $overhang );
+		$half_gap = intdiv( $gap, 2 );
+		$half_l   = intdiv( $support, 2 );
+		$half_r   = $support - $half_l;
+		$inner    = $width - $support;
 
-		$full = $count - 1;
-		$last = (int) ( $width - ( $full * $cc ) );
-		if ( $last <= 0 || $last === $cc ) {
+		if ( $inner <= $cc ) {
 			return array(
 				array(
-					'width_mm'  => $cc,
-					'length_mm' => (int) $length,
-					'qty'       => $count,
+					'width_mm'  => $width,
+					'length_mm' => $length_mm,
+					'edge'      => 'side',
 				),
 			);
 		}
 
-		$out = array();
-		if ( $full > 0 ) {
-			$out[] = array(
-				'width_mm'  => $cc,
-				'length_mm' => (int) $length,
-				'qty'       => $full,
+		$bays = (int) ceil( $inner / $cc );
+		$full = $bays - 1;
+		$plan = array();
+
+		for ( $i = 0; $i < $bays; $i++ ) {
+			$bay = ( $i < $full ) ? $cc : ( $inner - ( $full * $cc ) );
+			if ( 0 === $i ) {
+				$cut  = $bay + $half_l - $half_gap;
+				$edge = 'side';
+			} elseif ( $i === $full ) {
+				$cut  = $bay + $half_r - $half_gap;
+				$edge = 'side';
+			} else {
+				$cut  = $bay - $gap;
+				$edge = 'middle';
+			}
+			$plan[] = array(
+				'width_mm'  => (int) $cut,
+				'length_mm' => $length_mm,
+				'edge'      => $edge,
 			);
 		}
-		$out[] = array(
-			'width_mm'  => $last,
-			'length_mm' => (int) $length,
-			'qty'       => 1,
-		);
-		return $out;
+
+		return $plan;
+	}
+
+	/**
+	 * @param array<int, array{width_mm:int,length_mm:int}> $plan
+	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 */
+	public static function group_sheets( array $plan ) {
+		$groups = array();
+		foreach ( $plan as $sheet ) {
+			$key = (int) $sheet['width_mm'] . 'x' . (int) $sheet['length_mm'];
+			if ( ! isset( $groups[ $key ] ) ) {
+				$groups[ $key ] = array(
+					'width_mm'  => (int) $sheet['width_mm'],
+					'length_mm' => (int) $sheet['length_mm'],
+					'qty'       => 0,
+				);
+			}
+			$groups[ $key ]['qty']++;
+		}
+		return array_values( $groups );
 	}
 
 	/**
 	 * @param array<string, mixed> $settings
-	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
 	 */
-	public static function overlap_sheets( $width, $length, array $settings ) {
+	public static function overlap_plan( $width, $sheet_length, array $settings ) {
 		$count = self::overlap_sheet_count( $width, $settings );
 		$std   = (int) $settings['standard_sheet_width_mm'];
-		return array(
-			array(
+		$plan  = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$plan[] = array(
 				'width_mm'  => $std,
-				'length_mm' => (int) $length,
-				'qty'       => $count,
-			),
-		);
+				'length_mm' => (int) $sheet_length,
+				'edge'      => 'middle',
+			);
+		}
+		return $plan;
 	}
 
 	/**
