@@ -1,0 +1,413 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:00+0000\n"
+"PO-Revision-Date: 2026-09-24 13:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Lithuanian\n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Norhage\n"
+
+msgid "Cart is not available."
+msgstr "Krepšelis nepasiekiamas."
+
+msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
+msgstr "Šiam pasirinkimui prekių nerasta. Patikrinkite SKU sąsają terasos skaičiuoklės nustatymuose."
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Vienos komplekto prekės nepavyko įdėti į krepšelį."
+
+msgid "Terrace roof kit added to basket."
+msgstr "Terasos stogo komplektas įdėtas į krepšelį."
+
+#, php-format
+msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
+msgstr "Lakštas būtų platesnis už %d mm sandėlio plotį. Sumažinkite atramų žingsnį, kad kiekvieną dalį būtų galima išpjauti iš standartinio lakšto."
+
+msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
+msgstr "Paskutinis lakštas būtų per siauras pjauti. Pakoreguokite atramų žingsnį, kad kiekviena dalis būtų bent 100 mm."
+
+msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
+msgstr "Įveskite sijos plotį nuo 20 iki 200 mm. Įprasta 50 mm."
+
+msgid "Sheet overhang must be between 0 and 300 mm."
+msgstr "Lakšto užlaida turi būti nuo 0 iki 300 mm."
+
+msgid "Please enter a valid width and length."
+msgstr "Įveskite tinkamą plotį ir ilgį."
+
+msgid "Wood screws with washers"
+msgstr "Medsraigčiai su poveržlėmis"
+
+msgid "Connecting profile"
+msgstr "Jungiamasis profilis"
+
+msgid "Wall profile 2.2 m"
+msgstr "Sienos profilis 2,2 m"
+
+msgid "Ridge profile 2.2 m"
+msgstr "Kraigo profilis 2,2 m"
+
+msgid "Ventilation sealing tape"
+msgstr "Vėdinimo juosta"
+
+msgid "Insulation sealing tape"
+msgstr "Izoliacinė sandarinimo juosta"
+
+msgid "Clamping profile end cap"
+msgstr "Tvirtinimo profilio antgalis"
+
+msgid "EPDM rubber gasket 50 mm"
+msgstr "EPDM guminis tarpiklis 50 mm"
+
+msgid "Neutral silicone Silirub PC"
+msgstr "Neutralus silikonas Silirub PC"
+
+msgid "Polycarbonate sheet"
+msgstr "Polikarbonato lakštas"
+
+#, php-format
+msgid "%1$d × %2$d mm (%3$s m²)"
+msgstr "%1$d × %2$d mm (%3$s m²)"
+
+msgid "Finish profile"
+msgstr "Apdailos profilis"
+
+#, php-format
+msgid "%1$d pcs (%2$d / pack)"
+msgstr "%1$d vnt. (%2$d / pak.)"
+
+#, php-format
+msgid "%s m"
+msgstr "%s m"
+
+msgid "Terrace roof calculator"
+msgstr "Terasos stogo skaičiuoklė"
+
+msgid "Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support."
+msgstr "Pereikite žingsnius, patikrinkite pjovimo sąrašą ir įdėkite visą komplektą į krepšelį. Lakštai pjaunami taip, kad kiekviena siūlė būtų atramos centre."
+
+msgid "Roof shape"
+msgstr "Stogo forma"
+
+msgid "Lean-to"
+msgstr "Vienšlaitis"
+
+msgid "Gable"
+msgstr "Dvišlaitis"
+
+msgid "Polycarbonate"
+msgstr "Polikarbonatas"
+
+msgid "Material"
+msgstr "Medžiaga"
+
+msgid "Multiwall polycarbonate"
+msgstr "Kanalinis polikarbonatas"
+
+msgid "Solid polycarbonate"
+msgstr "Monolitinis polikarbonatas"
+
+msgid "Thickness"
+msgstr "Storis"
+
+msgid "Colour"
+msgstr "Spalva"
+
+msgid "Frame size"
+msgstr "Rėmo matmenys"
+
+msgid "Width along the wall"
+msgstr "Plotis palei sieną"
+
+msgid "Frame length (projection)"
+msgstr "Rėmo ilgis (iškyša)"
+
+msgid "Support spacing (centre to centre)"
+msgstr "Atramų žingsnis (nuo centro iki centro)"
+
+msgid "Support beam width"
+msgstr "Atraminės sijos plotis"
+
+#, php-format
+msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
+msgstr "Standartas 50 mm. Siūlės yra sijos centre ir palieka %d mm jungiamajam profiliui."
+
+msgid "Sheet overhang past the frame"
+msgstr "Lakšto užlaida už rėmo"
+
+msgid "Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less."
+msgstr "Lakštai pjaunami tiek ilgesni už rėmą, kad vanduo nuvarvėtų pro priekinę siją. 50 mm yra įprasta užlaida — pakeiskite, jei lašėjimo kraštui reikia daugiau ar mažiau."
+
+msgid "The cut diagram appears once the size is valid."
+msgstr "Pjovimo schema atsiranda, kai matmenys tinkami."
+
+msgid "Postal code (for shipping)"
+msgstr "Pašto kodas (pristatymui)"
+
+msgid "Profiles"
+msgstr "Profiliai"
+
+msgid "Connecting profile on the supports"
+msgstr "Jungiamasis profilis ant atramų"
+
+msgid "On every beam"
+msgstr "Ant kiekvienos sijos"
+
+#, php-format
+msgid "Only where sheets meet, using up to %d mm"
+msgstr "Tik ten, kur lakštai susiduria, iki %d mm"
+
+msgid "A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width."
+msgstr "Siūlė visada yra sijos centre. Antras pasirinkimas leidžia vienam lakštui dengti kelias sijas, pjaunant iš standartinio pločio."
+
+msgid "Clamping profile"
+msgstr "Tvirtinimo profilis"
+
+msgid "Clamping profile with lid"
+msgstr "Tvirtinimo profilis su dangteliu"
+
+msgid "Plastic H-profile"
+msgstr "Plastikinis H profilis"
+
+msgid "Connecting colour"
+msgstr "Jungiamojo profilio spalva"
+
+msgid "Silver"
+msgstr "Sidabrinė"
+
+msgid "Clear"
+msgstr "Skaidri"
+
+msgid "Brown"
+msgstr "Ruda"
+
+msgid "F aluminium"
+msgstr "F aliuminis"
+
+msgid "U plastic"
+msgstr "U plastikas"
+
+msgid "U aluminium"
+msgstr "U aliuminis"
+
+msgid "L aluminium"
+msgstr "L aliuminis"
+
+msgid "Finish colour"
+msgstr "Apdailos profilio spalva"
+
+msgid "Material list"
+msgstr "Medžiagų sąrašas"
+
+msgid "Enter a size to see the kit."
+msgstr "Įveskite matmenis, kad pamatytumėte komplektą."
+
+msgid "VAT"
+msgstr "PVM"
+
+msgid "Total excl. VAT"
+msgstr "Iš viso be PVM"
+
+msgid "Total incl. VAT"
+msgstr "Iš viso su PVM"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Pristatymas skaičiuojamas krepšelyje pagal jūsų pašto kodą."
+
+msgid "Add kit to basket"
+msgstr "Įdėti komplektą į krepšelį"
+
+#, php-format
+msgid "Recommended centre spacing for this thickness: %s mm."
+msgstr "Rekomenduojamas ašinis žingsnis šiam storiui: %s mm."
+
+#, php-format
+msgid "%d sheets"
+msgstr "%d lakštai"
+
+#, php-format
+msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Vienas lakštas dengia rėmą nuo krašto iki krašto. Pjovimo ilgis %1$d mm (rėmas %2$d mm + %3$d mm užlaida)."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang)."
+msgstr "Pilname tarpatramyje kraštinis lakštas yra %1$d mm platesnis už vidurinį: jis siekia %2$d mm atramos galą ir siūlėje praranda tik %3$d mm. Paskutinė dalis trumpesnė, kai žingsnis nesidalija rėme po lygiai. Pjovimo ilgis %4$d mm (rėmas %5$d mm + %6$d mm užlaida)."
+
+#, php-format
+msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
+msgstr "Lakštai dengia kelias sijas ir pjaunami iš %1$d mm sandėlio pločio. Siūlė dedama tik ten, kur kita dalis būtų platesnė, ir ji vis tiek yra ant sijos. Pjovimo ilgis %2$d mm (rėmas %3$d mm + %4$d mm užlaida)."
+
+#, php-format
+msgid "Cut widths: %s."
+msgstr "Pjovimo pločiai: %s."
+
+msgid "outer"
+msgstr "kraštinis"
+
+msgid "middle"
+msgstr "vidurinis"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+msgid "Some items are not in this shop (SKU not found). The rest can still be added."
+msgstr "Kai kurių prekių šioje parduotuvėje nėra (SKU nerastas). Likusias vis tiek galima įdėti."
+
+msgid "Adding kit…"
+msgstr "Dedamas komplektas…"
+
+msgid "Could not add the kit. Please try again."
+msgstr "Komplekto įdėti nepavyko. Bandykite dar kartą."
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s vnt."
+
+#, php-format
+msgid "%s each"
+msgstr "%s už vnt."
+
+msgid "Updating prices…"
+msgstr "Atnaujinamos kainos…"
+
+msgid "Bronze"
+msgstr "Bronzinė"
+
+msgid "Opal"
+msgstr "Opalas"
+
+msgid "Anthracite"
+msgstr "Antracitas"
+
+msgid "Cut width"
+msgstr "Pjovimo plotis"
+
+msgid "Cut length"
+msgstr "Pjovimo ilgis"
+
+msgid "Area"
+msgstr "Plotas"
+
+msgid "Terrace roof kit"
+msgstr "Terasos stogo komplektas"
+
+msgid "Terrace calculator"
+msgstr "Terasos skaičiuoklė"
+
+msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
+msgstr "Kiekvienai komplekto daliai pasirinkite katalogo prekę. Skaičiuoklė jas randa pagal SKU, todėl ta pati sąsaja tinka visose Norhage parduotuvėse."
+
+msgid "Where the form appears"
+msgstr "Kur rodoma forma"
+
+msgid "Show calculator on"
+msgstr "Rodyti skaičiuoklę"
+
+msgid "Every product page"
+msgstr "Visuose prekių puslapiuose"
+
+msgid "Only the products selected below"
+msgstr "Tik žemiau pasirinktose prekėse"
+
+msgid "Only products with the calculator checkbox enabled"
+msgstr "Tik prekėse, kuriose įjungta skaičiuoklė"
+
+msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
+msgstr "Pagal numatymą rodoma visuose prekių puslapiuose, todėl forma matoma be papildomo nustatymo. Kai terasos prekės pasirinktos, perjunkite į pasirinktas prekes arba žymimąjį langelį. Trumpasis kodas: [nh_terrace_calculator]."
+
+msgid "Selected products"
+msgstr "Pasirinktos prekės"
+
+msgid "Search products…"
+msgstr "Ieškoti prekių…"
+
+msgid "Behaviour"
+msgstr "Elgsena"
+
+msgid "Default size (mm)"
+msgstr "Numatytasis dydis (mm)"
+
+msgid "Default frame spacing (CC)"
+msgstr "Numatytasis gegnių žingsnis (ašinis)"
+
+msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
+msgstr "Atramos nuo centro iki centro, kai klientas palieka lauką tuščią. Įprasta 600 mm."
+
+msgid "Support beam and sheet overhang"
+msgstr "Atraminė sija ir lakšto užlaida"
+
+msgid "Beam width"
+msgstr "Sijos plotis"
+
+msgid "Joint gap"
+msgstr "Siūlės tarpas"
+
+msgid "Drip overhang"
+msgstr "Lašėjimo užlaida"
+
+msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
+msgstr "Siūlės yra sijos centre ir palieka šį tarpą jungiamajam profiliui (10 mm, taigi po 5 mm nuo kiekvieno lakšto). Kraštiniai lakštai eina iki rėmo galo. Lakštai pjaunami tiek ilgesni už rėmą, kad vanduo nuvarvėtų pro priekinę siją. 50 mm yra įprasta sija ir įprasta užlaida; klientas gali keisti abu."
+
+msgid "Limits (mm)"
+msgstr "Ribos (mm)"
+
+msgid "Width"
+msgstr "Plotis"
+
+msgid "Length"
+msgstr "Ilgis"
+
+msgid "Show postcode field"
+msgstr "Rodyti pašto kodo lauką"
+
+msgid "Saved to the customer when the kit is added, so shipping can be quoted in the basket."
+msgstr "Įrašoma klientui, kai komplektas įdedamas, kad pristatymą būtų galima apskaičiuoti krepšelyje."
+
+msgid "Multiwall polycarbonate (custom-cut)"
+msgstr "Kanalinis polikarbonatas (pagal matmenis)"
+
+msgid "Solid polycarbonate (custom-cut)"
+msgstr "Monolitinis polikarbonatas (pagal matmenis)"
+
+msgid "Connecting profiles"
+msgstr "Jungiamieji profiliai"
+
+msgid "Finish profiles"
+msgstr "Apdailos profiliai"
+
+msgid "Sealing tapes, screws and extras"
+msgstr "Sandarinimo juostos, sraigtai ir priedai"
+
+msgid "Ventilation / anti-dust tape"
+msgstr "Vėdinimo / apsaugos nuo dulkių juosta"
+
+msgid "Neutral silicone"
+msgstr "Neutralus silikonas"
+
+msgid "Ridge profile 2.2 m (gable)"
+msgstr "Kraigo profilis 2,2 m (dvišlaitis)"
+
+msgid "End cap – silver / grey"
+msgstr "Antgalis – sidabrinis / pilkas"
+
+msgid "End cap – brown"
+msgstr "Antgalis – rudas"
+
+msgid "Type"
+msgstr "Tipas"
+
+msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
+msgstr "Rodyti terasos stogo skaičiuoklę šiame prekės puslapyje (kai rodymo režimas yra «žymimasis langelis»)."
+
+msgid "Hide default add to cart"
+msgstr "Slėpti įprastą įdėjimą į krepšelį"
+
+msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
+msgstr "Slėpti įprastą pirkimo formą. Klientai naudoja komplekto pasiūlymą."

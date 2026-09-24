@@ -3,10 +3,13 @@
  * Pure geometry / BOM engine. No WooCommerce dependency.
  *
  * Quantities follow the Norhage terrace-roof spreadsheet:
- * - Sheets meet on the centre of each support. A joint leaves a gap (standard
+ * - Sheets meet on the centre of a support. A joint leaves a gap (standard
  *   10 mm) for the connecting profile, so each sheet loses half of that gap.
- * - Outer sheets run to the end of the frame, so they are wider by half the
- *   support width plus the half-gap the middle sheets give up.
+ * - With a profile on every beam, each bay is its own sheet. Outer sheets run
+ *   to the end of the frame, so they are wider by half the support width plus
+ *   the half-gap the middle sheets give up.
+ * - Without a profile on every beam, a sheet spans as many bays as the standard
+ *   stock width allows. Joints still land on a beam centre.
  * - Sheet length is the frame length plus a drip overhang (standard 50 mm).
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
@@ -60,9 +63,14 @@ class NH_TC_Engine {
 		}
 
 		$sheet_length = $length + $overhang;
-		$plan         = ( 'overlap' === $layout )
-			? self::overlap_plan( $width, $sheet_length, $settings )
-			: self::framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang );
+		$every_beam   = self::joints_on_every_beam( $input );
+		if ( 'overlap' === $layout ) {
+			$plan = self::overlap_plan( $width, $sheet_length, $settings );
+		} elseif ( ! $every_beam ) {
+			$plan = self::stock_sheet_plan( $width, $length, $cc, $support, $gap, $overhang, $max_sheet, $min_sheet );
+		} else {
+			$plan = self::framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang );
+		}
 
 		foreach ( $plan as $sheet ) {
 			$cut_w = (int) $sheet['width_mm'];
@@ -88,7 +96,9 @@ class NH_TC_Engine {
 		}
 
 		$connecting_count = max( 0, $sheet_count - 1 );
-		$beam_count       = ( 'gable' === $const ) ? $sheet_count + 2 : $sheet_count + 1;
+		$beam_count       = ( 'overlap' === $layout )
+			? ( ( 'gable' === $const ) ? $sheet_count + 2 : $sheet_count + 1 )
+			: self::beam_count( $width, $cc, $support, $const );
 
 		$finish_runs = ( 'gable' === $const )
 			? array( $sheet_length, $sheet_length, $width, $width )
@@ -242,6 +252,7 @@ class NH_TC_Engine {
 				'finish_profile'       => (string) $input['finish_profile'],
 				'finish_color'         => (string) $input['finish_color'],
 				'sheet_layout'         => $layout,
+				'joint_every_beam'     => $every_beam ? 1 : 0,
 				'sheet_count'          => $sheet_count,
 				'overlap_sheet_count'  => self::overlap_sheet_count( $width, $settings ),
 				'beam_count'           => $beam_count,
@@ -348,6 +359,28 @@ class NH_TC_Engine {
 	}
 
 	/**
+	 * A missing or empty flag means a connecting profile on every beam.
+	 *
+	 * @param array<string, mixed> $input
+	 */
+	public static function joints_on_every_beam( array $input ) {
+		if ( ! array_key_exists( 'joint_every_beam', $input ) || null === $input['joint_every_beam'] || '' === $input['joint_every_beam'] ) {
+			return true;
+		}
+		return ! in_array( (string) $input['joint_every_beam'], array( '0', 'false', 'no' ), true );
+	}
+
+	/**
+	 * Supports along the slope: one more than the number of bays. A gable adds the ridge beam.
+	 */
+	public static function beam_count( $width, $cc, $support, $construction ) {
+		$inner = (int) $width - max( 0, (int) $support );
+		$cc    = max( 1, (int) $cc );
+		$bays  = ( $inner <= $cc ) ? 1 : (int) ceil( $inner / $cc );
+		return ( 'gable' === (string) $construction ) ? $bays + 2 : $bays + 1;
+	}
+
+	/**
 	 * How much wider a full outer sheet is than a full middle sheet.
 	 */
 	public static function side_extra_mm( $support, $gap ) {
@@ -439,6 +472,108 @@ class NH_TC_Engine {
 			}
 			$plan[] = array(
 				'width_mm'  => (int) $cut,
+				'length_mm' => $length_mm,
+				'edge'      => $edge,
+			);
+		}
+
+		return $plan;
+	}
+
+	/**
+	 * Span as many bays as the stock width allows. Joints stay on beam centres.
+	 *
+	 * From the left edge, each sheet runs to the furthest beam that still keeps
+	 * the cut within the standard width. If that leaves a sliver at the end,
+	 * the last joint moves back one beam at a time until the end piece is wide
+	 * enough, or until it cannot move without making the previous piece too narrow.
+	 *
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
+	 */
+	public static function stock_sheet_plan( $width, $length, $cc, $support, $gap, $overhang, $max_sheet, $min_sheet = 100 ) {
+		$width     = (int) $width;
+		$support   = max( 0, (int) $support );
+		$gap       = max( 0, (int) $gap );
+		$cc        = max( 1, (int) $cc );
+		$max_sheet = max( 1, (int) $max_sheet );
+		$min_sheet = max( 1, (int) $min_sheet );
+		$length_mm = (int) $length + max( 0, (int) $overhang );
+		$half_gap  = intdiv( $gap, 2 );
+		$half_l    = intdiv( $support, 2 );
+		$inner     = $width - $support;
+
+		if ( $inner <= $cc ) {
+			return array(
+				array(
+					'width_mm'  => $width,
+					'length_mm' => $length_mm,
+					'edge'      => 'side',
+				),
+			);
+		}
+
+		$bays    = (int) ceil( $inner / $cc );
+		$centers = array();
+		for ( $i = 0; $i < $bays; $i++ ) {
+			$centers[] = $half_l + ( $i * $cc );
+		}
+		$centers[] = $half_l + $inner;
+
+		$sheet_width = static function ( $from, $to ) use ( $centers, $width, $gap, $half_gap, $bays ) {
+			$start = ( 0 === (int) $from ) ? 0 : ( $centers[ (int) $from ] + ( $gap - $half_gap ) );
+			$end   = ( (int) $to === $bays ) ? $width : ( $centers[ (int) $to ] - $half_gap );
+			return (int) ( $end - $start );
+		};
+
+		$segments = array();
+		$from     = 0;
+		$guard    = 0;
+		while ( $from < $bays && $guard < 100 ) {
+			++$guard;
+			$best = null;
+			for ( $to = $from + 1; $to <= $bays; $to++ ) {
+				if ( $sheet_width( $from, $to ) <= $max_sheet ) {
+					$best = $to;
+				} else {
+					break;
+				}
+			}
+			if ( null === $best ) {
+				$segments[] = array( $from, $from + 1 );
+				$from       = $from + 1;
+				continue;
+			}
+			$segments[] = array( $from, $best );
+			$from       = $best;
+		}
+
+		$relax = 0;
+		while ( $relax < 40 && count( $segments ) >= 2 ) {
+			++$relax;
+			$last_i = count( $segments ) - 1;
+			$prev   = $segments[ $last_i - 1 ];
+			$last   = $segments[ $last_i ];
+			if ( $sheet_width( $last[0], $last[1] ) >= $min_sheet ) {
+				break;
+			}
+			if ( $prev[1] - 1 <= $prev[0] ) {
+				break;
+			}
+			$joint  = $prev[1] - 1;
+			$prev_w = $sheet_width( $prev[0], $joint );
+			if ( $prev_w < $min_sheet || $prev_w > $max_sheet ) {
+				break;
+			}
+			$segments[ $last_i - 1 ] = array( $prev[0], $joint );
+			$segments[ $last_i ]     = array( $joint, $last[1] );
+		}
+
+		$plan = array();
+		$last_i = count( $segments ) - 1;
+		foreach ( $segments as $index => $segment ) {
+			$edge = ( 0 === $index || $index === $last_i ) ? 'side' : 'middle';
+			$plan[] = array(
+				'width_mm'  => $sheet_width( $segment[0], $segment[1] ),
 				'length_mm' => $length_mm,
 				'edge'      => $edge,
 			);

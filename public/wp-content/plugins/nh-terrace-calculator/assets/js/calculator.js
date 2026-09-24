@@ -194,11 +194,11 @@
       var spec = document.createElement('div');
       spec.className = 'nh-tc__item-spec';
       var qtyLabel = i18n('pcs', '%s pcs').replace('%s', item.qty);
-      var each = isMissing ? '' : i18n('each', '%s each').replace('%s', fmt(unitAmount(item, taxDisplay)));
+      var each = isMissing ? '' : i18n('each', '%s each').replace('%s', item.unit_display || fmt(unitAmount(item, taxDisplay)));
       spec.textContent = [qtyLabel, each, item.spec].filter(Boolean).join(' · ');
       var price = document.createElement('div');
       price.className = 'nh-tc__item-price';
-      price.textContent = isMissing ? '—' : fmt(lineAmount(item, taxDisplay));
+      price.textContent = isMissing ? '—' : (item.line_display || fmt(lineAmount(item, taxDisplay)));
       li.appendChild(name);
       li.appendChild(price);
       li.appendChild(spec);
@@ -214,10 +214,11 @@
     drawPlan(payload.meta);
     drawInlineThumbs(items.concat(missing));
 
+    if (payload.currency) cfg.currency = payload.currency;
     if (payload.totals) {
       totalsEl.hidden = false;
-      taxEl.textContent = fmt(payload.totals.tax);
-      totalEl.textContent = fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
+      taxEl.textContent = payload.totals.tax_formatted || fmt(payload.totals.tax);
+      totalEl.textContent = payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
     }
 
     atc.disabled = items.length === 0;
@@ -365,13 +366,17 @@
     });
 
     var halfGap = Math.round((Number(meta.profile_gap_mm) || 10) / 2);
-    var hasMiddle = plan.some(function (sheet) { return sheet.edge !== 'side'; });
     var note = document.createElement('p');
     note.className = 'nh-tc__plan-note';
-    if (!hasMiddle) {
+    if (plan.length < 2) {
       note.textContent = fillTemplate(
         i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
         [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+      );
+    } else if (String(meta.joint_every_beam) === '0') {
+      note.textContent = fillTemplate(
+        i18n('planStock', 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).'),
+        [meta.standard_sheet_mm, meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
       );
     } else {
       note.textContent = fillTemplate(

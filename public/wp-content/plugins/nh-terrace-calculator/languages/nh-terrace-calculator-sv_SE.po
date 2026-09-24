@@ -1,0 +1,413 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:00+0000\n"
+"PO-Revision-Date: 2026-09-24 13:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "Cart is not available."
+msgstr "Varukorgen är inte tillgänglig."
+
+msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
+msgstr "Inga produkter matchade det här valet. Kontrollera SKU-kopplingen i inställningarna för terrasskalkylatorn."
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Kunde inte lägga till en av varorna i varukorgen."
+
+msgid "Terrace roof kit added to basket."
+msgstr "Terrasstak-satsen har lagts i varukorgen."
+
+#, php-format
+msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
+msgstr "En skiva skulle bli bredare än lagerbredden på %d mm. Minska regelavståndet så att varje bit kan kapas från en standardskiva."
+
+msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
+msgstr "Den sista skivan skulle bli för smal att kapa. Justera regelavståndet så att varje bit är minst 100 mm."
+
+msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
+msgstr "Ange en regelbredd mellan 20 och 200 mm. 50 mm är det vanliga måttet."
+
+msgid "Sheet overhang must be between 0 and 300 mm."
+msgstr "Skivöverhänget måste vara mellan 0 och 300 mm."
+
+msgid "Please enter a valid width and length."
+msgstr "Ange en giltig bredd och längd."
+
+msgid "Wood screws with washers"
+msgstr "Träskruv med bricka"
+
+msgid "Connecting profile"
+msgstr "Skarvprofil"
+
+msgid "Wall profile 2.2 m"
+msgstr "Väggprofil 2,2 m"
+
+msgid "Ridge profile 2.2 m"
+msgstr "Nockprofil 2,2 m"
+
+msgid "Ventilation sealing tape"
+msgstr "Ventilationstejp"
+
+msgid "Insulation sealing tape"
+msgstr "Isoleringstejp"
+
+msgid "Clamping profile end cap"
+msgstr "Ändlock till klämprofil"
+
+msgid "EPDM rubber gasket 50 mm"
+msgstr "EPDM-gummilist 50 mm"
+
+msgid "Neutral silicone Silirub PC"
+msgstr "Neutral silikon Silirub PC"
+
+msgid "Polycarbonate sheet"
+msgstr "Polykarbonatskiva"
+
+#, php-format
+msgid "%1$d × %2$d mm (%3$s m²)"
+msgstr "%1$d × %2$d mm (%3$s m²)"
+
+msgid "Finish profile"
+msgstr "Avslutningsprofil"
+
+#, php-format
+msgid "%1$d pcs (%2$d / pack)"
+msgstr "%1$d st (%2$d / förp.)"
+
+#, php-format
+msgid "%s m"
+msgstr "%s m"
+
+msgid "Terrace roof calculator"
+msgstr "Terrasstak-kalkylator"
+
+msgid "Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support."
+msgstr "Gå igenom stegen, kontrollera kaplistan och lägg en komplett sats i varukorgen. Skivorna kapas så att varje skarv hamnar mitt på en regel."
+
+msgid "Roof shape"
+msgstr "Takform"
+
+msgid "Lean-to"
+msgstr "Pulpettak"
+
+msgid "Gable"
+msgstr "Sadeltak"
+
+msgid "Polycarbonate"
+msgstr "Polykarbonat"
+
+msgid "Material"
+msgstr "Material"
+
+msgid "Multiwall polycarbonate"
+msgstr "Kanalplast"
+
+msgid "Solid polycarbonate"
+msgstr "Massiv polykarbonat"
+
+msgid "Thickness"
+msgstr "Tjocklek"
+
+msgid "Colour"
+msgstr "Färg"
+
+msgid "Frame size"
+msgstr "Rammått"
+
+msgid "Width along the wall"
+msgstr "Bredd längs väggen"
+
+msgid "Frame length (projection)"
+msgstr "Ramlängd (utstick)"
+
+msgid "Support spacing (centre to centre)"
+msgstr "Regelavstånd (centrum till centrum)"
+
+msgid "Support beam width"
+msgstr "Bredd på bärregel"
+
+#, php-format
+msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
+msgstr "Standard 50 mm. Skarvarna ligger mitt på regeln och lämnar %d mm till skarvprofilen."
+
+msgid "Sheet overhang past the frame"
+msgstr "Skivöverhäng utanför ramen"
+
+msgid "Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less."
+msgstr "Skivorna kapas så mycket längre än ramen att vattnet droppar fritt från den främre regeln. 50 mm är det vanliga måttet — ändra det om droppkanten behöver mer eller mindre."
+
+msgid "The cut diagram appears once the size is valid."
+msgstr "Kapskissen visas när måtten är giltiga."
+
+msgid "Postal code (for shipping)"
+msgstr "Postnummer (för frakt)"
+
+msgid "Profiles"
+msgstr "Profiler"
+
+msgid "Connecting profile on the supports"
+msgstr "Skarvprofil på reglarna"
+
+msgid "On every beam"
+msgstr "På varje regel"
+
+#, php-format
+msgid "Only where sheets meet, using up to %d mm"
+msgstr "Bara där skivorna möts, upp till %d mm"
+
+msgid "A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width."
+msgstr "En skarv ligger alltid mitt på en regel. Det andra valet låter en skiva täcka flera reglar, kapad från standardbredden."
+
+msgid "Clamping profile"
+msgstr "Klämprofil"
+
+msgid "Clamping profile with lid"
+msgstr "Klämprofil med lock"
+
+msgid "Plastic H-profile"
+msgstr "H-profil i plast"
+
+msgid "Connecting colour"
+msgstr "Färg på skarvprofil"
+
+msgid "Silver"
+msgstr "Silver"
+
+msgid "Clear"
+msgstr "Klar"
+
+msgid "Brown"
+msgstr "Brun"
+
+msgid "F aluminium"
+msgstr "F-aluminium"
+
+msgid "U plastic"
+msgstr "U-plast"
+
+msgid "U aluminium"
+msgstr "U-aluminium"
+
+msgid "L aluminium"
+msgstr "L-aluminium"
+
+msgid "Finish colour"
+msgstr "Färg på avslutningsprofil"
+
+msgid "Material list"
+msgstr "Materiallista"
+
+msgid "Enter a size to see the kit."
+msgstr "Ange mått för att se satsen."
+
+msgid "VAT"
+msgstr "Moms"
+
+msgid "Total excl. VAT"
+msgstr "Totalt exkl. moms"
+
+msgid "Total incl. VAT"
+msgstr "Totalt inkl. moms"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Frakt räknas ut i varukorgen utifrån ditt postnummer."
+
+msgid "Add kit to basket"
+msgstr "Lägg satsen i varukorgen"
+
+#, php-format
+msgid "Recommended centre spacing for this thickness: %s mm."
+msgstr "Rekommenderat centrumavstånd för den här tjockleken: %s mm."
+
+#, php-format
+msgid "%d sheets"
+msgstr "%d skivor"
+
+#, php-format
+msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "En skiva täcker ramen från kant till kant. Kaplängd %1$d mm (ram %2$d mm + %3$d mm överhäng)."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang)."
+msgstr "På ett helt fack är en ytterskiva %1$d mm bredare än en mittskiva: den når ut till änden av den %2$d mm breda regeln och förlorar bara %3$d mm i skarven. Sista biten blir kortare när avståndet inte går jämnt upp i ramen. Kaplängd %4$d mm (ram %5$d mm + %6$d mm överhäng)."
+
+#, php-format
+msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
+msgstr "Skivorna täcker flera reglar och kapas från lagerbredden på %1$d mm. En skarv används bara där nästa bit annars skulle bli bredare, och den ligger fortfarande på en regel. Kaplängd %2$d mm (ram %3$d mm + %4$d mm överhäng)."
+
+#, php-format
+msgid "Cut widths: %s."
+msgstr "Kappbredder: %s."
+
+msgid "outer"
+msgstr "ytter"
+
+msgid "middle"
+msgstr "mitt"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+msgid "Some items are not in this shop (SKU not found). The rest can still be added."
+msgstr "Vissa varor finns inte i den här butiken (SKU hittades inte). Resten kan ändå läggas till."
+
+msgid "Adding kit…"
+msgstr "Lägger till satsen…"
+
+msgid "Could not add the kit. Please try again."
+msgstr "Kunde inte lägga till satsen. Försök igen."
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s st"
+
+#, php-format
+msgid "%s each"
+msgstr "%s per st"
+
+msgid "Updating prices…"
+msgstr "Uppdaterar priser…"
+
+msgid "Bronze"
+msgstr "Brons"
+
+msgid "Opal"
+msgstr "Opal"
+
+msgid "Anthracite"
+msgstr "Antracit"
+
+msgid "Cut width"
+msgstr "Kappbredd"
+
+msgid "Cut length"
+msgstr "Kaplängd"
+
+msgid "Area"
+msgstr "Yta"
+
+msgid "Terrace roof kit"
+msgstr "Terrasstak-sats"
+
+msgid "Terrace calculator"
+msgstr "Terrasskalkylator"
+
+msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
+msgstr "Välj produkter från katalogen för varje del i satsen. Kalkylatorn söker upp dem via SKU, så samma koppling fungerar i alla Norhage-butiker."
+
+msgid "Where the form appears"
+msgstr "Var formuläret visas"
+
+msgid "Show calculator on"
+msgstr "Visa kalkylatorn på"
+
+msgid "Every product page"
+msgstr "Alla produktsidor"
+
+msgid "Only the products selected below"
+msgstr "Bara produkterna som valts nedan"
+
+msgid "Only products with the calculator checkbox enabled"
+msgstr "Bara produkter där kalkylatorn är ikryssad"
+
+msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
+msgstr "Standard är alla produktsidor, så formuläret syns utan extra inställning. Byt till valda produkter eller kryssruta när terrassprodukterna är valda. Kortkod: [nh_terrace_calculator]."
+
+msgid "Selected products"
+msgstr "Valda produkter"
+
+msgid "Search products…"
+msgstr "Sök produkter…"
+
+msgid "Behaviour"
+msgstr "Beteende"
+
+msgid "Default size (mm)"
+msgstr "Standardmått (mm)"
+
+msgid "Default frame spacing (CC)"
+msgstr "Standard regelavstånd (c/c)"
+
+msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
+msgstr "Centrumavstånd mellan reglar när kunden lämnar c/c tomt. Standard är 600 mm."
+
+msgid "Support beam and sheet overhang"
+msgstr "Bärregel och skivöverhäng"
+
+msgid "Beam width"
+msgstr "Regelbredd"
+
+msgid "Joint gap"
+msgstr "Skarvmellanrum"
+
+msgid "Drip overhang"
+msgstr "Droppöverhäng"
+
+msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
+msgstr "Skarvarna ligger mitt på regeln och lämnar detta mellanrum till skarvprofilen (10 mm, alltså 5 mm av varje skiva). Ytterskivorna går ut till ramens kant. Skivorna kapas så mycket längre än ramen att vattnet droppar fritt från den främre regeln. 50 mm är vanlig regel och vanligt överhäng; kunden kan ändra båda."
+
+msgid "Limits (mm)"
+msgstr "Gränser (mm)"
+
+msgid "Width"
+msgstr "Bredd"
+
+msgid "Length"
+msgstr "Längd"
+
+msgid "Show postcode field"
+msgstr "Visa fält för postnummer"
+
+msgid "Saved to the customer when the kit is added, so shipping can be quoted in the basket."
+msgstr "Sparas på kunden när satsen läggs till, så att frakt kan räknas ut i varukorgen."
+
+msgid "Multiwall polycarbonate (custom-cut)"
+msgstr "Kanalplast (kapad efter mått)"
+
+msgid "Solid polycarbonate (custom-cut)"
+msgstr "Massiv polykarbonat (kapad efter mått)"
+
+msgid "Connecting profiles"
+msgstr "Skarvprofiler"
+
+msgid "Finish profiles"
+msgstr "Avslutningsprofiler"
+
+msgid "Sealing tapes, screws and extras"
+msgstr "Tätningstejp, skruvar och tillbehör"
+
+msgid "Ventilation / anti-dust tape"
+msgstr "Ventilations- / dammtejp"
+
+msgid "Neutral silicone"
+msgstr "Neutral silikon"
+
+msgid "Ridge profile 2.2 m (gable)"
+msgstr "Nockprofil 2,2 m (sadeltak)"
+
+msgid "End cap – silver / grey"
+msgstr "Ändlock – silver / grå"
+
+msgid "End cap – brown"
+msgstr "Ändlock – brun"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
+msgstr "Visa terrasstak-kalkylatorn på den här produktsidan (används när visningen är «kryssruta»)."
+
+msgid "Hide default add to cart"
+msgstr "Dölj vanlig lägg i varukorg"
+
+msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
+msgstr "Dölj det vanliga köpformuläret. Kunderna använder satserbjudandet i stället."

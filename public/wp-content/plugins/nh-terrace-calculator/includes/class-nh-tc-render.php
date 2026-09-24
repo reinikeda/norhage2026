@@ -229,6 +229,18 @@ class NH_TC_Render {
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
+						<div class="nh-tc__joint">
+							<span class="nh-tc__joint-label"><?php esc_html_e( 'Connecting profile on the supports', NH_TC_TD ); ?></span>
+							<label class="nh-tc__joint-option">
+								<input type="radio" name="joint_every_beam" value="1" checked>
+								<span><?php esc_html_e( 'On every beam', NH_TC_TD ); ?></span>
+							</label>
+							<label class="nh-tc__joint-option">
+								<input type="radio" name="joint_every_beam" value="0">
+								<span><?php echo esc_html( sprintf( /* translators: %d: standard polycarbonate sheet width in millimetres */ __( 'Only where sheets meet, using up to %d mm', NH_TC_TD ), (int) $s['standard_sheet_width_mm'] ) ); ?></span>
+							</label>
+							<small class="nh-tc__hint"><?php esc_html_e( 'A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width.', NH_TC_TD ); ?></small>
+						</div>
 						<div class="nh-tc__select-row nh-tc__select-row--pair">
 							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
 								<img alt="" width="44" height="44" decoding="async">
@@ -284,7 +296,7 @@ class NH_TC_Render {
 						</ul>
 						<div class="nh-tc__totals" hidden>
 							<div class="nh-tc__tax"><span><?php esc_html_e( 'VAT', NH_TC_TD ); ?></span><span data-offer-tax></span></div>
-							<div class="nh-tc__sum"><span><?php esc_html_e( 'Total incl. VAT', NH_TC_TD ); ?></span><span data-offer-total></span></div>
+							<div class="nh-tc__sum"><span><?php echo esc_html( 'excl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? __( 'Total excl. VAT', NH_TC_TD ) : __( 'Total incl. VAT', NH_TC_TD ) ); ?></span><span data-offer-total></span></div>
 							<p class="nh-tc__ship"><?php esc_html_e( 'Shipping is calculated in the basket from your postal code.', NH_TC_TD ); ?></p>
 						</div>
 						<button type="button" class="nh-tc__atc button alt" data-offer-atc disabled>
@@ -334,6 +346,7 @@ class NH_TC_Render {
 					'planWait'      => __( 'The cut diagram appears once the size is valid.', NH_TC_TD ),
 					'planSingle'    => __( 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
 					'planExtra'     => __( 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).', NH_TC_TD ),
+					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
 					'outer'         => __( 'outer', NH_TC_TD ),
 					'middle'        => __( 'middle', NH_TC_TD ),

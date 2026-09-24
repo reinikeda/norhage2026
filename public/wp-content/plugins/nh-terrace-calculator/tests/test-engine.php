@@ -170,6 +170,69 @@ $implied = $input;
 unset( $implied['support_mm'], $implied['overhang_mm'] );
 $implied_bom = NH_TC_Engine::calculate( $implied, $settings );
 nh_tc_assert( 'missing beam width and overhang use 50 mm', ! empty( $implied_bom['ok'] ) && 50 === (int) $implied_bom['meta']['support_mm'] && 50 === (int) $implied_bom['meta']['overhang_mm'] );
+nh_tc_assert( 'profiles on every beam by default', 1 === (int) $bom['meta']['joint_every_beam'] );
+
+$stock = NH_TC_Engine::calculate( array_merge( $input, array( 'joint_every_beam' => '0' ) ), $settings );
+$stock_sheets = array();
+foreach ( $stock['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$stock_sheets[] = $line;
+	}
+}
+$stock_roles = array();
+foreach ( $stock['lines'] as $line ) {
+	$stock_roles[ $line['role'] ] = $line;
+}
+$stock_cover = 0;
+foreach ( $stock_sheets as $line ) {
+	$stock_cover += (int) $line['cut']['width_mm'] * (int) $line['qty'];
+}
+$stock_cover += 10 * max( 0, (int) $stock['meta']['sheet_count'] - 1 );
+nh_tc_assert( 'stock layout calculates', ! empty( $stock['ok'] ) && 0 === (int) $stock['meta']['joint_every_beam'] );
+nh_tc_assert(
+	'4200 frame uses 1820, 1790 and 570 mm sheets',
+	3 === count( $stock_sheets )
+	&& 1820 === (int) $stock_sheets[0]['cut']['width_mm']
+	&& 1790 === (int) $stock_sheets[1]['cut']['width_mm']
+	&& 570 === (int) $stock_sheets[2]['cut']['width_mm']
+);
+nh_tc_assert( 'stock sheets plus joints still equal 4200', 4200 === $stock_cover );
+nh_tc_assert( 'two connecting profiles instead of six', isset( $stock_roles['connecting'] ) && 2 === (int) $stock_roles['connecting']['qty'] );
+nh_tc_assert( 'beams stay on the frame spacing', 8 === (int) $stock['meta']['beam_count'] );
+nh_tc_assert( 'no stock sheet is wider than 2100', 1820 <= 2100 && 1790 <= 2100 && 570 <= 2100 );
+
+$stock_even = NH_TC_Engine::stock_sheet_plan( 4250, 4000, 700, 50, 10, 0, 2100, 100 );
+$even_cover = 0;
+foreach ( $stock_even as $sheet ) {
+	$even_cover += (int) $sheet['width_mm'];
+}
+nh_tc_assert(
+	'4250 stock layout is 1420, 2090 and 720',
+	3 === count( $stock_even )
+	&& 1420 === (int) $stock_even[0]['width_mm']
+	&& 2090 === (int) $stock_even[1]['width_mm']
+	&& 720 === (int) $stock_even[2]['width_mm']
+	&& 4250 === $even_cover + ( 2 * 10 )
+);
+
+$one = NH_TC_Engine::calculate(
+	array_merge( $input, array( 'width_mm' => 2000, 'joint_every_beam' => 0, 'overhang_mm' => 0 ) ),
+	$settings
+);
+nh_tc_assert( 'a frame inside 2100 mm is one sheet and no connector', ! empty( $one['ok'] ) && 1 === (int) $one['meta']['sheet_count'] && 0 === (int) $one['meta']['connecting_count'] );
+
+$sliver_fix = NH_TC_Engine::stock_sheet_plan( 2120, 2000, 1000, 50, 10, 0, 2100, 100 );
+$sliver_cover = 0;
+foreach ( $sliver_fix as $sheet ) {
+	$sliver_cover += (int) $sheet['width_mm'];
+}
+nh_tc_assert(
+	'a narrow end piece moves the joint back onto an earlier beam',
+	2 === count( $sliver_fix )
+	&& 1020 === (int) $sliver_fix[0]['width_mm']
+	&& 1090 === (int) $sliver_fix[1]['width_mm']
+	&& 2120 === $sliver_cover + 10
+);
 
 if ( $failures ) {
 	echo "\n{$failures} failed\n";

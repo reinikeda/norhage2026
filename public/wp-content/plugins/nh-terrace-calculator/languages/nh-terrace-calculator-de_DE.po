@@ -1,0 +1,413 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:00+0000\n"
+"PO-Revision-Date: 2026-09-24 13:00+0000\n"
+"Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "Cart is not available."
+msgstr "Der Warenkorb ist nicht verfügbar."
+
+msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
+msgstr "Für diese Auswahl wurden keine Produkte gefunden. Prüfen Sie die SKU-Zuordnung in den Einstellungen des Terrassenrechners."
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Eine Position des Sets konnte nicht in den Warenkorb gelegt werden."
+
+msgid "Terrace roof kit added to basket."
+msgstr "Terrassendach-Set wurde in den Warenkorb gelegt."
+
+#, php-format
+msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
+msgstr "Eine Platte wäre breiter als die Lagerbreite von %d mm. Verringern Sie den Trägerabstand, damit jedes Stück aus einer Standardplatte geschnitten werden kann."
+
+msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
+msgstr "Die letzte Platte wäre zu schmal zum Schneiden. Passen Sie den Trägerabstand an, damit jedes Stück mindestens 100 mm breit ist."
+
+msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
+msgstr "Geben Sie eine Trägerbreite zwischen 20 und 200 mm ein. 50 mm ist das übliche Maß."
+
+msgid "Sheet overhang must be between 0 and 300 mm."
+msgstr "Der Plattenüberstand muss zwischen 0 und 300 mm liegen."
+
+msgid "Please enter a valid width and length."
+msgstr "Bitte geben Sie eine gültige Breite und Länge ein."
+
+msgid "Wood screws with washers"
+msgstr "Holzschrauben mit Scheiben"
+
+msgid "Connecting profile"
+msgstr "Verbindungsprofil"
+
+msgid "Wall profile 2.2 m"
+msgstr "Wandprofil 2,2 m"
+
+msgid "Ridge profile 2.2 m"
+msgstr "Firstprofil 2,2 m"
+
+msgid "Ventilation sealing tape"
+msgstr "Lüftungsband"
+
+msgid "Insulation sealing tape"
+msgstr "Dichtband"
+
+msgid "Clamping profile end cap"
+msgstr "Endkappe für Klemmprofil"
+
+msgid "EPDM rubber gasket 50 mm"
+msgstr "EPDM-Gummidichtung 50 mm"
+
+msgid "Neutral silicone Silirub PC"
+msgstr "Neutralvernetzendes Silikon Silirub PC"
+
+msgid "Polycarbonate sheet"
+msgstr "Polycarbonatplatte"
+
+#, php-format
+msgid "%1$d × %2$d mm (%3$s m²)"
+msgstr "%1$d × %2$d mm (%3$s m²)"
+
+msgid "Finish profile"
+msgstr "Abschlussprofil"
+
+#, php-format
+msgid "%1$d pcs (%2$d / pack)"
+msgstr "%1$d Stk. (%2$d / Packung)"
+
+#, php-format
+msgid "%s m"
+msgstr "%s m"
+
+msgid "Terrace roof calculator"
+msgstr "Terrassendach-Rechner"
+
+msgid "Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support."
+msgstr "Gehen Sie die Schritte durch, prüfen Sie die Zuschnittliste und legen Sie ein komplettes Set in den Warenkorb. Die Platten werden so geschnitten, dass jeder Stoß in der Trägermitte liegt."
+
+msgid "Roof shape"
+msgstr "Dachform"
+
+msgid "Lean-to"
+msgstr "Pultdach"
+
+msgid "Gable"
+msgstr "Satteldach"
+
+msgid "Polycarbonate"
+msgstr "Polycarbonat"
+
+msgid "Material"
+msgstr "Material"
+
+msgid "Multiwall polycarbonate"
+msgstr "Stegplatte"
+
+msgid "Solid polycarbonate"
+msgstr "Massivplatte"
+
+msgid "Thickness"
+msgstr "Stärke"
+
+msgid "Colour"
+msgstr "Farbe"
+
+msgid "Frame size"
+msgstr "Rahmenmaß"
+
+msgid "Width along the wall"
+msgstr "Breite entlang der Wand"
+
+msgid "Frame length (projection)"
+msgstr "Rahmenlänge (Ausladung)"
+
+msgid "Support spacing (centre to centre)"
+msgstr "Trägerabstand (Mitte zu Mitte)"
+
+msgid "Support beam width"
+msgstr "Breite des Trägers"
+
+#, php-format
+msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
+msgstr "Standard 50 mm. Die Stöße liegen in der Trägermitte und lassen %d mm für das Verbindungsprofil."
+
+msgid "Sheet overhang past the frame"
+msgstr "Plattenüberstand über den Rahmen"
+
+msgid "Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less."
+msgstr "Die Platten werden so viel länger als der Rahmen geschnitten, dass das Wasser vor dem vorderen Träger abtropft. 50 mm sind das übliche Maß — ändern Sie es, wenn die Tropfkante mehr oder weniger braucht."
+
+msgid "The cut diagram appears once the size is valid."
+msgstr "Die Zuschnittskizze erscheint, sobald das Maß gültig ist."
+
+msgid "Postal code (for shipping)"
+msgstr "Postleitzahl (für den Versand)"
+
+msgid "Profiles"
+msgstr "Profile"
+
+msgid "Connecting profile on the supports"
+msgstr "Verbindungsprofil auf den Trägern"
+
+msgid "On every beam"
+msgstr "An jedem Träger"
+
+#, php-format
+msgid "Only where sheets meet, using up to %d mm"
+msgstr "Nur dort, wo die Platten zusammentreffen, bis %d mm"
+
+msgid "A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width."
+msgstr "Ein Stoß liegt immer in der Trägermitte. Die zweite Wahl lässt eine Platte mehrere Träger überspannen, geschnitten aus der Standardbreite."
+
+msgid "Clamping profile"
+msgstr "Klemmprofil"
+
+msgid "Clamping profile with lid"
+msgstr "Klemmprofil mit Deckel"
+
+msgid "Plastic H-profile"
+msgstr "H-Profil aus Kunststoff"
+
+msgid "Connecting colour"
+msgstr "Farbe des Verbindungsprofils"
+
+msgid "Silver"
+msgstr "Silber"
+
+msgid "Clear"
+msgstr "Klar"
+
+msgid "Brown"
+msgstr "Braun"
+
+msgid "F aluminium"
+msgstr "F-Aluminium"
+
+msgid "U plastic"
+msgstr "U-Kunststoff"
+
+msgid "U aluminium"
+msgstr "U-Aluminium"
+
+msgid "L aluminium"
+msgstr "L-Aluminium"
+
+msgid "Finish colour"
+msgstr "Farbe des Abschlussprofils"
+
+msgid "Material list"
+msgstr "Materialliste"
+
+msgid "Enter a size to see the kit."
+msgstr "Geben Sie ein Maß ein, um das Set zu sehen."
+
+msgid "VAT"
+msgstr "MwSt."
+
+msgid "Total excl. VAT"
+msgstr "Summe exkl. MwSt."
+
+msgid "Total incl. VAT"
+msgstr "Summe inkl. MwSt."
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Der Versand wird im Warenkorb anhand Ihrer Postleitzahl berechnet."
+
+msgid "Add kit to basket"
+msgstr "Set in den Warenkorb"
+
+#, php-format
+msgid "Recommended centre spacing for this thickness: %s mm."
+msgstr "Empfohlener Achsabstand für diese Stärke: %s mm."
+
+#, php-format
+msgid "%d sheets"
+msgstr "%d Platten"
+
+#, php-format
+msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Eine Platte deckt den Rahmen von Kante zu Kante. Zuschnittlänge %1$d mm (Rahmen %2$d mm + %3$d mm Überstand)."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang)."
+msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm. Das letzte Stück wird kürzer, wenn der Abstand nicht gleichmäßig in den Rahmen passt. Zuschnittlänge %4$d mm (Rahmen %5$d mm + %6$d mm Überstand)."
+
+#, php-format
+msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
+msgstr "Die Platten überspannen mehrere Träger und werden aus der Lagerbreite von %1$d mm geschnitten. Ein Stoß wird nur gesetzt, wo das nächste Stück sonst breiter wäre, und er liegt weiterhin auf einem Träger. Zuschnittlänge %2$d mm (Rahmen %3$d mm + %4$d mm Überstand)."
+
+#, php-format
+msgid "Cut widths: %s."
+msgstr "Zuschnittbreiten: %s."
+
+msgid "outer"
+msgstr "außen"
+
+msgid "middle"
+msgstr "Mitte"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+msgid "Some items are not in this shop (SKU not found). The rest can still be added."
+msgstr "Einige Artikel gibt es in diesem Shop nicht (SKU nicht gefunden). Der Rest kann trotzdem hinzugefügt werden."
+
+msgid "Adding kit…"
+msgstr "Set wird hinzugefügt…"
+
+msgid "Could not add the kit. Please try again."
+msgstr "Das Set konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut."
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s Stk."
+
+#, php-format
+msgid "%s each"
+msgstr "%s je Stück"
+
+msgid "Updating prices…"
+msgstr "Preise werden aktualisiert…"
+
+msgid "Bronze"
+msgstr "Bronze"
+
+msgid "Opal"
+msgstr "Opal"
+
+msgid "Anthracite"
+msgstr "Anthrazit"
+
+msgid "Cut width"
+msgstr "Zuschnittbreite"
+
+msgid "Cut length"
+msgstr "Zuschnittlänge"
+
+msgid "Area"
+msgstr "Fläche"
+
+msgid "Terrace roof kit"
+msgstr "Terrassendach-Set"
+
+msgid "Terrace calculator"
+msgstr "Terrassenrechner"
+
+msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
+msgstr "Wählen Sie für jede Position im Set ein Produkt aus dem Katalog. Der Rechner sucht sie über die SKU, dieselbe Zuordnung gilt also in jedem Norhage-Shop."
+
+msgid "Where the form appears"
+msgstr "Wo das Formular erscheint"
+
+msgid "Show calculator on"
+msgstr "Rechner anzeigen auf"
+
+msgid "Every product page"
+msgstr "Jede Produktseite"
+
+msgid "Only the products selected below"
+msgstr "Nur die unten ausgewählten Produkte"
+
+msgid "Only products with the calculator checkbox enabled"
+msgstr "Nur Produkte mit aktiviertem Rechner-Kontrollkästchen"
+
+msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
+msgstr "Standard ist jede Produktseite, damit das Formular ohne weitere Einrichtung sichtbar ist. Wechseln Sie zu ausgewählten Produkten oder zum Kontrollkästchen, sobald die Terrassenprodukte feststehen. Shortcode: [nh_terrace_calculator]."
+
+msgid "Selected products"
+msgstr "Ausgewählte Produkte"
+
+msgid "Search products…"
+msgstr "Produkte suchen…"
+
+msgid "Behaviour"
+msgstr "Verhalten"
+
+msgid "Default size (mm)"
+msgstr "Standardmaß (mm)"
+
+msgid "Default frame spacing (CC)"
+msgstr "Standard-Sparrenabstand (Mitte–Mitte)"
+
+msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
+msgstr "Achsabstand der Träger, wenn der Kunde das Feld leer lässt. Standard sind 600 mm."
+
+msgid "Support beam and sheet overhang"
+msgstr "Trägerbreite und Plattenüberstand"
+
+msgid "Beam width"
+msgstr "Trägerbreite"
+
+msgid "Joint gap"
+msgstr "Fugenbreite"
+
+msgid "Drip overhang"
+msgstr "Tropfüberstand"
+
+msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
+msgstr "Die Stöße liegen in der Trägermitte und lassen diese Fuge für das Verbindungsprofil (10 mm, also 5 mm je Platte). Die äußeren Platten reichen bis zum Rahmenende. Die Platten werden so viel länger als der Rahmen geschnitten, dass das Wasser vor dem vorderen Träger abtropft. 50 mm sind die übliche Trägerbreite und der übliche Überstand; der Kunde kann beides ändern."
+
+msgid "Limits (mm)"
+msgstr "Grenzen (mm)"
+
+msgid "Width"
+msgstr "Breite"
+
+msgid "Length"
+msgstr "Länge"
+
+msgid "Show postcode field"
+msgstr "Feld für die Postleitzahl anzeigen"
+
+msgid "Saved to the customer when the kit is added, so shipping can be quoted in the basket."
+msgstr "Wird beim Hinzufügen des Sets am Kunden gespeichert, damit der Versand im Warenkorb berechnet werden kann."
+
+msgid "Multiwall polycarbonate (custom-cut)"
+msgstr "Stegplatte (Zuschnitt)"
+
+msgid "Solid polycarbonate (custom-cut)"
+msgstr "Massivplatte (Zuschnitt)"
+
+msgid "Connecting profiles"
+msgstr "Verbindungsprofile"
+
+msgid "Finish profiles"
+msgstr "Abschlussprofile"
+
+msgid "Sealing tapes, screws and extras"
+msgstr "Dichtbänder, Schrauben und Zubehör"
+
+msgid "Ventilation / anti-dust tape"
+msgstr "Lüftungs- / Staubschutzband"
+
+msgid "Neutral silicone"
+msgstr "Neutralvernetzendes Silikon"
+
+msgid "Ridge profile 2.2 m (gable)"
+msgstr "Firstprofil 2,2 m (Satteldach)"
+
+msgid "End cap – silver / grey"
+msgstr "Endkappe – silber / grau"
+
+msgid "End cap – brown"
+msgstr "Endkappe – braun"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
+msgstr "Terrassendach-Rechner auf dieser Produktseite anzeigen (wenn der Anzeigemodus «Kontrollkästchen» ist)."
+
+msgid "Hide default add to cart"
+msgstr "Standard-Schaltfläche ausblenden"
+
+msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
+msgstr "Das normale Kauf-Formular ausblenden. Kunden nutzen stattdessen das Set-Angebot."

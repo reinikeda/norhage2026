@@ -1,0 +1,408 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Norhage\n"
+
+msgid "Cart is not available."
+msgstr ""
+
+msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
+msgstr ""
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr ""
+
+msgid "Terrace roof kit added to basket."
+msgstr ""
+
+#, php-format
+msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
+msgstr ""
+
+msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
+msgstr ""
+
+msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
+msgstr ""
+
+msgid "Sheet overhang must be between 0 and 300 mm."
+msgstr ""
+
+msgid "Please enter a valid width and length."
+msgstr ""
+
+msgid "Wood screws with washers"
+msgstr ""
+
+msgid "Connecting profile"
+msgstr ""
+
+msgid "Wall profile 2.2 m"
+msgstr ""
+
+msgid "Ridge profile 2.2 m"
+msgstr ""
+
+msgid "Ventilation sealing tape"
+msgstr ""
+
+msgid "Insulation sealing tape"
+msgstr ""
+
+msgid "Clamping profile end cap"
+msgstr ""
+
+msgid "EPDM rubber gasket 50 mm"
+msgstr ""
+
+msgid "Neutral silicone Silirub PC"
+msgstr ""
+
+msgid "Polycarbonate sheet"
+msgstr ""
+
+#, php-format
+msgid "%1$d × %2$d mm (%3$s m²)"
+msgstr ""
+
+msgid "Finish profile"
+msgstr ""
+
+#, php-format
+msgid "%1$d pcs (%2$d / pack)"
+msgstr ""
+
+#, php-format
+msgid "%s m"
+msgstr ""
+
+msgid "Terrace roof calculator"
+msgstr ""
+
+msgid "Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support."
+msgstr ""
+
+msgid "Roof shape"
+msgstr ""
+
+msgid "Lean-to"
+msgstr ""
+
+msgid "Gable"
+msgstr ""
+
+msgid "Polycarbonate"
+msgstr ""
+
+msgid "Material"
+msgstr ""
+
+msgid "Multiwall polycarbonate"
+msgstr ""
+
+msgid "Solid polycarbonate"
+msgstr ""
+
+msgid "Thickness"
+msgstr ""
+
+msgid "Colour"
+msgstr ""
+
+msgid "Frame size"
+msgstr ""
+
+msgid "Width along the wall"
+msgstr ""
+
+msgid "Frame length (projection)"
+msgstr ""
+
+msgid "Support spacing (centre to centre)"
+msgstr ""
+
+msgid "Support beam width"
+msgstr ""
+
+#, php-format
+msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
+msgstr ""
+
+msgid "Sheet overhang past the frame"
+msgstr ""
+
+msgid "Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less."
+msgstr ""
+
+msgid "The cut diagram appears once the size is valid."
+msgstr ""
+
+msgid "Postal code (for shipping)"
+msgstr ""
+
+msgid "Profiles"
+msgstr ""
+
+msgid "Connecting profile on the supports"
+msgstr ""
+
+msgid "On every beam"
+msgstr ""
+
+#, php-format
+msgid "Only where sheets meet, using up to %d mm"
+msgstr ""
+
+msgid "A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width."
+msgstr ""
+
+msgid "Clamping profile"
+msgstr ""
+
+msgid "Clamping profile with lid"
+msgstr ""
+
+msgid "Plastic H-profile"
+msgstr ""
+
+msgid "Connecting colour"
+msgstr ""
+
+msgid "Silver"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Brown"
+msgstr ""
+
+msgid "F aluminium"
+msgstr ""
+
+msgid "U plastic"
+msgstr ""
+
+msgid "U aluminium"
+msgstr ""
+
+msgid "L aluminium"
+msgstr ""
+
+msgid "Finish colour"
+msgstr ""
+
+msgid "Material list"
+msgstr ""
+
+msgid "Enter a size to see the kit."
+msgstr ""
+
+msgid "VAT"
+msgstr ""
+
+msgid "Total excl. VAT"
+msgstr ""
+
+msgid "Total incl. VAT"
+msgstr ""
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr ""
+
+msgid "Add kit to basket"
+msgstr ""
+
+#, php-format
+msgid "Recommended centre spacing for this thickness: %s mm."
+msgstr ""
+
+#, php-format
+msgid "%d sheets"
+msgstr ""
+
+#, php-format
+msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr ""
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang)."
+msgstr ""
+
+#, php-format
+msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
+msgstr ""
+
+#, php-format
+msgid "Cut widths: %s."
+msgstr ""
+
+msgid "outer"
+msgstr ""
+
+msgid "middle"
+msgstr ""
+
+#, php-format
+msgid "%d mm"
+msgstr ""
+
+msgid "Some items are not in this shop (SKU not found). The rest can still be added."
+msgstr ""
+
+msgid "Adding kit…"
+msgstr ""
+
+msgid "Could not add the kit. Please try again."
+msgstr ""
+
+#, php-format
+msgid "%s pcs"
+msgstr ""
+
+#, php-format
+msgid "%s each"
+msgstr ""
+
+msgid "Updating prices…"
+msgstr ""
+
+msgid "Bronze"
+msgstr ""
+
+msgid "Opal"
+msgstr ""
+
+msgid "Anthracite"
+msgstr ""
+
+msgid "Cut width"
+msgstr ""
+
+msgid "Cut length"
+msgstr ""
+
+msgid "Area"
+msgstr ""
+
+msgid "Terrace roof kit"
+msgstr ""
+
+msgid "Terrace calculator"
+msgstr ""
+
+msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
+msgstr ""
+
+msgid "Where the form appears"
+msgstr ""
+
+msgid "Show calculator on"
+msgstr ""
+
+msgid "Every product page"
+msgstr ""
+
+msgid "Only the products selected below"
+msgstr ""
+
+msgid "Only products with the calculator checkbox enabled"
+msgstr ""
+
+msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
+msgstr ""
+
+msgid "Selected products"
+msgstr ""
+
+msgid "Search products…"
+msgstr ""
+
+msgid "Behaviour"
+msgstr ""
+
+msgid "Default size (mm)"
+msgstr ""
+
+msgid "Default frame spacing (CC)"
+msgstr ""
+
+msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
+msgstr ""
+
+msgid "Support beam and sheet overhang"
+msgstr ""
+
+msgid "Beam width"
+msgstr ""
+
+msgid "Joint gap"
+msgstr ""
+
+msgid "Drip overhang"
+msgstr ""
+
+msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
+msgstr ""
+
+msgid "Limits (mm)"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Show postcode field"
+msgstr ""
+
+msgid "Saved to the customer when the kit is added, so shipping can be quoted in the basket."
+msgstr ""
+
+msgid "Multiwall polycarbonate (custom-cut)"
+msgstr ""
+
+msgid "Solid polycarbonate (custom-cut)"
+msgstr ""
+
+msgid "Connecting profiles"
+msgstr ""
+
+msgid "Finish profiles"
+msgstr ""
+
+msgid "Sealing tapes, screws and extras"
+msgstr ""
+
+msgid "Ventilation / anti-dust tape"
+msgstr ""
+
+msgid "Neutral silicone"
+msgstr ""
+
+msgid "Ridge profile 2.2 m (gable)"
+msgstr ""
+
+msgid "End cap – silver / grey"
+msgstr ""
+
+msgid "End cap – brown"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
+msgstr ""
+
+msgid "Hide default add to cart"
+msgstr ""
+
+msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
+msgstr ""

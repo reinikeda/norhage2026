@@ -17,15 +17,18 @@ class NH_TC_Catalog {
 	 * @return array<string, mixed>
 	 */
 	public static function price_bom( array $bom, array $settings ) {
-			$meta    = $bom['meta'];
-			$offer   = array();
-			$missing = array();
-			$sub_ex  = 0.0;
-			$sub_in  = 0.0;
+			$meta     = $bom['meta'];
+			$offer    = array();
+			$missing  = array();
+			$sub_ex   = 0.0;
+			$sub_in   = 0.0;
+			$tax_mode = get_option( 'woocommerce_tax_display_shop', 'incl' );
 
 			foreach ( $bom['lines'] as $line ) {
 				$resolved = self::resolve_line( $line, $meta, $settings );
 				foreach ( $resolved as $item ) {
+					$item['unit_display'] = self::format_money( 'excl' === $tax_mode ? $item['unit_ex'] : $item['unit_inc'] );
+					$item['line_display'] = self::format_money( 'excl' === $tax_mode ? $item['line_ex'] : $item['line_inc'] );
 					if ( empty( $item['product_id'] ) ) {
 						$missing[] = $item;
 						continue;
@@ -36,18 +39,23 @@ class NH_TC_Catalog {
 				}
 			}
 
+			$tax   = $sub_in - $sub_ex;
+			$total = ( 'excl' === $tax_mode ) ? $sub_ex : $sub_in;
+
 			return array(
 				'ok'          => true,
 				'meta'        => $meta,
 				'items'       => $offer,
 				'missing'     => $missing,
 				'totals'      => array(
-					'ex'  => $sub_ex,
-					'inc' => $sub_in,
-					'tax' => $sub_in - $sub_ex,
+					'ex'              => $sub_ex,
+					'inc'             => $sub_in,
+					'tax'             => $tax,
+					'tax_formatted'   => self::format_money( $tax ),
+					'total_formatted' => self::format_money( $total ),
 				),
 				'currency'    => self::currency_payload(),
-				'tax_display' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
+				'tax_display' => $tax_mode,
 			);
 		}
 
@@ -506,14 +514,34 @@ class NH_TC_Catalog {
 	 * @return array<string, mixed>
 	 */
 	public static function currency_payload() {
+		$code = get_woocommerce_currency();
 		return array(
-			'symbol'   => get_woocommerce_currency_symbol(),
-			'code'     => get_woocommerce_currency(),
+			'code'     => $code,
+			'symbol'   => html_entity_decode( wp_strip_all_tags( (string) get_woocommerce_currency_symbol( $code ) ), ENT_QUOTES, 'UTF-8' ),
 			'pos'      => get_option( 'woocommerce_currency_pos', 'right_space' ),
-			'decimals' => wc_get_price_decimals(),
-			'thousand' => wc_get_price_thousand_separator(),
-			'decimal'  => wc_get_price_decimal_separator(),
+			'decimals' => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
+			'thousand' => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ' ',
+			'decimal'  => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : ',',
 		);
+	}
+
+	/**
+	 * Plain-text price in the active WooCommerce currency, tax display, and separators.
+	 *
+	 * @param float|int|string $amount
+	 */
+	public static function format_money( $amount ) {
+		if ( ! function_exists( 'wc_price' ) ) {
+			return '';
+		}
+		$html = wc_price(
+			(float) $amount,
+			array(
+				'currency' => get_woocommerce_currency(),
+			)
+		);
+		$text = html_entity_decode( wp_strip_all_tags( (string) $html ), ENT_QUOTES, 'UTF-8' );
+		return trim( (string) preg_replace( '/[ \t\f\v]+/u', ' ', $text ) );
 	}
 
 	/**

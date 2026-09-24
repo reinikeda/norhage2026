@@ -201,6 +201,7 @@ class NH_TC_Ajax {
 			'finish_profile'      => self::pick( $src, 'finish_profile', array( 'f_aluminium', 'f_profile', 'u_plastic', 'u_aluminium', 'l_aluminium' ), 'f_aluminium' ),
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
+			'joint_every_beam'    => self::pick( $src, 'joint_every_beam', array( '0', '1' ), '1' ),
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
