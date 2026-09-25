@@ -61,6 +61,19 @@
   grid-template-columns: 1fr;
 }
 
+.nh-tc__size {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem 1.25rem;
+}
+
+.nh-tc__size-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
 .nh-tc__step-no {
   display: inline-flex;
   align-items: center;
@@ -254,6 +267,46 @@
   background: #8aa394;
 }
 
+.nh-tc__gable {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background: #e7eee9;
+  overflow: hidden;
+}
+
+.nh-tc__gable .nh-tc__frame {
+  height: 72px;
+  border-radius: 0;
+  background: transparent;
+}
+
+.nh-tc__gable .is-upper .nh-tc__sheet {
+  top: 10px;
+  bottom: 0;
+  align-items: flex-start;
+  padding-top: 0.4rem;
+}
+
+.nh-tc__gable .is-lower .nh-tc__sheet {
+  top: 0;
+  bottom: 10px;
+  border-bottom-width: 1px;
+  border-radius: 0 0 3px 3px;
+}
+
+.nh-tc__gable .is-upper .nh-tc__beam {
+  top: 0;
+  bottom: auto;
+}
+
+.nh-tc__ridge {
+  position: relative;
+  z-index: 3;
+  height: 8px;
+  background: #6b5344;
+}
+
 .nh-tc__plan-note,
 .nh-tc__plan-cuts {
   margin: 0.45rem 0 0;
@@ -298,6 +351,13 @@
 
 .nh-tc__legend .is-rafter {
   width: 0.28rem;
+  background: #6b5344;
+  border-color: #6b5344;
+}
+
+.nh-tc__legend .is-ridge {
+  width: 0.9rem;
+  height: 0.28rem;
   background: #6b5344;
   border-color: #6b5344;
 }
@@ -604,7 +664,8 @@ body.nh-tc-hide-default-cart .product .summary form.cart {
     padding: 1.1rem 1.2rem 1.25rem;
   }
 
-  .nh-tc__row--2 {
+  .nh-tc__row--2,
+  .nh-tc__size {
     grid-template-columns: 1fr 1fr;
   }
 

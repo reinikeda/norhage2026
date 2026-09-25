@@ -190,9 +190,10 @@ class NH_TC_Render {
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Frame size', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--2">
+						<div class="nh-tc__size">
+							<div class="nh-tc__size-col">
 							<label>
-								<span><?php esc_html_e( 'Width along the wall', NH_TC_TD ); ?></span>
+								<span data-width-label><?php esc_html_e( 'Width along the wall', NH_TC_TD ); ?></span>
 								<span class="nh-tc__input">
 									<input type="number" name="width_mm" inputmode="numeric" required
 										min="<?php echo esc_attr( $s['min_width_mm'] ); ?>"
@@ -201,18 +202,6 @@ class NH_TC_Render {
 										value="<?php echo esc_attr( $s['default_width_mm'] ); ?>">
 									<span>mm</span>
 								</span>
-							</label>
-							<label>
-								<span><?php esc_html_e( 'Frame length (projection)', NH_TC_TD ); ?></span>
-								<span class="nh-tc__input">
-									<input type="number" name="length_mm" inputmode="numeric" required
-										min="<?php echo esc_attr( $s['min_length_mm'] ); ?>"
-										max="<?php echo esc_attr( $s['max_length_mm'] ); ?>"
-										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
-										value="<?php echo esc_attr( $s['default_length_mm'] ); ?>">
-									<span>mm</span>
-								</span>
-								<small class="nh-tc__hint" data-gable-length hidden><?php esc_html_e( 'Enter one side, from the ridge to the eave. Both sides are included.', NH_TC_TD ); ?></small>
 							</label>
 							<label>
 								<span><?php esc_html_e( 'Support spacing (centre to centre)', NH_TC_TD ); ?></span>
@@ -235,6 +224,20 @@ class NH_TC_Render {
 								</span>
 								<small class="nh-tc__hint"><?php echo esc_html( sprintf( /* translators: %d: joint gap in millimetres */ __( 'Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile.', NH_TC_TD ), $gap ) ); ?></small>
 							</label>
+							</div>
+							<div class="nh-tc__size-col">
+							<label>
+								<span data-length-label><?php esc_html_e( 'Frame length (projection)', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="length_mm" inputmode="numeric" required
+										min="<?php echo esc_attr( $s['min_length_mm'] ); ?>"
+										max="<?php echo esc_attr( $s['max_length_mm'] ); ?>"
+										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
+										value="<?php echo esc_attr( $s['default_length_mm'] ); ?>">
+									<span>mm</span>
+								</span>
+								<small class="nh-tc__hint" data-gable-length hidden><?php esc_html_e( 'Enter one side, from the ridge to the eave. Both sides are included.', NH_TC_TD ); ?></small>
+							</label>
 							<label>
 								<span><?php esc_html_e( 'Sheet overhang past the frame', NH_TC_TD ); ?></span>
 								<span class="nh-tc__input">
@@ -247,6 +250,7 @@ class NH_TC_Render {
 								</span>
 								<small class="nh-tc__hint"><?php esc_html_e( 'Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less.', NH_TC_TD ); ?></small>
 							</label>
+							</div>
 						</div>
 						<div class="nh-tc__plan" data-sheet-plan>
 							<p class="nh-tc__plan-note"><?php esc_html_e( 'The cut diagram appears once the size is valid.', NH_TC_TD ); ?></p>
@@ -380,6 +384,11 @@ class NH_TC_Render {
 					'planCut'       => __( 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
 					'planGable'     => __( 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.', NH_TC_TD ),
 					'rafter'        => __( 'Rafter', NH_TC_TD ),
+					'ridge'         => __( 'Ridge', NH_TC_TD ),
+					'widthWall'     => __( 'Width along the wall', NH_TC_TD ),
+					'widthGable'    => __( 'Width along the gable', NH_TC_TD ),
+					'lengthLean'    => __( 'Frame length (projection)', NH_TC_TD ),
+					'lengthGable'   => __( 'Length of one side (ridge to eave)', NH_TC_TD ),
 					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
 					'planStockBuy'  => __( 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.', NH_TC_TD ),

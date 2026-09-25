@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -519,4 +519,14 @@ msgstr "Geben Sie eine Seite ein, vom First zur Traufe. Beide Seiten werden gez�
 #, php-format
 msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
 msgstr "Beide Seiten werden gezählt. Die eingegebenen %1$d mm sind eine Seite, vom First zur Traufe, daher ist die Rahmenlänge %2$d mm."
+
+
+msgid "Width along the gable"
+msgstr "Breite entlang des Giebels"
+
+msgid "Length of one side (ridge to eave)"
+msgstr "Länge einer Seite (First zur Traufe)"
+
+msgid "Ridge"
+msgstr "First"
 

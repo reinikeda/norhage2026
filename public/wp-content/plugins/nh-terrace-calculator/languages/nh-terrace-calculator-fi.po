@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -519,4 +519,14 @@ msgstr "Syötä yksi lape harjalta räystäälle. Molemmat lappeet lasketaan muk
 #, php-format
 msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
 msgstr "Molemmat lappeet lasketaan mukaan. Syötetty %1$d mm on yksi lape harjalta räystäälle, joten rungon pituus on %2$d mm."
+
+
+msgid "Width along the gable"
+msgstr "Leveys päädyn suunnassa"
+
+msgid "Length of one side (ridge to eave)"
+msgstr "Yhden lappeen pituus (harjalta räystäälle)"
+
+msgid "Ridge"
+msgstr "Harja"
 
