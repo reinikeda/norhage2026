@@ -99,6 +99,7 @@ $last_edge = (int) $plan[6]['x_mm'] + (int) $plan[6]['width_mm'];
 nh_tc_assert( 'equal bays keep every joint on a rafter centre', $joints_on_centres && 25 === (int) $rafters[0] && 4175 === (int) $rafters[7] && 4200 === $last_edge );
 nh_tc_assert( 'outer sheets are 30 mm wider than a full middle sheet', 30 === (int) $bom['meta']['side_extra_mm'] );
 nh_tc_assert( '7 sheets still', 7 === (int) $bom['meta']['sheet_count'] );
+nh_tc_assert( 'custom supply starts with a profile on every rafter', 'every' === $bom['meta']['profile_joints'] );
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
 nh_tc_assert( 'F-profile 3×2 m + 3×3 m', isset( $by_role['finish']['packed']['2-m'], $by_role['finish']['packed']['3-m'] ) && 3 === (int) $by_role['finish']['packed']['2-m'] && 3 === (int) $by_role['finish']['packed']['3-m'] );
 nh_tc_assert( '150 screws → 3 packs of 5x60', isset( $by_role['screw'] ) && 150 === (int) $by_role['screw']['qty_raw'] && 3 === (int) $by_role['screw']['qty'] && '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions'] );
@@ -325,6 +326,92 @@ nh_tc_assert(
 	&& 2120 === $sliver_cover + 10
 );
 
+$optimal = NH_TC_Engine::optimal_layout( 4200, 4700, 600, 50, 10, 50, 2100, 100 );
+$optimal_cover = 0;
+foreach ( $optimal['sheets'] as $sheet ) {
+	$optimal_cover += (int) $sheet['width_mm'];
+}
+$optimal_joints = (
+	1804 === (int) $optimal['sheets'][0]['x_mm'] + (int) $optimal['sheets'][0]['width_mm'] + 5
+	&& 3582 === (int) $optimal['sheets'][1]['x_mm'] + (int) $optimal['sheets'][1]['width_mm'] + 5
+	&& 1804 === (int) $optimal['rafters_mm'][3]
+	&& 3582 === (int) $optimal['rafters_mm'][6]
+);
+nh_tc_assert(
+	'optimal 2100 mm span on even rafters is 1799, 1768 and 613',
+	3 === count( $optimal['sheets'] )
+	&& 8 === count( $optimal['rafters_mm'] )
+	&& 1799 === (int) $optimal['sheets'][0]['width_mm']
+	&& 1768 === (int) $optimal['sheets'][1]['width_mm']
+	&& 613 === (int) $optimal['sheets'][2]['width_mm']
+	&& 0 === (int) $optimal['sheets'][0]['x_mm']
+	&& 1809 === (int) $optimal['sheets'][1]['x_mm']
+	&& 3587 === (int) $optimal['sheets'][2]['x_mm']
+	&& $optimal_joints
+	&& 4200 === $optimal_cover + ( 2 * 10 )
+);
+
+$opt_in                    = $input;
+$opt_in['profile_joints']  = 'optimal';
+$opt_bom                   = NH_TC_Engine::calculate( $opt_in, $settings );
+$opt_connect               = 0;
+$opt_screws                = 0;
+foreach ( $opt_bom['lines'] as $line ) {
+	if ( 'connecting' === $line['role'] ) {
+		$opt_connect = (int) $line['qty'];
+	}
+	if ( 'screw' === $line['role'] ) {
+		$opt_screws = (int) $line['qty_raw'];
+	}
+}
+nh_tc_assert(
+	'custom optimal uses two connecting profiles and the screws that follow them',
+	! empty( $opt_bom['ok'] )
+	&& 'optimal' === $opt_bom['meta']['profile_joints']
+	&& 2100 === (int) $opt_bom['meta']['span_mm']
+	&& 3 === count( $opt_bom['meta']['sheet_plan'] )
+	&& 2 === (int) $opt_bom['meta']['connecting_count']
+	&& 2 === $opt_connect
+	&& 50 === $opt_screws
+	&& 8 === (int) $opt_bom['meta']['rafter_count']
+);
+
+$wide_cc                   = $input;
+$wide_cc['profile_joints'] = 'optimal';
+$wide_cc['cc_mm']          = 1100;
+$wide_multi                = NH_TC_Engine::calculate( $wide_cc, $settings );
+$wide_solid_in             = $wide_cc;
+$wide_solid_in['material'] = 'solid';
+$wide_solid                = NH_TC_Engine::calculate( $wide_solid_in, $settings );
+$solid_widths              = array();
+$solid_ok                  = ! empty( $wide_solid['ok'] ) && 2050 === (int) $wide_solid['meta']['span_mm'];
+foreach ( $wide_solid['meta']['sheet_plan'] as $sheet ) {
+	$solid_widths[] = (int) $sheet['width_mm'];
+	if ( (int) $sheet['width_mm'] > 2050 ) {
+		$solid_ok = false;
+	}
+}
+nh_tc_assert(
+	'solid optimal stays on the 2050 mm side',
+	$solid_ok
+	&& array( 1057, 1028, 1028, 1057 ) === $solid_widths
+	&& ! empty( $wide_multi['ok'] )
+	&& 2100 === (int) $wide_multi['meta']['span_mm']
+	&& 2095 === (int) $wide_multi['meta']['sheet_plan'][0]['width_mm']
+);
+
+$gable_opt                    = $opt_in;
+$gable_opt['construction']    = 'gable';
+$gable_opt_bom                = NH_TC_Engine::calculate( $gable_opt, $settings );
+nh_tc_assert(
+	'a gable doubles the length and keeps the optimal profile count',
+	! empty( $gable_opt_bom['ok'] )
+	&& 2 === (int) $gable_opt_bom['meta']['slopes']
+	&& 9400 === (int) $gable_opt_bom['meta']['length_mm']
+	&& 2 === (int) $gable_opt_bom['meta']['connecting_count']
+	&& 3 === count( $gable_opt_bom['meta']['sheet_plan'] )
+);
+
 $cover = NH_TC_Engine::stock_sheet_qty( 4200, 4750, 2100, 6000 );
 nh_tc_assert( 'two 2100 mm sheets cover a 4200 mm frame', 2 === $cover['across'] && 1 === $cover['along'] && 2 === $cover['qty'] );
 $cover_short = NH_TC_Engine::stock_sheet_qty( 4200, 4750, 2050, 3050 );
@@ -356,7 +443,30 @@ nh_tc_assert(
 	&& 1 === (int) $std_sheets[0]['stock']
 	&& 2 === (int) $std_bom['meta']['sheet_count']
 	&& 'standard' === $std_bom['meta']['sheet_supply']
-	&& 6 === (int) $std_bom['meta']['connecting_count']
+	&& 'optimal' === $std_bom['meta']['profile_joints']
+	&& 2100 === (int) $std_bom['meta']['span_mm']
+	&& 2 === (int) $std_bom['meta']['connecting_count']
+	&& 3 === count( $std_bom['meta']['sheet_plan'] )
+	&& 1799 === (int) $std_bom['meta']['sheet_plan'][0]['width_mm']
+);
+
+$every                     = $std_input;
+$every['profile_joints']   = 'every';
+$every_bom                 = NH_TC_Engine::calculate( $every, $std_settings );
+$every_sheet               = null;
+foreach ( $every_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$every_sheet = $line;
+	}
+}
+nh_tc_assert(
+	'standard supply with a profile on every rafter keeps the stock sheet and the rafter joints',
+	$every_sheet
+	&& 2 === (int) $every_sheet['qty']
+	&& 2100 === (int) $every_sheet['cut']['width_mm']
+	&& 6000 === (int) $every_sheet['cut']['length_mm']
+	&& 6 === (int) $every_bom['meta']['connecting_count']
+	&& 7 === count( $every_bom['meta']['sheet_plan'] )
 );
 
 $narrow                    = $std_input;
@@ -371,6 +481,9 @@ foreach ( $narrow_bom['lines'] as $line ) {
 nh_tc_assert(
 	'a 1050 mm stock width needs four sheets',
 	$narrow_sheet && 4 === (int) $narrow_sheet['qty'] && 1050 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
+	&& 1050 === (int) $narrow_bom['meta']['span_mm']
+	&& 7 === count( $narrow_bom['meta']['sheet_plan'] )
+	&& 6 === (int) $narrow_bom['meta']['connecting_count']
 );
 
 $opal                   = $std_input;
@@ -427,6 +540,40 @@ $none               = $std_input;
 $none['thickness']  = 12;
 $none_bom           = NH_TC_Engine::calculate( $none, $std_settings );
 nh_tc_assert( 'a thickness without standard plates is refused', empty( $none_bom['ok'] ) && in_array( 'standard_sheet', $none_bom['errors'], true ) );
+
+$catalog = NH_TC_Defaults::standard_sheet_catalog();
+$exception_settings = $settings;
+$exception_settings['standard_sheets'] = $catalog;
+$forty = $input;
+$forty['thickness'] = 40;
+$forty['profile_joints'] = 'optimal';
+$forty_bom = NH_TC_Engine::calculate( $forty, $exception_settings );
+$forty_ok = ! empty( $forty_bom['ok'] ) && 1230 === (int) $forty_bom['meta']['span_mm'] && 1206 === (int) $forty_bom['meta']['sheet_plan'][0]['width_mm'];
+foreach ( $forty_bom['meta']['sheet_plan'] as $sheet ) {
+	if ( (int) $sheet['width_mm'] > 1230 ) {
+		$forty_ok = false;
+	}
+}
+$clear16_in = $input;
+$clear16_in['thickness'] = 16;
+$clear16_in['profile_joints'] = 'optimal';
+$clear16_bom = NH_TC_Engine::calculate( $clear16_in, $exception_settings );
+nh_tc_assert(
+	'40 mm optimal spans the 1230 mm sheet and 16 mm clear still spans 2100 mm',
+	$forty_ok
+	&& 3 === (int) $forty_bom['meta']['connecting_count']
+	&& ! empty( $clear16_bom['ok'] )
+	&& 2100 === (int) $clear16_bom['meta']['span_mm']
+	&& 1799 === (int) $clear16_bom['meta']['sheet_plan'][0]['width_mm']
+);
+nh_tc_assert(
+	'catalog widths used for an optimal span',
+	1230 === NH_TC_Defaults::widest_standard_width( $catalog, 'multiwall', 40, 'clear' )
+	&& 2100 === NH_TC_Defaults::widest_standard_width( $catalog, 'multiwall', 16, 'clear' )
+	&& 2100 === NH_TC_Defaults::widest_standard_width( $catalog, 'multiwall', 10, 'opal' )
+	&& 2050 === NH_TC_Defaults::widest_standard_width( $catalog, 'solid', 10, 'clear' )
+	&& 0 === NH_TC_Defaults::widest_standard_width( $catalog, 'multiwall', 12, 'clear' )
+);
 
 if ( $failures ) {
 	echo "\n{$failures} failed\n";

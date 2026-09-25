@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -158,6 +158,18 @@ msgstr "Jungiamasis profilis ant atramų"
 
 msgid "On every beam"
 msgstr "Ant kiekvienos sijos"
+
+msgid "On every rafter"
+msgstr "Ant kiekvienos atramos"
+
+msgid "Optimal"
+msgstr "Optimalus"
+
+msgid "Optimal covers as much of the chosen width as it can. Each joint still sits on a rafter."
+msgstr "Optimalus uždengia tiek pasirinkto pločio, kiek galima. Kiekviena jungtis vis tiek yra ant atramos."
+
+msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
+msgstr "Kiekvienas lakštas uždengia tiek pasirinkto pločio, kiek galima. Jungtis naudojama tik ten, kur lakštai susitinka, ir ji vis tiek yra ant atramos."
 
 #, php-format
 msgid "Only where sheets meet, using up to %d mm"

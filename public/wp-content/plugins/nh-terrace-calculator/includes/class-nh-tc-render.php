@@ -259,7 +259,17 @@ class NH_TC_Render {
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">5</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
-						<p class="nh-tc__notice"><?php esc_html_e( 'A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project.', NH_TC_TD ); ?></p>
+						<div class="nh-tc__chips">
+							<label class="nh-tc__chip">
+								<input type="radio" name="profile_joints" value="every" checked>
+								<span><?php esc_html_e( 'On every rafter', NH_TC_TD ); ?></span>
+							</label>
+							<label class="nh-tc__chip">
+								<input type="radio" name="profile_joints" value="optimal">
+								<span><?php esc_html_e( 'Optimal', NH_TC_TD ); ?></span>
+							</label>
+						</div>
+						<p class="nh-tc__hint"><?php esc_html_e( 'Optimal covers as much of the chosen width as it can. Each joint still sits on a rafter.', NH_TC_TD ); ?></p>
 						<div class="nh-tc__select-row nh-tc__select-row--pair">
 							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
 								<img alt="" width="44" height="44" decoding="async">
@@ -392,6 +402,7 @@ class NH_TC_Render {
 					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
 					'planStockBuy'  => __( 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.', NH_TC_TD ),
+					'planOptimal'   => __( 'Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter.', NH_TC_TD ),
 					'outer'         => __( 'outer', NH_TC_TD ),
 					'middle'        => __( 'middle', NH_TC_TD ),
 					'mm'            => __( '%d mm', NH_TC_TD ),

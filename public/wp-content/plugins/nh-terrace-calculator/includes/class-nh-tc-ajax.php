@@ -202,6 +202,7 @@ class NH_TC_Ajax {
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
 			'sheet_supply'        => self::pick( $src, 'sheet_supply', array( 'custom', 'standard' ), 'custom' ),
+			'profile_joints'      => self::pick( $src, 'profile_joints', array( 'every', 'optimal' ), '' ),
 			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
 			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
