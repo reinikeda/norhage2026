@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -439,3 +439,30 @@ msgstr "En skiva täcker ramen från kant till kant."
 #, php-format
 msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
 msgstr "På ett helt fack är en ytterskiva %1$d mm bredare än en mittskiva: den når ut till änden av den %2$d mm breda regeln och förlorar bara %3$d mm i skarven. Sista biten blir kortare när avståndet inte går jämnt upp i ramen."
+
+msgid "Sheets"
+msgstr "Skivor"
+
+msgid "What kind of sheets do you want?"
+msgstr "Vilken sorts skivor vill du ha?"
+
+msgid "Custom cut by us"
+msgstr "Måttanpassat, kapat av oss"
+
+msgid "Standard sizes that you will cut yourself"
+msgstr "Standardstorlekar som du kapar själv"
+
+msgid "Sheet structure"
+msgstr "Kanalform"
+
+msgid "This thickness and colour is only available as a custom cut."
+msgstr "Den här tjockleken och färgen finns bara som måttanpassad."
+
+msgid "6-wall"
+msgstr "6-skikts"
+
+msgid "5-wall"
+msgstr "5-skikts"
+
+msgid "3-wall"
+msgstr "3-skikts"

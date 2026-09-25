@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -439,3 +439,30 @@ msgstr "Én plate dekker rammen fra kant til kant."
 #, php-format
 msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
 msgstr "På et helt fag er en ytterplate %1$d mm bredere enn en midtplate: den når ut til enden av den %2$d mm brede lekten og mister bare %3$d mm i skjøten. Det siste stykket blir kortere når avstanden ikke går opp i rammen."
+
+msgid "Sheets"
+msgstr "Plater"
+
+msgid "What kind of sheets do you want?"
+msgstr "Hva slags plater vil du ha?"
+
+msgid "Custom cut by us"
+msgstr "Måltilpasset, kappet av oss"
+
+msgid "Standard sizes that you will cut yourself"
+msgstr "Standardstørrelser som du kapper selv"
+
+msgid "Sheet structure"
+msgstr "Kanalform"
+
+msgid "This thickness and colour is only available as a custom cut."
+msgstr "Denne tykkelsen og fargen finnes bare som måltilpasset."
+
+msgid "6-wall"
+msgstr "6-veggs"
+
+msgid "5-wall"
+msgstr "5-veggs"
+
+msgid "3-wall"
+msgstr "3-veggs"

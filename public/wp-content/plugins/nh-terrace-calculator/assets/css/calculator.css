@@ -119,6 +119,65 @@
   box-shadow: inset 0 0 0 1px var(--tc-green);
 }
 
+.nh-tc__ask {
+  margin: 0 0 0.75rem;
+}
+
+.nh-tc__choices--supply {
+  grid-template-columns: 1fr;
+}
+
+.nh-tc__choice--plain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.2rem;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.nh-tc__stock {
+  margin-top: 1rem;
+}
+
+.nh-tc__stock-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.nh-tc__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+}
+
+.nh-tc__chip {
+  position: relative;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--tc-mint);
+  border-radius: 8px;
+  background: var(--tc-bg);
+  cursor: pointer;
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.nh-tc__chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nh-tc__chip:focus-within,
+.nh-tc__chip:has(input:checked) {
+  border-color: var(--tc-green);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--tc-green);
+}
+
 .nh-tc__plan {
   margin-top: 1rem;
 }
@@ -507,6 +566,10 @@ body.nh-tc-hide-default-cart .product .summary form.cart {
 
   .nh-tc__choice-art svg {
     max-width: 88px;
+  }
+
+  .nh-tc__choices--supply {
+    grid-template-columns: 1fr 1fr;
   }
 
   .nh-tc__select-row {
