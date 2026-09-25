@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -542,3 +542,47 @@ msgstr "Vieno šlaito ilgis (nuo kraigo iki karnizo)"
 msgid "Ridge"
 msgstr "Kraigas"
 
+msgid "How the calculator counts products"
+msgstr "Taip skaičiuotuvas skaičiuoja gaminius"
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr "Kiekviena medžiagų sąrašo eilutė yra vienas gaminys iš žemiau esančio susiejimo. Kiekis apskaičiuojamas pagal kliento įvestą rėmą. Eilutė su tuščiu varianto SKU vis tiek rodoma, pažymėta kaip nėra šioje parduotuvėje, ir likusį komplektą galima įdėti į krepšelį."
+
+msgid "Polycarbonate sheets"
+msgstr "Polikarbonato lakštai"
+
+msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
+msgstr "Pjovimas pagal matmenis, ant kiekvienos atramos. Atstumas tarp kraštinių atramų centrų yra rėmo plotis minus sija. Tas tarpas dalijamas į lygius tarpus, ir nė vienas nėra platesnis už centrų atstumą. Kiekvienas tarpas yra vienas lakštas. Abu šoniniai lakštai siekia rėmo galus. Vienodo pločio ir ilgio lakštai tampa viena eilute, o kiekis yra kiek lakštų yra to dydžio."
+
+msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
+msgstr "Pjovimas pagal matmenis, optimalus. Tos pačios atramos braižomos, bet vienas lakštas dengia tiek tarpų, kiek leidžia plotis. Jungtis ir jungiamasis profilis dedami tik ten, kur lakštai susitinka. Monolitinis lakštas niekada nedengia daugiau kaip 2050 mm, todėl 3050 mm kraštas lieka ilgiu. Kanalinis lakštas naudoja didžiausią tos storio ir spalvos sandėlio plotį. 2100 mm yra įprastas plotis. 40 mm skaidrus yra 1230 mm. 16 mm skaidrus laiko 6 sienelių, 5 sienelių ir 3 sienelių pločius atskirai, ir naudojamas plačiausias iš jų."
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr "Monolitinio lakšto ilgis. Kai ruožas ilgesnis už ruošinį, kiekvienas lakštas dalijamas į lygias dalis išilgai. Eilutės kiekis yra šios dalys. Dalijimas neprideda jungiamojo profilio."
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr "Standartiniai dydžiai. Klientas pasirenka plotį. Ilgis yra trumpiausias sandėlio ilgis, kuris uždengia rėmą ir lašėjimo kraštą. Kiekis yra lakštų skaičius per plotį, padaugintas iš skaičiaus išilgai. 4200 mm rėmas su 2100 mm lakštu yra 2 vnt. Tas pats rėmas su 1050 mm lakštu yra 4. 4750 mm ruožas ant ruošinio, kurio ilgoji kraštinė yra 3050 mm, yra 2 vnt. išilgai, todėl 3 per plotį kart 2 išilgai yra 6. Brėžinys yra pjovimo schema. Krepšelis gauna sandėlio dydį, ir profilio pasirinkimas to kiekio nekeičia."
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr "Dvišlaičiame stoge įvestas ilgis yra viena pusė, nuo kraigo iki karnizo, ir jis skaičiuojamas du kartus prieš pridedant išsikišimą. Tas suskaičiuotas ilgis parenka sandėlio ilgį ir lakšto pjovimą. Jis nedvigubina jungiamųjų profilių skaičiaus."
+
+msgid "Connecting profiles and screws"
+msgstr "Jungiamieji profiliai ir varžtai"
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+msgstr "Jungiamieji profiliai atitinka siūles per plotį: vienu mažiau nei lakštų per plotį. Kiekvienas profilis yra trumpiausias sandėlio ilgis, kuris uždengia lakšto ilgį. Varžtai dedami kas 200 mm išilgai kiekvieno tokio profilio sandėlio ilgio ir suapvalinami į viršų iki pakuočių po 50. Antgaliai yra du kiekvienam jungiamajam profiliui. Plastikinis H profilis antgalių neturi."
+
+msgid "Finish, wall and ridge"
+msgstr "Apdaila, siena ir kraigas"
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr "Vienšlaitis stogas gauna apdailos profilį abiejose pusėse ir ant lašėjimo krašto. Dvišlaitis gauna abi puses ir abu lašėjimo kraštus. Kiekvienas kraštas suapvalinamas iki pilno metro ir pakuojamas iš 3 m dalių, paskui 2 m, 1,5 m ir 1 m. Sienos profilis dengia plotį 2,2 m dalimis. Dvišlaitis tam pačiam skaičiui naudoja kraigo profilį vietoj sienos profilio."
+
+msgid "Tapes, gasket and silicone"
+msgstr "Juostos, tarpinė ir silikonas"
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgstr "Sandarinimo juostos dedamos tik kanaliniam lakštui. Vienas ventiliacijos ritinys ir vienas izoliacijos ritinys dengia lakštų pločius, ir dar po vieną ritinį dedama, kai pločiai kartu viršija 5 m. Guminė tarpinė seka perimetrą ir parduodama pilnais metrais. Silikonas yra vienas tūbelė kiekvieniems 10 m to perimetro ir bent viena tūbelė."
+
+msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr "Atramų skaičius atstumo pastaboje yra patarimas. Atramos nėra komplekto gaminys."

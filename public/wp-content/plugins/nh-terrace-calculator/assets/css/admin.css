@@ -1,3 +1,33 @@
+.nh-tc-help {
+  max-width: 960px;
+  margin: 16px 0 28px;
+  padding: 4px 16px 12px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+}
+
+.nh-tc-help h2 {
+  margin-top: 0.8em;
+}
+
+.nh-tc-help h3 {
+  margin: 1.15em 0 0.35em;
+}
+
+.nh-tc-help p,
+.nh-tc-help li {
+  max-width: 78ch;
+}
+
+.nh-tc-help ul {
+  margin: 0.4em 0 1em 1.2em;
+  list-style: disc;
+}
+
+.nh-tc-help li {
+  margin: 0 0 0.7em;
+}
+
 .nh-tc-admin .form-table input[type="number"] {
   width: 7rem;
 }

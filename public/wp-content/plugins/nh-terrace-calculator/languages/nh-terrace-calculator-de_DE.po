@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -542,3 +542,47 @@ msgstr "Länge einer Seite (First zur Traufe)"
 msgid "Ridge"
 msgstr "First"
 
+msgid "How the calculator counts products"
+msgstr "So zählt der Rechner die Produkte"
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr "Jede Zeile in der Materialliste ist ein Produkt aus der Zuordnung unten. Die Menge ergibt sich aus dem Rahmen, den der Kunde eingegeben hat. Eine Zeile mit leerer Variations-SKU wird trotzdem gezeigt, als nicht in diesem Shop gekennzeichnet, und der Rest des Sets kann in den Warenkorb gelegt werden."
+
+msgid "Polycarbonate sheets"
+msgstr "Polycarbonatplatten"
+
+msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
+msgstr "Zuschnitt, an jedem Träger. Der Abstand zwischen den Mitten der äußeren Träger ist die Rahmenbreite minus der Trägerbreite. Diese Spannweite wird in gleiche Felder geteilt, und kein Feld ist breiter als der Achsabstand. Jedes Feld ist eine Platte. Die beiden Seitenplatten reichen bis an die Enden des Rahmens. Platten gleicher Breite und Länge werden eine Zeile, und die Menge ist die Anzahl der Platten in dieser Größe."
+
+msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
+msgstr "Zuschnitt, optimal. Dieselben Träger werden gezeichnet, aber eine Platte deckt so viele Felder ab, wie die Breite erlaubt. Ein Stoß und ein Verbindungsprofil kommen nur dorthin, wo diese Platten aufeinandertreffen. Eine Massivplatte überspannt nie mehr als 2050 mm, damit die Seite von 3050 mm die Länge bleibt. Stegplatten nutzen die breiteste Lagerbreite für diese Dicke und Farbe. 2100 mm ist die übliche Breite. 40 mm klar ist 1230 mm. 16 mm klar hält die Breiten für 6-Steg, 5-Steg und 3-Steg getrennt, und die breiteste davon wird verwendet."
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr "Länge der Massivplatte. Ist die Bahn länger als die Tafel, wird jede Platte der Länge nach in gleiche Stücke geteilt. Die Zeilenmenge sind diese Stücke. Die Teilung fügt kein Verbindungsprofil hinzu."
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr "Standardmaße. Der Kunde wählt eine Breite. Die Länge ist die kürzeste Lagerlänge, die den Rahmen plus die Tropfkante deckt. Die Menge ist die Anzahl der Platten über die Breite, mal der Anzahl in der Länge. Ein Rahmen von 4200 mm mit einer Platte von 2100 mm sind 2 Stück. Derselbe Rahmen mit einer Platte von 1050 mm sind 4. Eine Bahn von 4750 mm auf einer Tafel, deren lange Seite 3050 mm ist, sind 2 Stück in der Länge, also 3 über die Breite mal 2 in der Länge sind 6. Die Zeichnung ist ein Schnittplan. Der Warenkorb erhält das Lagermaß, und die Profilwahl ändert diese Menge nicht."
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr "Beim Satteldach ist die eingegebene Länge eine Seite, vom First zur Traufe, und sie wird zweimal gezählt, bevor der Überstand addiert wird. Diese gezählte Länge wählt die Lagerlänge und den Plattenschnitt. Sie verdoppelt nicht die Anzahl der Verbindungsprofile."
+
+msgid "Connecting profiles and screws"
+msgstr "Verbindungsprofile und Schrauben"
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+msgstr "Verbindungsprofile entsprechen den Stößen über die Breite: eines weniger als die Platten über die Breite. Jedes Profil ist die kürzeste Lagerlänge, die die Plattenlänge deckt. Schrauben sitzen alle 200 mm entlang der Lagerlänge jedes dieser Profile und werden dann auf Packungen zu 50 aufgerundet. Endkappen sind zwei je Verbindungsprofil. Das Kunststoff-H-Profil hat keine Endkappen."
+
+msgid "Finish, wall and ridge"
+msgstr "Abschluss, Wand und First"
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr "Ein Pultdach erhält ein Abschlussprofil an beiden Seiten und an der Tropfkante. Ein Satteldach erhält beide Seiten und beide Tropfkanten. Jede Kante wird auf einen vollen Meter aufgerundet und aus 3-m-Stücken gepackt, danach 2 m, 1,5 m und 1 m. Das Wandprofil deckt die Breite in Stücken von 2,2 m. Ein Satteldach verwendet für dieselbe Anzahl das Firstprofil statt des Wandprofils."
+
+msgid "Tapes, gasket and silicone"
+msgstr "Bänder, Dichtung und Silikon"
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgstr "Dichtbänder werden nur bei Stegplatten hinzugefügt. Eine Lüftungsrolle und eine Dämmrolle decken die Plattenbreiten, und je eine weitere Rolle kommt hinzu, wenn die Breiten zusammen 5 m überschreiten. Die Gummidichtung folgt dem Umfang und wird in vollen Metern verkauft. Silikon ist eine Tube je 10 m dieses Umfangs, und mindestens eine Tube."
+
+msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr "Die Trägerzahl im Abstandshinweis ist ein Rat. Die Träger sind kein Produkt im Set."
