@@ -314,6 +314,7 @@
 .nh-tc__form input[type="number"],
 .nh-tc__form input[type="text"],
 .nh-tc__form select {
+  box-sizing: border-box;
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--tc-mint);
