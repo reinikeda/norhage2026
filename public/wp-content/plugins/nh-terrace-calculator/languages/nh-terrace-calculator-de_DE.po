@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -511,4 +511,12 @@ msgstr "Zuschnittlänge %1$d mm (Rahmen %2$d mm + %3$d mm Überstand)."
 #, php-format
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm."
+
+
+msgid "Enter one side, from the ridge to the eave. Both sides are included."
+msgstr "Geben Sie eine Seite ein, vom First zur Traufe. Beide Seiten werden gezählt."
+
+#, php-format
+msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
+msgstr "Beide Seiten werden gezählt. Die eingegebenen %1$d mm sind eine Seite, vom First zur Traufe, daher ist die Rahmenlänge %2$d mm."
 

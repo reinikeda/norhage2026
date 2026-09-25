@@ -156,8 +156,22 @@
     });
   }
 
+  function slopeCount() {
+    var picked = form.querySelector('[name="construction"]:checked');
+    return picked && picked.value === 'gable' ? 2 : 1;
+  }
+
+  function frameLength() {
+    return (lengthInput ? Number(lengthInput.value) : 0) * slopeCount();
+  }
+
+  function syncGableHint() {
+    var hint = root.querySelector('[data-gable-length]');
+    if (hint) hint.hidden = slopeCount() < 2;
+  }
+
   function preferredLength(lengths) {
-    var need = (lengthInput ? Number(lengthInput.value) : 0) + (overhangInput ? Number(overhangInput.value) : 0);
+    var need = frameLength() + (overhangInput ? Number(overhangInput.value) : 0);
     var sorted = lengths.map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
     var i;
     for (i = 0; i < sorted.length; i++) {
@@ -252,21 +266,8 @@
     var key = keys.length ? String(keys[keys.length - 1]) : Object.keys(table).sort(function (a, b) {
       return Number(a) - Number(b);
     })[0];
-    var pair = (key && table[key]) || [500, 600];
-    return { min: Number(pair[0]), max: Number(pair[1]) };
-  }
-
-  function evenSpacing(width, support, maxCc) {
-    var inner = Math.max(1, Number(width) - Number(support || 0));
-    var max = Math.max(1, Number(maxCc) || defaultCc);
-    if (inner <= max) return { cc: inner, bays: 1 };
-    var bays = Math.ceil(inner / max);
-    var cc = Math.ceil(inner / bays);
-    if (cc > max) {
-      bays += 1;
-      cc = Math.ceil(inner / bays);
-    }
-    return { cc: Math.max(1, cc), bays: bays };
+    var pair = (key && table[key]) || [500, 600, 600];
+    return { min: Number(pair[0]), max: Number(pair[1]), prefill: Number(pair[2] || pair[1]) };
   }
 
   function rafterCount(width, support, cc) {
@@ -283,11 +284,11 @@
     var material = matSel ? matSel.value : 'multiwall';
     var thickness = thkSel ? Number(thkSel.value) : 10;
     var range = rangeFor(material, thickness);
-    var even = evenSpacing(width, support, range.max);
+    var prefill = range.prefill || range.max || defaultCc;
     if (ccInput && (force || !ccCustom)) {
-      ccInput.value = String(even.cc);
+      ccInput.value = String(prefill);
     }
-    var used = ccInput ? Number(ccInput.value) : even.cc;
+    var used = ccInput ? Number(ccInput.value) : prefill;
     if (recEl) {
       recEl.textContent = fillTemplate(
         i18n('rafters', 'Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters).'),
@@ -453,6 +454,7 @@
 
   function schedule() {
     applySpacing(false);
+    syncGableHint();
     syncStockCard();
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
@@ -628,6 +630,15 @@
     planEl.appendChild(legend);
     planEl.appendChild(cuts);
     planEl.appendChild(note);
+    if (Number(meta.slopes) > 1) {
+      var gableNote = document.createElement('p');
+      gableNote.className = 'nh-tc__plan-note';
+      gableNote.textContent = fillTemplate(
+        i18n('planGable', 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.'),
+        [meta.projection_mm, meta.length_mm]
+      );
+      planEl.appendChild(gableNote);
+    }
     if (meta.sheet_supply === 'standard' && Number(meta.stock_width_mm) > 0 && Number(meta.stock_length_mm) > 0) {
       var stockNote = document.createElement('p');
       stockNote.className = 'nh-tc__plan-note';
@@ -741,6 +752,7 @@
   syncSheetOptions();
   syncProfileOptions();
   applySpacing(true);
+  syncGableHint();
   syncStockCard();
   quote();
 })();

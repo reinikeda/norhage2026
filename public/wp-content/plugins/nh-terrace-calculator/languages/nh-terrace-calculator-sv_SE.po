@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -511,4 +511,12 @@ msgstr "Kaplängd %1$d mm (ram %2$d mm + %3$d mm överhäng)."
 #, php-format
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "På ett helt fack är en ytterskiva %1$d mm bredare än en mittskiva: den når ut till änden av den %2$d mm breda regeln och förlorar bara %3$d mm i skarven."
+
+
+msgid "Enter one side, from the ridge to the eave. Both sides are included."
+msgstr "Ange en sida, från nocken till takfoten. Båda sidorna räknas med."
+
+#, php-format
+msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
+msgstr "Båda sidorna räknas med. De angivna %1$d mm är en sida, från nocken till takfoten, så ramlängden är %2$d mm."
 
