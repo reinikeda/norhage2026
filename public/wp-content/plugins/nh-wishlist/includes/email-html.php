@@ -32,6 +32,7 @@ function nh_wl_email_html( $doc ) {
 	$intro    = nh_wl_email_escape( isset( $doc['intro'] ) ? $doc['intro'] : '' );
 	$comment_label = nh_wl_email_escape( isset( $doc['comment_label'] ) ? $doc['comment_label'] : '' );
 	$open     = nh_wl_email_escape( isset( $doc['open_label'] ) ? $doc['open_label'] : '' );
+	$vat      = nh_wl_email_escape( isset( $doc['vat_note'] ) ? $doc['vat_note'] : '' );
 	$rows     = isset( $doc['items'] ) && is_array( $doc['items'] ) ? $doc['items'] : array();
 
 	$html  = '<!DOCTYPE html><html><body style="margin:0;padding:24px;background:#f6f3ee;color:#2c2a29;font-family:Arial,sans-serif;">';
@@ -43,6 +44,9 @@ function nh_wl_email_html( $doc ) {
 	}
 	if ( '' !== $intro ) {
 		$html .= '<p style="margin:0 0 16px;">' . $intro . '</p>';
+	}
+	if ( '' !== $vat ) {
+		$html .= '<p style="margin:0 0 16px;">' . $vat . '</p>';
 	}
 	if ( '' !== $comment ) {
 		$html .= '<p style="margin:0 0 6px;font-weight:700;">' . $comment_label . '</p>';
@@ -56,6 +60,7 @@ function nh_wl_email_html( $doc ) {
 		$url    = nh_wl_email_escape( isset( $row['url'] ) ? $row['url'] : '' );
 		$qty    = nh_wl_email_escape( isset( $row['qty_label'] ) ? $row['qty_label'] : '' );
 		$notice = nh_wl_email_escape( isset( $row['notice'] ) ? $row['notice'] : '' );
+		$price  = nh_wl_email_escape( isset( $row['price'] ) ? $row['price'] : '' );
 		$html  .= '<div style="border-top:1px solid #e4ddd2;padding:14px 0;">';
 		$html  .= '<p style="margin:0 0 6px;font-size:16px;font-weight:700;">' . $name . '</p>';
 		if ( '' !== $qty ) {
@@ -67,6 +72,9 @@ function nh_wl_email_html( $doc ) {
 				continue;
 			}
 			$html .= '<p style="margin:0 0 4px;">' . nh_wl_email_escape( ( isset( $line['label'] ) ? $line['label'] : '' ) . ': ' . ( isset( $line['value'] ) ? $line['value'] : '' ) ) . '</p>';
+		}
+		if ( '' !== $price ) {
+			$html .= '<p style="margin:8px 0 0;font-weight:700;">' . $price . '</p>';
 		}
 		if ( '' !== $notice ) {
 			$html .= '<p style="margin:8px 0 0;color:#8a4b08;">' . $notice . '</p>';

@@ -166,6 +166,9 @@ nh_wl_assert(
 	)
 );
 nh_wl_assert( 'linear price is length plus fee', 21.0 === nh_wl_custom_unit_price( 8, 1, $linear ) );
+nh_wl_assert( 'selected variation keeps its own sku', 'VAR-1' === nh_wl_display_sku( 'PARENT', 'VAR-1', false ) );
+nh_wl_assert( 'uncustomized product uses the parent sku', 'PARENT' === nh_wl_display_sku( 'PARENT', 'VAR-1', true ) );
+nh_wl_assert( 'missing variation sku falls back to the parent', 'PARENT' === nh_wl_display_sku( 'PARENT', '', false ) );
 
 $html = nh_wl_email_html(
 	array(
@@ -182,18 +185,41 @@ $html = nh_wl_email_html(
 				'qty_label' => 'Quantity: 2',
 				'lines'     => array(
 					array(
+						'label' => 'SKU',
+						'value' => 'PARENT',
+					),
+					array(
 						'label' => 'Width',
 						'value' => '1200 mm',
 					),
 				),
+				'price'     => '',
 				'notice'    => 'This product must be customized before it can be added to the basket.',
 			),
+			array(
+				'name'      => 'Ready sheet',
+				'url'       => 'https://example.test/ready',
+				'qty_label' => 'Quantity: 1',
+				'lines'     => array(
+					array(
+						'label' => 'SKU',
+						'value' => 'VAR-9',
+					),
+				),
+				'price'     => '24,00 €',
+				'notice'    => '',
+			),
 		),
+		'vat_note'      => 'Prices include VAT.',
 	)
 );
 nh_wl_assert( 'email contains the comment', false !== strpos( $html, 'Please cut &lt;carefully&gt;' ) );
 nh_wl_assert( 'email contains the product', false !== strpos( $html, 'Polycarbonate 16mm' ) );
 nh_wl_assert( 'email contains the customize notice', false !== strpos( $html, 'must be customized' ) );
+nh_wl_assert( 'email contains the parent sku', false !== strpos( $html, 'SKU: PARENT' ) );
+nh_wl_assert( 'email contains the selected sku', false !== strpos( $html, 'SKU: VAR-9' ) );
+nh_wl_assert( 'email contains the ready price', false !== strpos( $html, '24,00 €' ) );
+nh_wl_assert( 'email states that prices include vat', false !== strpos( $html, 'Prices include VAT.' ) );
 
 $font = dirname( __DIR__ ) . '/assets/fonts/LiberationSans-Regular.ttf';
 $info = nh_wl_pdf_font_info( $font );

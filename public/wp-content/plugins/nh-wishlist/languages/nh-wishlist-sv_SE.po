@@ -244,3 +244,9 @@ msgstr "Produkt"
 
 msgid "Total"
 msgstr "Totalt"
+
+msgid "Prices include VAT."
+msgstr "Priserna inkluderar moms."
+
+msgid "Prices exclude VAT."
+msgstr "Priserna exkluderar moms."

@@ -177,6 +177,24 @@ function nh_wl_needs_customize( $context ) {
 }
 
 /**
+ * SKU shown on the list, PDF, and quote.
+ * An unfinished product uses the parent SKU. A finished selection uses its own SKU.
+ *
+ * @param string $parent_sku Parent SKU.
+ * @param string $selected_sku Variation or simple-product SKU.
+ * @param bool   $needs_customize Whether a variation or size is still missing.
+ * @return string
+ */
+function nh_wl_display_sku( $parent_sku, $selected_sku, $needs_customize ) {
+	$parent   = trim( (string) $parent_sku );
+	$selected = trim( (string) $selected_sku );
+	if ( $needs_customize || '' === $selected ) {
+		return $parent;
+	}
+	return $selected;
+}
+
+/**
  * Recompute the notice against the live product type and cut settings.
  *
  * @param array<string,mixed> $item Stored item.

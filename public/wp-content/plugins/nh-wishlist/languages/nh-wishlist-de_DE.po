@@ -244,3 +244,9 @@ msgstr "Produkt"
 
 msgid "Total"
 msgstr "Gesamt"
+
+msgid "Prices include VAT."
+msgstr "Preise inklusive MwSt."
+
+msgid "Prices exclude VAT."
+msgstr "Preise exklusive MwSt."
