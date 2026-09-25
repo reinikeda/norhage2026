@@ -217,6 +217,43 @@
   white-space: nowrap;
 }
 
+.nh-tc__frame {
+  position: relative;
+  height: 96px;
+  border-radius: 8px 8px 0 0;
+  background: #e7eee9;
+  overflow: hidden;
+}
+
+.nh-tc__frame .nh-tc__sheet {
+  position: absolute;
+  top: 10px;
+  bottom: 14px;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.nh-tc__rafter {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  margin-left: -2px;
+  background: #6b5344;
+  pointer-events: none;
+}
+
+.nh-tc__beam {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8px;
+  background: #8aa394;
+}
+
 .nh-tc__plan-note,
 .nh-tc__plan-cuts {
   margin: 0.45rem 0 0;
@@ -259,6 +296,12 @@
   border-color: #8e8c89;
 }
 
+.nh-tc__legend .is-rafter {
+  width: 0.28rem;
+  background: #6b5344;
+  border-color: #6b5344;
+}
+
 .nh-tc__form label {
   display: flex;
   flex-direction: column;
@@ -271,6 +314,7 @@
 .nh-tc__form input[type="number"],
 .nh-tc__form input[type="text"],
 .nh-tc__form select {
+  box-sizing: border-box;
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--tc-mint);

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -489,3 +489,26 @@ msgstr "%1$d × %2$d mm"
 #, php-format
 msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
 msgstr "Brėžinys yra galimas atramų planas. Medžiagų sąraše yra %1$d standartiniai lakštai, %2$d × %3$d mm."
+
+msgid "Rafter"
+msgstr "Atrama"
+
+msgid "Joints sit on the centre of a rafter."
+msgstr "Jungtys yra atramos centre."
+
+#, php-format
+msgid "Both side sheets are %d mm."
+msgstr "Abu šoniniai lakštai yra %d mm."
+
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr "Šoniniai lakštai yra %1$d mm ir %2$d mm."
+
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Pjovimo ilgis %1$d mm (rėmas %2$d mm + %3$d mm užlaida)."
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr "Pilname tarpatramyje kraštinis lakštas yra %1$d mm platesnis už vidurinį: jis siekia %2$d mm atramos galą ir siūlėje praranda tik %3$d mm."
+

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -484,3 +484,26 @@ msgstr ""
 #, php-format
 msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
 msgstr ""
+
+msgid "Rafter"
+msgstr ""
+
+msgid "Joints sit on the centre of a rafter."
+msgstr ""
+
+#, php-format
+msgid "Both side sheets are %d mm."
+msgstr ""
+
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr ""
+
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr ""
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr ""
+
