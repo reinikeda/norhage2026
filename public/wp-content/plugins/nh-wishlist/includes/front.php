@@ -504,8 +504,6 @@ function nh_wl_script_data() {
 			'close'        => __( 'Close', 'nh-wishlist' ),
 			'saveTo'       => __( 'Save to %s', 'nh-wishlist' ),
 			'removeFrom'   => __( 'Remove from %s', 'nh-wishlist' ),
-			'savedOptions' => __( 'Saved with selected options', 'nh-wishlist' ),
-			'customize'    => nh_wl_customize_notice(),
 			'tryAgain'     => __( 'Please try again.', 'nh-wishlist' ),
 			'savedTo'      => __( 'Saved to %s.', 'nh-wishlist' ),
 			'removed'      => __( 'Removed from the wishlist.', 'nh-wishlist' ),
@@ -943,8 +941,7 @@ class NH_WL_Actions {
 				array_merge(
 					nh_wl_ajax_state( $state ),
 					array(
-						'message'          => __( 'Removed from the wishlist.', 'nh-wishlist' ),
-						'needs_customize'  => false,
+						'message' => __( 'Removed from the wishlist.', 'nh-wishlist' ),
 					)
 				)
 			);
@@ -955,25 +952,11 @@ class NH_WL_Actions {
 		}
 		$state = NH_WL_Store::save( $result['state'] );
 		$list  = nh_wl_find_list( $state, $list_id );
-		$flags_product = $product;
-		if ( $product->is_type( 'variation' ) ) {
-			$parent = wc_get_product( $product->get_parent_id() );
-			if ( $parent instanceof WC_Product ) {
-				$flags_product = $parent;
-			}
-		}
-		$flags = nh_wl_flags_for_product( $flags_product );
-		$needs = nh_wl_item_needs_customize( $result['item'], $flags );
-		$message = sprintf( __( 'Saved to %s.', 'nh-wishlist' ), $list ? nh_wl_list_label( $list ) : '' );
-		if ( $needs ) {
-			$message .= ' ' . nh_wl_customize_notice();
-		}
 		wp_send_json_success(
 			array_merge(
 				nh_wl_ajax_state( $state ),
 				array(
-					'message'         => $message,
-					'needs_customize' => $needs,
+					'message' => sprintf( __( 'Saved to %s.', 'nh-wishlist' ), $list ? nh_wl_list_label( $list ) : '' ),
 				)
 			)
 		);

@@ -15,7 +15,6 @@
   var lastFocus = null;
   var listsEl = pop.querySelector('.nh-wl-popover__lists');
   var noticeEl = pop.querySelector('.nh-wl-popover__notice');
-  var hintEl = pop.querySelector('.nh-wl-popover__hint');
   var createForm = pop.querySelector('.nh-wl-popover__create');
 
   function text(template, value) {
@@ -178,9 +177,6 @@
       });
       listsEl.appendChild(button);
     });
-    var others = rowsFor(selection, false).length > rowsFor(selection, true).length;
-    hintEl.hidden = !others;
-    hintEl.textContent = others ? cfg.i18n.savedOptions : '';
   }
 
   function openPopover(button) {
