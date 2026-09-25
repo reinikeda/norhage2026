@@ -181,8 +181,8 @@ class NH_TC_Render {
 							<div data-stock-sizes>
 								<p class="nh-tc__stock-label"><?php esc_html_e( 'Width', NH_TC_TD ); ?></p>
 								<div class="nh-tc__chips" data-stock-widths></div>
-								<p class="nh-tc__stock-label"><?php esc_html_e( 'Length', NH_TC_TD ); ?></p>
-								<div class="nh-tc__chips" data-stock-lengths></div>
+								<p class="nh-tc__hint"><?php esc_html_e( 'The shortest stock length that covers the frame plus the drip overhang is used.', NH_TC_TD ); ?></p>
+								<input type="hidden" name="stock_length_mm" value="" data-stock-length>
 							</div>
 							<p class="nh-tc__hint" data-stock-empty hidden><?php esc_html_e( 'This thickness and colour is only available as a custom cut.', NH_TC_TD ); ?></p>
 						</div>
@@ -360,7 +360,7 @@ class NH_TC_Render {
 				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
 				'recCc'      => $s['recommended_cc'],
 				'supportRanges' => NH_TC_Engine::support_range_tables(),
-				'standardSheets' => isset( $s['standard_sheets'] ) ? $s['standard_sheets'] : array(),
+				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $s['standard_sheets'] ) ? $s['standard_sheets'] : array() ),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),

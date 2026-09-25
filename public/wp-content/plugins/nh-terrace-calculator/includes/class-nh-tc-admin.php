@@ -106,9 +106,10 @@ class NH_TC_Admin {
 			}
 		}
 
-		$out['connecting'] = self::sanitize_ref_map( $defaults['connecting'], $input['connecting'] ?? array() );
-		$out['finish']     = self::sanitize_ref_map( $defaults['finish'], $input['finish'] ?? array() );
-		$out['sheets']     = self::sanitize_sheets( $input['sheets'] ?? array() );
+		$out['connecting']      = self::sanitize_ref_map( $defaults['connecting'], $input['connecting'] ?? array() );
+		$out['finish']          = self::sanitize_ref_map( $defaults['finish'], $input['finish'] ?? array() );
+		$out['sheets']          = self::sanitize_sheets( $input['sheets'] ?? array() );
+		$out['standard_sheets'] = self::sanitize_standard_sheets( $input['standard_sheets'] ?? array() );
 
 		return $out;
 	}
@@ -159,6 +160,56 @@ class NH_TC_Admin {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Keep the catalog sizes and overlay the SKUs that were posted.
+	 *
+	 * @param mixed $input
+	 * @return array<string, mixed>
+	 */
+	private static function sanitize_standard_sheets( $input ) {
+		$out   = NH_TC_Defaults::standard_sheet_catalog();
+		$input = is_array( $input ) ? $input : array();
+		foreach ( $out as $material => $thicknesses ) {
+			foreach ( $thicknesses as $thickness => $colours ) {
+				foreach ( $colours as $colour => $groups ) {
+					foreach ( $groups as $channel => $group ) {
+						$posted = $input[ $material ][ $thickness ][ $colour ][ $channel ] ?? null;
+						if ( ! is_array( $posted ) ) {
+							continue;
+						}
+						if ( array_key_exists( 'sku', $posted ) ) {
+							$out[ $material ][ $thickness ][ $colour ][ $channel ]['sku'] = self::sku_text( $posted['sku'] );
+						}
+						if ( empty( $posted['widths'] ) || ! is_array( $posted['widths'] ) ) {
+							continue;
+						}
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( empty( $posted['widths'][ $width ] ) || ! is_array( $posted['widths'][ $width ] ) ) {
+								continue;
+							}
+							foreach ( $lengths as $length => $_sku ) {
+								if ( array_key_exists( $length, $posted['widths'][ $width ] ) ) {
+									$out[ $material ][ $thickness ][ $colour ][ $channel ]['widths'][ $width ][ $length ] = self::sku_text( $posted['widths'][ $width ][ $length ] );
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * @param mixed $val
+	 */
+	private static function sku_text( $val ) {
+		if ( is_array( $val ) ) {
+			$val = reset( $val );
+		}
+		return sanitize_text_field( trim( (string) $val ) );
 	}
 
 	private static function ref_from_posted( $val ) {
@@ -284,6 +335,12 @@ class NH_TC_Admin {
 				<h2><?php esc_html_e( 'Solid polycarbonate (custom-cut)', NH_TC_TD ); ?></h2>
 				<?php self::sheet_table( $key, 'solid', $s['sheets']['solid'] ?? array() ); ?>
 
+				<h2><?php esc_html_e( 'Standard sizes', NH_TC_TD ); ?></h2>
+				<p class="description">
+					<?php esc_html_e( 'Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang.', NH_TC_TD ); ?>
+				</p>
+				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
+
 				<h2><?php esc_html_e( 'Connecting profiles', NH_TC_TD ); ?></h2>
 				<?php self::profile_table( $key, 'connecting', $s['connecting'], array(
 					'clamping'     => __( 'Clamping profile', NH_TC_TD ),
@@ -376,6 +433,75 @@ class NH_TC_Admin {
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * @param array<string, mixed> $catalog
+	 */
+	private static function standard_sheet_fields( $key, array $catalog ) {
+		$materials = array(
+			'multiwall' => __( 'Multiwall polycarbonate', NH_TC_TD ),
+			'solid'     => __( 'Solid polycarbonate', NH_TC_TD ),
+		);
+		foreach ( $materials as $material => $heading ) {
+			if ( empty( $catalog[ $material ] ) || ! is_array( $catalog[ $material ] ) ) {
+				continue;
+			}
+			echo '<h3>' . esc_html( $heading ) . '</h3>';
+			foreach ( $catalog[ $material ] as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) || empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+							continue;
+						}
+						$base  = $key . '[standard_sheets][' . $material . '][' . $thickness . '][' . $colour . '][' . $channel . ']';
+						$label = sprintf( '%d mm · %s', (int) $thickness, ucfirst( (string) $colour ) );
+						if ( 'stock' !== (string) $channel ) {
+							$label .= ' · ' . self::channel_label( (string) $channel );
+						}
+						echo '<details class="nh-tc-standard">';
+						echo '<summary>' . esc_html( $label ) . '</summary>';
+						echo '<div class="nh-tc-standard-body">';
+						echo '<p><label>' . esc_html__( 'Parent SKU', NH_TC_TD ) . ' ';
+						echo '<input type="text" class="regular-text" name="' . esc_attr( $base . '[sku]' ) . '" value="' . esc_attr( (string) ( $group['sku'] ?? '' ) ) . '" autocomplete="off" spellcheck="false">';
+						echo '</label></p>';
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( ! is_array( $lengths ) ) {
+								continue;
+							}
+							echo '<p class="nh-tc-var-width">' . esc_html( sprintf( '%d mm', (int) $width ) ) . '</p>';
+							echo '<div class="nh-tc-var-grid">';
+							foreach ( $lengths as $length => $sku ) {
+								echo '<label><span>' . esc_html( sprintf( '%d mm', (int) $length ) ) . '</span>';
+								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( (string) $sku ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								echo '</label>';
+							}
+							echo '</div>';
+						}
+						echo '</div></details>';
+					}
+				}
+			}
+		}
+	}
+
+	private static function channel_label( $channel ) {
+		if ( '6w' === $channel ) {
+			return __( '6-wall', NH_TC_TD );
+		}
+		if ( '5x' === $channel ) {
+			return __( '5-wall', NH_TC_TD );
+		}
+		if ( '3w' === $channel ) {
+			return __( '3-wall', NH_TC_TD );
+		}
+		return __( 'Standard sheet', NH_TC_TD );
 	}
 
 	private static function product_select( $name, $ref ) {

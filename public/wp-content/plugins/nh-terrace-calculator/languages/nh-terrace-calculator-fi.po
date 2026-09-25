@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.2\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -466,3 +466,18 @@ msgstr "5-seinäinen"
 
 msgid "3-wall"
 msgstr "3-seinäinen"
+
+msgid "The shortest stock length that covers the frame plus the drip overhang is used."
+msgstr "Käytetään lyhintä vakiopituutta, joka kattaa rungon ja tippareunan."
+
+msgid "Standard sizes"
+msgstr "Vakiokoot"
+
+msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
+msgstr "Syötä variaation SKU jokaiselle vakioleveydelle ja -pituudelle. Asiakas valitsee leveyden. Laskuri käyttää lyhintä vakiopituutta, joka kattaa rungon pituuden ja tippareunan."
+
+msgid "Parent SKU"
+msgstr "Päätuotteen SKU"
+
+msgid "Standard sheet"
+msgstr "Vakiolevy"

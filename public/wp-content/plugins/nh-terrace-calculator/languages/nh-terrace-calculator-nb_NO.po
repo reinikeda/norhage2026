@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.2\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -466,3 +466,18 @@ msgstr "5-veggs"
 
 msgid "3-wall"
 msgstr "3-veggs"
+
+msgid "The shortest stock length that covers the frame plus the drip overhang is used."
+msgstr "Den korteste standardlengden som dekker rammen pluss dryppoverhenget, brukes."
+
+msgid "Standard sizes"
+msgstr "Standardstørrelser"
+
+msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
+msgstr "Skriv inn en variasjon-SKU for hver standardbredde og -lengde. Kunden velger bredde. Kalkulatoren bruker den korteste standardlengden som dekker rammelengden pluss dryppoverhenget."
+
+msgid "Parent SKU"
+msgstr "Overordnet SKU"
+
+msgid "Standard sheet"
+msgstr "Standardplate"

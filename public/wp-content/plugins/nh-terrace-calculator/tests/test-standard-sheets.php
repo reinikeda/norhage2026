@@ -57,7 +57,8 @@ nh_tc_sheet_assert(
 	'16 mm clear keeps 6-wall, 5-wall and 3-wall apart',
 	array( '6w', '5x', '3w' ) === array_keys( $clear16 )
 	&& '40106210071601P' === $clear16['6w']['sku']
-	&& $to_6 === $clear16['6w']['widths']['2100']
+	&& $to_6 === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 16, 'clear', 2100, '6w' )
+	&& '' === $clear16['6w']['widths']['2100']['1000']
 	&& ! isset( $clear16['6w']['widths']['900'] )
 );
 
@@ -116,6 +117,64 @@ foreach ( $catalog as $materials ) {
 		}
 	}
 }
+nh_tc_sheet_assert(
+	'a 4750 mm run takes the shortest covering stock length',
+	6000 === NH_TC_Defaults::covering_stock_length( $to_6, 4750 )
+	&& 5000 === NH_TC_Defaults::covering_stock_length( array( 1000, 2000, 4000, 5000, 7500 ), 4750 )
+	&& 3050 === NH_TC_Defaults::covering_stock_length( array( 1520, 3050 ), 4750 )
+	&& 5000 === NH_TC_Defaults::covering_stock_length( array( 5000 ), 980 )
+	&& 1000 === NH_TC_Defaults::covering_stock_length( $to_6, 500 )
+	&& 0 === NH_TC_Defaults::covering_stock_length( array(), 4750 )
+);
+
+nh_tc_sheet_assert(
+	'variation slots start without an invented SKU',
+	'' === NH_TC_Defaults::standard_sheet_variation_sku( 'multiwall', 10, 'clear', 1050, 1000 )
+	&& array( '1000' => '', '2000' => 'SKU' ) === NH_TC_Defaults::length_sku_map( array( '1000' => '', '2000' => 'SKU' ) )
+	&& array( '1000' => '', '2000' => '' ) === NH_TC_Defaults::length_sku_map( array( 1000, 2000 ) )
+);
+
+$merged_base = array(
+	'widths' => array(
+		'2100' => array(
+			'1000' => '',
+			'6000' => '',
+		),
+	),
+);
+$merged_list = NH_TC_Defaults::merge_deep(
+	$merged_base,
+	array(
+		'widths' => array(
+			'2100' => array( 1000, 2000, 3000, 4000, 6000 ),
+		),
+	)
+);
+$merged_skus = NH_TC_Defaults::merge_deep(
+	array(
+		'widths' => array(
+			'2100' => array(
+				'1000' => '',
+				'6000' => '',
+			),
+		),
+	),
+	array(
+		'widths' => array(
+			'2100' => array(
+				'1000' => 'SKU-1000',
+				'6000' => 'SKU-6000',
+			),
+		),
+	)
+);
+nh_tc_sheet_assert(
+	'saved length lists replace maps and saved SKUs overlay them',
+	array( 1000, 2000, 3000, 4000, 6000 ) === $merged_list['widths']['2100']
+	&& 'SKU-1000' === $merged_skus['widths']['2100']['1000']
+	&& 'SKU-6000' === $merged_skus['widths']['2100']['6000']
+);
+
 nh_tc_sheet_assert(
 	'Polygal duplicates of an Arla sheet are left out',
 	! in_array( '40201210060602P', $skus, true )

@@ -26,3 +26,42 @@
 .nh-tc-admin .select2-container {
   min-width: 180px !important;
 }
+
+.nh-tc-standard {
+  margin: 0 0 8px;
+  max-width: 960px;
+  border: 1px solid #c3c4c7;
+  background: #fff;
+}
+
+.nh-tc-standard summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+.nh-tc-standard-body {
+  padding: 4px 12px 12px;
+}
+
+.nh-tc-var-width {
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+.nh-tc-var-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.nh-tc-var-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.nh-tc-var-grid input {
+  width: 11rem;
+}
