@@ -1,0 +1,227 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: English\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr ""
+
+msgid "A customer sent this wishlist."
+msgstr ""
+
+msgid "A wishlist for you"
+msgstr ""
+
+msgid "Add all to basket"
+msgstr ""
+
+msgid "Add to basket"
+msgstr ""
+
+msgid "Add to wishlist"
+msgstr ""
+
+msgid "Added %d products to the basket."
+msgstr ""
+
+msgid "Added to the basket."
+msgstr ""
+
+msgid "Choose a wishlist"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Comment:"
+msgstr ""
+
+msgid "Continue shopping"
+msgstr ""
+
+msgid "Could not add this product to the basket."
+msgstr ""
+
+msgid "Could not send the email. Please try again."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create a list"
+msgstr ""
+
+msgid "Customer service"
+msgstr ""
+
+msgid "Customize"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Delete list"
+msgstr ""
+
+msgid "Enter a list name."
+msgstr ""
+
+msgid "Enter an email address."
+msgstr ""
+
+msgid "In wishlist"
+msgstr ""
+
+msgid "Invalid wishlist."
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "List created."
+msgstr ""
+
+msgid "List deleted."
+msgstr ""
+
+msgid "List name"
+msgstr ""
+
+msgid "List renamed."
+msgstr ""
+
+msgid "New list"
+msgstr ""
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr ""
+
+msgid "Open product"
+msgstr ""
+
+msgid "Please try again."
+msgstr ""
+
+msgid "Quantity"
+msgstr ""
+
+msgid "Quantity updated."
+msgstr ""
+
+msgid "Quantity: %d"
+msgstr ""
+
+msgid "Recipient"
+msgstr ""
+
+msgid "Recipient email"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Remove from %s"
+msgstr ""
+
+msgid "Removed from the wishlist."
+msgstr ""
+
+msgid "Rename"
+msgstr ""
+
+msgid "SKU"
+msgstr ""
+
+msgid "Save as PDF"
+msgstr ""
+
+msgid "Save to %s"
+msgstr ""
+
+msgid "Saved on your account."
+msgstr ""
+
+msgid "Saved to %s."
+msgstr ""
+
+msgid "Saved with selected options"
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Send by email"
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "That name is already used."
+msgstr ""
+
+msgid "The only wishlist cannot be deleted."
+msgstr ""
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr ""
+
+msgid "This product is no longer available."
+msgstr ""
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr ""
+
+msgid "This wishlist is full."
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "View wishlist"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Wishlist"
+msgstr ""
+
+msgid "Wishlist for customer service"
+msgstr ""
+
+msgid "Wishlist sent."
+msgstr ""
+
+msgid "Wishlists"
+msgstr ""
+
+msgid "You can create up to 20 wishlists."
+msgstr ""
+
+msgid "Your wishlist is empty."
+msgstr ""
+
+msgid "A customer asked for a quote."
+msgstr ""
+
+msgid "Quote request"
+msgstr ""
+
+msgid "Quote sent."
+msgstr ""
+
+msgid "Send a quote"
+msgstr ""

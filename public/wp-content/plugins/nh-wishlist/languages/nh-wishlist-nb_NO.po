@@ -1,0 +1,228 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: Norwegian Bokmål\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr "%d produkter må tilpasses før de kan legges i handlekurven."
+
+msgid "A customer sent this wishlist."
+msgstr "En kunde sendte denne ønskelisten."
+
+msgid "A wishlist for you"
+msgstr "En ønskeliste til deg"
+
+msgid "Add all to basket"
+msgstr "Legg alle i handlekurven"
+
+msgid "Add to basket"
+msgstr "Legg i handlekurven"
+
+msgid "Add to wishlist"
+msgstr "Legg på ønskelisten"
+
+msgid "Added %d products to the basket."
+msgstr "%d produkter er lagt i handlekurven."
+
+msgid "Added to the basket."
+msgstr "Lagt i handlekurven."
+
+msgid "Choose a wishlist"
+msgstr "Velg ønskeliste"
+
+msgid "Close"
+msgstr "Lukk"
+
+msgid "Comment"
+msgstr "Kommentar"
+
+msgid "Comment:"
+msgstr "Kommentar:"
+
+msgid "Continue shopping"
+msgstr "Fortsett å handle"
+
+msgid "Could not add this product to the basket."
+msgstr "Kunne ikke legge dette produktet i handlekurven."
+
+msgid "Could not send the email. Please try again."
+msgstr "E-posten kunne ikke sendes. Prøv igjen."
+
+msgid "Create"
+msgstr "Opprett"
+
+msgid "Create a list"
+msgstr "Opprett en liste"
+
+msgid "Customer service"
+msgstr "Kundeservice"
+
+msgid "Customize"
+msgstr "Tilpass"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Delete list"
+msgstr "Slett liste"
+
+msgid "Enter a list name."
+msgstr "Skriv inn et listenavn."
+
+msgid "Enter an email address."
+msgstr "Skriv inn en e-postadresse."
+
+msgid "In wishlist"
+msgstr "På ønskelisten"
+
+msgid "Invalid wishlist."
+msgstr "Ugyldig ønskeliste."
+
+msgid "Length"
+msgstr "Lengde"
+
+msgid "List created."
+msgstr "Liste opprettet."
+
+msgid "List deleted."
+msgstr "Liste slettet."
+
+msgid "List name"
+msgstr "Listenavn"
+
+msgid "List renamed."
+msgstr "Listen har fått nytt navn."
+
+msgid "New list"
+msgstr "Ny liste"
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr "Norhage Wishlist krever WooCommerce."
+
+msgid "Open product"
+msgstr "Åpne produkt"
+
+msgid "Please try again."
+msgstr "Prøv igjen."
+
+msgid "Quantity"
+msgstr "Antall"
+
+msgid "Quantity updated."
+msgstr "Antall oppdatert."
+
+msgid "Quantity: %d"
+msgstr "Antall: %d"
+
+msgid "Recipient"
+msgstr "Mottaker"
+
+msgid "Recipient email"
+msgstr "Mottakerens e-post"
+
+msgid "Remove"
+msgstr "Fjern"
+
+msgid "Remove from %s"
+msgstr "Fjern fra %s"
+
+msgid "Removed from the wishlist."
+msgstr "Fjernet fra ønskelisten."
+
+msgid "Rename"
+msgstr "Gi nytt navn"
+
+msgid "SKU"
+msgstr "Varenummer"
+
+msgid "Save as PDF"
+msgstr "Lagre som PDF"
+
+msgid "Save to %s"
+msgstr "Lagre i %s"
+
+msgid "Saved on your account."
+msgstr "Lagret på kontoen din."
+
+msgid "Saved to %s."
+msgstr "Lagret i %s."
+
+msgid "Saved with selected options"
+msgstr "Lagret med valgte alternativer"
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Send by email"
+msgstr "Send med e-post"
+
+msgid "Sign in"
+msgstr "Logg inn"
+
+msgid "That name is already used."
+msgstr "Det navnet er allerede i bruk."
+
+msgid "The only wishlist cannot be deleted."
+msgstr "Den eneste ønskelisten kan ikke slettes."
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr "Ønskelisten lagres i en informasjonskapsel i denne nettleseren. Logg inn for å beholde den på kontoen din."
+
+msgid "This product is no longer available."
+msgstr "Dette produktet er ikke lenger tilgjengelig."
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr "Dette produktet må tilpasses før det kan legges i handlekurven."
+
+msgid "This wishlist is full."
+msgstr "Denne ønskelisten er full."
+
+msgid "Update"
+msgstr "Oppdater"
+
+msgid "View wishlist"
+msgstr "Vis ønskeliste"
+
+msgid "Width"
+msgstr "Bredde"
+
+msgid "Wishlist"
+msgstr "Ønskeliste"
+
+msgid "Wishlist for customer service"
+msgstr "Ønskeliste til kundeservice"
+
+msgid "Wishlist sent."
+msgstr "Ønskelisten er sendt."
+
+msgid "Wishlists"
+msgstr "Ønskelister"
+
+msgid "You can create up to 20 wishlists."
+msgstr "Du kan opprette opptil 20 ønskelister."
+
+msgid "Your wishlist is empty."
+msgstr "Ønskelisten er tom."
+
+msgid "A customer asked for a quote."
+msgstr "En kunde har bedt om et tilbud."
+
+msgid "Quote request"
+msgstr "Tilbudsforespørsel"
+
+msgid "Quote sent."
+msgstr "Tilbudsforespørsel sendt."
+
+msgid "Send a quote"
+msgstr "Be om tilbud"

@@ -1,0 +1,228 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: Finnish\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr "%d tuotetta on mukautettava, ennen kuin ne voi lisätä ostoskoriin."
+
+msgid "A customer sent this wishlist."
+msgstr "Asiakas lähetti tämän toivelistan."
+
+msgid "A wishlist for you"
+msgstr "Toivelista sinulle"
+
+msgid "Add all to basket"
+msgstr "Lisää kaikki ostoskoriin"
+
+msgid "Add to basket"
+msgstr "Lisää ostoskoriin"
+
+msgid "Add to wishlist"
+msgstr "Lisää toivelistalle"
+
+msgid "Added %d products to the basket."
+msgstr "%d tuotetta lisättiin ostoskoriin."
+
+msgid "Added to the basket."
+msgstr "Lisätty ostoskoriin."
+
+msgid "Choose a wishlist"
+msgstr "Valitse toivelista"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "Comment"
+msgstr "Kommentti"
+
+msgid "Comment:"
+msgstr "Kommentti:"
+
+msgid "Continue shopping"
+msgstr "Jatka ostoksia"
+
+msgid "Could not add this product to the basket."
+msgstr "Tuotetta ei voitu lisätä ostoskoriin."
+
+msgid "Could not send the email. Please try again."
+msgstr "Sähköpostia ei voitu lähettää. Yritä uudelleen."
+
+msgid "Create"
+msgstr "Luo"
+
+msgid "Create a list"
+msgstr "Luo lista"
+
+msgid "Customer service"
+msgstr "Asiakaspalvelu"
+
+msgid "Customize"
+msgstr "Mukauta"
+
+msgid "Default"
+msgstr "Oletus"
+
+msgid "Delete list"
+msgstr "Poista lista"
+
+msgid "Enter a list name."
+msgstr "Anna listan nimi."
+
+msgid "Enter an email address."
+msgstr "Anna sähköpostiosoite."
+
+msgid "In wishlist"
+msgstr "Toivelistalla"
+
+msgid "Invalid wishlist."
+msgstr "Virheellinen toivelista."
+
+msgid "Length"
+msgstr "Pituus"
+
+msgid "List created."
+msgstr "Lista luotu."
+
+msgid "List deleted."
+msgstr "Lista poistettu."
+
+msgid "List name"
+msgstr "Listan nimi"
+
+msgid "List renamed."
+msgstr "Lista nimetty uudelleen."
+
+msgid "New list"
+msgstr "Uusi lista"
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr "Norhage Wishlist tarvitsee WooCommercen."
+
+msgid "Open product"
+msgstr "Avaa tuote"
+
+msgid "Please try again."
+msgstr "Yritä uudelleen."
+
+msgid "Quantity"
+msgstr "Määrä"
+
+msgid "Quantity updated."
+msgstr "Määrä päivitetty."
+
+msgid "Quantity: %d"
+msgstr "Määrä: %d"
+
+msgid "Recipient"
+msgstr "Vastaanottaja"
+
+msgid "Recipient email"
+msgstr "Vastaanottajan sähköposti"
+
+msgid "Remove"
+msgstr "Poista"
+
+msgid "Remove from %s"
+msgstr "Poista listalta %s"
+
+msgid "Removed from the wishlist."
+msgstr "Poistettu toivelistalta."
+
+msgid "Rename"
+msgstr "Nimeä uudelleen"
+
+msgid "SKU"
+msgstr "Tuotenumero"
+
+msgid "Save as PDF"
+msgstr "Tallenna PDF-tiedostona"
+
+msgid "Save to %s"
+msgstr "Tallenna listalle %s"
+
+msgid "Saved on your account."
+msgstr "Tallennettu tilillesi."
+
+msgid "Saved to %s."
+msgstr "Tallennettu listalle %s."
+
+msgid "Saved with selected options"
+msgstr "Tallennettu valituilla vaihtoehdoilla"
+
+msgid "Send"
+msgstr "Lähetä"
+
+msgid "Send by email"
+msgstr "Lähetä sähköpostitse"
+
+msgid "Sign in"
+msgstr "Kirjaudu sisään"
+
+msgid "That name is already used."
+msgstr "Nimi on jo käytössä."
+
+msgid "The only wishlist cannot be deleted."
+msgstr "Ainoaa toivelistaa ei voi poistaa."
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr "Toivelista tallennetaan evästeeseen tässä selaimessa. Kirjaudu sisään, niin se säilyy tililläsi."
+
+msgid "This product is no longer available."
+msgstr "Tuotetta ei ole enää saatavilla."
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr "Tuote on mukautettava, ennen kuin sen voi lisätä ostoskoriin."
+
+msgid "This wishlist is full."
+msgstr "Tämä toivelista on täynnä."
+
+msgid "Update"
+msgstr "Päivitä"
+
+msgid "View wishlist"
+msgstr "Näytä toivelista"
+
+msgid "Width"
+msgstr "Leveys"
+
+msgid "Wishlist"
+msgstr "Toivelista"
+
+msgid "Wishlist for customer service"
+msgstr "Toivelista asiakaspalvelulle"
+
+msgid "Wishlist sent."
+msgstr "Toivelista lähetetty."
+
+msgid "Wishlists"
+msgstr "Toivelistat"
+
+msgid "You can create up to 20 wishlists."
+msgstr "Voit luoda enintään 20 toivelistaa."
+
+msgid "Your wishlist is empty."
+msgstr "Toivelistasi on tyhjä."
+
+msgid "A customer asked for a quote."
+msgstr "Asiakas pyysi tarjouksen."
+
+msgid "Quote request"
+msgstr "Tarjouspyyntö"
+
+msgid "Quote sent."
+msgstr "Tarjouspyyntö lähetetty."
+
+msgid "Send a quote"
+msgstr "Pyydä tarjous"
