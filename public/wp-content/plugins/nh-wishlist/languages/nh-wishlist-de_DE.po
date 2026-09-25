@@ -1,0 +1,261 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage Wishlist 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:00+0000\n"
+"PO-Revision-Date: 2026-09-24 12:00+0000\n"
+"Last-Translator: Norhage\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage\n"
+
+
+msgid "%d products must be customized before they can be added to the basket."
+msgstr "%d Produkte müssen angepasst werden, bevor sie in den Warenkorb gelegt werden können."
+
+msgid "A customer sent this wishlist."
+msgstr "Ein Kunde hat diese Wunschliste gesendet."
+
+msgid "A wishlist for you"
+msgstr "Eine Wunschliste für Sie"
+
+msgid "Add all to basket"
+msgstr "Alle in den Warenkorb"
+
+msgid "Add to basket"
+msgstr "In den Warenkorb"
+
+msgid "Add to wishlist"
+msgstr "Auf die Wunschliste"
+
+msgid "Added %d products to the basket."
+msgstr "%d Produkte wurden in den Warenkorb gelegt."
+
+msgid "Added to the basket."
+msgstr "In den Warenkorb gelegt."
+
+msgid "Choose a wishlist"
+msgstr "Wunschliste wählen"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Comment"
+msgstr "Kommentar"
+
+msgid "Comment:"
+msgstr "Kommentar:"
+
+msgid "Continue shopping"
+msgstr "Weiter einkaufen"
+
+msgid "Could not add this product to the basket."
+msgstr "Dieses Produkt konnte nicht in den Warenkorb gelegt werden."
+
+msgid "Could not send the email. Please try again."
+msgstr "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+
+msgid "Create"
+msgstr "Erstellen"
+
+msgid "Create a list"
+msgstr "Liste erstellen"
+
+msgid "Customer service"
+msgstr "Kundenservice"
+
+msgid "Customize"
+msgstr "Anpassen"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Delete list"
+msgstr "Liste löschen"
+
+msgid "Enter a list name."
+msgstr "Geben Sie einen Listennamen ein."
+
+msgid "Enter an email address."
+msgstr "Geben Sie eine E-Mail-Adresse ein."
+
+msgid "In wishlist"
+msgstr "Auf der Wunschliste"
+
+msgid "Invalid wishlist."
+msgstr "Ungültige Wunschliste."
+
+msgid "Length"
+msgstr "Länge"
+
+msgid "List created."
+msgstr "Liste erstellt."
+
+msgid "List deleted."
+msgstr "Liste gelöscht."
+
+msgid "List name"
+msgstr "Listenname"
+
+msgid "List renamed."
+msgstr "Liste umbenannt."
+
+msgid "New list"
+msgstr "Neue Liste"
+
+msgid "Norhage Wishlist needs WooCommerce."
+msgstr "Norhage Wishlist benötigt WooCommerce."
+
+msgid "Open product"
+msgstr "Produkt öffnen"
+
+msgid "Please try again."
+msgstr "Bitte versuchen Sie es erneut."
+
+msgid "Quantity"
+msgstr "Menge"
+
+msgid "Quantity updated."
+msgstr "Menge aktualisiert."
+
+msgid "Quantity: %d"
+msgstr "Menge: %d"
+
+msgid "Recipient"
+msgstr "Empfänger"
+
+msgid "Recipient email"
+msgstr "E-Mail des Empfängers"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Remove from %s"
+msgstr "Aus %s entfernen"
+
+msgid "Removed from the wishlist."
+msgstr "Von der Wunschliste entfernt."
+
+msgid "Rename"
+msgstr "Umbenennen"
+
+msgid "SKU"
+msgstr "Artikelnummer"
+
+msgid "Save as PDF"
+msgstr "Als PDF speichern"
+
+msgid "Save to %s"
+msgstr "In %s speichern"
+
+msgid "Saved on your account."
+msgstr "In Ihrem Konto gespeichert."
+
+msgid "Saved to %s."
+msgstr "In %s gespeichert."
+
+msgid "Saved with selected options"
+msgstr "Mit gewählten Optionen gespeichert"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "Send by email"
+msgstr "Per E-Mail senden"
+
+msgid "Sign in"
+msgstr "Anmelden"
+
+msgid "That name is already used."
+msgstr "Dieser Name wird bereits verwendet."
+
+msgid "The only wishlist cannot be deleted."
+msgstr "Die einzige Wunschliste kann nicht gelöscht werden."
+
+msgid "The wishlist is stored in a cookie in this browser. Sign in to keep it on your account."
+msgstr "Die Wunschliste wird in einem Cookie in diesem Browser gespeichert. Melden Sie sich an, um sie in Ihrem Konto zu behalten."
+
+msgid "This product is no longer available."
+msgstr "Dieses Produkt ist nicht mehr verfügbar."
+
+msgid "This product must be customized before it can be added to the basket."
+msgstr "Dieses Produkt muss angepasst werden, bevor es in den Warenkorb gelegt werden kann."
+
+msgid "This wishlist is full."
+msgstr "Diese Wunschliste ist voll."
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "View wishlist"
+msgstr "Wunschliste ansehen"
+
+msgid "Width"
+msgstr "Breite"
+
+msgid "Wishlist"
+msgstr "Wunschliste"
+
+msgid "Wishlist for customer service"
+msgstr "Wunschliste für den Kundenservice"
+
+msgid "Wishlist sent."
+msgstr "Wunschliste gesendet."
+
+msgid "Wishlists"
+msgstr "Wunschlisten"
+
+msgid "You can create up to 20 wishlists."
+msgstr "Sie können bis zu 20 Wunschlisten erstellen."
+
+msgid "Your wishlist is empty."
+msgstr "Ihre Wunschliste ist leer."
+
+msgid "A customer asked for a quote."
+msgstr "Ein Kunde hat ein Angebot angefragt."
+
+msgid "Quote request"
+msgstr "Angebotsanfrage"
+
+msgid "Quote sent."
+msgstr "Angebot gesendet."
+
+msgid "Send a quote"
+msgstr "Angebot anfragen"
+
+msgid "Delete this list?"
+msgstr "Diese Liste löschen?"
+
+msgid "Details"
+msgstr "Angaben"
+
+msgid "Price"
+msgstr "Preis"
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr "Preise werden nur angezeigt, wenn das Produkt bestellbereit ist."
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Total"
+msgstr "Gesamt"
+
+msgid "Prices include VAT."
+msgstr "Preise inklusive MwSt."
+
+msgid "Prices exclude VAT."
+msgstr "Preise exklusive MwSt."
+
+msgid "Your saved wishlists:"
+msgstr "Ihre gespeicherten Wunschlisten:"
+
+msgid "Send a quote to customer service"
+msgstr "Angebot an den Kundenservice senden"
+
+msgid "Enter a comment."
+msgstr "Geben Sie einen Kommentar ein."
