@@ -223,6 +223,10 @@ nh_wl_assert( 'pdf is a real file', strlen( $pdf ) > 10000 );
 $header = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/template-parts/headers/header-main.php' );
 nh_wl_assert( 'header has a wishlist link', false !== strpos( $header, 'nh_wl_header_link' ) );
 
+$front = file_get_contents( dirname( __DIR__ ) . '/includes/front.php' );
+nh_wl_assert( 'form handler loads the storefront cart', false !== strpos( $front, 'nh_wl_load_storefront()' ) );
+nh_wl_assert( 'notices are added only after the storefront loads', 1 === substr_count( $front, 'wc_add_notice(' ) );
+
 $plugin = dirname( __DIR__ );
 $code   = '';
 $iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $plugin ) );
