@@ -196,6 +196,40 @@ nh_tc_sheet_assert(
 	&& ! in_array( '40206210071602P', $skus, true )
 );
 
+$half_ok = true;
+foreach ( $catalog as $thicknesses ) {
+	foreach ( $thicknesses as $colours ) {
+		foreach ( $colours as $groups ) {
+			foreach ( $groups as $group ) {
+				$widths = array();
+				foreach ( array_keys( $group['widths'] ) as $width ) {
+					$widths[] = (int) $width;
+				}
+				sort( $widths, SORT_NUMERIC );
+				if ( in_array( 625, $widths, true ) || in_array( 615, $widths, true ) ) {
+					$half_ok = false;
+				}
+				if ( in_array( 1050, $widths, true ) && ! in_array( 2100, $widths, true ) ) {
+					$half_ok = false;
+				}
+				foreach ( $widths as $width ) {
+					if ( in_array( $width * 2, $widths, true ) && ( $width * 2 ) !== 2100 ) {
+						$half_ok = false;
+					}
+				}
+			}
+		}
+	}
+}
+nh_tc_sheet_assert(
+	'a half width is only sold beside 2100 mm, never beside 1250 or 1230',
+	$half_ok
+	&& array() === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 10, 'clear', 625 )
+	&& array() === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 10, 'opal', 625 )
+	&& array() === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 40, 'clear', 615 )
+	&& array() === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 40, 'clear', 1050 )
+);
+
 if ( $failures ) {
 	echo "\n{$failures} failed\n";
 	exit( 1 );

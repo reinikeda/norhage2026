@@ -36,6 +36,7 @@
   var lastPayload = null;
   var posting = false;
   var ccCustom = false;
+  var jointsPinned = false;
   var defaultCc = Number(cfg.defaultCc) || 600;
   var widthInput = form.querySelector('[name="width_mm"]');
   var lengthInput = form.querySelector('[name="length_mm"]');
@@ -113,6 +114,14 @@
   function currentSupply() {
     var picked = form.querySelector('[name="sheet_supply"]:checked');
     return picked ? picked.value : 'custom';
+  }
+
+  function applyJointDefault() {
+    if (jointsPinned) return;
+    var want = currentSupply() === 'standard' ? 'optimal' : 'every';
+    Array.prototype.forEach.call(form.querySelectorAll('[name="profile_joints"]'), function (input) {
+      input.checked = input.value === want;
+    });
   }
 
   function stockGroups() {
@@ -617,6 +626,15 @@
           i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
           [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
         );
+    } else if (meta.profile_joints === 'optimal') {
+      var optimalText = i18n('planOptimal', 'Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter.');
+      if (!split) {
+        optimalText += ' ' + fillTemplate(
+          i18n('planCut', 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
+          [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+        );
+      }
+      note.textContent = optimalText;
     } else {
       var leftW = Number(plan[0].width_mm);
       var rightW = Number(plan[plan.length - 1].width_mm);
@@ -779,6 +797,16 @@
       schedule();
     });
   }
+  form.addEventListener('change', function (event) {
+    var target = event.target;
+    if (!target || !target.name) return;
+    if (target.name === 'sheet_supply') {
+      jointsPinned = false;
+      applyJointDefault();
+    } else if (target.name === 'profile_joints') {
+      jointsPinned = true;
+    }
+  });
   form.addEventListener('input', schedule);
   form.addEventListener('change', schedule);
   atc.addEventListener('click', addToCart);

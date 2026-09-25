@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -158,6 +158,18 @@ msgstr "Liitosprofiili tuilla"
 
 msgid "On every beam"
 msgstr "Jokaisella palkilla"
+
+msgid "On every rafter"
+msgstr "Jokaisella koolauksella"
+
+msgid "Optimal"
+msgstr "Optimaalinen"
+
+msgid "Optimal covers as much of the chosen width as it can. Each joint still sits on a rafter."
+msgstr "Optimaalinen peittää niin paljon valitusta leveydestä kuin mahdollista. Jokainen sauma osuu edelleen koolaukseen."
+
+msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
+msgstr "Jokainen levy peittää niin paljon valitusta leveydestä kuin mahdollista. Saumaa käytetään vain siellä, missä levyt kohtaavat, ja se osuu edelleen koolaukseen."
 
 #, php-format
 msgid "Only where sheets meet, using up to %d mm"

@@ -449,6 +449,25 @@ class NH_TC_Defaults {
 	 *
 	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
 	 */
+	/**
+	 * Widest stock width sold for this thickness and colour, looking across every channel.
+	 *
+	 * @param array<string, mixed> $catalog
+	 */
+	public static function widest_standard_width( array $catalog, $material, $thickness, $colour ) {
+		$groups = self::standard_groups_in( $catalog, $material, $thickness, $colour );
+		$widest = 0;
+		foreach ( $groups as $group ) {
+			if ( empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+				continue;
+			}
+			foreach ( array_keys( $group['widths'] ) as $width ) {
+				$widest = max( $widest, (int) $width );
+			}
+		}
+		return $widest;
+	}
+
 	public static function standard_sheet_groups( $material, $thickness, $colour ) {
 		return self::standard_groups_in( self::standard_sheet_catalog(), $material, $thickness, $colour );
 	}
