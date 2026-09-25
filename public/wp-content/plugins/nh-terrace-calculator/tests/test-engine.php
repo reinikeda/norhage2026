@@ -110,8 +110,8 @@ nh_tc_assert( '18 m rubber gasket', isset( $by_role['gasket'] ) && 18 === (int) 
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
 nh_tc_assert(
-	'recommended spacing for 10 mm multiwall is 593 mm inside 500–600',
-	593 === (int) $bom['meta']['recommended_cc_mm']
+	'recommended spacing for 10 mm multiwall is a 600 mm prefill inside 500–600',
+	600 === (int) $bom['meta']['recommended_cc_mm']
 	&& 500 === (int) $bom['meta']['recommended_min_mm']
 	&& 600 === (int) $bom['meta']['recommended_max_mm']
 	&& 8 === (int) $bom['meta']['rafter_count']
@@ -154,6 +154,14 @@ foreach ( $gbom['lines'] as $line ) {
 }
 nh_tc_assert( 'gable uses ridge not wall', isset( $groles['ridge'] ) && ! isset( $groles['wall'] ) );
 nh_tc_assert( 'gable 9 beams', 9 === (int) $gbom['meta']['beam_count'] );
+nh_tc_assert(
+	'gable counts the entered side twice',
+	2 === (int) $gbom['meta']['slopes']
+	&& 4700 === (int) $gbom['meta']['projection_mm']
+	&& 9400 === (int) $gbom['meta']['length_mm']
+	&& 9450 === (int) $gbom['meta']['sheet_length_mm']
+);
+nh_tc_assert( 'lean-to keeps the entered length', 1 === (int) $bom['meta']['slopes'] && 4700 === (int) $bom['meta']['projection_mm'] && 4700 === (int) $bom['meta']['length_mm'] );
 
 nh_tc_assert( 'parse 1,5 m', 1500 === NH_TC_Engine::parse_size_to_mm( '1,5 m' ) );
 nh_tc_assert( 'parse 5 m', 5000 === NH_TC_Engine::parse_size_to_mm( '5 m' ) );
@@ -164,9 +172,9 @@ $empty_cc['cc_mm'] = 0;
 $empty_cc['thickness'] = 6;
 $empty_bom = NH_TC_Engine::calculate( $empty_cc, $settings );
 nh_tc_assert(
-	'empty CC uses the 6 mm recommendation of 462 mm',
+	'empty CC uses the 6 mm prefill of 500 mm',
 	! empty( $empty_bom['ok'] )
-	&& 462 === (int) $empty_bom['meta']['cc_mm']
+	&& 500 === (int) $empty_bom['meta']['cc_mm']
 	&& 400 === (int) $empty_bom['meta']['recommended_min_mm']
 	&& 500 === (int) $empty_bom['meta']['recommended_max_mm']
 	&& 10 === (int) $empty_bom['meta']['rafter_count']
@@ -179,15 +187,37 @@ nh_tc_assert( '12 mm multiwall uses the 10 mm range', 500 === (int) $mw12['min_m
 
 $solid_advice = NH_TC_Engine::recommended_support( 'solid', 10, 4200, 50 );
 nh_tc_assert(
-	'solid 10 mm recommends 1038 mm and 5 rafters',
-	1038 === (int) $solid_advice['cc_mm']
-	&& 5 === (int) $solid_advice['rafters']
+	'solid 10 mm prefills 1000 mm and 6 rafters',
+	1000 === (int) $solid_advice['cc_mm']
+	&& 6 === (int) $solid_advice['rafters']
 	&& 900 === (int) $solid_advice['min_mm']
 	&& 1100 === (int) $solid_advice['max_mm']
 );
 
 $mw4 = NH_TC_Engine::recommended_support( 'multiwall', 4, 4200, 50 );
-nh_tc_assert( '4 mm multiwall recommends 378 mm and 12 rafters', 378 === (int) $mw4['cc_mm'] && 12 === (int) $mw4['rafters'] && 350 === (int) $mw4['min_mm'] && 400 === (int) $mw4['max_mm'] );
+nh_tc_assert( '4 mm multiwall prefills 400 mm and 12 rafters', 400 === (int) $mw4['cc_mm'] && 12 === (int) $mw4['rafters'] && 350 === (int) $mw4['min_mm'] && 400 === (int) $mw4['max_mm'] );
+
+$prefills = array(
+	array( 'multiwall', 4, 400 ),
+	array( 'multiwall', 6, 500 ),
+	array( 'multiwall', 8, 500 ),
+	array( 'multiwall', 12, 600 ),
+	array( 'multiwall', 10, 600 ),
+	array( 'multiwall', 16, 700 ),
+	array( 'multiwall', 25, 900 ),
+	array( 'multiwall', 40, 1000 ),
+	array( 'solid', 2, 300 ),
+	array( 'solid', 3, 400 ),
+	array( 'solid', 4, 500 ),
+	array( 'solid', 5, 600 ),
+	array( 'solid', 6, 700 ),
+	array( 'solid', 8, 800 ),
+	array( 'solid', 10, 1000 ),
+);
+foreach ( $prefills as $row ) {
+	$got = NH_TC_Engine::support_range( $row[0], $row[1] );
+	nh_tc_assert( $row[0] . ' ' . $row[1] . ' mm prefills ' . $row[2] . ' mm', (int) $got['prefill_mm'] === (int) $row[2] );
+}
 
 $h_in = $input;
 $h_in['connecting_profile'] = 'h_plastic';

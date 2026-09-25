@@ -15,6 +15,8 @@
  *   2050 × 3050 mm blank, turned either way, and split along the length when
  *   the run is longer than the blank.
  * - Sheet length is the frame length plus a drip overhang (standard 50 mm).
+ *   A gable enters one slope, from the ridge to the eave, and the frame
+ *   length counts that slope twice.
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
  * - Wall profiles cover the wall width in 2.2 m pieces.
@@ -43,12 +45,14 @@ class NH_TC_Engine {
 			);
 		}
 
-		$width    = (int) $input['width_mm'];
-		$length   = (int) $input['length_mm'];
-		$cc       = (int) $input['cc_mm'];
-		$thk      = (int) $input['thickness'];
-		$layout   = (string) $input['sheet_layout'];
-		$const    = (string) $input['construction'];
+		$width      = (int) $input['width_mm'];
+		$projection = (int) $input['length_mm'];
+		$cc         = (int) $input['cc_mm'];
+		$thk        = (int) $input['thickness'];
+		$layout     = (string) $input['sheet_layout'];
+		$const      = (string) $input['construction'];
+		$slopes     = ( 'gable' === $const ) ? 2 : 1;
+		$length     = $projection * $slopes;
 		$support  = self::support_width( $input, $settings );
 		$overhang = self::sheet_overhang( $input, $settings );
 		$gap       = self::profile_gap( $settings );
@@ -299,6 +303,8 @@ class NH_TC_Engine {
 			'meta' => array(
 				'width_mm'             => $width,
 				'length_mm'            => $length,
+				'projection_mm'        => $projection,
+				'slopes'               => $slopes,
 				'cc_mm'                => $cc,
 				'support_mm'           => $support,
 				'overhang_mm'          => $overhang,
@@ -573,23 +579,23 @@ class NH_TC_Engine {
 	public static function support_range_tables() {
 		return array(
 			'multiwall' => array(
-				'4'  => array( 350, 400 ),
-				'6'  => array( 400, 500 ),
-				'10' => array( 500, 600 ),
-				'16' => array( 700, 800 ),
-				'20' => array( 800, 1000 ),
-				'25' => array( 800, 1000 ),
-				'32' => array( 1000, 1200 ),
-				'40' => array( 1000, 1200 ),
+				'4'  => array( 350, 400, 400 ),
+				'6'  => array( 400, 500, 500 ),
+				'10' => array( 500, 600, 600 ),
+				'16' => array( 700, 800, 700 ),
+				'20' => array( 800, 1000, 900 ),
+				'25' => array( 800, 1000, 900 ),
+				'32' => array( 1000, 1200, 1000 ),
+				'40' => array( 1000, 1200, 1000 ),
 			),
 			'solid'     => array(
-				'2'  => array( 250, 350 ),
-				'3'  => array( 350, 450 ),
-				'4'  => array( 450, 550 ),
-				'5'  => array( 550, 650 ),
-				'6'  => array( 650, 750 ),
-				'8'  => array( 750, 900 ),
-				'10' => array( 900, 1100 ),
+				'2'  => array( 250, 350, 300 ),
+				'3'  => array( 350, 450, 400 ),
+				'4'  => array( 450, 550, 500 ),
+				'5'  => array( 550, 650, 600 ),
+				'6'  => array( 650, 750, 700 ),
+				'8'  => array( 750, 900, 800 ),
+				'10' => array( 900, 1100, 1000 ),
 			),
 		);
 	}
@@ -597,7 +603,7 @@ class NH_TC_Engine {
 	/**
 	 * The listed range for this thickness, or the next thinner listed sheet.
 	 *
-	 * @return array{min_mm:int,max_mm:int}
+	 * @return array{min_mm:int,max_mm:int,prefill_mm:int}
 	 */
 	public static function support_range( $material, $thickness ) {
 		$tables   = self::support_range_tables();
@@ -612,43 +618,31 @@ class NH_TC_Engine {
 		if ( null === $chosen ) {
 			$chosen = reset( $table );
 		}
+		$max     = (int) $chosen[1];
+		$prefill = isset( $chosen[2] ) ? (int) $chosen[2] : $max;
 		return array(
-			'min_mm' => (int) $chosen[0],
-			'max_mm' => (int) $chosen[1],
+			'min_mm'     => (int) $chosen[0],
+			'max_mm'     => $max,
+			'prefill_mm' => $prefill > 0 ? $prefill : $max,
 		);
 	}
 
 	/**
-	 * Even rafter spacing for this roof, kept inside the recommended range.
+	 * Prefill for the centre-spacing field, plus the rafter count that spacing gives.
 	 *
 	 * @return array{min_mm:int,max_mm:int,cc_mm:int,bays:int,rafters:int}
 	 */
 	public static function recommended_support( $material, $thickness, $width, $support ) {
-		$range = self::support_range( $material, $thickness );
-		$inner = max( 1, (int) $width - max( 0, (int) $support ) );
-		$max   = max( 1, (int) $range['max_mm'] );
-		if ( $inner <= $max ) {
-			$bays = 1;
-			$cc   = $inner;
-		} else {
-			$bays = (int) ceil( $inner / $max );
-			// Ceil keeps every full bay inside the range and stops a 1 mm remainder
-			// from opening an extra bay in the framed sheet plan.
-			$cc = (int) ceil( $inner / $bays );
-			if ( $cc > $max ) {
-				++$bays;
-				$cc = (int) ceil( $inner / $bays );
-			}
-		}
-		if ( $cc < 1 ) {
-			$cc = $max;
-		}
+		$range  = self::support_range( $material, $thickness );
+		$inner  = max( 1, (int) $width - max( 0, (int) $support ) );
+		$cc     = max( 1, (int) $range['prefill_mm'] );
+		$bays   = ( $inner <= $cc ) ? 1 : (int) ceil( $inner / $cc );
 		return array(
 			'min_mm'  => (int) $range['min_mm'],
-			'max_mm'  => $max,
-			'cc_mm'   => (int) $cc,
-			'bays'    => (int) $bays,
-			'rafters' => (int) $bays + 1,
+			'max_mm'  => (int) $range['max_mm'],
+			'cc_mm'   => $cc,
+			'bays'    => $bays,
+			'rafters' => $bays + 1,
 		);
 	}
 
@@ -668,7 +662,7 @@ class NH_TC_Engine {
 	public static function recommended_cc( $thickness, array $settings ) {
 		unset( $settings );
 		$range = self::support_range( 'multiwall', $thickness );
-		return (int) $range['max_mm'];
+		return (int) $range['prefill_mm'];
 	}
 
 	/**

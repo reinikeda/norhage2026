@@ -212,6 +212,7 @@ class NH_TC_Render {
 										value="<?php echo esc_attr( $s['default_length_mm'] ); ?>">
 									<span>mm</span>
 								</span>
+								<small class="nh-tc__hint" data-gable-length hidden><?php esc_html_e( 'Enter one side, from the ridge to the eave. Both sides are included.', NH_TC_TD ); ?></small>
 							</label>
 							<label>
 								<span><?php esc_html_e( 'Support spacing (centre to centre)', NH_TC_TD ); ?></span>
@@ -377,6 +378,7 @@ class NH_TC_Render {
 					'planSides'     => __( 'The side sheets are %1$d mm and %2$d mm.', NH_TC_TD ),
 					'planJoint'     => __( 'Joints sit on the centre of a rafter.', NH_TC_TD ),
 					'planCut'       => __( 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
+					'planGable'     => __( 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.', NH_TC_TD ),
 					'rafter'        => __( 'Rafter', NH_TC_TD ),
 					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
