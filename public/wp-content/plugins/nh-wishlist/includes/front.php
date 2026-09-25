@@ -128,10 +128,12 @@ function nh_wl_view_url( $list_id = '' ) {
  * @return string
  */
 function nh_wl_service_email() {
-	$email = apply_filters( 'nh_wl_customer_service_email', 'info@norhage.eu' );
-	$email = sanitize_email( (string) $email );
+	$host = function_exists( 'home_url' ) ? (string) wp_parse_url( home_url(), PHP_URL_HOST ) : '';
+	$detected = nh_wl_info_email_for_host( $host );
+	$email    = apply_filters( 'nh_wl_customer_service_email', $detected );
+	$email    = sanitize_email( (string) $email );
 	if ( ! is_email( $email ) ) {
-		$email = sanitize_email( (string) get_option( 'admin_email' ) );
+		return $detected;
 	}
 	return $email;
 }
@@ -935,9 +937,13 @@ class NH_WL_Actions {
 			nh_wl_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
-		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
 		$comment = nh_wl_sanitize_comment( isset( $_POST['comment'] ) ? wp_unslash( $_POST['comment'] ) : '' );
-		$view    = nh_wl_prepare_view( $state, $list_id );
+		if ( '' === $comment ) {
+			nh_wl_add_notice( __( 'Enter a comment.', 'nh-wishlist' ), 'error' );
+			return;
+		}
+		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+		$view = nh_wl_prepare_view( $state, $list_id );
 		$to      = nh_wl_service_email();
 		$subject = __( 'Quote request', 'nh-wishlist' );
 		$intro   = __( 'A customer asked for a quote.', 'nh-wishlist' );

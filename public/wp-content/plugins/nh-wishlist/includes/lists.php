@@ -177,6 +177,22 @@ function nh_wl_needs_customize( $context ) {
 }
 
 /**
+ * Customer-service address for the shop domain: info@norhage.lt, info@norhage.de, and so on.
+ *
+ * @param string $host Request host.
+ * @return string
+ */
+function nh_wl_info_email_for_host( $host ) {
+	$host = strtolower( trim( (string) $host ) );
+	$host = preg_replace( '/:\d+$/', '', $host );
+	$host = preg_replace( '/^www\./', '', (string) $host );
+	if ( is_string( $host ) && preg_match( '/(?:^|\.)(norhage\.[a-z]{2,})$/', $host, $matches ) ) {
+		return 'info@' . $matches[1];
+	}
+	return 'info@norhage.eu';
+}
+
+/**
  * SKU shown on the list, PDF, and quote.
  * An unfinished product uses the parent SKU. A finished selection uses its own SKU.
  *

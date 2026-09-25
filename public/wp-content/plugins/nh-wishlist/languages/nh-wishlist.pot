@@ -249,3 +249,12 @@ msgstr ""
 
 msgid "Prices exclude VAT."
 msgstr ""
+
+msgid "Your saved wishlists:"
+msgstr ""
+
+msgid "Send a quote to customer service"
+msgstr ""
+
+msgid "Enter a comment."
+msgstr ""

@@ -250,3 +250,12 @@ msgstr "Kainos su PVM."
 
 msgid "Prices exclude VAT."
 msgstr "Kainos be PVM."
+
+msgid "Your saved wishlists:"
+msgstr "Jūsų išsaugoti pageidavimų sąrašai:"
+
+msgid "Send a quote to customer service"
+msgstr "Siųsti užklausą klientų aptarnavimui"
+
+msgid "Enter a comment."
+msgstr "Įrašykite komentarą."

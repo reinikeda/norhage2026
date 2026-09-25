@@ -60,10 +60,20 @@ ul.products li.product,
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 5;
+  z-index: 60;
   width: 34px;
   height: 34px;
   border-radius: 999px;
+}
+
+/* Sale and custom labels share the top-right corner. Keep the heart there and stack the labels under it. */
+body ul.products li.product .nhg-labels--thumb .nhg-badge--sale,
+body ul.products li.product .nhg-labels--thumb .nhg-badge--custom {
+  top: 48px !important;
+}
+
+body ul.products li.product .nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
+  top: 82px !important;
 }
 
 .nh-wl-single {
@@ -296,11 +306,85 @@ ul.products li.product,
   text-decoration: underline;
 }
 
+.nh-wl__lists-label {
+  margin: 14px 0 8px;
+  color: #5f5c59;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .nh-wl__lists {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
+  align-items: center;
+}
+
+.nh-wl__list-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nh-wl__list-item.is-current {
+  background: #1e3932;
+  border-radius: 999px;
+  padding-right: 2px;
+}
+
+.nh-wl__edit {
+  position: relative;
+}
+
+.nh-wl__edit > summary {
+  list-style: none;
+}
+
+.nh-wl__edit > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nh-wl__edit[open] .nh-wl__rename {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 6;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 240px;
+  margin: 0;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #e4ddd2;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(30, 57, 50, 0.12);
+}
+
+.nh-wl__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.nh-wl__icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.nh-wl__delete-form {
+  margin: 0;
 }
 
 .nh-wl__list {
@@ -332,13 +416,18 @@ ul.products li.product,
   color: #f1e6d6;
 }
 
-.nh-wl__manage,
-.nh-wl__toolbar,
-.nh-wl-card__form {
+.nh-wl__toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+
+.nh-wl-card__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
 }
 
 .nh-wl__manage {
@@ -563,6 +652,8 @@ ul.products li.product,
 
 .nh-wl input[type="number"] {
   width: 72px;
+  height: 34px;
+  margin: 0;
 }
 
 .nh-wl textarea {
@@ -626,15 +717,29 @@ body .nh-wl a.nh-wl__list span {
   font-size: 12px !important;
 }
 
-body .nh-wl a.nh-wl__list.is-current,
-body .woocommerce .nh-wl a.nh-wl__list.is-current {
-  background: #1e3932 !important;
-  border-color: #1e3932 !important;
+body .nh-wl .nh-wl__list-item.is-current > a.nh-wl__list,
+body .woocommerce .nh-wl .nh-wl__list-item.is-current > a.nh-wl__list {
+  background: transparent !important;
+  border-color: transparent !important;
   color: #fff !important;
 }
 
-body .nh-wl a.nh-wl__list.is-current span {
+body .nh-wl .nh-wl__list-item.is-current > a.nh-wl__list span {
   color: #f1e6d6 !important;
+}
+
+body .nh-wl .nh-wl__icon,
+body .woocommerce .nh-wl button.nh-wl__icon,
+body .woocommerce .nh-wl summary.nh-wl__icon {
+  background: transparent !important;
+  border: 0 !important;
+  color: #fff !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
 }
 
 body .nh-wl .nh-wl__button,
