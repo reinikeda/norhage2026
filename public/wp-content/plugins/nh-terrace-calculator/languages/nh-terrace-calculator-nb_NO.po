@@ -432,3 +432,10 @@ msgstr "En massiv polykarbonatplate er %1$d × %2$d mm og kan snus begge veier. 
 
 msgid "Shipping"
 msgstr "Frakt"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Én plate dekker rammen fra kant til kant."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "På et helt fag er en ytterplate %1$d mm bredere enn en midtplate: den når ut til enden av den %2$d mm brede lekten og mister bare %3$d mm i skjøten. Det siste stykket blir kortere når avstanden ikke går opp i rammen."

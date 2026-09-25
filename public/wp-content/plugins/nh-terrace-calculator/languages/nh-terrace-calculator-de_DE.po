@@ -432,3 +432,10 @@ msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedre
 
 msgid "Shipping"
 msgstr "Versand"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Eine Platte deckt den Rahmen von Kante zu Kante."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm. Das letzte Stück wird kürzer, wenn der Abstand nicht gleichmäßig in den Rahmen passt."

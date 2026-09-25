@@ -342,6 +342,8 @@ class NH_TC_Render {
 					'sheets'        => __( '%d sheets', NH_TC_TD ),
 					'planWait'      => __( 'The cut diagram appears once the size is valid.', NH_TC_TD ),
 					'planSingle'    => __( 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
+					'planCover'     => __( 'One sheet covers the frame from edge to edge.', NH_TC_TD ),
+					'planBay'       => __( 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly.', NH_TC_TD ),
 					'planExtra'     => __( 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).', NH_TC_TD ),
 					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),

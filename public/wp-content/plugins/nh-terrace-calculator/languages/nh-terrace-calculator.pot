@@ -427,3 +427,10 @@ msgstr ""
 
 msgid "Shipping"
 msgstr ""
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr ""
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr ""

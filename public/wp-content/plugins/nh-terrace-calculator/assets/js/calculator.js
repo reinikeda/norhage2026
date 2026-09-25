@@ -61,8 +61,8 @@
       }
       sel.appendChild(opt);
     });
-    if (preferred && values.indexOf(preferred) !== -1) sel.value = preferred;
-    else if (values.indexOf(current) !== -1) sel.value = current;
+    if (current && values.indexOf(current) !== -1) sel.value = current;
+    else if (preferred && values.indexOf(preferred) !== -1) sel.value = preferred;
     else if (values.length) sel.value = values[0];
   }
 
@@ -417,12 +417,20 @@
     });
 
     var halfGap = Math.round((Number(meta.profile_gap_mm) || 10) / 2);
+    var split = Number(meta.length_pieces) > 1;
     var note = document.createElement('p');
     note.className = 'nh-tc__plan-note';
     if (plan.length < 2) {
+      note.textContent = split
+        ? i18n('planCover', 'One sheet covers the frame from edge to edge.')
+        : fillTemplate(
+          i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
+          [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+        );
+    } else if (split) {
       note.textContent = fillTemplate(
-        i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
-        [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+        i18n('planBay', 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly.'),
+        [meta.side_extra_mm, meta.support_mm, halfGap]
       );
     } else {
       note.textContent = fillTemplate(

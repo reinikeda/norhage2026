@@ -432,3 +432,10 @@ msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pas
 
 msgid "Shipping"
 msgstr "Pristatymas"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Vienas lakštas dengia rėmą nuo krašto iki krašto."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "Pilname tarpatramyje kraštinis lakštas yra %1$d mm platesnis už vidurinį: jis siekia %2$d mm atramos galą ir siūlėje praranda tik %3$d mm. Paskutinė dalis trumpesnė, kai žingsnis nesidalija rėme po lygiai."

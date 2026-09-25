@@ -432,3 +432,10 @@ msgstr "En massiv polykarbonatplade er %1$d × %2$d mm og kan vendes begge veje.
 
 msgid "Shipping"
 msgstr "Fragt"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Én plade dækker rammen fra kant til kant."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "På et helt fag er en yderplade %1$d mm bredere end en midterplade: den når ud til enden af den %2$d mm brede lægte og mister kun %3$d mm i samlingen. Det sidste stykke bliver kortere, når afstanden ikke går op i rammen."
