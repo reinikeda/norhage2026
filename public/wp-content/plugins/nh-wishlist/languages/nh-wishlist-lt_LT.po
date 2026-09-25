@@ -226,3 +226,21 @@ msgstr "Pasiūlymo užklausa išsiųsta."
 
 msgid "Send a quote"
 msgstr "Prašyti pasiūlymo"
+
+msgid "Delete this list?"
+msgstr "Ištrinti šį sąrašą?"
+
+msgid "Details"
+msgstr "Informacija"
+
+msgid "Price"
+msgstr "Kaina"
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr "Kainos rodomos tik tiems produktams, kuriuos jau galima užsakyti."
+
+msgid "Product"
+msgstr "Produktas"
+
+msgid "Total"
+msgstr "Iš viso"

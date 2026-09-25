@@ -226,3 +226,21 @@ msgstr "Angebot gesendet."
 
 msgid "Send a quote"
 msgstr "Angebot anfragen"
+
+msgid "Delete this list?"
+msgstr "Diese Liste löschen?"
+
+msgid "Details"
+msgstr "Angaben"
+
+msgid "Price"
+msgstr "Preis"
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr "Preise werden nur angezeigt, wenn das Produkt bestellbereit ist."
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Total"
+msgstr "Gesamt"

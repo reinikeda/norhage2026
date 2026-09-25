@@ -226,3 +226,21 @@ msgstr "Tilbudsforespørgsel sendt."
 
 msgid "Send a quote"
 msgstr "Bed om tilbud"
+
+msgid "Delete this list?"
+msgstr "Slet denne liste?"
+
+msgid "Details"
+msgstr "Detaljer"
+
+msgid "Price"
+msgstr "Pris"
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr "Priser vises kun for produkter, der er klar til bestilling."
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Total"
+msgstr "Total"

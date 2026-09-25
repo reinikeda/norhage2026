@@ -164,30 +164,69 @@ ul.products li.product,
   align-items: flex-end;
   justify-content: center;
   padding: 16px;
-  background: rgba(30, 57, 50, 0.45);
+  background: rgba(30, 57, 50, 0.48);
 }
 
 .nh-wl-popover__card {
-  width: min(380px, 100%);
+  width: min(400px, 100%);
   max-height: min(80vh, 560px);
   overflow: auto;
   background: #fff;
   color: #2c2a29;
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 16px 40px rgba(30, 57, 50, 0.18);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 24px 60px rgba(30, 57, 50, 0.28);
+}
+
+.nh-wl-popover__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  background: #1e3932;
+  color: #fff;
+}
+
+.nh-wl-popover__head h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .nh-wl-popover__lists {
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  padding: 14px;
+}
+
+.nh-wl-popover__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c2a29;
+}
+
+.nh-wl-popover__action {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: #00704a;
 }
 
 .nh-wl-popover__create {
   display: flex;
   gap: 8px;
   align-items: end;
-  margin-top: 12px;
+  margin: 0;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #e4ddd2;
+  background: #faf7f2;
 }
 
 .nh-wl-popover__create label {
@@ -200,19 +239,37 @@ ul.products li.product,
 }
 
 .nh-wl-popover__notice {
-  margin: 10px 0 0;
+  margin: 0;
+  padding: 0 14px 12px;
   color: #1e3932;
+  background: #faf7f2;
   font-size: 13px;
   line-height: 1.35;
 }
 
+.nh-wl-popover__notice[hidden] {
+  display: none;
+}
+
 .nh-wl-popover__close {
-  margin-top: 8px;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
   border: 0;
-  padding: 6px 0;
-  color: #00704a;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
+}
+
+.nh-wl-popover__close:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .nh-wl {
@@ -281,12 +338,48 @@ ul.products li.product,
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  align-items: end;
+  align-items: center;
 }
 
-.nh-wl__manage,
+.nh-wl__manage {
+  margin: 0 0 16px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #e4ddd2;
+  border-radius: 12px;
+}
+
 .nh-wl__toolbar {
   margin: 0 0 14px;
+}
+
+.nh-wl__rename {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+}
+
+.nh-wl__rename label {
+  flex: 1;
+  min-width: 0;
+}
+
+.nh-wl__rename input[type="text"] {
+  max-width: none;
+}
+
+.nh-wl .screen-reader-text {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 .nh-wl__create label,
@@ -502,8 +595,7 @@ body .nh-wl h2 a,
 body .entry-content .nh-wl h2,
 body .entry-content .nh-wl h2 a,
 body .woocommerce .nh-wl h2,
-body .woocommerce .nh-wl h2 a,
-body .nh-wl-popover__card h2 {
+body .woocommerce .nh-wl h2 a {
   margin: 0 0 4px;
   color: #2c2a29 !important;
   background: transparent !important;
@@ -580,25 +672,70 @@ body .woocommerce .nh-wl button.nh-wl__text {
   font-size: 13px !important;
 }
 
+body .nh-wl-popover__head h2 {
+  margin: 0 !important;
+  color: #fff !important;
+  background: transparent !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+body .nh-wl-popover__close {
+  background: transparent !important;
+  border: 0 !important;
+  color: #fff !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  min-height: 0 !important;
+  width: 32px;
+  height: 32px;
+  padding: 0 !important;
+}
+
 body .nh-wl-popover__lists button {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   background: #fff !important;
   color: #2c2a29 !important;
   border: 1px solid #e4ddd2 !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   text-transform: none !important;
   text-align: left;
   width: 100%;
-  min-height: 36px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 10px 12px !important;
+  border-radius: 10px;
   cursor: pointer;
+  box-shadow: none !important;
+}
+
+body .nh-wl-popover__lists button:hover {
+  background: #faf7f2 !important;
+  border-color: #c3e8c6 !important;
 }
 
 body .nh-wl-popover__lists button.is-saved {
-  background: #f1e6d6 !important;
+  background: #f3faf6 !important;
   color: #1e3932 !important;
   border-color: #00704a !important;
+}
+
+body .nh-wl-popover__lists button .nh-wl-popover__name {
+  color: #2c2a29 !important;
+  font-size: 14px !important;
+}
+
+body .nh-wl-popover__lists button .nh-wl-popover__action {
+  color: #00704a !important;
+  font-size: 13px !important;
+}
+
+body .nh-wl-popover__lists button.is-saved .nh-wl-popover__action {
+  color: #1e3932 !important;
 }
 
 body .nh-wl .nh-wl-card__notice {
