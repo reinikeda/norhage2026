@@ -166,8 +166,21 @@
   }
 
   function syncGableHint() {
+    var gable = slopeCount() > 1;
     var hint = root.querySelector('[data-gable-length]');
-    if (hint) hint.hidden = slopeCount() < 2;
+    var widthLabel = root.querySelector('[data-width-label]');
+    var lengthLabel = root.querySelector('[data-length-label]');
+    if (hint) hint.hidden = !gable;
+    if (widthLabel) {
+      widthLabel.textContent = gable
+        ? i18n('widthGable', 'Width along the gable')
+        : i18n('widthWall', 'Width along the wall');
+    }
+    if (lengthLabel) {
+      lengthLabel.textContent = gable
+        ? i18n('lengthGable', 'Length of one side (ridge to eave)')
+        : i18n('lengthLean', 'Frame length (projection)');
+    }
   }
 
   function preferredLength(lengths) {
@@ -531,40 +544,47 @@
     var plan = meta.sheet_plan;
     var rafters = Array.isArray(meta.rafters_mm) ? meta.rafters_mm : [];
     var framed = rafters.length > 1 && Number(meta.width_mm) > 0;
-    var row = document.createElement('div');
-    row.className = framed ? 'nh-tc__frame' : 'nh-tc__sheets';
-    row.setAttribute('role', 'img');
-    var aria = i18n('sheets', '%d sheets').replace('%d', plan.length);
-    if (framed) aria += ', ' + rafters.length + ' ' + i18n('rafter', 'Rafter');
-    row.setAttribute('aria-label', aria);
+    var gable = Number(meta.slopes) > 1;
 
-    plan.forEach(function (sheet) {
-      var cell = document.createElement('div');
-      cell.className = 'nh-tc__sheet is-' + (sheet.edge === 'side' ? 'side' : 'middle');
-      if (framed) {
-        cell.style.left = (Number(sheet.x_mm) / Number(meta.width_mm) * 100) + '%';
-        cell.style.width = (Number(sheet.width_mm) / Number(meta.width_mm) * 100) + '%';
-      } else {
-        cell.style.flexGrow = String(Math.max(1, sheet.width_mm));
-      }
-      var label = document.createElement('span');
-      label.textContent = sheet.width_mm;
-      cell.appendChild(label);
-      row.appendChild(cell);
-    });
-
-    if (framed) {
-      rafters.forEach(function (pos) {
-        var line = document.createElement('i');
-        line.className = 'nh-tc__rafter';
-        line.style.left = (Number(pos) / Number(meta.width_mm) * 100) + '%';
-        line.setAttribute('aria-hidden', 'true');
-        row.appendChild(line);
+    function buildSlope(slopeClass) {
+      var slope = document.createElement('div');
+      slope.className = framed ? 'nh-tc__frame ' + slopeClass : 'nh-tc__sheets';
+      plan.forEach(function (sheet) {
+        var cell = document.createElement('div');
+        cell.className = 'nh-tc__sheet is-' + (sheet.edge === 'side' ? 'side' : 'middle');
+        if (framed) {
+          cell.style.left = (Number(sheet.x_mm) / Number(meta.width_mm) * 100) + '%';
+          cell.style.width = (Number(sheet.width_mm) / Number(meta.width_mm) * 100) + '%';
+        } else {
+          cell.style.flexGrow = String(Math.max(1, sheet.width_mm));
+        }
+        var label = document.createElement('span');
+        label.textContent = sheet.width_mm;
+        cell.appendChild(label);
+        slope.appendChild(cell);
       });
-      var beam = document.createElement('div');
-      beam.className = 'nh-tc__beam';
-      beam.setAttribute('aria-hidden', 'true');
-      row.appendChild(beam);
+      if (framed) {
+        rafters.forEach(function (pos) {
+          var line = document.createElement('i');
+          line.className = 'nh-tc__rafter';
+          line.style.left = (Number(pos) / Number(meta.width_mm) * 100) + '%';
+          line.setAttribute('aria-hidden', 'true');
+          slope.appendChild(line);
+        });
+        var beam = document.createElement('div');
+        beam.className = 'nh-tc__beam';
+        beam.setAttribute('aria-hidden', 'true');
+        slope.appendChild(beam);
+      }
+      return slope;
+    }
+
+    var row = buildSlope(gable ? 'is-upper' : '');
+    if (!gable) {
+      row.setAttribute('role', 'img');
+      var aria = i18n('sheets', '%d sheets').replace('%d', plan.length);
+      if (framed) aria += ', ' + rafters.length + ' ' + i18n('rafter', 'Rafter');
+      row.setAttribute('aria-label', aria);
     }
 
     var groups = [];
@@ -623,10 +643,24 @@
 
     var legend = document.createElement('p');
     legend.className = 'nh-tc__legend';
-    legend.innerHTML = '<span><i class="is-side"></i>' + i18n('outer', 'outer') + '</span><span><i class="is-middle"></i>' + i18n('middle', 'middle') + '</span>' + (framed ? '<span><i class="is-rafter"></i>' + i18n('rafter', 'Rafter') + '</span>' : '') + '<span><i class="is-joint"></i>' + (meta.profile_gap_mm || 10) + ' mm</span>';
+    legend.innerHTML = '<span><i class="is-side"></i>' + i18n('outer', 'outer') + '</span><span><i class="is-middle"></i>' + i18n('middle', 'middle') + '</span>' + (framed ? '<span><i class="is-rafter"></i>' + i18n('rafter', 'Rafter') + '</span>' : '') + (gable ? '<span><i class="is-ridge"></i>' + i18n('ridge', 'Ridge') + '</span>' : '') + '<span><i class="is-joint"></i>' + (meta.profile_gap_mm || 10) + ' mm</span>';
 
     planEl.innerHTML = '';
-    planEl.appendChild(row);
+    if (gable) {
+      var scheme = document.createElement('div');
+      scheme.className = 'nh-tc__gable';
+      scheme.setAttribute('role', 'img');
+      scheme.setAttribute('aria-label', i18n('sheets', '%d sheets').replace('%d', plan.length * 2) + ', ' + i18n('ridge', 'Ridge'));
+      var ridge = document.createElement('div');
+      ridge.className = 'nh-tc__ridge';
+      ridge.setAttribute('aria-hidden', 'true');
+      scheme.appendChild(row);
+      scheme.appendChild(ridge);
+      scheme.appendChild(buildSlope('is-lower'));
+      planEl.appendChild(scheme);
+    } else {
+      planEl.appendChild(row);
+    }
     planEl.appendChild(legend);
     planEl.appendChild(cuts);
     planEl.appendChild(note);

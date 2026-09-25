@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -519,4 +519,14 @@ msgstr "Įveskite vieną šlaitą nuo kraigo iki karnizo. Abu šlaitai įskaiči
 #, php-format
 msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
 msgstr "Abu šlaitai įskaičiuojami. Įvesti %1$d mm yra vienas šlaitas nuo kraigo iki karnizo, todėl rėmo ilgis yra %2$d mm."
+
+
+msgid "Width along the gable"
+msgstr "Plotis palei frontoną"
+
+msgid "Length of one side (ridge to eave)"
+msgstr "Vieno šlaito ilgis (nuo kraigo iki karnizo)"
+
+msgid "Ridge"
+msgstr "Kraigas"
 

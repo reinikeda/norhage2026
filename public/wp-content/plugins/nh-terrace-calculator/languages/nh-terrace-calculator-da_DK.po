@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.6\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -519,4 +519,14 @@ msgstr "Indtast én side, fra rygningen til tagfoden. Begge sider tælles med."
 #, php-format
 msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
 msgstr "Begge sider tælles med. De indtastede %1$d mm er én side, fra rygningen til tagfoden, så rammelængden er %2$d mm."
+
+
+msgid "Width along the gable"
+msgstr "Bredde langs gavlen"
+
+msgid "Length of one side (ridge to eave)"
+msgstr "Længde på én side (rygning til tagfod)"
+
+msgid "Ridge"
+msgstr "Rygning"
 
