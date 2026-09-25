@@ -69,7 +69,7 @@
       opt.value = v;
       opt.textContent = labelFor(v);
       if (/^\d+$/.test(String(v))) {
-        opt.textContent = v + ' mm';
+        opt.textContent = i18n('mm', '%d mm').replace('%d', v);
       }
       sel.appendChild(opt);
     });

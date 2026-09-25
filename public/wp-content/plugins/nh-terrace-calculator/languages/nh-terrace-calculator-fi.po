@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -542,3 +542,47 @@ msgstr "Yhden lappeen pituus (harjalta räystäälle)"
 msgid "Ridge"
 msgstr "Harja"
 
+msgid "How the calculator counts products"
+msgstr "Näin laskuri laskee tuotteet"
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr "Jokainen materiaalilistan rivi on yksi tuote alla olevasta kytkennästä. Määrä lasketaan asiakkaan syöttämästä rungosta. Rivi, jonka variaation SKU on tyhjä, näytetään silti merkinnällä ei tässä kaupassa, ja muun sarjan voi lisätä koriin."
+
+msgid "Polycarbonate sheets"
+msgstr "Polykarbonaattilevyt"
+
+msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
+msgstr "Mittatilaus, jokaisella koolauksella. Uloimpien koolausten keskipisteiden väli on rungon leveys miinus palkki. Väli jaetaan yhtä suuriin väleihin, eikä yksikään ole keskiväliä leveämpi. Jokainen väli on yksi levy. Molemmat sivulevyt ulottuvat rungon päihin. Saman levyiset ja pituiset levyt ovat yksi rivi, ja määrä on kuinka monta levyä on sitä kokoa."
+
+msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
+msgstr "Mittatilaus, optimaalinen. Samat koolaukset piirretään, mutta yksi levy peittää niin monta väliä kuin leveys sallii. Sauma ja liitosprofiili lisätään vain sinne, missä levyt kohtaavat. Umpilevy ei koskaan ylitä 2050 mm, joten 3050 mm:n sivu jää pituudeksi. Kennolevy käyttää kyseisen paksuuden ja värin leveintä varastoleveyttä. 2100 mm on tavallinen leveys. 40 mm kirkas on 1230 mm. 16 mm kirkas pitää 6-seinäisen, 5-seinäisen ja 3-seinäisen leveydet erillään, ja niistä käytetään leveintä."
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr "Umpilevyn pituus. Kun matka on aihiota pidempi, jokainen levy jaetaan yhtä pitkiin osiin pituussuunnassa. Rivin määrä on nämä osat. Jako ei lisää liitosprofiilia."
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr "Vakiokoot. Asiakas valitsee leveyden. Pituus on lyhin varastopituus, joka peittää rungon ja tippanokan. Määrä on levyjen määrä leveyssuunnassa kerrottuna pituussuunnan määrällä. 4200 mm:n runko ja 2100 mm:n levy on 2 kappaletta. Sama runko ja 1050 mm:n levy on 4. 4750 mm:n matka aihiolla, jonka pitkä sivu on 3050 mm, on 2 kappaletta pituussuunnassa, joten 3 leveyssuunnassa kertaa 2 pituussuunnassa on 6. Piirros on katkaisukaavio. Koriin tulee varastokoko, eikä profiilivalinta muuta tätä määrää."
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr "Harjakatossa syötetty pituus on yksi lape harjalta räystäälle, ja se lasketaan kahteen kertaan ennen kuin ylitys lisätään. Laskettu pituus valitsee varastopituuden ja levyn katkaisun. Se ei kaksinkertaista liitosprofiilien määrää."
+
+msgid "Connecting profiles and screws"
+msgstr "Liitosprofiilit ja ruuvit"
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+msgstr "Liitosprofiilit vastaavat leveyssuunnan saumoja: yksi vähemmän kuin levyjä leveyssuunnassa. Jokainen profiili on lyhin varastopituus, joka peittää levyn pituuden. Ruuvit tulevat 200 mm:n välein kunkin profiilin varastopituudelle ja pyöristetään ylöspäin 50 kappaleen paketeiksi. Päätytulppia on kaksi jokaista liitosprofiilia kohti. Muovisessa H-profiilissa ei ole päätytulppia."
+
+msgid "Finish, wall and ridge"
+msgstr "Pääty, seinä ja harja"
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr "Pulpettikatto saa päätyprofiilin molemmille sivuille ja tippanokalle. Harjakatto saa molemmat sivut ja molemmat tippanokat. Jokainen reuna pyöristetään ylöspäin täyteen metriin ja pakataan 3 m:n kappaleista, sitten 2 m, 1,5 m ja 1 m. Seinäprofiili peittää leveyden 2,2 m:n kappaleina. Harjakatto käyttää harjaprofiilia samaan määrään seinäprofiilin sijaan."
+
+msgid "Tapes, gasket and silicone"
+msgstr "Teipit, tiiviste ja silikoni"
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgstr "Tiivisteteipit lisätään vain kennolevylle. Yksi tuuletusrulla ja yksi eristerulla peittävät levyjen leveydet, ja yksi rulla lisää kumpaakin lisätään, kun leveydet yhdessä ylittävät 5 m. Kumitiiviste seuraa ympärysmittaa ja myydään kokonaisina metreinä. Silikonia on yksi tuubi jokaista 10 m kohti tästä ympärysmitasta, ja vähintään yksi tuubi."
+
+msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr "Koolausten määrä välinohjeessa on suositus. Koolaukset eivät ole tuote sarjassa."

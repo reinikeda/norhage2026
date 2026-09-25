@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -542,3 +542,47 @@ msgstr "Längd på en sida (nock till takfot)"
 msgid "Ridge"
 msgstr "Nock"
 
+msgid "How the calculator counts products"
+msgstr "Så räknar kalkylatorn produkter"
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr "Varje rad i materiallistan är en produkt från kopplingen nedan. Antalet räknas ut från den ram kunden har angett. En rad med tom variant-SKU visas ändå, märkt som inte i den här butiken, och resten av satsen kan läggas i korgen."
+
+msgid "Polycarbonate sheets"
+msgstr "Polykarbonatskivor"
+
+msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
+msgstr "Anpassat kap, på varje regel. Avståndet mellan centrum på de yttersta reglarna är rambredden minus balken. Det spannet delas i lika fack, och inget fack är bredare än centrumavståndet. Varje fack är en skiva. De två sidoskivorna går ut till ramens ändar. Skivor med samma bredd och längd blir en rad, och antalet är hur många skivor som har den storleken."
+
+msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
+msgstr "Anpassat kap, optimalt. Samma reglar ritas, men en skiva täcker så många fack som bredden tillåter. En skarv och en skarvprofil läggs bara till där skivorna möts. En massiv skiva spänner aldrig mer än 2050 mm, så sidan på 3050 mm förblir längden. Kanalplast använder den bredaste lagerbredden för tjockleken och färgen. 2100 mm är den vanliga bredden. 40 mm klar är 1230 mm. 16 mm klar håller 6-skikts, 5-skikts och 3-skikts bredder åtskilda, och den bredaste av dem används."
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr "Massiv längd. När längden är längre än skivan delas varje skiva i lika delar på längden. Radantalet är de delarna. Delningen lägger inte till en skarvprofil."
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr "Standardmått. Kunden väljer en bredd. Längden är den kortaste lagerlängden som täcker ramen plus droppkanten. Antalet är antalet skivor tvärs bredden, multiplicerat med antalet på längden. En ram på 4200 mm med en skiva på 2100 mm är 2 stycken. Samma ram med en skiva på 1050 mm är 4. En längd på 4750 mm på en skiva vars långsida är 3050 mm är 2 stycken på längden, så 3 på tvären gånger 2 på längden är 6. Ritningen är ett kappschema. Korgen får lagermåttet, och profilvalet ändrar inte det antalet."
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr "På ett sadeltak är den angivna längden en sida, från nock till takfot, och den räknas två gånger innan överhänget läggs till. Den räknade längden väljer lagerlängden och skivkappet. Den dubblerar inte antalet skarvprofiler."
+
+msgid "Connecting profiles and screws"
+msgstr "Skarvprofiler och skruvar"
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+msgstr "Skarvprofiler är lika med skarvarna tvärs bredden: en färre än skivorna på tvären. Varje profil är den kortaste lagerlängden som täcker skivlängden. Skruvar sätts var 200:e mm längs lagerlängden för var och en av dessa profiler, och rundas sedan upp till förpackningar om 50. Ändlock är två för varje skarvprofil. H-profil i plast har inga ändlock."
+
+msgid "Finish, wall and ridge"
+msgstr "Avslut, vägg och nock"
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr "Ett pulpettak får avslutningsprofil på båda sidor och på droppkanten. Ett sadeltak får båda sidor och båda droppkanter. Varje kant rundas upp till en hel meter och packas från 3 m-bitar, sedan 2 m, 1,5 m och 1 m. Väggprofilen täcker bredden i bitar om 2,2 m. Ett sadeltak använder nockprofilen för samma antal, i stället för väggprofilen."
+
+msgid "Tapes, gasket and silicone"
+msgstr "Tejp, packning och silikon"
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgstr "Tätningstejp läggs bara till för kanalplast. En ventilationsrulle och en isoleringsrulle täcker skivbredderna, och en rulle till av varje läggs till när bredderna tillsammans passerar 5 m. Gummipackningen följer omkretsen och säljs i hela meter. Silikon är ett rör för varje 10 m av den omkretsen, och minst ett rör."
+
+msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr "Antalet reglar i avståndsnotisen är ett råd. Reglarna är inte en produkt i satsen."

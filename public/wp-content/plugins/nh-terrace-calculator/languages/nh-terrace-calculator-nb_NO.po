@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.8\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -542,3 +542,47 @@ msgstr "Lengde på én side (møne til raft)"
 msgid "Ridge"
 msgstr "Møne"
 
+msgid "How the calculator counts products"
+msgstr "Slik teller kalkulatoren produkter"
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr "Hver linje i materiallisten er ett produkt fra oppsettet under. Antallet regnes ut fra rammen kunden har skrevet inn. En rad med tom variant-SKU vises likevel, merket som ikke i denne butikken, og resten av settet kan legges i kurven."
+
+msgid "Polycarbonate sheets"
+msgstr "Polykarbonatplater"
+
+msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
+msgstr "Tilpasset kapp, på hver lekte. Avstanden mellom sentrene på de ytterste lektene er rammebredden minus bjelken. Det spennet deles i like fag, og ingen fag er bredere enn senteravstanden. Hvert fag er én plate. De to sideplatene går ut til endene av rammen. Plater med samme bredde og lengde blir én linje, og antallet er hvor mange plater som har den størrelsen."
+
+msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
+msgstr "Tilpasset kapp, optimalt. De samme lektene tegnes, men én plate dekker så mange fag som bredden tillater. En skjøt og en forbindelsesprofil legges bare til der platene møtes. En massiv plate spenner aldri mer enn 2050 mm, så siden på 3050 mm forblir lengden. Kanalplast bruker den bredeste lagerbredden for tykkelsen og fargen. 2100 mm er den vanlige bredden. 40 mm klar er 1230 mm. 16 mm klar holder 6-veggs, 5-veggs og 3-veggs bredder hver for seg, og den bredeste av dem brukes."
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr "Massiv lengde. Når løpet er lengre enn platen, deles hver plate i like deler på langs. Linjeantallet er disse delene. Delingen legger ikke til en forbindelsesprofil."
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr "Standardmål. Kunden velger en bredde. Lengden er den korteste lagerlengden som dekker rammen pluss dryppkanten. Antallet er antall plater på tvers av bredden, ganget med antallet på langs. En ramme på 4200 mm med en plate på 2100 mm er 2 stykker. Samme ramme med en plate på 1050 mm er 4. Et løp på 4750 mm på en plate der langsiden er 3050 mm er 2 stykker på langs, så 3 på tvers ganger 2 på langs er 6. Tegningen er et kappeskjema. Handlekurven får lagermålet, og profilvalget endrer ikke det antallet."
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr "På et saltak er den innskrevne lengden én side, fra mønet til raftet, og den telles to ganger før overhenget legges til. Den talte lengden velger lagerlengden og platekappet. Den dobler ikke antallet forbindelsesprofiler."
+
+msgid "Connecting profiles and screws"
+msgstr "Forbindelsesprofiler og skruer"
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+msgstr "Forbindelsesprofiler er lik skjøtene på tvers av bredden: én færre enn platene på tvers. Hver profil er den korteste lagerlengden som dekker platelengden. Skruer settes for hver 200 mm langs lagerlengden til hver av disse profilene, og rundes så opp til pakker på 50. Endehetter er to for hver forbindelsesprofil. H-profil i plast har ingen endehetter."
+
+msgid "Finish, wall and ridge"
+msgstr "Avslutning, vegg og møne"
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr "Et pulttak får avslutningsprofil på begge sider og på dryppkanten. Et saltak får begge sider og begge dryppkanter. Hver kant rundes opp til en hel meter og pakkes fra 3 m-deler, deretter 2 m, 1,5 m og 1 m. Veggprofilen dekker bredden i deler på 2,2 m. Et saltak bruker møneprofilen for det samme antallet, i stedet for veggprofilen."
+
+msgid "Tapes, gasket and silicone"
+msgstr "Tape, pakning og silikon"
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgstr "Tetningstape legges bare til for kanalplast. Én ventilasjonsrull og én isolasjonsrull dekker platebreddene, og en rull til av hver legges til når breddene til sammen passerer 5 m. Gummipakningen følger omkretsen og selges i hele meter. Silikon er ett rør for hver 10 m av den omkretsen, og minst ett rør."
+
+msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr "Lektetallet i notatet om avstand er et råd. Lektene er ikke et produkt i settet."
