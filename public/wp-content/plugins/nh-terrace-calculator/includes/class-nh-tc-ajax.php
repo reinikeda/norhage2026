@@ -201,6 +201,9 @@ class NH_TC_Ajax {
 			'finish_profile'      => self::pick( $src, 'finish_profile', array( 'f_aluminium', 'f_profile', 'u_plastic', 'u_aluminium', 'l_aluminium' ), 'f_aluminium' ),
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
+			'sheet_supply'        => self::pick( $src, 'sheet_supply', array( 'custom', 'standard' ), 'custom' ),
+			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
+			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
@@ -234,6 +237,9 @@ class NH_TC_Ajax {
 		}
 		if ( in_array( 'overhang', $errors, true ) ) {
 			return __( 'Sheet overhang must be between 0 and 300 mm.', NH_TC_TD );
+		}
+		if ( in_array( 'standard_sheet', $errors, true ) ) {
+			return __( 'This thickness and colour is only available as a custom cut.', NH_TC_TD );
 		}
 		return __( 'Please enter a valid width and length.', NH_TC_TD );
 	}

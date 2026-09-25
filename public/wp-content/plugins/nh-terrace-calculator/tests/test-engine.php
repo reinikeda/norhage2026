@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', '/tmp/' );
 }
 
+require_once dirname( __DIR__ ) . '/includes/class-nh-tc-defaults.php';
 require_once dirname( __DIR__ ) . '/includes/class-nh-tc-engine.php';
 
 $failures = 0;
@@ -265,6 +266,109 @@ nh_tc_assert(
 	&& 1090 === (int) $sliver_fix[1]['width_mm']
 	&& 2120 === $sliver_cover + 10
 );
+
+$cover = NH_TC_Engine::stock_sheet_qty( 4200, 4750, 2100, 6000 );
+nh_tc_assert( 'two 2100 mm sheets cover a 4200 mm frame', 2 === $cover['across'] && 1 === $cover['along'] && 2 === $cover['qty'] );
+$cover_short = NH_TC_Engine::stock_sheet_qty( 4200, 4750, 2050, 3050 );
+nh_tc_assert( 'a short solid blank is bought across and along the run', 3 === $cover_short['across'] && 2 === $cover_short['along'] && 6 === $cover_short['qty'] );
+
+$std_settings                     = $settings;
+$std_settings['standard_sheets']  = NH_TC_Defaults::standard_sheet_catalog();
+$std_settings['standard_sheets']['multiwall']['10']['clear']['stock']['widths']['2100']['6000'] = 'SKU-2100-6000';
+$std_input                        = $input;
+$std_input['sheet_supply']        = 'standard';
+$std_input['stock_channel']       = 'stock';
+$std_input['stock_width_mm']      = 2100;
+$std_input['stock_length_mm']     = 1000;
+$std_bom                          = NH_TC_Engine::calculate( $std_input, $std_settings );
+$std_sheets                       = array();
+foreach ( $std_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$std_sheets[] = $line;
+	}
+}
+nh_tc_assert(
+	'standard supply lists the covering stock sheet, not the bay cuts',
+	! empty( $std_bom['ok'] )
+	&& 1 === count( $std_sheets )
+	&& 2 === (int) $std_sheets[0]['qty']
+	&& 2100 === (int) $std_sheets[0]['cut']['width_mm']
+	&& 6000 === (int) $std_sheets[0]['cut']['length_mm']
+	&& 'SKU-2100-6000' === $std_sheets[0]['sku']
+	&& 1 === (int) $std_sheets[0]['stock']
+	&& 2 === (int) $std_bom['meta']['sheet_count']
+	&& 'standard' === $std_bom['meta']['sheet_supply']
+	&& 6 === (int) $std_bom['meta']['connecting_count']
+);
+
+$narrow                    = $std_input;
+$narrow['stock_width_mm']  = 1050;
+$narrow_bom                = NH_TC_Engine::calculate( $narrow, $std_settings );
+$narrow_sheet              = null;
+foreach ( $narrow_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$narrow_sheet = $line;
+	}
+}
+nh_tc_assert(
+	'a 1050 mm stock width needs four sheets',
+	$narrow_sheet && 4 === (int) $narrow_sheet['qty'] && 1050 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
+);
+
+$opal                   = $std_input;
+$opal['colour']         = 'opal';
+$opal['stock_width_mm'] = 1250;
+$opal_bom               = NH_TC_Engine::calculate( $opal, $std_settings );
+$opal_sheet             = null;
+foreach ( $opal_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$opal_sheet = $line;
+	}
+}
+nh_tc_assert(
+	'10 mm opal 1250 mm repeats the 2 m sheet along the run',
+	$opal_sheet && 12 === (int) $opal_sheet['qty'] && 1250 === (int) $opal_sheet['cut']['width_mm'] && 2000 === (int) $opal_sheet['cut']['length_mm'] && 4 === (int) $opal_bom['meta']['stock_across'] && 3 === (int) $opal_bom['meta']['stock_along']
+);
+
+$five                      = $std_input;
+$five['thickness']         = 16;
+$five['stock_channel']     = '5x';
+$five['stock_width_mm']    = 1200;
+$five_bom                  = NH_TC_Engine::calculate( $five, $std_settings );
+$five_sheet                = null;
+foreach ( $five_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$five_sheet = $line;
+	}
+}
+nh_tc_assert(
+	'16 mm 5-wall 1200 mm uses the 5000 mm stock length',
+	$five_sheet && 4 === (int) $five_sheet['qty'] && 1200 === (int) $five_sheet['cut']['width_mm'] && 5000 === (int) $five_sheet['cut']['length_mm']
+);
+
+$solid_in                  = $std_input;
+$solid_in['material']      = 'solid';
+$solid_in['stock_width_mm'] = 2050;
+$solid_bom                 = NH_TC_Engine::calculate( $solid_in, $std_settings );
+$solid_sheet               = null;
+$solid_tapes               = false;
+foreach ( $solid_bom['lines'] as $line ) {
+	if ( 'sheet' === $line['role'] ) {
+		$solid_sheet = $line;
+	}
+	if ( 'vent_tape' === $line['role'] || 'iso_tape' === $line['role'] ) {
+		$solid_tapes = true;
+	}
+}
+nh_tc_assert(
+	'solid standard blanks cover the width and the run',
+	$solid_sheet && 6 === (int) $solid_sheet['qty'] && 2050 === (int) $solid_sheet['cut']['width_mm'] && 3050 === (int) $solid_sheet['cut']['length_mm'] && ! $solid_tapes
+);
+
+$none               = $std_input;
+$none['thickness']  = 12;
+$none_bom           = NH_TC_Engine::calculate( $none, $std_settings );
+nh_tc_assert( 'a thickness without standard plates is refused', empty( $none_bom['ok'] ) && in_array( 'standard_sheet', $none_bom['errors'], true ) );
 
 if ( $failures ) {
 	echo "\n{$failures} failed\n";

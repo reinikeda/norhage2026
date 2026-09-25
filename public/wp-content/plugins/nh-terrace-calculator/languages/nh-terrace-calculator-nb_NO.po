@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.3\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -481,3 +481,11 @@ msgstr "Overordnet SKU"
 
 msgid "Standard sheet"
 msgstr "Standardplate"
+
+#, php-format
+msgid "%1$d × %2$d mm"
+msgstr "%1$d × %2$d mm"
+
+#, php-format
+msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
+msgstr "Tegningen er et mulig lekteopplegg. Materiallisten legger til %1$d standardplater på %2$d × %3$d mm."

@@ -118,6 +118,21 @@ class NH_TC_Engine {
 		$plan   = $across;
 		$sheets = self::group_sheets( $pieces );
 
+		$supply = isset( $input['sheet_supply'] ) ? (string) $input['sheet_supply'] : 'custom';
+		$choice = null;
+		if ( 'standard' === $supply ) {
+			$choice = self::standard_sheet_choice( $input, $settings, $sheet_length );
+			if ( ! $choice ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'standard_sheet' ),
+				);
+			}
+		}
+		$stock_cover = $choice
+			? self::stock_sheet_qty( $width, $sheet_length, (int) $choice['width_mm'], (int) $choice['length_mm'] )
+			: null;
+
 		$sheet_count = 0;
 		foreach ( $sheets as $sheet ) {
 			$sheet_count += (int) $sheet['qty'];
@@ -158,15 +173,29 @@ class NH_TC_Engine {
 
 		$lines = array();
 
-		foreach ( $sheets as $sheet ) {
+		if ( $choice && $stock_cover ) {
 			$lines[] = array(
-				'role' => 'sheet',
-				'qty'  => (int) $sheet['qty'],
-				'cut'  => array(
-					'width_mm'  => (int) $sheet['width_mm'],
-					'length_mm' => (int) $sheet['length_mm'],
+				'role'       => 'sheet',
+				'qty'        => (int) $stock_cover['qty'],
+				'stock'      => 1,
+				'sku'        => (string) $choice['sku'],
+				'parent_sku' => (string) $choice['parent_sku'],
+				'cut'        => array(
+					'width_mm'  => (int) $choice['width_mm'],
+					'length_mm' => (int) $choice['length_mm'],
 				),
 			);
+		} else {
+			foreach ( $sheets as $sheet ) {
+				$lines[] = array(
+					'role' => 'sheet',
+					'qty'  => (int) $sheet['qty'],
+					'cut'  => array(
+						'width_mm'  => (int) $sheet['width_mm'],
+						'length_mm' => (int) $sheet['length_mm'],
+					),
+				);
+			}
 		}
 
 		if ( $screw_packs > 0 ) {
@@ -288,7 +317,12 @@ class NH_TC_Engine {
 				'finish_profile'       => (string) $input['finish_profile'],
 				'finish_color'         => (string) $input['finish_color'],
 				'sheet_layout'         => $layout,
-				'sheet_count'          => $sheet_count,
+				'sheet_count'          => ( $stock_cover ) ? (int) $stock_cover['qty'] : $sheet_count,
+				'sheet_supply'         => $choice ? 'standard' : 'custom',
+				'stock_width_mm'       => $choice ? (int) $choice['width_mm'] : 0,
+				'stock_length_mm'      => $choice ? (int) $choice['length_mm'] : 0,
+				'stock_across'         => $stock_cover ? (int) $stock_cover['across'] : 0,
+				'stock_along'          => $stock_cover ? (int) $stock_cover['along'] : 0,
 				'overlap_sheet_count'  => self::overlap_sheet_count( $width, $settings ),
 				'beam_count'           => $beam_count,
 				'connecting_count'     => $connecting_count,
@@ -298,6 +332,54 @@ class NH_TC_Engine {
 				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
 			),
 			'lines' => $lines,
+		);
+	}
+
+	/**
+	 * How many whole stock sheets cover the frame. Sheets tile across the width
+	 * and, when one stock length is shorter than the run, along the length too.
+	 *
+	 * @return array{across:int,along:int,qty:int}
+	 */
+	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
+		$across = (int) ceil( max( 1, (int) $frame_width ) / max( 1, (int) $stock_width ) );
+		$along  = (int) ceil( max( 1, (int) $need_length ) / max( 1, (int) $stock_length ) );
+		return array(
+			'across' => $across,
+			'along'  => $along,
+			'qty'    => $across * $along,
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 * @return array{channel:string,width_mm:int,length_mm:int,sku:string,parent_sku:string}|null
+	 */
+	private static function standard_sheet_choice( array $input, array $settings, $need_mm ) {
+		$catalog = ( isset( $settings['standard_sheets'] ) && is_array( $settings['standard_sheets'] ) ) ? $settings['standard_sheets'] : null;
+		if ( is_array( $catalog ) && class_exists( 'NH_TC_Defaults' ) ) {
+			return NH_TC_Defaults::pick_standard_sheet(
+				$catalog,
+				isset( $input['material'] ) ? $input['material'] : 'multiwall',
+				isset( $input['thickness'] ) ? $input['thickness'] : 0,
+				isset( $input['colour'] ) ? $input['colour'] : '',
+				isset( $input['stock_channel'] ) ? $input['stock_channel'] : '',
+				isset( $input['stock_width_mm'] ) ? $input['stock_width_mm'] : 0,
+				$need_mm
+			);
+		}
+		$width  = isset( $input['stock_width_mm'] ) ? (int) $input['stock_width_mm'] : 0;
+		$length = isset( $input['stock_length_mm'] ) ? (int) $input['stock_length_mm'] : 0;
+		if ( $width < 1 || $length < 1 ) {
+			return null;
+		}
+		return array(
+			'channel'    => isset( $input['stock_channel'] ) ? (string) $input['stock_channel'] : 'stock',
+			'width_mm'   => $width,
+			'length_mm'  => $length,
+			'sku'        => isset( $input['stock_sku'] ) ? (string) $input['stock_sku'] : '',
+			'parent_sku' => '',
 		);
 	}
 

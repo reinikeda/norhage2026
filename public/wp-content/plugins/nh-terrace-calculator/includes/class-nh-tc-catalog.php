@@ -70,6 +70,9 @@ class NH_TC_Catalog {
 
 		switch ( $role ) {
 			case 'sheet':
+				if ( ! empty( $line['stock'] ) ) {
+					return array( self::resolve_stock_sheet( $line ) );
+				}
 				return array( self::resolve_sheet( $line, $meta, $settings ) );
 			case 'screw':
 				return array( self::resolve_simple_variable( $line, $settings['hardware']['screws'], $line['attrs'] ?? array(), __( 'Wood screws with washers', NH_TC_TD ) ) );
@@ -148,6 +151,56 @@ class NH_TC_Catalog {
 		$item['line_inc'] = $priced['inc'] * $qty;
 		$item['price_html'] = wc_price( 'incl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? $item['line_inc'] : $item['line_ex'] );
 
+		return $item;
+	}
+
+	/**
+	 * A bought stock sheet, priced as that variation. Not a custom cut.
+	 *
+	 * @param array<string, mixed> $line
+	 * @return array<string, mixed>
+	 */
+	private static function resolve_stock_sheet( array $line ) {
+		$sku  = isset( $line['sku'] ) ? trim( (string) $line['sku'] ) : '';
+		$qty  = (int) $line['qty'];
+		$cut  = isset( $line['cut'] ) && is_array( $line['cut'] ) ? $line['cut'] : array();
+		$spec = sprintf(
+			/* translators: 1: stock width in millimetres, 2: stock length in millimetres */
+			__( '%1$d × %2$d mm', NH_TC_TD ),
+			isset( $cut['width_mm'] ) ? (int) $cut['width_mm'] : 0,
+			isset( $cut['length_mm'] ) ? (int) $cut['length_mm'] : 0
+		);
+		$empty         = self::empty_item( 'sheet', $sku, $qty, __( 'Polycarbonate sheet', NH_TC_TD ) );
+		$empty['spec'] = $spec;
+		$empty['cut']  = $cut;
+
+		if ( ! $sku ) {
+			$empty['error'] = 'sku_missing';
+			return $empty;
+		}
+
+		$product = self::product_by_sku( $sku );
+		if ( ! $product ) {
+			$empty['error'] = 'not_found';
+			return $empty;
+		}
+
+		if ( $product->is_type( 'variation' ) ) {
+			$parent = wc_get_product( $product->get_parent_id() );
+			$parent = $parent instanceof WC_Product ? $parent : $product;
+			$item   = self::build_item( $parent, $product->get_id(), $product->get_variation_attributes(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
+		} elseif ( $product->is_type( 'variable' ) ) {
+			$empty['error']     = 'variation_missing';
+			$empty['name']      = $product->get_name();
+			$empty['permalink'] = $product->get_permalink();
+			return $empty;
+		} else {
+			$item = self::build_item( $product, 0, array(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
+		}
+
+		$item['spec']       = $spec;
+		$item['cut']        = $cut;
+		$item['custom_cut'] = 0;
 		return $item;
 	}
 
