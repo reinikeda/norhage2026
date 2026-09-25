@@ -46,9 +46,9 @@
   var stockChannelEl = root.querySelector('[data-stock-channel]');
   var stockSizes = root.querySelector('[data-stock-sizes]');
   var stockWidthsEl = root.querySelector('[data-stock-widths]');
-  var stockLengthsEl = root.querySelector('[data-stock-lengths]');
+  var stockLengthInput = root.querySelector('[data-stock-length]');
   var stockEmpty = root.querySelector('[data-stock-empty]');
-  var stockState = { key: '', channel: '', width: '', length: '', lengthPinned: false };
+  var stockState = { key: '', channel: '', width: '', length: '' };
   var stockSig = '';
 
   function i18n(key, fallback) {
@@ -144,6 +144,18 @@
     });
   }
 
+  function lengthsOf(entry) {
+    if (!entry) return [];
+    if (Object.prototype.toString.call(entry) === '[object Array]') {
+      return entry.map(String);
+    }
+    return Object.keys(entry).filter(function (key) {
+      return Number(key) > 0;
+    }).sort(function (a, b) {
+      return Number(a) - Number(b);
+    });
+  }
+
   function preferredLength(lengths) {
     var need = (lengthInput ? Number(lengthInput.value) : 0) + (overhangInput ? Number(overhangInput.value) : 0);
     var sorted = lengths.map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
@@ -183,7 +195,6 @@
       stockState.channel = '';
       stockState.width = '';
       stockState.length = '';
-      stockState.lengthPinned = false;
     }
 
     var empty = !channels.length;
@@ -193,8 +204,9 @@
     if (empty) {
       if (stockChannelEl) stockChannelEl.innerHTML = '';
       if (stockWidthsEl) stockWidthsEl.innerHTML = '';
-      if (stockLengthsEl) stockLengthsEl.innerHTML = '';
+      if (stockLengthInput) stockLengthInput.value = '';
       stockSig = key + '|empty';
+      setStockDisabled(true);
       return;
     }
 
@@ -203,22 +215,19 @@
       else if (channels.indexOf('6w') !== -1) stockState.channel = '6w';
       else stockState.channel = channels[0];
       stockState.width = '';
-      stockState.lengthPinned = false;
     }
 
     var widthMap = (groups[stockState.channel] && groups[stockState.channel].widths) || {};
     var widths = Object.keys(widthMap).sort(function (a, b) { return Number(a) - Number(b); });
     if (widths.indexOf(String(stockState.width)) === -1) {
       stockState.width = widths.indexOf('2100') !== -1 ? '2100' : widths[widths.length - 1];
-      stockState.lengthPinned = false;
     }
 
-    var lengths = (widthMap[stockState.width] || []).map(String);
-    if (!stockState.lengthPinned || lengths.indexOf(String(stockState.length)) === -1) {
-      stockState.length = preferredLength(lengths);
-    }
+    var lengths = lengthsOf(widthMap[stockState.width]);
+    stockState.length = preferredLength(lengths);
+    if (stockLengthInput) stockLengthInput.value = stockState.length;
 
-    var sig = [key, stockState.channel, stockState.width, stockState.length].join('|');
+    var sig = [key, stockState.channel, stockState.width].join('|');
     if (sig === stockSig) {
       setStockDisabled(false);
       return;
@@ -230,9 +239,6 @@
     });
     renderChips(stockWidthsEl, 'stock_width_mm', widths, stockState.width, function (width) {
       return i18n('mm', '%d mm').replace('%d', width);
-    });
-    renderChips(stockLengthsEl, 'stock_length_mm', lengths, stockState.length, function (length) {
-      return i18n('mm', '%d mm').replace('%d', length);
     });
     setStockDisabled(false);
   }
@@ -664,13 +670,8 @@
       if (target.name === 'stock_channel') {
         stockState.channel = target.value;
         stockState.width = '';
-        stockState.lengthPinned = false;
       } else if (target.name === 'stock_width_mm') {
         stockState.width = target.value;
-        stockState.lengthPinned = false;
-      } else if (target.name === 'stock_length_mm') {
-        stockState.length = target.value;
-        stockState.lengthPinned = true;
       }
     });
   }

@@ -223,7 +223,10 @@ class NH_TC_Defaults {
 	 * and colour, the Arla parent is stored. 16 mm clear is split by channel shape
 	 * because 900, 980 and 1200 mm belong to the 5-wall sheet.
 	 *
-	 * @return array<string, array<string, array<string, array<string, array{sku:string, channel:string, widths:array<string, int[]>}>>>>
+	 * Each width maps a stock length in millimetres to that variation's SKU.
+	 * The SKU is empty until it is entered in the calculator settings.
+	 *
+	 * @return array<string, array<string, array<string, array<string, array{sku:string, channel:string, widths:array<string, array<string, string>}>}>>>
 	 */
 	public static function standard_sheet_catalog() {
 		$to_6 = array( 1000, 2000, 3000, 4000, 6000 );
@@ -418,9 +421,33 @@ class NH_TC_Defaults {
 	}
 
 	/**
+	 * Shortest stock length that covers the needed run. When every stock length
+	 * is shorter, the longest one is returned. Zero when there is no length.
+	 *
+	 * @param int[] $lengths
+	 */
+	public static function covering_stock_length( array $lengths, $need_mm ) {
+		$clean = array();
+		foreach ( $lengths as $length ) {
+			$length = (int) $length;
+			if ( $length > 0 ) {
+				$clean[] = $length;
+			}
+		}
+		sort( $clean, SORT_NUMERIC );
+		$need = (int) $need_mm;
+		foreach ( $clean as $length ) {
+			if ( $length >= $need ) {
+				return $length;
+			}
+		}
+		return $clean ? $clean[ count( $clean ) - 1 ] : 0;
+	}
+
+	/**
 	 * Channel groups for one thickness and colour. Empty when that sheet has no standard sizes.
 	 *
-	 * @return array<string, array{sku:string, channel:string, widths:array<string, int[]>}>
+	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
 	 */
 	public static function standard_sheet_groups( $material, $thickness, $colour ) {
 		$catalog = self::standard_sheet_catalog();
@@ -444,7 +471,89 @@ class NH_TC_Defaults {
 		if ( ! isset( $groups[ $channel ]['widths'][ (string) (int) $width_mm ] ) ) {
 			return array();
 		}
-		return array_map( 'intval', $groups[ $channel ]['widths'][ (string) (int) $width_mm ] );
+		return array_map( 'intval', array_keys( self::length_sku_map( $groups[ $channel ]['widths'][ (string) (int) $width_mm ] ) ) );
+	}
+
+	/**
+	 * Variation SKU for one stock size. Empty when that size has no SKU yet.
+	 */
+	public static function standard_sheet_variation_sku( $material, $thickness, $colour, $width_mm, $length_mm, $channel = 'stock' ) {
+		$groups  = self::standard_sheet_groups( $material, $thickness, $colour );
+		$channel = (string) $channel;
+		$width   = (string) (int) $width_mm;
+		if ( ! isset( $groups[ $channel ]['widths'][ $width ] ) ) {
+			return '';
+		}
+		$map    = self::length_sku_map( $groups[ $channel ]['widths'][ $width ] );
+		$length = (string) (int) $length_mm;
+		return isset( $map[ $length ] ) ? $map[ $length ] : '';
+	}
+
+	/**
+	 * Turn either a length list or a length-to-SKU map into length => SKU.
+	 *
+	 * @param mixed $lengths
+	 * @return array<string, string>
+	 */
+	public static function length_sku_map( $lengths ) {
+		if ( ! is_array( $lengths ) ) {
+			return array();
+		}
+		$out = array();
+		if ( self::is_assoc( $lengths ) ) {
+			foreach ( $lengths as $length => $sku ) {
+				$mm = (int) $length;
+				if ( $mm <= 0 ) {
+					continue;
+				}
+				$out[ (string) $mm ] = is_scalar( $sku ) ? trim( (string) $sku ) : '';
+			}
+		} else {
+			foreach ( $lengths as $length ) {
+				$mm = (int) $length;
+				if ( $mm > 0 ) {
+					$out[ (string) $mm ] = '';
+				}
+			}
+		}
+		ksort( $out, SORT_NUMERIC );
+		return $out;
+	}
+
+	/**
+	 * Normalize saved standard-sheet settings so every width is a length-to-SKU map.
+	 *
+	 * @param mixed $catalog
+	 * @return array<string, mixed>
+	 */
+	public static function normalize_standard_sheets( $catalog ) {
+		if ( ! is_array( $catalog ) ) {
+			return array();
+		}
+		foreach ( $catalog as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) || empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+							continue;
+						}
+						foreach ( $group['widths'] as $width => $lengths ) {
+							$catalog[ $material ][ $thickness ][ $colour ][ $channel ]['widths'][ (string) (int) $width ] = self::length_sku_map( $lengths );
+						}
+					}
+				}
+			}
+		}
+		return $catalog;
 	}
 
 	/**
@@ -459,13 +568,13 @@ class NH_TC_Defaults {
 	}
 
 	/**
-	 * @param array<string, int[]> $widths
-	 * @return array{sku:string, channel:string, widths:array<string, int[]>}
+	 * @param array<string, int[]|array<string, string>> $widths
+	 * @return array{sku:string, channel:string, widths:array<string, array<string, string>>}
 	 */
 	private static function stock_sheet( $sku, $channel, array $widths ) {
 		$clean = array();
 		foreach ( $widths as $width => $lengths ) {
-			$clean[ (string) (int) $width ] = array_values( array_map( 'intval', $lengths ) );
+			$clean[ (string) (int) $width ] = self::length_sku_map( $lengths );
 		}
 		return array(
 			'sku'     => (string) $sku,
@@ -492,7 +601,7 @@ class NH_TC_Defaults {
 	 */
 	public static function merge_deep( $base, $over ) {
 		foreach ( $over as $key => $value ) {
-			if ( is_array( $value ) && isset( $base[ $key ] ) && is_array( $base[ $key ] ) && self::is_assoc( $base[ $key ] ) ) {
+			if ( is_array( $value ) && isset( $base[ $key ] ) && is_array( $base[ $key ] ) && self::is_assoc( $base[ $key ] ) && self::is_assoc( $value ) ) {
 				$base[ $key ] = self::merge_deep( $base[ $key ], $value );
 			} else {
 				$base[ $key ] = $value;
