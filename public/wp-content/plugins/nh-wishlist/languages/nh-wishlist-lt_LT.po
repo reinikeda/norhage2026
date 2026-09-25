@@ -244,3 +244,9 @@ msgstr "Produktas"
 
 msgid "Total"
 msgstr "Iš viso"
+
+msgid "Prices include VAT."
+msgstr "Kainos su PVM."
+
+msgid "Prices exclude VAT."
+msgstr "Kainos be PVM."

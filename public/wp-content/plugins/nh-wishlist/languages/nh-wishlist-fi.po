@@ -244,3 +244,9 @@ msgstr "Tuote"
 
 msgid "Total"
 msgstr "Yhteensä"
+
+msgid "Prices include VAT."
+msgstr "Hinnat sisältävät alv:n."
+
+msgid "Prices exclude VAT."
+msgstr "Hinnat eivät sisällä alv:ta."

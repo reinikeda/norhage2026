@@ -367,11 +367,19 @@ function nh_wl_prepare_item( $item ) {
 			$image = $product->get_image( 'woocommerce_thumbnail', array( 'class' => 'nh-wl-card__img' ) );
 		}
 	}
-	$lines = array();
-	if ( $chosen instanceof WC_Product && $chosen->get_sku() ) {
+	$lines        = array();
+	$parent_sku   = $product instanceof WC_Product ? (string) $product->get_sku( 'edit' ) : '';
+	$selected_sku = '';
+	if ( ! $needs && $chosen instanceof WC_Product && $chosen->get_id() !== ( $product instanceof WC_Product ? $product->get_id() : 0 ) ) {
+		$selected_sku = (string) $chosen->get_sku( 'edit' );
+	} elseif ( ! $needs ) {
+		$selected_sku = $parent_sku;
+	}
+	$sku = nh_wl_display_sku( $parent_sku, $selected_sku, $needs );
+	if ( '' !== $sku ) {
 		$lines[] = array(
 			'label' => __( 'SKU', 'nh-wishlist' ),
-			'value' => $chosen->get_sku(),
+			'value' => $sku,
 		);
 	}
 	$lines = array_merge( $lines, nh_wl_attribute_lines( isset( $item['attributes'] ) ? $item['attributes'] : array() ) );
@@ -464,6 +472,22 @@ function nh_wl_plain_price( $amount ) {
 }
 
 /**
+ * Shop prices are shown to customers with or without VAT.
+ *
+ * @return string
+ */
+function nh_wl_vat_note() {
+	if ( ! function_exists( 'wc_tax_enabled' ) || ! wc_tax_enabled() ) {
+		return '';
+	}
+	$display = function_exists( 'get_option' ) ? (string) get_option( 'woocommerce_tax_display_shop', 'excl' ) : 'excl';
+	if ( 'incl' === $display ) {
+		return __( 'Prices include VAT.', 'nh-wishlist' );
+	}
+	return __( 'Prices exclude VAT.', 'nh-wishlist' );
+}
+
+/**
  * @param array<string,mixed> $view View.
  * @return array<string,mixed>
  */
@@ -514,7 +538,7 @@ function nh_wl_pdf_document( $view ) {
 		'brand'       => $view['site_name'],
 		'footer'      => $view['site_name'],
 		'contact'     => nh_wl_service_email(),
-		'note'        => __( 'Prices are shown only for products that are ready to order.', 'nh-wishlist' ),
+		'note'        => trim( __( 'Prices are shown only for products that are ready to order.', 'nh-wishlist' ) . ' ' . nh_wl_vat_note() ),
 		'columns'     => array(
 			'product' => __( 'Product', 'nh-wishlist' ),
 			'details' => __( 'Details', 'nh-wishlist' ),
@@ -928,6 +952,7 @@ class NH_WL_Actions {
 				'url'       => $item['url'],
 				'qty_label' => $item['qty_label'],
 				'lines'     => $item['lines'],
+				'price'     => isset( $item['price_text'] ) ? $item['price_text'] : '',
 				'notice'    => $item['notice'],
 			);
 		}
@@ -940,6 +965,7 @@ class NH_WL_Actions {
 				'comment'       => $comment,
 				'comment_label' => __( 'Comment:', 'nh-wishlist' ),
 				'open_label'    => __( 'Open product', 'nh-wishlist' ),
+				'vat_note'      => nh_wl_vat_note(),
 				'items'         => $rows,
 			)
 		);

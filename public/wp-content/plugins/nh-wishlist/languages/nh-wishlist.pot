@@ -243,3 +243,9 @@ msgstr ""
 
 msgid "Total"
 msgstr ""
+
+msgid "Prices include VAT."
+msgstr ""
+
+msgid "Prices exclude VAT."
+msgstr ""
