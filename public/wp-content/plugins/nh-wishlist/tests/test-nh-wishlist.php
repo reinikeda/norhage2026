@@ -169,6 +169,10 @@ nh_wl_assert( 'linear price is length plus fee', 21.0 === nh_wl_custom_unit_pric
 nh_wl_assert( 'selected variation keeps its own sku', 'VAR-1' === nh_wl_display_sku( 'PARENT', 'VAR-1', false ) );
 nh_wl_assert( 'uncustomized product uses the parent sku', 'PARENT' === nh_wl_display_sku( 'PARENT', 'VAR-1', true ) );
 nh_wl_assert( 'missing variation sku falls back to the parent', 'PARENT' === nh_wl_display_sku( 'PARENT', '', false ) );
+nh_wl_assert( 'lithuanian shop mail is info@norhage.lt', 'info@norhage.lt' === nh_wl_info_email_for_host( 'staging.norhage.lt' ) );
+nh_wl_assert( 'german shop mail is info@norhage.de', 'info@norhage.de' === nh_wl_info_email_for_host( 'www.norhage.de' ) );
+nh_wl_assert( 'eu shop mail is info@norhage.eu', 'info@norhage.eu' === nh_wl_info_email_for_host( 'norhage.eu' ) );
+nh_wl_assert( 'unknown host falls back to info@norhage.eu', 'info@norhage.eu' === nh_wl_info_email_for_host( 'localhost' ) );
 
 $html = nh_wl_email_html(
 	array(

@@ -250,3 +250,12 @@ msgstr "Prisene inkluderer mva."
 
 msgid "Prices exclude VAT."
 msgstr "Prisene er uten mva."
+
+msgid "Your saved wishlists:"
+msgstr "Dine lagrede ønskelister:"
+
+msgid "Send a quote to customer service"
+msgstr "Send et tilbud til kundeservice"
+
+msgid "Enter a comment."
+msgstr "Skriv en kommentar."

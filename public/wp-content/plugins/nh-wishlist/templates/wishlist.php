@@ -13,47 +13,54 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="nh-wl">
 	<header class="nh-wl__header">
 		<h1><?php esc_html_e( 'Wishlist', 'nh-wishlist' ); ?></h1>
-		<?php if ( ! empty( $view['logged_in'] ) ) : ?>
-			<p class="nh-wl__account"><?php esc_html_e( 'Saved on your account.', 'nh-wishlist' ); ?></p>
-		<?php else : ?>
+		<?php if ( empty( $view['logged_in'] ) ) : ?>
 			<p class="nh-wl__account">
 				<?php esc_html_e( 'The wishlist is stored in a cookie in this browser. Sign in to keep it on your account.', 'nh-wishlist' ); ?>
 				<a href="<?php echo esc_url( $view['login_url'] ); ?>"><?php esc_html_e( 'Sign in', 'nh-wishlist' ); ?></a>
 			</p>
 		<?php endif; ?>
+		<p class="nh-wl__lists-label" id="nh-wl-lists-label"><?php esc_html_e( 'Your saved wishlists:', 'nh-wishlist' ); ?></p>
 	</header>
 
-	<nav class="nh-wl__lists" aria-label="<?php esc_attr_e( 'Wishlists', 'nh-wishlist' ); ?>">
+	<nav class="nh-wl__lists" aria-labelledby="nh-wl-lists-label">
 		<?php foreach ( $view['lists'] as $list ) : ?>
-			<a class="nh-wl__list<?php echo ! empty( $list['current'] ) ? ' is-current' : ''; ?>" href="<?php echo esc_url( $list['url'] ); ?>"<?php echo ! empty( $list['current'] ) ? ' aria-current="page"' : ''; ?>>
-				<?php echo esc_html( $list['label'] ); ?>
-				<span><?php echo esc_html( (string) $list['count'] ); ?></span>
-			</a>
+			<div class="nh-wl__list-item<?php echo ! empty( $list['current'] ) ? ' is-current' : ''; ?>">
+				<a class="nh-wl__list" href="<?php echo esc_url( $list['url'] ); ?>"<?php echo ! empty( $list['current'] ) ? ' aria-current="page"' : ''; ?>>
+					<?php echo esc_html( $list['label'] ); ?>
+					<span><?php echo esc_html( (string) $list['count'] ); ?></span>
+				</a>
+				<?php if ( ! empty( $list['current'] ) ) : ?>
+					<details class="nh-wl__edit">
+						<summary class="nh-wl__icon" aria-label="<?php esc_attr_e( 'Rename', 'nh-wishlist' ); ?>">
+							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5L4 16.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M13.8 6.7l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+						</summary>
+						<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl__rename">
+							<?php wp_nonce_field( 'nh_wl' ); ?>
+							<input type="hidden" name="action" value="nh_wl">
+							<input type="hidden" name="nh_wl_do" value="rename">
+							<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
+							<label>
+								<span class="screen-reader-text"><?php esc_html_e( 'List name', 'nh-wishlist' ); ?></span>
+								<input type="text" name="list_name" maxlength="80" required value="<?php echo esc_attr( $view['label'] ); ?>" aria-label="<?php esc_attr_e( 'List name', 'nh-wishlist' ); ?>">
+							</label>
+							<button type="submit" class="nh-wl__button nh-wl__button--ghost"><?php esc_html_e( 'Rename', 'nh-wishlist' ); ?></button>
+						</form>
+					</details>
+					<?php if ( ! empty( $view['can_delete'] ) ) : ?>
+						<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl__delete-form" onsubmit="return confirm(this.getAttribute('data-confirm'));" data-confirm="<?php echo esc_attr( __( 'Delete this list?', 'nh-wishlist' ) ); ?>">
+							<?php wp_nonce_field( 'nh_wl' ); ?>
+							<input type="hidden" name="action" value="nh_wl">
+							<input type="hidden" name="nh_wl_do" value="delete">
+							<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
+							<button type="submit" class="nh-wl__icon" aria-label="<?php esc_attr_e( 'Delete list', 'nh-wishlist' ); ?>">
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 7V5h6v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 7l.8 12h6.4L16 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+							</button>
+						</form>
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>
 		<?php endforeach; ?>
 	</nav>
-
-	<div class="nh-wl__manage">
-		<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl__rename">
-			<?php wp_nonce_field( 'nh_wl' ); ?>
-			<input type="hidden" name="action" value="nh_wl">
-			<input type="hidden" name="nh_wl_do" value="rename">
-			<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
-			<label>
-				<span class="screen-reader-text"><?php esc_html_e( 'List name', 'nh-wishlist' ); ?></span>
-				<input type="text" name="list_name" maxlength="80" required value="<?php echo esc_attr( $view['label'] ); ?>" aria-label="<?php esc_attr_e( 'List name', 'nh-wishlist' ); ?>">
-			</label>
-			<button type="submit" class="nh-wl__button nh-wl__button--ghost"><?php esc_html_e( 'Rename', 'nh-wishlist' ); ?></button>
-		</form>
-		<?php if ( ! empty( $view['can_delete'] ) ) : ?>
-			<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" onsubmit="return confirm(this.getAttribute('data-confirm'));" data-confirm="<?php echo esc_attr( __( 'Delete this list?', 'nh-wishlist' ) ); ?>">
-				<?php wp_nonce_field( 'nh_wl' ); ?>
-				<input type="hidden" name="action" value="nh_wl">
-				<input type="hidden" name="nh_wl_do" value="delete">
-				<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
-				<button type="submit" class="nh-wl__delete"><?php esc_html_e( 'Delete list', 'nh-wishlist' ); ?></button>
-			</form>
-		<?php endif; ?>
-	</div>
 
 	<?php if ( empty( $view['items'] ) ) : ?>
 		<p class="nh-wl__empty"><?php esc_html_e( 'Your wishlist is empty.', 'nh-wishlist' ); ?></p>
@@ -135,11 +142,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<input type="hidden" name="nh_wl_do" value="quote">
 			<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
 			<fieldset>
-				<legend><?php esc_html_e( 'Send a quote', 'nh-wishlist' ); ?></legend>
-				<p class="nh-wl-email__to"><?php esc_html_e( 'Customer service', 'nh-wishlist' ); ?></p>
+				<legend><?php esc_html_e( 'Send a quote to customer service', 'nh-wishlist' ); ?></legend>
 				<label>
 					<span><?php esc_html_e( 'Comment', 'nh-wishlist' ); ?></span>
-					<textarea name="comment" rows="4" maxlength="2000"></textarea>
+					<textarea name="comment" rows="4" maxlength="2000" required></textarea>
 				</label>
 				<button type="submit" class="nh-wl__button"><?php esc_html_e( 'Send a quote', 'nh-wishlist' ); ?></button>
 			</fieldset>

@@ -250,3 +250,12 @@ msgstr "Hinnat sisältävät alv:n."
 
 msgid "Prices exclude VAT."
 msgstr "Hinnat eivät sisällä alv:ta."
+
+msgid "Your saved wishlists:"
+msgstr "Tallennetut toivelistasi:"
+
+msgid "Send a quote to customer service"
+msgstr "Lähetä tarjouspyyntö asiakaspalveluun"
+
+msgid "Enter a comment."
+msgstr "Kirjoita kommentti."
