@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_WL_VERSION', '1.0.0' );
+define( 'NH_WL_VERSION', '1.0.1' );
 define( 'NH_WL_FILE', __FILE__ );
 define( 'NH_WL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_WL_URL', plugin_dir_url( __FILE__ ) );
@@ -217,7 +217,6 @@ final class NH_WL_Plugin {
 		echo '<div class="nh-wl-popover__card" role="dialog" aria-modal="true" aria-labelledby="nh-wl-popover-title">';
 		echo '<h2 id="nh-wl-popover-title">' . esc_html__( 'Choose a wishlist', 'nh-wishlist' ) . '</h2>';
 		echo '<div class="nh-wl-popover__lists"></div>';
-		echo '<p class="nh-wl-popover__hint" hidden></p>';
 		echo '<form class="nh-wl-popover__create">';
 		echo '<label>' . esc_html__( 'List name', 'nh-wishlist' ) . ' <input type="text" name="list_name" maxlength="80" autocomplete="off"></label>';
 		echo '<button type="submit">' . esc_html__( 'Create', 'nh-wishlist' ) . '</button>';
