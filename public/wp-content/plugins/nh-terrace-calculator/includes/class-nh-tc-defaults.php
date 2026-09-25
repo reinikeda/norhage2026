@@ -450,14 +450,80 @@ class NH_TC_Defaults {
 	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
 	 */
 	public static function standard_sheet_groups( $material, $thickness, $colour ) {
-		$catalog = self::standard_sheet_catalog();
-		$material = (string) $material;
+		return self::standard_groups_in( self::standard_sheet_catalog(), $material, $thickness, $colour );
+	}
+
+	/**
+	 * Channel groups inside a saved or default catalog.
+	 *
+	 * @param array<string, mixed> $catalog
+	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
+	 */
+	public static function standard_groups_in( array $catalog, $material, $thickness, $colour ) {
+		$material  = (string) $material;
 		$thickness = (string) (int) $thickness;
-		$colour = (string) $colour;
+		$colour    = (string) $colour;
 		if ( ! isset( $catalog[ $material ][ $thickness ][ $colour ] ) || ! is_array( $catalog[ $material ][ $thickness ][ $colour ] ) ) {
 			return array();
 		}
 		return $catalog[ $material ][ $thickness ][ $colour ];
+	}
+
+	/**
+	 * Stock size for a standard-sheet quote. The length is the shortest one that
+	 * covers the needed run. Null when that thickness and colour has no standard sizes.
+	 *
+	 * @param array<string, mixed> $catalog
+	 * @return array{channel:string,width_mm:int,length_mm:int,sku:string,parent_sku:string}|null
+	 */
+	public static function pick_standard_sheet( array $catalog, $material, $thickness, $colour, $channel, $width_mm, $need_mm ) {
+		$groups = self::standard_groups_in( $catalog, $material, $thickness, $colour );
+		if ( ! $groups ) {
+			return null;
+		}
+		$channel = (string) $channel;
+		if ( ! isset( $groups[ $channel ] ) ) {
+			if ( isset( $groups['stock'] ) ) {
+				$channel = 'stock';
+			} elseif ( isset( $groups['6w'] ) ) {
+				$channel = '6w';
+			} else {
+				$channel = (string) array_key_first( $groups );
+			}
+		}
+		$group  = $groups[ $channel ];
+		$widths = ( isset( $group['widths'] ) && is_array( $group['widths'] ) ) ? $group['widths'] : array();
+		if ( ! $widths ) {
+			return null;
+		}
+		$width = (string) (int) $width_mm;
+		if ( ! isset( $widths[ $width ] ) ) {
+			if ( isset( $widths['2100'] ) ) {
+				$width = '2100';
+			} else {
+				$keys = array_keys( $widths );
+				usort(
+					$keys,
+					static function ( $a, $b ) {
+						return (int) $a <=> (int) $b;
+					}
+				);
+				$width = (string) $keys[ count( $keys ) - 1 ];
+			}
+		}
+		$map     = self::length_sku_map( $widths[ $width ] );
+		$length  = self::covering_stock_length( array_map( 'intval', array_keys( $map ) ), $need_mm );
+		if ( $length <= 0 ) {
+			return null;
+		}
+		$length_key = (string) $length;
+		return array(
+			'channel'    => $channel,
+			'width_mm'   => (int) $width,
+			'length_mm'  => $length,
+			'sku'        => isset( $map[ $length_key ] ) ? (string) $map[ $length_key ] : '',
+			'parent_sku' => isset( $group['sku'] ) ? (string) $group['sku'] : '',
+		);
 	}
 
 	/**

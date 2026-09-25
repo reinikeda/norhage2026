@@ -597,6 +597,15 @@
     planEl.appendChild(legend);
     planEl.appendChild(cuts);
     planEl.appendChild(note);
+    if (meta.sheet_supply === 'standard' && Number(meta.stock_width_mm) > 0 && Number(meta.stock_length_mm) > 0) {
+      var stockNote = document.createElement('p');
+      stockNote.className = 'nh-tc__plan-note';
+      stockNote.textContent = fillTemplate(
+        i18n('planStockBuy', 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.'),
+        [meta.sheet_count, meta.stock_width_mm, meta.stock_length_mm]
+      );
+      planEl.appendChild(stockNote);
+    }
     if (Number(meta.length_pieces) > 1) {
       var solidNote = document.createElement('p');
       solidNote.className = 'nh-tc__plan-note';

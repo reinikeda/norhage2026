@@ -376,6 +376,7 @@ class NH_TC_Render {
 					'planExtra'     => __( 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).', NH_TC_TD ),
 					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
 					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
+					'planStockBuy'  => __( 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.', NH_TC_TD ),
 					'outer'         => __( 'outer', NH_TC_TD ),
 					'middle'        => __( 'middle', NH_TC_TD ),
 					'mm'            => __( '%d mm', NH_TC_TD ),

@@ -175,6 +175,20 @@ nh_tc_sheet_assert(
 	&& 'SKU-6000' === $merged_skus['widths']['2100']['6000']
 );
 
+$picked = NH_TC_Defaults::pick_standard_sheet( NH_TC_Defaults::standard_sheet_catalog(), 'multiwall', 10, 'clear', 'stock', 2100, 4750 );
+nh_tc_sheet_assert(
+	'the quote picks 2100 x 6000 for a 4750 mm run',
+	is_array( $picked )
+	&& 2100 === $picked['width_mm']
+	&& 6000 === $picked['length_mm']
+	&& '40101210061001P' === $picked['parent_sku']
+	&& '' === $picked['sku']
+);
+nh_tc_sheet_assert(
+	'an unknown thickness has no standard sheet',
+	null === NH_TC_Defaults::pick_standard_sheet( NH_TC_Defaults::standard_sheet_catalog(), 'multiwall', 12, 'clear', 'stock', 2100, 4750 )
+);
+
 nh_tc_sheet_assert(
 	'Polygal duplicates of an Arla sheet are left out',
 	! in_array( '40201210060602P', $skus, true )
