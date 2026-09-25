@@ -90,7 +90,13 @@ nh_tc_assert( '25 mm isolation tape, 1 roll', isset( $by_role['iso_tape'] ) && 1
 nh_tc_assert( '18 m rubber gasket', isset( $by_role['gasket'] ) && 18 === (int) $by_role['gasket']['qty'] );
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
-nh_tc_assert( 'recommended CC 600', 600 === (int) $bom['meta']['recommended_cc_mm'] );
+nh_tc_assert(
+	'recommended spacing for 10 mm multiwall is 593 mm inside 500–600',
+	593 === (int) $bom['meta']['recommended_cc_mm']
+	&& 500 === (int) $bom['meta']['recommended_min_mm']
+	&& 600 === (int) $bom['meta']['recommended_max_mm']
+	&& 8 === (int) $bom['meta']['rafter_count']
+);
 nh_tc_assert( 'overlap min sheets is 3', 3 === NH_TC_Engine::overlap_sheet_count( 4200, $settings ) );
 
 $even = NH_TC_Engine::framed_sheet_plan( 4250, 4000, 700, 50, 10, 0 );
@@ -135,7 +141,31 @@ $empty_cc = $input;
 $empty_cc['cc_mm'] = 0;
 $empty_cc['thickness'] = 6;
 $empty_bom = NH_TC_Engine::calculate( $empty_cc, $settings );
-nh_tc_assert( 'empty CC uses 600 not recommended 500', ! empty( $empty_bom['ok'] ) && 600 === (int) $empty_bom['meta']['cc_mm'] );
+nh_tc_assert(
+	'empty CC uses the 6 mm recommendation of 462 mm',
+	! empty( $empty_bom['ok'] )
+	&& 462 === (int) $empty_bom['meta']['cc_mm']
+	&& 400 === (int) $empty_bom['meta']['recommended_min_mm']
+	&& 500 === (int) $empty_bom['meta']['recommended_max_mm']
+	&& 10 === (int) $empty_bom['meta']['rafter_count']
+);
+
+$mw8 = NH_TC_Engine::support_range( 'multiwall', 8 );
+$mw12 = NH_TC_Engine::support_range( 'multiwall', 12 );
+nh_tc_assert( '8 mm multiwall uses the 6 mm range', 400 === (int) $mw8['min_mm'] && 500 === (int) $mw8['max_mm'] );
+nh_tc_assert( '12 mm multiwall uses the 10 mm range', 500 === (int) $mw12['min_mm'] && 600 === (int) $mw12['max_mm'] );
+
+$solid_advice = NH_TC_Engine::recommended_support( 'solid', 10, 4200, 50 );
+nh_tc_assert(
+	'solid 10 mm recommends 1038 mm and 5 rafters',
+	1038 === (int) $solid_advice['cc_mm']
+	&& 5 === (int) $solid_advice['rafters']
+	&& 900 === (int) $solid_advice['min_mm']
+	&& 1100 === (int) $solid_advice['max_mm']
+);
+
+$mw4 = NH_TC_Engine::recommended_support( 'multiwall', 4, 4200, 50 );
+nh_tc_assert( '4 mm multiwall recommends 378 mm and 12 rafters', 378 === (int) $mw4['cc_mm'] && 12 === (int) $mw4['rafters'] && 350 === (int) $mw4['min_mm'] && 400 === (int) $mw4['max_mm'] );
 
 $h_in = $input;
 $h_in['connecting_profile'] = 'h_plastic';
@@ -170,36 +200,41 @@ $implied = $input;
 unset( $implied['support_mm'], $implied['overhang_mm'] );
 $implied_bom = NH_TC_Engine::calculate( $implied, $settings );
 nh_tc_assert( 'missing beam width and overhang use 50 mm', ! empty( $implied_bom['ok'] ) && 50 === (int) $implied_bom['meta']['support_mm'] && 50 === (int) $implied_bom['meta']['overhang_mm'] );
-nh_tc_assert( 'profiles on every beam by default', 1 === (int) $bom['meta']['joint_every_beam'] );
 
-$stock = NH_TC_Engine::calculate( array_merge( $input, array( 'joint_every_beam' => '0' ) ), $settings );
-$stock_sheets = array();
-foreach ( $stock['lines'] as $line ) {
+$solid = array_merge( $input, array( 'material' => 'solid', 'thickness' => 10 ) );
+$solid_bom = NH_TC_Engine::calculate( $solid, $settings );
+$solid_roles = array();
+$solid_sheets = array();
+foreach ( $solid_bom['lines'] as $line ) {
+	$solid_roles[ $line['role'] ] = $line;
 	if ( 'sheet' === $line['role'] ) {
-		$stock_sheets[] = $line;
+		$solid_sheets[] = $line;
 	}
 }
-$stock_roles = array();
-foreach ( $stock['lines'] as $line ) {
-	$stock_roles[ $line['role'] ] = $line;
-}
-$stock_cover = 0;
-foreach ( $stock_sheets as $line ) {
-	$stock_cover += (int) $line['cut']['width_mm'] * (int) $line['qty'];
-}
-$stock_cover += 10 * max( 0, (int) $stock['meta']['sheet_count'] - 1 );
-nh_tc_assert( 'stock layout calculates', ! empty( $stock['ok'] ) && 0 === (int) $stock['meta']['joint_every_beam'] );
+nh_tc_assert( 'solid sheet quote calculates', ! empty( $solid_bom['ok'] ) );
+nh_tc_assert( 'solid sheets omit sealing tapes', ! isset( $solid_roles['vent_tape'] ) && ! isset( $solid_roles['iso_tape'] ) && isset( $solid_roles['gasket'] ) && isset( $solid_roles['silicon'] ) );
+nh_tc_assert( 'solid length split keeps six connecting profiles', 6 === (int) $solid_bom['meta']['connecting_count'] && isset( $solid_roles['connecting'] ) && 6 === (int) $solid_roles['connecting']['qty'] );
 nh_tc_assert(
-	'4200 frame uses 1820, 1790 and 570 mm sheets',
-	3 === count( $stock_sheets )
-	&& 1820 === (int) $stock_sheets[0]['cut']['width_mm']
-	&& 1790 === (int) $stock_sheets[1]['cut']['width_mm']
-	&& 570 === (int) $stock_sheets[2]['cut']['width_mm']
+	'solid 4750 mm run is two 2375 mm pieces on the same widths',
+	2 === (int) $solid_bom['meta']['length_pieces']
+	&& 14 === (int) $solid_bom['meta']['sheet_count']
+	&& 3 === count( $solid_sheets )
+	&& 620 === (int) $solid_sheets[0]['cut']['width_mm'] && 2375 === (int) $solid_sheets[0]['cut']['length_mm'] && 2 === (int) $solid_sheets[0]['qty']
+	&& 590 === (int) $solid_sheets[1]['cut']['width_mm'] && 2375 === (int) $solid_sheets[1]['cut']['length_mm'] && 10 === (int) $solid_sheets[1]['qty']
+	&& 570 === (int) $solid_sheets[2]['cut']['width_mm'] && 2375 === (int) $solid_sheets[2]['cut']['length_mm'] && 2 === (int) $solid_sheets[2]['qty']
 );
-nh_tc_assert( 'stock sheets plus joints still equal 4200', 4200 === $stock_cover );
-nh_tc_assert( 'two connecting profiles instead of six', isset( $stock_roles['connecting'] ) && 2 === (int) $stock_roles['connecting']['qty'] );
-nh_tc_assert( 'beams stay on the frame spacing', 8 === (int) $stock['meta']['beam_count'] );
-nh_tc_assert( 'no stock sheet is wider than 2100', 1820 <= 2100 && 1790 <= 2100 && 570 <= 2100 );
+nh_tc_assert( 'multiwall quote still includes both tapes', isset( $by_role['vent_tape'] ) && isset( $by_role['iso_tape'] ) );
+
+$wide_solid_pieces = NH_TC_Engine::solid_length_pieces( 2200, 4750, $settings );
+nh_tc_assert(
+	'a 2200 mm solid cut uses the 2050 mm side as the length',
+	is_array( $wide_solid_pieces )
+	&& 3 === count( $wide_solid_pieces )
+	&& 1584 === (int) $wide_solid_pieces[0]
+	&& 1583 === (int) $wide_solid_pieces[1]
+	&& 1583 === (int) $wide_solid_pieces[2]
+);
+nh_tc_assert( 'a solid cut wider than 3050 mm does not fit', null === NH_TC_Engine::solid_length_pieces( 3100, 4750, $settings ) );
 
 $stock_even = NH_TC_Engine::stock_sheet_plan( 4250, 4000, 700, 50, 10, 0, 2100, 100 );
 $even_cover = 0;
@@ -215,11 +250,8 @@ nh_tc_assert(
 	&& 4250 === $even_cover + ( 2 * 10 )
 );
 
-$one = NH_TC_Engine::calculate(
-	array_merge( $input, array( 'width_mm' => 2000, 'joint_every_beam' => 0, 'overhang_mm' => 0 ) ),
-	$settings
-);
-nh_tc_assert( 'a frame inside 2100 mm is one sheet and no connector', ! empty( $one['ok'] ) && 1 === (int) $one['meta']['sheet_count'] && 0 === (int) $one['meta']['connecting_count'] );
+$one = NH_TC_Engine::stock_sheet_plan( 2000, 4700, 600, 50, 10, 0, 2100, 100 );
+nh_tc_assert( 'a frame inside 2100 mm is one stock sheet', 1 === count( $one ) && 2000 === (int) $one[0]['width_mm'] );
 
 $sliver_fix = NH_TC_Engine::stock_sheet_plan( 2120, 2000, 1000, 50, 10, 0, 2100, 100 );
 $sliver_cover = 0;

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -411,3 +411,24 @@ msgstr "Slėpti įprastą įdėjimą į krepšelį"
 
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Slėpti įprastą pirkimo formą. Klientai naudoja komplekto pasiūlymą."
+
+msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
+msgstr "Atramų žingsnis yra tik rekomendacija. Konstrukcijos stiprumą turi patvirtinti architektas."
+
+msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
+msgstr "Jungiamasis profilis įtrauktas ant kiekvienos atramos. Jei nenorite jungiamojo profilio ant kiekvienos atramos, susisiekite su mūsų palaikymo komanda dėl individualaus stogo projekto."
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr "Rekomenduojamas šio storio žingsnis yra %1$d–%2$d mm. Šiam stogui naudojamas %3$d mm atstumas tarp centrų (%4$d atramos)."
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr "Monolitiniai lakštai yra %1$d × %2$d mm ir gali būti pasukti bet kuria kryptimi. %3$d mm ilgis supjaustomas į %4$d dalis."
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pasuktas bet kuria kryptimi. Ši dalis vis tiek per plati. Sumažinkite atramų žingsnį."
+
+msgid "Shipping"
+msgstr "Pristatymas"

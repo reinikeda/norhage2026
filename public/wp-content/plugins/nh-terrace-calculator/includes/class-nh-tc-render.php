@@ -96,8 +96,10 @@ class NH_TC_Render {
 		self::enqueue();
 
 		$s         = NH_TC_Defaults::settings();
-		$cc        = isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600;
 		$support   = isset( $s['default_support_mm'] ) ? (int) $s['default_support_mm'] : 50;
+		$width     = isset( $s['default_width_mm'] ) ? (int) $s['default_width_mm'] : 4200;
+		$advice    = NH_TC_Engine::recommended_support( 'multiwall', 10, $width, $support );
+		$cc        = (int) $advice['cc_mm'];
 		$overhang  = isset( $s['default_overhang_mm'] ) ? (int) $s['default_overhang_mm'] : 50;
 		$min_sup   = isset( $s['min_support_mm'] ) ? (int) $s['min_support_mm'] : 20;
 		$max_sup   = isset( $s['max_support_mm'] ) ? (int) $s['max_support_mm'] : 200;
@@ -186,10 +188,11 @@ class NH_TC_Render {
 							<label>
 								<span><?php esc_html_e( 'Support spacing (centre to centre)', NH_TC_TD ); ?></span>
 								<span class="nh-tc__input">
-									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="10" value="<?php echo esc_attr( (string) $cc ); ?>">
+									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="1" value="<?php echo esc_attr( (string) $cc ); ?>">
 									<span>mm</span>
 								</span>
 								<small class="nh-tc__hint" data-rec-cc></small>
+								<small class="nh-tc__hint"><?php esc_html_e( 'Support spacing is only a recommendation. The structural strength must be confirmed by the architect.', NH_TC_TD ); ?></small>
 							</label>
 							<label>
 								<span><?php esc_html_e( 'Support beam width', NH_TC_TD ); ?></span>
@@ -219,28 +222,11 @@ class NH_TC_Render {
 						<div class="nh-tc__plan" data-sheet-plan>
 							<p class="nh-tc__plan-note"><?php esc_html_e( 'The cut diagram appears once the size is valid.', NH_TC_TD ); ?></p>
 						</div>
-						<?php if ( ! empty( $s['show_postcode'] ) ) : ?>
-						<label>
-							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
-							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
-						</label>
-						<?php endif; ?>
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
 						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__joint">
-							<span class="nh-tc__joint-label"><?php esc_html_e( 'Connecting profile on the supports', NH_TC_TD ); ?></span>
-							<label class="nh-tc__joint-option">
-								<input type="radio" name="joint_every_beam" value="1" checked>
-								<span><?php esc_html_e( 'On every beam', NH_TC_TD ); ?></span>
-							</label>
-							<label class="nh-tc__joint-option">
-								<input type="radio" name="joint_every_beam" value="0">
-								<span><?php echo esc_html( sprintf( /* translators: %d: standard polycarbonate sheet width in millimetres */ __( 'Only where sheets meet, using up to %d mm', NH_TC_TD ), (int) $s['standard_sheet_width_mm'] ) ); ?></span>
-							</label>
-							<small class="nh-tc__hint"><?php esc_html_e( 'A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width.', NH_TC_TD ); ?></small>
-						</div>
+						<p class="nh-tc__notice"><?php esc_html_e( 'A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project.', NH_TC_TD ); ?></p>
 						<div class="nh-tc__select-row nh-tc__select-row--pair">
 							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
 								<img alt="" width="44" height="44" decoding="async">
@@ -284,6 +270,14 @@ class NH_TC_Render {
 								</select>
 							</label>
 						</div>
+					</fieldset>
+
+					<fieldset class="nh-tc__card">
+						<legend><span class="nh-tc__step-no">5</span><?php esc_html_e( 'Shipping', NH_TC_TD ); ?></legend>
+						<label>
+							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
+							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
+						</label>
 					</fieldset>
 				</form>
 
@@ -337,11 +331,14 @@ class NH_TC_Render {
 				'connectTree'=> NH_TC_Catalog::color_tree( $s['connecting'] ),
 				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
 				'recCc'      => $s['recommended_cc'],
+				'supportRanges' => NH_TC_Engine::support_range_tables(),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
 				'i18n'       => array(
 					'recCc'         => __( 'Recommended centre spacing for this thickness: %s mm.', NH_TC_TD ),
+					'rafters'       => __( 'Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters).', NH_TC_TD ),
+					'planSolid'     => __( 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length.', NH_TC_TD ),
 					'sheets'        => __( '%d sheets', NH_TC_TD ),
 					'planWait'      => __( 'The cut diagram appears once the size is valid.', NH_TC_TD ),
 					'planSingle'    => __( 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),

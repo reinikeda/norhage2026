@@ -35,7 +35,10 @@
   var timer = null;
   var lastPayload = null;
   var posting = false;
+  var ccCustom = false;
   var defaultCc = Number(cfg.defaultCc) || 600;
+  var widthInput = form.querySelector('[name="width_mm"]');
+  var supportInput = form.querySelector('[name="support_mm"]');
 
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
@@ -77,7 +80,6 @@
     fillSelect(thkSel, thicknesses, '10');
     var colours = thkMap[thkSel.value] || [];
     fillSelect(colSel, colours, 'clear');
-    updateRecCc();
   }
 
   function syncProfileOptions() {
@@ -97,9 +99,57 @@
     fillSelect(finishCol, finishTree[finishSel.value] || [], 'silver');
   }
 
-  function updateRecCc() {
-    var rec = (cfg.recCc && thkSel && cfg.recCc[thkSel.value]) || defaultCc;
-    if (recEl) recEl.textContent = i18n('recCc', 'Recommended centre spacing for this thickness: %s mm.').replace('%s', String(rec || defaultCc));
+  function rangeFor(material, thickness) {
+    var tables = cfg.supportRanges || {};
+    var table = tables[material] || tables.multiwall || {};
+    var keys = Object.keys(table).map(Number).filter(function (n) {
+      return n <= Number(thickness);
+    }).sort(function (a, b) { return a - b; });
+    var key = keys.length ? String(keys[keys.length - 1]) : Object.keys(table).sort(function (a, b) {
+      return Number(a) - Number(b);
+    })[0];
+    var pair = (key && table[key]) || [500, 600];
+    return { min: Number(pair[0]), max: Number(pair[1]) };
+  }
+
+  function evenSpacing(width, support, maxCc) {
+    var inner = Math.max(1, Number(width) - Number(support || 0));
+    var max = Math.max(1, Number(maxCc) || defaultCc);
+    if (inner <= max) return { cc: inner, bays: 1 };
+    var bays = Math.ceil(inner / max);
+    var cc = Math.ceil(inner / bays);
+    if (cc > max) {
+      bays += 1;
+      cc = Math.ceil(inner / bays);
+    }
+    return { cc: Math.max(1, cc), bays: bays };
+  }
+
+  function rafterCount(width, support, cc) {
+    var inner = Math.max(0, Number(width) - Number(support || 0));
+    var step = Math.max(1, Number(cc) || 1);
+    var bays = inner <= step ? 1 : Math.ceil(inner / step);
+    return bays + 1;
+  }
+
+  function applySpacing(force) {
+    var width = widthInput ? Number(widthInput.value) : 0;
+    var support = supportInput ? Number(supportInput.value) : 50;
+    if (!support) support = 50;
+    var material = matSel ? matSel.value : 'multiwall';
+    var thickness = thkSel ? Number(thkSel.value) : 10;
+    var range = rangeFor(material, thickness);
+    var even = evenSpacing(width, support, range.max);
+    if (ccInput && (force || !ccCustom)) {
+      ccInput.value = String(even.cc);
+    }
+    var used = ccInput ? Number(ccInput.value) : even.cc;
+    if (recEl) {
+      recEl.textContent = fillTemplate(
+        i18n('rafters', 'Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters).'),
+        [range.min, range.max, used || even.cc, rafterCount(width, support, used || even.cc)]
+      );
+    }
   }
 
   function fmt(n) {
@@ -258,6 +308,7 @@
   }
 
   function schedule() {
+    applySpacing(false);
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
   }
@@ -373,11 +424,6 @@
         i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
         [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
       );
-    } else if (String(meta.joint_every_beam) === '0') {
-      note.textContent = fillTemplate(
-        i18n('planStock', 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).'),
-        [meta.standard_sheet_mm, meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
-      );
     } else {
       note.textContent = fillTemplate(
         i18n('planExtra', 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).'),
@@ -398,6 +444,15 @@
     planEl.appendChild(legend);
     planEl.appendChild(cuts);
     planEl.appendChild(note);
+    if (Number(meta.length_pieces) > 1) {
+      var solidNote = document.createElement('p');
+      solidNote.className = 'nh-tc__plan-note';
+      solidNote.textContent = fillTemplate(
+        i18n('planSolid', 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length.'),
+        [meta.blank_short_mm, meta.blank_long_mm, meta.sheet_length_mm, meta.length_pieces]
+      );
+      planEl.appendChild(solidNote);
+    }
   }
 
   function addToCart() {
@@ -441,17 +496,23 @@
 
   if (matSel) {
     matSel.addEventListener('change', function () {
+      ccCustom = false;
       syncSheetOptions();
       schedule();
     });
   }
   if (thkSel) {
     thkSel.addEventListener('change', function () {
+      ccCustom = false;
       var tree = cfg.tree || {};
       var thkMap = tree[matSel.value] || {};
       fillSelect(colSel, thkMap[thkSel.value] || [], 'clear');
-      updateRecCc();
       schedule();
+    });
+  }
+  if (ccInput) {
+    ccInput.addEventListener('input', function () {
+      ccCustom = true;
     });
   }
   if (connectSel) {
@@ -474,5 +535,6 @@
 
   syncSheetOptions();
   syncProfileOptions();
+  applySpacing(true);
   quote();
 })();

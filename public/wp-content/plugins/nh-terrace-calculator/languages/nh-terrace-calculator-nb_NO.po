@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -411,3 +411,24 @@ msgstr "Skjul vanlig legg i handlekurv"
 
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Skjul det vanlige kjøpsskjemaet. Kundene bruker tilbudet på settet i stedet."
+
+msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
+msgstr "Lekteavstanden er bare en anbefaling. Den konstruktive styrken må bekreftes av arkitekten."
+
+msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
+msgstr "En forbindelsesprofil er tatt med på hver lekt. Hvis du ikke vil ha en forbindelsesprofil på hver lekt, ta kontakt med kundestøtten vår for et tilpasset takprosjekt."
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr "Anbefalt avstand for denne tykkelsen er %1$d–%2$d mm. Dette taket bruker %3$d mm senteravstand (%4$d lektere)."
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr "Massive plater er %1$d × %2$d mm og kan snus begge veier. Lengden på %3$d mm kappes i %4$d deler."
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr "En massiv polykarbonatplate er %1$d × %2$d mm og kan snus begge veier. Dette stykket er likevel for bredt. Reduser lekteavstanden."
+
+msgid "Shipping"
+msgstr "Frakt"
