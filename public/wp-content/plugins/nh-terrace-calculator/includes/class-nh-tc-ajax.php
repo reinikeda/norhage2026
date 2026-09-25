@@ -28,7 +28,7 @@ class NH_TC_Ajax {
 		if ( empty( $bom['ok'] ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Please enter a valid width and length.', NH_TC_TD ),
+					'message' => self::failure_message( $bom['errors'], $settings ),
 					'errors'  => $bom['errors'],
 				),
 				400
@@ -53,7 +53,7 @@ class NH_TC_Ajax {
 		if ( empty( $bom['ok'] ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Please enter a valid width and length.', NH_TC_TD ),
+					'message' => self::failure_message( $bom['errors'], $settings ),
 					'errors'  => $bom['errors'],
 				),
 				400
@@ -181,10 +181,17 @@ class NH_TC_Ajax {
 			}
 		}
 
+		$overhang = null;
+		if ( array_key_exists( 'overhang_mm', $src ) && '' !== $src['overhang_mm'] && null !== $src['overhang_mm'] ) {
+			$overhang = (int) $src['overhang_mm'];
+		}
+
 		return array(
 			'width_mm'            => isset( $src['width_mm'] ) ? absint( $src['width_mm'] ) : 0,
 			'length_mm'           => isset( $src['length_mm'] ) ? absint( $src['length_mm'] ) : 0,
 			'cc_mm'               => isset( $src['cc_mm'] ) ? absint( $src['cc_mm'] ) : 0,
+			'support_mm'          => ( isset( $src['support_mm'] ) && '' !== $src['support_mm'] ) ? absint( $src['support_mm'] ) : 0,
+			'overhang_mm'         => $overhang,
 			'construction'        => self::pick( $src, 'construction', array( 'single_slope', 'gable' ), 'single_slope' ),
 			'material'            => self::pick( $src, 'material', array( 'multiwall', 'solid' ), 'multiwall' ),
 			'thickness'           => isset( $src['thickness'] ) ? absint( $src['thickness'] ) : 10,
@@ -194,8 +201,48 @@ class NH_TC_Ajax {
 			'finish_profile'      => self::pick( $src, 'finish_profile', array( 'f_aluminium', 'f_profile', 'u_plastic', 'u_aluminium', 'l_aluminium' ), 'f_aluminium' ),
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
+			'sheet_supply'        => self::pick( $src, 'sheet_supply', array( 'custom', 'standard' ), 'custom' ),
+			'profile_joints'      => self::pick( $src, 'profile_joints', array( 'every', 'optimal' ), '' ),
+			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
+			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
+	}
+
+	/**
+	 * @param string[]             $errors
+	 * @param array<string, mixed> $settings
+	 */
+	private static function failure_message( array $errors, array $settings ) {
+		if ( in_array( 'solid_sheet', $errors, true ) ) {
+			$blank = NH_TC_Engine::solid_blank( $settings );
+			return sprintf(
+				/* translators: 1: shorter solid-sheet side in millimetres, 2: longer side in millimetres */
+				__( 'A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing.', NH_TC_TD ),
+				(int) $blank['short_mm'],
+				(int) $blank['long_mm']
+			);
+		}
+		if ( in_array( 'sheet_width', $errors, true ) ) {
+			return sprintf(
+				/* translators: %d: maximum polycarbonate sheet width in millimetres */
+				__( 'A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet.', NH_TC_TD ),
+				(int) $settings['standard_sheet_width_mm']
+			);
+		}
+		if ( in_array( 'sheet_narrow', $errors, true ) ) {
+			return __( 'The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm.', NH_TC_TD );
+		}
+		if ( in_array( 'support', $errors, true ) ) {
+			return __( 'Enter a support beam width between 20 and 200 mm. 50 mm is the usual size.', NH_TC_TD );
+		}
+		if ( in_array( 'overhang', $errors, true ) ) {
+			return __( 'Sheet overhang must be between 0 and 300 mm.', NH_TC_TD );
+		}
+		if ( in_array( 'standard_sheet', $errors, true ) ) {
+			return __( 'This thickness and colour is only available as a custom cut.', NH_TC_TD );
+		}
+		return __( 'Please enter a valid width and length.', NH_TC_TD );
 	}
 
 	/**

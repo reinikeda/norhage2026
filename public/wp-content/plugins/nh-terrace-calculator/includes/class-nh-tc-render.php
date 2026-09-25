@@ -95,63 +95,53 @@ class NH_TC_Render {
 		self::$printed = true;
 		self::enqueue();
 
-		$s  = NH_TC_Defaults::settings();
-		$cc = isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600;
+		$s         = NH_TC_Defaults::settings();
+		$support   = isset( $s['default_support_mm'] ) ? (int) $s['default_support_mm'] : 50;
+		$width     = isset( $s['default_width_mm'] ) ? (int) $s['default_width_mm'] : 4200;
+		$advice    = NH_TC_Engine::recommended_support( 'multiwall', 10, $width, $support );
+		$cc        = (int) $advice['cc_mm'];
+		$overhang  = isset( $s['default_overhang_mm'] ) ? (int) $s['default_overhang_mm'] : 50;
+		$min_sup   = isset( $s['min_support_mm'] ) ? (int) $s['min_support_mm'] : 20;
+		$max_sup   = isset( $s['max_support_mm'] ) ? (int) $s['max_support_mm'] : 200;
+		$max_oh    = isset( $s['max_overhang_mm'] ) ? (int) $s['max_overhang_mm'] : 300;
+		$gap       = isset( $s['profile_gap_mm'] ) ? (int) $s['profile_gap_mm'] : 10;
 
 		ob_start();
 		?>
 		<section class="nh-tc" id="nh-terrace-calculator" data-step="<?php echo esc_attr( $s['step_mm'] ); ?>">
 			<div class="nh-tc__intro">
 				<h2 class="nh-tc__title"><?php esc_html_e( 'Terrace roof calculator', NH_TC_TD ); ?></h2>
-				<p class="nh-tc__lead"><?php esc_html_e( 'Enter the opening size, choose sheets and profiles, and add a complete weather-tight kit to the basket — live catalogue prices, including custom-cut sheets.', NH_TC_TD ); ?></p>
+				<p class="nh-tc__lead"><?php esc_html_e( 'Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support.', NH_TC_TD ); ?></p>
 			</div>
 
 			<div class="nh-tc__grid">
 				<form class="nh-tc__form" id="nh-tc-form" novalidate>
 					<fieldset class="nh-tc__card">
-						<legend><?php esc_html_e( 'Roof size', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--2">
-							<label>
-								<span><?php esc_html_e( 'Width (along the wall)', NH_TC_TD ); ?></span>
-								<span class="nh-tc__input">
-									<input type="number" name="width_mm" inputmode="numeric" required
-										min="<?php echo esc_attr( $s['min_width_mm'] ); ?>"
-										max="<?php echo esc_attr( $s['max_width_mm'] ); ?>"
-										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
-										value="<?php echo esc_attr( $s['default_width_mm'] ); ?>">
-									<span>mm</span>
+						<legend><span class="nh-tc__step-no">1</span><?php esc_html_e( 'Roof shape', NH_TC_TD ); ?></legend>
+						<div class="nh-tc__choices">
+							<label class="nh-tc__choice">
+								<input type="radio" name="construction" value="single_slope" checked>
+								<span class="nh-tc__choice-art" aria-hidden="true">
+									<svg viewBox="0 0 88 56" width="88" height="56"><path d="M8 46 V16 H14 V46" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 18 H80 L14 40 Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
 								</span>
+								<span><?php esc_html_e( 'Lean-to', NH_TC_TD ); ?></span>
 							</label>
-							<label>
-								<span><?php esc_html_e( 'Length (projection)', NH_TC_TD ); ?></span>
-								<span class="nh-tc__input">
-									<input type="number" name="length_mm" inputmode="numeric" required
-										min="<?php echo esc_attr( $s['min_length_mm'] ); ?>"
-										max="<?php echo esc_attr( $s['max_length_mm'] ); ?>"
-										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
-										value="<?php echo esc_attr( $s['default_length_mm'] ); ?>">
-									<span>mm</span>
+							<label class="nh-tc__choice">
+								<input type="radio" name="construction" value="gable">
+								<span class="nh-tc__choice-art" aria-hidden="true">
+									<svg viewBox="0 0 88 56" width="88" height="56"><path d="M8 46 L44 14 L80 46 Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M44 14 V46" fill="none" stroke="currentColor" stroke-width="2"/></svg>
 								</span>
+								<span><?php esc_html_e( 'Gable', NH_TC_TD ); ?></span>
 							</label>
 						</div>
-						<?php if ( ! empty( $s['show_postcode'] ) ) : ?>
-						<label>
-							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
-							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
-						</label>
-						<?php endif; ?>
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
-						<legend><?php esc_html_e( 'Sheets', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--2">
-							<label>
-								<span><?php esc_html_e( 'Construction', NH_TC_TD ); ?></span>
-								<select name="construction">
-									<option value="single_slope" selected><?php esc_html_e( 'Single-slope (lean-to)', NH_TC_TD ); ?></option>
-									<option value="gable"><?php esc_html_e( 'Gable / ridge', NH_TC_TD ); ?></option>
-								</select>
-							</label>
+						<legend><span class="nh-tc__step-no">2</span><?php esc_html_e( 'Polycarbonate', NH_TC_TD ); ?></legend>
+						<div class="nh-tc__select-row">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="sheet">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Material', NH_TC_TD ); ?></span>
 								<select name="material">
@@ -167,20 +157,123 @@ class NH_TC_Render {
 								<span><?php esc_html_e( 'Colour', NH_TC_TD ); ?></span>
 								<select name="colour"></select>
 							</label>
-							<label>
-								<span><?php esc_html_e( 'Frame support spacing (CC)', NH_TC_TD ); ?></span>
-								<span class="nh-tc__input">
-									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="10" placeholder="<?php echo esc_attr( (string) $cc ); ?>" value="">
-									<span>mm</span>
-								</span>
-								<small class="nh-tc__hint" data-rec-cc></small>
-							</label>
 						</div>
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
-						<legend><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
-						<div class="nh-tc__row nh-tc__row--2">
+						<legend><span class="nh-tc__step-no">3</span><?php esc_html_e( 'Sheets', NH_TC_TD ); ?></legend>
+						<p class="nh-tc__ask"><?php esc_html_e( 'What kind of sheets do you want?', NH_TC_TD ); ?></p>
+						<div class="nh-tc__choices nh-tc__choices--supply">
+							<label class="nh-tc__choice nh-tc__choice--plain">
+								<input type="radio" name="sheet_supply" value="custom" checked>
+								<span><?php esc_html_e( 'Custom cut by us', NH_TC_TD ); ?></span>
+							</label>
+							<label class="nh-tc__choice nh-tc__choice--plain">
+								<input type="radio" name="sheet_supply" value="standard">
+								<span><?php esc_html_e( 'Standard sizes that you will cut yourself', NH_TC_TD ); ?></span>
+							</label>
+						</div>
+						<div class="nh-tc__stock" data-stock-card hidden>
+							<div data-stock-channels hidden>
+								<p class="nh-tc__stock-label"><?php esc_html_e( 'Sheet structure', NH_TC_TD ); ?></p>
+								<div class="nh-tc__chips" data-stock-channel></div>
+							</div>
+							<div data-stock-sizes>
+								<p class="nh-tc__stock-label"><?php esc_html_e( 'Width', NH_TC_TD ); ?></p>
+								<div class="nh-tc__chips" data-stock-widths></div>
+								<p class="nh-tc__hint"><?php esc_html_e( 'The shortest stock length that covers the frame plus the drip overhang is used.', NH_TC_TD ); ?></p>
+								<input type="hidden" name="stock_length_mm" value="" data-stock-length>
+							</div>
+							<p class="nh-tc__hint" data-stock-empty hidden><?php esc_html_e( 'This thickness and colour is only available as a custom cut.', NH_TC_TD ); ?></p>
+						</div>
+					</fieldset>
+
+					<fieldset class="nh-tc__card">
+						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Frame size', NH_TC_TD ); ?></legend>
+						<div class="nh-tc__size">
+							<div class="nh-tc__size-col">
+							<label>
+								<span data-width-label><?php esc_html_e( 'Width along the wall', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="width_mm" inputmode="numeric" required
+										min="<?php echo esc_attr( $s['min_width_mm'] ); ?>"
+										max="<?php echo esc_attr( $s['max_width_mm'] ); ?>"
+										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
+										value="<?php echo esc_attr( $s['default_width_mm'] ); ?>">
+									<span>mm</span>
+								</span>
+							</label>
+							<label>
+								<span><?php esc_html_e( 'Support spacing (centre to centre)', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="cc_mm" inputmode="numeric" min="200" max="2000" step="1" value="<?php echo esc_attr( (string) $cc ); ?>">
+									<span>mm</span>
+								</span>
+								<small class="nh-tc__hint" data-rec-cc></small>
+								<small class="nh-tc__hint"><?php esc_html_e( 'Support spacing is only a recommendation. The structural strength must be confirmed by the architect.', NH_TC_TD ); ?></small>
+							</label>
+							<label>
+								<span><?php esc_html_e( 'Support beam width', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="support_mm" inputmode="numeric"
+										min="<?php echo esc_attr( (string) $min_sup ); ?>"
+										max="<?php echo esc_attr( (string) $max_sup ); ?>"
+										step="1"
+										value="<?php echo esc_attr( (string) $support ); ?>">
+									<span>mm</span>
+								</span>
+								<small class="nh-tc__hint"><?php echo esc_html( sprintf( /* translators: %d: joint gap in millimetres */ __( 'Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile.', NH_TC_TD ), $gap ) ); ?></small>
+							</label>
+							</div>
+							<div class="nh-tc__size-col">
+							<label>
+								<span data-length-label><?php esc_html_e( 'Frame length (projection)', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="length_mm" inputmode="numeric" required
+										min="<?php echo esc_attr( $s['min_length_mm'] ); ?>"
+										max="<?php echo esc_attr( $s['max_length_mm'] ); ?>"
+										step="<?php echo esc_attr( $s['step_mm'] ); ?>"
+										value="<?php echo esc_attr( $s['default_length_mm'] ); ?>">
+									<span>mm</span>
+								</span>
+								<small class="nh-tc__hint" data-gable-length hidden><?php esc_html_e( 'Enter one side, from the ridge to the eave. Both sides are included.', NH_TC_TD ); ?></small>
+							</label>
+							<label>
+								<span><?php esc_html_e( 'Sheet overhang past the frame', NH_TC_TD ); ?></span>
+								<span class="nh-tc__input">
+									<input type="number" name="overhang_mm" inputmode="numeric"
+										min="0"
+										max="<?php echo esc_attr( (string) $max_oh ); ?>"
+										step="5"
+										value="<?php echo esc_attr( (string) $overhang ); ?>">
+									<span>mm</span>
+								</span>
+								<small class="nh-tc__hint"><?php esc_html_e( 'Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less.', NH_TC_TD ); ?></small>
+							</label>
+							</div>
+						</div>
+						<div class="nh-tc__plan" data-sheet-plan>
+							<p class="nh-tc__plan-note"><?php esc_html_e( 'The cut diagram appears once the size is valid.', NH_TC_TD ); ?></p>
+						</div>
+					</fieldset>
+
+					<fieldset class="nh-tc__card">
+						<legend><span class="nh-tc__step-no">5</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
+						<div class="nh-tc__chips">
+							<label class="nh-tc__chip">
+								<input type="radio" name="profile_joints" value="every" checked>
+								<span><?php esc_html_e( 'On every rafter', NH_TC_TD ); ?></span>
+							</label>
+							<label class="nh-tc__chip">
+								<input type="radio" name="profile_joints" value="optimal">
+								<span><?php esc_html_e( 'Optimal', NH_TC_TD ); ?></span>
+							</label>
+						</div>
+						<p class="nh-tc__hint"><?php esc_html_e( 'Optimal covers as much of the chosen width as it can. Each joint still sits on a rafter.', NH_TC_TD ); ?></p>
+						<div class="nh-tc__select-row nh-tc__select-row--pair">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Connecting profile', NH_TC_TD ); ?></span>
 								<select name="connecting_profile">
@@ -197,6 +290,11 @@ class NH_TC_Render {
 									<option value="brown"><?php esc_html_e( 'Brown', NH_TC_TD ); ?></option>
 								</select>
 							</label>
+						</div>
+						<div class="nh-tc__select-row nh-tc__select-row--pair">
+							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="finish">
+								<img alt="" width="44" height="44" decoding="async">
+							</a>
 							<label>
 								<span><?php esc_html_e( 'Finish profile', NH_TC_TD ); ?></span>
 								<select name="finish_profile">
@@ -216,18 +314,26 @@ class NH_TC_Render {
 							</label>
 						</div>
 					</fieldset>
+
+					<fieldset class="nh-tc__card">
+						<legend><span class="nh-tc__step-no">6</span><?php esc_html_e( 'Shipping', NH_TC_TD ); ?></legend>
+						<label>
+							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
+							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
+						</label>
+					</fieldset>
 				</form>
 
 				<aside class="nh-tc__offer" aria-live="polite">
 					<div class="nh-tc__offer-card">
-						<h3><?php esc_html_e( 'Offer summary', NH_TC_TD ); ?></h3>
+						<h3><?php esc_html_e( 'Material list', NH_TC_TD ); ?></h3>
 						<p class="nh-tc__offer-meta" data-offer-meta></p>
 						<ul class="nh-tc__items" data-offer-items>
 							<li class="nh-tc__empty"><?php esc_html_e( 'Enter a size to see the kit.', NH_TC_TD ); ?></li>
 						</ul>
 						<div class="nh-tc__totals" hidden>
 							<div class="nh-tc__tax"><span><?php esc_html_e( 'VAT', NH_TC_TD ); ?></span><span data-offer-tax></span></div>
-							<div class="nh-tc__sum"><span><?php esc_html_e( 'Total incl. VAT', NH_TC_TD ); ?></span><span data-offer-total></span></div>
+							<div class="nh-tc__sum"><span><?php echo esc_html( 'excl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? __( 'Total excl. VAT', NH_TC_TD ) : __( 'Total incl. VAT', NH_TC_TD ) ); ?></span><span data-offer-total></span></div>
 							<p class="nh-tc__ship"><?php esc_html_e( 'Shipping is calculated in the basket from your postal code.', NH_TC_TD ); ?></p>
 						</div>
 						<button type="button" class="nh-tc__atc button alt" data-offer-atc disabled>
@@ -268,12 +374,41 @@ class NH_TC_Render {
 				'connectTree'=> NH_TC_Catalog::color_tree( $s['connecting'] ),
 				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
 				'recCc'      => $s['recommended_cc'],
+				'supportRanges' => NH_TC_Engine::support_range_tables(),
+				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $s['standard_sheets'] ) ? $s['standard_sheets'] : array() ),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
 				'i18n'       => array(
-					'recCc'         => __( 'Leave empty to use %s mm', NH_TC_TD ),
+					'recCc'         => __( 'Recommended centre spacing for this thickness: %s mm.', NH_TC_TD ),
+					'rafters'       => __( 'Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters).', NH_TC_TD ),
+					'planSolid'     => __( 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length.', NH_TC_TD ),
 					'sheets'        => __( '%d sheets', NH_TC_TD ),
+					'planWait'      => __( 'The cut diagram appears once the size is valid.', NH_TC_TD ),
+					'planSingle'    => __( 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
+					'planCover'     => __( 'One sheet covers the frame from edge to edge.', NH_TC_TD ),
+					'planOuter'     => __( 'An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint.', NH_TC_TD ),
+					'planSidesEqual'=> __( 'Both side sheets are %d mm.', NH_TC_TD ),
+					'planSides'     => __( 'The side sheets are %1$d mm and %2$d mm.', NH_TC_TD ),
+					'planJoint'     => __( 'Joints sit on the centre of a rafter.', NH_TC_TD ),
+					'planCut'       => __( 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).', NH_TC_TD ),
+					'planGable'     => __( 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.', NH_TC_TD ),
+					'rafter'        => __( 'Rafter', NH_TC_TD ),
+					'ridge'         => __( 'Ridge', NH_TC_TD ),
+					'widthWall'     => __( 'Width along the wall', NH_TC_TD ),
+					'widthGable'    => __( 'Width along the gable', NH_TC_TD ),
+					'lengthLean'    => __( 'Frame length (projection)', NH_TC_TD ),
+					'lengthGable'   => __( 'Length of one side (ridge to eave)', NH_TC_TD ),
+					'planStock'     => __( 'Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang).', NH_TC_TD ),
+					'planCuts'      => __( 'Cut widths: %s.', NH_TC_TD ),
+					'planStockBuy'  => __( 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.', NH_TC_TD ),
+					'planOptimal'   => __( 'Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter.', NH_TC_TD ),
+					'outer'         => __( 'outer', NH_TC_TD ),
+					'middle'        => __( 'middle', NH_TC_TD ),
+					'mm'            => __( '%d mm', NH_TC_TD ),
+					'6w'            => __( '6-wall', NH_TC_TD ),
+					'5x'            => __( '5-wall', NH_TC_TD ),
+					'3w'            => __( '3-wall', NH_TC_TD ),
 					'missing'       => __( 'Some items are not in this shop (SKU not found). The rest can still be added.', NH_TC_TD ),
 					'adding'        => __( 'Adding kit…', NH_TC_TD ),
 					'error'         => __( 'Could not add the kit. Please try again.', NH_TC_TD ),

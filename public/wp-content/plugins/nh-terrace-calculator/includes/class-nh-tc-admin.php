@@ -70,7 +70,7 @@ class NH_TC_Admin {
 		$input    = is_array( $input ) ? $input : array();
 		$out      = $defaults;
 
-		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
+		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
 			if ( isset( $input[ $int_key ] ) ) {
 				$out[ $int_key ] = absint( $input[ $int_key ] );
 			}
@@ -106,9 +106,10 @@ class NH_TC_Admin {
 			}
 		}
 
-		$out['connecting'] = self::sanitize_ref_map( $defaults['connecting'], $input['connecting'] ?? array() );
-		$out['finish']     = self::sanitize_ref_map( $defaults['finish'], $input['finish'] ?? array() );
-		$out['sheets']     = self::sanitize_sheets( $input['sheets'] ?? array() );
+		$out['connecting']      = self::sanitize_ref_map( $defaults['connecting'], $input['connecting'] ?? array() );
+		$out['finish']          = self::sanitize_ref_map( $defaults['finish'], $input['finish'] ?? array() );
+		$out['sheets']          = self::sanitize_sheets( $input['sheets'] ?? array() );
+		$out['standard_sheets'] = self::sanitize_standard_sheets( $input['standard_sheets'] ?? array() );
 
 		return $out;
 	}
@@ -161,6 +162,56 @@ class NH_TC_Admin {
 		return $out;
 	}
 
+	/**
+	 * Keep the catalog sizes and overlay the SKUs that were posted.
+	 *
+	 * @param mixed $input
+	 * @return array<string, mixed>
+	 */
+	private static function sanitize_standard_sheets( $input ) {
+		$out   = NH_TC_Defaults::standard_sheet_catalog();
+		$input = is_array( $input ) ? $input : array();
+		foreach ( $out as $material => $thicknesses ) {
+			foreach ( $thicknesses as $thickness => $colours ) {
+				foreach ( $colours as $colour => $groups ) {
+					foreach ( $groups as $channel => $group ) {
+						$posted = $input[ $material ][ $thickness ][ $colour ][ $channel ] ?? null;
+						if ( ! is_array( $posted ) ) {
+							continue;
+						}
+						if ( array_key_exists( 'sku', $posted ) ) {
+							$out[ $material ][ $thickness ][ $colour ][ $channel ]['sku'] = self::sku_text( $posted['sku'] );
+						}
+						if ( empty( $posted['widths'] ) || ! is_array( $posted['widths'] ) ) {
+							continue;
+						}
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( empty( $posted['widths'][ $width ] ) || ! is_array( $posted['widths'][ $width ] ) ) {
+								continue;
+							}
+							foreach ( $lengths as $length => $_sku ) {
+								if ( array_key_exists( $length, $posted['widths'][ $width ] ) ) {
+									$out[ $material ][ $thickness ][ $colour ][ $channel ]['widths'][ $width ][ $length ] = self::sku_text( $posted['widths'][ $width ][ $length ] );
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * @param mixed $val
+	 */
+	private static function sku_text( $val ) {
+		if ( is_array( $val ) ) {
+			$val = reset( $val );
+		}
+		return sanitize_text_field( trim( (string) $val ) );
+	}
+
 	private static function ref_from_posted( $val ) {
 		if ( is_array( $val ) ) {
 			$val = reset( $val );
@@ -191,6 +242,7 @@ class NH_TC_Admin {
 			<p class="description">
 				<?php esc_html_e( 'Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop.', NH_TC_TD ); ?>
 			</p>
+			<?php self::quantity_help(); ?>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'nh_tc_settings_group' ); ?>
 
@@ -241,7 +293,22 @@ class NH_TC_Admin {
 						<th><?php esc_html_e( 'Default frame spacing (CC)', NH_TC_TD ); ?></th>
 						<td>
 							<input type="number" name="<?php echo esc_attr( $key ); ?>[default_cc_mm]" value="<?php echo esc_attr( $s['default_cc_mm'] ); ?>">
-							<p class="description"><?php esc_html_e( 'Used when the customer leaves CC empty. Standard is 600 mm.', NH_TC_TD ); ?></p>
+							<p class="description"><?php esc_html_e( 'Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Support beam and sheet overhang', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Beam width', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[default_support_mm]" value="<?php echo esc_attr( $s['default_support_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Joint gap', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[profile_gap_mm]" value="<?php echo esc_attr( $s['profile_gap_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Drip overhang', NH_TC_TD ); ?>
+								<input type="number" name="<?php echo esc_attr( $key ); ?>[default_overhang_mm]" value="<?php echo esc_attr( $s['default_overhang_mm'] ); ?>"> mm
+							</label>
+							<p class="description"><?php esc_html_e( 'Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both.', NH_TC_TD ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -268,6 +335,12 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Solid polycarbonate (custom-cut)', NH_TC_TD ); ?></h2>
 				<?php self::sheet_table( $key, 'solid', $s['sheets']['solid'] ?? array() ); ?>
+
+				<h2><?php esc_html_e( 'Standard sizes', NH_TC_TD ); ?></h2>
+				<p class="description">
+					<?php esc_html_e( 'Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang.', NH_TC_TD ); ?>
+				</p>
+				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
 
 				<h2><?php esc_html_e( 'Connecting profiles', NH_TC_TD ); ?></h2>
 				<?php self::profile_table( $key, 'connecting', $s['connecting'], array(
@@ -319,6 +392,37 @@ class NH_TC_Admin {
 	}
 
 	/**
+	 * Explain how each kit line gets its quantity. Shown above the product mapping.
+	 */
+	public static function quantity_help() {
+		?>
+		<div class="nh-tc-help">
+			<h2><?php esc_html_e( 'How the calculator counts products', NH_TC_TD ); ?></h2>
+			<p><?php esc_html_e( 'Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added.', NH_TC_TD ); ?></p>
+
+			<h3><?php esc_html_e( 'Polycarbonate sheets', NH_TC_TD ); ?></h3>
+			<ul>
+				<li><?php esc_html_e( 'Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size.', NH_TC_TD ); ?></li>
+				<li><?php esc_html_e( 'Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used.', NH_TC_TD ); ?></li>
+				<li><?php esc_html_e( 'Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile.', NH_TC_TD ); ?></li>
+				<li><?php esc_html_e( 'Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity.', NH_TC_TD ); ?></li>
+				<li><?php esc_html_e( 'On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles.', NH_TC_TD ); ?></li>
+			</ul>
+
+			<h3><?php esc_html_e( 'Connecting profiles and screws', NH_TC_TD ); ?></h3>
+			<p><?php esc_html_e( 'Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps.', NH_TC_TD ); ?></p>
+
+			<h3><?php esc_html_e( 'Finish, wall and ridge', NH_TC_TD ); ?></h3>
+			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
+
+			<h3><?php esc_html_e( 'Tapes, gasket and silicone', NH_TC_TD ); ?></h3>
+			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'The rafter count in the spacing note is advice. Rafters are not a product in the kit.', NH_TC_TD ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * @param array<string, array<string, string>> $rows
 	 * @param array<string, string>                $type_labels
 	 * @param string[]                             $colours
@@ -361,6 +465,75 @@ class NH_TC_Admin {
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * @param array<string, mixed> $catalog
+	 */
+	private static function standard_sheet_fields( $key, array $catalog ) {
+		$materials = array(
+			'multiwall' => __( 'Multiwall polycarbonate', NH_TC_TD ),
+			'solid'     => __( 'Solid polycarbonate', NH_TC_TD ),
+		);
+		foreach ( $materials as $material => $heading ) {
+			if ( empty( $catalog[ $material ] ) || ! is_array( $catalog[ $material ] ) ) {
+				continue;
+			}
+			echo '<h3>' . esc_html( $heading ) . '</h3>';
+			foreach ( $catalog[ $material ] as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) || empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+							continue;
+						}
+						$base  = $key . '[standard_sheets][' . $material . '][' . $thickness . '][' . $colour . '][' . $channel . ']';
+						$label = sprintf( '%d mm · %s', (int) $thickness, ucfirst( (string) $colour ) );
+						if ( 'stock' !== (string) $channel ) {
+							$label .= ' · ' . self::channel_label( (string) $channel );
+						}
+						echo '<details class="nh-tc-standard">';
+						echo '<summary>' . esc_html( $label ) . '</summary>';
+						echo '<div class="nh-tc-standard-body">';
+						echo '<p><label>' . esc_html__( 'Parent SKU', NH_TC_TD ) . ' ';
+						echo '<input type="text" class="regular-text" name="' . esc_attr( $base . '[sku]' ) . '" value="' . esc_attr( (string) ( $group['sku'] ?? '' ) ) . '" autocomplete="off" spellcheck="false">';
+						echo '</label></p>';
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( ! is_array( $lengths ) ) {
+								continue;
+							}
+							echo '<p class="nh-tc-var-width">' . esc_html( sprintf( '%d mm', (int) $width ) ) . '</p>';
+							echo '<div class="nh-tc-var-grid">';
+							foreach ( $lengths as $length => $sku ) {
+								echo '<label><span>' . esc_html( sprintf( '%d mm', (int) $length ) ) . '</span>';
+								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( (string) $sku ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								echo '</label>';
+							}
+							echo '</div>';
+						}
+						echo '</div></details>';
+					}
+				}
+			}
+		}
+	}
+
+	private static function channel_label( $channel ) {
+		if ( '6w' === $channel ) {
+			return __( '6-wall', NH_TC_TD );
+		}
+		if ( '5x' === $channel ) {
+			return __( '5-wall', NH_TC_TD );
+		}
+		if ( '3w' === $channel ) {
+			return __( '3-wall', NH_TC_TD );
+		}
+		return __( 'Standard sheet', NH_TC_TD );
 	}
 
 	private static function product_select( $name, $ref ) {
