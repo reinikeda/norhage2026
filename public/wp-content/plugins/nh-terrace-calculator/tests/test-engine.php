@@ -74,11 +74,29 @@ foreach ( $bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert( 'three cut widths', 3 === count( $sheet_lines ) );
-nh_tc_assert( 'outer 620 x 4750', 1 === (int) $sheet_lines[0]['qty'] && 620 === (int) $sheet_lines[0]['cut']['width_mm'] && 4750 === (int) $sheet_lines[0]['cut']['length_mm'] );
-nh_tc_assert( 'middle 590 x 5', 5 === (int) $sheet_lines[1]['qty'] && 590 === (int) $sheet_lines[1]['cut']['width_mm'] && 4750 === (int) $sheet_lines[1]['cut']['length_mm'] );
-nh_tc_assert( 'short outer 570 x 4750', 1 === (int) $sheet_lines[2]['qty'] && 570 === (int) $sheet_lines[2]['cut']['width_mm'] );
-$covered = 620 + ( 590 * 5 ) + 570 + ( 6 * 10 );
+nh_tc_assert( 'equal outers 613 x 4750', 2 === (int) $sheet_lines[0]['qty'] && 613 === (int) $sheet_lines[0]['cut']['width_mm'] && 4750 === (int) $sheet_lines[0]['cut']['length_mm'] );
+nh_tc_assert( 'middle 583 x 4', 4 === (int) $sheet_lines[1]['qty'] && 583 === (int) $sheet_lines[1]['cut']['width_mm'] && 4750 === (int) $sheet_lines[1]['cut']['length_mm'] );
+nh_tc_assert( 'one middle 582 x 4750', 1 === (int) $sheet_lines[2]['qty'] && 582 === (int) $sheet_lines[2]['cut']['width_mm'] );
+$covered = ( 613 * 2 ) + ( 583 * 4 ) + 582 + ( 6 * 10 );
 nh_tc_assert( 'sheet widths plus 10 mm joints equal the frame', 4200 === $covered );
+$plan    = $bom['meta']['sheet_plan'];
+$rafters = $bom['meta']['rafters_mm'];
+$joints_on_centres = 8 === count( $rafters ) && 7 === count( $plan ) && 0 === (int) $plan[0]['x_mm'] && 613 === (int) $plan[0]['width_mm'] && 613 === (int) $plan[6]['width_mm'];
+$expected_bays     = array( 593, 593, 593, 593, 593, 592, 593 );
+for ( $i = 0; $i < 7; $i++ ) {
+	$bay = (int) $rafters[ $i + 1 ] - (int) $rafters[ $i ];
+	if ( $bay !== $expected_bays[ $i ] ) {
+		$joints_on_centres = false;
+	}
+	if ( $i < 6 ) {
+		$joint = (int) $plan[ $i ]['x_mm'] + (int) $plan[ $i ]['width_mm'] + 5;
+		if ( $joint !== (int) $rafters[ $i + 1 ] ) {
+			$joints_on_centres = false;
+		}
+	}
+}
+$last_edge = (int) $plan[6]['x_mm'] + (int) $plan[6]['width_mm'];
+nh_tc_assert( 'equal bays keep every joint on a rafter centre', $joints_on_centres && 25 === (int) $rafters[0] && 4175 === (int) $rafters[7] && 4200 === $last_edge );
 nh_tc_assert( 'outer sheets are 30 mm wider than a full middle sheet', 30 === (int) $bom['meta']['side_extra_mm'] );
 nh_tc_assert( '7 sheets still', 7 === (int) $bom['meta']['sheet_count'] );
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
@@ -122,7 +140,10 @@ foreach ( $odd as $sheet ) {
 	$odd_sum += (int) $sheet['width_mm'];
 }
 nh_tc_assert( 'odd 51 mm beam still closes the frame', 3 === count( $odd ) && 2100 === $odd_sum + ( 2 * 10 ) );
-nh_tc_assert( 'right end keeps the extra millimetre', 70 === (int) $odd[2]['width_mm'] && 1020 === (int) $odd[0]['width_mm'] );
+nh_tc_assert( 'odd beam keeps equal bays and the extra millimetre on the right sheet', 703 === (int) $odd[0]['width_mm'] && 673 === (int) $odd[1]['width_mm'] && 704 === (int) $odd[2]['width_mm'] );
+
+$two = NH_TC_Engine::framed_sheet_plan( 1301, 2000, 700, 50, 10, 0 );
+nh_tc_assert( 'two bays put the spare millimetre on the right sheet', 2 === count( $two ) && 645 === (int) $two[0]['width_mm'] && 646 === (int) $two[1]['width_mm'] );
 
 $gable = $input;
 $gable['construction'] = 'gable';
@@ -190,7 +211,14 @@ $sliver = NH_TC_Engine::calculate(
 	array_merge( $input, array( 'width_mm' => 1251, 'support_mm' => 50, 'cc_mm' => 600, 'overhang_mm' => 0 ) ),
 	$settings
 );
-nh_tc_assert( 'rejects a sliver end sheet', empty( $sliver['ok'] ) && in_array( 'sheet_narrow', $sliver['errors'], true ) );
+nh_tc_assert(
+	'a 1251 mm frame keeps both side sheets and drops the narrow end piece',
+	! empty( $sliver['ok'] )
+	&& 3 === count( $sliver['meta']['sheet_plan'] )
+	&& 420 === (int) $sliver['meta']['sheet_plan'][0]['width_mm']
+	&& 391 === (int) $sliver['meta']['sheet_plan'][1]['width_mm']
+	&& 420 === (int) $sliver['meta']['sheet_plan'][2]['width_mm']
+);
 
 $flush = $input;
 $flush['overhang_mm'] = 0;
@@ -220,9 +248,9 @@ nh_tc_assert(
 	2 === (int) $solid_bom['meta']['length_pieces']
 	&& 14 === (int) $solid_bom['meta']['sheet_count']
 	&& 3 === count( $solid_sheets )
-	&& 620 === (int) $solid_sheets[0]['cut']['width_mm'] && 2375 === (int) $solid_sheets[0]['cut']['length_mm'] && 2 === (int) $solid_sheets[0]['qty']
-	&& 590 === (int) $solid_sheets[1]['cut']['width_mm'] && 2375 === (int) $solid_sheets[1]['cut']['length_mm'] && 10 === (int) $solid_sheets[1]['qty']
-	&& 570 === (int) $solid_sheets[2]['cut']['width_mm'] && 2375 === (int) $solid_sheets[2]['cut']['length_mm'] && 2 === (int) $solid_sheets[2]['qty']
+	&& 613 === (int) $solid_sheets[0]['cut']['width_mm'] && 2375 === (int) $solid_sheets[0]['cut']['length_mm'] && 4 === (int) $solid_sheets[0]['qty']
+	&& 583 === (int) $solid_sheets[1]['cut']['width_mm'] && 2375 === (int) $solid_sheets[1]['cut']['length_mm'] && 8 === (int) $solid_sheets[1]['qty']
+	&& 582 === (int) $solid_sheets[2]['cut']['width_mm'] && 2375 === (int) $solid_sheets[2]['cut']['length_mm'] && 2 === (int) $solid_sheets[2]['qty']
 );
 nh_tc_assert( 'multiwall quote still includes both tapes', isset( $by_role['vent_tape'] ) && isset( $by_role['iso_tape'] ) );
 

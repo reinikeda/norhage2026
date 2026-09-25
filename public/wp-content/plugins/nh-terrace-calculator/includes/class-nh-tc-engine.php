@@ -6,8 +6,11 @@
  * - Sheets meet on the centre of a support. A joint leaves a gap (standard
  *   10 mm) for the connecting profile, so each sheet loses half of that gap.
  * - A connecting profile sits on every rafter. Each bay is its own sheet.
+ *   Bays share the inner span evenly, and neither bay is wider than the
+ *   entered centre distance, so the two side sheets match when they can.
  *   Outer sheets run to the end of the frame, so they are wider by half the
- *   support width plus the half-gap the middle sheets give up.
+ *   support width plus the half-gap the middle sheets give up. Joints sit
+ *   on the rafter centres.
  * - Multiwall pieces are cut from 2100 mm stock. Solid pieces are cut from a
  *   2050 × 3050 mm blank, turned either way, and split along the length when
  *   the run is longer than the blank.
@@ -63,10 +66,13 @@ class NH_TC_Engine {
 		}
 
 		$sheet_length = $length + $overhang;
+		$rafters      = array();
 		if ( 'overlap' === $layout ) {
 			$across = self::overlap_plan( $width, $sheet_length, $settings );
 		} else {
-			$across = self::framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang );
+			$frame   = self::frame_layout( $width, $length, $cc, $support, $gap, $overhang );
+			$across  = $frame['sheets'];
+			$rafters = $frame['rafters_mm'];
 		}
 
 		foreach ( $across as $sheet ) {
@@ -304,6 +310,7 @@ class NH_TC_Engine {
 				'blank_long_mm'        => 'solid' === $material ? (int) $blank['long_mm'] : 0,
 				'length_pieces'        => $length_pieces,
 				'sheet_plan'           => $plan,
+				'rafters_mm'           => $rafters,
 				'recommended_cc_mm'    => (int) $advice['cc_mm'],
 				'recommended_min_mm'   => (int) $advice['min_mm'],
 				'recommended_max_mm'   => (int) $advice['max_mm'],
@@ -687,58 +694,119 @@ class NH_TC_Engine {
 	/**
 	 * One entry per sheet. Joints sit on beam centres.
 	 *
-	 * The distance between the outer beam centres is width − support. That span
-	 * is split into bays of CC (the last bay takes the remainder).
-	 * A middle sheet is CC minus the joint gap. An outer sheet reaches the
-	 * outer face of the end beam and is only shortened on its joint side.
-	 *
-	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>
 	 */
 	public static function framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang ) {
-		$width    = (int) $width;
-		$support  = max( 0, (int) $support );
-		$gap      = max( 0, (int) $gap );
-		$cc       = max( 1, (int) $cc );
+		return self::frame_layout( $width, $length, $cc, $support, $gap, $overhang )['sheets'];
+	}
+
+	/**
+	 * Sheets and rafter centres for a framed roof.
+	 *
+	 * The distance between the outer beam centres is width − support. That span
+	 * is split into the fewest equal bays that stay within the entered centre
+	 * distance, with the two end bays the same width whenever the spare
+	 * millimetres fit in the middle. A middle sheet is the bay minus the joint
+	 * gap. An outer sheet reaches the outer face of the end beam and is only
+	 * shortened on its joint side. Each joint is the centre of a rafter.
+	 *
+	 * @return array{sheets:array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>,rafters_mm:int[]}
+	 */
+	public static function frame_layout( $width, $length, $cc, $support, $gap, $overhang ) {
+		$width     = (int) $width;
+		$support   = max( 0, (int) $support );
+		$gap       = max( 0, (int) $gap );
+		$cc        = max( 1, (int) $cc );
 		$length_mm = (int) $length + max( 0, (int) $overhang );
-		$half_gap = intdiv( $gap, 2 );
-		$half_l   = intdiv( $support, 2 );
-		$half_r   = $support - $half_l;
-		$inner    = $width - $support;
+		$half_gap  = intdiv( $gap, 2 );
+		$half_l    = intdiv( $support, 2 );
+		$half_r    = $support - $half_l;
+		$inner     = $width - $support;
 
 		if ( $inner <= $cc ) {
 			return array(
-				array(
-					'width_mm'  => $width,
-					'length_mm' => $length_mm,
-					'edge'      => 'side',
+				'sheets'     => array(
+					array(
+						'width_mm'  => $width,
+						'length_mm' => $length_mm,
+						'edge'      => 'side',
+						'x_mm'      => 0,
+					),
 				),
+				'rafters_mm' => array( $half_l, $width - $half_r ),
 			);
 		}
 
-		$bays = (int) ceil( $inner / $cc );
-		$full = $bays - 1;
-		$plan = array();
+		$bay_widths = self::even_bay_widths( $inner, (int) ceil( $inner / $cc ) );
+		$sheets     = array();
+		$rafters    = array( $half_l );
+		$x          = 0;
+		$centre     = $half_l;
+		$last       = count( $bay_widths ) - 1;
 
-		for ( $i = 0; $i < $bays; $i++ ) {
-			$bay = ( $i < $full ) ? $cc : ( $inner - ( $full * $cc ) );
+		foreach ( $bay_widths as $i => $bay ) {
 			if ( 0 === $i ) {
 				$cut  = $bay + $half_l - $half_gap;
 				$edge = 'side';
-			} elseif ( $i === $full ) {
+			} elseif ( $i === $last ) {
 				$cut  = $bay + $half_r - $half_gap;
 				$edge = 'side';
 			} else {
 				$cut  = $bay - $gap;
 				$edge = 'middle';
 			}
-			$plan[] = array(
+			$sheets[] = array(
 				'width_mm'  => (int) $cut,
 				'length_mm' => $length_mm,
 				'edge'      => $edge,
+				'x_mm'      => (int) $x,
 			);
+			$x      += (int) $cut + $gap;
+			$centre += (int) $bay;
+			$rafters[] = (int) $centre;
 		}
 
-		return $plan;
+		return array(
+			'sheets'     => $sheets,
+			'rafters_mm' => $rafters,
+		);
+	}
+
+	/**
+	 * Split an inner span into bays no wider than the caller already chose.
+	 * Spare millimetres go to the middle bays first so the two ends match.
+	 * With only two bays, the extra millimetre stays on the right.
+	 *
+	 * @return int[]
+	 */
+	public static function even_bay_widths( $inner, $bays ) {
+		$inner  = max( 0, (int) $inner );
+		$bays   = max( 1, (int) $bays );
+		$base   = intdiv( $inner, $bays );
+		$extra  = $inner - ( $base * $bays );
+		$widths = array_fill( 0, $bays, $base );
+		if ( $extra < 1 || $bays < 2 ) {
+			return $widths;
+		}
+		if ( 2 === $bays ) {
+			$widths[1] = $base + 1;
+			return $widths;
+		}
+
+		$middle_count = $bays - 2;
+		$middle_extra = $extra;
+		if ( $extra > $middle_count ) {
+			$widths[0]           = $base + 1;
+			$widths[ $bays - 1 ] = $base + 1;
+			$middle_extra        = $extra - 2;
+		}
+		if ( $middle_extra > 0 && $middle_count > 0 ) {
+			$offset = intdiv( $middle_count - $middle_extra, 2 );
+			for ( $i = 0; $i < $middle_extra; $i++ ) {
+				$widths[ 1 + $offset + $i ] = $base + 1;
+			}
+		}
+		return $widths;
 	}
 
 	/**

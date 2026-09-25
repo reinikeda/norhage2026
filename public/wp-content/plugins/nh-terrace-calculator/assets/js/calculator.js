@@ -527,20 +527,43 @@
     }
 
     var plan = meta.sheet_plan;
+    var rafters = Array.isArray(meta.rafters_mm) ? meta.rafters_mm : [];
+    var framed = rafters.length > 1 && Number(meta.width_mm) > 0;
     var row = document.createElement('div');
-    row.className = 'nh-tc__sheets';
+    row.className = framed ? 'nh-tc__frame' : 'nh-tc__sheets';
     row.setAttribute('role', 'img');
-    row.setAttribute('aria-label', i18n('sheets', '%d sheets').replace('%d', plan.length));
+    var aria = i18n('sheets', '%d sheets').replace('%d', plan.length);
+    if (framed) aria += ', ' + rafters.length + ' ' + i18n('rafter', 'Rafter');
+    row.setAttribute('aria-label', aria);
 
     plan.forEach(function (sheet) {
       var cell = document.createElement('div');
       cell.className = 'nh-tc__sheet is-' + (sheet.edge === 'side' ? 'side' : 'middle');
-      cell.style.flexGrow = String(Math.max(1, sheet.width_mm));
+      if (framed) {
+        cell.style.left = (Number(sheet.x_mm) / Number(meta.width_mm) * 100) + '%';
+        cell.style.width = (Number(sheet.width_mm) / Number(meta.width_mm) * 100) + '%';
+      } else {
+        cell.style.flexGrow = String(Math.max(1, sheet.width_mm));
+      }
       var label = document.createElement('span');
       label.textContent = sheet.width_mm;
       cell.appendChild(label);
       row.appendChild(cell);
     });
+
+    if (framed) {
+      rafters.forEach(function (pos) {
+        var line = document.createElement('i');
+        line.className = 'nh-tc__rafter';
+        line.style.left = (Number(pos) / Number(meta.width_mm) * 100) + '%';
+        line.setAttribute('aria-hidden', 'true');
+        row.appendChild(line);
+      });
+      var beam = document.createElement('div');
+      beam.className = 'nh-tc__beam';
+      beam.setAttribute('aria-hidden', 'true');
+      row.appendChild(beam);
+    }
 
     var groups = [];
     plan.forEach(function (sheet) {
@@ -572,16 +595,24 @@
           i18n('planSingle', 'One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
           [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
         );
-    } else if (split) {
-      note.textContent = fillTemplate(
-        i18n('planBay', 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly.'),
-        [meta.side_extra_mm, meta.support_mm, halfGap]
-      );
     } else {
-      note.textContent = fillTemplate(
-        i18n('planExtra', 'On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang).'),
-        [meta.side_extra_mm, meta.support_mm, halfGap, meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
-      );
+      var leftW = Number(plan[0].width_mm);
+      var rightW = Number(plan[plan.length - 1].width_mm);
+      var sides = leftW === rightW
+        ? i18n('planSidesEqual', 'Both side sheets are %d mm.').replace('%d', leftW)
+        : fillTemplate(i18n('planSides', 'The side sheets are %1$d mm and %2$d mm.'), [leftW, rightW]);
+      var text = fillTemplate(
+        i18n('planOuter', 'An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint.'),
+        [meta.side_extra_mm, meta.support_mm, halfGap]
+      ) + ' ' + sides;
+      if (framed) text += ' ' + i18n('planJoint', 'Joints sit on the centre of a rafter.');
+      if (!split) {
+        text += ' ' + fillTemplate(
+          i18n('planCut', 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
+          [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
+        );
+      }
+      note.textContent = text;
     }
 
     var cuts = document.createElement('p');
@@ -590,7 +621,7 @@
 
     var legend = document.createElement('p');
     legend.className = 'nh-tc__legend';
-    legend.innerHTML = '<span><i class="is-side"></i>' + i18n('outer', 'outer') + '</span><span><i class="is-middle"></i>' + i18n('middle', 'middle') + '</span><span><i class="is-joint"></i>' + (meta.profile_gap_mm || 10) + ' mm</span>';
+    legend.innerHTML = '<span><i class="is-side"></i>' + i18n('outer', 'outer') + '</span><span><i class="is-middle"></i>' + i18n('middle', 'middle') + '</span>' + (framed ? '<span><i class="is-rafter"></i>' + i18n('rafter', 'Rafter') + '</span>' : '') + '<span><i class="is-joint"></i>' + (meta.profile_gap_mm || 10) + ' mm</span>';
 
     planEl.innerHTML = '';
     planEl.appendChild(row);

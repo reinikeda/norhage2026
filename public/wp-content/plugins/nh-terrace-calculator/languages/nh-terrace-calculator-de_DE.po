@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -489,3 +489,26 @@ msgstr "%1$d × %2$d mm"
 #, php-format
 msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
 msgstr "Die Zeichnung ist ein möglicher Trägerplan. Die Materialliste enthält %1$d Lagerplatten von %2$d × %3$d mm."
+
+msgid "Rafter"
+msgstr "Träger"
+
+msgid "Joints sit on the centre of a rafter."
+msgstr "Die Stöße sitzen auf der Mitte eines Trägers."
+
+#, php-format
+msgid "Both side sheets are %d mm."
+msgstr "Beide Seitenplatten sind %d mm."
+
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr "Die Seitenplatten sind %1$d mm und %2$d mm."
+
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Zuschnittlänge %1$d mm (Rahmen %2$d mm + %3$d mm Überstand)."
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm."
+

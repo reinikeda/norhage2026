@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -489,3 +489,26 @@ msgstr "%1$d × %2$d mm"
 #, php-format
 msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
 msgstr "Tegningen er et muligt lægteoplæg. Materialelisten tilføjer %1$d standardplader på %2$d × %3$d mm."
+
+msgid "Rafter"
+msgstr "Lægte"
+
+msgid "Joints sit on the centre of a rafter."
+msgstr "Samlingerne sidder i centrum af en lægte."
+
+#, php-format
+msgid "Both side sheets are %d mm."
+msgstr "Begge sideplader er %d mm."
+
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr "Sidepladerne er %1$d mm og %2$d mm."
+
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Skærelængde %1$d mm (ramme %2$d mm + %3$d mm udhæng)."
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr "På et helt fag er en yderplade %1$d mm bredere end en midterplade: den når ud til enden af den %2$d mm brede lægte og mister kun %3$d mm i samlingen."
+

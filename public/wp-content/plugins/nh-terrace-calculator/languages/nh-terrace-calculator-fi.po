@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.4\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -489,3 +489,26 @@ msgstr "%1$d × %2$d mm"
 #, php-format
 msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
 msgstr "Piirros on mahdollinen koolaus. Materiaaliluettelo lisää %1$d vakiolevyä koossa %2$d × %3$d mm."
+
+msgid "Rafter"
+msgstr "Koolaus"
+
+msgid "Joints sit on the centre of a rafter."
+msgstr "Saumat osuvat koolauksen keskelle."
+
+#, php-format
+msgid "Both side sheets are %d mm."
+msgstr "Molemmat sivulevyt ovat %d mm."
+
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr "Sivulevyt ovat %1$d mm ja %2$d mm."
+
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr "Katkaisupituus %1$d mm (runko %2$d mm + %3$d mm ylitys)."
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulottuu %2$d mm:n tuen päähän ja menettää saumassa vain %3$d mm."
+

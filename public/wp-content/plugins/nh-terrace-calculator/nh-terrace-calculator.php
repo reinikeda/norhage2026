@@ -3,7 +3,7 @@
  * Plugin Name: Norhage Terrace Roof Calculator
  * Description: Product-page terrace roof configurator. Builds a live-priced kit from WooCommerce SKUs (sheets, profiles, tapes, screws) and adds every line to the cart, including custom-cut sizes.
  * Author: Daiva Reinike
- * Version: 1.4.4
+ * Version: 1.4.5
  * Requires Plugins: woocommerce
  * Text Domain: nh-terrace-calculator
  * Domain Path: /languages
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_TC_VERSION', '1.4.4' );
+define( 'NH_TC_VERSION', '1.4.5' );
 define( 'NH_TC_FILE', __FILE__ );
 define( 'NH_TC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_TC_URL', plugin_dir_url( __FILE__ ) );
