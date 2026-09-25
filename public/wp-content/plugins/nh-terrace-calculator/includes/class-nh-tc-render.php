@@ -161,7 +161,35 @@ class NH_TC_Render {
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
-						<legend><span class="nh-tc__step-no">3</span><?php esc_html_e( 'Frame size', NH_TC_TD ); ?></legend>
+						<legend><span class="nh-tc__step-no">3</span><?php esc_html_e( 'Sheets', NH_TC_TD ); ?></legend>
+						<p class="nh-tc__ask"><?php esc_html_e( 'What kind of sheets do you want?', NH_TC_TD ); ?></p>
+						<div class="nh-tc__choices nh-tc__choices--supply">
+							<label class="nh-tc__choice nh-tc__choice--plain">
+								<input type="radio" name="sheet_supply" value="custom" checked>
+								<span><?php esc_html_e( 'Custom cut by us', NH_TC_TD ); ?></span>
+							</label>
+							<label class="nh-tc__choice nh-tc__choice--plain">
+								<input type="radio" name="sheet_supply" value="standard">
+								<span><?php esc_html_e( 'Standard sizes that you will cut yourself', NH_TC_TD ); ?></span>
+							</label>
+						</div>
+						<div class="nh-tc__stock" data-stock-card hidden>
+							<div data-stock-channels hidden>
+								<p class="nh-tc__stock-label"><?php esc_html_e( 'Sheet structure', NH_TC_TD ); ?></p>
+								<div class="nh-tc__chips" data-stock-channel></div>
+							</div>
+							<div data-stock-sizes>
+								<p class="nh-tc__stock-label"><?php esc_html_e( 'Width', NH_TC_TD ); ?></p>
+								<div class="nh-tc__chips" data-stock-widths></div>
+								<p class="nh-tc__stock-label"><?php esc_html_e( 'Length', NH_TC_TD ); ?></p>
+								<div class="nh-tc__chips" data-stock-lengths></div>
+							</div>
+							<p class="nh-tc__hint" data-stock-empty hidden><?php esc_html_e( 'This thickness and colour is only available as a custom cut.', NH_TC_TD ); ?></p>
+						</div>
+					</fieldset>
+
+					<fieldset class="nh-tc__card">
+						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Frame size', NH_TC_TD ); ?></legend>
 						<div class="nh-tc__row nh-tc__row--2">
 							<label>
 								<span><?php esc_html_e( 'Width along the wall', NH_TC_TD ); ?></span>
@@ -225,7 +253,7 @@ class NH_TC_Render {
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
-						<legend><span class="nh-tc__step-no">4</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
+						<legend><span class="nh-tc__step-no">5</span><?php esc_html_e( 'Profiles', NH_TC_TD ); ?></legend>
 						<p class="nh-tc__notice"><?php esc_html_e( 'A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project.', NH_TC_TD ); ?></p>
 						<div class="nh-tc__select-row nh-tc__select-row--pair">
 							<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="connecting">
@@ -273,7 +301,7 @@ class NH_TC_Render {
 					</fieldset>
 
 					<fieldset class="nh-tc__card">
-						<legend><span class="nh-tc__step-no">5</span><?php esc_html_e( 'Shipping', NH_TC_TD ); ?></legend>
+						<legend><span class="nh-tc__step-no">6</span><?php esc_html_e( 'Shipping', NH_TC_TD ); ?></legend>
 						<label>
 							<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
 							<input type="text" name="postcode" autocomplete="postal-code" maxlength="12">
@@ -332,6 +360,7 @@ class NH_TC_Render {
 				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
 				'recCc'      => $s['recommended_cc'],
 				'supportRanges' => NH_TC_Engine::support_range_tables(),
+				'standardSheets' => isset( $s['standard_sheets'] ) ? $s['standard_sheets'] : array(),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
@@ -350,6 +379,9 @@ class NH_TC_Render {
 					'outer'         => __( 'outer', NH_TC_TD ),
 					'middle'        => __( 'middle', NH_TC_TD ),
 					'mm'            => __( '%d mm', NH_TC_TD ),
+					'6w'            => __( '6-wall', NH_TC_TD ),
+					'5x'            => __( '5-wall', NH_TC_TD ),
+					'3w'            => __( '3-wall', NH_TC_TD ),
 					'missing'       => __( 'Some items are not in this shop (SKU not found). The rest can still be added.', NH_TC_TD ),
 					'adding'        => __( 'Adding kit…', NH_TC_TD ),
 					'error'         => __( 'Could not add the kit. Please try again.', NH_TC_TD ),

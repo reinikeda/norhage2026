@@ -38,7 +38,18 @@
   var ccCustom = false;
   var defaultCc = Number(cfg.defaultCc) || 600;
   var widthInput = form.querySelector('[name="width_mm"]');
+  var lengthInput = form.querySelector('[name="length_mm"]');
+  var overhangInput = form.querySelector('[name="overhang_mm"]');
   var supportInput = form.querySelector('[name="support_mm"]');
+  var stockCard = root.querySelector('[data-stock-card]');
+  var stockChannels = root.querySelector('[data-stock-channels]');
+  var stockChannelEl = root.querySelector('[data-stock-channel]');
+  var stockSizes = root.querySelector('[data-stock-sizes]');
+  var stockWidthsEl = root.querySelector('[data-stock-widths]');
+  var stockLengthsEl = root.querySelector('[data-stock-lengths]');
+  var stockEmpty = root.querySelector('[data-stock-empty]');
+  var stockState = { key: '', channel: '', width: '', length: '', lengthPinned: false };
+  var stockSig = '';
 
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
@@ -97,6 +108,133 @@
       fillSelect(finishSel, finishTypes, 'f_aluminium');
     }
     fillSelect(finishCol, finishTree[finishSel.value] || [], 'silver');
+  }
+
+  function currentSupply() {
+    var picked = form.querySelector('[name="sheet_supply"]:checked');
+    return picked ? picked.value : 'custom';
+  }
+
+  function stockGroups() {
+    var cat = cfg.standardSheets || {};
+    var material = matSel ? matSel.value : 'multiwall';
+    var thickness = thkSel ? String(thkSel.value) : '';
+    var colour = colSel ? colSel.value : '';
+    var byMaterial = cat[material] || {};
+    var byThickness = byMaterial[thickness] || {};
+    return byThickness[colour] || {};
+  }
+
+  function renderChips(container, name, values, selected, labelFn) {
+    if (!container) return;
+    container.innerHTML = '';
+    values.forEach(function (value) {
+      var label = document.createElement('label');
+      label.className = 'nh-tc__chip';
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = name;
+      input.value = String(value);
+      input.checked = String(value) === String(selected);
+      var text = document.createElement('span');
+      text.textContent = labelFn(value);
+      label.appendChild(input);
+      label.appendChild(text);
+      container.appendChild(label);
+    });
+  }
+
+  function preferredLength(lengths) {
+    var need = (lengthInput ? Number(lengthInput.value) : 0) + (overhangInput ? Number(overhangInput.value) : 0);
+    var sorted = lengths.map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+    var i;
+    for (i = 0; i < sorted.length; i++) {
+      if (sorted[i] >= need) return String(sorted[i]);
+    }
+    return sorted.length ? String(sorted[sorted.length - 1]) : '';
+  }
+
+  function setStockDisabled(disabled) {
+    if (!stockCard) return;
+    Array.prototype.forEach.call(stockCard.querySelectorAll('input'), function (input) {
+      input.disabled = disabled;
+    });
+  }
+
+  function syncStockCard() {
+    if (!stockCard) return;
+    var standard = currentSupply() === 'standard';
+    stockCard.hidden = !standard;
+    if (!standard) {
+      setStockDisabled(true);
+      stockSig = 'custom';
+      return;
+    }
+
+    var groups = stockGroups();
+    var channels = Object.keys(groups);
+    var key = [
+      matSel ? matSel.value : '',
+      thkSel ? thkSel.value : '',
+      colSel ? colSel.value : ''
+    ].join('|');
+    if (key !== stockState.key) {
+      stockState.key = key;
+      stockState.channel = '';
+      stockState.width = '';
+      stockState.length = '';
+      stockState.lengthPinned = false;
+    }
+
+    var empty = !channels.length;
+    if (stockEmpty) stockEmpty.hidden = !empty;
+    if (stockSizes) stockSizes.hidden = empty;
+    if (stockChannels) stockChannels.hidden = empty || (channels.length === 1 && channels[0] === 'stock');
+    if (empty) {
+      if (stockChannelEl) stockChannelEl.innerHTML = '';
+      if (stockWidthsEl) stockWidthsEl.innerHTML = '';
+      if (stockLengthsEl) stockLengthsEl.innerHTML = '';
+      stockSig = key + '|empty';
+      return;
+    }
+
+    if (channels.indexOf(stockState.channel) === -1) {
+      if (channels.indexOf('stock') !== -1) stockState.channel = 'stock';
+      else if (channels.indexOf('6w') !== -1) stockState.channel = '6w';
+      else stockState.channel = channels[0];
+      stockState.width = '';
+      stockState.lengthPinned = false;
+    }
+
+    var widthMap = (groups[stockState.channel] && groups[stockState.channel].widths) || {};
+    var widths = Object.keys(widthMap).sort(function (a, b) { return Number(a) - Number(b); });
+    if (widths.indexOf(String(stockState.width)) === -1) {
+      stockState.width = widths.indexOf('2100') !== -1 ? '2100' : widths[widths.length - 1];
+      stockState.lengthPinned = false;
+    }
+
+    var lengths = (widthMap[stockState.width] || []).map(String);
+    if (!stockState.lengthPinned || lengths.indexOf(String(stockState.length)) === -1) {
+      stockState.length = preferredLength(lengths);
+    }
+
+    var sig = [key, stockState.channel, stockState.width, stockState.length].join('|');
+    if (sig === stockSig) {
+      setStockDisabled(false);
+      return;
+    }
+    stockSig = sig;
+
+    renderChips(stockChannelEl, 'stock_channel', channels, stockState.channel, function (channel) {
+      return i18n(channel, channel);
+    });
+    renderChips(stockWidthsEl, 'stock_width_mm', widths, stockState.width, function (width) {
+      return i18n('mm', '%d mm').replace('%d', width);
+    });
+    renderChips(stockLengthsEl, 'stock_length_mm', lengths, stockState.length, function (length) {
+      return i18n('mm', '%d mm').replace('%d', length);
+    });
+    setStockDisabled(false);
   }
 
   function rangeFor(material, thickness) {
@@ -309,6 +447,7 @@
 
   function schedule() {
     applySpacing(false);
+    syncStockCard();
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
   }
@@ -518,6 +657,23 @@
       schedule();
     });
   }
+  if (stockCard) {
+    stockCard.addEventListener('change', function (event) {
+      var target = event.target;
+      if (!target || !target.name) return;
+      if (target.name === 'stock_channel') {
+        stockState.channel = target.value;
+        stockState.width = '';
+        stockState.lengthPinned = false;
+      } else if (target.name === 'stock_width_mm') {
+        stockState.width = target.value;
+        stockState.lengthPinned = false;
+      } else if (target.name === 'stock_length_mm') {
+        stockState.length = target.value;
+        stockState.lengthPinned = true;
+      }
+    });
+  }
   if (ccInput) {
     ccInput.addEventListener('input', function () {
       ccCustom = true;
@@ -544,5 +700,6 @@
   syncSheetOptions();
   syncProfileOptions();
   applySpacing(true);
+  syncStockCard();
   quote();
 })();

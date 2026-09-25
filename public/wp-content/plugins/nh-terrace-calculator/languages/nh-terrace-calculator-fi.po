@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -439,3 +439,30 @@ msgstr "Yksi levy peittää rungon reunasta reunaan."
 #, php-format
 msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
 msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulottuu %2$d mm:n tuen päähän ja menettää saumassa vain %3$d mm. Viimeinen pala on lyhyempi, kun jako ei mene tasan rungon kanssa."
+
+msgid "Sheets"
+msgstr "Levyt"
+
+msgid "What kind of sheets do you want?"
+msgstr "Millaisia levyjä haluat?"
+
+msgid "Custom cut by us"
+msgstr "Me leikkaamme mittojen mukaan"
+
+msgid "Standard sizes that you will cut yourself"
+msgstr "Vakiokoot, jotka leikkaat itse"
+
+msgid "Sheet structure"
+msgstr "Kennorakenne"
+
+msgid "This thickness and colour is only available as a custom cut."
+msgstr "Tätä paksuutta ja väriä on vain mittojen mukaan leikattuna."
+
+msgid "6-wall"
+msgstr "6-seinäinen"
+
+msgid "5-wall"
+msgstr "5-seinäinen"
+
+msgid "3-wall"
+msgstr "3-seinäinen"
