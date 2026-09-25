@@ -225,6 +225,280 @@ function nh_wl_pdf_glyph( $font, $codepoint ) {
 }
 
 /**
+ * @param string $hex RRGGBB.
+ * @return array{0:float,1:float,2:float}
+ */
+function nh_wl_pdf_color( $hex ) {
+	$hex = ltrim( (string) $hex, '#' );
+	if ( 6 !== strlen( $hex ) || ! ctype_xdigit( $hex ) ) {
+		return array( 0.0, 0.0, 0.0 );
+	}
+	return array(
+		hexdec( substr( $hex, 0, 2 ) ) / 255,
+		hexdec( substr( $hex, 2, 2 ) ) / 255,
+		hexdec( substr( $hex, 4, 2 ) ) / 255,
+	);
+}
+
+/**
+ * @param float  $x X.
+ * @param float  $y Y.
+ * @param float  $w Width.
+ * @param float  $h Height.
+ * @param string $hex Fill.
+ * @return string
+ */
+function nh_wl_pdf_fill_rect( $x, $y, $w, $h, $hex ) {
+	$color = nh_wl_pdf_color( $hex );
+	return sprintf( "%.3F %.3F %.3F rg %.2F %.2F %.2F %.2F re f\n", $color[0], $color[1], $color[2], $x, $y, $w, $h );
+}
+
+/**
+ * @param string              $text Text.
+ * @param array<string,mixed> $font Font.
+ * @param float               $size Size.
+ * @param float               $x X.
+ * @param float               $y Y.
+ * @param string              $hex Color.
+ * @param array<int,int>      $used Glyph map.
+ * @return string
+ */
+function nh_wl_pdf_draw_text( $text, $font, $size, $x, $y, $hex, &$used ) {
+	$color = nh_wl_pdf_color( $hex );
+	return sprintf( "%.3F %.3F %.3F rg\n", $color[0], $color[1], $color[2] ) . nh_wl_pdf_text_operator( $text, $font, $size, $x, $y, $used );
+}
+
+/**
+ * @param string              $text Text.
+ * @param array<string,mixed> $font Font.
+ * @param float               $size Size.
+ * @param float               $right Right edge.
+ * @param float               $y Y.
+ * @param string              $hex Color.
+ * @param array<int,int>      $used Glyph map.
+ * @return string
+ */
+function nh_wl_pdf_draw_right( $text, $font, $size, $right, $y, $hex, &$used ) {
+	$x = $right - nh_wl_pdf_width( $text, $font, $size );
+	return nh_wl_pdf_draw_text( $text, $font, $size, $x, $y, $hex, $used );
+}
+
+/**
+ * @param array<string,mixed> $row Row.
+ * @param array<string,mixed> $font Font.
+ * @return array<string,mixed>
+ */
+function nh_wl_pdf_sheet_row( $row, $font ) {
+	$name = nh_wl_pdf_wrap( isset( $row['name'] ) ? (string) $row['name'] : '', $font, 10, 200 );
+	if ( ! $name ) {
+		$name = array( '' );
+	}
+	$details = array();
+	$source  = isset( $row['details'] ) && is_array( $row['details'] ) ? $row['details'] : array();
+	foreach ( $source as $line ) {
+		foreach ( nh_wl_pdf_wrap( (string) $line, $font, 8, 168 ) as $wrapped ) {
+			if ( '' !== $wrapped ) {
+				$details[] = $wrapped;
+			}
+		}
+	}
+	$note_text = isset( $row['note'] ) ? (string) $row['note'] : '';
+	$note      = '' !== $note_text ? nh_wl_pdf_wrap( $note_text, $font, 8, 500 ) : array();
+	$body      = max( count( $name ), count( $details ), 1 );
+	$height    = 12 + ( $body * 12 ) + ( $note ? 4 + ( count( $note ) * 11 ) : 0 ) + 6;
+	return array(
+		'type'    => 'row',
+		'name'    => $name,
+		'details' => $details,
+		'note'    => $note,
+		'qty'     => isset( $row['qty'] ) ? (string) $row['qty'] : '',
+		'price'   => isset( $row['price'] ) ? (string) $row['price'] : '',
+		'height'  => $height,
+	);
+}
+
+/**
+ * Quote-style sheet: branded header, columns, and a total for ready lines.
+ *
+ * @param array<string,mixed> $document Document.
+ * @param array<string,mixed> $font Font.
+ * @return string
+ */
+function nh_wl_pdf_render_sheet( $document, $font ) {
+	$columns = isset( $document['columns'] ) && is_array( $document['columns'] ) ? $document['columns'] : array();
+	$columns = array_merge(
+		array(
+			'product' => 'Product',
+			'details' => 'Details',
+			'qty'     => 'Quantity',
+			'price'   => 'Price',
+		),
+		$columns
+	);
+	$blocks = array();
+	$rows   = isset( $document['rows'] ) && is_array( $document['rows'] ) ? $document['rows'] : array();
+	foreach ( $rows as $row ) {
+		if ( is_array( $row ) ) {
+			$blocks[] = nh_wl_pdf_sheet_row( $row, $font );
+		}
+	}
+	$total = isset( $document['total'] ) ? (string) $document['total'] : '';
+	if ( '' !== $total ) {
+		$blocks[] = array(
+			'type'   => 'total',
+			'label'  => isset( $document['total_label'] ) ? (string) $document['total_label'] : '',
+			'amount' => $total,
+			'height' => 28,
+		);
+	}
+	$note = isset( $document['note'] ) ? (string) $document['note'] : '';
+	if ( '' !== $note ) {
+		$lines = nh_wl_pdf_wrap( $note, $font, 8, 523 );
+		$blocks[] = array(
+			'type'   => 'note',
+			'lines'  => $lines,
+			'height' => 10 + ( count( $lines ) * 11 ),
+		);
+	}
+	$chunks  = array();
+	$current = array();
+	$first   = true;
+	$y       = 734.0;
+	foreach ( $blocks as $block ) {
+		if ( $current && ( $y - $block['height'] ) < 52 ) {
+			$chunks[] = array(
+				'first'  => $first,
+				'blocks' => $current,
+			);
+			$current = array();
+			$first   = false;
+			$y       = 770.0;
+		}
+		$current[] = $block;
+		$y        -= $block['height'];
+	}
+	$chunks[] = array(
+		'first'  => $first,
+		'blocks' => $current,
+	);
+
+	$used    = array();
+	$streams = array();
+	$count   = count( $chunks );
+	foreach ( $chunks as $index => $chunk ) {
+		$streams[] = nh_wl_pdf_sheet_page( $document, $columns, $chunk, $index + 1, $count, $font, $used );
+	}
+	return nh_wl_pdf_assemble( $font, $streams, $used );
+}
+
+/**
+ * @param array<string,mixed>      $document Document.
+ * @param array<string,string>     $columns Columns.
+ * @param array<string,mixed>      $chunk Page chunk.
+ * @param int                      $number Page number.
+ * @param int                      $count Page count.
+ * @param array<string,mixed>      $font Font.
+ * @param array<int,int>           $used Glyph map.
+ * @return string
+ */
+function nh_wl_pdf_sheet_page( $document, $columns, $chunk, $number, $count, $font, &$used ) {
+	$forest = '1E3932';
+	$cream  = 'F1E6D6';
+	$off    = 'FAF7F2';
+	$char   = '2C2A29';
+	$muted  = '5F5C59';
+	$white  = 'FFFFFF';
+	$stream = nh_wl_pdf_fill_rect( 0, 0, 595, 842, $white );
+	$title  = isset( $document['title'] ) ? (string) $document['title'] : '';
+	$list   = isset( $document['subtitle'] ) ? (string) $document['subtitle'] : '';
+	$meta   = isset( $document['meta'] ) ? (string) $document['meta'] : '';
+	$brand  = isset( $document['brand'] ) ? (string) $document['brand'] : '';
+	if ( ! empty( $chunk['first'] ) ) {
+		$stream .= nh_wl_pdf_fill_rect( 0, 770, 595, 72, $forest );
+		$stream .= nh_wl_pdf_draw_text( $title, $font, 18, 36, 812, $white, $used );
+		if ( '' !== $list ) {
+			$stream .= nh_wl_pdf_draw_text( $list, $font, 11, 36, 792, $cream, $used );
+		}
+		if ( '' !== $meta ) {
+			$stream .= nh_wl_pdf_draw_text( $meta, $font, 9, 36, 778, $cream, $used );
+		}
+		if ( '' !== $brand ) {
+			$stream .= nh_wl_pdf_draw_right( $brand, $font, 9, 559, 812, $cream, $used );
+		}
+		$head = 742.0;
+		$top  = 734.0;
+	} else {
+		$stream .= nh_wl_pdf_fill_rect( 0, 806, 595, 36, $forest );
+		$stream .= nh_wl_pdf_draw_text( trim( $title . ( '' !== $list ? ' - ' . $list : '' ) ), $font, 11, 36, 820, $white, $used );
+		$head = 778.0;
+		$top  = 770.0;
+	}
+	$stream .= nh_wl_pdf_fill_rect( 36, $head, 523, 20, $cream );
+	$stream .= nh_wl_pdf_draw_text( (string) $columns['product'], $font, 8, 44, $head + 6, $forest, $used );
+	$stream .= nh_wl_pdf_draw_text( (string) $columns['details'], $font, 8, 262, $head + 6, $forest, $used );
+	$stream .= nh_wl_pdf_draw_right( (string) $columns['qty'], $font, 8, 470, $head + 6, $forest, $used );
+	$stream .= nh_wl_pdf_draw_right( (string) $columns['price'], $font, 8, 551, $head + 6, $forest, $used );
+
+	$stripe = 0;
+	foreach ( $chunk['blocks'] as $block ) {
+		$bottom = $top - $block['height'];
+		if ( 'row' === $block['type'] ) {
+			if ( 1 === $stripe % 2 ) {
+				$stream .= nh_wl_pdf_fill_rect( 36, $bottom, 523, $block['height'], $off );
+			}
+			$stream .= nh_wl_pdf_fill_rect( 36, $bottom, 523, 0.6, 'E4DDD2' );
+			$cursor = $top - 16;
+			foreach ( $block['name'] as $line ) {
+				$stream .= nh_wl_pdf_draw_text( $line, $font, 10, 44, $cursor, $char, $used );
+				$cursor -= 12;
+			}
+			$cursor = $top - 16;
+			foreach ( $block['details'] as $line ) {
+				$stream .= nh_wl_pdf_draw_text( $line, $font, 8, 262, $cursor, $muted, $used );
+				$cursor -= 12;
+			}
+			if ( '' !== $block['qty'] ) {
+				$stream .= nh_wl_pdf_draw_right( $block['qty'], $font, 10, 470, $top - 16, $char, $used );
+			}
+			if ( '' !== $block['price'] ) {
+				$stream .= nh_wl_pdf_draw_right( $block['price'], $font, 10, 551, $top - 16, $char, $used );
+			}
+			if ( $block['note'] ) {
+				$note_y = $top - 16 - ( max( count( $block['name'] ), count( $block['details'] ), 1 ) * 12 ) - 2;
+				foreach ( $block['note'] as $line ) {
+					$stream .= nh_wl_pdf_draw_text( $line, $font, 8, 44, $note_y, '4B2C20', $used );
+					$note_y -= 11;
+				}
+			}
+			++$stripe;
+		} elseif ( 'total' === $block['type'] ) {
+			$stream .= nh_wl_pdf_fill_rect( 360, $bottom + 8, 199, 0.8, $forest );
+			$stream .= nh_wl_pdf_draw_text( $block['label'], $font, 10, 360, $bottom + 14, $forest, $used );
+			$stream .= nh_wl_pdf_draw_right( $block['amount'], $font, 10, 551, $bottom + 14, $forest, $used );
+		} else {
+			$cursor = $top - 12;
+			foreach ( $block['lines'] as $line ) {
+				$stream .= nh_wl_pdf_draw_text( $line, $font, 8, 36, $cursor, $muted, $used );
+				$cursor -= 11;
+			}
+		}
+		$top = $bottom;
+	}
+
+	$stream .= nh_wl_pdf_fill_rect( 0, 0, 595, 36, $cream );
+	$footer  = isset( $document['footer'] ) ? (string) $document['footer'] : '';
+	$contact = isset( $document['contact'] ) ? (string) $document['contact'] : '';
+	if ( '' !== $footer ) {
+		$stream .= nh_wl_pdf_draw_text( $footer, $font, 8, 36, 16, $forest, $used );
+	}
+	if ( '' !== $contact ) {
+		$stream .= nh_wl_pdf_draw_text( $contact, $font, 8, 220, 16, $muted, $used );
+	}
+	$stream .= nh_wl_pdf_draw_right( $number . '/' . $count, $font, 8, 559, 16, $muted, $used );
+	return $stream;
+}
+
+/**
  * @param array<string,mixed> $document Document.
  * @param string              $font_path Font path.
  * @return string
@@ -235,6 +509,9 @@ function nh_wl_pdf_render( $document, $font_path ) {
 		return nh_wl_pdf_render_plain( $document );
 	}
 	$document = is_array( $document ) ? $document : array();
+	if ( isset( $document['rows'] ) && is_array( $document['rows'] ) ) {
+		return nh_wl_pdf_render_sheet( $document, $font );
+	}
 	$title    = isset( $document['title'] ) ? (string) $document['title'] : '';
 	$subtitle = isset( $document['subtitle'] ) ? (string) $document['subtitle'] : '';
 	$meta     = isset( $document['meta'] ) ? (string) $document['meta'] : '';

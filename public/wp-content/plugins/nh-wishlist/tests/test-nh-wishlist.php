@@ -220,6 +220,39 @@ nh_wl_assert( 'pdf embeds the font', false !== strpos( $pdf, '/FontFile2' ) );
 nh_wl_assert( 'pdf maps a Lithuanian character', false !== strpos( $pdf, '0105' ) );
 nh_wl_assert( 'pdf is a real file', strlen( $pdf ) > 10000 );
 
+$sheet = nh_wl_pdf_render(
+	array(
+		'title'       => 'Wishlist',
+		'subtitle'    => 'Default',
+		'meta'        => '25 Sep 2026',
+		'brand'       => 'Norhage',
+		'footer'      => 'Norhage',
+		'contact'     => 'info@norhage.eu',
+		'note'        => 'Prices are shown only for products that are ready to order.',
+		'columns'     => array(
+			'product' => 'Product',
+			'details' => 'Details',
+			'qty'     => 'Quantity',
+			'price'   => 'Price',
+		),
+		'rows'        => array(
+			array(
+				'name'    => 'Polikarbonatas ąčę',
+				'details' => array( 'Plotis: 1200 mm', 'Ilgis: 800 mm' ),
+				'qty'     => '2',
+				'price'   => '24,00',
+				'note'    => '',
+			),
+		),
+		'total_label' => 'Total',
+		'total'       => '24,00',
+	),
+	$font
+);
+nh_wl_assert( 'sheet header', 0 === strpos( $sheet, '%PDF-1.4' ) );
+nh_wl_assert( 'sheet draws a branded bar', false !== strpos( $sheet, ' re f' ) );
+nh_wl_assert( 'sheet keeps a Lithuanian name', false !== strpos( $sheet, '0105' ) );
+
 $header = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/template-parts/headers/header-main.php' );
 nh_wl_assert( 'header has a wishlist link', false !== strpos( $header, 'nh_wl_header_link' ) );
 

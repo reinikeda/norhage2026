@@ -376,9 +376,11 @@ function nh_wl_prepare_item( $item ) {
 	}
 	$lines = array_merge( $lines, nh_wl_attribute_lines( isset( $item['attributes'] ) ? $item['attributes'] : array() ) );
 	$lines = array_merge( $lines, nh_wl_dimension_lines( isset( $item['dimensions'] ) ? $item['dimensions'] : array() ) );
+	$price_amount = 0.0;
 	if ( $available && ! $needs && $chosen instanceof WC_Product ) {
-		$price_html = nh_wl_item_price_html( $product, $chosen, $item, $flags );
-		$price_text = trim( wp_strip_all_tags( html_entity_decode( $price_html, ENT_QUOTES, 'UTF-8' ) ) );
+		$price_html   = nh_wl_item_price_html( $product, $chosen, $item, $flags );
+		$price_text   = trim( wp_strip_all_tags( html_entity_decode( $price_html, ENT_QUOTES, 'UTF-8' ) ) );
+		$price_amount = nh_wl_item_price_amount( $product, $chosen, $item, $flags );
 	}
 	return array(
 		'key'              => $item['key'],
@@ -392,6 +394,7 @@ function nh_wl_prepare_item( $item ) {
 		'needs_customize'  => (bool) $needs,
 		'price_html'       => $price_html,
 		'price_text'       => $price_text,
+		'price_amount'     => $price_amount,
 		'qty_label'        => sprintf( __( 'Quantity: %d', 'nh-wishlist' ), (int) $item['quantity'] ),
 	);
 }
@@ -421,43 +424,106 @@ function nh_wl_item_price_html( $parent, $chosen, $item, $flags ) {
 }
 
 /**
+ * Unit price shown to the customer, tax display included when WooCommerce provides it.
+ *
+ * @param WC_Product          $parent Parent.
+ * @param WC_Product          $chosen Chosen product or variation.
+ * @param array<string,mixed> $item Item.
+ * @param array<string,mixed> $flags Flags.
+ * @return float
+ */
+function nh_wl_item_price_amount( $parent, $chosen, $item, $flags ) {
+	if ( ! empty( $flags['is_custom'] ) ) {
+		$base = (float) $chosen->get_price();
+		$fee  = (float) get_post_meta( $parent->get_id(), '_nh_cc_cut_fee', true );
+		$dims = nh_wl_normalize_dimensions( isset( $item['dimensions'] ) ? $item['dimensions'] : array() );
+		$dims['unit'] = $flags['unit'];
+		$dims['type'] = $flags['type'];
+		$raw  = nh_wl_custom_unit_price( $base, $fee, $dims );
+	} else {
+		$raw = (float) $chosen->get_price();
+	}
+	if ( $raw <= 0 ) {
+		return 0.0;
+	}
+	if ( function_exists( 'wc_get_price_to_display' ) ) {
+		return (float) wc_get_price_to_display( $chosen, array( 'price' => $raw ) );
+	}
+	return $raw;
+}
+
+/**
+ * @param float $amount Amount.
+ * @return string
+ */
+function nh_wl_plain_price( $amount ) {
+	if ( function_exists( 'wc_price' ) ) {
+		return trim( wp_strip_all_tags( html_entity_decode( wc_price( $amount ), ENT_QUOTES, 'UTF-8' ) ) );
+	}
+	return (string) $amount;
+}
+
+/**
  * @param array<string,mixed> $view View.
  * @return array<string,mixed>
  */
 function nh_wl_pdf_document( $view ) {
-	$blocks = array();
+	$rows  = array();
+	$total = 0.0;
+	$priced = false;
 	foreach ( $view['items'] as $item ) {
-		$lines   = array();
-		$lines[] = $item['qty_label'];
+		$details = array();
 		foreach ( $item['lines'] as $line ) {
-			$lines[] = $line['label'] . ': ' . $line['value'];
+			$details[] = $line['label'] . ': ' . $line['value'];
 		}
-		if ( '' !== $item['price_text'] ) {
-			$lines[] = $item['price_text'];
-		}
+		$note = '';
 		if ( '' !== $item['notice'] ) {
-			$lines[] = $item['notice'];
+			$note = $item['notice'];
+		} elseif ( empty( $item['available'] ) ) {
+			$note = __( 'This product is no longer available.', 'nh-wishlist' );
 		}
-		if ( empty( $item['available'] ) && '' === $item['notice'] ) {
-			$lines[] = __( 'This product is no longer available.', 'nh-wishlist' );
+		$amount = isset( $item['price_amount'] ) ? (float) $item['price_amount'] : 0.0;
+		$qty    = max( 1, (int) $item['quantity'] );
+		$price  = '';
+		if ( $amount > 0 && '' === $note ) {
+			$total += $amount * $qty;
+			$priced = true;
+			$price  = nh_wl_plain_price( $amount * $qty );
 		}
-		$blocks[] = array(
-			'heading' => $item['name'],
-			'lines'   => $lines,
+		$rows[] = array(
+			'name'    => $item['name'],
+			'details' => $details,
+			'qty'     => (string) (int) $item['quantity'],
+			'price'   => $price,
+			'note'    => $note,
 		);
 	}
-	if ( ! $blocks ) {
-		$blocks[] = array(
-			'heading' => '',
-			'lines'   => array( __( 'Your wishlist is empty.', 'nh-wishlist' ) ),
+	if ( ! $rows ) {
+		$rows[] = array(
+			'name'    => __( 'Your wishlist is empty.', 'nh-wishlist' ),
+			'details' => array(),
+			'qty'     => '',
+			'price'   => '',
+			'note'    => '',
 		);
 	}
 	return array(
-		'title'    => __( 'Wishlist', 'nh-wishlist' ),
-		'subtitle' => $view['label'],
-		'meta'     => $view['date'],
-		'footer'   => $view['site_name'],
-		'blocks'   => $blocks,
+		'title'       => __( 'Wishlist', 'nh-wishlist' ),
+		'subtitle'    => $view['label'],
+		'meta'        => $view['date'],
+		'brand'       => $view['site_name'],
+		'footer'      => $view['site_name'],
+		'contact'     => nh_wl_service_email(),
+		'note'        => __( 'Prices are shown only for products that are ready to order.', 'nh-wishlist' ),
+		'columns'     => array(
+			'product' => __( 'Product', 'nh-wishlist' ),
+			'details' => __( 'Details', 'nh-wishlist' ),
+			'qty'     => __( 'Quantity', 'nh-wishlist' ),
+			'price'   => __( 'Price', 'nh-wishlist' ),
+		),
+		'rows'        => $rows,
+		'total_label' => __( 'Total', 'nh-wishlist' ),
+		'total'       => $priced ? nh_wl_plain_price( $total ) : '',
 	);
 }
 
@@ -496,6 +562,7 @@ function nh_wl_script_data() {
 		'count'  => nh_wl_count_items( $state ),
 		'i18n'   => array(
 			'add'          => __( 'Add to wishlist', 'nh-wishlist' ),
+			'remove'       => __( 'Remove', 'nh-wishlist' ),
 			'inWishlist'   => __( 'In wishlist', 'nh-wishlist' ),
 			'choose'       => __( 'Choose a wishlist', 'nh-wishlist' ),
 			'create'       => __( 'Create a list', 'nh-wishlist' ),

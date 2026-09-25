@@ -33,29 +33,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</nav>
 
 	<div class="nh-wl__manage">
-		<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl__create">
-			<?php wp_nonce_field( 'nh_wl' ); ?>
-			<input type="hidden" name="action" value="nh_wl">
-			<input type="hidden" name="nh_wl_do" value="create">
-			<label>
-				<span><?php esc_html_e( 'New list', 'nh-wishlist' ); ?></span>
-				<input type="text" name="list_name" maxlength="80" required placeholder="<?php esc_attr_e( 'List name', 'nh-wishlist' ); ?>">
-			</label>
-			<button type="submit"><?php esc_html_e( 'Create', 'nh-wishlist' ); ?></button>
-		</form>
 		<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" class="nh-wl__rename">
 			<?php wp_nonce_field( 'nh_wl' ); ?>
 			<input type="hidden" name="action" value="nh_wl">
 			<input type="hidden" name="nh_wl_do" value="rename">
 			<input type="hidden" name="list_id" value="<?php echo esc_attr( $view['list_id'] ); ?>">
 			<label>
-				<span><?php esc_html_e( 'Rename', 'nh-wishlist' ); ?></span>
-				<input type="text" name="list_name" maxlength="80" required value="<?php echo esc_attr( $view['label'] ); ?>">
+				<span class="screen-reader-text"><?php esc_html_e( 'List name', 'nh-wishlist' ); ?></span>
+				<input type="text" name="list_name" maxlength="80" required value="<?php echo esc_attr( $view['label'] ); ?>" aria-label="<?php esc_attr_e( 'List name', 'nh-wishlist' ); ?>">
 			</label>
-			<button type="submit"><?php esc_html_e( 'Rename', 'nh-wishlist' ); ?></button>
+			<button type="submit" class="nh-wl__button nh-wl__button--ghost"><?php esc_html_e( 'Rename', 'nh-wishlist' ); ?></button>
 		</form>
 		<?php if ( ! empty( $view['can_delete'] ) ) : ?>
-			<form method="post" action="<?php echo esc_url( $view['action'] ); ?>">
+			<form method="post" action="<?php echo esc_url( $view['action'] ); ?>" onsubmit="return confirm(this.getAttribute('data-confirm'));" data-confirm="<?php echo esc_attr( __( 'Delete this list?', 'nh-wishlist' ) ); ?>">
 				<?php wp_nonce_field( 'nh_wl' ); ?>
 				<input type="hidden" name="action" value="nh_wl">
 				<input type="hidden" name="nh_wl_do" value="delete">

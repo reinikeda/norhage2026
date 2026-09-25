@@ -226,3 +226,21 @@ msgstr "Tarjouspyyntö lähetetty."
 
 msgid "Send a quote"
 msgstr "Pyydä tarjous"
+
+msgid "Delete this list?"
+msgstr "Poistetaanko tämä lista?"
+
+msgid "Details"
+msgstr "Tiedot"
+
+msgid "Price"
+msgstr "Hinta"
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr "Hinnat näytetään vain tuotteille, jotka ovat valmiita tilattavaksi."
+
+msgid "Product"
+msgstr "Tuote"
+
+msgid "Total"
+msgstr "Yhteensä"

@@ -13,6 +13,7 @@
 
   var pending = null;
   var lastFocus = null;
+  var saving = false;
   var listsEl = pop.querySelector('.nh-wl-popover__lists');
   var noticeEl = pop.querySelector('.nh-wl-popover__notice');
   var createForm = pop.querySelector('.nh-wl-popover__create');
@@ -150,6 +151,7 @@
 
   function showNotice(message) {
     noticeEl.textContent = message || '';
+    noticeEl.hidden = !message;
   }
 
   function closePopover() {
@@ -171,7 +173,15 @@
       var button = document.createElement('button');
       button.type = 'button';
       button.className = exact ? 'is-saved' : '';
-      button.textContent = exact ? text(cfg.i18n.removeFrom, list.name) : text(cfg.i18n.saveTo, list.name);
+      button.setAttribute('aria-label', exact ? text(cfg.i18n.removeFrom, list.name) : text(cfg.i18n.saveTo, list.name));
+      var name = document.createElement('span');
+      name.className = 'nh-wl-popover__name';
+      name.textContent = list.name;
+      var action = document.createElement('span');
+      action.className = 'nh-wl-popover__action';
+      action.textContent = exact ? cfg.i18n.remove : '+';
+      button.appendChild(name);
+      button.appendChild(action);
       button.addEventListener('click', function () {
         save(list.id, exact);
       });
@@ -193,6 +203,10 @@
   }
 
   function save(listId, remove) {
+    if (saving || !pending) {
+      return;
+    }
+    saving = true;
     var fields = {
       action: 'nh_wl_save',
       list_id: listId,
@@ -206,14 +220,15 @@
       length_m: pending.length_m
     };
     post(fields).then(function (result) {
+      saving = false;
       if (!result || !result.success) {
         showNotice((result && result.data && result.data.message) || cfg.i18n.tryAgain);
         return;
       }
       applyState(result.data);
-      showNotice(result.data.message || '');
-      renderLists();
+      closePopover();
     }).catch(function () {
+      saving = false;
       showNotice(cfg.i18n.tryAgain);
     });
   }

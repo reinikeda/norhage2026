@@ -225,3 +225,21 @@ msgstr ""
 
 msgid "Send a quote"
 msgstr ""
+
+msgid "Delete this list?"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Prices are shown only for products that are ready to order."
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "Total"
+msgstr ""

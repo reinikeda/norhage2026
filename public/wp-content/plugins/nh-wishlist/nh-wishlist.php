@@ -3,7 +3,7 @@
  * Plugin Name: Norhage Wishlist
  * Description: Wishlists that keep the selected variation and custom-cut dimensions. Guests are stored with a cookie. Lists can be added to the basket, saved as PDF, or sent as a quote to customer service.
  * Author: Norhage
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires Plugins: woocommerce
  * Text Domain: nh-wishlist
  * Domain Path: /languages
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_WL_VERSION', '1.0.2' );
+define( 'NH_WL_VERSION', '1.0.3' );
 define( 'NH_WL_FILE', __FILE__ );
 define( 'NH_WL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_WL_URL', plugin_dir_url( __FILE__ ) );
@@ -215,14 +215,16 @@ final class NH_WL_Plugin {
 	public function popover() {
 		echo '<div id="nh-wl-popover" class="nh-wl-popover" hidden>';
 		echo '<div class="nh-wl-popover__card" role="dialog" aria-modal="true" aria-labelledby="nh-wl-popover-title">';
+		echo '<header class="nh-wl-popover__head">';
 		echo '<h2 id="nh-wl-popover-title">' . esc_html__( 'Choose a wishlist', 'nh-wishlist' ) . '</h2>';
+		echo '<button type="button" class="nh-wl-popover__close" aria-label="' . esc_attr__( 'Close', 'nh-wishlist' ) . '">&times;</button>';
+		echo '</header>';
 		echo '<div class="nh-wl-popover__lists"></div>';
 		echo '<form class="nh-wl-popover__create">';
-		echo '<label>' . esc_html__( 'List name', 'nh-wishlist' ) . ' <input type="text" name="list_name" maxlength="80" autocomplete="off"></label>';
+		echo '<label><span>' . esc_html__( 'New list', 'nh-wishlist' ) . '</span><input type="text" name="list_name" maxlength="80" autocomplete="off" placeholder="' . esc_attr__( 'List name', 'nh-wishlist' ) . '"></label>';
 		echo '<button type="submit">' . esc_html__( 'Create', 'nh-wishlist' ) . '</button>';
 		echo '</form>';
-		echo '<p class="nh-wl-popover__notice" role="status"></p>';
-		echo '<button type="button" class="nh-wl-popover__close">' . esc_html__( 'Close', 'nh-wishlist' ) . '</button>';
+		echo '<p class="nh-wl-popover__notice" role="status" hidden></p>';
 		echo '</div></div>';
 	}
 
