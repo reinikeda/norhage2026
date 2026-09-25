@@ -80,6 +80,7 @@ class NH_TC_Defaults {
 				'40' => '6-mm-x-80-mm',
 			),
 			'sheets'                 => self::sheet_skus(),
+			'standard_sheets'        => self::standard_sheet_catalog(),
 			'connecting'             => array(
 				'clamping' => array(
 					'silver' => '70371704C',
@@ -209,6 +210,267 @@ class NH_TC_Defaults {
 		return array(
 			'multiwall' => $multi,
 			'solid'     => $solid,
+		);
+	}
+
+	/**
+	 * Standard plates the customer can buy and cut.
+	 *
+	 * Each entry is the variable parent SKU from the Norhage catalog. Widths are
+	 * the sold widths, and each width lists only the lengths sold for that width.
+	 * A 1050 mm multiwall width is the half of a 2100 mm sheet. Other widths are
+	 * stock sizes and are not halved. When Arla and Polygal both sell a thickness
+	 * and colour, the Arla parent is stored. 16 mm clear is split by channel shape
+	 * because 900, 980 and 1200 mm belong to the 5-wall sheet.
+	 *
+	 * @return array<string, array<string, array<string, array<string, array{sku:string, channel:string, widths:array<string, int[]>}>>>>
+	 */
+	public static function standard_sheet_catalog() {
+		$to_6 = array( 1000, 2000, 3000, 4000, 6000 );
+		$to_7 = array( 1000, 2000, 3000, 4000, 5000, 7000 );
+		$solid = array( 1520, 3050 );
+
+		return array(
+			'multiwall' => array(
+				'4'  => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '40101210060401P', 'stock', self::both_widths( $to_6 ) ),
+					),
+				),
+				'6'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '40101210060601P', 'stock', self::both_widths( $to_6 ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '40101210060602P', 'stock', self::both_widths( $to_6 ) ),
+					),
+					'opal'   => array(
+						'stock' => self::stock_sheet( '40101210070603P', 'stock', self::both_widths( $to_7 ) ),
+					),
+				),
+				'8'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '40101210070801P', 'stock', self::both_widths( $to_7 ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '40101210060802P', 'stock', self::both_widths( $to_6 ) ),
+					),
+				),
+				'10' => array(
+					'clear'      => array(
+						'stock' => self::stock_sheet(
+							'40101210061001P',
+							'stock',
+							array(
+								'1050' => $to_6,
+								'1250' => $to_6,
+								'2100' => $to_6,
+							)
+						),
+					),
+					'bronze'     => array(
+						'stock' => self::stock_sheet( '40101210061002P', 'stock', self::both_widths( $to_6 ) ),
+					),
+					'opal'       => array(
+						'stock' => self::stock_sheet(
+							'40101210061003P',
+							'stock',
+							array(
+								'1050' => $to_6,
+								'1250' => array( 2000 ),
+								'2100' => $to_6,
+							)
+						),
+					),
+					'anthracite' => array(
+						'stock' => self::stock_sheet( '40101210071006P', 'stock', self::both_widths( $to_7 ) ),
+					),
+				),
+				'16' => array(
+					'clear'  => array(
+						'6w' => self::stock_sheet( '40106210071601P', '6w', self::both_widths( $to_6 ) ),
+						'5x' => self::stock_sheet(
+							'40106210071601P',
+							'5x',
+							array(
+								'900'  => $to_7,
+								'980'  => $to_7,
+								'1050' => $to_6,
+								'1200' => array( 1000, 2000, 4000, 5000, 7500 ),
+								'2100' => $to_6,
+							)
+						),
+						'3w' => self::stock_sheet(
+							'40106210071601P',
+							'3w',
+							array(
+								'980' => array( 5000 ),
+							)
+						),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '40108210061602P', 'stock', self::both_widths( $to_6 ) ),
+					),
+					'opal'   => array(
+						'stock' => self::stock_sheet(
+							'40106210071603P',
+							'stock',
+							array(
+								'1050' => $to_7,
+								'1200' => array( 1000, 2000, 3000 ),
+								'2100' => $to_7,
+							)
+						),
+					),
+				),
+				'20' => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '40171210062001P', 'stock', self::both_widths( $to_6 ) ),
+					),
+					'opal'  => array(
+						'stock' => self::stock_sheet( '40171210072003P', 'stock', self::both_widths( $to_7 ) ),
+					),
+				),
+				'25' => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '40110210072501P', 'stock', self::both_widths( $to_7 ) ),
+					),
+					'opal'  => array(
+						'stock' => self::stock_sheet( '40110210072503P', 'stock', self::both_widths( $to_7 ) ),
+					),
+				),
+				'32' => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '40110210073201P', 'stock', self::both_widths( $to_7 ) ),
+					),
+					'opal'  => array(
+						'stock' => self::stock_sheet( '40110210073203P', 'stock', self::both_widths( $to_7 ) ),
+					),
+				),
+				'40' => array(
+					'clear' => array(
+						'stock' => self::stock_sheet(
+							'40274123074001P',
+							'stock',
+							array(
+								'1230' => $to_7,
+							)
+						),
+					),
+				),
+			),
+			'solid'     => array(
+				'2'  => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '3010201', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'3'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '3010301', 'stock', array( '2050' => $solid ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '3010302', 'stock', array( '2050' => $solid ) ),
+					),
+					'opal'   => array(
+						'stock' => self::stock_sheet( '3010303', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'4'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '3010401', 'stock', array( '2050' => $solid ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '3010402', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'5'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '3010501', 'stock', array( '2050' => $solid ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '3010502', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'6'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '3010601', 'stock', array( '2050' => $solid ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '3010602', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'8'  => array(
+					'clear'  => array(
+						'stock' => self::stock_sheet( '3010801', 'stock', array( '2050' => $solid ) ),
+					),
+					'bronze' => array(
+						'stock' => self::stock_sheet( '3010802', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+				'10' => array(
+					'clear' => array(
+						'stock' => self::stock_sheet( '3011001', 'stock', array( '2050' => $solid ) ),
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Channel groups for one thickness and colour. Empty when that sheet has no standard sizes.
+	 *
+	 * @return array<string, array{sku:string, channel:string, widths:array<string, int[]>}>
+	 */
+	public static function standard_sheet_groups( $material, $thickness, $colour ) {
+		$catalog = self::standard_sheet_catalog();
+		$material = (string) $material;
+		$thickness = (string) (int) $thickness;
+		$colour = (string) $colour;
+		if ( ! isset( $catalog[ $material ][ $thickness ][ $colour ] ) || ! is_array( $catalog[ $material ][ $thickness ][ $colour ] ) ) {
+			return array();
+		}
+		return $catalog[ $material ][ $thickness ][ $colour ];
+	}
+
+	/**
+	 * Lengths sold for one standard width, in millimetres.
+	 *
+	 * @return int[]
+	 */
+	public static function standard_sheet_lengths( $material, $thickness, $colour, $width_mm, $channel = 'stock' ) {
+		$groups = self::standard_sheet_groups( $material, $thickness, $colour );
+		$channel = (string) $channel;
+		if ( ! isset( $groups[ $channel ]['widths'][ (string) (int) $width_mm ] ) ) {
+			return array();
+		}
+		return array_map( 'intval', $groups[ $channel ]['widths'][ (string) (int) $width_mm ] );
+	}
+
+	/**
+	 * @param int[] $lengths
+	 * @return array<string, int[]>
+	 */
+	private static function both_widths( array $lengths ) {
+		return array(
+			'1050' => $lengths,
+			'2100' => $lengths,
+		);
+	}
+
+	/**
+	 * @param array<string, int[]> $widths
+	 * @return array{sku:string, channel:string, widths:array<string, int[]>}
+	 */
+	private static function stock_sheet( $sku, $channel, array $widths ) {
+		$clean = array();
+		foreach ( $widths as $width => $lengths ) {
+			$clean[ (string) (int) $width ] = array_values( array_map( 'intval', $lengths ) );
+		}
+		return array(
+			'sku'     => (string) $sku,
+			'channel' => (string) $channel,
+			'widths'  => $clean,
 		);
 	}
 
