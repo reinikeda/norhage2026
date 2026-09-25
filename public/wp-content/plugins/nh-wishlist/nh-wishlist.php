@@ -3,7 +3,7 @@
  * Plugin Name: Norhage Wishlist
  * Description: Wishlists that keep the selected variation and custom-cut dimensions. Guests are stored with a cookie. Lists can be added to the basket, saved as PDF, or sent as a quote to customer service.
  * Author: Norhage
- * Version: 1.0.0
+ * Version: 1.0.2
  * Requires Plugins: woocommerce
  * Text Domain: nh-wishlist
  * Domain Path: /languages
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_WL_VERSION', '1.0.1' );
+define( 'NH_WL_VERSION', '1.0.2' );
 define( 'NH_WL_FILE', __FILE__ );
 define( 'NH_WL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_WL_URL', plugin_dir_url( __FILE__ ) );

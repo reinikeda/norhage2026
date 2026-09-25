@@ -625,6 +625,39 @@ function nh_wl_ajax_state( $state ) {
 }
 
 /**
+ * admin-post.php does not load the storefront, so notices and the basket are missing until this runs.
+ *
+ * @return void
+ */
+function nh_wl_load_storefront() {
+	if ( function_exists( 'wc_load_cart' ) ) {
+		wc_load_cart();
+	} elseif ( defined( 'WC_ABSPATH' ) && is_readable( WC_ABSPATH . 'includes/wc-notice-functions.php' ) ) {
+		include_once WC_ABSPATH . 'includes/wc-notice-functions.php';
+		if ( function_exists( 'WC' ) && is_callable( array( WC(), 'initialize_session' ) ) ) {
+			WC()->initialize_session();
+		}
+	}
+	if ( function_exists( 'WC' ) && WC()->cart && is_callable( array( WC()->cart, 'get_cart' ) ) ) {
+		WC()->cart->get_cart();
+	}
+}
+
+/**
+ * @param string $message Notice text.
+ * @param string $notice_type success|error|notice.
+ * @return void
+ */
+function nh_wl_add_notice( $message, $notice_type = 'success' ) {
+	if ( ! function_exists( 'wc_add_notice' ) ) {
+		nh_wl_load_storefront();
+	}
+	if ( function_exists( 'wc_add_notice' ) ) {
+		wc_add_notice( $message, $notice_type );
+	}
+}
+
+/**
  * Form posts and heart AJAX.
  */
 class NH_WL_Actions {
@@ -641,6 +674,7 @@ class NH_WL_Actions {
 	}
 
 	public static function handle() {
+		nh_wl_load_storefront();
 		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'nh_wl' ) ) {
 			wp_die( esc_html__( 'Please try again.', 'nh-wishlist' ), '', array( 'response' => 403 ) );
 		}
@@ -674,9 +708,9 @@ class NH_WL_Actions {
 				$result = nh_wl_update_quantity( $state, $list_id, $key, isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1 );
 				if ( $result['ok'] ) {
 					NH_WL_Store::save( $result['state'] );
-					wc_add_notice( __( 'Quantity updated.', 'nh-wishlist' ), 'success' );
+					nh_wl_add_notice( __( 'Quantity updated.', 'nh-wishlist' ), 'success' );
 				} else {
-					wc_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
+					nh_wl_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
 				}
 				break;
 			case 'remove':
@@ -684,9 +718,9 @@ class NH_WL_Actions {
 				$result = nh_wl_remove_item( $state, $list_id, $key );
 				if ( $result['ok'] ) {
 					NH_WL_Store::save( $result['state'] );
-					wc_add_notice( __( 'Removed from the wishlist.', 'nh-wishlist' ), 'success' );
+					nh_wl_add_notice( __( 'Removed from the wishlist.', 'nh-wishlist' ), 'success' );
 				} else {
-					wc_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
+					nh_wl_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
 				}
 				break;
 			case 'cart':
@@ -699,7 +733,7 @@ class NH_WL_Actions {
 				self::send_quote( $state, $list_id );
 				break;
 			default:
-				wc_add_notice( __( 'Please try again.', 'nh-wishlist' ), 'error' );
+				nh_wl_add_notice( __( 'Please try again.', 'nh-wishlist' ), 'error' );
 				break;
 		}
 		self::redirect( $list_id );
@@ -713,11 +747,11 @@ class NH_WL_Actions {
 	 */
 	private static function finish_list_change( $result, $success, $list_id = '' ) {
 		if ( ! $result['ok'] ) {
-			wc_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
+			nh_wl_add_notice( nh_wl_error_message( $result['error'] ), 'error' );
 			self::redirect( $list_id );
 		}
 		NH_WL_Store::save( $result['state'] );
-		wc_add_notice( $success, 'success' );
+		nh_wl_add_notice( $success, 'success' );
 		if ( '' === $list_id && ! empty( $result['list_id'] ) ) {
 			$list_id = $result['list_id'];
 		}
@@ -741,19 +775,19 @@ class NH_WL_Actions {
 		}
 		$item = nh_wl_stored_item( $state, $list_id, $key );
 		if ( ! $item ) {
-			wc_add_notice( __( 'Invalid wishlist.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Invalid wishlist.', 'nh-wishlist' ), 'error' );
 			return;
 		}
 		$result = NH_WL_Cart::add_item( $item );
 		if ( is_wp_error( $result ) ) {
 			if ( 'customize' === $result->get_error_code() ) {
-				wc_add_notice( nh_wl_customize_notice(), 'notice' );
+				nh_wl_add_notice( nh_wl_customize_notice(), 'notice' );
 			} elseif ( ! function_exists( 'wc_notice_count' ) || ! wc_notice_count( 'error' ) ) {
-				wc_add_notice( $result->get_error_message(), 'error' );
+				nh_wl_add_notice( $result->get_error_message(), 'error' );
 			}
 			return;
 		}
-		wc_add_notice( __( 'Added to the basket.', 'nh-wishlist' ), 'success' );
+		nh_wl_add_notice( __( 'Added to the basket.', 'nh-wishlist' ), 'success' );
 	}
 
 	/**
@@ -764,7 +798,7 @@ class NH_WL_Actions {
 	private static function add_all( $state, $list_id ) {
 		$list = nh_wl_find_list( $state, $list_id );
 		if ( ! $list ) {
-			wc_add_notice( __( 'Invalid wishlist.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Invalid wishlist.', 'nh-wishlist' ), 'error' );
 			return;
 		}
 		$added   = 0;
@@ -783,15 +817,15 @@ class NH_WL_Actions {
 			++$added;
 		}
 		if ( 1 === $added ) {
-			wc_add_notice( __( 'Added to the basket.', 'nh-wishlist' ), 'success' );
+			nh_wl_add_notice( __( 'Added to the basket.', 'nh-wishlist' ), 'success' );
 		} elseif ( $added > 1 ) {
-			wc_add_notice( sprintf( __( 'Added %d products to the basket.', 'nh-wishlist' ), $added ), 'success' );
+			nh_wl_add_notice( sprintf( __( 'Added %d products to the basket.', 'nh-wishlist' ), $added ), 'success' );
 		}
 		if ( $skipped > 0 ) {
-			wc_add_notice( sprintf( __( '%d products must be customized before they can be added to the basket.', 'nh-wishlist' ), $skipped ), 'notice' );
+			nh_wl_add_notice( sprintf( __( '%d products must be customized before they can be added to the basket.', 'nh-wishlist' ), $skipped ), 'notice' );
 		}
 		if ( $failed > 0 && ( ! function_exists( 'wc_notice_count' ) || ! wc_notice_count( 'error' ) ) ) {
-			wc_add_notice( __( 'Could not add this product to the basket.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Could not add this product to the basket.', 'nh-wishlist' ), 'error' );
 		}
 	}
 
@@ -807,7 +841,7 @@ class NH_WL_Actions {
 		$key   = 'nh_wl_quote_' . md5( $ip );
 		$count = (int) get_transient( $key );
 		if ( $count >= 3 ) {
-			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
 		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
@@ -817,7 +851,7 @@ class NH_WL_Actions {
 		$subject = __( 'Quote request', 'nh-wishlist' );
 		$intro   = __( 'A customer asked for a quote.', 'nh-wishlist' );
 		if ( ! is_email( $to ) ) {
-			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
 		$rows = array();
@@ -851,10 +885,10 @@ class NH_WL_Actions {
 		}
 		$sent = wp_mail( $to, $subject, $html, $headers );
 		if ( ! $sent ) {
-			wc_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
+			nh_wl_add_notice( __( 'Could not send the email. Please try again.', 'nh-wishlist' ), 'error' );
 			return;
 		}
-		wc_add_notice( __( 'Quote sent.', 'nh-wishlist' ), 'success' );
+		nh_wl_add_notice( __( 'Quote sent.', 'nh-wishlist' ), 'success' );
 	}
 
 	/**
