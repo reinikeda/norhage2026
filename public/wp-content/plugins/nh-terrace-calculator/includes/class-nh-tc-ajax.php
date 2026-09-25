@@ -201,7 +201,6 @@ class NH_TC_Ajax {
 			'finish_profile'      => self::pick( $src, 'finish_profile', array( 'f_aluminium', 'f_profile', 'u_plastic', 'u_aluminium', 'l_aluminium' ), 'f_aluminium' ),
 			'finish_color'        => self::pick( $src, 'finish_color', array( 'silver', 'brown', 'clear', 'bronze' ), 'silver' ),
 			'sheet_layout'        => self::pick( $src, 'sheet_layout', array( 'per_cc', 'overlap' ), 'per_cc' ),
-			'joint_every_beam'    => self::pick( $src, 'joint_every_beam', array( '0', '1' ), '1' ),
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
@@ -211,6 +210,15 @@ class NH_TC_Ajax {
 	 * @param array<string, mixed> $settings
 	 */
 	private static function failure_message( array $errors, array $settings ) {
+		if ( in_array( 'solid_sheet', $errors, true ) ) {
+			$blank = NH_TC_Engine::solid_blank( $settings );
+			return sprintf(
+				/* translators: 1: shorter solid-sheet side in millimetres, 2: longer side in millimetres */
+				__( 'A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing.', NH_TC_TD ),
+				(int) $blank['short_mm'],
+				(int) $blank['long_mm']
+			);
+		}
 		if ( in_array( 'sheet_width', $errors, true ) ) {
 			return sprintf(
 				/* translators: %d: maximum polycarbonate sheet width in millimetres */

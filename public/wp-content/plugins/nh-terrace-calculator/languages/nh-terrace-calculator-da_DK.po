@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -411,3 +411,31 @@ msgstr "Skjul almindelig læg i kurv"
 
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Skjul den almindelige købsformular. Kunderne bruger tilbuddet på sættet i stedet."
+
+msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
+msgstr "Lægteafstanden er kun en anbefaling. Den bærende styrke skal bekræftes af arkitekten."
+
+msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
+msgstr "En forbindelsesprofil er med på hver lægte. Hvis du ikke vil have en forbindelsesprofil på hver lægte, så kontakt vores support for et tilpasset tagprojekt."
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr "Anbefalet afstand for denne tykkelse er %1$d–%2$d mm. Dette tag bruger %3$d mm centerafstand (%4$d lægter)."
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr "Massive plader er %1$d × %2$d mm og kan vendes begge veje. Længden på %3$d mm skæres i %4$d stykker."
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr "En massiv polykarbonatplade er %1$d × %2$d mm og kan vendes begge veje. Dette stykke er stadig for bredt. Reducer lægteafstanden."
+
+msgid "Shipping"
+msgstr "Fragt"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Én plade dækker rammen fra kant til kant."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "På et helt fag er en yderplade %1$d mm bredere end en midterplade: den når ud til enden af den %2$d mm brede lægte og mister kun %3$d mm i samlingen. Det sidste stykke bliver kortere, når afstanden ikke går op i rammen."

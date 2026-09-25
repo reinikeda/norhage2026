@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -411,3 +411,31 @@ msgstr "Standard-Schaltfläche ausblenden"
 
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Das normale Kauf-Formular ausblenden. Kunden nutzen stattdessen das Set-Angebot."
+
+msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
+msgstr "Der Trägerabstand ist nur eine Empfehlung. Die statische Tragfähigkeit muss vom Architekten bestätigt werden."
+
+msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
+msgstr "Auf jedem Träger ist ein Verbindungsprofil enthalten. Wenn Sie nicht auf jedem Träger ein Verbindungsprofil möchten, wenden Sie sich bitte an unser Support-Team für ein individuelles Dachprojekt."
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr "Der empfohlene Abstand für diese Stärke beträgt %1$d–%2$d mm. Dieses Dach verwendet %3$d mm Achsabstand (%4$d Träger)."
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr "Massivplatten sind %1$d × %2$d mm und können in beide Richtungen gedreht werden. Die Länge von %3$d mm wird in %4$d Teile geschnitten."
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedreht werden. Dieses Stück ist trotzdem zu breit. Verringern Sie den Trägerabstand."
+
+msgid "Shipping"
+msgstr "Versand"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Eine Platte deckt den Rahmen von Kante zu Kante."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm. Das letzte Stück wird kürzer, wenn der Abstand nicht gleichmäßig in den Rahmen passt."

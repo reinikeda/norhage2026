@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.3.0\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -411,3 +411,31 @@ msgstr "Piilota tavallinen lisää ostoskoriin"
 
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Piilota tavallinen ostolomake. Asiakkaat käyttävät sen sijaan sarjatarjousta."
+
+msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
+msgstr "Koolausväli on vain suositus. Rakenteen lujuuden vahvistaa arkkitehti."
+
+msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
+msgstr "Jokaiseen koolaukseen kuuluu liitosprofiili. Jos et halua liitosprofiilia jokaiseen koolaukseen, ota yhteyttä asiakastukeemme räätälöityä kattoprojektia varten."
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr "Suositeltu väli tälle paksuudelle on %1$d–%2$d mm. Tässä katossa keskiväli on %3$d mm (%4$d koolausta)."
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr "Umpilevyt ovat %1$d × %2$d mm ja ne voi kääntää kummin päin tahansa. %3$d mm:n pituus leikataan %4$d osaan."
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin päin tahansa. Tämä kappale on silti liian leveä. Pienennä koolausväliä."
+
+msgid "Shipping"
+msgstr "Toimitus"
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr "Yksi levy peittää rungon reunasta reunaan."
+
+#, php-format
+msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
+msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulottuu %2$d mm:n tuen päähän ja menettää saumassa vain %3$d mm. Viimeinen pala on lyhyempi, kun jako ei mene tasan rungon kanssa."
