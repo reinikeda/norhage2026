@@ -120,6 +120,11 @@ nrh_dl_assert( 'a label may contain a semicolon', 'Manual; German' === $semi[0][
 $skip = nrh_downloads_csv_parse_items( "Broken row without url\nOK; https://cdn.example.com/ok.pdf" );
 nrh_dl_assert( 'rows without a URL are skipped', 1 === count( $skip ) && 'OK' === $skip[0]['label'] );
 
+$mashed_dl = nrh_downloads_csv_parse_items( 'Monteringsveiledning – TRE300 3×4 m med takluke og utvidelse; 6 års storm- og snøgaranti; https://staging.norhage.no/wp-content/uploads/2026/09/NO_6_ar_storm_og_snolastgaranti_TEHI_AS.pdf 5 års produktgaranti; https://staging.norhage.no/wp-content/uploads/2026/09/NO_5_ar_produktgaranti_TEHI_AS.pdf Bruk og vedlikehold; https://staging.norhage.no/wp-content/uploads/2026/09/Greenhouse_maintenance_NO_tre_kanalpolykarbonat.pdf' );
+nrh_dl_assert( 'Excel-flattened PDFs split on each URL', 3 === count( $mashed_dl ) );
+nrh_dl_assert( 'second flattened PDF is the 5 year guarantee', '5 års produktgaranti' === $mashed_dl[1]['label'] );
+nrh_dl_assert( 'third flattened PDF is maintenance', 'Bruk og vedlikehold' === $mashed_dl[2]['label'] );
+
 $formatted = nrh_downloads_csv_format_items(
 	array(
 		array( 'label' => 'Installation manual', 'url' => 'https://cdn.example.com/manual.pdf' ),
@@ -128,7 +133,7 @@ $formatted = nrh_downloads_csv_format_items(
 );
 nrh_dl_assert(
 	'round-trip text keeps label and URL',
-	"Installation manual; https://cdn.example.com/manual.pdf\nDatasheet; https://cdn.example.com/data.pdf" === $formatted
+	'Installation manual | https://cdn.example.com/manual.pdf || Datasheet | https://cdn.example.com/data.pdf' === $formatted
 );
 nrh_dl_assert( 'formatted text parses back', 2 === count( nrh_downloads_csv_parse_items( $formatted ) ) );
 
@@ -140,7 +145,7 @@ $product->meta['_nrh_downloads'] = array(
 );
 nrh_dl_assert(
 	'export column prints the saved files',
-	'Manual; https://cdn.example.com/manual.pdf' === nrh_downloads_csv_export_column( '', $product )
+	'Manual | https://cdn.example.com/manual.pdf' === nrh_downloads_csv_export_column( '', $product )
 );
 
 $imported = nrh_downloads_csv_apply_import(
@@ -173,7 +178,7 @@ $dl_meta = nrh_downloads_csv_export_meta_value(
 	array( array( 'label' => 'Manual', 'url' => 'https://cdn.example.com/manual.pdf' ) ),
 	(object) array( 'key' => '_nrh_downloads' )
 );
-nrh_dl_assert( 'custom meta export turns downloads into text', 'Manual; https://cdn.example.com/manual.pdf' === $dl_meta );
+nrh_dl_assert( 'custom meta export turns downloads into text', 'Manual | https://cdn.example.com/manual.pdf' === $dl_meta );
 
 $from_meta = new WC_Product();
 $from_meta->type = 'simple';

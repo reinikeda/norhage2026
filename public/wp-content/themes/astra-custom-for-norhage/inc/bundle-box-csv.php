@@ -10,11 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This file adds a readable "Bundle items" column and writes the same
  * meta back on import.
  *
- * Cell format, one add-on per line:
- *   SKU; max=2; free=1; pa_width=10-mm
+ * Cell format, add-ons separated with " || ":
+ *   SKU | max=2 | free=1 | pa_width=10-mm || OTHER-SKU | pa_width=25-mm
  *
- * Lines may also be separated with " | ". Attribute keys accept width or
- * pa_width. Values accept the current term slug or the visible term name.
+ * Newlines and the older "SKU; pa_width=10-mm" form still import.
  */
 
 if ( ! defined( 'NH_BUNDLE_META_KEY' ) ) {
@@ -104,34 +103,95 @@ if ( ! function_exists( 'nh_bundle_csv_parse_bool' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nh_bundle_csv_looks_like_sku' ) ) {
+	function nh_bundle_csv_looks_like_sku( $token ) {
+		$token = trim( (string) $token );
+		if ( $token === '' || 0 === strcasecmp( $token, 'free' ) ) {
+			return false;
+		}
+
+		if ( 0 === stripos( $token, 'id:' ) ) {
+			return true;
+		}
+
+		if ( preg_match( '/^\d{5,}$/', $token ) ) {
+			return true;
+		}
+
+		if ( preg_match( '/-(mm|cm|m|ml)$/i', $token ) ) {
+			return false;
+		}
+
+		if ( 0 === strpos( $token, 'pa_' ) || false !== strpos( $token, '=' ) ) {
+			return false;
+		}
+
+		return (bool) preg_match( '/^[A-Z][A-Z0-9._-]{2,}$/i', $token );
+	}
+}
+
+if ( ! function_exists( 'nh_bundle_csv_peel_trailing_skus' ) ) {
+	/**
+	 * @return array{0:string,1:string[]}
+	 */
+	function nh_bundle_csv_peel_trailing_skus( $value ) {
+		$tokens = preg_split( '/\s+/', trim( (string) $value ) );
+		$skus   = array();
+
+		while ( count( $tokens ) > 1 && nh_bundle_csv_looks_like_sku( end( $tokens ) ) ) {
+			array_unshift( $skus, array_pop( $tokens ) );
+		}
+
+		return array( implode( ' ', $tokens ), $skus );
+	}
+}
+
+if ( ! function_exists( 'nh_bundle_csv_blank_item' ) ) {
+	function nh_bundle_csv_blank_item() {
+		return array(
+			'sku'          => '',
+			'max'          => '',
+			'free'         => 0,
+			'locked_attrs' => array(),
+		);
+	}
+}
+
 if ( ! function_exists( 'nh_bundle_csv_parse_line' ) ) {
 	/**
-	 * @return array{sku:string,max:string,free:int,locked_attrs:array}|null
+	 * @return array<int,array{sku:string,max:string,free:int,locked_attrs:array}>
 	 */
 	function nh_bundle_csv_parse_line( $line ) {
 		$line = trim( (string) $line );
 		if ( $line === '' || 0 === strpos( $line, '#' ) ) {
-			return null;
+			return array();
 		}
 
-		$parts = array_map( 'trim', explode( ';', $line ) );
-		$sku   = '';
-		$max   = '';
-		$free  = 0;
-		$attrs = array();
+		$line = str_replace( ' | ', '; ', $line );
+		$items = array();
+		$cur   = nh_bundle_csv_blank_item();
 
-		foreach ( $parts as $part ) {
+		foreach ( explode( ';', $line ) as $part ) {
+			$part = trim( $part );
 			if ( $part === '' ) {
 				continue;
 			}
 
 			if ( false === strpos( $part, '=' ) ) {
 				if ( 0 === strcasecmp( $part, 'free' ) ) {
-					$free = 1;
+					$cur['free'] = 1;
 					continue;
 				}
-				if ( $sku === '' ) {
-					$sku = $part;
+
+				foreach ( preg_split( '/\s+/', $part ) as $token ) {
+					if ( $token === '' ) {
+						continue;
+					}
+					if ( $cur['sku'] !== '' ) {
+						$items[] = $cur;
+						$cur     = nh_bundle_csv_blank_item();
+					}
+					$cur['sku'] = $token;
 				}
 				continue;
 			}
@@ -139,51 +199,43 @@ if ( ! function_exists( 'nh_bundle_csv_parse_line' ) ) {
 			$bits  = explode( '=', $part, 2 );
 			$key   = strtolower( trim( $bits[0] ) );
 			$value = isset( $bits[1] ) ? trim( $bits[1] ) : '';
+			list( $value, $extra_skus ) = nh_bundle_csv_peel_trailing_skus( $value );
 
 			if ( $key === 'sku' ) {
-				$sku = $value;
-				continue;
-			}
-
-			if ( $key === 'id' ) {
-				if ( $sku === '' && $value !== '' ) {
-					$sku = ( 0 === stripos( $value, 'id:' ) ) ? $value : ( 'id:' . $value );
+				if ( $cur['sku'] !== '' && $value !== $cur['sku'] ) {
+					$items[] = $cur;
+					$cur     = nh_bundle_csv_blank_item();
 				}
-				continue;
+				$cur['sku'] = $value;
+			} elseif ( $key === 'id' ) {
+				if ( $cur['sku'] === '' && $value !== '' ) {
+					$cur['sku'] = ( 0 === stripos( $value, 'id:' ) ) ? $value : ( 'id:' . $value );
+				}
+			} elseif ( $key === 'max' ) {
+				$cur['max'] = $value;
+			} elseif ( $key === 'free' ) {
+				$cur['free'] = nh_bundle_csv_parse_bool( $value ) ? 1 : 0;
+			} elseif ( ! in_array( $key, nh_bundle_csv_reserved_keys(), true ) ) {
+				$taxonomy = nh_bundle_csv_normalize_attr_key( $key );
+				if ( $taxonomy !== '' && $value !== '' ) {
+					$cur['locked_attrs'][ $taxonomy ] = $value;
+				}
 			}
 
-			if ( $key === 'max' ) {
-				$max = $value;
-				continue;
+			foreach ( $extra_skus as $sku ) {
+				if ( $cur['sku'] !== '' ) {
+					$items[] = $cur;
+					$cur     = nh_bundle_csv_blank_item();
+				}
+				$cur['sku'] = $sku;
 			}
-
-			if ( $key === 'free' ) {
-				$free = nh_bundle_csv_parse_bool( $value ) ? 1 : 0;
-				continue;
-			}
-
-			if ( in_array( $key, nh_bundle_csv_reserved_keys(), true ) ) {
-				continue;
-			}
-
-			$taxonomy = nh_bundle_csv_normalize_attr_key( $key );
-			if ( $taxonomy === '' || $value === '' ) {
-				continue;
-			}
-
-			$attrs[ $taxonomy ] = $value;
 		}
 
-		if ( $sku === '' ) {
-			return null;
+		if ( $cur['sku'] !== '' ) {
+			$items[] = $cur;
 		}
 
-		return array(
-			'sku'          => $sku,
-			'max'          => $max,
-			'free'         => $free,
-			'locked_attrs' => $attrs,
-		);
+		return $items;
 	}
 }
 
@@ -194,12 +246,11 @@ if ( ! function_exists( 'nh_bundle_csv_parse_items' ) ) {
 	 */
 	function nh_bundle_csv_parse_items( $text ) {
 		$text = str_replace( array( "\r\n", "\r" ), "\n", (string) $text );
-		$text = str_replace( ' | ', "\n", $text );
+		$text = str_replace( array( ' || ', '||' ), "\n", $text );
 		$out  = array();
 
 		foreach ( preg_split( "/\n+/", $text ) as $line ) {
-			$parsed = nh_bundle_csv_parse_line( $line );
-			if ( null !== $parsed ) {
+			foreach ( nh_bundle_csv_parse_line( $line ) as $parsed ) {
 				$out[] = $parsed;
 			}
 		}
@@ -236,7 +287,7 @@ if ( ! function_exists( 'nh_bundle_csv_format_line' ) ) {
 			}
 		}
 
-		return implode( '; ', $parts );
+		return implode( ' | ', $parts );
 	}
 }
 
@@ -251,7 +302,7 @@ if ( ! function_exists( 'nh_bundle_csv_format_items' ) ) {
 			}
 		}
 
-		return implode( "\n", $lines );
+		return implode( ' || ', $lines );
 	}
 }
 

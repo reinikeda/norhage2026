@@ -96,7 +96,7 @@ if ( is_admin() ) {
 		echo '<p class="description">' . esc_html(
 			sprintf(
 				/* translators: %s: CSV column name */
-				__( 'You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list.', 'nh-theme' ),
+				__( 'You can also edit these files in a product CSV. In Products → Export, include %s. Separate files with || like: Label | https://example.com/file.pdf. Import replaces the whole list.', 'nh-theme' ),
 				__( 'PDF downloads', 'nh-theme' )
 			)
 		) . '</p>';
@@ -1169,7 +1169,7 @@ function nc_bundle_items_box_html( $post ) {
 	echo '<p>' . esc_html(
 		sprintf(
 			/* translators: %s: CSV column name */
-			__( 'You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list.', 'nh-theme' ),
+			__( 'You can also edit these extras in a product CSV. In Products → Export, include %s. Separate add-ons with || like: SKU | pa_width=25-mm || 905800540. Import replaces the whole list.', 'nh-theme' ),
 			__( 'Bundle items', 'nh-theme' )
 		)
 	) . '</p>';

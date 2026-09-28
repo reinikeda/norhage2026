@@ -10,8 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The column is named "PDF downloads" so it does not clash with WooCommerce's
  * own Downloads column (purchasable files).
  *
- * Cell format, one file per line:
- *   Installation manual; https://cdn.example.com/manual.pdf
+ * Cell format, files separated with " || ":
+ *   Installation manual | https://cdn.example.com/manual.pdf
+ *
+ * Newlines and the older "Label; https://..." form still import.
+ * If Excel flattens line breaks, each https:// URL becomes its own file.
  */
 
 if ( ! defined( 'NRH_DOWNLOADS_META_KEY' ) ) {
@@ -54,16 +57,25 @@ if ( ! function_exists( 'nrh_downloads_csv_parse_line' ) ) {
 	 * @return array{label:string,url:string}|null
 	 */
 	function nrh_downloads_csv_parse_line( $line ) {
+		$rows = nrh_downloads_csv_parse_chunk( $line );
+		return empty( $rows ) ? null : $rows[0];
+	}
+}
+
+if ( ! function_exists( 'nrh_downloads_csv_parse_chunk' ) ) {
+	/**
+	 * @return array<int,array{label:string,url:string}>
+	 */
+	function nrh_downloads_csv_parse_chunk( $line ) {
 		$line = trim( (string) $line );
 		if ( $line === '' || 0 === strpos( $line, '#' ) ) {
-			return null;
+			return array();
 		}
 
-		$label = '';
-		$url   = '';
-
 		if ( false !== stripos( $line, 'url=' ) || false !== stripos( $line, 'label=' ) ) {
-			$parts = array_map( 'trim', explode( ';', $line ) );
+			$label = '';
+			$url   = '';
+			$parts = array_map( 'trim', explode( ';', str_replace( ' | ', '; ', $line ) ) );
 			foreach ( $parts as $part ) {
 				if ( false === strpos( $part, '=' ) ) {
 					continue;
@@ -77,17 +89,31 @@ if ( ! function_exists( 'nrh_downloads_csv_parse_line' ) ) {
 					$url = $value;
 				}
 			}
+			$row = nrh_downloads_csv_sanitize_row( $label, $url );
+			return $row ? array( $row ) : array();
 		}
 
-		if ( $url === '' ) {
-			$url = nrh_downloads_csv_extract_url( $line );
-			if ( $url !== '' && $label === '' ) {
-				$label = trim( str_ireplace( $url, '', $line ) );
-				$label = trim( $label, " \t;|," );
+		if ( ! preg_match_all( '#https?://[^\s]+#i', $line, $matches, PREG_OFFSET_CAPTURE ) ) {
+			return array();
+		}
+
+		$found = $matches[0];
+		$rows  = array();
+		$count = count( $found );
+
+		for ( $i = 0; $i < $count; $i++ ) {
+			$url        = rtrim( $found[ $i ][0], '.,);' );
+			$url_start  = $found[ $i ][1];
+			$label_from = ( 0 === $i ) ? 0 : ( $found[ $i - 1 ][1] + strlen( $found[ $i - 1 ][0] ) );
+			$label      = trim( substr( $line, $label_from, $url_start - $label_from ) );
+			$label      = trim( $label, " \t;|," );
+			$row        = nrh_downloads_csv_sanitize_row( $label, $url );
+			if ( $row ) {
+				$rows[] = $row;
 			}
 		}
 
-		return nrh_downloads_csv_sanitize_row( $label, $url );
+		return $rows;
 	}
 }
 
@@ -98,12 +124,11 @@ if ( ! function_exists( 'nrh_downloads_csv_parse_items' ) ) {
 	 */
 	function nrh_downloads_csv_parse_items( $text ) {
 		$text = str_replace( array( "\r\n", "\r" ), "\n", (string) $text );
-		$text = str_replace( ' | ', "\n", $text );
+		$text = str_replace( array( ' || ', '||' ), "\n", $text );
 		$out  = array();
 
 		foreach ( preg_split( "/\n+/", $text ) as $line ) {
-			$row = nrh_downloads_csv_parse_line( $line );
-			if ( null !== $row ) {
+			foreach ( nrh_downloads_csv_parse_chunk( $line ) as $row ) {
 				$out[] = $row;
 			}
 		}
@@ -128,10 +153,10 @@ if ( ! function_exists( 'nrh_downloads_csv_format_items' ) ) {
 			if ( $label === '' || $url === '' ) {
 				continue;
 			}
-			$lines[] = $label . '; ' . $url;
+			$lines[] = $label . ' | ' . $url;
 		}
 
-		return implode( "\n", $lines );
+		return implode( ' || ', $lines );
 	}
 }
 

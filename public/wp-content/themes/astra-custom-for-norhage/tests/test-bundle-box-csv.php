@@ -214,6 +214,14 @@ nh_csv_assert( 'custom attributes keep their own key', isset( $custom_attr[0]['l
 $sku_key = nh_bundle_csv_parse_items( 'sku=SEAL-10; id=101; max=1' );
 nh_csv_assert( 'sku= prefix is accepted', 'SEAL-10' === $sku_key[0]['sku'] );
 
+$mashed = nh_bundle_csv_parse_items( 'WOOD; pa_width=25-mm OTHER; pa_width=25-mm 905800540 905800550' );
+nh_csv_assert( 'Excel-flattened extras still split into four add-ons', 4 === count( $mashed ) );
+nh_csv_assert( 'first mashed extra keeps 25-mm', '25-mm' === $mashed[0]['locked_attrs']['pa_width'] );
+nh_csv_assert( 'second mashed extra keeps 25-mm', '25-mm' === $mashed[1]['locked_attrs']['pa_width'] );
+nh_csv_assert( 'third mashed extra is SKU 905800540', '905800540' === $mashed[2]['sku'] );
+nh_csv_assert( 'fourth mashed extra is SKU 905800550', '905800550' === $mashed[3]['sku'] );
+nh_csv_assert( 'SKU-only extras have no locked width', empty( $mashed[2]['locked_attrs'] ) );
+
 $meta = nh_bundle_csv_parsed_to_meta( $parsed );
 nh_csv_assert( 'SKU SEAL-10 becomes product 101', 101 === $meta[0]['id'] );
 nh_csv_assert( 'SKU PROFILE becomes product 202', 202 === $meta[1]['id'] );
@@ -256,7 +264,7 @@ $formatted = nh_bundle_csv_format_items(
 );
 nh_csv_assert(
 	'round-trip text keeps SKU, max, free and attributes',
-	"SEAL-10; max=2; pa_width=10-mm\nPROFILE; free=1; pa_color=klar" === $formatted
+	'SEAL-10 | max=2 | pa_width=10-mm || PROFILE | free=1 | pa_color=klar' === $formatted
 );
 
 $round = nh_bundle_csv_parse_items( $formatted );
@@ -326,7 +334,7 @@ $as_text  = nh_bundle_csv_export_meta_value(
 	),
 	$meta_obj
 );
-nh_csv_assert( 'custom meta export turns the bundle array into text', 'SEAL-10; max=2; pa_width=10-mm' === $as_text );
+nh_csv_assert( 'custom meta export turns the bundle array into text', 'SEAL-10 | max=2 | pa_width=10-mm' === $as_text );
 
 $from_meta = new WC_Product();
 $from_meta->id   = 50;
