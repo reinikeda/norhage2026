@@ -182,6 +182,32 @@ $languages = dirname( __DIR__ ) . '/languages';
 nh_wl_assert( 'finnish mo is selected for fi_FI', false !== strpos( nh_wl_mofile_for_locale( 'fi_FI', $languages ), 'nh-wishlist-fi.mo' ) );
 nh_wl_assert( 'german mo is selected for de_DE', false !== strpos( nh_wl_mofile_for_locale( 'de_DE', $languages ), 'nh-wishlist-de_DE.mo' ) );
 nh_wl_assert( 'english has no mo', '' === nh_wl_mofile_for_locale( 'en_US', $languages ) );
+$tracked = nh_wl_ga4_ecommerce(
+	array(
+		'currency'       => 'EUR',
+		'item_id'        => 'VAR-1',
+		'item_name'      => 'Polycarbonate',
+		'price'          => 12.5,
+		'quantity'       => 2,
+		'item_variant'   => '1200 mm, 800 mm',
+		'item_list_name' => 'Terrace',
+		'item_category'  => 'Sheets',
+	)
+);
+nh_wl_assert( 'ga4 add carries currency and value', 'EUR' === $tracked['currency'] && 25.0 === $tracked['value'] );
+nh_wl_assert( 'ga4 item uses the sku, size, and list', 'VAR-1' === $tracked['items'][0]['item_id'] && '1200 mm, 800 mm' === $tracked['items'][0]['item_variant'] && 'Terrace' === $tracked['items'][0]['item_list_name'] && 12.5 === $tracked['items'][0]['price'] );
+$unpriced = nh_wl_ga4_ecommerce(
+	array(
+		'currency'  => 'EUR',
+		'item_id'   => 'PARENT',
+		'item_name' => 'Variable sheet',
+		'price'     => 0,
+		'quantity'  => 1,
+	)
+);
+nh_wl_assert( 'ga4 omits a price that is not ready', ! isset( $unpriced['value'] ) && ! isset( $unpriced['items'][0]['price'] ) && 'PARENT' === $unpriced['items'][0]['item_id'] );
+$script = file_get_contents( dirname( __DIR__ ) . '/assets/js/wishlist.js' );
+nh_wl_assert( 'wishlist add pushes a gtm event', false !== strpos( $script, "event: 'add_to_wishlist'" ) && false !== strpos( $script, 'ecommerce: null' ) );
 
 $html = nh_wl_email_html(
 	array(

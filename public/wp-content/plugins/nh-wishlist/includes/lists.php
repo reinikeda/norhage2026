@@ -249,6 +249,46 @@ function nh_wl_mofile_for_locale( $locale, $languages_dir ) {
 }
 
 /**
+ * GA4 ecommerce object for add_to_wishlist. A missing price is left out so GTM does not record zero.
+ *
+ * @param array<string,mixed> $args Item fields.
+ * @return array<string,mixed>
+ */
+function nh_wl_ga4_ecommerce( $args ) {
+	$args     = is_array( $args ) ? $args : array();
+	$quantity = isset( $args['quantity'] ) ? (int) $args['quantity'] : 1;
+	if ( $quantity < 1 ) {
+		$quantity = 1;
+	}
+	$price = isset( $args['price'] ) ? (float) $args['price'] : 0.0;
+	$item  = array(
+		'item_id'   => trim( (string) ( isset( $args['item_id'] ) ? $args['item_id'] : '' ) ),
+		'item_name' => trim( (string) ( isset( $args['item_name'] ) ? $args['item_name'] : '' ) ),
+		'quantity'  => $quantity,
+	);
+	foreach ( array( 'item_variant', 'item_list_name', 'item_category' ) as $key ) {
+		$value = trim( (string) ( isset( $args[ $key ] ) ? $args[ $key ] : '' ) );
+		if ( '' !== $value ) {
+			$item[ $key ] = $value;
+		}
+	}
+	if ( $price > 0 ) {
+		$item['price'] = round( $price, 2 );
+	}
+	$ecommerce = array(
+		'items' => array( $item ),
+	);
+	$currency = trim( (string) ( isset( $args['currency'] ) ? $args['currency'] : '' ) );
+	if ( '' !== $currency ) {
+		$ecommerce['currency'] = $currency;
+	}
+	if ( $price > 0 ) {
+		$ecommerce['value'] = round( $price * $quantity, 2 );
+	}
+	return $ecommerce;
+}
+
+/**
  * Recompute the notice against the live product type and cut settings.
  *
  * @param array<string,mixed> $item Stored item.
