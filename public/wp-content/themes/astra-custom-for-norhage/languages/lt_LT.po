@@ -2316,3 +2316,8 @@ msgstr "Šiuos failus taip pat galite redaguoti produktų CSV. Skiltyje Produkta
 msgctxt "min_price"
 msgid "From:"
 msgstr "Nuo:"
+
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr "Pasirinkti"

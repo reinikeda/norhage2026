@@ -1411,3 +1411,7 @@ msgctxt "min_price"
 msgid "From:"
 msgstr ""
 
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr ""

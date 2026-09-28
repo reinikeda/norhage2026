@@ -2261,3 +2261,8 @@ msgstr "Du kan også redigere disse filer i en produkt-CSV. I Produkter → Eksp
 msgctxt "min_price"
 msgid "From:"
 msgstr "Fra:"
+
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr "Vælg"

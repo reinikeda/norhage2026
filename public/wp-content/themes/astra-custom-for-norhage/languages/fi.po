@@ -2290,3 +2290,8 @@ msgstr "Voit muokata näitä tiedostoja myös tuote-CSV:ssä. Kohdassa Tuotteet 
 msgctxt "min_price"
 msgid "From:"
 msgstr "Alkaen:"
+
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr "Valitse"
