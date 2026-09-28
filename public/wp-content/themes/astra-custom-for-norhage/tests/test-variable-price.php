@@ -15,6 +15,12 @@ if ( ! function_exists( 'add_filter' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_action' ) ) {
+	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		unset( $hook, $callback, $priority, $accepted_args );
+	}
+}
+
 if ( ! function_exists( 'esc_html' ) ) {
 	function esc_html( $text ) {
 		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
@@ -98,6 +104,14 @@ nh_price_assert(
 	'schema hooks are not registered',
 	false === strpos( $source, 'woocommerce_structured_data' ) && false === strpos( $source, 'wpseo_schema' )
 );
+
+$js = file_get_contents( dirname( __DIR__ ) . '/assets/js/nh-variable-price.js' );
+nh_price_assert( 'selected variation replaces the visible price', false !== strpos( $js, 'found_variation.nhFrom' ) && false !== strpos( $js, 'variation.price_html' ) );
+nh_price_assert( 'clearing the variation restores From', false !== strpos( $js, 'reset_data.nhFrom' ) && false !== strpos( $js, 'original' ) );
+nh_price_assert( 'hidden variation price is not the target', false !== strpos( $js, 'woocommerce-variation-price' ) );
+
+$css = file_get_contents( dirname( __DIR__ ) . '/style.css' );
+nh_price_assert( 'From uses the same text color as the price', false !== strpos( $css, '.woocommerce .price .from' ) && false !== strpos( $css, 'var(--ui-text, #2C2A29)' ) );
 
 $expected = array(
 	'nb_NO.po' => 'Fra:',

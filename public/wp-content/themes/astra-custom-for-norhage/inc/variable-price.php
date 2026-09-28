@@ -3,8 +3,9 @@
  * Variable products: show "From {lowest price}" instead of a min–max range.
  *
  * Category cards and the single product summary both use
- * WC_Product_Variable::get_price_html(). A selected variation still replaces
- * that HTML with its own exact price via WooCommerce's variation script.
+ * WC_Product_Variable::get_price_html(). The product page keeps "From" until
+ * a variation is selected, then nh-variable-price.js swaps in that variation's
+ * price. Woo's own variation price is hidden by the theme.
  *
  * Offer JSON-LD is not touched. WooCommerce and Yoast read
  * get_variation_prices() / get_price() for lowPrice, highPrice, and price.
@@ -164,3 +165,29 @@ function nh_variable_price_from_html( $price_html, $product ) {
 }
 add_filter( 'woocommerce_variable_price_html', 'nh_variable_price_from_html', 20, 2 );
 add_filter( 'woocommerce_variable_sale_price_html', 'nh_variable_price_from_html', 20, 2 );
+
+/**
+ * On the product page, replace "From" with the selected variation price.
+ */
+function nh_variable_price_assets() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	$product = function_exists( 'wc_get_product' ) ? wc_get_product( get_queried_object_id() ) : null;
+	if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) {
+		return;
+	}
+
+	$relative = '/assets/js/nh-variable-price.js';
+	$args     = function_exists( 'norhage_script_args' ) ? norhage_script_args() : true;
+
+	wp_enqueue_script(
+		'nh-variable-price',
+		get_stylesheet_directory_uri() . $relative,
+		array( 'jquery', 'wc-add-to-cart-variation' ),
+		function_exists( 'norhage_asset_version' ) ? norhage_asset_version( $relative ) : null,
+		$args
+	);
+}
+add_action( 'wp_enqueue_scripts', 'nh_variable_price_assets', 30 );
