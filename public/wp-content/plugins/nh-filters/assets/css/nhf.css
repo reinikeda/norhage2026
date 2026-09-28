@@ -929,3 +929,69 @@ body.nhf-lock {
     font-size: 15px;
   }
 }
+
+/* Category chips under the short description */
+.nhf-chips {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  margin: 4px 0 22px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid rgba(30, 57, 50, 0.12);
+  border-radius: 12px;
+}
+
+.nhf-chips__label {
+  margin: 0 0 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--nh-forest, #1E3932);
+}
+
+.nhf-chips__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.nhf-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 14px;
+  border: 1px solid rgba(30, 57, 50, 0.18);
+  border-radius: 8px;
+  background: var(--nh-offwhite, #FAF7F2);
+  color: var(--nh-forest, #1E3932);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.nhf-chip:hover,
+.nhf-chip:focus-visible {
+  border-color: var(--nh-green, #00704A);
+  color: var(--nh-green, #00704A);
+  text-decoration: none;
+}
+
+.nhf-chip.is-active {
+  background: var(--nh-forest, #1E3932);
+  border-color: var(--nh-forest, #1E3932);
+  color: #fff;
+}
+
+.nhf-chip:focus-visible {
+  outline: 2px solid var(--nh-green, #00704A);
+  outline-offset: 2px;
+}
