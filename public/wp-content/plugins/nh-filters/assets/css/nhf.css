@@ -930,20 +930,21 @@ body.nhf-lock {
   }
 }
 
-/* Category chips under the short description */
+/* Category chips under the short description.
+   Equal tiles, two across on a phone, more as the screen widens. */
 .nhf-chips {
   box-sizing: border-box;
   max-width: 100%;
   min-width: 0;
-  margin: 4px 0 22px;
-  padding: 12px;
+  margin: 8px 0 24px;
+  padding: 14px;
   background: #fff;
   border: 1px solid rgba(30, 57, 50, 0.12);
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .nhf-chips__label {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -952,40 +953,49 @@ body.nhf-lock {
 }
 
 .nhf-chips__row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   min-width: 0;
   max-width: 100%;
 }
 
 .nhf-chip {
   box-sizing: border-box;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  max-width: 100%;
-  padding: 8px 14px;
-  border: 1px solid rgba(30, 57, 50, 0.18);
-  border-radius: 8px;
-  background: var(--nh-offwhite, #FAF7F2);
+  width: 100%;
+  aspect-ratio: 1.15 / 1;
+  min-height: 112px;
+  min-width: 0;
+  margin: 0;
+  padding: 18px 12px;
+  border: 1.5px solid rgba(30, 57, 50, 0.16);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
   color: var(--nh-forest, #1E3932);
-  font-weight: 700;
-  font-size: 0.9375rem;
-  line-height: 1.2;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-align: center;
   text-decoration: none;
+  text-transform: none;
   overflow-wrap: anywhere;
 }
 
 .nhf-chip:hover,
 .nhf-chip:focus-visible {
   border-color: var(--nh-green, #00704A);
-  color: var(--nh-green, #00704A);
+  background: #f4faf6;
+  color: var(--nh-forest, #1E3932);
   text-decoration: none;
 }
 
-.nhf-chip.is-active {
+.nhf-chip.is-active,
+.nhf-chip.is-active:hover {
   background: var(--nh-forest, #1E3932);
   border-color: var(--nh-forest, #1E3932);
   color: #fff;
@@ -994,4 +1004,31 @@ body.nhf-lock {
 .nhf-chip:focus-visible {
   outline: 2px solid var(--nh-green, #00704A);
   outline-offset: 2px;
+}
+
+@media (min-width: 480px) {
+  .nhf-chips__row {
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 12px;
+  }
+
+  .nhf-chip {
+    min-height: 128px;
+    font-size: 1.75rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .nhf-chips {
+    padding: 18px;
+  }
+
+  .nhf-chips__row {
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  }
+
+  .nhf-chip {
+    min-height: 140px;
+    font-size: 2rem;
+  }
 }
