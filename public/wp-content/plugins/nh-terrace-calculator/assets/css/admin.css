@@ -95,3 +95,9 @@
 .nh-tc-var-grid input {
   width: 11rem;
 }
+
+.nh-tc-oos {
+  color: #8a4b08;
+  font-size: 11px;
+  font-style: normal;
+}

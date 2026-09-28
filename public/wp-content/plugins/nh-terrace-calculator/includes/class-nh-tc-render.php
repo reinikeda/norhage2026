@@ -164,11 +164,11 @@ class NH_TC_Render {
 						<legend><span class="nh-tc__step-no">3</span><?php esc_html_e( 'Sheets', NH_TC_TD ); ?></legend>
 						<p class="nh-tc__ask"><?php esc_html_e( 'What kind of sheets do you want?', NH_TC_TD ); ?></p>
 						<div class="nh-tc__choices nh-tc__choices--supply">
-							<label class="nh-tc__choice nh-tc__choice--plain">
+							<label class="nh-tc__choice nh-tc__choice--plain" data-supply-custom>
 								<input type="radio" name="sheet_supply" value="custom" checked>
 								<span><?php esc_html_e( 'Custom cut by us', NH_TC_TD ); ?></span>
 							</label>
-							<label class="nh-tc__choice nh-tc__choice--plain">
+							<label class="nh-tc__choice nh-tc__choice--plain" data-supply-standard>
 								<input type="radio" name="sheet_supply" value="standard">
 								<span><?php esc_html_e( 'Standard sizes that you will cut yourself', NH_TC_TD ); ?></span>
 							</label>
@@ -185,6 +185,7 @@ class NH_TC_Render {
 								<input type="hidden" name="stock_length_mm" value="" data-stock-length>
 							</div>
 							<p class="nh-tc__hint" data-stock-empty hidden><?php esc_html_e( 'This thickness and colour is only available as a custom cut.', NH_TC_TD ); ?></p>
+							<p class="nh-tc__hint" data-stock-oos hidden><?php esc_html_e( 'This thickness and colour is out of stock.', NH_TC_TD ); ?></p>
 						</div>
 					</fieldset>
 
@@ -349,7 +350,8 @@ class NH_TC_Render {
 	}
 
 	public static function enqueue() {
-		$s = NH_TC_Defaults::settings();
+		$s    = NH_TC_Defaults::settings();
+		$live = NH_TC_Catalog::with_live_sheets( $s );
 		wp_enqueue_style(
 			'nh-tc',
 			NH_TC_URL . 'assets/css/calculator.css',
@@ -375,7 +377,8 @@ class NH_TC_Render {
 				'finishTree' => NH_TC_Catalog::color_tree( $s['finish'] ),
 				'recCc'      => $s['recommended_cc'],
 				'supportRanges' => NH_TC_Engine::support_range_tables(),
-				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $s['standard_sheets'] ) ? $s['standard_sheets'] : array() ),
+				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $live['standard_sheets'] ) ? $live['standard_sheets'] : array() ),
+				'customStock'    => NH_TC_Catalog::custom_stock_flags( $s ),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),

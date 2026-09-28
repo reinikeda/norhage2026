@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -586,3 +586,12 @@ msgstr "Sandarinimo juostos dedamos tik kanaliniam lakštui. Vienas ventiliacijo
 
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
 msgstr "Atramų skaičius atstumo pastaboje yra patarimas. Atramos nėra komplekto gaminys."
+
+msgid "This thickness and colour is out of stock."
+msgstr "Šio storio ir spalvos nėra sandėlyje."
+
+msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
+msgstr "Variacijos, kurios jau yra prie pagrindinio produkto, įrašomos žemiau ir naudojamos kainai. Išparduotas dydis slepiamas nuo pirkėjų. Jei pjaustymas pagal matmenis išparduotas, ta pasirinktis taip pat slepiama."
+
+msgid "Out of stock"
+msgstr "Išparduota"
