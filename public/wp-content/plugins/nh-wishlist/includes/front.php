@@ -405,6 +405,7 @@ function nh_wl_prepare_item( $item ) {
 		'price_html'       => $price_html,
 		'price_text'       => $price_text,
 		'price_amount'     => $price_amount,
+		'sku'              => $sku,
 		'qty_label'        => sprintf( __( 'Quantity: %d', 'nh-wishlist' ), (int) $item['quantity'] ),
 	);
 }
@@ -695,6 +696,48 @@ function nh_wl_render_wishlist( $context ) {
 function nh_wl_is_public_page() {
 	$value = get_query_var( 'nh_wishlist' );
 	return '1' === (string) $value;
+}
+
+/**
+ * Ecommerce payload for a successful add. GTM forwards event add_to_wishlist to GA4.
+ *
+ * @param array<string,mixed> $item Stored item.
+ * @param string              $list_name Wishlist name.
+ * @return array<string,mixed>
+ */
+function nh_wl_tracking_ecommerce( $item, $list_name ) {
+	$view    = nh_wl_prepare_item( $item );
+	$sku     = isset( $view['sku'] ) ? trim( (string) $view['sku'] ) : '';
+	$item_id = '' !== $sku ? $sku : (string) (int) $item['product_id'];
+	$lines   = $view['lines'];
+	if ( '' !== $sku && $lines ) {
+		array_shift( $lines );
+	}
+	$variant = array();
+	foreach ( $lines as $line ) {
+		if ( '' !== $line['value'] ) {
+			$variant[] = $line['value'];
+		}
+	}
+	$category = '';
+	if ( function_exists( 'get_the_terms' ) ) {
+		$terms = get_the_terms( (int) $item['product_id'], 'product_cat' );
+		if ( is_array( $terms ) && isset( $terms[0]->name ) ) {
+			$category = (string) $terms[0]->name;
+		}
+	}
+	return nh_wl_ga4_ecommerce(
+		array(
+			'currency'       => function_exists( 'get_woocommerce_currency' ) ? (string) get_woocommerce_currency() : '',
+			'item_id'        => $item_id,
+			'item_name'      => wp_strip_all_tags( (string) $view['name'] ),
+			'price'          => (float) $view['price_amount'],
+			'quantity'       => (int) $view['quantity'],
+			'item_variant'   => implode( ', ', $variant ),
+			'item_list_name' => (string) $list_name,
+			'item_category'  => $category,
+		)
+	);
 }
 
 /**
@@ -1152,7 +1195,8 @@ class NH_WL_Actions {
 			array_merge(
 				nh_wl_ajax_state( $state ),
 				array(
-					'message' => sprintf( __( 'Saved to %s.', 'nh-wishlist' ), $list ? nh_wl_list_label( $list ) : '' ),
+					'message'   => sprintf( __( 'Saved to %s.', 'nh-wishlist' ), $list ? nh_wl_list_label( $list ) : '' ),
+					'ecommerce' => nh_wl_tracking_ecommerce( $item, $list ? nh_wl_list_label( $list ) : '' ),
 				)
 			)
 		);
