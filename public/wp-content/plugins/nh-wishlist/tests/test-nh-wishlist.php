@@ -173,6 +173,15 @@ nh_wl_assert( 'lithuanian shop mail is info@norhage.lt', 'info@norhage.lt' === n
 nh_wl_assert( 'german shop mail is info@norhage.de', 'info@norhage.de' === nh_wl_info_email_for_host( 'www.norhage.de' ) );
 nh_wl_assert( 'eu shop mail is info@norhage.eu', 'info@norhage.eu' === nh_wl_info_email_for_host( 'norhage.eu' ) );
 nh_wl_assert( 'unknown host falls back to info@norhage.eu', 'info@norhage.eu' === nh_wl_info_email_for_host( 'localhost' ) );
+nh_wl_assert( 'finnish locale uses the fi catalog', 'fi' === nh_wl_catalog_locale( 'fi_FI' ) && 'fi' === nh_wl_catalog_locale( 'fi' ) );
+nh_wl_assert( 'german locale keeps de_DE', 'de_DE' === nh_wl_catalog_locale( 'de_DE' ) );
+nh_wl_assert( 'lithuanian locale keeps lt_LT', 'lt_LT' === nh_wl_catalog_locale( 'lt_LT' ) );
+nh_wl_assert( 'bokmal keeps nb_NO', 'nb_NO' === nh_wl_catalog_locale( 'nb_NO' ) );
+nh_wl_assert( 'other norwegian locales share nb_NO', 'nb_NO' === nh_wl_catalog_locale( 'no' ) && 'nb_NO' === nh_wl_catalog_locale( 'nn_NO' ) && 'nb_NO' === nh_wl_catalog_locale( 'no_NO' ) );
+$languages = dirname( __DIR__ ) . '/languages';
+nh_wl_assert( 'finnish mo is selected for fi_FI', false !== strpos( nh_wl_mofile_for_locale( 'fi_FI', $languages ), 'nh-wishlist-fi.mo' ) );
+nh_wl_assert( 'german mo is selected for de_DE', false !== strpos( nh_wl_mofile_for_locale( 'de_DE', $languages ), 'nh-wishlist-de_DE.mo' ) );
+nh_wl_assert( 'english has no mo', '' === nh_wl_mofile_for_locale( 'en_US', $languages ) );
 
 $html = nh_wl_email_html(
 	array(
@@ -289,6 +298,12 @@ nh_wl_assert( 'header has a wishlist link', false !== strpos( $header, 'nh_wl_he
 $front = file_get_contents( dirname( __DIR__ ) . '/includes/front.php' );
 nh_wl_assert( 'form handler loads the storefront cart', false !== strpos( $front, 'nh_wl_load_storefront()' ) );
 nh_wl_assert( 'notices are added only after the storefront loads', 1 === substr_count( $front, 'wc_add_notice(' ) );
+$handle = substr( $front, (int) strpos( $front, 'function handle()' ) );
+$pdf_at = strpos( $handle, 'self::send_pdf(' );
+$shop_at = strpos( $handle, 'nh_wl_use_shop_locale()' );
+nh_wl_assert( 'pdf is built after the shop locale is loaded', false !== $shop_at && false !== $pdf_at && $shop_at < $pdf_at );
+$de_mo = file_get_contents( dirname( __DIR__ ) . '/languages/nh-wishlist-de_DE.mo' );
+nh_wl_assert( 'german catalog contains the pdf title', false !== strpos( $de_mo, 'Wunschliste' ) && false !== strpos( $de_mo, 'Produkt' ) && false !== strpos( $de_mo, 'Preis' ) );
 
 $plugin = dirname( __DIR__ );
 $code   = '';

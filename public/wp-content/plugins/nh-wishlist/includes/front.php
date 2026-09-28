@@ -718,6 +718,65 @@ function nh_wl_ajax_state( $state ) {
 }
 
 /**
+ * Shop language from Settings → General. admin-post.php otherwise uses the account language, so a PDF can stay English on a translated shop.
+ *
+ * @return string
+ */
+function nh_wl_site_locale() {
+	$locale = function_exists( 'get_option' ) ? (string) get_option( 'WPLANG', '' ) : '';
+	if ( function_exists( 'apply_filters' ) ) {
+		$locale = (string) apply_filters( 'nh_wl_site_locale', $locale );
+	}
+	$locale = str_replace( '-', '_', trim( $locale ) );
+	return '' !== $locale ? $locale : 'en_US';
+}
+
+/**
+ * Load the shop catalog into the locale that __() will query.
+ *
+ * @return void
+ */
+function nh_wl_load_shop_catalog() {
+	if ( ! function_exists( 'load_textdomain' ) ) {
+		return;
+	}
+	$site   = nh_wl_site_locale();
+	$mofile = nh_wl_mofile_for_locale( $site, NH_WL_DIR . 'languages' );
+	if ( '' === $mofile ) {
+		return;
+	}
+	$active = function_exists( 'determine_locale' ) ? determine_locale() : $site;
+	$bind   = ( $active === $site ) ? $site : $active;
+	if ( function_exists( 'unload_textdomain' ) ) {
+		unload_textdomain( 'nh-wishlist' );
+	}
+	global $wp_version;
+	if ( isset( $wp_version ) && version_compare( (string) $wp_version, '6.5', '>=' ) ) {
+		load_textdomain( 'nh-wishlist', $mofile, $bind );
+		return;
+	}
+	load_textdomain( 'nh-wishlist', $mofile );
+}
+
+/**
+ * PDF, quote, and other admin-post text follow the shop, not the logged-in user's profile language.
+ *
+ * @return void
+ */
+function nh_wl_use_shop_locale() {
+	static $done = false;
+	if ( $done ) {
+		return;
+	}
+	$done = true;
+	$site = nh_wl_site_locale();
+	if ( function_exists( 'switch_to_locale' ) && function_exists( 'determine_locale' ) && determine_locale() !== $site ) {
+		switch_to_locale( $site );
+	}
+	nh_wl_load_shop_catalog();
+}
+
+/**
  * admin-post.php does not load the storefront, so notices and the basket are missing until this runs.
  *
  * @return void
@@ -767,6 +826,7 @@ class NH_WL_Actions {
 	}
 
 	public static function handle() {
+		nh_wl_use_shop_locale();
 		nh_wl_load_storefront();
 		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'nh_wl' ) ) {
 			wp_die( esc_html__( 'Please try again.', 'nh-wishlist' ), '', array( 'response' => 403 ) );
@@ -1025,11 +1085,13 @@ class NH_WL_Actions {
 	}
 
 	public static function ajax_state() {
+		nh_wl_use_shop_locale();
 		check_ajax_referer( 'nh_wl', 'nonce' );
 		wp_send_json_success( nh_wl_ajax_state( NH_WL_Store::state() ) );
 	}
 
 	public static function ajax_create() {
+		nh_wl_use_shop_locale();
 		check_ajax_referer( 'nh_wl', 'nonce' );
 		$result = nh_wl_create_list( NH_WL_Store::state(), isset( $_POST['list_name'] ) ? wp_unslash( $_POST['list_name'] ) : '' );
 		if ( ! $result['ok'] ) {
@@ -1048,6 +1110,7 @@ class NH_WL_Actions {
 	}
 
 	public static function ajax_save() {
+		nh_wl_use_shop_locale();
 		check_ajax_referer( 'nh_wl', 'nonce' );
 		$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
 		$product    = wc_get_product( $product_id );
