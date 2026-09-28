@@ -3,7 +3,21 @@
  * Pure geometry / BOM engine. No WooCommerce dependency.
  *
  * Quantities follow the Norhage terrace-roof spreadsheet:
- * - Per-CC layout: one sheet per rafter spacing, width = CC.
+ * - Sheets meet on the centre of a support. A joint leaves a gap (standard
+ *   10 mm) for the connecting profile, so each sheet loses half of that gap.
+ * - Rafters share the inner span evenly, and neither bay is wider than the
+ *   entered centre distance, so the two side sheets match when they can.
+ *   A connecting profile can sit on every rafter, one sheet per bay, or only
+ *   where sheets meet. Optimal spanning covers as many of those bays as the
+ *   chosen sheet width allows, and every joint still sits on a rafter centre.
+ *   Outer sheets run to the end of the frame, so they are wider by half the
+ *   support width plus the half-gap the middle sheets give up.
+ * - Multiwall pieces are cut from 2100 mm stock. Solid pieces are cut from a
+ *   2050 × 3050 mm blank, turned either way, and split along the length when
+ *   the run is longer than the blank.
+ * - Sheet length is the frame length plus a drip overhang (standard 50 mm).
+ *   A gable enters one slope, from the ridge to the eave, and the frame
+ *   length counts that slope twice.
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
  * - Wall profiles cover the wall width in 2.2 m pieces.
@@ -32,38 +46,127 @@ class NH_TC_Engine {
 			);
 		}
 
-		$width  = (int) $input['width_mm'];
-		$length = (int) $input['length_mm'];
-		$cc     = (int) $input['cc_mm'];
-		$thk    = (int) $input['thickness'];
-		$layout = (string) $input['sheet_layout'];
-		$const  = (string) $input['construction'];
+		$width      = (int) $input['width_mm'];
+		$projection = (int) $input['length_mm'];
+		$cc         = (int) $input['cc_mm'];
+		$thk        = (int) $input['thickness'];
+		$layout     = (string) $input['sheet_layout'];
+		$const      = (string) $input['construction'];
+		$slopes     = ( 'gable' === $const ) ? 2 : 1;
+		$length     = $projection * $slopes;
+		$support  = self::support_width( $input, $settings );
+		$overhang = self::sheet_overhang( $input, $settings );
+		$gap       = self::profile_gap( $settings );
+		$material  = isset( $input['material'] ) ? (string) $input['material'] : 'multiwall';
+		$max_sheet = self::max_sheet_width( $settings );
+		$min_sheet = isset( $settings['min_sheet_mm'] ) ? (int) $settings['min_sheet_mm'] : 100;
+		if ( $min_sheet < 1 ) {
+			$min_sheet = 100;
+		}
+		$blank = self::solid_blank( $settings );
 
-		$recommended_cc = self::recommended_cc( $thk, $settings );
+		$advice = self::recommended_support( $material, $thk, $width, $support );
 		if ( $cc <= 0 ) {
-			$cc = isset( $settings['default_cc_mm'] ) ? (int) $settings['default_cc_mm'] : 600;
-			if ( $cc <= 0 ) {
-				$cc = 600;
+			$cc = (int) $advice['cc_mm'];
+		}
+
+		$sheet_length = $length + $overhang;
+		$supply       = isset( $input['sheet_supply'] ) ? (string) $input['sheet_supply'] : 'custom';
+		$choice       = null;
+		if ( 'standard' === $supply ) {
+			$choice = self::standard_sheet_choice( $input, $settings, $sheet_length );
+			if ( ! $choice ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'standard_sheet' ),
+				);
+			}
+		}
+		$quoted  = $choice ? 'standard' : 'custom';
+		$joints  = self::profile_joints( $input, $quoted );
+		$span_mm = self::optimal_span_mm( $input, $settings, $quoted, $choice ? (int) $choice['width_mm'] : 0 );
+
+		$rafters = array();
+		if ( 'overlap' === $layout ) {
+			$across = self::overlap_plan( $width, $sheet_length, $settings );
+		} elseif ( 'optimal' === $joints ) {
+			$framed  = self::optimal_layout( $width, $length, $cc, $support, $gap, $overhang, $span_mm, $min_sheet );
+			$across  = $framed['sheets'];
+			$rafters = $framed['rafters_mm'];
+		} else {
+			$frame   = self::frame_layout( $width, $length, $cc, $support, $gap, $overhang );
+			$across  = $frame['sheets'];
+			$rafters = $frame['rafters_mm'];
+		}
+
+		foreach ( $across as $sheet ) {
+			$cut_w = (int) $sheet['width_mm'];
+			if ( $cut_w < $min_sheet ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'sheet_narrow' ),
+				);
+			}
+			if ( 'solid' === $material ) {
+				if ( $cut_w > (int) $blank['long_mm'] ) {
+					return array(
+						'ok'     => false,
+						'errors' => array( 'solid_sheet' ),
+					);
+				}
+			} elseif ( $cut_w > $max_sheet ) {
+				return array(
+					'ok'     => false,
+					'errors' => array( 'sheet_width' ),
+				);
 			}
 		}
 
-		$sheets = ( 'overlap' === $layout )
-			? self::overlap_sheets( $width, $length, $settings )
-			: self::per_cc_sheets( $width, $length, $cc );
+		$pieces        = array();
+		$length_pieces = 1;
+		foreach ( $across as $sheet ) {
+			$lengths = array( (int) $sheet['length_mm'] );
+			if ( 'solid' === $material ) {
+				$lengths = self::solid_length_pieces( (int) $sheet['width_mm'], (int) $sheet['length_mm'], $settings );
+				if ( null === $lengths ) {
+					return array(
+						'ok'     => false,
+						'errors' => array( 'solid_sheet' ),
+					);
+				}
+			}
+			$length_pieces = max( $length_pieces, count( $lengths ) );
+			foreach ( $lengths as $piece_length ) {
+				$pieces[] = array(
+					'width_mm'  => (int) $sheet['width_mm'],
+					'length_mm' => (int) $piece_length,
+					'edge'      => $sheet['edge'],
+				);
+			}
+		}
+
+		$plan   = $across;
+		$sheets = self::group_sheets( $pieces );
+
+		$stock_cover = $choice
+			? self::stock_sheet_qty( $width, $sheet_length, (int) $choice['width_mm'], (int) $choice['length_mm'] )
+			: null;
 
 		$sheet_count = 0;
 		foreach ( $sheets as $sheet ) {
 			$sheet_count += (int) $sheet['qty'];
 		}
 
-		$connecting_count = max( 0, $sheet_count - 1 );
-		$beam_count       = ( 'gable' === $const ) ? $sheet_count + 2 : $sheet_count + 1;
+		$connecting_count = max( 0, count( $across ) - 1 );
+		$beam_count       = ( 'overlap' === $layout )
+			? ( ( 'gable' === $const ) ? $sheet_count + 2 : $sheet_count + 1 )
+			: self::beam_count( $width, $cc, $support, $const );
 
 		$finish_runs = ( 'gable' === $const )
-			? array( $length, $length, $width, $width )
-			: array( $length, $length, $width );
+			? array( $sheet_length, $sheet_length, $width, $width )
+			: array( $sheet_length, $sheet_length, $width );
 
-		$connecting_stock_mm = self::smallest_stock( $length, $settings['profile_stock_mm'] );
+		$connecting_stock_mm = self::smallest_stock( $sheet_length, $settings['profile_stock_mm'] );
 		$screws_raw          = $connecting_count * (int) ceil( $connecting_stock_mm / max( 1, (int) $settings['screw_spacing_mm'] ) );
 		$pack_size           = max( 1, (int) $settings['screw_pack_size'] );
 		$screw_packs         = (int) ceil( $screws_raw / $pack_size );
@@ -73,7 +176,7 @@ class NH_TC_Engine {
 			$end_width_mm += (int) $sheet['width_mm'] * (int) $sheet['qty'];
 		}
 
-		$perimeter_mm = 2 * ( $width + $length );
+		$perimeter_mm = 2 * ( $width + $sheet_length );
 		$gasket_m     = (int) ceil( $perimeter_mm / 1000 );
 		$silicon_qty  = max( 1, (int) ceil( ( $perimeter_mm / 1000 ) / max( 1, (float) $settings['silicon_metres_per_tube'] ) ) );
 		$tape_width   = self::tape_width_mm( $thk );
@@ -89,15 +192,29 @@ class NH_TC_Engine {
 
 		$lines = array();
 
-		foreach ( $sheets as $sheet ) {
+		if ( $choice && $stock_cover ) {
 			$lines[] = array(
-				'role' => 'sheet',
-				'qty'  => (int) $sheet['qty'],
-				'cut'  => array(
-					'width_mm'  => (int) $sheet['width_mm'],
-					'length_mm' => (int) $sheet['length_mm'],
+				'role'       => 'sheet',
+				'qty'        => (int) $stock_cover['qty'],
+				'stock'      => 1,
+				'sku'        => (string) $choice['sku'],
+				'parent_sku' => (string) $choice['parent_sku'],
+				'cut'        => array(
+					'width_mm'  => (int) $choice['width_mm'],
+					'length_mm' => (int) $choice['length_mm'],
 				),
 			);
+		} else {
+			foreach ( $sheets as $sheet ) {
+				$lines[] = array(
+					'role' => 'sheet',
+					'qty'  => (int) $sheet['qty'],
+					'cut'  => array(
+						'width_mm'  => (int) $sheet['width_mm'],
+						'length_mm' => (int) $sheet['length_mm'],
+					),
+				);
+			}
 		}
 
 		if ( $screw_packs > 0 ) {
@@ -116,7 +233,7 @@ class NH_TC_Engine {
 			$lines[] = array(
 				'role'      => 'connecting',
 				'qty'       => $connecting_count,
-				'length_mm' => $length,
+				'length_mm' => $sheet_length,
 				'stock_mm'  => $connecting_stock_mm,
 				'attrs'     => array(
 					'length' => self::mm_to_length_slug( $connecting_stock_mm ),
@@ -147,27 +264,29 @@ class NH_TC_Engine {
 			);
 		}
 
-		$lines[] = array(
-			'role'         => 'vent_tape',
-			'qty'          => $tape_rolls,
-			'cover_mm'     => $end_width_mm,
-			'tape_width_mm'=> $tape_width,
-			'attrs'        => array(
-				'width'  => $tape_width . '-mm',
-				'length' => '5-m',
-			),
-		);
+		if ( 'multiwall' === $material ) {
+			$lines[] = array(
+				'role'         => 'vent_tape',
+				'qty'          => $tape_rolls,
+				'cover_mm'     => $end_width_mm,
+				'tape_width_mm'=> $tape_width,
+				'attrs'        => array(
+					'width'  => $tape_width . '-mm',
+					'length' => '5-m',
+				),
+			);
 
-		$lines[] = array(
-			'role'         => 'iso_tape',
-			'qty'          => $tape_rolls,
-			'cover_mm'     => $end_width_mm,
-			'tape_width_mm'=> $tape_width,
-			'attrs'        => array(
-				'width'  => $tape_width . '-mm',
-				'length' => '5-m',
-			),
-		);
+			$lines[] = array(
+				'role'         => 'iso_tape',
+				'qty'          => $tape_rolls,
+				'cover_mm'     => $end_width_mm,
+				'tape_width_mm'=> $tape_width,
+				'attrs'        => array(
+					'width'  => $tape_width . '-mm',
+					'length' => '5-m',
+				),
+			);
+		}
 
 		if ( $connecting_count > 0 && 'h_plastic' !== (string) $input['connecting_profile'] ) {
 			$lines[] = array(
@@ -193,8 +312,24 @@ class NH_TC_Engine {
 			'meta' => array(
 				'width_mm'             => $width,
 				'length_mm'            => $length,
+				'projection_mm'        => $projection,
+				'slopes'               => $slopes,
 				'cc_mm'                => $cc,
-				'recommended_cc_mm'    => $recommended_cc,
+				'support_mm'           => $support,
+				'overhang_mm'          => $overhang,
+				'profile_gap_mm'       => $gap,
+				'sheet_length_mm'      => $sheet_length,
+				'side_extra_mm'        => self::side_extra_mm( $support, $gap ),
+				'standard_sheet_mm'    => 'solid' === $material ? (int) $blank['long_mm'] : $max_sheet,
+				'blank_short_mm'       => 'solid' === $material ? (int) $blank['short_mm'] : $max_sheet,
+				'blank_long_mm'        => 'solid' === $material ? (int) $blank['long_mm'] : 0,
+				'length_pieces'        => $length_pieces,
+				'sheet_plan'           => $plan,
+				'rafters_mm'           => $rafters,
+				'recommended_cc_mm'    => (int) $advice['cc_mm'],
+				'recommended_min_mm'   => (int) $advice['min_mm'],
+				'recommended_max_mm'   => (int) $advice['max_mm'],
+				'rafter_count'         => self::rafter_count( $width, $cc, $support ),
 				'thickness'            => $thk,
 				'construction'         => $const,
 				'material'             => (string) $input['material'],
@@ -204,7 +339,14 @@ class NH_TC_Engine {
 				'finish_profile'       => (string) $input['finish_profile'],
 				'finish_color'         => (string) $input['finish_color'],
 				'sheet_layout'         => $layout,
-				'sheet_count'          => $sheet_count,
+				'profile_joints'       => $joints,
+				'span_mm'              => $span_mm,
+				'sheet_count'          => ( $stock_cover ) ? (int) $stock_cover['qty'] : $sheet_count,
+				'sheet_supply'         => $choice ? 'standard' : 'custom',
+				'stock_width_mm'       => $choice ? (int) $choice['width_mm'] : 0,
+				'stock_length_mm'      => $choice ? (int) $choice['length_mm'] : 0,
+				'stock_across'         => $stock_cover ? (int) $stock_cover['across'] : 0,
+				'stock_along'          => $stock_cover ? (int) $stock_cover['along'] : 0,
 				'overlap_sheet_count'  => self::overlap_sheet_count( $width, $settings ),
 				'beam_count'           => $beam_count,
 				'connecting_count'     => $connecting_count,
@@ -214,6 +356,54 @@ class NH_TC_Engine {
 				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
 			),
 			'lines' => $lines,
+		);
+	}
+
+	/**
+	 * How many whole stock sheets cover the frame. Sheets tile across the width
+	 * and, when one stock length is shorter than the run, along the length too.
+	 *
+	 * @return array{across:int,along:int,qty:int}
+	 */
+	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
+		$across = (int) ceil( max( 1, (int) $frame_width ) / max( 1, (int) $stock_width ) );
+		$along  = (int) ceil( max( 1, (int) $need_length ) / max( 1, (int) $stock_length ) );
+		return array(
+			'across' => $across,
+			'along'  => $along,
+			'qty'    => $across * $along,
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 * @return array{channel:string,width_mm:int,length_mm:int,sku:string,parent_sku:string}|null
+	 */
+	private static function standard_sheet_choice( array $input, array $settings, $need_mm ) {
+		$catalog = ( isset( $settings['standard_sheets'] ) && is_array( $settings['standard_sheets'] ) ) ? $settings['standard_sheets'] : null;
+		if ( is_array( $catalog ) && class_exists( 'NH_TC_Defaults' ) ) {
+			return NH_TC_Defaults::pick_standard_sheet(
+				$catalog,
+				isset( $input['material'] ) ? $input['material'] : 'multiwall',
+				isset( $input['thickness'] ) ? $input['thickness'] : 0,
+				isset( $input['colour'] ) ? $input['colour'] : '',
+				isset( $input['stock_channel'] ) ? $input['stock_channel'] : '',
+				isset( $input['stock_width_mm'] ) ? $input['stock_width_mm'] : 0,
+				$need_mm
+			);
+		}
+		$width  = isset( $input['stock_width_mm'] ) ? (int) $input['stock_width_mm'] : 0;
+		$length = isset( $input['stock_length_mm'] ) ? (int) $input['stock_length_mm'] : 0;
+		if ( $width < 1 || $length < 1 ) {
+			return null;
+		}
+		return array(
+			'channel'    => isset( $input['stock_channel'] ) ? (string) $input['stock_channel'] : 'stock',
+			'width_mm'   => $width,
+			'length_mm'  => $length,
+			'sku'        => isset( $input['stock_sku'] ) ? (string) $input['stock_sku'] : '',
+			'parent_sku' => '',
 		);
 	}
 
@@ -248,19 +438,291 @@ class NH_TC_Engine {
 			$errors[] = 'cc';
 		}
 
+		$support = self::support_width( $input, $settings );
+		$min_s   = isset( $settings['min_support_mm'] ) ? (int) $settings['min_support_mm'] : 20;
+		$max_s   = isset( $settings['max_support_mm'] ) ? (int) $settings['max_support_mm'] : 200;
+		if ( $support < $min_s || $support > $max_s ) {
+			$errors[] = 'support';
+		}
+
+		$overhang = self::sheet_overhang( $input, $settings );
+		$max_oh   = isset( $settings['max_overhang_mm'] ) ? (int) $settings['max_overhang_mm'] : 300;
+		if ( $overhang < 0 || $overhang > $max_oh ) {
+			$errors[] = 'overhang';
+		}
+
 		return $errors;
+	}
+
+	/**
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 */
+	public static function support_width( array $input, array $settings ) {
+		$support = isset( $input['support_mm'] ) ? (int) $input['support_mm'] : 0;
+		if ( $support <= 0 ) {
+			$support = isset( $settings['default_support_mm'] ) ? (int) $settings['default_support_mm'] : 50;
+		}
+		if ( $support <= 0 ) {
+			$support = 50;
+		}
+		return $support;
+	}
+
+	/**
+	 * Missing overhang uses the standard drip allowance. An explicit 0 is kept.
+	 *
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 */
+	public static function sheet_overhang( array $input, array $settings ) {
+		if ( ! array_key_exists( 'overhang_mm', $input ) || null === $input['overhang_mm'] || '' === $input['overhang_mm'] ) {
+			$overhang = isset( $settings['default_overhang_mm'] ) ? (int) $settings['default_overhang_mm'] : 50;
+			return $overhang >= 0 ? $overhang : 50;
+		}
+		return (int) $input['overhang_mm'];
+	}
+
+	/**
+	 * @param array<string, mixed> $settings
+	 */
+	public static function profile_gap( array $settings ) {
+		$gap = isset( $settings['profile_gap_mm'] ) ? (int) $settings['profile_gap_mm'] : 10;
+		return $gap >= 0 ? $gap : 10;
+	}
+
+	/**
+	 * @param array<string, mixed> $settings
+	 */
+	public static function max_sheet_width( array $settings ) {
+		$max = isset( $settings['standard_sheet_width_mm'] ) ? (int) $settings['standard_sheet_width_mm'] : 2100;
+		return $max > 0 ? $max : 2100;
+	}
+
+	/**
+	 * A missing or empty flag means a connecting profile on every beam.
+	 *
+	 * @param array<string, mixed> $input
+	 */
+	public static function joints_on_every_beam( array $input ) {
+		if ( ! array_key_exists( 'joint_every_beam', $input ) || null === $input['joint_every_beam'] || '' === $input['joint_every_beam'] ) {
+			return true;
+		}
+		return ! in_array( (string) $input['joint_every_beam'], array( '0', 'false', 'no' ), true );
+	}
+
+	/**
+	 * A missing choice follows the sheet supply: standard spans the chosen
+	 * width, custom puts a profile on every rafter.
+	 *
+	 * @param array<string, mixed> $input
+	 */
+	public static function profile_joints( array $input, $supply ) {
+		$joints = isset( $input['profile_joints'] ) ? (string) $input['profile_joints'] : '';
+		if ( 'every' === $joints || 'optimal' === $joints ) {
+			return $joints;
+		}
+		return ( 'standard' === (string) $supply ) ? 'optimal' : 'every';
+	}
+
+	/**
+	 * Widest cut an optimal sheet may take.
+	 *
+	 * Standard supply uses the width the customer picked. Solid custom cuts
+	 * stay within the short side of the blank, so the long side stays the
+	 * length. Multiwall custom uses the widest catalog width for that
+	 * thickness and colour, across every channel, and otherwise the usual
+	 * 2100 mm sheet.
+	 *
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $settings
+	 */
+	public static function optimal_span_mm( array $input, array $settings, $supply, $chosen_width ) {
+		if ( 'standard' === (string) $supply && (int) $chosen_width > 0 ) {
+			return (int) $chosen_width;
+		}
+		$material = isset( $input['material'] ) ? (string) $input['material'] : 'multiwall';
+		if ( 'solid' === $material ) {
+			return (int) self::solid_blank( $settings )['short_mm'];
+		}
+		$catalog = ( isset( $settings['standard_sheets'] ) && is_array( $settings['standard_sheets'] ) ) ? $settings['standard_sheets'] : null;
+		if ( is_array( $catalog ) && class_exists( 'NH_TC_Defaults' ) ) {
+			$widest = NH_TC_Defaults::widest_standard_width(
+				$catalog,
+				$material,
+				isset( $input['thickness'] ) ? $input['thickness'] : 0,
+				isset( $input['colour'] ) ? $input['colour'] : ''
+			);
+			if ( $widest > 0 ) {
+				return $widest;
+			}
+		}
+		return self::max_sheet_width( $settings );
+	}
+
+	/**
+	 * Supports along the slope: one more than the number of bays. A gable adds the ridge beam.
+	 */
+	public static function beam_count( $width, $cc, $support, $construction ) {
+		$inner = (int) $width - max( 0, (int) $support );
+		$cc    = max( 1, (int) $cc );
+		$bays  = ( $inner <= $cc ) ? 1 : (int) ceil( $inner / $cc );
+		return ( 'gable' === (string) $construction ) ? $bays + 2 : $bays + 1;
+	}
+
+	/**
+	 * How much wider a full outer sheet is than a full middle sheet.
+	 */
+	public static function side_extra_mm( $support, $gap ) {
+		$support  = (int) $support;
+		$gap      = (int) $gap;
+		$half_gap = intdiv( $gap, 2 );
+		$half_b   = intdiv( $support, 2 );
+		return $half_b + ( $gap - $half_gap );
+	}
+
+	/**
+	 * Solid blanks can be turned, so either side may be the width.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return array{short_mm:int,long_mm:int}
+	 */
+	public static function solid_blank( array $settings ) {
+		$short = 2050;
+		$long  = 3050;
+		if ( isset( $settings['solid_sheet_mm'] ) && is_array( $settings['solid_sheet_mm'] ) ) {
+			$a = isset( $settings['solid_sheet_mm'][0] ) ? (int) $settings['solid_sheet_mm'][0] : 0;
+			$b = isset( $settings['solid_sheet_mm'][1] ) ? (int) $settings['solid_sheet_mm'][1] : 0;
+			if ( $a > 0 && $b > 0 ) {
+				$short = min( $a, $b );
+				$long  = max( $a, $b );
+			}
+		}
+		return array(
+			'short_mm' => $short,
+			'long_mm'  => $long,
+		);
+	}
+
+	/**
+	 * Split a solid run so every piece fits on a 2050 × 3050 mm sheet, either way up.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return int[]|null Null when the cut is wider than the longer side.
+	 */
+	public static function solid_length_pieces( $width, $length, array $settings ) {
+		$blank  = self::solid_blank( $settings );
+		$width  = (int) $width;
+		$length = max( 1, (int) $length );
+		if ( $width > (int) $blank['long_mm'] ) {
+			return null;
+		}
+		$max_len = ( $width <= (int) $blank['short_mm'] ) ? (int) $blank['long_mm'] : (int) $blank['short_mm'];
+		if ( $length <= $max_len ) {
+			return array( $length );
+		}
+		$count = (int) ceil( $length / $max_len );
+		$base  = intdiv( $length, $count );
+		$extra = $length % $count;
+		$parts = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$parts[] = $base + ( $i < $extra ? 1 : 0 );
+		}
+		return $parts;
+	}
+
+	/**
+	 * Recommended centre spacing, in millimetres, by material and thickness.
+	 *
+	 * @return array<string, array<string, int[]>>
+	 */
+	public static function support_range_tables() {
+		return array(
+			'multiwall' => array(
+				'4'  => array( 350, 400, 400 ),
+				'6'  => array( 400, 500, 500 ),
+				'10' => array( 500, 600, 600 ),
+				'16' => array( 700, 800, 700 ),
+				'20' => array( 800, 1000, 900 ),
+				'25' => array( 800, 1000, 900 ),
+				'32' => array( 1000, 1200, 1000 ),
+				'40' => array( 1000, 1200, 1000 ),
+			),
+			'solid'     => array(
+				'2'  => array( 250, 350, 300 ),
+				'3'  => array( 350, 450, 400 ),
+				'4'  => array( 450, 550, 500 ),
+				'5'  => array( 550, 650, 600 ),
+				'6'  => array( 650, 750, 700 ),
+				'8'  => array( 750, 900, 800 ),
+				'10' => array( 900, 1100, 1000 ),
+			),
+		);
+	}
+
+	/**
+	 * The listed range for this thickness, or the next thinner listed sheet.
+	 *
+	 * @return array{min_mm:int,max_mm:int,prefill_mm:int}
+	 */
+	public static function support_range( $material, $thickness ) {
+		$tables   = self::support_range_tables();
+		$material = isset( $tables[ $material ] ) ? (string) $material : 'multiwall';
+		$table    = $tables[ $material ];
+		$chosen   = null;
+		foreach ( $table as $thk => $range ) {
+			if ( (int) $thk <= (int) $thickness ) {
+				$chosen = $range;
+			}
+		}
+		if ( null === $chosen ) {
+			$chosen = reset( $table );
+		}
+		$max     = (int) $chosen[1];
+		$prefill = isset( $chosen[2] ) ? (int) $chosen[2] : $max;
+		return array(
+			'min_mm'     => (int) $chosen[0],
+			'max_mm'     => $max,
+			'prefill_mm' => $prefill > 0 ? $prefill : $max,
+		);
+	}
+
+	/**
+	 * Prefill for the centre-spacing field, plus the rafter count that spacing gives.
+	 *
+	 * @return array{min_mm:int,max_mm:int,cc_mm:int,bays:int,rafters:int}
+	 */
+	public static function recommended_support( $material, $thickness, $width, $support ) {
+		$range  = self::support_range( $material, $thickness );
+		$inner  = max( 1, (int) $width - max( 0, (int) $support ) );
+		$cc     = max( 1, (int) $range['prefill_mm'] );
+		$bays   = ( $inner <= $cc ) ? 1 : (int) ceil( $inner / $cc );
+		return array(
+			'min_mm'  => (int) $range['min_mm'],
+			'max_mm'  => (int) $range['max_mm'],
+			'cc_mm'   => $cc,
+			'bays'    => $bays,
+			'rafters' => $bays + 1,
+		);
+	}
+
+	/**
+	 * Supports across the roof, including both ends.
+	 */
+	public static function rafter_count( $width, $cc, $support ) {
+		$inner = max( 0, (int) $width - max( 0, (int) $support ) );
+		$cc    = max( 1, (int) $cc );
+		$bays  = ( $inner <= $cc ) ? 1 : (int) ceil( $inner / $cc );
+		return $bays + 1;
 	}
 
 	/**
 	 * @param array<string, mixed> $settings
 	 */
 	public static function recommended_cc( $thickness, array $settings ) {
-		$key = (string) (int) $thickness;
-		$map = $settings['recommended_cc'];
-		if ( isset( $map[ $key ] ) ) {
-			return (int) $map[ $key ];
-		}
-		return 600;
+		unset( $settings );
+		$range = self::support_range( 'multiwall', $thickness );
+		return (int) $range['prefill_mm'];
 	}
 
 	/**
@@ -284,57 +746,370 @@ class NH_TC_Engine {
 	}
 
 	/**
-	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 * One entry per sheet. Joints sit on beam centres.
+	 *
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>
 	 */
-	public static function per_cc_sheets( $width, $length, $cc ) {
-		$cc    = max( 1, (int) $cc );
-		$count = (int) ceil( $width / $cc );
-		if ( $count < 1 ) {
-			$count = 1;
+	public static function framed_sheet_plan( $width, $length, $cc, $support, $gap, $overhang ) {
+		return self::frame_layout( $width, $length, $cc, $support, $gap, $overhang )['sheets'];
+	}
+
+	/**
+	 * Sheets and rafter centres for a framed roof.
+	 *
+	 * The distance between the outer beam centres is width − support. That span
+	 * is split into the fewest equal bays that stay within the entered centre
+	 * distance, with the two end bays the same width whenever the spare
+	 * millimetres fit in the middle. A middle sheet is the bay minus the joint
+	 * gap. An outer sheet reaches the outer face of the end beam and is only
+	 * shortened on its joint side. Each joint is the centre of a rafter.
+	 *
+	 * @return array{sheets:array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>,rafters_mm:int[]}
+	 */
+	public static function frame_layout( $width, $length, $cc, $support, $gap, $overhang ) {
+		$width     = (int) $width;
+		$support   = max( 0, (int) $support );
+		$gap       = max( 0, (int) $gap );
+		$cc        = max( 1, (int) $cc );
+		$length_mm = (int) $length + max( 0, (int) $overhang );
+		$half_gap  = intdiv( $gap, 2 );
+		$half_l    = intdiv( $support, 2 );
+		$half_r    = $support - $half_l;
+		$inner     = $width - $support;
+
+		if ( $inner <= $cc ) {
+			return array(
+				'sheets'     => array(
+					array(
+						'width_mm'  => $width,
+						'length_mm' => $length_mm,
+						'edge'      => 'side',
+						'x_mm'      => 0,
+					),
+				),
+				'rafters_mm' => array( $half_l, $width - $half_r ),
+			);
 		}
 
-		$full = $count - 1;
-		$last = (int) ( $width - ( $full * $cc ) );
-		if ( $last <= 0 || $last === $cc ) {
+		$bay_widths = self::even_bay_widths( $inner, (int) ceil( $inner / $cc ) );
+		$sheets     = array();
+		$rafters    = array( $half_l );
+		$x          = 0;
+		$centre     = $half_l;
+		$last       = count( $bay_widths ) - 1;
+
+		foreach ( $bay_widths as $i => $bay ) {
+			if ( 0 === $i ) {
+				$cut  = $bay + $half_l - $half_gap;
+				$edge = 'side';
+			} elseif ( $i === $last ) {
+				$cut  = $bay + $half_r - $half_gap;
+				$edge = 'side';
+			} else {
+				$cut  = $bay - $gap;
+				$edge = 'middle';
+			}
+			$sheets[] = array(
+				'width_mm'  => (int) $cut,
+				'length_mm' => $length_mm,
+				'edge'      => $edge,
+				'x_mm'      => (int) $x,
+			);
+			$x      += (int) $cut + $gap;
+			$centre += (int) $bay;
+			$rafters[] = (int) $centre;
+		}
+
+		return array(
+			'sheets'     => $sheets,
+			'rafters_mm' => $rafters,
+		);
+	}
+
+	/**
+	 * Split an inner span into bays no wider than the caller already chose.
+	 * Spare millimetres go to the middle bays first so the two ends match.
+	 * With only two bays, the extra millimetre stays on the right.
+	 *
+	 * @return int[]
+	 */
+	public static function even_bay_widths( $inner, $bays ) {
+		$inner  = max( 0, (int) $inner );
+		$bays   = max( 1, (int) $bays );
+		$base   = intdiv( $inner, $bays );
+		$extra  = $inner - ( $base * $bays );
+		$widths = array_fill( 0, $bays, $base );
+		if ( $extra < 1 || $bays < 2 ) {
+			return $widths;
+		}
+		if ( 2 === $bays ) {
+			$widths[1] = $base + 1;
+			return $widths;
+		}
+
+		$middle_count = $bays - 2;
+		$middle_extra = $extra;
+		if ( $extra > $middle_count ) {
+			$widths[0]           = $base + 1;
+			$widths[ $bays - 1 ] = $base + 1;
+			$middle_extra        = $extra - 2;
+		}
+		if ( $middle_extra > 0 && $middle_count > 0 ) {
+			$offset = intdiv( $middle_count - $middle_extra, 2 );
+			for ( $i = 0; $i < $middle_extra; $i++ ) {
+				$widths[ 1 + $offset + $i ] = $base + 1;
+			}
+		}
+		return $widths;
+	}
+
+	/**
+	 * Cover as many even rafter bays as the sheet width allows.
+	 *
+	 * The rafter centres are the same ones a profile-on-every-rafter roof
+	 * would use. A sheet runs to the furthest of those centres that still
+	 * fits, and the joint is that centre. Rafters between the joints stay
+	 * in the layout with no connecting profile.
+	 *
+	 * @return array{sheets:array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>,rafters_mm:int[]}
+	 */
+	public static function optimal_layout( $width, $length, $cc, $support, $gap, $overhang, $max_sheet, $min_sheet = 100 ) {
+		$frame     = self::frame_layout( $width, $length, $cc, $support, $gap, $overhang );
+		$length_mm = (int) $length + max( 0, (int) $overhang );
+		return array(
+			'sheets'     => self::sheets_across_rafters( (int) $width, $length_mm, $frame['rafters_mm'], $gap, $max_sheet, $min_sheet ),
+			'rafters_mm' => $frame['rafters_mm'],
+		);
+	}
+
+	/**
+	 * @param int[] $centers Rafter centres, including both ends. Index equals the bay boundary.
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string,x_mm:int}>
+	 */
+	private static function sheets_across_rafters( $width, $length_mm, array $centers, $gap, $max_sheet, $min_sheet ) {
+		$width     = (int) $width;
+		$gap       = max( 0, (int) $gap );
+		$half_gap  = intdiv( $gap, 2 );
+		$max_sheet = max( 1, (int) $max_sheet );
+		$min_sheet = max( 1, (int) $min_sheet );
+		$bays      = count( $centers ) - 1;
+		$length_mm = (int) $length_mm;
+
+		if ( $bays < 1 ) {
 			return array(
 				array(
-					'width_mm'  => $cc,
-					'length_mm' => (int) $length,
-					'qty'       => $count,
+					'width_mm'  => $width,
+					'length_mm' => $length_mm,
+					'edge'      => 'side',
+					'x_mm'      => 0,
 				),
 			);
 		}
 
-		$out = array();
-		if ( $full > 0 ) {
-			$out[] = array(
-				'width_mm'  => $cc,
-				'length_mm' => (int) $length,
-				'qty'       => $full,
+		$sheet_width = static function ( $from, $to ) use ( $centers, $width, $gap, $half_gap, $bays ) {
+			$start = ( 0 === (int) $from ) ? 0 : ( (int) $centers[ (int) $from ] + ( $gap - $half_gap ) );
+			$end   = ( (int) $to === $bays ) ? $width : ( (int) $centers[ (int) $to ] - $half_gap );
+			return (int) ( $end - $start );
+		};
+
+		$segments = array();
+		$from     = 0;
+		$guard    = 0;
+		while ( $from < $bays && $guard < 100 ) {
+			++$guard;
+			$best = null;
+			for ( $to = $from + 1; $to <= $bays; $to++ ) {
+				if ( $sheet_width( $from, $to ) <= $max_sheet ) {
+					$best = $to;
+				} else {
+					break;
+				}
+			}
+			if ( null === $best ) {
+				$segments[] = array( $from, $from + 1 );
+				$from       = $from + 1;
+				continue;
+			}
+			$segments[] = array( $from, $best );
+			$from       = $best;
+		}
+
+		$relax = 0;
+		while ( $relax < 40 && count( $segments ) >= 2 ) {
+			++$relax;
+			$last_i = count( $segments ) - 1;
+			$prev   = $segments[ $last_i - 1 ];
+			$last   = $segments[ $last_i ];
+			if ( $sheet_width( $last[0], $last[1] ) >= $min_sheet ) {
+				break;
+			}
+			if ( $prev[1] - 1 <= $prev[0] ) {
+				break;
+			}
+			$joint  = $prev[1] - 1;
+			$prev_w = $sheet_width( $prev[0], $joint );
+			if ( $prev_w < $min_sheet || $prev_w > $max_sheet ) {
+				break;
+			}
+			$segments[ $last_i - 1 ] = array( $prev[0], $joint );
+			$segments[ $last_i ]     = array( $joint, $last[1] );
+		}
+
+		$plan   = array();
+		$last_i = count( $segments ) - 1;
+		foreach ( $segments as $index => $segment ) {
+			$start = (int) $segment[0];
+			$edge  = ( 0 === $index || $index === $last_i ) ? 'side' : 'middle';
+			$x     = ( 0 === $start ) ? 0 : ( (int) $centers[ $start ] + ( $gap - $half_gap ) );
+			$plan[] = array(
+				'width_mm'  => $sheet_width( $segment[0], $segment[1] ),
+				'length_mm' => $length_mm,
+				'edge'      => $edge,
+				'x_mm'      => (int) $x,
 			);
 		}
-		$out[] = array(
-			'width_mm'  => $last,
-			'length_mm' => (int) $length,
-			'qty'       => 1,
-		);
-		return $out;
+
+		return $plan;
+	}
+
+	/**
+	 * Span as many bays as the stock width allows. Joints stay on beam centres.
+	 *
+	 * From the left edge, each sheet runs to the furthest beam that still keeps
+	 * the cut within the standard width. If that leaves a sliver at the end,
+	 * the last joint moves back one beam at a time until the end piece is wide
+	 * enough, or until it cannot move without making the previous piece too narrow.
+	 *
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
+	 */
+	public static function stock_sheet_plan( $width, $length, $cc, $support, $gap, $overhang, $max_sheet, $min_sheet = 100 ) {
+		$width     = (int) $width;
+		$support   = max( 0, (int) $support );
+		$gap       = max( 0, (int) $gap );
+		$cc        = max( 1, (int) $cc );
+		$max_sheet = max( 1, (int) $max_sheet );
+		$min_sheet = max( 1, (int) $min_sheet );
+		$length_mm = (int) $length + max( 0, (int) $overhang );
+		$half_gap  = intdiv( $gap, 2 );
+		$half_l    = intdiv( $support, 2 );
+		$inner     = $width - $support;
+
+		if ( $inner <= $cc ) {
+			return array(
+				array(
+					'width_mm'  => $width,
+					'length_mm' => $length_mm,
+					'edge'      => 'side',
+				),
+			);
+		}
+
+		$bays    = (int) ceil( $inner / $cc );
+		$centers = array();
+		for ( $i = 0; $i < $bays; $i++ ) {
+			$centers[] = $half_l + ( $i * $cc );
+		}
+		$centers[] = $half_l + $inner;
+
+		$sheet_width = static function ( $from, $to ) use ( $centers, $width, $gap, $half_gap, $bays ) {
+			$start = ( 0 === (int) $from ) ? 0 : ( $centers[ (int) $from ] + ( $gap - $half_gap ) );
+			$end   = ( (int) $to === $bays ) ? $width : ( $centers[ (int) $to ] - $half_gap );
+			return (int) ( $end - $start );
+		};
+
+		$segments = array();
+		$from     = 0;
+		$guard    = 0;
+		while ( $from < $bays && $guard < 100 ) {
+			++$guard;
+			$best = null;
+			for ( $to = $from + 1; $to <= $bays; $to++ ) {
+				if ( $sheet_width( $from, $to ) <= $max_sheet ) {
+					$best = $to;
+				} else {
+					break;
+				}
+			}
+			if ( null === $best ) {
+				$segments[] = array( $from, $from + 1 );
+				$from       = $from + 1;
+				continue;
+			}
+			$segments[] = array( $from, $best );
+			$from       = $best;
+		}
+
+		$relax = 0;
+		while ( $relax < 40 && count( $segments ) >= 2 ) {
+			++$relax;
+			$last_i = count( $segments ) - 1;
+			$prev   = $segments[ $last_i - 1 ];
+			$last   = $segments[ $last_i ];
+			if ( $sheet_width( $last[0], $last[1] ) >= $min_sheet ) {
+				break;
+			}
+			if ( $prev[1] - 1 <= $prev[0] ) {
+				break;
+			}
+			$joint  = $prev[1] - 1;
+			$prev_w = $sheet_width( $prev[0], $joint );
+			if ( $prev_w < $min_sheet || $prev_w > $max_sheet ) {
+				break;
+			}
+			$segments[ $last_i - 1 ] = array( $prev[0], $joint );
+			$segments[ $last_i ]     = array( $joint, $last[1] );
+		}
+
+		$plan = array();
+		$last_i = count( $segments ) - 1;
+		foreach ( $segments as $index => $segment ) {
+			$edge = ( 0 === $index || $index === $last_i ) ? 'side' : 'middle';
+			$plan[] = array(
+				'width_mm'  => $sheet_width( $segment[0], $segment[1] ),
+				'length_mm' => $length_mm,
+				'edge'      => $edge,
+			);
+		}
+
+		return $plan;
+	}
+
+	/**
+	 * @param array<int, array{width_mm:int,length_mm:int}> $plan
+	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 */
+	public static function group_sheets( array $plan ) {
+		$groups = array();
+		foreach ( $plan as $sheet ) {
+			$key = (int) $sheet['width_mm'] . 'x' . (int) $sheet['length_mm'];
+			if ( ! isset( $groups[ $key ] ) ) {
+				$groups[ $key ] = array(
+					'width_mm'  => (int) $sheet['width_mm'],
+					'length_mm' => (int) $sheet['length_mm'],
+					'qty'       => 0,
+				);
+			}
+			$groups[ $key ]['qty']++;
+		}
+		return array_values( $groups );
 	}
 
 	/**
 	 * @param array<string, mixed> $settings
-	 * @return array<int, array{width_mm:int,length_mm:int,qty:int}>
+	 * @return array<int, array{width_mm:int,length_mm:int,edge:string}>
 	 */
-	public static function overlap_sheets( $width, $length, array $settings ) {
+	public static function overlap_plan( $width, $sheet_length, array $settings ) {
 		$count = self::overlap_sheet_count( $width, $settings );
 		$std   = (int) $settings['standard_sheet_width_mm'];
-		return array(
-			array(
+		$plan  = array();
+		for ( $i = 0; $i < $count; $i++ ) {
+			$plan[] = array(
 				'width_mm'  => $std,
-				'length_mm' => (int) $length,
-				'qty'       => $count,
-			),
-		);
+				'length_mm' => (int) $sheet_length,
+				'edge'      => 'middle',
+			);
+		}
+		return $plan;
 	}
 
 	/**

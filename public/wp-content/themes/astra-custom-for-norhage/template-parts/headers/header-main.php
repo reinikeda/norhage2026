@@ -45,6 +45,8 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
         <span class="screen-reader-text"><?php echo esc_html( $account_label ); ?></span>
       </a>
 
+      <?php if ( function_exists( 'nh_wl_header_link' ) ) { nh_wl_header_link(); } ?>
+
       <!-- Cart -->
 		<a class="nh-cart" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>" aria-haspopup="dialog" aria-controls="nh-side-cart">
         <span class="nh-cart-icon">
@@ -143,6 +145,8 @@ $phone_href_clean = 'tel:' . __( '+4917665106609', 'nh-theme' );
           </svg>
           <span class="screen-reader-text"><?php echo esc_html( $account_label ); ?></span>
         </a>
+
+        <?php if ( function_exists( 'nh_wl_header_link' ) ) { nh_wl_header_link( 'nh-wl-header--mobile' ); } ?>
 
         <a class="nh-cart nh-cart--mobile" href="<?php echo esc_url( $cart_url ); ?>" aria-label="<?php esc_attr_e( 'Cart', 'nh-theme' ); ?>" aria-haspopup="dialog" aria-controls="nh-side-cart">
           <span class="nh-cart-icon">

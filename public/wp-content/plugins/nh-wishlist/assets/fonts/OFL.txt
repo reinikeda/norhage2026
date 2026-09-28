@@ -1,0 +1,4 @@
+Liberation Sans is licensed under the SIL Open Font License, Version 1.1.
+The font file in this directory is the unmodified LiberationSans-Regular.ttf
+from the Liberation Fonts project. The license text is available at
+https://scripts.sil.org/OFL
