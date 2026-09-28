@@ -770,6 +770,17 @@ a.ast-on-card-button.ast-select-options-trigger,
   min-height: 2.4em;
 }
 
+/* "From" sits outside the price amount, so it was inheriting a lighter color. */
+.woocommerce .price .from,
+.nhhb-na-price .from,
+.nh-price .from,
+.nh-404-card__price .from {
+  color: var(--ui-text, #2C2A29);
+  font-weight: 700;
+  font-size: 1em;
+  opacity: 1;
+}
+
 .nh-price-unit {
   white-space: nowrap;
   font-size: 0.95em;

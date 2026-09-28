@@ -2255,3 +2255,14 @@ msgstr "PDF-downloads"
 
 msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
 msgstr "Du kan også redigere disse filer i en produkt-CSV. I Produkter → Eksportér, medtag %s. Én fil pr. linje: Etiket; https://example.com/file.pdf. Import erstatter hele listen."
+
+#. Variable product price prefix. WooCommerce context min_price.
+#: inc/variable-price.php
+msgctxt "min_price"
+msgid "From:"
+msgstr "Fra:"
+
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr "Vælg"
