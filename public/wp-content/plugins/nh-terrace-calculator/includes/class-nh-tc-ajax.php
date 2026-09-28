@@ -21,18 +21,11 @@ class NH_TC_Ajax {
 	public static function quote() {
 		check_ajax_referer( 'nh_tc', 'security' );
 
-		$settings = NH_TC_Defaults::settings();
-		$input    = self::read_input();
-		$bom      = NH_TC_Engine::calculate( $input, $settings );
+		list( $settings, $input ) = self::request_state();
+		$bom                      = NH_TC_Engine::calculate( $input, $settings );
 
 		if ( empty( $bom['ok'] ) ) {
-			wp_send_json_error(
-				array(
-					'message' => self::failure_message( $bom['errors'], $settings ),
-					'errors'  => $bom['errors'],
-				),
-				400
-			);
+			self::send_failure( $bom, $settings, $input );
 		}
 
 		$priced = NH_TC_Catalog::price_bom( $bom, $settings );
@@ -46,18 +39,11 @@ class NH_TC_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Cart is not available.', NH_TC_TD ) ), 500 );
 		}
 
-		$settings = NH_TC_Defaults::settings();
-		$input    = self::read_input();
-		$bom      = NH_TC_Engine::calculate( $input, $settings );
+		list( $settings, $input ) = self::request_state();
+		$bom                      = NH_TC_Engine::calculate( $input, $settings );
 
 		if ( empty( $bom['ok'] ) ) {
-			wp_send_json_error(
-				array(
-					'message' => self::failure_message( $bom['errors'], $settings ),
-					'errors'  => $bom['errors'],
-				),
-				400
-			);
+			self::send_failure( $bom, $settings, $input );
 		}
 
 		$priced = NH_TC_Catalog::price_bom( $bom, $settings );
@@ -206,6 +192,41 @@ class NH_TC_Ajax {
 			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
 			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
 			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
+		);
+	}
+
+	/**
+	 * Settings with live variation SKUs, and the posted input.
+	 * An out-of-stock custom cut is quoted as a standard sheet instead.
+	 *
+	 * @return array{0:array<string,mixed>,1:array<string,mixed>}
+	 */
+	private static function request_state() {
+		$settings = NH_TC_Catalog::with_live_sheets( NH_TC_Defaults::settings() );
+		$input    = self::read_input();
+		if ( 'standard' !== $input['sheet_supply'] && ! NH_TC_Catalog::custom_cut_is_available( $settings, $input ) ) {
+			$input['sheet_supply'] = 'standard';
+		}
+		return array( $settings, $input );
+	}
+
+	/**
+	 * @param array<string, mixed> $bom
+	 * @param array<string, mixed> $settings
+	 * @param array<string, mixed> $input
+	 */
+	private static function send_failure( array $bom, array $settings, array $input ) {
+		$errors  = isset( $bom['errors'] ) && is_array( $bom['errors'] ) ? $bom['errors'] : array();
+		$message = self::failure_message( $errors, $settings );
+		if ( in_array( 'standard_sheet', $errors, true ) && ! NH_TC_Catalog::custom_cut_is_available( $settings, $input ) ) {
+			$message = __( 'This thickness and colour is out of stock.', NH_TC_TD );
+		}
+		wp_send_json_error(
+			array(
+				'message' => $message,
+				'errors'  => $errors,
+			),
+			400
 		);
 	}
 

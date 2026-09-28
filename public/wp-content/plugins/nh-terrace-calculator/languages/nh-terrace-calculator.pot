@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -580,4 +580,13 @@ msgid "Sealing tapes are added only for multiwall. One ventilation roll and one 
 msgstr ""
 
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
+msgstr ""
+
+msgid "This thickness and colour is out of stock."
+msgstr ""
+
+msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
+msgstr ""
+
+msgid "Out of stock"
 msgstr ""

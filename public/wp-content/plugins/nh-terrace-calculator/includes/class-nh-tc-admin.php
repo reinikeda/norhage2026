@@ -340,6 +340,9 @@ class NH_TC_Admin {
 				<p class="description">
 					<?php esc_html_e( 'Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang.', NH_TC_TD ); ?>
 				</p>
+				<p class="description">
+					<?php esc_html_e( 'Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well.', NH_TC_TD ); ?>
+				</p>
 				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
 
 				<h2><?php esc_html_e( 'Connecting profiles', NH_TC_TD ); ?></h2>
@@ -503,6 +506,7 @@ class NH_TC_Admin {
 						echo '<p><label>' . esc_html__( 'Parent SKU', NH_TC_TD ) . ' ';
 						echo '<input type="text" class="regular-text" name="' . esc_attr( $base . '[sku]' ) . '" value="' . esc_attr( (string) ( $group['sku'] ?? '' ) ) . '" autocomplete="off" spellcheck="false">';
 						echo '</label></p>';
+						$live = function_exists( 'wc_get_product' ) ? NH_TC_Catalog::variation_sku_index( (string) ( $group['sku'] ?? '' ) ) : array();
 						foreach ( $group['widths'] as $width => $lengths ) {
 							if ( ! is_array( $lengths ) ) {
 								continue;
@@ -510,8 +514,19 @@ class NH_TC_Admin {
 							echo '<p class="nh-tc-var-width">' . esc_html( sprintf( '%d mm', (int) $width ) ) . '</p>';
 							echo '<div class="nh-tc-var-grid">';
 							foreach ( $lengths as $length => $sku ) {
+								$saved      = is_scalar( $sku ) ? trim( (string) $sku ) : '';
+								$width_key  = (string) (int) $width;
+								$length_key = (string) (int) $length;
+								$found      = ( isset( $live[ $width_key ][ $length_key ] ) && is_array( $live[ $width_key ][ $length_key ] ) ) ? $live[ $width_key ][ $length_key ] : null;
+								$value      = $saved;
+								if ( '' === $value && $found && '' !== trim( (string) $found['sku'] ) ) {
+									$value = (string) $found['sku'];
+								}
 								echo '<label><span>' . esc_html( sprintf( '%d mm', (int) $length ) ) . '</span>';
-								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( (string) $sku ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( $value ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								if ( $found && empty( $found['in_stock'] ) ) {
+									echo '<em class="nh-tc-oos">' . esc_html__( 'Out of stock', NH_TC_TD ) . '</em>';
+								}
 								echo '</label>';
 							}
 							echo '</div>';
