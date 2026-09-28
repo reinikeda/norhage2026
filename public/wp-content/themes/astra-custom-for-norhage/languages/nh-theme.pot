@@ -1385,6 +1385,18 @@ msgstr ""
 msgid "On this page"
 msgstr ""
 
+#: inc/bundle-box-csv.php
+msgid "Bundle items"
+msgstr ""
+
+#: inc/bundle-box-csv.php
+msgid "Bundle box name"
+msgstr ""
+
+#: inc/meta-boxes.php
+msgid "You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list."
+msgstr ""
+
 #: inc/downloads-csv.php
 msgid "PDF downloads"
 msgstr ""

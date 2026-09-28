@@ -230,6 +230,97 @@ nh_tc_sheet_assert(
 	&& array() === NH_TC_Defaults::standard_sheet_lengths( 'multiwall', 40, 'clear', 1050 )
 );
 
+nh_tc_sheet_assert(
+	'attribute millimetres accept 2100, 2100 mm and 2100-mm',
+	2100 === NH_TC_Defaults::millimetres_from_attribute( '2100' )
+	&& 2100 === NH_TC_Defaults::millimetres_from_attribute( '2100 mm' )
+	&& 2100 === NH_TC_Defaults::millimetres_from_attribute( '2100-mm' )
+	&& 1520 === NH_TC_Defaults::millimetres_from_attribute( '1520' )
+	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '6-m' )
+	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '6 m' )
+	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '2.2m' )
+	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '25 mm' )
+);
+
+$stock_fixture = array(
+	'multiwall' => array(
+		'10' => array(
+			'clear' => array(
+				'stock' => array(
+					'sku'     => 'PARENT',
+					'channel' => 'stock',
+					'widths'  => array(
+						'1050' => array( '6000' => 'SAVED-1050' ),
+						'2100' => array(
+							'4000' => 'SAVED-4000',
+							'6000' => 'SAVED-6000',
+						),
+					),
+				),
+			),
+		),
+		'16' => array(
+			'clear' => array(
+				'6w' => array(
+					'sku'     => 'PARENT-6',
+					'channel' => '6w',
+					'widths'  => array(
+						'2100' => array( '6000' => '' ),
+					),
+				),
+				'5x' => array(
+					'sku'     => 'PARENT-5',
+					'channel' => '5x',
+					'widths'  => array(
+						'1200' => array( '5000' => 'KEEP' ),
+					),
+				),
+			),
+		),
+	),
+);
+$live_parent = array(
+	array( 'width_mm' => 2100, 'length_mm' => 6000, 'sku' => 'LIVE-6000', 'in_stock' => false ),
+	array( 'width_mm' => 2100, 'length_mm' => 4000, 'sku' => '', 'in_stock' => true ),
+	array( 'width_mm' => 2100, 'length_mm' => 7000, 'sku' => 'LIVE-7000', 'in_stock' => true ),
+	array( 'width_mm' => 1050, 'length_mm' => 6000, 'sku' => 'LIVE-1050', 'in_stock' => false ),
+	array( 'width_mm' => 3000, 'length_mm' => 6000, 'sku' => 'JUNK', 'in_stock' => true ),
+	array( 'width_mm' => 0, 'length_mm' => 6000, 'sku' => 'NO-WIDTH', 'in_stock' => true ),
+);
+$overlaid = NH_TC_Defaults::overlay_standard_catalog(
+	$stock_fixture,
+	array(
+		'PARENT'   => $live_parent,
+		'PARENT-6' => array(
+			array( 'width_mm' => 2100, 'length_mm' => 6000, 'sku' => 'LIVE-6W', 'in_stock' => false ),
+		),
+	)
+);
+$clear10 = $overlaid['multiwall']['10']['clear']['stock']['widths'];
+$picked_live = NH_TC_Defaults::pick_standard_sheet( $overlaid, 'multiwall', 10, 'clear', 'stock', 2100, 4750 );
+nh_tc_sheet_assert(
+	'an in-stock variation fills its SKU and an out-of-stock size is hidden',
+	isset( $clear10['2100']['4000'] ) && 'SAVED-4000' === $clear10['2100']['4000']
+	&& isset( $clear10['2100']['7000'] ) && 'LIVE-7000' === $clear10['2100']['7000']
+	&& ! isset( $clear10['2100']['6000'] )
+	&& ! isset( $clear10['1050'] )
+	&& ! isset( $clear10['3000'] )
+	&& is_array( $picked_live )
+	&& 7000 === $picked_live['length_mm']
+	&& 'LIVE-7000' === $picked_live['sku']
+);
+nh_tc_sheet_assert(
+	'a parent that is not in the shop stays as saved, and an out-of-stock channel is removed',
+	! isset( $overlaid['multiwall']['16']['clear']['6w'] )
+	&& 'KEEP' === $overlaid['multiwall']['16']['clear']['5x']['widths']['1200']['5000']
+);
+$untouched = NH_TC_Defaults::overlay_standard_catalog( $stock_fixture, array() );
+nh_tc_sheet_assert(
+	'without a loaded parent the catalog widths stay put',
+	'SAVED-6000' === $untouched['multiwall']['10']['clear']['stock']['widths']['2100']['6000']
+	&& isset( $untouched['multiwall']['16']['clear']['6w'] )
+);
+
 if ( $failures ) {
 	echo "\n{$failures} failed\n";
 	exit( 1 );

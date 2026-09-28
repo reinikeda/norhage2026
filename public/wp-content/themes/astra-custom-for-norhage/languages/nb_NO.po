@@ -2241,6 +2241,15 @@ msgstr "Produktinformasjon"
 msgid "Show %d more"
 msgstr "Vis %d til"
 
+msgid "Bundle items"
+msgstr "Tilleggsprodukter"
+
+msgid "Bundle box name"
+msgstr "Navn i bundelboks"
+
+msgid "You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list."
+msgstr "Du kan også redigere disse tilleggene i en produkt-CSV. I Produkter → Eksporter, ta med %s. Ett tillegg per linje: SKU; max=2; free=1; pa_width=10-mm. Attributtverdier kan være slug eller synlig navn. Import erstatter hele listen."
+
 msgid "PDF downloads"
 msgstr "PDF-nedlastinger"
 

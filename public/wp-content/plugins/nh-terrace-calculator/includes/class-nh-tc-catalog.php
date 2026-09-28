@@ -129,6 +129,13 @@ class NH_TC_Catalog {
 			return $empty;
 		}
 
+		if ( ! self::is_sellable( $product ) ) {
+			$empty['error']     = 'out_of_stock';
+			$empty['name']      = $product->get_name();
+			$empty['permalink'] = $product->get_permalink();
+			return $empty;
+		}
+
 		// Sheet products are priced per 1 m²; the kit line is cut to size.
 		$priced = self::custom_cut_unit_price( $product, (int) $cut['width_mm'], (int) $cut['length_mm'] );
 
@@ -182,6 +189,13 @@ class NH_TC_Catalog {
 		$product = self::product_by_sku( $sku );
 		if ( ! $product ) {
 			$empty['error'] = 'not_found';
+			return $empty;
+		}
+
+		if ( ! $product->is_type( 'variable' ) && ! self::is_sellable( $product ) ) {
+			$empty['error']     = 'out_of_stock';
+			$empty['name']      = $product->get_name();
+			$empty['permalink'] = $product->get_permalink();
 			return $empty;
 		}
 
@@ -595,6 +609,187 @@ class NH_TC_Catalog {
 		);
 		$text = html_entity_decode( wp_strip_all_tags( (string) $html ), ENT_QUOTES, 'UTF-8' );
 		return trim( (string) preg_replace( '/[ \t\f\v]+/u', ' ', $text ) );
+	}
+
+	/**
+	 * A product can be sold: in stock (backorders count) and carrying a price.
+	 */
+	public static function is_sellable( WC_Product $product ) {
+		return $product->is_in_stock() && $product->is_purchasable() && '' !== (string) $product->get_price();
+	}
+
+	/**
+	 * Width and length of each variation on a variable sheet.
+	 *
+	 * @return array<int, array{width_mm:int,length_mm:int,sku:string,in_stock:bool}>
+	 */
+	public static function variation_sizes( WC_Product $product ) {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return array();
+		}
+		$out = array();
+		foreach ( $product->get_children() as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+			if ( ! $variation instanceof WC_Product || ! $variation->is_type( 'variation' ) ) {
+				continue;
+			}
+			$width  = 0;
+			$length = 0;
+			foreach ( $variation->get_attributes() as $key => $val ) {
+				$mm = NH_TC_Defaults::millimetres_from_attribute( $val );
+				if ( $mm <= 0 ) {
+					continue;
+				}
+				$key_l = strtolower( (string) $key );
+				if ( self::attr_key_matches( $key_l, 'width' ) ) {
+					$width = $mm;
+				} elseif ( self::attr_key_matches( $key_l, 'length' ) ) {
+					$length = $mm;
+				}
+			}
+			if ( $width <= 0 || $length <= 0 ) {
+				continue;
+			}
+			$out[] = array(
+				'width_mm'  => $width,
+				'length_mm' => $length,
+				'sku'       => (string) $variation->get_sku(),
+				'in_stock'  => self::is_sellable( $variation ),
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Live variation SKUs for one parent, including sizes that are out of stock.
+	 *
+	 * @return array<string, array<string, array{width_mm:int,length_mm:int,sku:string,in_stock:bool}>>
+	 */
+	public static function variation_sku_index( $parent_sku ) {
+		$index = array();
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return $index;
+		}
+		$product = self::product_by_sku( $parent_sku );
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			return $index;
+		}
+		foreach ( self::variation_sizes( $product ) as $row ) {
+			$index[ (string) $row['width_mm'] ][ (string) $row['length_mm'] ] = $row;
+		}
+		return $index;
+	}
+
+	/**
+	 * Fill standard-sheet SKUs from the shop and drop sizes that are out of stock.
+	 * A parent that is not in the shop is left unchanged.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return array<string, mixed>
+	 */
+	public static function with_live_sheets( array $settings ) {
+		$catalog = NH_TC_Defaults::normalize_standard_sheets( isset( $settings['standard_sheets'] ) ? $settings['standard_sheets'] : array() );
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			$settings['standard_sheets'] = $catalog;
+			return $settings;
+		}
+		$by_parent = array();
+		foreach ( $catalog as $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $group ) {
+						if ( ! is_array( $group ) ) {
+							continue;
+						}
+						$parent = isset( $group['sku'] ) ? trim( (string) $group['sku'] ) : '';
+						if ( '' === $parent || array_key_exists( $parent, $by_parent ) ) {
+							continue;
+						}
+						$product = self::product_by_sku( $parent );
+						if ( ! $product || ! $product->is_type( 'variable' ) ) {
+							continue;
+						}
+						$by_parent[ $parent ] = self::variation_sizes( $product );
+					}
+				}
+			}
+		}
+		$settings['standard_sheets'] = NH_TC_Defaults::overlay_standard_catalog( $catalog, $by_parent );
+		return $settings;
+	}
+
+	/**
+	 * False when the custom-cut product for this slot is in the shop and cannot be sold.
+	 * A missing product stays available, so an unknown SKU is not treated as out of stock.
+	 *
+	 * @param array<string, mixed> $settings
+	 */
+	public static function custom_slot_available( array $settings, $material, $thickness, $colour ) {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return true;
+		}
+		$sku = self::sheet_sku( $material, (string) $thickness, $colour, $settings );
+		if ( ! $sku ) {
+			return true;
+		}
+		$product = self::product_by_sku( $sku );
+		if ( ! $product ) {
+			return true;
+		}
+		return self::is_sellable( $product );
+	}
+
+	/**
+	 * @param array<string, mixed> $settings
+	 * @param array<string, mixed> $input
+	 */
+	public static function custom_cut_is_available( array $settings, array $input ) {
+		return self::custom_slot_available(
+			$settings,
+			isset( $input['material'] ) ? $input['material'] : '',
+			isset( $input['thickness'] ) ? $input['thickness'] : '',
+			isset( $input['colour'] ) ? $input['colour'] : ''
+		);
+	}
+
+	/**
+	 * Storefront flags. Only slots that are out of stock are listed, as false.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return array<string, array<string, array<string, bool>>>
+	 */
+	public static function custom_stock_flags( array $settings ) {
+		$flags  = array();
+		$sheets = ( isset( $settings['sheets'] ) && is_array( $settings['sheets'] ) ) ? $settings['sheets'] : array();
+		foreach ( $sheets as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $ref ) {
+					if ( '' === trim( (string) $ref ) ) {
+						continue;
+					}
+					if ( self::custom_slot_available( $settings, $material, $thickness, $colour ) ) {
+						continue;
+					}
+					$flags[ (string) $material ][ (string) $thickness ][ (string) $colour ] = false;
+				}
+			}
+		}
+		return $flags;
 	}
 
 	/**

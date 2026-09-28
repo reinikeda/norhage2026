@@ -1166,6 +1166,13 @@ function nc_bundle_items_box_html( $post ) {
 
 	echo '<p><strong>' . esc_html__( "Product extra's", 'nh-theme' ) . '</strong></p>';
 	echo '<p>' . esc_html__( 'Select one or more products that can be added to this product as add-ons. Only simple products or product-variants are allowed. For variable products, use "Fixed attributes" to pre-select an attribute (e.g. Width) so the customer only chooses the remaining one (e.g. Length).', 'nh-theme' ) . '</p>';
+	echo '<p>' . esc_html(
+		sprintf(
+			/* translators: %s: CSV column name */
+			__( 'You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list.', 'nh-theme' ),
+			__( 'Bundle items', 'nh-theme' )
+		)
+	) . '</p>';
 
 	echo '<table class="widefat striped" id="nc-bundle-rows" style="margin-top:10px">';
 	echo '<thead><tr>';

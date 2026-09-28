@@ -466,6 +466,7 @@ require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/product-brand.php';
 require_once get_stylesheet_directory() . '/inc/sticky-atc.php';
 require_once get_stylesheet_directory() . '/inc/bundle-box.php';
+require_once get_stylesheet_directory() . '/inc/bundle-box-csv.php';
 require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/cart-ux.php';
