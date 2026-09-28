@@ -492,35 +492,8 @@ require_once get_stylesheet_directory() . '/inc/faq.php';
 require_once get_stylesheet_directory() . '/inc/sample-order.php';
 require_once get_stylesheet_directory() . '/inc/seo.php';
 require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';
+require_once get_stylesheet_directory() . '/inc/catalog-button.php';
 require_once get_stylesheet_directory() . '/inc/404.php';
-
-/* --------------------------------------------------------------------------
- * Shop Archive Buttons – All Link to Product Page (No add-to-cart URLs)
- * -------------------------------------------------------------------------- */
-
-/**
- * 1. Override ALL loop add-to-cart buttons to link directly to product page
- * Updated to use 'nh-theme' textdomain for custom translations.
- */
-add_filter( 'woocommerce_loop_add_to_cart_link', function( $html, $product, $args ) {
-    if ( ! $product instanceof WC_Product ) {
-        return $html;
-    }
-
-    $url = $product->get_permalink();
-
-    // Both types open the product page — keep the label honest.
-    $text = __( 'View product', 'nh-theme' );
-        
-    $class = isset( $args['class'] ) ? $args['class'] : 'button';
-
-    return sprintf(
-        '<a href="%s" class="%s">%s</a>',
-        esc_url( $url ),
-        esc_attr( $class ),
-        esc_html( $text )
-    );
-}, 999, 3 );
 
 /* --------------------------------------------------------------------------
  * Secondary product title + optional logo

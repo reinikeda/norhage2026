@@ -2249,3 +2249,8 @@ msgstr "PDF-Downloads"
 
 msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
 msgstr "Sie können diese Dateien auch in einer Produkt-CSV bearbeiten. Unter Produkte → Exportieren die Spalte %s einschließen. Eine Datei pro Zeile: Bezeichnung; https://example.com/file.pdf. Der Import ersetzt die gesamte Liste."
+
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr "Auswählen"

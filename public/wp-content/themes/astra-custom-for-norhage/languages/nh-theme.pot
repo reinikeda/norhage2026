@@ -1405,3 +1405,8 @@ msgstr ""
 msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
 msgstr ""
 
+#. Category card button. Opens the product page.
+#: inc/catalog-button.php
+msgid "Select"
+msgstr ""
+
