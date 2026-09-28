@@ -211,6 +211,44 @@ function nh_wl_display_sku( $parent_sku, $selected_sku, $needs_customize ) {
 }
 
 /**
+ * Locale used in the .mo filename. Finnish ships as fi. Norwegian variants share nb_NO.
+ *
+ * @param string $locale WordPress locale.
+ * @return string
+ */
+function nh_wl_catalog_locale( $locale ) {
+	$locale = str_replace( '-', '_', trim( (string) $locale ) );
+	$map    = array(
+		'fi_FI' => 'fi',
+		'nb'    => 'nb_NO',
+		'no'    => 'nb_NO',
+		'no_NO' => 'nb_NO',
+		'nn'    => 'nb_NO',
+		'nn_NO' => 'nb_NO',
+	);
+	if ( isset( $map[ $locale ] ) ) {
+		return $map[ $locale ];
+	}
+	return $locale;
+}
+
+/**
+ * Compiled catalog for a shop locale. English has no file.
+ *
+ * @param string $locale WordPress locale.
+ * @param string $languages_dir Languages directory.
+ * @return string
+ */
+function nh_wl_mofile_for_locale( $locale, $languages_dir ) {
+	$code = nh_wl_catalog_locale( $locale );
+	if ( '' === $code || 'en' === $code || 'en_US' === $code || 'en_GB' === $code ) {
+		return '';
+	}
+	$file = rtrim( (string) $languages_dir, "/\\" ) . '/nh-wishlist-' . $code . '.mo';
+	return is_readable( $file ) ? $file : '';
+}
+
+/**
  * Recompute the notice against the live product type and cut settings.
  *
  * @param array<string,mixed> $item Stored item.
