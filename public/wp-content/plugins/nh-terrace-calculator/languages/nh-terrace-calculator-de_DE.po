@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -586,3 +586,12 @@ msgstr "Dichtbänder werden nur bei Stegplatten hinzugefügt. Eine Lüftungsroll
 
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
 msgstr "Die Trägerzahl im Abstandshinweis ist ein Rat. Die Träger sind kein Produkt im Set."
+
+msgid "This thickness and colour is out of stock."
+msgstr "Diese Stärke und Farbe ist nicht auf Lager."
+
+msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
+msgstr "Varianten, die bereits am Hauptprodukt liegen, werden unten eingetragen und für den Preis verwendet. Eine Größe, die nicht auf Lager ist, wird für Kunden ausgeblendet. Ein Zuschnitt, der nicht auf Lager ist, blendet diese Auswahl ebenfalls aus."
+
+msgid "Out of stock"
+msgstr "Nicht auf Lager"

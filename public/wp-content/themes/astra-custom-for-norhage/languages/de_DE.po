@@ -2234,3 +2234,18 @@ msgstr "Produktinformationen"
 
 msgid "Show %d more"
 msgstr "%d weitere anzeigen"
+
+msgid "Bundle items"
+msgstr "Zusatzprodukte"
+
+msgid "Bundle box name"
+msgstr "Name in der Bundle-Box"
+
+msgid "You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list."
+msgstr "Sie können diese Extras auch in einer Produkt-CSV bearbeiten. Unter Produkte → Exportieren die Spalte %s einschließen. Ein Zusatzprodukt pro Zeile: SKU; max=2; free=1; pa_width=10-mm. Attributwerte können der Slug oder der sichtbare Name sein. Der Import ersetzt die gesamte Liste."
+
+msgid "PDF downloads"
+msgstr "PDF-Downloads"
+
+msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
+msgstr "Sie können diese Dateien auch in einer Produkt-CSV bearbeiten. Unter Produkte → Exportieren die Spalte %s einschließen. Eine Datei pro Zeile: Bezeichnung; https://example.com/file.pdf. Der Import ersetzt die gesamte Liste."

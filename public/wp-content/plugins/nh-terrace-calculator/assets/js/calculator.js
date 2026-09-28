@@ -49,6 +49,7 @@
   var stockWidthsEl = root.querySelector('[data-stock-widths]');
   var stockLengthInput = root.querySelector('[data-stock-length]');
   var stockEmpty = root.querySelector('[data-stock-empty]');
+  var stockOos = root.querySelector('[data-stock-oos]');
   var stockState = { key: '', channel: '', width: '', length: '' };
   var stockSig = '';
 
@@ -109,6 +110,31 @@
       fillSelect(finishSel, finishTypes, 'f_aluminium');
     }
     fillSelect(finishCol, finishTree[finishSel.value] || [], 'silver');
+  }
+
+  function customCutAvailable() {
+    var stock = cfg.customStock || {};
+    var material = matSel ? matSel.value : 'multiwall';
+    var thickness = thkSel ? String(thkSel.value) : '';
+    var colour = colSel ? colSel.value : '';
+    var row = (stock[material] && stock[material][thickness]) || {};
+    return row[colour] !== false;
+  }
+
+  function syncSupplyAvailability() {
+    var label = root.querySelector('[data-supply-custom]');
+    var input = form.querySelector('[name="sheet_supply"][value="custom"]');
+    var available = customCutAvailable();
+    if (label) label.hidden = !available;
+    if (!input) return;
+    input.disabled = !available;
+    if (!available && input.checked) {
+      input.checked = false;
+      var standard = form.querySelector('[name="sheet_supply"][value="standard"]');
+      if (standard) standard.checked = true;
+      jointsPinned = false;
+      applyJointDefault();
+    }
   }
 
   function currentSupply() {
@@ -234,7 +260,9 @@
     }
 
     var empty = !channels.length;
-    if (stockEmpty) stockEmpty.hidden = !empty;
+    var customOn = customCutAvailable();
+    if (stockEmpty) stockEmpty.hidden = !empty || !customOn;
+    if (stockOos) stockOos.hidden = !empty || customOn;
     if (stockSizes) stockSizes.hidden = empty;
     if (stockChannels) stockChannels.hidden = empty || (channels.length === 1 && channels[0] === 'stock');
     if (empty) {
@@ -477,6 +505,7 @@
   function schedule() {
     applySpacing(false);
     syncGableHint();
+    syncSupplyAvailability();
     syncStockCard();
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
@@ -815,6 +844,7 @@
   syncProfileOptions();
   applySpacing(true);
   syncGableHint();
+  syncSupplyAvailability();
   syncStockCard();
   quote();
 })();

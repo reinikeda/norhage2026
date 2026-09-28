@@ -224,7 +224,8 @@ class NH_TC_Defaults {
 	 * because 900, 980 and 1200 mm belong to the 5-wall sheet.
 	 *
 	 * Each width maps a stock length in millimetres to that variation's SKU.
-	 * The SKU is empty until it is entered in the calculator settings.
+	 * The SKU is empty until it is entered in the calculator settings, or until
+	 * the variable product in the shop supplies it.
 	 *
 	 * @return array<string, array<string, array<string, array<string, array{sku:string, channel:string, widths:array<string, array<string, string>}>}>>>
 	 */
@@ -666,6 +667,132 @@ class NH_TC_Defaults {
 			'channel' => (string) $channel,
 			'widths'  => $clean,
 		);
+	}
+
+	/**
+	 * Millimetres from a variation attribute such as "2100", "2100 mm" or "2100-mm".
+	 * A metre slug such as "6-m" is not a sheet size.
+	 */
+	public static function millimetres_from_attribute( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		$raw = str_replace( array( '_', '–', '—' ), '-', $raw );
+		$raw = preg_replace( '/\s+/', ' ', $raw );
+		if ( ! is_string( $raw ) || '' === $raw ) {
+			return 0;
+		}
+		if ( preg_match( '/\d(?:[.,]\d+)?\s*-?\s*m$/', $raw ) && ! preg_match( '/mm/', $raw ) ) {
+			return 0;
+		}
+		if ( preg_match( '/^(\d{3,5})(?:\s*-?\s*mm)?$/', $raw, $match ) ) {
+			$mm = (int) $match[1];
+			if ( $mm >= 100 && $mm <= 20000 ) {
+				return $mm;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Keep the in-stock variations of one width map.
+	 *
+	 * A width that is not already in the catalog is left out. An extra in-stock
+	 * length on a known width is kept. A saved SKU is used only when the live
+	 * variation has no SKU of its own.
+	 *
+	 * @param array<string, mixed> $widths
+	 * @param array<int, array<string, mixed>> $variations
+	 * @return array<string, array<string, string>>
+	 */
+	public static function apply_live_variations( array $widths, array $variations ) {
+		$known = array();
+		foreach ( $widths as $width => $lengths ) {
+			$mm = (int) $width;
+			if ( $mm > 0 ) {
+				$known[ (string) $mm ] = self::length_sku_map( $lengths );
+			}
+		}
+
+		$live = array();
+		foreach ( $variations as $variation ) {
+			if ( ! is_array( $variation ) || empty( $variation['in_stock'] ) ) {
+				continue;
+			}
+			$width  = isset( $variation['width_mm'] ) ? (int) $variation['width_mm'] : 0;
+			$length = isset( $variation['length_mm'] ) ? (int) $variation['length_mm'] : 0;
+			if ( $width <= 0 || $length <= 0 || ! isset( $known[ (string) $width ] ) ) {
+				continue;
+			}
+			$live[ (string) $width ][ (string) $length ] = isset( $variation['sku'] ) ? trim( (string) $variation['sku'] ) : '';
+		}
+
+		$out = array();
+		foreach ( $known as $width => $saved_lengths ) {
+			if ( empty( $live[ $width ] ) ) {
+				continue;
+			}
+			$kept = array();
+			foreach ( $saved_lengths as $length => $saved ) {
+				if ( ! isset( $live[ $width ][ $length ] ) ) {
+					continue;
+				}
+				$live_sku       = $live[ $width ][ $length ];
+				$kept[ $length ] = '' !== $live_sku ? $live_sku : $saved;
+			}
+			foreach ( $live[ $width ] as $length => $live_sku ) {
+				if ( ! isset( $kept[ $length ] ) ) {
+					$kept[ $length ] = $live_sku;
+				}
+			}
+			if ( $kept ) {
+				ksort( $kept, SORT_NUMERIC );
+				$out[ $width ] = $kept;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Replace stock sizes with the live variations of parents that were found.
+	 * A parent missing from $by_parent is left as saved.
+	 *
+	 * @param array<string, mixed> $catalog
+	 * @param array<string, array<int, array<string, mixed>>> $by_parent
+	 * @return array<string, mixed>
+	 */
+	public static function overlay_standard_catalog( array $catalog, array $by_parent ) {
+		foreach ( $catalog as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) ) {
+							continue;
+						}
+						$parent = isset( $group['sku'] ) ? trim( (string) $group['sku'] ) : '';
+						if ( '' === $parent || ! array_key_exists( $parent, $by_parent ) ) {
+							continue;
+						}
+						$variations = is_array( $by_parent[ $parent ] ) ? $by_parent[ $parent ] : array();
+						$widths     = ( isset( $group['widths'] ) && is_array( $group['widths'] ) ) ? $group['widths'] : array();
+						$next       = self::apply_live_variations( $widths, $variations );
+						if ( ! $next ) {
+							unset( $catalog[ $material ][ $thickness ][ $colour ][ $channel ] );
+							continue;
+						}
+						$catalog[ $material ][ $thickness ][ $colour ][ $channel ]['widths'] = $next;
+					}
+				}
+			}
+		}
+		return $catalog;
 	}
 
 	/**

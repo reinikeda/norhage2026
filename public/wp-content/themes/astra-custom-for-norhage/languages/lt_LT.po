@@ -2295,3 +2295,18 @@ msgstr "Produkto informacija"
 
 msgid "Show %d more"
 msgstr "Rodyti dar %d"
+
+msgid "Bundle items"
+msgstr "Papildomi produktai"
+
+msgid "Bundle box name"
+msgstr "Pavadinimas rinkinio lange"
+
+msgid "You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list."
+msgstr "Šiuos priedus taip pat galite redaguoti produktų CSV. Skiltyje Produktai → Eksportuoti įtraukite %s. Vienas priedas eilutėje: SKU; max=2; free=1; pa_width=10-mm. Atributo reikšmė gali būti slug arba matomas pavadinimas. Importas pakeičia visą sąrašą."
+
+msgid "PDF downloads"
+msgstr "PDF atsisiuntimai"
+
+msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
+msgstr "Šiuos failus taip pat galite redaguoti produktų CSV. Skiltyje Produktai → Eksportuoti įtraukite %s. Vienas failas eilutėje: Pavadinimas; https://example.com/file.pdf. Importas pakeičia visą sąrašą."

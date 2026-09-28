@@ -149,6 +149,10 @@
   line-height: 1.35;
 }
 
+.nh-tc__choice[hidden] {
+  display: none;
+}
+
 .nh-tc__stock {
   margin-top: 1rem;
 }

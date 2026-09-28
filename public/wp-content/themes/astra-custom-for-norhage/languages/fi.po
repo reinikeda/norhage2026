@@ -2269,3 +2269,18 @@ msgstr "Tuotetiedot"
 
 msgid "Show %d more"
 msgstr "Näytä %d lisää"
+
+msgid "Bundle items"
+msgstr "Lisätuotteet"
+
+msgid "Bundle box name"
+msgstr "Nimi bundle-laatikossa"
+
+msgid "You can also edit these extras in a product CSV. In Products → Export, include %s. One add-on per line: SKU; max=2; free=1; pa_width=10-mm. Attribute values can be the term slug or the visible name. Import replaces the whole list."
+msgstr "Voit muokata näitä lisätuotteita myös tuote-CSV:ssä. Kohdassa Tuotteet → Vie ota mukaan %s. Yksi lisätuote per rivi: SKU; max=2; free=1; pa_width=10-mm. Attribuutin arvoksi käy slug tai näkyvä nimi. Tuonti korvaa koko listan."
+
+msgid "PDF downloads"
+msgstr "PDF-lataukset"
+
+msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
+msgstr "Voit muokata näitä tiedostoja myös tuote-CSV:ssä. Kohdassa Tuotteet → Vie ota mukaan %s. Yksi tiedosto per rivi: Nimike; https://example.com/file.pdf. Tuonti korvaa koko listan."

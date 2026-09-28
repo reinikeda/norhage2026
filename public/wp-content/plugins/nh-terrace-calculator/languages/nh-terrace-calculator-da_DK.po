@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.9\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 13:00+0000\n"
 "PO-Revision-Date: 2026-09-24 13:00+0000\n"
@@ -586,3 +586,12 @@ msgstr "Tætningstape lægges kun til for kanalplast. Én ventilationsrulle og �
 
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
 msgstr "Lægteantallet i noten om afstand er et råd. Lægterne er ikke et produkt i sættet."
+
+msgid "This thickness and colour is out of stock."
+msgstr "Denne tykkelse og farve er udsolgt."
+
+msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
+msgstr "Variationer, der allerede findes på hovedproduktet, udfyldes nedenfor og bruges i prisen. En størrelse, der er udsolgt, skjules for kunderne. Et produkt skåret på mål, der er udsolgt, skjuler også det valg."
+
+msgid "Out of stock"
+msgstr "Udsoldt"
