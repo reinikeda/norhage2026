@@ -202,6 +202,21 @@
     }
   }
 
+  function trackAdd(data) {
+    var ecommerce = data && data.ecommerce;
+    if (!ecommerce || !ecommerce.items || !ecommerce.items.length) {
+      return;
+    }
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ ecommerce: null });
+      window.dataLayer.push({
+        event: 'add_to_wishlist',
+        ecommerce: ecommerce
+      });
+    } catch (err) {}
+  }
+
   function save(listId, remove) {
     if (saving || !pending) {
       return;
@@ -226,6 +241,9 @@
         return;
       }
       applyState(result.data);
+      if (!remove) {
+        trackAdd(result.data);
+      }
       closePopover();
     }).catch(function () {
       saving = false;
