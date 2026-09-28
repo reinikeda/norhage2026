@@ -338,18 +338,12 @@ if ( ! function_exists( 'nh_bundle_csv_parsed_to_meta' ) ) {
 	}
 }
 
-if ( ! function_exists( 'nh_bundle_csv_read_export_rows' ) ) {
-	function nh_bundle_csv_read_export_rows( $product_id ) {
-		$product_id = absint( $product_id );
-		if ( ! $product_id ) {
-			return array();
-		}
-
-		$raw = get_post_meta( $product_id, NH_BUNDLE_META_KEY, true );
-		if ( ! is_array( $raw ) || empty( $raw ) ) {
-			$raw = get_post_meta( $product_id, NH_BUNDLE_META_KEY_COMPAT, true );
-		}
-
+if ( ! function_exists( 'nh_bundle_csv_stored_to_rows' ) ) {
+	/**
+	 * @param mixed $raw Stored `_nh_bundle_items_v2` value.
+	 * @return array<int,array>
+	 */
+	function nh_bundle_csv_stored_to_rows( $raw ) {
 		if ( ! is_array( $raw ) ) {
 			return array();
 		}
@@ -398,14 +392,30 @@ if ( ! function_exists( 'nh_bundle_csv_read_export_rows' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nh_bundle_csv_read_export_rows' ) ) {
+	function nh_bundle_csv_read_export_rows( $product_id ) {
+		$product_id = absint( $product_id );
+		if ( ! $product_id ) {
+			return array();
+		}
+
+		$raw = get_post_meta( $product_id, NH_BUNDLE_META_KEY, true );
+		if ( ! is_array( $raw ) || empty( $raw ) ) {
+			$raw = get_post_meta( $product_id, NH_BUNDLE_META_KEY_COMPAT, true );
+		}
+
+		return nh_bundle_csv_stored_to_rows( $raw );
+	}
+}
+
 if ( ! function_exists( 'nh_bundle_csv_column_names' ) ) {
 	function nh_bundle_csv_column_names( $columns ) {
 		if ( ! is_array( $columns ) ) {
 			$columns = array();
 		}
 
-		$columns['nh_bundle_items']    = __( 'Bundle items', 'nh-theme' );
-		$columns['nh_bundle_box_name'] = __( 'Bundle box name', 'nh-theme' );
+		$columns['nh_bundle_items']    = 'Bundle items';
+		$columns['nh_bundle_box_name'] = 'Bundle box name';
 
 		return $columns;
 	}
@@ -463,6 +473,8 @@ if ( ! function_exists( 'nh_bundle_csv_mapping_defaults' ) ) {
 		$columns['Bundle box name']                     = 'nh_bundle_box_name';
 		$columns['Meta: Bundle box name']               = 'nh_bundle_box_name';
 		$columns['Meta: _bundle_box_name']              = 'nh_bundle_box_name';
+		$columns['Meta: _nc_bundle_items_v2']           = 'nh_bundle_items';
+		$columns['Meta: _nh_bundle_items_v2']           = 'nh_bundle_items';
 
 		return $columns;
 	}
@@ -488,32 +500,90 @@ if ( ! function_exists( 'nh_bundle_csv_apply_import' ) ) {
 			}
 		}
 
-		if ( ! array_key_exists( 'nh_bundle_items', $data ) ) {
+		if ( array_key_exists( 'nh_bundle_items', $data ) ) {
+			if ( $product->is_type( 'variation' ) ) {
+				return $product;
+			}
+
+			$raw = is_string( $data['nh_bundle_items'] ) ? $data['nh_bundle_items'] : '';
+			if ( trim( $raw ) === '' ) {
+				$product->delete_meta_data( NH_BUNDLE_META_KEY );
+				$product->delete_meta_data( NH_BUNDLE_META_KEY_COMPAT );
+				return $product;
+			}
+
+			$rows = nh_bundle_csv_parsed_to_meta( nh_bundle_csv_parse_items( $raw ) );
+			if ( empty( $rows ) ) {
+				$product->delete_meta_data( NH_BUNDLE_META_KEY );
+				$product->delete_meta_data( NH_BUNDLE_META_KEY_COMPAT );
+				return $product;
+			}
+
+			$product->update_meta_data( NH_BUNDLE_META_KEY, $rows );
+			$product->update_meta_data( NH_BUNDLE_META_KEY_COMPAT, $rows );
+
 			return $product;
 		}
 
-		if ( $product->is_type( 'variation' ) ) {
-			return $product;
-		}
-
-		$raw = is_string( $data['nh_bundle_items'] ) ? $data['nh_bundle_items'] : '';
-		if ( trim( $raw ) === '' ) {
-			$product->delete_meta_data( NH_BUNDLE_META_KEY );
-			$product->delete_meta_data( NH_BUNDLE_META_KEY_COMPAT );
-			return $product;
-		}
-
-		$rows = nh_bundle_csv_parsed_to_meta( nh_bundle_csv_parse_items( $raw ) );
-		if ( empty( $rows ) ) {
-			$product->delete_meta_data( NH_BUNDLE_META_KEY );
-			$product->delete_meta_data( NH_BUNDLE_META_KEY_COMPAT );
-			return $product;
-		}
-
-		$product->update_meta_data( NH_BUNDLE_META_KEY, $rows );
-		$product->update_meta_data( NH_BUNDLE_META_KEY_COMPAT, $rows );
+		nh_bundle_csv_hydrate_string_meta( $product );
 
 		return $product;
+	}
+}
+
+if ( ! function_exists( 'nh_bundle_csv_hydrate_string_meta' ) ) {
+	function nh_bundle_csv_hydrate_string_meta( $product ) {
+		if ( ! $product instanceof WC_Product || $product->is_type( 'variation' ) ) {
+			return;
+		}
+
+		foreach ( array( NH_BUNDLE_META_KEY, NH_BUNDLE_META_KEY_COMPAT ) as $key ) {
+			$raw = $product->get_meta( $key, true );
+			if ( ! is_string( $raw ) || trim( $raw ) === '' ) {
+				continue;
+			}
+
+			$rows = nh_bundle_csv_parsed_to_meta( nh_bundle_csv_parse_items( $raw ) );
+			if ( empty( $rows ) ) {
+				continue;
+			}
+
+			$product->update_meta_data( NH_BUNDLE_META_KEY, $rows );
+			$product->update_meta_data( NH_BUNDLE_META_KEY_COMPAT, $rows );
+			return;
+		}
+	}
+}
+
+if ( ! function_exists( 'nh_bundle_csv_export_meta_value' ) ) {
+	function nh_bundle_csv_export_meta_value( $value, $meta ) {
+		$key = ( is_object( $meta ) && isset( $meta->key ) ) ? $meta->key : '';
+		if ( ! in_array( $key, array( NH_BUNDLE_META_KEY, NH_BUNDLE_META_KEY_COMPAT ), true ) ) {
+			return $value;
+		}
+
+		if ( is_string( $value ) ) {
+			return $value;
+		}
+
+		if ( is_array( $value ) ) {
+			return nh_bundle_csv_format_items( nh_bundle_csv_stored_to_rows( $value ) );
+		}
+
+		return $value;
+	}
+}
+
+if ( ! function_exists( 'nh_product_csv_export_notice' ) ) {
+	function nh_product_csv_export_notice() {
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+		if ( 'product_exporter' !== $page ) {
+			return;
+		}
+
+		echo '<div class="notice notice-info"><p>';
+		echo esc_html__( 'Norhage columns are at the end of the Columns list: Bundle items, Bundle box name, and PDF downloads. You can also tick Yes, export all custom meta — those values then appear as Meta: _nc_bundle_items_v2 and Meta: _nrh_downloads.', 'nh-theme' );
+		echo '</p></div>';
 	}
 }
 
@@ -521,6 +591,8 @@ add_filter( 'woocommerce_product_export_column_names', 'nh_bundle_csv_column_nam
 add_filter( 'woocommerce_product_export_product_default_columns', 'nh_bundle_csv_column_names' );
 add_filter( 'woocommerce_product_export_product_column_nh_bundle_items', 'nh_bundle_csv_export_items_column', 10, 2 );
 add_filter( 'woocommerce_product_export_product_column_nh_bundle_box_name', 'nh_bundle_csv_export_name_column', 10, 2 );
+add_filter( 'woocommerce_product_export_meta_value', 'nh_bundle_csv_export_meta_value', 10, 2 );
 add_filter( 'woocommerce_csv_product_import_mapping_options', 'nh_bundle_csv_mapping_options' );
 add_filter( 'woocommerce_csv_product_import_mapping_default_columns', 'nh_bundle_csv_mapping_defaults' );
 add_filter( 'woocommerce_product_import_pre_insert_product_object', 'nh_bundle_csv_apply_import', 10, 2 );
+add_action( 'admin_notices', 'nh_product_csv_export_notice' );

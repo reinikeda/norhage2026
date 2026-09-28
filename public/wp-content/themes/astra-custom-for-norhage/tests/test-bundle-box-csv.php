@@ -31,6 +31,12 @@ if ( ! function_exists( 'add_filter' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_action' ) ) {
+	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		add_filter( $hook, $callback, $priority, $accepted_args );
+	}
+}
+
 if ( ! function_exists( '__' ) ) {
 	function __( $text, $domain = 'default' ) {
 		unset( $domain );
@@ -308,6 +314,30 @@ $untouched->meta['_nh_bundle_items_v2'] = array( array( 'id' => 101 ) );
 $untouched = nh_bundle_csv_apply_import( $untouched, array( 'sku' => 'PARENT' ) );
 nh_csv_assert( 'CSV without Bundle items leaves extras alone', 1 === count( $untouched->meta['_nh_bundle_items_v2'] ) );
 
+$meta_obj = (object) array( 'key' => '_nc_bundle_items_v2' );
+$as_text  = nh_bundle_csv_export_meta_value(
+	array(
+		array(
+			'id'           => 101,
+			'max'          => 2,
+			'free'         => 0,
+			'locked_attrs' => array( 'pa_width' => '10-mm' ),
+		),
+	),
+	$meta_obj
+);
+nh_csv_assert( 'custom meta export turns the bundle array into text', 'SEAL-10; max=2; pa_width=10-mm' === $as_text );
+
+$from_meta = new WC_Product();
+$from_meta->id   = 50;
+$from_meta->type = 'simple';
+$from_meta->meta['_nc_bundle_items_v2'] = 'SEAL-10; max=2; pa_width=10-mm';
+$from_meta = nh_bundle_csv_apply_import( $from_meta, array( 'sku' => 'PARENT' ) );
+nh_csv_assert( 'Meta: bundle text is turned back into extras', 101 === $from_meta->meta['_nh_bundle_items_v2'][0]['id'] );
+
+$names = nh_bundle_csv_column_names( array() );
+nh_csv_assert( 'export header stays Bundle items', 'Bundle items' === $names['nh_bundle_items'] );
+
 $source = file_get_contents( dirname( __DIR__ ) . '/inc/bundle-box-csv.php' );
 $functions = file_get_contents( dirname( __DIR__ ) . '/functions.php' );
 nh_csv_assert( 'theme loads the bundle CSV helpers', false !== strpos( $functions, 'bundle-box-csv.php' ) );
@@ -326,6 +356,7 @@ foreach ( $nh_filters as $row ) {
 	$hooks[] = $row[0];
 }
 nh_csv_assert( 'export column names are hooked', in_array( 'woocommerce_product_export_column_names', $hooks, true ) );
+nh_csv_assert( 'custom meta export is hooked', in_array( 'woocommerce_product_export_meta_value', $hooks, true ) );
 nh_csv_assert( 'import mapping options are hooked', in_array( 'woocommerce_csv_product_import_mapping_options', $hooks, true ) );
 
 if ( $failures > 0 ) {

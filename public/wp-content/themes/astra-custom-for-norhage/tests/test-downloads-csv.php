@@ -18,6 +18,12 @@ if ( ! function_exists( 'add_filter' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_action' ) ) {
+	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+		add_filter( $hook, $callback, $priority, $accepted_args );
+	}
+}
+
 if ( ! function_exists( '__' ) ) {
 	function __( $text, $domain = 'default' ) {
 		unset( $domain );
@@ -163,6 +169,21 @@ $untouched->meta['_nrh_downloads'] = array( array( 'label' => 'Keep', 'url' => '
 $untouched = nrh_downloads_csv_apply_import( $untouched, array( 'sku' => 'PARENT' ) );
 nrh_dl_assert( 'CSV without PDF downloads leaves files alone', 'Keep' === $untouched->meta['_nrh_downloads'][0]['label'] );
 
+$dl_meta = nrh_downloads_csv_export_meta_value(
+	array( array( 'label' => 'Manual', 'url' => 'https://cdn.example.com/manual.pdf' ) ),
+	(object) array( 'key' => '_nrh_downloads' )
+);
+nrh_dl_assert( 'custom meta export turns downloads into text', 'Manual; https://cdn.example.com/manual.pdf' === $dl_meta );
+
+$from_meta = new WC_Product();
+$from_meta->type = 'simple';
+$from_meta->meta['_nrh_downloads'] = 'Guide; https://cdn.example.com/guide.pdf';
+$from_meta = nrh_downloads_csv_apply_import( $from_meta, array( 'sku' => 'PARENT' ) );
+nrh_dl_assert( 'Meta: downloads text is turned back into files', 'Guide' === $from_meta->meta['_nrh_downloads'][0]['label'] );
+
+$names = nrh_downloads_csv_column_names( array() );
+nrh_dl_assert( 'export header stays PDF downloads', 'PDF downloads' === $names['nrh_downloads'] );
+
 $source    = file_get_contents( dirname( __DIR__ ) . '/inc/downloads-csv.php' );
 $functions = file_get_contents( dirname( __DIR__ ) . '/functions.php' );
 nrh_dl_assert( 'theme loads the downloads CSV helpers', false !== strpos( $functions, 'downloads-csv.php' ) );
@@ -175,6 +196,7 @@ foreach ( $nh_filters as $row ) {
 	$hooks[] = $row[0];
 }
 nrh_dl_assert( 'export column names are hooked', in_array( 'woocommerce_product_export_column_names', $hooks, true ) );
+nrh_dl_assert( 'custom meta export is hooked', in_array( 'woocommerce_product_export_meta_value', $hooks, true ) );
 nrh_dl_assert( 'import mapping options are hooked', in_array( 'woocommerce_csv_product_import_mapping_options', $hooks, true ) );
 
 if ( $failures > 0 ) {

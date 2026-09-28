@@ -141,7 +141,7 @@ if ( ! function_exists( 'nrh_downloads_csv_column_names' ) ) {
 			$columns = array();
 		}
 
-		$columns['nrh_downloads'] = __( 'PDF downloads', 'nh-theme' );
+		$columns['nrh_downloads'] = 'PDF downloads';
 
 		return $columns;
 	}
@@ -203,35 +203,77 @@ if ( ! function_exists( 'nrh_downloads_csv_apply_import' ) ) {
 			return $product;
 		}
 
-		if ( ! array_key_exists( 'nrh_downloads', $data ) ) {
+		if ( array_key_exists( 'nrh_downloads', $data ) ) {
+			if ( $product->is_type( 'variation' ) ) {
+				return $product;
+			}
+
+			$raw = is_string( $data['nrh_downloads'] ) ? $data['nrh_downloads'] : '';
+			if ( trim( $raw ) === '' ) {
+				$product->delete_meta_data( NRH_DOWNLOADS_META_KEY );
+				return $product;
+			}
+
+			$rows = nrh_downloads_csv_parse_items( $raw );
+			if ( empty( $rows ) ) {
+				$product->delete_meta_data( NRH_DOWNLOADS_META_KEY );
+				return $product;
+			}
+
+			$product->update_meta_data( NRH_DOWNLOADS_META_KEY, $rows );
+
 			return $product;
 		}
 
-		if ( $product->is_type( 'variation' ) ) {
-			return $product;
+		nrh_downloads_csv_hydrate_string_meta( $product );
+
+		return $product;
+	}
+}
+
+if ( ! function_exists( 'nrh_downloads_csv_hydrate_string_meta' ) ) {
+	function nrh_downloads_csv_hydrate_string_meta( $product ) {
+		if ( ! $product instanceof WC_Product || $product->is_type( 'variation' ) ) {
+			return;
 		}
 
-		$raw = is_string( $data['nrh_downloads'] ) ? $data['nrh_downloads'] : '';
-		if ( trim( $raw ) === '' ) {
-			$product->delete_meta_data( NRH_DOWNLOADS_META_KEY );
-			return $product;
+		$raw = $product->get_meta( NRH_DOWNLOADS_META_KEY, true );
+		if ( ! is_string( $raw ) || trim( $raw ) === '' ) {
+			return;
 		}
 
 		$rows = nrh_downloads_csv_parse_items( $raw );
 		if ( empty( $rows ) ) {
-			$product->delete_meta_data( NRH_DOWNLOADS_META_KEY );
-			return $product;
+			return;
 		}
 
 		$product->update_meta_data( NRH_DOWNLOADS_META_KEY, $rows );
+	}
+}
 
-		return $product;
+if ( ! function_exists( 'nrh_downloads_csv_export_meta_value' ) ) {
+	function nrh_downloads_csv_export_meta_value( $value, $meta ) {
+		$key = ( is_object( $meta ) && isset( $meta->key ) ) ? $meta->key : '';
+		if ( $key !== NRH_DOWNLOADS_META_KEY ) {
+			return $value;
+		}
+
+		if ( is_string( $value ) ) {
+			return $value;
+		}
+
+		if ( is_array( $value ) ) {
+			return nrh_downloads_csv_format_items( $value );
+		}
+
+		return $value;
 	}
 }
 
 add_filter( 'woocommerce_product_export_column_names', 'nrh_downloads_csv_column_names' );
 add_filter( 'woocommerce_product_export_product_default_columns', 'nrh_downloads_csv_column_names' );
 add_filter( 'woocommerce_product_export_product_column_nrh_downloads', 'nrh_downloads_csv_export_column', 10, 2 );
+add_filter( 'woocommerce_product_export_meta_value', 'nrh_downloads_csv_export_meta_value', 10, 2 );
 add_filter( 'woocommerce_csv_product_import_mapping_options', 'nrh_downloads_csv_mapping_options' );
 add_filter( 'woocommerce_csv_product_import_mapping_default_columns', 'nrh_downloads_csv_mapping_defaults' );
 add_filter( 'woocommerce_product_import_pre_insert_product_object', 'nrh_downloads_csv_apply_import', 10, 2 );
