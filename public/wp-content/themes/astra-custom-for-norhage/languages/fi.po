@@ -2284,3 +2284,9 @@ msgstr "PDF-lataukset"
 
 msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
 msgstr "Voit muokata näitä tiedostoja myös tuote-CSV:ssä. Kohdassa Tuotteet → Vie ota mukaan %s. Yksi tiedosto per rivi: Nimike; https://example.com/file.pdf. Tuonti korvaa koko listan."
+
+#. Variable product price prefix. WooCommerce context min_price.
+#: inc/variable-price.php
+msgctxt "min_price"
+msgid "From:"
+msgstr "Alkaen:"
