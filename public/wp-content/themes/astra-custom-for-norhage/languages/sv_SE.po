@@ -2234,3 +2234,9 @@ msgstr "Produktinformation"
 
 msgid "Show %d more"
 msgstr "Visa %d till"
+
+msgid "PDF downloads"
+msgstr "PDF-nedladdningar"
+
+msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
+msgstr "Du kan också redigera dessa filer i en produkt-CSV. I Produkter → Exportera, ta med %s. En fil per rad: Etikett; https://example.com/file.pdf. Import ersätter hela listan."

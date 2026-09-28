@@ -93,6 +93,13 @@ if ( is_admin() ) {
 		echo '<p><button id="add-download" class="button" type="button">+ '
 			. esc_html__( 'Add Download', 'nh-theme' )
 			. '</button></p>';
+		echo '<p class="description">' . esc_html(
+			sprintf(
+				/* translators: %s: CSV column name */
+				__( 'You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list.', 'nh-theme' ),
+				__( 'PDF downloads', 'nh-theme' )
+			)
+		) . '</p>';
 		?>
 		<script>
 		jQuery(function($){

@@ -461,6 +461,7 @@ add_action( 'woocommerce_after_shop_loop', function () {
 require_once get_stylesheet_directory() . '/inc/attachment-alt.php';
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
+require_once get_stylesheet_directory() . '/inc/downloads-csv.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/product-brand.php';
 require_once get_stylesheet_directory() . '/inc/sticky-atc.php';

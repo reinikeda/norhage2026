@@ -2295,3 +2295,9 @@ msgstr "Produkto informacija"
 
 msgid "Show %d more"
 msgstr "Rodyti dar %d"
+
+msgid "PDF downloads"
+msgstr "PDF atsisiuntimai"
+
+msgid "You can also edit these files in a product CSV. In Products → Export, include %s. One file per line: Label; https://example.com/file.pdf. Import replaces the whole list."
+msgstr "Šiuos failus taip pat galite redaguoti produktų CSV. Skiltyje Produktai → Eksportuoti įtraukite %s. Vienas failas eilutėje: Pavadinimas; https://example.com/file.pdf. Importas pakeičia visą sąrašą."
