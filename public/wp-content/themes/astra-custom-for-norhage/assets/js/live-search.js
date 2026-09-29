@@ -178,6 +178,7 @@ jQuery(function ($) {
         if ($active && $active.length) {
           var href = $active.find('a').attr('href');
           if (href) {
+            e.preventDefault();
             closeResults();
             window.location.href = href;
           }
