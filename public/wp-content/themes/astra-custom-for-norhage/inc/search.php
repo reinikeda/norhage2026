@@ -4,6 +4,8 @@
  * - Shortcode renders input + empty results <ul>
  * - AJAX searches: title/content, SKU (incl. variations → parent), product tags ONLY
  * - Returns up to 6 results, sorted by relevance then date desc
+ * - Submitting the product search (?s=&post_type=product) uses the same SKU and tag
+ *   matches, so Enter finds the products the live results already showed.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -53,8 +55,6 @@ add_action( 'wp_ajax_nopriv_nrh_live_search', 'nrh_live_search_callback' );
 add_action( 'wp_ajax_nrh_live_search',        'nrh_live_search_callback' );
 
 function nrh_live_search_callback() {
-	global $wpdb;
-
 	// Basic input guard
 	$term = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 	if ( mb_strlen( $term ) < 2 ) {
@@ -70,7 +70,6 @@ function nrh_live_search_callback() {
 	// Optional: mild HTTP caching guard for AJAX endpoints
 	nocache_headers();
 
-	$like        = '%' . $wpdb->esc_like( $term ) . '%';
 	$found       = [];  // product_id => weight
 	$limit_each  = 40;  // soft cap per source before merging
 	$final_limit = 6;   // items returned to UI
@@ -103,68 +102,11 @@ function nrh_live_search_callback() {
 	}
 	wp_reset_postdata();
 
-	/* ----------------------------------------
-	 * B) SKU search (products + variations → parent)
-	 *    - Direct product SKU match
-	 *    - Variation SKU match returns parent product
-	 * --------------------------------------*/
-	// Direct product SKUs
-	$sku_product_ids = $wpdb->get_col(
-		$wpdb->prepare("
-      SELECT pm.post_id
-      FROM {$wpdb->postmeta} pm
-      INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-      WHERE pm.meta_key = '_sku'
-        AND pm.meta_value LIKE %s
-        AND p.post_type = 'product'
-        AND p.post_status = 'publish'
-      LIMIT %d
-    ", $like, $limit_each )
-	);
-
-	// Variation SKUs → parent product IDs
-	$sku_variation_parent_ids = $wpdb->get_col(
-		$wpdb->prepare("
-      SELECT DISTINCT p.post_parent
-      FROM {$wpdb->postmeta} pm
-      INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-      WHERE pm.meta_key = '_sku'
-        AND pm.meta_value LIKE %s
-        AND p.post_type = 'product_variation'
-        AND p.post_status = 'publish'
-        AND p.post_parent > 0
-      LIMIT %d
-    ", $like, $limit_each )
-	);
-
-	foreach ( array_merge( $sku_product_ids, $sku_variation_parent_ids ) as $pid ) {
-		if ( get_post_type( $pid ) === 'product' && get_post_status( $pid ) === 'publish' ) {
-			$found[ $pid ] = max( $found[ $pid ] ?? 0, 50 ); // SKU is most relevant
-		}
+	foreach ( nrh_search_sku_ids( $term, $limit_each ) as $pid ) {
+		$found[ $pid ] = max( $found[ $pid ] ?? 0, 50 ); // SKU is most relevant
 	}
 
-	/* ----------------------------------------
-	 * C) TAG search only (product_tag by term NAME)
-	 *    (No categories per your request)
-	 * --------------------------------------*/
-	$tag_object_ids = $wpdb->get_col(
-		$wpdb->prepare("
-      SELECT DISTINCT tr.object_id
-      FROM {$wpdb->terms} t
-      INNER JOIN {$wpdb->term_taxonomy} tt
-              ON tt.term_id = t.term_id AND tt.taxonomy = 'product_tag'
-      INNER JOIN {$wpdb->term_relationships} tr
-              ON tr.term_taxonomy_id = tt.term_taxonomy_id
-      INNER JOIN {$wpdb->posts} p
-              ON p.ID = tr.object_id
-      WHERE p.post_type = 'product'
-        AND p.post_status = 'publish'
-        AND t.name LIKE %s
-      LIMIT %d
-    ", $like, $limit_each )
-	);
-
-	foreach ( $tag_object_ids as $pid ) {
+	foreach ( nrh_search_tag_ids( $term, $limit_each ) as $pid ) {
 		$found[ $pid ] = max( $found[ $pid ] ?? 0, 20 ); // tag name match relevance
 	}
 
@@ -224,6 +166,265 @@ function nrh_live_search_callback() {
 
 	wp_send_json( $payload );
 }
+
+/**
+ * Published product IDs whose own SKU, or a variation SKU, matches the term.
+ *
+ * Variation matches return the parent product, which is what both the live
+ * dropdown and the search results page list.
+ *
+ * @param string $term  Raw search term.
+ * @param int    $limit Max IDs per source.
+ * @return int[]
+ */
+function nrh_search_sku_ids( $term, $limit = 40 ) {
+	global $wpdb;
+
+	$term  = trim( (string) $term );
+	$limit = max( 1, (int) $limit );
+	if ( $term === '' || ! isset( $wpdb ) || ! is_object( $wpdb ) ) {
+		return array();
+	}
+
+	$cache_key = 'sku|' . strtolower( $term ) . '|' . $limit;
+	$cached    = nrh_search_id_cache( $cache_key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$like = '%' . $wpdb->esc_like( $term ) . '%';
+
+	$product_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"
+			SELECT pm.post_id
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			WHERE pm.meta_key = '_sku'
+			  AND pm.meta_value LIKE %s
+			  AND p.post_type = 'product'
+			  AND p.post_status = 'publish'
+			LIMIT %d
+			",
+			$like,
+			$limit
+		)
+	);
+
+	// Variation SKU → parent. Parent must itself be a published product.
+	$parent_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"
+			SELECT DISTINCT parent.ID
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			INNER JOIN {$wpdb->posts} parent ON parent.ID = p.post_parent
+			WHERE pm.meta_key = '_sku'
+			  AND pm.meta_value LIKE %s
+			  AND p.post_type = 'product_variation'
+			  AND p.post_status = 'publish'
+			  AND parent.post_type = 'product'
+			  AND parent.post_status = 'publish'
+			LIMIT %d
+			",
+			$like,
+			$limit
+		)
+	);
+
+	$ids = array();
+	foreach ( array_merge( (array) $product_ids, (array) $parent_ids ) as $pid ) {
+		$pid = (int) $pid;
+		if ( $pid <= 0 ) {
+			continue;
+		}
+		if ( function_exists( 'get_post_type' ) && function_exists( 'get_post_status' ) ) {
+			if ( get_post_type( $pid ) !== 'product' || get_post_status( $pid ) !== 'publish' ) {
+				continue;
+			}
+		}
+		$ids[ $pid ] = $pid;
+	}
+
+	$ids = array_values( $ids );
+	nrh_search_id_cache( $cache_key, $ids );
+	return $ids;
+}
+
+/**
+ * Published product IDs tagged with a product_tag whose name matches the term.
+ *
+ * @param string $term  Raw search term.
+ * @param int    $limit Max IDs.
+ * @return int[]
+ */
+function nrh_search_tag_ids( $term, $limit = 40 ) {
+	global $wpdb;
+
+	$term  = trim( (string) $term );
+	$limit = max( 1, (int) $limit );
+	if ( $term === '' || ! isset( $wpdb ) || ! is_object( $wpdb ) ) {
+		return array();
+	}
+
+	$cache_key = 'tag|' . strtolower( $term ) . '|' . $limit;
+	$cached    = nrh_search_id_cache( $cache_key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$like = '%' . $wpdb->esc_like( $term ) . '%';
+	$rows = $wpdb->get_col(
+		$wpdb->prepare(
+			"
+			SELECT DISTINCT tr.object_id
+			FROM {$wpdb->terms} t
+			INNER JOIN {$wpdb->term_taxonomy} tt
+			        ON tt.term_id = t.term_id AND tt.taxonomy = 'product_tag'
+			INNER JOIN {$wpdb->term_relationships} tr
+			        ON tr.term_taxonomy_id = tt.term_taxonomy_id
+			INNER JOIN {$wpdb->posts} p
+			        ON p.ID = tr.object_id
+			WHERE p.post_type = 'product'
+			  AND p.post_status = 'publish'
+			  AND t.name LIKE %s
+			LIMIT %d
+			",
+			$like,
+			$limit
+		)
+	);
+
+	$ids = array();
+	foreach ( (array) $rows as $pid ) {
+		$pid = (int) $pid;
+		if ( $pid > 0 ) {
+			$ids[ $pid ] = $pid;
+		}
+	}
+
+	$ids = array_values( $ids );
+	nrh_search_id_cache( $cache_key, $ids );
+	return $ids;
+}
+
+/**
+ * Request-local cache for SKU/tag ID lookups.
+ *
+ * Pass $ids to store. Omit it to read. Null means "not cached".
+ *
+ * @param string     $key Cache key.
+ * @param int[]|null $ids IDs to store, or null to read.
+ * @return int[]|null
+ */
+function nrh_search_id_cache( $key, $ids = null ) {
+	static $cache = array();
+	if ( null !== $ids ) {
+		$cache[ $key ] = array_values( $ids );
+		return $cache[ $key ];
+	}
+	return array_key_exists( $key, $cache ) ? $cache[ $key ] : null;
+}
+
+/**
+ * Whether this query is the public product search form (?s=&post_type=product).
+ *
+ * @param mixed $query WP_Query or test double.
+ * @return bool
+ */
+function nrh_query_is_product_search( $query ) {
+	if ( ! is_object( $query ) || ! method_exists( $query, 'is_main_query' ) || ! method_exists( $query, 'is_search' ) || ! method_exists( $query, 'get' ) ) {
+		return false;
+	}
+	if ( function_exists( 'is_admin' ) && is_admin() ) {
+		return false;
+	}
+	if ( ! $query->is_main_query() || ! $query->is_search() ) {
+		return false;
+	}
+
+	$post_type = $query->get( 'post_type' );
+	if ( 'product' === $post_type ) {
+		return true;
+	}
+	return is_array( $post_type ) && in_array( 'product', $post_type, true );
+}
+
+/**
+ * Fold extra product IDs into WordPress's search WHERE group.
+ *
+ * The core clause is "AND ((title) OR (excerpt) OR (content))" plus an
+ * optional password predicate. IDs are OR'd inside that group so post type,
+ * status, and visibility constraints outside it still apply.
+ *
+ * @param string $search     posts_search SQL.
+ * @param int[]  $post_ids   Product IDs to include.
+ * @param string $posts_table Posts table name, including prefix.
+ * @return string
+ */
+function nrh_extend_product_search_sql( $search, $post_ids, $posts_table ) {
+	$post_ids = array_values( array_unique( array_filter( array_map( 'absint', (array) $post_ids ) ) ) );
+	if ( ! $post_ids || ! is_string( $posts_table ) || $posts_table === '' ) {
+		return $search;
+	}
+
+	$or = $posts_table . '.ID IN (' . implode( ',', $post_ids ) . ')';
+	$search = (string) $search;
+	if ( trim( $search ) === '' ) {
+		return ' AND (' . $or . ') ';
+	}
+
+	$password        = '';
+	$password_needle = " AND ({$posts_table}.post_password = '')";
+	if ( false !== strpos( $search, $password_needle ) ) {
+		$password = $password_needle;
+		$search   = str_replace( $password_needle, '', $search );
+	}
+
+	$trimmed = rtrim( $search );
+	if ( substr( $trimmed, -1 ) !== ')' ) {
+		return $search . ' OR ' . $or . ' ' . $password;
+	}
+
+	return substr( $trimmed, 0, -1 ) . ' OR ' . $or . ') ' . $password;
+}
+
+/**
+ * Keep SKU and tag matches when the header search form is submitted.
+ *
+ * Live search finds them over AJAX. Enter (and the search button) load
+ * /?s=term&post_type=product, which otherwise only matches title, excerpt,
+ * and content.
+ *
+ * @param string $search Search SQL.
+ * @param mixed  $query  WP_Query.
+ * @return string
+ */
+function nrh_product_search_posts_search( $search, $query ) {
+	if ( ! nrh_query_is_product_search( $query ) ) {
+		return $search;
+	}
+
+	$term = $query->get( 's' );
+	if ( ! is_string( $term ) ) {
+		return $search;
+	}
+	$term = trim( $term );
+	$len  = function_exists( 'mb_strlen' ) ? mb_strlen( $term ) : strlen( $term );
+	if ( $len < 2 ) {
+		return $search;
+	}
+
+	global $wpdb;
+	$posts_table = ( isset( $wpdb ) && is_object( $wpdb ) && ! empty( $wpdb->posts ) ) ? $wpdb->posts : 'wp_posts';
+	$ids         = array_merge(
+		nrh_search_sku_ids( $term, 1000 ),
+		nrh_search_tag_ids( $term, 1000 )
+	);
+
+	return nrh_extend_product_search_sql( $search, $ids, $posts_table );
+}
+add_filter( 'posts_search', 'nrh_product_search_posts_search', 20, 2 );
 
 // 3) Enqueue JS & localize
 add_action( 'wp_enqueue_scripts', function () {
