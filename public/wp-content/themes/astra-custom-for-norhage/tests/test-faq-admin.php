@@ -62,7 +62,10 @@ if ( ! function_exists( 'absint' ) ) {
 	}
 }
 
-$GLOBALS['nh_faq_option'] = null;
+$GLOBALS['nh_faq_option']      = null;
+$GLOBALS['nh_faq_wplang']      = '';
+$GLOBALS['nh_faq_is_admin']    = false;
+$GLOBALS['nh_faq_admin_locale'] = 'en_US';
 
 if ( ! function_exists( 'get_option' ) ) {
 	function get_option( $key, $default = false ) {
@@ -70,7 +73,23 @@ if ( ! function_exists( 'get_option' ) ) {
 			return $GLOBALS['nh_faq_option'];
 		}
 
+		if ( 'WPLANG' === $key ) {
+			return $GLOBALS['nh_faq_wplang'];
+		}
+
 		return $default;
+	}
+}
+
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() {
+		return ! empty( $GLOBALS['nh_faq_is_admin'] );
+	}
+}
+
+if ( ! function_exists( 'determine_locale' ) ) {
+	function determine_locale() {
+		return (string) $GLOBALS['nh_faq_admin_locale'];
 	}
 }
 
@@ -105,6 +124,32 @@ nh_faq_assert(
 	isset( $items['return-period']['answer'] ) && false !== strpos( $items['return-period']['answer'], '<a href=' )
 );
 nh_faq_assert( 'topics include ordering', isset( $topics['ordering'] ) && 10 === (int) $topics['ordering']['order'] );
+
+$GLOBALS['nh_faq_is_admin']     = true;
+$GLOBALS['nh_faq_admin_locale'] = 'en_US';
+$GLOBALS['nh_faq_wplang']       = 'nb_NO';
+$shop_items                     = nh_theme_faq_items();
+$shop_topics                    = nh_theme_faq_topics();
+
+nh_faq_assert(
+	'norwegian shop shows norwegian questions in an english admin',
+	isset( $shop_items['delivery-large-items']['question'] ) && 'Hvordan leveres store varer?' === $shop_items['delivery-large-items']['question']
+);
+nh_faq_assert(
+	'norwegian shop shows norwegian topics in admin',
+	isset( $shop_topics['ordering']['label'] ) && 'Bestilling og levering' === $shop_topics['ordering']['label']
+);
+nh_faq_assert(
+	'norwegian answers keep the shop link',
+	isset( $shop_items['return-period']['answer'] ) && false !== strpos( $shop_items['return-period']['answer'], 'https://norhage.no/retur-og-refusjonspolicy/' )
+);
+nh_faq_assert(
+	'quoted questions stay intact',
+	isset( $shop_items['delivery-curbside']['question'] ) && 'Hva betyr «levering ved fortauskant»?' === $shop_items['delivery-curbside']['question']
+);
+
+$GLOBALS['nh_faq_is_admin'] = false;
+$GLOBALS['nh_faq_wplang']   = '';
 
 $prepared = nh_theme_faq_prepare_content(
 	array(
