@@ -490,6 +490,7 @@ require_once get_stylesheet_directory() . '/inc/product-content-sections.php';
 require_once get_stylesheet_directory() . '/inc/delivery-time.php';
 require_once get_stylesheet_directory() . '/inc/faq-data.php';
 require_once get_stylesheet_directory() . '/inc/faq.php';
+require_once get_stylesheet_directory() . '/inc/faq-admin.php';
 require_once get_stylesheet_directory() . '/inc/sample-order.php';
 require_once get_stylesheet_directory() . '/inc/seo.php';
 require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';

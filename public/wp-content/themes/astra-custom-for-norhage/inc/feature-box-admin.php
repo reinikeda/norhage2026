@@ -77,6 +77,27 @@ function nh_render_feature_box_metabox( $post ) {
 }
 
 /**
+ * Keep feature icons at dashicon size in the product editor.
+ * Bare SVGs otherwise fall back to the browser default of 300×150.
+ *
+ * @param string $svg Icon markup from the feature list.
+ * @return string
+ */
+function nh_feature_admin_icon_html( $svg ) {
+    if ( ! is_string( $svg ) || '' === $svg ) {
+        return '';
+    }
+
+    if ( preg_match( '/<svg\b[^>]*\bwidth=/i', $svg ) ) {
+        return $svg;
+    }
+
+    $sized = preg_replace( '/<svg\b/i', '<svg width="18" height="18"', $svg, 1 );
+
+    return is_string( $sized ) ? $sized : $svg;
+}
+
+/**
  * Render a single picker list item.
  *
  * @param string $key
@@ -94,11 +115,10 @@ function nh_feature_picker_item( $key, $feature, $checked ) {
                 value="<?php echo esc_attr( $key ); ?>"
                 <?php checked( $checked ); ?>
             >
-            <span class="nhf-admin-icon"><?php echo $feature['icon']; ?></span>
-            <span><?php echo esc_html( $feature['label'] ); ?></span>
+            <span class="nhf-admin-icon"><?php echo nh_feature_admin_icon_html( $feature['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+            <span class="nhf-admin-label"><?php echo esc_html( $feature['label'] ); ?></span>
         </label>
-        <span class="dashicons dashicons-move nhf-grip" title="<
-        ?php esc_attr_e( 'Drag to reorder', 'nh-theme' ); ?>"></span>
+        <span class="dashicons dashicons-move nhf-grip" title="<?php esc_attr_e( 'Drag to reorder', 'nh-theme' ); ?>"></span>
     </li>
     <?php
 }
@@ -158,6 +178,13 @@ function nh_enqueue_feature_box_admin_assets() {
     }
 
     wp_enqueue_script( 'jquery-ui-sortable' );
+
+    wp_enqueue_style(
+        'nh-feature-box-admin',
+        get_stylesheet_directory_uri() . '/assets/css/feature-box-admin.css',
+        array(),
+        function_exists( 'norhage_asset_version' ) ? norhage_asset_version( '/assets/css/feature-box-admin.css' ) : '1.0.0'
+    );
 
     wp_enqueue_script(
         'nh-feature-box-admin',
