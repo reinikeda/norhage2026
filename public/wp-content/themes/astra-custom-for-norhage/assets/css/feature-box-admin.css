@@ -1,0 +1,84 @@
+/* Product editor: Product Feature Box metabox. */
+
+#nh_feature_box .inside {
+    padding-bottom: 10px;
+}
+
+.nhf-sortable {
+    margin: 10px 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    background: #fff;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.nhf-sortable .nhf-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f1;
+    background: #fff;
+}
+
+.nhf-sortable .nhf-item:last-child {
+    border-bottom: none;
+}
+
+.nhf-sortable .nhf-item:hover {
+    background: #f6f7f7;
+}
+
+.nhf-sortable .nhf-item label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.nhf-sortable .nhf-admin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    flex: 0 0 20px;
+    overflow: hidden;
+    color: #50575e;
+}
+
+.nhf-sortable .nhf-admin-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    max-width: 18px;
+    max-height: 18px;
+}
+
+.nhf-sortable .nhf-admin-label {
+    min-width: 0;
+}
+
+.nhf-sortable .nhf-grip {
+    cursor: move;
+    color: #a7aaad;
+    flex: 0 0 auto;
+}
+
+.nhf-sortable .nhf-grip:hover {
+    color: #2271b1;
+}
+
+.nhf-sortable .nhf-check {
+    margin: 0 !important;
+    flex: 0 0 auto;
+}

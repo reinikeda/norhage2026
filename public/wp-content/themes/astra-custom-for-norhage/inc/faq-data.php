@@ -8,9 +8,119 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FAQ Topics for main FAQ page.
+ * Saved FAQ content, or null while this shop still uses the built-in text.
+ *
+ * @return array|null
+ */
+function nh_theme_faq_saved_content() {
+	if ( ! function_exists( 'get_option' ) ) {
+		return null;
+	}
+
+	$saved = get_option( 'nh_theme_faq_content', null );
+
+	if ( ! is_array( $saved ) || empty( $saved['custom'] ) ) {
+		return null;
+	}
+
+	$topics = array();
+
+	if ( ! empty( $saved['topics'] ) && is_array( $saved['topics'] ) ) {
+		foreach ( $saved['topics'] as $topic_id => $topic ) {
+			$topic_id = sanitize_title( (string) $topic_id );
+
+			if ( '' === $topic_id || ! is_array( $topic ) ) {
+				continue;
+			}
+
+			$label = isset( $topic['label'] ) ? (string) $topic['label'] : '';
+
+			if ( '' === $label ) {
+				continue;
+			}
+
+			$topics[ $topic_id ] = array(
+				'label' => $label,
+				'order' => isset( $topic['order'] ) ? (int) $topic['order'] : 0,
+			);
+		}
+	}
+
+	$items = array();
+
+	if ( ! empty( $saved['items'] ) && is_array( $saved['items'] ) ) {
+		foreach ( $saved['items'] as $faq_id => $item ) {
+			$faq_id = sanitize_title( (string) $faq_id );
+
+			if ( '' === $faq_id || ! is_array( $item ) ) {
+				continue;
+			}
+
+			$question = isset( $item['question'] ) ? (string) $item['question'] : '';
+			$answer   = isset( $item['answer'] ) ? (string) $item['answer'] : '';
+
+			if ( '' === $question || '' === $answer ) {
+				continue;
+			}
+
+			$item_topics = array();
+
+			if ( ! empty( $item['topics'] ) && is_array( $item['topics'] ) ) {
+				foreach ( $item['topics'] as $topic_id ) {
+					$topic_id = sanitize_title( (string) $topic_id );
+
+					if ( isset( $topics[ $topic_id ] ) && ! in_array( $topic_id, $item_topics, true ) ) {
+						$item_topics[] = $topic_id;
+					}
+				}
+			}
+
+			$items[ $faq_id ] = array(
+				'question' => $question,
+				'answer'   => $answer,
+				'topics'   => $item_topics,
+			);
+		}
+	}
+
+	return array(
+		'topics' => $topics,
+		'items'  => $items,
+	);
+}
+
+/**
+ * FAQ topics for the main FAQ page.
+ * Uses text saved in WooCommerce admin when present.
  */
 function nh_theme_faq_topics() {
+	$saved = nh_theme_faq_saved_content();
+
+	if ( is_array( $saved ) ) {
+		return $saved['topics'];
+	}
+
+	return nh_theme_faq_default_topics();
+}
+
+/**
+ * FAQ registry.
+ * Uses text saved in WooCommerce admin when present.
+ */
+function nh_theme_faq_items() {
+	$saved = nh_theme_faq_saved_content();
+
+	if ( is_array( $saved ) ) {
+		return $saved['items'];
+	}
+
+	return nh_theme_faq_default_items();
+}
+
+/**
+ * Built-in FAQ topics. These are the starting text, including translations.
+ */
+function nh_theme_faq_default_topics() {
 	return array(
 		// PROCESS TOPICS
 		'ordering' => array(
@@ -43,9 +153,9 @@ function nh_theme_faq_topics() {
 }
 
 /**
- * FAQ Registry.
+ * Built-in FAQ registry. These are the starting questions, including translations.
  */
-function nh_theme_faq_items() {
+function nh_theme_faq_default_items() {
 	return array(
 
         // ORDERING

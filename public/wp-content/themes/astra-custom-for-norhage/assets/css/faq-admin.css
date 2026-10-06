@@ -1,0 +1,94 @@
+.nh-faq-admin-layout {
+    max-width: 920px;
+}
+
+#nh-faq-admin-form {
+    padding-bottom: 72px;
+}
+
+.nh-faq-admin-card,
+.nh-faq-admin-item {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 12px 14px 4px;
+    margin: 0 0 12px;
+}
+
+.nh-faq-admin-item__head,
+.nh-faq-admin-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.nh-faq-admin-item__head h3,
+.nh-faq-admin-card__head h2 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.nh-faq-admin-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.nh-faq-admin-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 0 0 12px;
+    padding: 0;
+    border: 0;
+}
+
+.nh-faq-admin-topics legend {
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+.nh-faq-admin-topics label {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.nh-faq-topic-table .regular-text {
+    width: 100%;
+    max-width: 420px;
+}
+
+.nh-faq-topic-table .small-text {
+    width: 70px;
+}
+
+.nh-faq-admin-submit {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 16px 0 0;
+    padding: 12px 0;
+    background: #f0f0f1;
+    border-top: 1px solid #dcdcde;
+    z-index: 5;
+}
+
+.nh-faq-admin-id {
+    margin: 0 0 8px;
+}
+
+.nh-faq-admin-filter {
+    margin: 0 0 12px;
+    max-width: 420px;
+}
+
+.nh-faq-admin-item.is-deleted,
+.nh-faq-topic-row.is-deleted {
+    opacity: 0.45;
+}

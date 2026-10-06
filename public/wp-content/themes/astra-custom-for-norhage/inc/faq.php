@@ -22,6 +22,7 @@ class NH_Theme_FAQ {
 
 		add_action( 'add_meta_boxes_product', array( $this, 'add_product_metabox' ) );
 		add_action( 'save_post_product', array( $this, 'save_product_metabox' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_product_admin' ) );
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			add_filter( 'woocommerce_product_tabs', array( $this, 'add_product_tab' ), 25 );
@@ -403,7 +404,7 @@ class NH_Theme_FAQ {
 	public function add_product_metabox() {
 		add_meta_box(
 			'nh-theme-faq-ids',
-			__( 'Product FAQ IDs', 'nh-theme' ),
+			__( 'Product FAQs', 'nh-theme' ),
 			array( $this, 'render_product_metabox' ),
 			'product',
 			'side',
@@ -411,44 +412,168 @@ class NH_Theme_FAQ {
 		);
 	}
 
+	/**
+	 * Styles and the question filter for the product FAQ box.
+	 *
+	 * @param string $hook Current admin page.
+	 */
+	public function enqueue_product_admin( $hook ) {
+		if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) {
+			return;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		if ( ! $screen || 'product' !== $screen->post_type ) {
+			return;
+		}
+
+		$version = function_exists( 'norhage_asset_version' ) ? norhage_asset_version( '/assets/css/faq-product-admin.css' ) : '1.0.0';
+
+		wp_enqueue_style(
+			'nh-theme-faq-product-admin',
+			get_stylesheet_directory_uri() . '/assets/css/faq-product-admin.css',
+			array(),
+			$version
+		);
+
+		wp_enqueue_script(
+			'nh-theme-faq-product-admin',
+			get_stylesheet_directory_uri() . '/assets/js/faq-product-admin.js',
+			array(),
+			$version,
+			true
+		);
+	}
+
 	public function render_product_metabox( $post ) {
-		$value = get_post_meta( $post->ID, self::PRODUCT_META_KEY, true );
-		$items = nh_theme_faq_items();
+		$selected = $this->get_product_faq_ids( $post->ID );
+		$items    = nh_theme_faq_items();
+		$topics   = nh_theme_faq_topics();
 
 		wp_nonce_field( 'nh_theme_faq_save_product', 'nh_theme_faq_nonce' );
 		?>
 
-		<p>
-			<label for="nh_faq_ids">
-				<?php esc_html_e( 'Attached FAQ IDs', 'nh-theme' ); ?>
-			</label>
+		<p class="description">
+			<?php esc_html_e( 'Tick the questions to show on this product.', 'nh-theme' ); ?>
+			<?php if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' ) ) : ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=nh-theme-faqs' ) ); ?>">
+					<?php esc_html_e( 'Edit FAQ text', 'nh-theme' ); ?>
+				</a>
+			<?php endif; ?>
 		</p>
 
-		<textarea
-			id="nh_faq_ids"
-			name="nh_faq_ids"
-			rows="4"
-			style="width:100%;"
-			placeholder="delivery-times,return-policy"
-		><?php echo esc_textarea( $value ); ?></textarea>
+		<?php if ( empty( $items ) ) : ?>
+			<p><?php esc_html_e( 'No questions yet.', 'nh-theme' ); ?></p>
+			<?php
+			return;
+		endif;
+
+		$selected_items = array();
+
+		foreach ( $selected as $faq_id ) {
+			if ( isset( $items[ $faq_id ] ) ) {
+				$selected_items[ $faq_id ] = $items[ $faq_id ];
+			}
+		}
+
+		$groups = array();
+
+		foreach ( $topics as $topic_id => $topic ) {
+			$groups[ $topic_id ] = array(
+				'label' => isset( $topic['label'] ) ? $topic['label'] : $topic_id,
+				'items' => array(),
+			);
+		}
+
+		$groups['nh-faq-other'] = array(
+			'label' => __( 'Other', 'nh-theme' ),
+			'items' => array(),
+		);
+
+		foreach ( $items as $faq_id => $item ) {
+			if ( isset( $selected_items[ $faq_id ] ) ) {
+				continue;
+			}
+
+			$item_topics = ! empty( $item['topics'] ) && is_array( $item['topics'] ) ? $item['topics'] : array();
+			$placed      = false;
+
+			foreach ( $item_topics as $topic_id ) {
+				if ( isset( $groups[ $topic_id ] ) && 'nh-faq-other' !== $topic_id ) {
+					$groups[ $topic_id ]['items'][ $faq_id ] = $item;
+					$placed = true;
+					break;
+				}
+			}
+
+			if ( ! $placed ) {
+				$groups['nh-faq-other']['items'][ $faq_id ] = $item;
+			}
+		}
+		?>
+
+		<label class="screen-reader-text" for="nh-faq-product-filter">
+			<?php esc_html_e( 'Filter questions', 'nh-theme' ); ?>
+		</label>
+		<input
+			type="search"
+			id="nh-faq-product-filter"
+			class="nh-faq-product-filter"
+			placeholder="<?php esc_attr_e( 'Search questions', 'nh-theme' ); ?>"
+		>
+
+		<div class="nh-faq-product-list" id="nh-faq-product-list">
+			<?php if ( ! empty( $selected_items ) ) : ?>
+				<p class="nh-faq-product-topic"><?php esc_html_e( 'Shown on this product', 'nh-theme' ); ?></p>
+				<?php
+				foreach ( $selected_items as $faq_id => $item ) {
+					$this->render_product_faq_choice( $faq_id, $item, true );
+				}
+				?>
+			<?php endif; ?>
+
+			<?php foreach ( $groups as $group ) : ?>
+				<?php if ( empty( $group['items'] ) ) : ?>
+					<?php continue; ?>
+				<?php endif; ?>
+				<p class="nh-faq-product-topic"><?php echo esc_html( $group['label'] ); ?></p>
+				<?php
+				foreach ( $group['items'] as $faq_id => $item ) {
+					$this->render_product_faq_choice( $faq_id, $item, false );
+				}
+				?>
+			<?php endforeach; ?>
+		</div>
 
 		<p class="description">
-			<?php esc_html_e( 'Use comma-separated FAQ IDs. This is the same product meta field used by CSV imports.', 'nh-theme' ); ?>
+			<?php esc_html_e( 'CSV imports can still write the nh_faq_ids field.', 'nh-theme' ); ?>
 		</p>
 
-		<?php if ( ! empty( $items ) ) : ?>
-			<p><strong><?php esc_html_e( 'Available IDs:', 'nh-theme' ); ?></strong></p>
+		<?php
+	}
 
-			<ul style="margin-left: 1em; list-style: disc;">
-				<?php foreach ( $items as $faq_id => $item ) : ?>
-					<li>
-						<code><?php echo esc_html( $faq_id ); ?></code><br>
-						<?php echo esc_html( $item['question'] ); ?>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-		<?php endif; ?>
-
+	/**
+	 * One question checkbox in the product editor.
+	 *
+	 * @param string $faq_id  Stable FAQ id.
+	 * @param array  $item    Question data.
+	 * @param bool   $checked Whether it is attached to this product.
+	 */
+	private function render_product_faq_choice( $faq_id, $item, $checked ) {
+		$question = isset( $item['question'] ) ? $item['question'] : $faq_id;
+		?>
+		<div class="nh-faq-product-item" data-label="<?php echo esc_attr( strtolower( wp_strip_all_tags( $question ) ) ); ?>">
+			<label>
+				<input
+					type="checkbox"
+					name="nh_faq_ids[]"
+					value="<?php echo esc_attr( $faq_id ); ?>"
+					<?php checked( $checked ); ?>
+				>
+				<span><?php echo esc_html( $question ); ?></span>
+			</label>
+		</div>
 		<?php
 	}
 
@@ -469,16 +594,26 @@ class NH_Theme_FAQ {
 			return;
 		}
 
-		$value = isset( $_POST['nh_faq_ids'] )
-			? sanitize_text_field( wp_unslash( $_POST['nh_faq_ids'] ) )
-			: '';
+		$valid = array_keys( nh_theme_faq_items() );
+		$ids   = array();
+		$raw   = isset( $_POST['nh_faq_ids'] ) && is_array( $_POST['nh_faq_ids'] )
+			? wp_unslash( $_POST['nh_faq_ids'] )
+			: array();
 
-		if ( '' === $value ) {
+		foreach ( $raw as $faq_id ) {
+			$faq_id = sanitize_title( (string) $faq_id );
+
+			if ( in_array( $faq_id, $valid, true ) && ! in_array( $faq_id, $ids, true ) ) {
+				$ids[] = $faq_id;
+			}
+		}
+
+		if ( empty( $ids ) ) {
 			delete_post_meta( $post_id, self::PRODUCT_META_KEY );
 			return;
 		}
 
-		update_post_meta( $post_id, self::PRODUCT_META_KEY, $value );
+		update_post_meta( $post_id, self::PRODUCT_META_KEY, implode( ',', $ids ) );
 	}
 
 	/**
