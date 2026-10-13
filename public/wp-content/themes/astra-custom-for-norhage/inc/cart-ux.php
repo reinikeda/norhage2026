@@ -71,6 +71,64 @@ function nh_cart_ux_init() {
 	add_filter( 'woocommerce_cart_shipping_total', 'nh_cart_strip_repeated_vat_note', 99 );
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'nh_cart_strip_repeated_vat_note', 99 );
 	add_filter( 'woocommerce_cart_totals_fee_html', 'nh_cart_strip_repeated_vat_note', 99 );
+
+	add_action( 'woocommerce_after_cart_item_name', 'nh_cart_print_item_sku', 5, 2 );
+	add_filter( 'woocommerce_checkout_cart_item_quantity', 'nh_checkout_append_item_sku', 20, 3 );
+}
+
+/**
+ * SKU for a cart line, if the product has one.
+ *
+ * @param array $cart_item Cart item.
+ * @return string
+ */
+function nh_cart_item_sku( $cart_item ) {
+	$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
+	if ( ! $product instanceof WC_Product ) {
+		return '';
+	}
+	return (string) $product->get_sku();
+}
+
+/**
+ * @param array $cart_item Cart item.
+ * @return string
+ */
+function nh_cart_sku_markup( $cart_item ) {
+	$sku = nh_cart_item_sku( $cart_item );
+	if ( $sku === '' ) {
+		return '';
+	}
+	return '<span class="nh-cart-sku">' . esc_html(
+		sprintf(
+			/* translators: %s: product SKU */
+			__( 'SKU: %s', 'woocommerce' ),
+			$sku
+		)
+	) . '</span>';
+}
+
+/**
+ * Cart table: SKU directly under the product name.
+ *
+ * @param array  $cart_item     Cart item.
+ * @param string $cart_item_key Cart item key.
+ */
+function nh_cart_print_item_sku( $cart_item, $cart_item_key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	echo nh_cart_sku_markup( $cart_item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+/**
+ * Checkout review: quantity sits next to the name, so the SKU follows it
+ * and CSS puts it on the next line.
+ *
+ * @param string $html          Quantity HTML.
+ * @param array  $cart_item     Cart item.
+ * @param string $cart_item_key Cart item key.
+ * @return string
+ */
+function nh_checkout_append_item_sku( $html, $cart_item, $cart_item_key ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	return $html . nh_cart_sku_markup( $cart_item );
 }
 
 /**

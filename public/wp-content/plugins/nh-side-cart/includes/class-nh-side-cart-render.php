@@ -117,6 +117,7 @@ final class NH_Side_Cart_Render {
 		);
 		$remove_url    = wc_get_cart_remove_url( $cart_item_key );
 		$name          = $product->get_name();
+		$sku           = (string) $product->get_sku();
 		?>
 		<li class="nh-sc__item<?php echo $qty_locked ? ' nh-sc__item--qty-locked' : ''; ?>" data-key="<?php echo esc_attr( $cart_item_key ); ?>">
 			<div class="nh-sc__thumb">
@@ -128,11 +129,16 @@ final class NH_Side_Cart_Render {
 			</div>
 			<div class="nh-sc__item-main">
 				<div class="nh-sc__item-top">
-					<?php if ( $permalink ) : ?>
-						<a class="nh-sc__name" href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $name ); ?></a>
-					<?php else : ?>
-						<span class="nh-sc__name"><?php echo esc_html( $name ); ?></span>
-					<?php endif; ?>
+					<div class="nh-sc__item-title">
+						<?php if ( $permalink ) : ?>
+							<a class="nh-sc__name" href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $name ); ?></a>
+						<?php else : ?>
+							<span class="nh-sc__name"><?php echo esc_html( $name ); ?></span>
+						<?php endif; ?>
+						<?php if ( $sku !== '' ) : ?>
+							<span class="nh-cart-sku nh-sc__sku"><?php echo esc_html( sprintf( /* translators: %s: product SKU */ __( 'SKU: %s', 'woocommerce' ), $sku ) ); ?></span>
+						<?php endif; ?>
+					</div>
 					<button
 						type="button"
 						class="nh-sc__remove"

@@ -314,13 +314,28 @@ body.nh-sc-open {
   gap: 8px;
 }
 
-.nh-sc__name {
+.nh-sc__item-title {
   flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nh-sc__name {
+  display: block;
   font-weight: 700;
   color: var(--nh-sc-forest);
   text-decoration: none;
   line-height: 1.3;
   overflow-wrap: anywhere;
+}
+
+.nh-sc__sku,
+.nh-sc .nh-cart-sku {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--nh-sc-muted);
 }
 
 .nh-sc__name:hover {
