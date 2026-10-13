@@ -564,6 +564,10 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_admin_order_data_after_billing_address', 'nh_checkout_admin_billing_meta', 10, 1 );
 	add_action( 'woocommerce_order_details_after_customer_details', 'nh_checkout_order_contact_details', 10, 1 );
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
+	add_filter( 'wpo_wcpdf_document_is_allowed', 'nh_checkout_pdf_invoice_is_allowed', 10, 2 );
+	add_filter( 'wpo_ips_document_is_allowed_in_my_account', 'nh_checkout_pdf_invoice_allowed_in_my_account', 10, 4 );
+	add_filter( 'wpo_wcpdf_myaccount_actions', 'nh_checkout_pdf_myaccount_actions', 20, 2 );
+	add_filter( 'wpo_wcpdf_check_privs', 'nh_checkout_pdf_customer_can_access', 20, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_required_hint', 5 );
 	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_place_order_note', 8 );
@@ -3449,6 +3453,129 @@ function nh_checkout_pdf_reg_number( $type, $order_or_document ) { // phpcs:igno
 	}
 
 	echo '<div class="billing-reg">' . esc_html( sprintf( __( 'Reg. no. %s', 'nh-theme' ), $reg ) ) . '</div>';
+}
+
+/**
+ * True when the order was paid with Direct bank transfer.
+ *
+ * @param mixed $order Order-like object.
+ * @return bool
+ */
+function nh_checkout_pdf_order_is_bacs( $order ) {
+	if ( ! is_object( $order ) || ! is_callable( array( $order, 'get_payment_method' ) ) ) {
+		return false;
+	}
+	return strtolower( (string) $order->get_payment_method() ) === 'bacs';
+}
+
+/**
+ * PDF Invoices & Packing Slips creates an invoice for every order by default.
+ * Norhage only needs invoices for Direct bank transfer (BACS). Packing slips
+ * stay available for SVEA, Kustom, PayPal, and MakeCommerce.
+ *
+ * Already-generated invoices stay allowed in wp-admin so older PDFs remain
+ * downloadable for staff. Customer My Account / thank-you links are blocked
+ * separately for non-BACS orders.
+ *
+ * @param bool  $allowed  Whether the plugin may create this document.
+ * @param mixed $document WPO order document.
+ * @return bool
+ */
+function nh_checkout_pdf_invoice_is_allowed( $allowed, $document ) {
+	if ( ! $allowed || ! is_object( $document ) ) {
+		return $allowed;
+	}
+
+	$type = '';
+	if ( is_callable( array( $document, 'get_type' ) ) ) {
+		$type = (string) $document->get_type();
+	} elseif ( ! empty( $document->type ) ) {
+		$type = (string) $document->type;
+	}
+
+	if ( $type !== 'invoice' ) {
+		return $allowed;
+	}
+
+	$order = isset( $document->order ) ? $document->order : null;
+	if ( nh_checkout_pdf_order_is_bacs( $order ) ) {
+		return $allowed;
+	}
+
+	if ( is_callable( array( $document, 'exists' ) ) && $document->exists() ) {
+		return $allowed;
+	}
+
+	if ( ! is_object( $order ) || ! is_callable( array( $order, 'get_payment_method' ) ) ) {
+		return $allowed;
+	}
+
+	return false;
+}
+
+/**
+ * Hide the My Account / thank-you invoice button unless the order is BACS.
+ * Email attach (on-hold) is a separate plugin setting; this covers the
+ * customer download path.
+ *
+ * @param bool  $allowed        Plugin decision.
+ * @param mixed $default        Unused plugin default.
+ * @param mixed $output_format  Unused output format.
+ * @param mixed $document       WPO order document.
+ * @return bool
+ */
+function nh_checkout_pdf_invoice_allowed_in_my_account( $allowed, $default, $output_format, $document ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	if ( ! $allowed || ! is_object( $document ) ) {
+		return $allowed;
+	}
+	$order = isset( $document->order ) ? $document->order : null;
+	return nh_checkout_pdf_order_is_bacs( $order );
+}
+
+/**
+ * Remove invoice actions from My Account and the thank-you order table.
+ *
+ * @param array $actions Woo order actions.
+ * @param mixed $order   Order.
+ * @return array
+ */
+function nh_checkout_pdf_myaccount_actions( $actions, $order ) {
+	if ( ! is_array( $actions ) ) {
+		return $actions;
+	}
+	if ( nh_checkout_pdf_order_is_bacs( $order ) ) {
+		return $actions;
+	}
+	unset( $actions['invoice'], $actions['invoice_xml'] );
+	return $actions;
+}
+
+/**
+ * Block customer PDF links for non-BACS orders even if a file already exists.
+ * Shop staff downloading from wp-admin are unchanged.
+ *
+ * @param bool  $allowed   Whether the request may generate the PDF.
+ * @param mixed $order_ids Order id or ids.
+ * @return bool
+ */
+function nh_checkout_pdf_customer_can_access( $allowed, $order_ids ) {
+	if ( ! $allowed ) {
+		return false;
+	}
+	$customer_request = ! empty( $_REQUEST['my-account'] ) || ! empty( $_REQUEST['shortcode'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! $customer_request ) {
+		return $allowed;
+	}
+	if ( function_exists( 'current_user_can' ) && current_user_can( 'manage_woocommerce' ) ) {
+		return $allowed;
+	}
+	foreach ( (array) $order_ids as $order_id ) {
+		$order = function_exists( 'wc_get_order' ) ? wc_get_order( $order_id ) : null;
+		if ( is_object( $order ) && ! nh_checkout_pdf_order_is_bacs( $order ) ) {
+			return false;
+		}
+	}
+	return $allowed;
 }
 
 function nh_checkout_secure_note() {
