@@ -156,6 +156,64 @@ nh_pdf_invoice_assert(
 	nh_checkout_pdf_invoice_is_allowed( true, $property_only ) === false
 );
 
+$bacs_actions = array(
+	'pay'     => array( 'url' => '/pay', 'name' => 'Pay' ),
+	'invoice' => array( 'url' => '/pdf', 'name' => 'Invoice' ),
+);
+$kept         = nh_checkout_pdf_myaccount_actions( $bacs_actions, new Nh_Pdf_Order_Stub( 'bacs' ) );
+nh_pdf_invoice_assert( 'bacs my-account keeps invoice button', isset( $kept['invoice'] ) );
+
+$svea_actions = $bacs_actions;
+$svea_actions['invoice_xml'] = array( 'url' => '/xml', 'name' => 'E-Invoice' );
+$hidden = nh_checkout_pdf_myaccount_actions( $svea_actions, new Nh_Pdf_Order_Stub( 'svea_checkout' ) );
+nh_pdf_invoice_assert( 'svea my-account hides invoice button', ! isset( $hidden['invoice'] ) );
+nh_pdf_invoice_assert( 'svea my-account hides xml invoice button', ! isset( $hidden['invoice_xml'] ) );
+nh_pdf_invoice_assert( 'svea my-account keeps pay button', isset( $hidden['pay'] ) );
+
+$bacs_doc = nh_pdf_doc( 'invoice', 'bacs' );
+$svea_doc = nh_pdf_doc( 'invoice', 'svea_checkout' );
+nh_pdf_invoice_assert(
+	'bacs is allowed in my account',
+	nh_checkout_pdf_invoice_allowed_in_my_account( true, 'available', 'pdf', $bacs_doc ) === true
+);
+nh_pdf_invoice_assert(
+	'svea is blocked in my account even if plugin would show the button',
+	nh_checkout_pdf_invoice_allowed_in_my_account( true, 'always', 'pdf', $svea_doc ) === false
+);
+
+$_REQUEST['my-account'] = 'true';
+nh_pdf_invoice_assert(
+	'admin-style request without order lookup stays allowed',
+	nh_checkout_pdf_customer_can_access( true, array( 12 ) ) === true
+);
+
+if ( ! function_exists( 'wc_get_order' ) ) {
+	function wc_get_order( $id ) {
+		if ( (int) $id === 21 ) {
+			return new Nh_Pdf_Order_Stub( 'bacs' );
+		}
+		if ( (int) $id === 22 ) {
+			return new Nh_Pdf_Order_Stub( 'kco' );
+		}
+		return null;
+	}
+}
+
+nh_pdf_invoice_assert(
+	'customer can download bacs invoice from my account',
+	nh_checkout_pdf_customer_can_access( true, array( 21 ) ) === true
+);
+nh_pdf_invoice_assert(
+	'customer cannot download kustom invoice from my account',
+	nh_checkout_pdf_customer_can_access( true, array( 22 ) ) === false
+);
+
+unset( $_REQUEST['my-account'] );
+nh_pdf_invoice_assert(
+	'admin download of kustom invoice stays allowed',
+	nh_checkout_pdf_customer_can_access( true, array( 22 ) ) === true
+);
+
 if ( $failures > 0 ) {
 	exit( 1 );
 }
