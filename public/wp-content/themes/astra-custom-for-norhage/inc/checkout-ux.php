@@ -564,6 +564,7 @@ function nh_checkout_ux_init() {
 	add_action( 'woocommerce_admin_order_data_after_billing_address', 'nh_checkout_admin_billing_meta', 10, 1 );
 	add_action( 'woocommerce_order_details_after_customer_details', 'nh_checkout_order_contact_details', 10, 1 );
 	add_action( 'wpo_wcpdf_after_billing_address', 'nh_checkout_pdf_reg_number', 10, 2 );
+	add_filter( 'wpo_wcpdf_document_is_allowed', 'nh_checkout_pdf_invoice_is_allowed', 10, 2 );
 	add_action( 'woocommerce_review_order_after_submit', 'nh_checkout_secure_note', 8 );
 	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_required_hint', 5 );
 	add_action( 'woocommerce_checkout_after_terms_and_conditions', 'nh_checkout_terms_place_order_note', 8 );
@@ -3449,6 +3450,50 @@ function nh_checkout_pdf_reg_number( $type, $order_or_document ) { // phpcs:igno
 	}
 
 	echo '<div class="billing-reg">' . esc_html( sprintf( __( 'Reg. no. %s', 'nh-theme' ), $reg ) ) . '</div>';
+}
+
+/**
+ * PDF Invoices & Packing Slips creates an invoice for every order by default.
+ * Norhage only needs invoices for Direct bank transfer (BACS). Packing slips
+ * stay available for SVEA, Kustom, PayPal, and MakeCommerce.
+ *
+ * Already-generated invoices stay allowed so older PDFs remain downloadable.
+ *
+ * @param bool  $allowed  Whether the plugin may create this document.
+ * @param mixed $document WPO order document.
+ * @return bool
+ */
+function nh_checkout_pdf_invoice_is_allowed( $allowed, $document ) {
+	if ( ! $allowed || ! is_object( $document ) ) {
+		return $allowed;
+	}
+
+	$type = '';
+	if ( is_callable( array( $document, 'get_type' ) ) ) {
+		$type = (string) $document->get_type();
+	} elseif ( ! empty( $document->type ) ) {
+		$type = (string) $document->type;
+	}
+
+	if ( $type !== 'invoice' ) {
+		return $allowed;
+	}
+
+	if ( is_callable( array( $document, 'exists' ) ) && $document->exists() ) {
+		return $allowed;
+	}
+
+	$order = isset( $document->order ) ? $document->order : null;
+	if ( ! is_object( $order ) || ! is_callable( array( $order, 'get_payment_method' ) ) ) {
+		return $allowed;
+	}
+
+	$method = strtolower( (string) $order->get_payment_method() );
+	if ( $method !== 'bacs' ) {
+		return false;
+	}
+
+	return $allowed;
 }
 
 function nh_checkout_secure_note() {
