@@ -99,7 +99,13 @@ function nh_cart_sku_markup( $cart_item ) {
 	if ( $sku === '' ) {
 		return '';
 	}
-	return '<span class="nh-cart-sku">' . esc_html( $sku ) . '</span>';
+	return '<span class="nh-cart-sku">' . esc_html(
+		sprintf(
+			/* translators: %s: product SKU */
+			__( 'SKU: %s', 'woocommerce' ),
+			$sku
+		)
+	) . '</span>';
 }
 
 /**

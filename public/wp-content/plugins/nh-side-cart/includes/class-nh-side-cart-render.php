@@ -136,7 +136,7 @@ final class NH_Side_Cart_Render {
 							<span class="nh-sc__name"><?php echo esc_html( $name ); ?></span>
 						<?php endif; ?>
 						<?php if ( $sku !== '' ) : ?>
-							<span class="nh-cart-sku nh-sc__sku"><?php echo esc_html( $sku ); ?></span>
+							<span class="nh-cart-sku nh-sc__sku"><?php echo esc_html( sprintf( /* translators: %s: product SKU */ __( 'SKU: %s', 'woocommerce' ), $sku ) ); ?></span>
 						<?php endif; ?>
 					</div>
 					<button
