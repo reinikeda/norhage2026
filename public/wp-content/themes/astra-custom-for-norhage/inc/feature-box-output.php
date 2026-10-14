@@ -45,6 +45,11 @@ function nh_render_feature_box_before_cart() {
 
 /**
  * OUT-OF-STOCK: append to short description.
+ *
+ * WooCommerce also runs this filter from wc_format_content() while it builds
+ * variation JSON, before the add-to-cart form is printed. That is not the
+ * short description block. Closing the page buffer there drops the document
+ * head — including jQuery — and leaves the rest of the product page broken.
  */
 add_filter( 'woocommerce_short_description', 'nh_append_feature_box_to_short_desc', 20 );
 function nh_append_feature_box_to_short_desc( $desc ) {
@@ -59,6 +64,9 @@ function nh_append_feature_box_to_short_desc( $desc ) {
     if ( $product->is_in_stock() ) {
         return $desc;
     }
+    if ( nh_feature_box_filter_is_variation_format() ) {
+        return $desc;
+    }
 
     $html = nh_get_feature_box_html( $product->get_id() );
     if ( empty( $html ) ) {
@@ -66,5 +74,34 @@ function nh_append_feature_box_to_short_desc( $desc ) {
     }
 
     $nh_feature_box_rendered = true;
-    return $desc . $html . wp_kses_post( ob_get_clean() . do_action( 'nh_after_feature_box', $product->get_id() ) );
+
+    $level = ob_get_level();
+    ob_start();
+    do_action( 'nh_after_feature_box', $product->get_id() );
+    $after = '';
+    if ( ob_get_level() > $level ) {
+        $after = ob_get_clean();
+    }
+    if ( ! is_string( $after ) ) {
+        $after = '';
+    }
+
+    return $desc . $html . wp_kses_post( $after );
+}
+
+/**
+ * Variation descriptions are formatted with wc_format_content(), which applies
+ * woocommerce_short_description. The product short description template does not.
+ *
+ * @return bool
+ */
+function nh_feature_box_filter_is_variation_format() {
+    $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 15 );
+    foreach ( $trace as $frame ) {
+        if ( isset( $frame['function'] ) && 'wc_format_content' === $frame['function'] ) {
+            return true;
+        }
+    }
+
+    return false;
 }
