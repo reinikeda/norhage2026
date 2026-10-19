@@ -775,6 +775,20 @@ a.ast-on-card-button.ast-select-options-trigger,
   padding-right: 0.7em;
 }
 
+.woocommerce ul.products li.product a.button.nh-catalog-atc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+}
+
+.woocommerce ul.products li.product a.button.nh-catalog-atc .nh-catalog-atc__icon {
+  width: 0.95em;
+  height: 0.95em;
+  flex: 0 0 auto;
+  display: block;
+}
+
 /* Reserve space for price lines */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > .price {
   min-height: 2.4em;

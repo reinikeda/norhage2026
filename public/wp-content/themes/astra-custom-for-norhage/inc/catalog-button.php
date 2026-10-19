@@ -86,6 +86,19 @@ function nh_catalog_button_label() {
 }
 
 /**
+ * Same cart glyph as the header, sized for the catalog button.
+ *
+ * @return string
+ */
+function nh_catalog_button_icon_html() {
+	return '<svg class="nh-catalog-atc__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">'
+		. '<circle cx="9" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>'
+		. '<circle cx="19" cy="21" r="1" stroke-width="2" fill="none" stroke="currentColor"></circle>'
+		. '<path d="M2 3h3l3.6 12.6a2 2 0 0 0 2 1.4h7.8a2 2 0 0 0 2-1.6l1.5-8.4H6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"></path>'
+		. '</svg>';
+}
+
+/**
  * Catalog cards never add from the listing.
  * Variable and custom-cut products need the page to customise; simple
  * products open it too so customers see details first.
@@ -111,11 +124,15 @@ function nh_catalog_button_link( $html, $product, $args ) {
 	}
 
 	$class = isset( $args['class'] ) ? $args['class'] : 'button';
+	if ( strpos( ' ' . $class . ' ', ' nh-catalog-atc ' ) === false ) {
+		$class .= ' nh-catalog-atc';
+	}
 
 	return sprintf(
-		'<a href="%s" class="%s">%s</a>',
+		'<a href="%s" class="%s">%s<span class="nh-catalog-atc__label">%s</span></a>',
 		esc_url( $product->get_permalink() ),
 		esc_attr( $class ),
+		nh_catalog_button_icon_html(),
 		esc_html( nh_catalog_button_label() )
 	);
 }

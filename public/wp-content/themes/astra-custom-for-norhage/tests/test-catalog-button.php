@@ -32,6 +32,24 @@ if ( ! function_exists( 'determine_locale' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_url' ) ) {
+	function esc_url( $url ) {
+		return (string) $url;
+	}
+}
+
+if ( ! function_exists( 'esc_attr' ) ) {
+	function esc_attr( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ) {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
 if ( ! function_exists( 'nh_shorten_finnish_add_to_cart_text' ) ) {
 	function nh_shorten_finnish_add_to_cart_text( $text ) {
 		$locale = function_exists( 'determine_locale' ) ? determine_locale() : 'en_US';
@@ -99,6 +117,19 @@ nh_catalog_assert( 'English stays Add to cart', 'Add to cart' === nh_catalog_but
 
 nh_catalog_assert( 'simple products open the product page', true === nh_catalog_product_opens_page( (object) array( 'type' => 'simple' ) ) );
 nh_catalog_assert( 'variable products open the product page', true === nh_catalog_product_opens_page( (object) array( 'type' => 'variable' ) ) );
+nh_catalog_assert( 'icon markup is an svg cart', false !== strpos( nh_catalog_button_icon_html(), 'nh-catalog-atc__icon' ) );
+
+if ( ! class_exists( 'WC_Product' ) ) {
+	class WC_Product {
+		public function get_permalink() {
+			return 'https://example.test/product';
+		}
+	}
+}
+
+$html = nh_catalog_button_link( '', new WC_Product(), array( 'class' => 'button' ) );
+nh_catalog_assert( 'catalog button includes the cart icon', false !== strpos( $html, 'nh-catalog-atc__icon' ) );
+nh_catalog_assert( 'catalog button includes the label', false !== strpos( $html, 'Add to cart' ) );
 
 if ( $failures > 0 ) {
 	fwrite( STDERR, "{$failures} failed\n" );
