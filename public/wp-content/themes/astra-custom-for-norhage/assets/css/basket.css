@@ -261,6 +261,23 @@ body.woocommerce-cart .return-to-shop .button {
   color: var(--ui-muted, #8e8c89);
 }
 
+.nh-cart-layout .nh-cart-delivery-row th,
+.nh-cart-layout .nh-cart-delivery-row td {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ui-muted, #8e8c89);
+  border-top: 0;
+}
+
+.nh-cart-layout .nh-cart-delivery-row .nh-cart-delivery__value,
+.nh-cart-layout .nh-cart-delivery-row td {
+  font-weight: 600;
+  color: #6e6c69;
+}
+
 .nh-cart-layout td.product-name dl.variation,
 .nh-cart-layout .product-name dl.variation {
   display: grid;

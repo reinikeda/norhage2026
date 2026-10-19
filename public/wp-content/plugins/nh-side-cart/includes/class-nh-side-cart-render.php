@@ -65,6 +65,7 @@ final class NH_Side_Cart_Render {
 			self::render_shipping();
 		}
 
+		self::render_delivery_estimate();
 		self::render_totals();
 		self::render_actions();
 	}
@@ -326,6 +327,13 @@ final class NH_Side_Cart_Render {
 			}
 			echo '</ul>';
 		}
+	}
+
+	private static function render_delivery_estimate() {
+		if ( ! function_exists( 'nhdt_print_cart_estimate' ) ) {
+			return;
+		}
+		nhdt_print_cart_estimate();
 	}
 
 	private static function render_totals() {

@@ -1,6 +1,8 @@
 <?php
 /**
- * Category cards open the product page. One short label for every product.
+ * Category cards use an Add to cart label and always open the product page.
+ * Variable and custom-cut products need the page to choose options; simple
+ * products open it too so customers see details before buying.
  *
  * @package Astra_Custom_For_Norhage
  */
@@ -10,16 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Catalog button label.
- *
- * Theme translations win. If the .mo file has not been rebuilt yet, the shop
- * locales still resolve.
+ * WooCommerce "Add to cart" in the shop language, with a short Finnish form.
  *
  * @return string
  */
 function nh_catalog_button_label() {
-	$translated = __( 'Select', 'nh-theme' );
-	if ( is_string( $translated ) && '' !== $translated && 'Select' !== $translated ) {
+	$translated = __( 'Add to cart', 'woocommerce' );
+	if ( function_exists( 'nh_shorten_finnish_add_to_cart_text' ) ) {
+		$translated = nh_shorten_finnish_add_to_cart_text( $translated );
+	}
+	if ( is_string( $translated ) && '' !== $translated && 'Add to cart' !== $translated ) {
 		return $translated;
 	}
 
@@ -31,16 +33,16 @@ function nh_catalog_button_label() {
 	}
 
 	$map = array(
-		'nb_NO' => 'Velg',
-		'nn_NO' => 'Velg',
-		'sv_SE' => 'Välj',
-		'da_DK' => 'Vælg',
-		'de_DE' => 'Auswählen',
-		'de_AT' => 'Auswählen',
-		'de_CH' => 'Auswählen',
-		'fi'    => 'Valitse',
-		'fi_FI' => 'Valitse',
-		'lt_LT' => 'Pasirinkti',
+		'nb_NO' => 'Legg i handlekurv',
+		'nn_NO' => 'Legg i handlekurv',
+		'sv_SE' => 'Lägg i varukorg',
+		'da_DK' => 'Læg i kurv',
+		'de_DE' => 'In den Warenkorb',
+		'de_AT' => 'In den Warenkorb',
+		'de_CH' => 'In den Warenkorb',
+		'fi'    => 'Lisää koriin',
+		'fi_FI' => 'Lisää koriin',
+		'lt_LT' => 'Į krepšelį',
 	);
 
 	if ( isset( $map[ $locale ] ) ) {
@@ -54,11 +56,23 @@ function nh_catalog_button_label() {
 		}
 	}
 
-	return 'Select';
+	return 'Add to cart';
 }
 
 /**
- * Every catalog button opens the product. Simple products are not added from the card.
+ * Catalog cards never add from the listing.
+ * Variable and custom-cut products need the page to customise; simple
+ * products open it too so customers see details first.
+ *
+ * @param mixed $product Product.
+ * @return bool
+ */
+function nh_catalog_product_opens_page( $product = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	return true;
+}
+
+/**
+ * Every catalog button opens the product page.
  *
  * @param string     $html    Button HTML.
  * @param WC_Product $product Product.

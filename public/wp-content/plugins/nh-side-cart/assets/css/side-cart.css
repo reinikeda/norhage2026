@@ -627,6 +627,20 @@ body.nh-sc-open {
   outline: none;
 }
 
+.nh-sc .nh-cart-delivery {
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--nh-sc-muted);
+  font-weight: 500;
+}
+
+.nh-sc .nh-cart-delivery__value {
+  font-weight: 600;
+  color: #6e6c69;
+}
+
 .nh-sc__totals {
   margin: 16px 0 0;
   padding: 12px 0 0;
