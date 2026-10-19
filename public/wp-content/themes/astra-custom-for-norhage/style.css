@@ -765,6 +765,30 @@ a.ast-on-card-button.ast-select-options-trigger,
   margin-top: auto !important;
 }
 
+/* Catalog Add to cart must stay one line on narrow cards. */
+.woocommerce ul.products li.product a.button.add_to_cart_button,
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.button {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+}
+
+.woocommerce ul.products li.product a.button.nh-catalog-atc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+}
+
+.woocommerce ul.products li.product a.button.nh-catalog-atc .nh-catalog-atc__icon {
+  width: 0.95em;
+  height: 0.95em;
+  flex: 0 0 auto;
+  display: block;
+}
+
 /* Reserve space for price lines */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > .price {
   min-height: 2.4em;

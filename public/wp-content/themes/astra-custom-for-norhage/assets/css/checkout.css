@@ -863,6 +863,23 @@ body.woocommerce-checkout.nh-checkout-form #order_review .product-name .nh-cart-
   color: var(--ui-muted, #8e8c89);
 }
 
+body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tfoot .nh-cart-delivery-row th,
+body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tfoot .nh-cart-delivery-row td {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ui-muted, #8e8c89);
+  border-top: 0;
+}
+
+body.woocommerce-checkout.nh-checkout-form #order_review table.shop_table tfoot .nh-cart-delivery-row td {
+  font-weight: 600;
+  color: #6e6c69;
+  text-align: right;
+}
+
 body.woocommerce-checkout.nh-checkout-form #order_review .product-name,
 body.woocommerce-checkout.nh-checkout-form #order_review .product-total {
   vertical-align: top;
