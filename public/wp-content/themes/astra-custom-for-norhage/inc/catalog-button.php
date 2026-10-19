@@ -12,7 +12,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WooCommerce "Add to cart" in the shop language, with a short Finnish form.
+ * Short catalog "Add to cart" labels that fit one line on a product card.
+ *
+ * @return array<string, string>
+ */
+function nh_catalog_button_label_map() {
+	return array(
+		'nb_NO' => 'Legg i kurv',
+		'nn_NO' => 'Legg i kurv',
+		'sv_SE' => 'Lägg i korg',
+		'da_DK' => 'Læg i kurv',
+		'de_DE' => 'In den Korb',
+		'de_AT' => 'In den Korb',
+		'de_CH' => 'In den Korb',
+		'fi'    => 'Lisää koriin',
+		'fi_FI' => 'Lisää koriin',
+		'lt_LT' => 'Į krepšelį',
+	);
+}
+
+/**
+ * Woo’s official strings are too long for catalog cards. Keep the meaning.
+ *
+ * @param string $text Label.
+ * @return string
+ */
+function nh_catalog_shorten_add_to_cart_label( $text ) {
+	$long = array(
+		'Legg i handlekurv'  => 'Legg i kurv',
+		'Lägg i varukorg'    => 'Lägg i korg',
+		'In den Warenkorb'   => 'In den Korb',
+		'Lisää ostoskoriin'  => 'Lisää koriin',
+	);
+	return isset( $long[ $text ] ) ? $long[ $text ] : $text;
+}
+
+/**
+ * One-line Add to cart label for the current shop language.
  *
  * @return string
  */
@@ -21,9 +57,7 @@ function nh_catalog_button_label() {
 	if ( function_exists( 'nh_shorten_finnish_add_to_cart_text' ) ) {
 		$translated = nh_shorten_finnish_add_to_cart_text( $translated );
 	}
-	if ( is_string( $translated ) && '' !== $translated && 'Add to cart' !== $translated ) {
-		return $translated;
-	}
+	$translated = nh_catalog_shorten_add_to_cart_label( is_string( $translated ) ? $translated : '' );
 
 	$locale = '';
 	if ( function_exists( 'determine_locale' ) ) {
@@ -32,18 +66,10 @@ function nh_catalog_button_label() {
 		$locale = (string) get_locale();
 	}
 
-	$map = array(
-		'nb_NO' => 'Legg i handlekurv',
-		'nn_NO' => 'Legg i handlekurv',
-		'sv_SE' => 'Lägg i varukorg',
-		'da_DK' => 'Læg i kurv',
-		'de_DE' => 'In den Warenkorb',
-		'de_AT' => 'In den Warenkorb',
-		'de_CH' => 'In den Warenkorb',
-		'fi'    => 'Lisää koriin',
-		'fi_FI' => 'Lisää koriin',
-		'lt_LT' => 'Į krepšelį',
-	);
+	$map = nh_catalog_button_label_map();
+	if ( $translated !== '' && $translated !== 'Add to cart' ) {
+		return $translated;
+	}
 
 	if ( isset( $map[ $locale ] ) ) {
 		return $map[ $locale ];

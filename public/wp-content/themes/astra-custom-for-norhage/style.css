@@ -765,6 +765,16 @@ a.ast-on-card-button.ast-select-options-trigger,
   margin-top: auto !important;
 }
 
+/* Catalog Add to cart must stay one line on narrow cards. */
+.woocommerce ul.products li.product a.button.add_to_cart_button,
+.woocommerce ul.products li.product .astra-shop-summary-wrap > a.button {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+}
+
 /* Reserve space for price lines */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > .price {
   min-height: 2.4em;

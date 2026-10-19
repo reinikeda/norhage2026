@@ -60,16 +60,20 @@ function nh_catalog_assert( $label, $ok ) {
 }
 
 $nh_catalog_translated = 'Lägg i varukorg';
-nh_catalog_assert( 'Woo translation wins', 'Lägg i varukorg' === nh_catalog_button_label() );
+nh_catalog_assert( 'long Swedish Woo string is shortened', 'Lägg i korg' === nh_catalog_button_label() );
 
 $nh_catalog_translated = 'Add to cart';
 $nh_catalog_locale     = 'sv_SE';
-nh_catalog_assert( 'Swedish fallback is Lägg i varukorg', 'Lägg i varukorg' === nh_catalog_button_label() );
+nh_catalog_assert( 'Swedish fallback is Lägg i korg', 'Lägg i korg' === nh_catalog_button_label() );
 
 $nh_catalog_locale = 'de_DE';
-nh_catalog_assert( 'German fallback is In den Warenkorb', 'In den Warenkorb' === nh_catalog_button_label() );
+nh_catalog_assert( 'German fallback is In den Korb', 'In den Korb' === nh_catalog_button_label() );
 
-$nh_catalog_locale = 'fi';
+$nh_catalog_translated = 'In den Warenkorb';
+nh_catalog_assert( 'long German Woo string is shortened', 'In den Korb' === nh_catalog_button_label() );
+
+$nh_catalog_translated = 'Add to cart';
+$nh_catalog_locale     = 'fi';
 nh_catalog_assert( 'Finnish fallback is Lisää koriin', 'Lisää koriin' === nh_catalog_button_label() );
 
 $nh_catalog_translated = 'Lisää ostoskoriin';
@@ -84,9 +88,13 @@ $nh_catalog_locale = 'da_DK';
 nh_catalog_assert( 'Danish fallback is Læg i kurv', 'Læg i kurv' === nh_catalog_button_label() );
 
 $nh_catalog_locale = 'nb_NO';
-nh_catalog_assert( 'Norwegian fallback is Legg i handlekurv', 'Legg i handlekurv' === nh_catalog_button_label() );
+nh_catalog_assert( 'Norwegian fallback is Legg i kurv', 'Legg i kurv' === nh_catalog_button_label() );
 
-$nh_catalog_locale = 'en_US';
+$nh_catalog_translated = 'Legg i handlekurv';
+nh_catalog_assert( 'long Norwegian Woo string is shortened', 'Legg i kurv' === nh_catalog_button_label() );
+
+$nh_catalog_translated = 'Add to cart';
+$nh_catalog_locale     = 'en_US';
 nh_catalog_assert( 'English stays Add to cart', 'Add to cart' === nh_catalog_button_label() );
 
 nh_catalog_assert( 'simple products open the product page', true === nh_catalog_product_opens_page( (object) array( 'type' => 'simple' ) ) );
