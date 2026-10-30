@@ -35,11 +35,15 @@ class NH_Theme_FAQ {
 	public function register_assets() {
 		$theme_version = wp_get_theme()->get( 'Version' );
 
+		$faq_css_version = function_exists( 'norhage_asset_version' )
+			? norhage_asset_version( '/assets/css/faq.css' )
+			: $theme_version;
+
 		wp_register_style(
 			'nh-theme-faq',
 			get_stylesheet_directory_uri() . '/assets/css/faq.css',
 			array(),
-			$theme_version
+			$faq_css_version
 		);
 
 		wp_register_script(

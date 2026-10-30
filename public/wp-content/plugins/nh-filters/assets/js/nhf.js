@@ -10,6 +10,9 @@ const nhfT = (key, fallback) =>
   let filtersFormClone = null;
   let badgeEl = null;
   let openedByBtn = null;
+  let scrollLocked = false;
+  let lockedScrollY = 0;
+  const rangeDragReady = new WeakSet();
 
   const qs = (sel, ctx = document) => (ctx ? ctx.querySelector(sel) : null);
   const qsa = (sel, ctx = document) =>
@@ -18,6 +21,27 @@ const nhfT = (key, fallback) =>
   function lockBody(lock) {
     document.documentElement.classList.toggle('nhf-lock', lock);
     document.body.classList.toggle('nhf-lock', lock);
+
+    if (lock) {
+      if (scrollLocked) return;
+      lockedScrollY = window.scrollY || window.pageYOffset || 0;
+      scrollLocked = true;
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + lockedScrollY + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      return;
+    }
+
+    if (!scrollLocked) return;
+    scrollLocked = false;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, lockedScrollY);
   }
 
   function setFilterSectionAria(section) {
@@ -125,12 +149,106 @@ const nhfT = (key, fallback) =>
     }
   }
 
+  function pointerX(event) {
+    if (event.touches && event.touches.length) return event.touches[0].clientX;
+    if (event.changedTouches && event.changedTouches.length) return event.changedTouches[0].clientX;
+    return event.clientX;
+  }
+
+  function rangeIndexFromX(control, input, clientX) {
+    const rect = control.getBoundingClientRect();
+    const max = parseInt(input.max, 10);
+    const thumb = 28;
+    const width = Math.max(1, rect.width - thumb);
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left - thumb / 2) / width));
+    if (!Number.isFinite(max) || max < 0) return 0;
+    return Math.round(ratio * max);
+  }
+
+  /*
+   * Safari on iPhone and Mac does not honor pointer-events on a range thumb.
+   * pointer-events:none on the input then disables the whole slider. Dragging
+   * is handled on the track instead, which works for mouse and touch.
+   */
+  function bindRangePointer(box) {
+    const control = qs('.nhf-range__control', box);
+    const fromEl = qs('[data-nhf-range-from]', box);
+    const toEl = qs('[data-nhf-range-to]', box);
+    if (!control || !fromEl || !toEl || rangeDragReady.has(control)) return;
+    rangeDragReady.add(control);
+
+    let drag = null;
+    let before = '';
+
+    function pickThumb(clientX) {
+      const value = rangeIndexFromX(control, fromEl, clientX);
+      const from = parseInt(fromEl.value, 10);
+      const to = parseInt(toEl.value, 10);
+      const fromDist = Math.abs(value - from);
+      const toDist = Math.abs(value - to);
+      if (fromDist < toDist) return fromEl;
+      if (toDist < fromDist) return toEl;
+      return value <= from ? fromEl : toEl;
+    }
+
+    function moveTo(clientX) {
+      if (!drag || typeof clientX !== 'number' || Number.isNaN(clientX)) return;
+      let value = rangeIndexFromX(control, drag, clientX);
+      const from = parseInt(fromEl.value, 10);
+      const to = parseInt(toEl.value, 10);
+      if (drag === fromEl && value > to) value = to;
+      if (drag === toEl && value < from) value = from;
+      drag.value = String(value);
+      applyRange(box, false);
+    }
+
+    function start(event) {
+      if (event.button != null && event.button !== 0) return;
+      const x = pointerX(event);
+      if (typeof x !== 'number' || Number.isNaN(x)) return;
+      before = fromEl.value + ':' + toEl.value;
+      drag = pickThumb(x);
+      if (event.pointerId != null && control.setPointerCapture) {
+        try {
+          control.setPointerCapture(event.pointerId);
+        } catch (err) {
+          /* Capture can fail if the pointer already ended. */
+        }
+      }
+      moveTo(x);
+      event.preventDefault();
+    }
+
+    function end(event) {
+      if (!drag) return;
+      moveTo(pointerX(event));
+      const changed = before !== fromEl.value + ':' + toEl.value;
+      drag = null;
+      applyRange(box, changed);
+    }
+
+    control.addEventListener('pointerdown', start, { passive: false });
+    control.addEventListener('pointermove', (event) => {
+      if (!drag) return;
+      moveTo(pointerX(event));
+      event.preventDefault();
+    }, { passive: false });
+    control.addEventListener('pointerup', end);
+    control.addEventListener('pointercancel', () => {
+      if (!drag) return;
+      const changed = before !== fromEl.value + ':' + toEl.value;
+      drag = null;
+      applyRange(box, changed);
+    });
+  }
+
   function initRangeFilters(root) {
     qsa('[data-nhf-range]', root).forEach((box) => {
       if (box.dataset.nhfRangeReady === '1') return;
       box.dataset.nhfRangeReady = '1';
 
       applyRange(box, false);
+      bindRangePointer(box);
 
       box.addEventListener('input', (e) => {
         if (!(e.target instanceof Element)) return;
@@ -252,6 +370,25 @@ const nhfT = (key, fallback) =>
     openedByBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
   }
 
+  function fitDrawerPanel(drawer) {
+    if (!drawer || !drawer.classList.contains('is-open')) return;
+    const panel = qs('.nhf-drawer__panel', drawer);
+    if (!panel) return;
+
+    const vv = window.visualViewport;
+    const visible = vv && vv.height ? vv.height : window.innerHeight;
+    const height = Math.max(240, Math.round(visible * 0.92));
+    panel.style.height = height + 'px';
+    panel.style.maxHeight = height + 'px';
+  }
+
+  function clearDrawerFit(drawer) {
+    const panel = qs('.nhf-drawer__panel', drawer);
+    if (!panel) return;
+    panel.style.height = '';
+    panel.style.maxHeight = '';
+  }
+
   function openDrawer(drawer, openerBtn = null) {
     if (!drawer) return;
 
@@ -259,6 +396,7 @@ const nhfT = (key, fallback) =>
     drawer.classList.add('is-open');
     setOpenerExpanded(true);
     lockBody(true);
+    fitDrawerPanel(drawer);
 
     requestAnimationFrame(() => {
       qs('.nhf-drawer__panel', drawer)?.focus();
@@ -272,6 +410,7 @@ const nhfT = (key, fallback) =>
 
     drawer.classList.remove('is-open');
     setOpenerExpanded(false);
+    clearDrawerFit(drawer);
     lockBody(false);
 
     if (restoreFocus && openedByBtn) {
@@ -357,7 +496,11 @@ const nhfT = (key, fallback) =>
       }
 
       if (action === 'apply') {
-        filtersFormClone?.submit();
+        if (filtersFormClone && typeof filtersFormClone.requestSubmit === 'function') {
+          filtersFormClone.requestSubmit();
+        } else {
+          filtersFormClone?.submit();
+        }
       }
     });
 
@@ -501,6 +644,11 @@ const nhfT = (key, fallback) =>
       mq.addEventListener('change', handleViewportChange);
     } else if (typeof mq.addListener === 'function') {
       mq.addListener(handleViewportChange);
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => fitDrawerPanel(filtersDrawer));
+      window.visualViewport.addEventListener('scroll', () => fitDrawerPanel(filtersDrawer));
     }
   }
 

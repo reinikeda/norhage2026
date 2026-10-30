@@ -78,6 +78,17 @@
       return useBundleMode() ? bundleBtn() : mainBtn;
     }
 
+    function pressControl(target) {
+      if (!target) return;
+      var form = target.form || (target.closest && target.closest('form'));
+      var type = String(target.getAttribute('type') || target.type || '').toLowerCase();
+      if (type === 'submit' && form && typeof form.requestSubmit === 'function') {
+        form.requestSubmit(target);
+        return;
+      }
+      target.click();
+    }
+
     function priceSource() {
       if (useBundleMode()) {
         return document.getElementById('bundle-total-amount') ||
@@ -166,7 +177,7 @@
         }
         return;
       }
-      target.click();
+      pressControl(target);
     });
 
     if (window.NHPriceSummary && typeof window.NHPriceSummary.update === 'function') {

@@ -912,7 +912,7 @@ body.nh-crisp-open #crisp-chatbox-wrapper {
   min-width: 0;
   border: 0;
   padding: 0 10px;
-  font-size: 13.5px;
+  font-size: 16px;
   background: transparent;
   color: #1b1b1b;
   outline: none;
@@ -927,8 +927,10 @@ body.nh-crisp-open #crisp-chatbox-wrapper {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 38px;
+  width: 44px;
+  min-width: 44px;
   height: 100%;
+  touch-action: manipulation;
   padding: 0;
   border: 0;
   border-left: 1.5px solid #d4d8d4;
@@ -1068,12 +1070,18 @@ body.nh-crisp-open #crisp-chatbox-wrapper {
 .nh-drawer__nav .drawer-menu--primary > li.menu-item-has-children { position: relative; }
 .nh-drawer__nav .drawer-menu--primary > li.menu-item-has-children > a { padding-right: 52px; }
 
+#nh-mobile-drawer .dropdown-menu-toggle,
+#nh-mobile-drawer .ast-menu-toggle {
+  display: none !important;
+}
+
 .nh-submenu-toggle {
   position: absolute;
-  top: 10px;
-  right: 8px;
-  width: 36px;
-  height: 36px;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+  height: 44px;
+  touch-action: manipulation;
   padding: 0;
   border: 0;
   border-radius: 6px;
@@ -1136,6 +1144,10 @@ body.nh-crisp-open #crisp-chatbox-wrapper {
     padding-top: 0;
     padding-bottom: 0;
     gap: 10px;
+  }
+
+  .nh-header-search input[type="search"] {
+    font-size: 16px;
   }
 
   .nhhb-logo img { height: 32px; }
