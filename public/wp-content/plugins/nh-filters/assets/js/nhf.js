@@ -179,6 +179,7 @@ const nhfT = (key, fallback) =>
 
     let drag = null;
     let before = '';
+    let slidePoint = false;
 
     function pickThumb(clientX) {
       const value = rangeIndexFromX(control, fromEl, clientX);
@@ -194,6 +195,12 @@ const nhfT = (key, fallback) =>
     function moveTo(clientX) {
       if (!drag || typeof clientX !== 'number' || Number.isNaN(clientX)) return;
       let value = rangeIndexFromX(control, drag, clientX);
+      if (slidePoint) {
+        fromEl.value = String(value);
+        toEl.value = String(value);
+        applyRange(box, false);
+        return;
+      }
       const from = parseInt(fromEl.value, 10);
       const to = parseInt(toEl.value, 10);
       if (drag === fromEl && value > to) value = to;
@@ -207,6 +214,9 @@ const nhfT = (key, fallback) =>
       const x = pointerX(event);
       if (typeof x !== 'number' || Number.isNaN(x)) return;
       before = fromEl.value + ':' + toEl.value;
+      const fromNow = parseInt(fromEl.value, 10);
+      const toNow = parseInt(toEl.value, 10);
+      slidePoint = fromNow === toNow;
       drag = pickThumb(x);
       if (event.pointerId != null && control.setPointerCapture) {
         try {

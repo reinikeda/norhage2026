@@ -219,13 +219,6 @@ function nhf_chip_query_args( $param, $slug, array $selected, array $current_arg
 	}
 	$clean  = array_values( array_unique( $clean ) );
 	$was_on = ( '' !== $slug && in_array( $slug, $clean, true ) );
-	$next   = $was_on ? array_values( array_diff( $clean, array( $slug ) ) ) : $clean;
-	if ( ! $was_on && '' !== $slug ) {
-		$next[] = $slug;
-	}
-	if ( ! empty( $next ) ) {
-		sort( $next, SORT_NATURAL );
-	}
 
 	$args = array();
 	foreach ( $current_args as $key => $value ) {
@@ -238,8 +231,13 @@ function nhf_chip_query_args( $param, $slug, array $selected, array $current_arg
 		}
 		$args[ $key ] = (string) $value;
 	}
-	if ( ! empty( $next ) ) {
-		$args[ $param ] = implode( ',', $next );
+
+	/*
+	 * Quick chips are one choice. Tapping 16 mm while 25 mm is on must
+	 * replace 25 mm, and tapping the active chip clears the filter.
+	 */
+	if ( ! $was_on && '' !== $slug ) {
+		$args[ $param ] = $slug;
 	}
 
 	return $args;
