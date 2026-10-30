@@ -149,7 +149,7 @@ nhf_chip_assert( 'other catalog args stay', 'price' === $added['orderby'] );
 nhf_chip_assert( 'paging starts over', ! isset( $added['paged'] ) );
 
 $toggled = nhf_chip_query_args( 'thickness', '16-mm', array( '10-mm' ), array() );
-nhf_chip_assert( 'a second thickness stays selected with the first', '10-mm,16-mm' === $toggled['thickness'] );
+nhf_chip_assert( 'choosing another thickness replaces the first', '16-mm' === $toggled['thickness'] );
 
 $cleared = nhf_chip_query_args( 'thickness', '10-mm', array( '10-mm' ), array( 'instock' => '1' ) );
 nhf_chip_assert( 'choosing the active thickness clears it', ! isset( $cleared['thickness'] ) );
