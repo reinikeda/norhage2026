@@ -76,12 +76,13 @@
   transition: background .15s ease, border-color .15s ease, color .15s ease, transform .02s ease;
 }
 
-/* Hover for enabled, unselected buttons */
-.variations_form .nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
-  background: var(--nh-cream) !important;
-  border-color: var(--nh-green) !important;
-  color: var(--nh-forest) !important;
-  transform: translateY(-1px);
+/* Hover only on a real pointer. A moving hover target eats the first iPhone tap. */
+@media (hover: hover) and (pointer: fine) {
+  .variations_form .nh-attr-btn:not(.is-selected):not(.is-disabled):hover {
+    background: var(--nh-cream) !important;
+    border-color: var(--nh-green) !important;
+    color: var(--nh-forest) !important;
+  }
 }
 
 /* Selected (active) - keep !important to override inline JS styles */
@@ -127,6 +128,14 @@
 .variations_form .nh-attr-btn:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+@media (max-width: 1023px) {
+  .variations_form .nh-attr-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+    touch-action: manipulation;
+  }
 }
 
 /* Baseline border for unselected (keeps consistent look) */

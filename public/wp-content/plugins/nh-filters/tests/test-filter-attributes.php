@@ -101,6 +101,13 @@ nhf_assert( 'range values use visible chips', false !== strpos( $plugin, 'nhf-ra
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/nhf.js' );
 nhf_assert( 'mobile clone rebinds the range slider', false !== strpos( $js, 'delete box.dataset.nhfRangeReady' ) );
+nhf_assert( 'range drag uses pointer capture for Safari', false !== strpos( $js, 'setPointerCapture' ) );
+nhf_assert( 'iPhone scroll lock pins the page', false !== strpos( $js, "position = 'fixed'" ) );
+
+$css = file_get_contents( dirname( __DIR__ ) . '/assets/css/nhf.css' );
+nhf_assert( 'filter sheet uses the small viewport height', false !== strpos( $css, '85svh' ) );
+nhf_assert( 'filter button stays clear of the chat bubble', false !== strpos( $css, 'safe-area-inset-left' ) );
+nhf_assert( 'show more summary is not a flex box', false === strpos( $css, ".nhf-more__summary {\n  display: flex;" ) );
 
 nhf_assert( 'comma decimals parse as fractions', 1.05 === nhf_parse_numeric_value( '1,05 m' ) );
 nhf_assert( 'dot decimals still parse', 2.1 === nhf_parse_numeric_value( '2.1 m' ) );

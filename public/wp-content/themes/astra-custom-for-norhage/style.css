@@ -1050,6 +1050,7 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   background:#fff;
   color:#111;
   padding:0 14px;
+  font-size:16px;
 }
 
 .nh-nl__input::placeholder{
@@ -1290,27 +1291,29 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   }
 
   .nh-footer__fold > summary{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    display:block;
+    position:relative;
     min-height:48px;
+    padding:14px 28px 14px 0;
     cursor:pointer;
+    touch-action:manipulation;
   }
 
   .nh-footer__fold > summary::after{
     content:"";
-    flex:0 0 auto;
+    position:absolute;
+    right:4px;
+    top:50%;
     width:8px;
     height:8px;
-    margin-right:4px;
+    margin-top:-6px;
     border-right:2px solid currentColor;
     border-bottom:2px solid currentColor;
-    transform:translateY(-2px) rotate(45deg);
+    transform:rotate(45deg);
   }
 
   .nh-footer__fold[open] > summary::after{
-    transform:translateY(2px) rotate(225deg);
+    transform:rotate(225deg);
   }
 
   .nh-footer__menu{
@@ -1325,7 +1328,7 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   .nh-footer__menu a{
     display:flex;
     align-items:center;
-    min-height:40px;
+    min-height:44px;
   }
 
   .nh-footer__newsletter{
@@ -1392,6 +1395,12 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
   .single-product .single_add_to_cart_button {
     min-height: 48px;
     width: 100%;
+    touch-action: manipulation;
+  }
+
+  .woocommerce ul.products li.product a.button.nh-catalog-atc {
+    min-height: 44px;
+    touch-action: manipulation;
   }
 
   .single-product .quantity .qty,
@@ -1423,11 +1432,6 @@ nav.woocommerce-pagination .page-numbers[aria-disabled="true"]{
     height: 44px;
     line-height: 44px;
     right: calc(16px + env(safe-area-inset-right, 0px));
-  }
-
-  /* Filter pill sits in the same corner on shop archives. */
-  body:has(.nhf-mobilebar) #ast-scroll-top {
-    --nh-scroll-top-gap: 76px;
   }
 
   body.has-nh-sticky-atc #ast-scroll-top,

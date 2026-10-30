@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom FAQ
  * Description: Simple, fast WooCommerce FAQ plugin with Global & Product scopes + FAQPage schema.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Daiva Reinike
  * License: GPLv2 or later
  * Text Domain: nh-faq
@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'NH_FAQ_VERSION', '1.0.0' );
+define( 'NH_FAQ_VERSION', '1.0.1' );
 define( 'NH_FAQ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NH_FAQ_URL',  plugin_dir_url( __FILE__ ) );
 
