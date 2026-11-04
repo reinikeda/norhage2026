@@ -98,13 +98,19 @@ nhf_assert( 'sidebar skips attributes that are not ticked', false !== strpos( $p
 nhf_assert( 'admin screen is loaded in wp-admin', false !== strpos( $plugin, '/includes/admin.php' ) );
 nhf_assert( 'sidebar renders a range for numeric attributes', false !== strpos( $plugin, 'nhf_render_range_filter' ) );
 nhf_assert( 'range values use visible chips', false !== strpos( $plugin, 'nhf-range__value' ) );
+nhf_assert( 'range handles are elements on the track', false !== strpos( $plugin, 'nhf-range__thumb' ) );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/nhf.js' );
 nhf_assert( 'mobile clone rebinds the range slider', false !== strpos( $js, 'delete box.dataset.nhfRangeReady' ) );
 nhf_assert( 'range drag uses pointer capture for Safari', false !== strpos( $js, 'setPointerCapture' ) );
 nhf_assert( 'iPhone scroll lock pins the page', false !== strpos( $js, "position = 'fixed'" ) );
+nhf_assert( 'a click on button text uses the parent element', false !== strpos( $js, 'node.parentElement' ) );
+nhf_assert( 'thickness chips navigate from the click itself', false !== strpos( $js, 'window.location.assign(chip.href)' ) );
+nhf_assert( 'filter clicks run before other page scripts', false !== strpos( $js, '}, true);' ) );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/nhf.css' );
+nhf_assert( 'range inputs are clipped out of the hit area', false !== strpos( $css, 'clip: rect(0, 0, 0, 0)' ) );
+nhf_assert( 'slider handles are drawn beside the track', false !== strpos( $css, '.nhf-range__thumb' ) );
 nhf_assert( 'filter sheet uses the small viewport height', false !== strpos( $css, '85svh' ) );
 nhf_assert( 'filter button stays clear of the chat bubble', false !== strpos( $css, 'safe-area-inset-left' ) );
 nhf_assert( 'show more summary is not a flex box', false === strpos( $css, ".nhf-more__summary {\n  display: flex;" ) );

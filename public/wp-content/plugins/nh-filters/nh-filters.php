@@ -3,7 +3,7 @@
  * Plugin Name: Custom Filters
  * Description: Custom WooCommerce sidebar with accordion Product Categories + real Filters (attributes, stock, sale) pruned to current archive. Use [nh_filters_sidebar] in any sidebar widget area.
  * Author: Daiva Reinike
- * Version: 1.10.4
+ * Version: 1.10.5
  * Requires Plugins: woocommerce
  * Text Domain: nhf
  */
@@ -39,7 +39,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-styles',
 		plugins_url( 'assets/css/nhf.css', __FILE__ ),
 		[],
-		'1.10.4'
+		'1.10.5'
 	);
 	wp_enqueue_style( 'nhf-styles' );
 
@@ -47,7 +47,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'nhf-script',
 		plugins_url( 'assets/js/nhf.js', __FILE__ ),
 		[],
-		'1.10.4',
+		'1.10.5',
 		true
 	);
 
@@ -432,6 +432,8 @@ function nhf_render_range_filter( $label, $param_key, array $rows, array $select
 	echo '      </div>';
 	echo '      <div class="nhf-range__control">';
 	echo '        <div class="nhf-range__rail" aria-hidden="true"><span class="nhf-range__fill" data-nhf-range-fill></span></div>';
+	echo '        <span class="nhf-range__thumb nhf-range__thumb--from" data-nhf-thumb="from" aria-hidden="true"></span>';
+	echo '        <span class="nhf-range__thumb nhf-range__thumb--to" data-nhf-thumb="to" aria-hidden="true"></span>';
 	echo '        <input type="range" class="nhf-range__input nhf-range__input--from" min="0" max="' . esc_attr( (string) $last ) . '" step="1" value="' . esc_attr( (string) $from ) . '" data-nhf-range-from aria-label="' . esc_attr( sprintf( __( 'From %s', 'nhf' ), $label ) ) . '">';
 	echo '        <input type="range" class="nhf-range__input nhf-range__input--to" min="0" max="' . esc_attr( (string) $last ) . '" step="1" value="' . esc_attr( (string) $to ) . '" data-nhf-range-to aria-label="' . esc_attr( sprintf( __( 'To %s', 'nhf' ), $label ) ) . '">';
 	echo '      </div>';
