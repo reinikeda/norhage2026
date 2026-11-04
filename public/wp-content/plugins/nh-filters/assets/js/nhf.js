@@ -18,6 +18,24 @@ const nhfT = (key, fallback) =>
   const qsa = (sel, ctx = document) =>
     ctx ? Array.from(ctx.querySelectorAll(sel)) : [];
 
+  /*
+   * Safari on iPhone and Mac (and Chrome on iPhone, which is WebKit) sets
+   * click.target to the text node inside a button or link. Text nodes have
+   * no closest(), so the click was ignored and other page scripts threw.
+   */
+  function eventElement(event) {
+    const node = event.target;
+    if (node instanceof Element) return node;
+    if (node && node.parentElement instanceof Element) return node.parentElement;
+    return null;
+  }
+
+  function isPlainClick(event) {
+    if (event.button != null && event.button !== 0) return false;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
+    return true;
+  }
+
   function lockBody(lock) {
     document.documentElement.classList.toggle('nhf-lock', lock);
     document.body.classList.toggle('nhf-lock', lock);
@@ -129,6 +147,9 @@ const nhfT = (key, fallback) =>
     fromEl.setAttribute('aria-valuetext', fromLabel);
     toEl.setAttribute('aria-valuetext', toLabel);
     updateRangeFill(box, from, to, last);
+    box.style.setProperty('--nhf-from', String(from));
+    box.style.setProperty('--nhf-to', String(to));
+    box.style.setProperty('--nhf-last', String(Math.max(1, last)));
 
     const full = from === 0 && to === last;
     box.dataset.nhfSyncing = '1';
@@ -261,23 +282,18 @@ const nhfT = (key, fallback) =>
       bindRangePointer(box);
 
       box.addEventListener('input', (e) => {
-        if (!(e.target instanceof Element)) return;
-        if (!e.target.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
-
-        qsa('.nhf-range__input', box).forEach((el) => {
-          el.style.zIndex = '2';
-        });
-        e.target.style.zIndex = '4';
+        const input = eventElement(e);
+        if (!input || !input.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
 
         const fromEl = qs('[data-nhf-range-from]', box);
         const toEl = qs('[data-nhf-range-to]', box);
         const from = parseInt(fromEl.value, 10);
         const to = parseInt(toEl.value, 10);
 
-        if (e.target === fromEl && from > to) {
+        if (input === fromEl && from > to) {
           fromEl.value = String(to);
         }
-        if (e.target === toEl && to < from) {
+        if (input === toEl && to < from) {
           toEl.value = String(from);
         }
 
@@ -285,8 +301,8 @@ const nhfT = (key, fallback) =>
       });
 
       box.addEventListener('change', (e) => {
-        if (!(e.target instanceof Element)) return;
-        if (!e.target.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
+        const input = eventElement(e);
+        if (!input || !input.matches('[data-nhf-range-from], [data-nhf-range-to]')) return;
         applyRange(box, true);
       });
     });
@@ -367,7 +383,8 @@ const nhfT = (key, fallback) =>
     });
 
     wrap.addEventListener('click', (e) => {
-      if (e.target?.dataset?.close) {
+      const el = eventElement(e);
+      if (el?.closest('[data-close]')) {
         closeDrawer(wrap, true);
       }
     });
@@ -493,7 +510,8 @@ const nhfT = (key, fallback) =>
     });
 
     filtersDrawer.addEventListener('click', (e) => {
-      const actionEl = e.target.closest('[data-action]');
+      const el = eventElement(e);
+      const actionEl = el?.closest('[data-action]');
       if (!actionEl) return;
 
       const action = actionEl.dataset.action;
@@ -570,26 +588,50 @@ const nhfT = (key, fallback) =>
   }
 
   function bindGlobalEvents() {
-    document.addEventListener('click', (e) => {
-      if (!(e.target instanceof Element)) return;
+    /*
+     * Capture runs before Astra, Complianz, and the tag manager. Those
+     * listeners call closest() on the raw target and throw when Safari
+     * hands them a text node, which drops the click.
+     */
+    document.addEventListener('click', (event) => {
+      const el = eventElement(event);
+      if (!el || !isPlainClick(event)) return;
 
-      const catToggle = e.target.closest('button.nhf-cat-toggle');
+      const chip = el.closest('a.nhf-chip');
+      if (chip && chip.href) {
+        event.preventDefault();
+        window.location.assign(chip.href);
+        return;
+      }
+
+      const catToggle = el.closest('button.nhf-cat-toggle');
       if (catToggle) {
-        e.preventDefault();
+        event.preventDefault();
         handleCategoryToggle(catToggle);
         return;
       }
 
-      const filterToggle = e.target.closest('button.nhf-filter-toggle');
+      const filterToggle = el.closest('button.nhf-filter-toggle');
       if (filterToggle) {
-        e.preventDefault();
+        event.preventDefault();
         handleFilterToggle(filterToggle);
+        return;
       }
-    });
+
+      const input = el.matches('input[type="checkbox"]')
+        ? el
+        : el.closest('label')?.querySelector('input[type="checkbox"]');
+      if (!input || input.disabled || input.closest('[data-nhf-range]')) return;
+      if (!input.form || !input.form.classList.contains('nhf-form')) return;
+
+      event.preventDefault();
+      input.checked = !input.checked;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }, true);
 
     document.addEventListener('change', (e) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
+      const target = eventElement(e);
+      if (!target) return;
 
       if (
         target.matches('.nhf-filter input, .nhf-filter select, .nhf-filter textarea')
@@ -611,8 +653,8 @@ const nhfT = (key, fallback) =>
     });
 
     document.addEventListener('input', (e) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
+      const target = eventElement(e);
+      if (!target) return;
 
       if (
         target.matches(
@@ -626,8 +668,8 @@ const nhfT = (key, fallback) =>
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
 
-      const target = e.target;
-      if (!(target instanceof Element)) return;
+      const target = eventElement(e);
+      if (!target) return;
 
       if (!mq.matches && target.matches('#nhf-sidebar .nhf-form input[type="number"]')) {
         target.form?.submit();
