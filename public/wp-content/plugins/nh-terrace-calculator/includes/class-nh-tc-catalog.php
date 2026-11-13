@@ -590,13 +590,14 @@ class NH_TC_Catalog {
 	public static function currency_payload() {
 		$code = get_woocommerce_currency();
 		return array(
-			'code'     => $code,
-			'symbol'   => html_entity_decode( wp_strip_all_tags( (string) get_woocommerce_currency_symbol( $code ) ), ENT_QUOTES, 'UTF-8' ),
-			'pos'      => get_option( 'woocommerce_currency_pos', 'right_space' ),
-			'decimals' => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
-			'trim'     => function_exists( 'nh_ig_currency_is_whole' ) && nh_ig_currency_is_whole( $code ),
-			'thousand' => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ' ',
-			'decimal'  => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : ',',
+			'code'        => $code,
+			'symbol'      => html_entity_decode( wp_strip_all_tags( (string) get_woocommerce_currency_symbol( $code ) ), ENT_QUOTES, 'UTF-8' ),
+			'pos'         => get_option( 'woocommerce_currency_pos', 'right_space' ),
+			'decimals'    => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
+			'trim'        => function_exists( 'nh_ig_currency_is_whole' ) && nh_ig_currency_is_whole( $code ),
+			'superscript' => function_exists( 'nh_eur_use_superscript' ) && nh_eur_use_superscript(),
+			'thousand'    => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ' ',
+			'decimal'     => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : ',',
 		);
 	}
 

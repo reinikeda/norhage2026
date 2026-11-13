@@ -348,7 +348,7 @@ if ( ! function_exists( 'nh_bundle_render_row' ) ) {
 		$display_title = ! empty( $row['label'] ) ? $row['label'] : nh_bundle_get_display_name( $product );
 
 		if ( $is_free ) {
-			$price_html = wc_price( 0 );
+			$price_html = function_exists( 'nh_eur_format_display' ) ? nh_eur_format_display( wc_price( 0 ) ) : wc_price( 0 );
 		} else {
 			$price_html = $product->get_price_html();
 			$price_html = $price_html !== '' ? $price_html : '—';
@@ -508,6 +508,7 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 			. ' data-currency-pos="' . esc_attr( $price_pos ) . '"'
 			. ' data-decimals="' . esc_attr( $decimals ) . '"'
 			. ' data-trim="' . esc_attr( nh_ig_currency_is_whole( get_woocommerce_currency() ) ? '1' : '0' ) . '"'
+			. ' data-superscript="' . esc_attr( ( function_exists( 'nh_eur_use_superscript' ) && nh_eur_use_superscript() ) ? '1' : '0' ) . '"'
 			. ' data-thousand="' . esc_attr( $thousand_sep ) . '"'
 			. ' data-decimal="' . esc_attr( $decimal_sep ) . '">';
 
@@ -530,7 +531,8 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 		}
 
 		echo '    <div class="nc-bundle-footer">';
-		echo '      <div class="nc-total">' . esc_html__( 'Total:', 'nh-theme' ) . ' <strong id="bundle-total-amount">' . wp_kses_post( wc_price( 0 ) ) . '</strong></div>';
+		$bundle_zero = function_exists( 'nh_eur_format_display' ) ? nh_eur_format_display( wc_price( 0 ) ) : wc_price( 0 );
+		echo '      <div class="nc-total">' . esc_html__( 'Total:', 'nh-theme' ) . ' <strong id="bundle-total-amount">' . wp_kses_post( $bundle_zero ) . '</strong></div>';
 		echo '      <button type="button" id="add-bundle-to-cart" class="button alt nc-bundle-btn nh-bundle-add-all is-disabled" disabled aria-disabled="true">'
 			. esc_html__( 'Add all to basket', 'nh-theme' ) .
 			'</button>';

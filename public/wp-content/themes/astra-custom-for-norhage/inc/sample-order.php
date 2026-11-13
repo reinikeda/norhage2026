@@ -138,7 +138,7 @@ function norhage_render_sample_strip() {
             <?php endif; ?>
             <?php esc_html_e( 'Order a sample', 'nh-theme' ); ?>
             (<?php echo esc_html( $width . ' × ' . $length . ' mm' ); ?>)
-            · <span class="norhage-sample-price"><?php echo wc_price( $display_price ); ?></span>
+            · <span class="norhage-sample-price"><?php echo function_exists( 'nh_eur_format_display' ) ? nh_eur_format_display( wc_price( $display_price ) ) : wc_price( $display_price ); ?></span>
         </span>
         <button type="button"
                 class="button norhage-add-sample"

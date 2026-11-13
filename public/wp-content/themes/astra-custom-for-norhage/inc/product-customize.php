@@ -331,8 +331,9 @@ add_action( 'wp_enqueue_scripts', function () {
 		'pos'      => get_option( 'woocommerce_currency_pos', 'right_space' ),
 		'decs'     => wc_get_price_decimals(),
 		'thousand' => wc_get_price_thousand_separator(),
-		'decimal'  => wc_get_price_decimal_separator(),
-		'trim'     => nh_ig_currency_is_whole( get_woocommerce_currency() ),
+		'decimal'     => wc_get_price_decimal_separator(),
+		'trim'        => nh_ig_currency_is_whole( get_woocommerce_currency() ),
+		'superscript' => function_exists( 'nh_eur_use_superscript' ) && nh_eur_use_superscript(),
 	] );
 
 	// 2) Attribute buttons (for selects → buttons)

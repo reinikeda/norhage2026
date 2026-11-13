@@ -788,6 +788,29 @@ a.ast-on-card-button.ast-select-options-trigger,
   min-height: 2.4em;
 }
 
+/* EUR catalog and product pages: 10,49 € is shown as 10,⁴⁹ €. */
+sup.nh-eur-cents,
+.price sup,
+.nh-price sup,
+.nh-404-card__price sup,
+.nhhb-na-price sup,
+.nh-ps-val sup,
+.nh-ps-total-val sup,
+.nc-col-price sup,
+.norhage-sample-price sup,
+.nh-sticky-atc__amount sup,
+.nh-tc__item-price sup,
+.nh-tc__item-spec sup,
+.nh-tc__tax sup,
+.nh-tc__sum sup {
+  font-size: 0.65em;
+  line-height: 0;
+  position: relative;
+  top: -0.5em;
+  vertical-align: baseline;
+  font-weight: inherit;
+}
+
 /* "From" sits outside the price amount, so it was inheriting a lighter color. */
 .woocommerce .price .from,
 .nhhb-na-price .from,

@@ -347,6 +347,23 @@
     }
   }
 
+  function raiseCents(text) {
+    var p = cfg.currency || {};
+    if (!p.superscript) return String(text);
+    var decimal = p.decimal != null ? String(p.decimal) : ',';
+    var esc = decimal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return String(text).replace(new RegExp('(<[^>]+>)|(' + esc + ')(\\d{2})(?!\\d)', 'g'), function (match, tag, sep, cents) {
+      return tag ? tag : sep + '<sup class="nh-eur-cents">' + cents + '</sup>';
+    });
+  }
+
+  function showPrice(el, text) {
+    if (!el) return;
+    var html = raiseCents(text);
+    if (html.indexOf('<sup') !== -1) el.innerHTML = html;
+    else el.textContent = text;
+  }
+
   function fmt(n) {
     var p = cfg.currency || {};
     var num = Number(n || 0);
@@ -441,10 +458,21 @@
       spec.className = 'nh-tc__item-spec';
       var qtyLabel = i18n('pcs', '%s pcs').replace('%s', item.qty);
       var each = isMissing ? '' : i18n('each', '%s each').replace('%s', item.unit_display || fmt(unitAmount(item, taxDisplay)));
-      spec.textContent = [qtyLabel, each, item.spec].filter(Boolean).join(' · ');
+      spec.textContent = '';
+      [qtyLabel, each, item.spec].filter(Boolean).forEach(function (piece, index) {
+        if (index) spec.appendChild(document.createTextNode(' · '));
+        if (piece === each && raiseCents(piece).indexOf('<sup') !== -1) {
+          var eachNode = document.createElement('span');
+          eachNode.innerHTML = raiseCents(piece);
+          spec.appendChild(eachNode);
+        } else {
+          spec.appendChild(document.createTextNode(piece));
+        }
+      });
       var price = document.createElement('div');
       price.className = 'nh-tc__item-price';
-      price.textContent = isMissing ? '—' : (item.line_display || fmt(lineAmount(item, taxDisplay)));
+      if (isMissing) price.textContent = '—';
+      else showPrice(price, item.line_display || fmt(lineAmount(item, taxDisplay)));
       li.appendChild(name);
       li.appendChild(price);
       li.appendChild(spec);
@@ -463,8 +491,8 @@
     if (payload.currency) cfg.currency = payload.currency;
     if (payload.totals) {
       totalsEl.hidden = false;
-      taxEl.textContent = payload.totals.tax_formatted || fmt(payload.totals.tax);
-      totalEl.textContent = payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
+      showPrice(taxEl, payload.totals.tax_formatted || fmt(payload.totals.tax));
+      showPrice(totalEl, payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc));
     }
 
     atc.disabled = items.length === 0;

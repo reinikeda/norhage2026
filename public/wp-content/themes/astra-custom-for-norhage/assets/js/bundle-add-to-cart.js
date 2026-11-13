@@ -58,7 +58,8 @@ jQuery(function ($) {
           ? $form.attr('data-decimal')
           : (fallback.decimal != null ? fallback.decimal : ',')
       ),
-      trim: String($form.attr('data-trim') || '') === '1' || !!fallback.trim
+      trim: String($form.attr('data-trim') || '') === '1' || !!fallback.trim,
+      superscript: String($form.attr('data-superscript') || '') === '1' || !!fallback.superscript
     };
   }
 
@@ -76,9 +77,12 @@ jQuery(function ($) {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, p.thousand);
     const hideZeros = p.trim && p.decimals > 0 && parts[1] && /^0+$/.test(parts[1]);
 
-    const value = (p.decimals > 0 && !hideZeros)
-      ? parts[0] + p.decimal + (parts[1] || '')
-      : parts[0];
+    const cents = (p.decimals > 0 && !hideZeros)
+      ? (p.superscript
+          ? '<sup class="nh-eur-cents">' + (parts[1] || '') + '</sup>'
+          : (parts[1] || ''))
+      : '';
+    const value = cents ? parts[0] + p.decimal + cents : parts[0];
 
     const nbsp = '\u00A0';
 

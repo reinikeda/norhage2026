@@ -63,7 +63,14 @@
     const p   = window.NH_PRICE_FMT || {};
     const sym = p.symbol || '';
     const pos = p.pos || 'right_space';
-    const val = fmtNumber(n);
+    let val = fmtNumber(n);
+    if (p.superscript) {
+      const dec = p.decimal || ',';
+      const at = val.lastIndexOf(dec);
+      if (at !== -1) {
+        val = val.slice(0, at + dec.length) + '<sup class="nh-eur-cents">' + val.slice(at + dec.length) + '</sup>';
+      }
+    }
     const nbsp = '\u00A0';
     switch (pos) {
       case 'left':        return sym + val;
