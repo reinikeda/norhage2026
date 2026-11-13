@@ -42,34 +42,10 @@ add_action( 'wp', function () {
 	}
 } );
 
-/** ===== Blog meta: hide author (archive + single). Keep the date. ===== */
-add_filter( 'astra_post_meta', function( $meta ){
-	if ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_singular('post') ) {
-		$meta = array_diff( (array) $meta, array( 'author' ) );
-	}
-	return array_values( (array) $meta );
-}, 25 );
-
-add_filter( 'astra_post_author', function( $output ) {
-	if ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_singular( 'post' ) ) {
-		return '';
-	}
-	return $output;
-}, 20 );
-
-add_filter( 'astra_single_post_meta', function( $markup ){
-	if ( is_singular( 'post' ) ) {
-		return nh_blog_clean_meta( $markup );
-	}
-	return $markup;
-}, 25 );
-
-add_filter( 'astra_blog_post_meta', function( $markup ){
-	if ( is_home() || is_category() || is_tag() || is_author() || is_date() ) {
-		return nh_blog_clean_meta( $markup );
-	}
-	return $markup;
-}, 25 );
+/**
+ * Blog author and date follow Appearance → Customize → Blog → Meta.
+ * Archive and single post each have their own meta list in Astra.
+ */
 
 /** Astra prints Previous / Next from its own text domain, which stays English here. */
 add_filter( 'astra_default_strings', function( $strings ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI tests: blog meta keeps the date and drops the author.
+ * CLI tests: blog meta leaves the author in place, and Previous / Next translate.
  *
  * Run: php public/wp-content/themes/astra-custom-for-norhage/tests/test-blog-structure.php
  */
@@ -23,34 +23,19 @@ function nh_blog_assert( $label, $ok ) {
 	echo "FAIL  {$label}\n";
 }
 
-$live = <<<'HTML'
-<div class="entry-meta">By <span class="posted-by vcard author" itemtype="https://schema.org/Person" itemscope="itemscope" itemprop="author">  <span
- class="author-name" itemprop="name"> admin </span>  </span> / <span class="posted-on"><span class="published" itemprop="datePublished"> August 27, 2026 </span></span></div>
-HTML;
+$blog_php = file_get_contents( dirname( __DIR__ ) . '/inc/blog.php' );
+nh_blog_assert( 'blog.php does not drop the author meta key', strpos( $blog_php, "array( 'author' )" ) === false );
+nh_blog_assert( 'blog.php does not blank the author output', strpos( $blog_php, 'astra_post_author' ) === false );
+nh_blog_assert( 'blog.php does not rewrite the meta HTML', strpos( $blog_php, 'nh_blog_clean_meta' ) === false );
+nh_blog_assert( 'author stripping helper is gone', ! function_exists( 'nh_blog_clean_meta' ) );
 
-$clean = nh_blog_clean_meta( $live );
-nh_blog_assert( 'live single keeps the date', strpos( $clean, 'August 27, 2026' ) !== false && strpos( $clean, 'posted-on' ) !== false );
-nh_blog_assert( 'live single drops the author name', stripos( $clean, 'admin' ) === false && stripos( $clean, 'posted-by' ) === false );
-nh_blog_assert( 'live single drops the By prefix', ! preg_match( '/\bBy\b/', $clean ) );
-nh_blog_assert( 'live single drops the slash between author and date', ! preg_match( '/>\s*\/\s*</', $clean ) );
-
-$already_empty_author = 'By  / <span class="posted-on"><span class="published"> August 27, 2026 </span></span>';
-$from_filter           = nh_blog_clean_meta( $already_empty_author );
-nh_blog_assert( 'empty author element still leaves the date', strpos( $from_filter, 'August 27, 2026' ) !== false );
-nh_blog_assert( 'empty author element drops By and the slash', stripos( $from_filter, 'By' ) === false && ! preg_match( '/>\s*\/\s*</', $from_filter ) && ! preg_match( '/^\s*\/\s*/', trim( strip_tags( $from_filter ) ) ) );
-
-$german = 'Von <span class="posted-by author"><span class="author-name"> admin </span></span> / <span class="posted-on"><span class="published">27. August 2026</span></span>';
-$de     = nh_blog_clean_meta( $german );
-nh_blog_assert( 'translated prefix is removed', strpos( $de, 'Von' ) === false && strpos( $de, '27. August 2026' ) !== false );
-
-$date_only = '<div class="entry-meta"><span class="posted-on"><span class="published"> August 24, 2026 </span></span></div>';
-$kept      = nh_blog_clean_meta( $date_only );
-nh_blog_assert( 'date-only meta stays intact', strpos( $kept, 'August 24, 2026' ) !== false && strpos( $kept, 'posted-on' ) !== false );
-
-$twice = nh_blog_clean_meta( $clean );
-nh_blog_assert( 'cleaning is idempotent', $twice === $clean );
-
-nh_blog_assert( 'empty markup stays empty', nh_blog_clean_meta( '   ' ) === '   ' );
+$style = file_get_contents( dirname( __DIR__ ) . '/style.css' );
+$meta_css = '';
+if ( preg_match( '/SINGLE POST:.*?(?=\/\* ---------- Read more)/s', $style, $meta_match ) ) {
+	$meta_css = $meta_match[0];
+}
+nh_blog_assert( 'single post CSS names the author', strpos( $meta_css, '.posted-by' ) !== false );
+nh_blog_assert( 'single post CSS does not hide the author', stripos( $meta_css, 'display' ) === false && strpos( $meta_css, 'font-size: 0' ) === false );
 
 $nav = nh_blog_navigation_strings(
 	array(

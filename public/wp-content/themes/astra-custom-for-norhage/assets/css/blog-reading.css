@@ -176,6 +176,11 @@ body.category .ast-article-post .entry-meta,
 body.tag .ast-article-post .entry-meta,
 body.author .ast-article-post .entry-meta,
 body.date .ast-article-post .entry-meta,
+body.blog .ast-article-post .posted-by,
+body.category .ast-article-post .posted-by,
+body.tag .ast-article-post .posted-by,
+body.author .ast-article-post .posted-by,
+body.date .ast-article-post .posted-by,
 body.blog .ast-article-post .posted-on,
 body.category .ast-article-post .posted-on,
 body.tag .ast-article-post .posted-on,
@@ -325,7 +330,7 @@ body.date .navigation.pagination .page-numbers {
   padding: 0 12px;
 }
 
-/* Single article: comfortable measure, date kept, author line removed in PHP. */
+/* Single article: comfortable measure. Author and date follow the Blog meta setting. */
 body.single-post .nh-backbar,
 body.single-post .ast-article-single,
 body.single-post .post-navigation,

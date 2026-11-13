@@ -1106,7 +1106,8 @@ function nh_single_product_image_note() {
 }
 
 /**
- * Fail-safe: Strip author links from the final HTML output to fix SEO 3XX errors.
+ * Fail-safe: unwrap /author/ links on single posts so the name stays visible
+ * without a link that 301s. The author name itself is left in the HTML.
  */
 add_action( 'template_redirect', 'norhage_start_buffer_strip_author', 1 );
 
