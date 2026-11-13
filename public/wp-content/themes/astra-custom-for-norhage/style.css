@@ -367,24 +367,18 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
   margin:8px 0 0;
 }
 
-/* SINGLE POST: remove "By admin /" but keep the date */
+/* SINGLE POST: author name and date, both from Appearance → Blog meta */
 .single-post .entry-header .entry-meta{
-  font-size: 0 !important;
-  line-height: 0 !important;
-}
-
-.single-post .entry-header .entry-meta .posted-by{
-  display: none !important;
-}
-
-.single-post .entry-header .entry-meta .posted-on,
-.single-post .entry-header .entry-meta .posted-on *{
   font-size: 14px !important;
   line-height: 1.2 !important;
 }
 
-.single-post .entry-header .entry-meta .ast-meta-separator{
-  display:none !important;
+.single-post .entry-header .entry-meta .posted-by,
+.single-post .entry-header .entry-meta .posted-by *,
+.single-post .entry-header .entry-meta .posted-on,
+.single-post .entry-header .entry-meta .posted-on *{
+  font-size: 14px !important;
+  line-height: 1.2 !important;
 }
 
 /* ---------- Read more link (no extra arrow) ---------- */
