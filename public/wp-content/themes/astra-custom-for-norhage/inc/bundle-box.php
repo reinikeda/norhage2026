@@ -507,6 +507,7 @@ if ( ! function_exists( 'nh_render_bundle_box' ) ) {
 			. ' data-currency-symbol="' . esc_attr( $currency_symbol ) . '"'
 			. ' data-currency-pos="' . esc_attr( $price_pos ) . '"'
 			. ' data-decimals="' . esc_attr( $decimals ) . '"'
+			. ' data-trim="' . esc_attr( nh_ig_currency_is_whole( get_woocommerce_currency() ) ? '1' : '0' ) . '"'
 			. ' data-thousand="' . esc_attr( $thousand_sep ) . '"'
 			. ' data-decimal="' . esc_attr( $decimal_sep ) . '">';
 

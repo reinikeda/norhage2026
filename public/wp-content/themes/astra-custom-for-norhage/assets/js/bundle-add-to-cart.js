@@ -57,7 +57,8 @@ jQuery(function ($) {
         $form.attr('data-decimal') != null
           ? $form.attr('data-decimal')
           : (fallback.decimal != null ? fallback.decimal : ',')
-      )
+      ),
+      trim: String($form.attr('data-trim') || '') === '1' || !!fallback.trim
     };
   }
 
@@ -73,8 +74,9 @@ jQuery(function ($) {
 
     const parts = num.toFixed(p.decimals).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, p.thousand);
+    const hideZeros = p.trim && p.decimals > 0 && parts[1] && /^0+$/.test(parts[1]);
 
-    const value = p.decimals > 0
+    const value = (p.decimals > 0 && !hideZeros)
       ? parts[0] + p.decimal + (parts[1] || '')
       : parts[0];
 

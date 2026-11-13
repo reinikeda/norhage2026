@@ -270,7 +270,7 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 	$perm2 = nh_cc_get_perm2_display_prices( $variation );
 
 	$fee_raw  = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
-	$fee_disp = $fee_raw > 0 ? wc_get_price_to_display( $variation, [ 'price' => $fee_raw ] ) : 0;
+	$fee_disp = $fee_raw > 0 ? nh_ig_round_display_gross( wc_get_price_to_display( $variation, [ 'price' => $fee_raw ] ) ) : 0;
 
 	$kg_per_m2 = nh_cc_get_kg_per_m2_from_product( $variation ); // UPDATED
 
@@ -279,10 +279,22 @@ add_filter( 'woocommerce_available_variation', function ( $data, $product, $vari
 	$parent_type = get_post_meta( $product->get_id(), '_nh_cc_type', true ) ?: 'planar';
 	$step_m = get_post_meta( $product->get_id(), '_nh_cc_step_m', true ) ?: 0.01;
 
+	$raw_reg  = $variation->get_regular_price( 'edit' );
+	$raw_sale = $variation->get_sale_price( 'edit' );
+	$raw_base = $variation->get_price( 'edit' );
+	if ( $raw_reg === '' ) {
+		$raw_reg = $raw_base;
+	}
+
 	$data['nh_cc_enabled']         = true;
 	$data['nh_cc_perm2_reg_disp']  = (float) $perm2['reg'];
 	$data['nh_cc_perm2_sale_disp'] = (float) $perm2['sale'];
 	$data['nh_cc_cut_fee_disp']    = (float) $fee_disp;
+	$data['nh_cc_round_gross']     = nh_ig_currency_is_whole( get_woocommerce_currency() );
+	$data['nh_cc_raw_reg']         = (float) $raw_reg;
+	$data['nh_cc_raw_sale']        = ( $raw_sale === '' || $raw_sale === null ) ? 0 : (float) $raw_sale;
+	$data['nh_cc_raw_fee']         = (float) $fee_raw;
+	$data['nh_cc_tax_rates']       = nh_ig_rates_for_js( $variation );
 	$data['nh_cc_kg_per_m2']       = (float) $kg_per_m2;
 	$data['nh_cc_unit']            = sanitize_text_field( $parent_unit );
 	$data['nh_cc_type']            = sanitize_text_field( $parent_type );
@@ -320,6 +332,7 @@ add_action( 'wp_enqueue_scripts', function () {
 		'decs'     => wc_get_price_decimals(),
 		'thousand' => wc_get_price_thousand_separator(),
 		'decimal'  => wc_get_price_decimal_separator(),
+		'trim'     => nh_ig_currency_is_whole( get_woocommerce_currency() ),
 	] );
 
 	// 2) Attribute buttons (for selects → buttons)
@@ -355,7 +368,7 @@ add_action( 'wp_enqueue_scripts', function () {
 
 		// Fee display (from parent meta)
 		$fee_raw  = (float) get_post_meta( $pid, '_nh_cc_cut_fee', true );
-		$fee_disp = $fee_raw > 0 ? wc_get_price_to_display( $product_obj, [ 'price' => $fee_raw ] ) : 0;
+		$fee_disp = $fee_raw > 0 ? nh_ig_round_display_gross( wc_get_price_to_display( $product_obj, [ 'price' => $fee_raw ] ) ) : 0;
 
 		// Weight per m² from Woo weight:
 		// - SIMPLE: we can pass now
@@ -382,11 +395,23 @@ add_action( 'wp_enqueue_scripts', function () {
 			true
 		);
 
+		$raw_reg  = $product_obj->is_type( 'simple' ) ? $product_obj->get_regular_price( 'edit' ) : '';
+		$raw_sale = $product_obj->is_type( 'simple' ) ? $product_obj->get_sale_price( 'edit' ) : '';
+		$raw_base = $product_obj->is_type( 'simple' ) ? $product_obj->get_price( 'edit' ) : '';
+		if ( $raw_reg === '' ) {
+			$raw_reg = $raw_base;
+		}
+
 		wp_localize_script( 'custom-cutting', 'NH_CC', [
 			'enabled'         => true,
 			'perm2_reg_disp'  => (float) $perm2_reg,
 			'perm2_sale_disp' => (float) $perm2_sale,
 			'cut_fee'         => (float) $fee_disp,
+			'round_gross'     => nh_ig_currency_is_whole( get_woocommerce_currency() ),
+			'raw_reg'         => (float) $raw_reg,
+			'raw_sale'        => ( $raw_sale === '' || $raw_sale === null ) ? 0 : (float) $raw_sale,
+			'raw_fee'         => (float) $fee_raw,
+			'tax_rates'       => nh_ig_rates_for_js( $product_obj ),
 			'min_w'           => ( $v = get_post_meta( $pid, '_nh_cc_min_w', true ) ) === '' ? '' : (int) $v,
 			'max_w'           => ( $v = get_post_meta( $pid, '_nh_cc_max_w', true ) ) === '' ? '' : (int) $v,
 			'min_l'           => ( $v = get_post_meta( $pid, '_nh_cc_min_l', true ) ) === '' ? '' : $v,
@@ -600,8 +625,9 @@ add_filter( 'woocommerce_add_cart_item_data', function( $cart_item_data, $produc
 		'length_m'  => $l_m,
 	];
 
-	// Base price from the selected product/variation (interpreted according to product type)
-	$cart_item_data['nh_cc_base_price'] = (float) $chosen->get_price();
+	// Entered ex-VAT price. The cart rounds the finished cut (area × this price + fee)
+	// once, so a per-m² price that is already a whole krone is not rounded again first.
+	$cart_item_data['nh_cc_base_price'] = (float) $chosen->get_price( 'edit' );
 
 	// Fee from PARENT meta (shared across variations)
 	$cart_item_data['nh_cc_cut_fee_raw'] = (float) get_post_meta( $product_id, '_nh_cc_cut_fee', true );
@@ -641,7 +667,7 @@ add_filter( 'woocommerce_get_item_data', function( $item_data, $cart_item ){
 		$product = $cart_item['data'] ?? null;
 		$fee_disp = $fee_raw;
 		if ( $product instanceof WC_Product ) {
-			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee_raw ] );
+			$fee_disp = nh_ig_round_display_gross( wc_get_price_to_display( $product, [ 'price' => $fee_raw ] ) );
 		}
 
 		$unit  = isset( $cart_item['nh_custom_size']['unit'] ) ? $cart_item['nh_custom_size']['unit'] : 'mm';
@@ -736,7 +762,7 @@ add_action( 'woocommerce_checkout_create_order_line_item', function( $item, $car
 		$fee_label    = nh_cc_cutting_fee_label( $unit );
 		$existing_fee = $item->get_meta( $fee_label, true );
 		if ( empty( $existing_fee ) ) {
-			$fee_disp = wc_get_price_to_display( $product, [ 'price' => $fee ] );
+			$fee_disp = nh_ig_round_display_gross( wc_get_price_to_display( $product, [ 'price' => $fee ] ) );
 			$item->add_meta_data( $fee_label, wc_price( $fee_disp ), true );
 		}
 	}
@@ -782,7 +808,7 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 
 			$price_per_m2 = isset( $item['nh_cc_base_price'] )
 				? (float) $item['nh_cc_base_price']
-				: (float) $product->get_price();
+				: (float) $product->get_price( 'edit' );
 
 			$fee = isset( $item['nh_cc_cut_fee_raw'] )
 				? (float) $item['nh_cc_cut_fee_raw']
@@ -820,7 +846,7 @@ add_action( 'woocommerce_before_calculate_totals', function( $cart ){
 			$lm = isset( $size['length_m'] ) ? floatval( $size['length_m'] ) : 0.0;
 			if ( $lm <= 0 ) continue;
 
-			$price_per_m = isset( $item['nh_cc_base_price'] ) ? (float) $item['nh_cc_base_price'] : (float) $product->get_price();
+			$price_per_m = isset( $item['nh_cc_base_price'] ) ? (float) $item['nh_cc_base_price'] : (float) $product->get_price( 'edit' );
 
 			$fee = isset( $item['nh_cc_cut_fee_raw'] )
 				? (float) $item['nh_cc_cut_fee_raw']

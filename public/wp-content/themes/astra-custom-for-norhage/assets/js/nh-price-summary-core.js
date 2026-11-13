@@ -24,7 +24,8 @@
 
     const parts = n.toFixed(d).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, th);
-    const num = d > 0 ? parts[0] + dc + (parts[1] || '') : parts[0];
+    const hideZeros = F.trim && d > 0 && parts[1] && /^0+$/.test(parts[1]);
+    const num = (d > 0 && !hideZeros) ? parts[0] + dc + (parts[1] || '') : parts[0];
 
     const nbsp = '\u00A0';
     let before = '', after = '';

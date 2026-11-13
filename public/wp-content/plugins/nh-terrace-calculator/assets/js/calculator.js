@@ -356,7 +356,8 @@
     var thousand = p.thousand != null ? String(p.thousand) : ' ';
     var decimal = p.decimal != null ? String(p.decimal) : ',';
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousand);
-    var value = decs > 0 ? parts[0] + decimal + (parts[1] || '') : parts[0];
+    var hideZeros = p.trim && decs > 0 && parts[1] && /^0+$/.test(parts[1]);
+    var value = (decs > 0 && !hideZeros) ? parts[0] + decimal + (parts[1] || '') : parts[0];
     var symbol = p.symbol || '';
     var nbsp = '\u00A0';
     switch (p.pos) {

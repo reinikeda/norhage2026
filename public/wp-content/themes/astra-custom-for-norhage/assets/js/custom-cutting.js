@@ -10,7 +10,53 @@
     const fx  = Number(n || 0).toFixed(d);
     const pa  = fx.split('.');
     pa[0] = pa[0].replace(/\B(?=(\d{3})+(?!\d))/g, th);
+    if (p.trim && d && pa[1] && /^0+$/.test(pa[1])) return pa[0];
     return d ? pa[0] + dec + pa[1] : pa[0];
+  }
+
+  function halfUp(n, dp) {
+    var f = Math.pow(10, dp);
+    var x = Number(n) * f;
+    return Math.round(x + (x >= 0 ? 1e-8 : -1e-8)) / f;
+  }
+
+  // Same exclusive-tax rounding as inc/integer-gross.php, then nearest whole unit.
+  function grossFromNet(net, rates) {
+    net = halfUp(net, 2);
+    rates = rates || [];
+    if (!rates.length) return net;
+    var taxes = [];
+    var pre = 0;
+    var i;
+    for (i = 0; i < rates.length; i++) {
+      if (rates[i].compound) continue;
+      var regular = halfUp(net * (Number(rates[i].rate) / 100), 6);
+      taxes.push(regular);
+      pre += regular;
+    }
+    for (i = 0; i < rates.length; i++) {
+      if (!rates[i].compound) continue;
+      var compound = halfUp((net + pre) * (Number(rates[i].rate) / 100), 6);
+      taxes.push(compound);
+      pre += compound;
+    }
+    var tax = 0;
+    for (i = 0; i < taxes.length; i++) tax += halfUp(taxes[i], 2);
+    return halfUp(net + tax, 2);
+  }
+
+  function cutUnitGross(measure, rawPrice, rawFee) {
+    var net = halfUp(Number(measure) * Number(rawPrice || 0) + Math.max(0, Number(rawFee || 0)), 2);
+    var gross = grossFromNet(net, CC.tax_rates || []);
+    return CC.round_gross ? Math.round(gross) : gross;
+  }
+
+  function cutUnits(measure) {
+    if (!CC.round_gross || !(Number(CC.raw_reg || 0) > 0)) return null;
+    var reg = cutUnitGross(measure, CC.raw_reg, CC.raw_fee);
+    var saleRaw = Number(CC.raw_sale || 0);
+    var sale = saleRaw > 0 ? cutUnitGross(measure, saleRaw, CC.raw_fee) : reg;
+    return { reg: reg, sale: sale };
   }
 
   function money(n) {
@@ -380,10 +426,11 @@
       if (valid) {
         var area = (wmm / 1000) * (lmm / 1000); // m²
 
-        // Price
+        // Price. NOK/SEK/DKK round the finished cut once, from the entered ex-VAT rate.
         if (M2_REG > 0 || M2_SALE > 0) {
-          var unit_reg   = area * M2_REG  + Math.max(0, FEE);
-          var unit_sale  = area * M2_SALE + Math.max(0, FEE);
+          var rounded = cutUnits(area);
+          var unit_reg   = rounded ? rounded.reg  : area * M2_REG  + Math.max(0, FEE);
+          var unit_sale  = rounded ? rounded.sale : area * M2_SALE + Math.max(0, FEE);
           var total_reg  = unit_reg  * q;
           var total_sale = unit_sale * q;
 
@@ -439,8 +486,9 @@
         var fee = Number(CC.cut_fee || 0);
 
         if (price_m_reg > 0 || price_m_sale > 0) {
-          var unit_reg   = lm * price_m_reg + Math.max(0, fee);
-          var unit_sale  = lm * price_m_sale + Math.max(0, fee);
+          var rounded_m = cutUnits(lm);
+          var unit_reg   = rounded_m ? rounded_m.reg  : lm * price_m_reg + Math.max(0, fee);
+          var unit_sale  = rounded_m ? rounded_m.sale : lm * price_m_sale + Math.max(0, fee);
           var total_reg  = unit_reg  * q;
           var total_sale = unit_sale * q;
 
@@ -540,6 +588,11 @@
     if (variation.nh_cc_perm2_reg_disp != null)  CC.perm2_reg_disp  = Number(variation.nh_cc_perm2_reg_disp) || 0;
     if (variation.nh_cc_perm2_sale_disp != null) CC.perm2_sale_disp = Number(variation.nh_cc_perm2_sale_disp) || 0;
     if (variation.nh_cc_cut_fee_disp != null)    CC.cut_fee         = Number(variation.nh_cc_cut_fee_disp) || 0;
+    if (variation.nh_cc_raw_reg != null)         CC.raw_reg         = Number(variation.nh_cc_raw_reg) || 0;
+    if (variation.nh_cc_raw_sale != null)        CC.raw_sale        = Number(variation.nh_cc_raw_sale) || 0;
+    if (variation.nh_cc_raw_fee != null)         CC.raw_fee         = Number(variation.nh_cc_raw_fee) || 0;
+    if (variation.nh_cc_tax_rates)               CC.tax_rates       = variation.nh_cc_tax_rates;
+    if (variation.nh_cc_round_gross != null)     CC.round_gross     = !!variation.nh_cc_round_gross;
 
     if (variation.nh_cc_kg_per_m2 != null)       CC.kg_per_m2       = Number(variation.nh_cc_kg_per_m2) || 0;
 
@@ -553,6 +606,8 @@
     if (!CC.enabled) return;
     CC.perm2_reg_disp  = 0;
     CC.perm2_sale_disp = 0;
+    CC.raw_reg         = 0;
+    CC.raw_sale        = 0;
     CC.kg_per_m2       = 0;
     renderPerm2AndFee();
     recalcCustom();

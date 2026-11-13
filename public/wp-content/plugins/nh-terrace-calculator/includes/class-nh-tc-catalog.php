@@ -468,13 +468,20 @@ class NH_TC_Catalog {
 	 */
 	public static function custom_cut_unit_price( WC_Product $product, $width_mm, $length_mm ) {
 		$area = ( (float) $width_mm / 1000 ) * ( (float) $length_mm / 1000 );
-		$base = (float) $product->get_price(); // Catalogue price = price per 1 m².
+		$base = (float) $product->get_price( 'edit' ); // Entered ex-VAT price per 1 m².
 		$fee  = (float) get_post_meta( $product->get_id(), '_nh_cc_cut_fee', true );
 		$raw  = ( $area * $base ) + max( 0, $fee );
 		$raw  = round( $raw, (int) wc_get_price_decimals() );
 
-		$ex  = (float) wc_get_price_excluding_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
-		$inc = (float) wc_get_price_including_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
+		if ( function_exists( 'nh_ig_currency_is_whole' ) && nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+			$split = nh_ig_adjust_net( $raw, nh_ig_rates_for_product( $product ), (int) wc_get_price_decimals() );
+			$raw   = $split['net'];
+			$ex    = $split['net'];
+			$inc   = $split['gross'];
+		} else {
+			$ex  = (float) wc_get_price_excluding_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
+			$inc = (float) wc_get_price_including_tax( $product, array( 'price' => $raw, 'qty' => 1 ) );
+		}
 
 		return array(
 			'ex'   => $ex,
@@ -587,6 +594,7 @@ class NH_TC_Catalog {
 			'symbol'   => html_entity_decode( wp_strip_all_tags( (string) get_woocommerce_currency_symbol( $code ) ), ENT_QUOTES, 'UTF-8' ),
 			'pos'      => get_option( 'woocommerce_currency_pos', 'right_space' ),
 			'decimals' => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
+			'trim'     => function_exists( 'nh_ig_currency_is_whole' ) && nh_ig_currency_is_whole( $code ),
 			'thousand' => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ' ',
 			'decimal'  => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : ',',
 		);
