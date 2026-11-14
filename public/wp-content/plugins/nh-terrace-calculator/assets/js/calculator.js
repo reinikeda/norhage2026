@@ -301,7 +301,11 @@
     var hint = root.querySelector('[data-gable-length]');
     var widthLabel = root.querySelector('[data-width-label]');
     var lengthLabel = root.querySelector('[data-length-label]');
+    var leanGuide = root.querySelector('[data-measure-lean]');
+    var gableGuide = root.querySelector('[data-measure-gable]');
     if (hint) hint.hidden = !gable;
+    if (leanGuide) leanGuide.hidden = gable;
+    if (gableGuide) gableGuide.hidden = !gable;
     if (widthLabel) {
       widthLabel.textContent = gable
         ? i18n('widthGable', 'Width along the gable')

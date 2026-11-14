@@ -213,12 +213,18 @@
 
 .nh-tc__measure-guide {
   margin-top: 0.9rem;
-  padding: 0.65rem;
-  border-radius: 10px;
-  background: var(--tc-bg);
+  padding: 0.85rem 0.75rem 0.55rem;
+  border-radius: 12px;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(195, 232, 198, 0.45), transparent 55%),
+    linear-gradient(180deg, #fbf8f3 0%, #f1ebe2 100%);
   border: 1px solid var(--tc-line);
   color: var(--tc-forest);
   overflow: hidden;
+}
+
+.nh-tc__measure-svg[hidden] {
+  display: none !important;
 }
 
 .nh-tc__measure-svg {
@@ -372,12 +378,14 @@
 .nh-tc__sheets {
   display: flex;
   align-items: stretch;
-  gap: 3px;
-  height: 84px;
-  padding: 10px 10px 0;
-  border-radius: 8px 8px 0 0;
-  background: #e7eee9;
-  border-bottom: 8px solid #8aa394;
+  gap: 2px;
+  height: 96px;
+  padding: 12px 12px 0;
+  border-radius: 12px 12px 0 0;
+  background:
+    linear-gradient(180deg, #f4faf6 0%, #e3efe7 100%);
+  border-bottom: 10px solid #7f9b8c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .nh-tc__sheet {
@@ -385,19 +393,24 @@
   align-items: flex-end;
   justify-content: center;
   min-width: 0;
-  padding: 0.35rem 0.15rem 0.7rem;
-  border: 1px solid var(--tc-forest);
+  padding: 0.35rem 0.15rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--tc-forest) 55%, #9ed4b4);
   border-bottom-width: 0;
-  border-radius: 3px 3px 0 0;
-  background: #d8f0e2;
+  border-radius: 4px 4px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 42%),
+    linear-gradient(180deg, #e7f7ee 0%, #c7ebd6 100%);
   color: var(--tc-forest);
   font-size: 0.72rem;
   font-weight: 700;
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .nh-tc__sheet.is-side {
-  background: #9ed4b4;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 40%),
+    linear-gradient(180deg, #b7e2c8 0%, #86c9a4 100%);
 }
 
 .nh-tc__sheet span {
@@ -406,10 +419,12 @@
 
 .nh-tc__frame {
   position: relative;
-  height: 96px;
-  border-radius: 8px 8px 0 0;
-  background: #e7eee9;
+  height: 108px;
+  border-radius: 12px 12px 0 0;
+  background:
+    linear-gradient(180deg, #f4faf6 0%, #e3efe7 100%);
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .nh-tc__frame .nh-tc__sheet {
@@ -425,10 +440,12 @@
   z-index: 2;
   top: 0;
   bottom: 0;
-  width: 4px;
-  margin-left: -2px;
-  background: #6b5344;
+  width: 5px;
+  margin-left: -2.5px;
+  background: linear-gradient(90deg, #5a4336, #7a5d4a 45%, #5a4336);
+  border-radius: 1px;
   pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .nh-tc__beam {
@@ -437,8 +454,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 8px;
-  background: #8aa394;
+  height: 10px;
+  background: linear-gradient(180deg, #97b0a3, #738f81);
 }
 
 .nh-tc__gable {
