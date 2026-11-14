@@ -194,14 +194,18 @@
   function syncHints(meta) {
     if (!meta) return;
     if (dimsEl) {
-      dimsEl.textContent =
-        'Calc. ' + meta.calc_width_mm + ' × ' + meta.calc_height_mm + ' mm' +
-        (meta.overlap_pct != null ? ' · ' + meta.overlap_pct + '% overlap' : '');
+      var dims = i18n('calcDims', 'Calc. %1$d × %2$d mm')
+        .replace('%1$d', meta.calc_width_mm)
+        .replace('%2$d', meta.calc_height_mm);
+      if (meta.overlap_pct != null) {
+        dims += ' · ' + i18n('overlapPct', '%d%% overlap').replace('%d', meta.overlap_pct);
+      }
+      dimsEl.textContent = dims;
     }
     if (hintEl) {
       hintEl.textContent = meta.mounting === 'soffit'
-        ? 'Into the opening: height − 45 mm for the rail.'
-        : 'Above the opening: height + 30 mm; width gains a sealing allowance.';
+        ? i18n('mountSoffit', 'Into the opening: height − 45 mm for the rail.')
+        : i18n('mountFace', 'Above the opening: height + 30 mm; width gains a sealing allowance.');
     }
     if (recEl && meta.recommended_width_mm) {
       recEl.textContent = i18n('recWidth', 'Recommended for this height: %d mm strips.').replace('%d', meta.recommended_width_mm);
@@ -226,9 +230,12 @@
     }
     var note = document.createElement('p');
     note.className = 'nh-psc__plan-note';
-    note.textContent =
-      meta.strip_count + ' × ' + meta.strip_width_mm + '×' + meta.strip_thickness_mm + ' mm · ' +
-      meta.total_metres + ' m · ' + meta.area_m2 + ' m²';
+    note.textContent = i18n('planMeta', '%1$d × %2$d×%3$d mm · %4$s m · %5$s m²')
+      .replace('%1$d', meta.strip_count)
+      .replace('%2$d', meta.strip_width_mm)
+      .replace('%3$d', meta.strip_thickness_mm)
+      .replace('%4$s', String(meta.total_metres))
+      .replace('%5$s', String(meta.area_m2));
     planEl.innerHTML = '';
     planEl.appendChild(viz);
     planEl.appendChild(note);
