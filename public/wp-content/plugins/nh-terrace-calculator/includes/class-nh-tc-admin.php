@@ -70,7 +70,7 @@ class NH_TC_Admin {
 		$input    = is_array( $input ) ? $input : array();
 		$out      = $defaults;
 
-		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
+		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'finish_screw_spacing_mm', 'wall_screw_spacing_mm', 'fixing_button_spacing_mm', 'fixing_button_pack_size', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
 			if ( isset( $input[ $int_key ] ) ) {
 				$out[ $int_key ] = absint( $input[ $int_key ] );
 			}
@@ -326,7 +326,51 @@ class NH_TC_Admin {
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Show postcode field', NH_TC_TD ); ?></th>
-						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_postcode]" value="1" <?php checked( $s['show_postcode'] ); ?>> <?php esc_html_e( 'Saved to the customer when the kit is added, so shipping can be quoted in the basket.', NH_TC_TD ); ?></label></td>
+						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_postcode]" value="1" <?php checked( ! empty( $s['show_postcode'] ) ); ?>> <?php esc_html_e( 'Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket.', NH_TC_TD ); ?></label></td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Screw spacing (mm)', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Connecting profiles', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[screw_spacing_mm]" value="<?php echo esc_attr( $s['screw_spacing_mm'] ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Finish profiles', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[finish_screw_spacing_mm]" value="<?php echo esc_attr( isset( $s['finish_screw_spacing_mm'] ) ? $s['finish_screw_spacing_mm'] : 400 ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Wall / ridge', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[wall_screw_spacing_mm]" value="<?php echo esc_attr( isset( $s['wall_screw_spacing_mm'] ) ? $s['wall_screw_spacing_mm'] : 400 ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Pack size', NH_TC_TD ); ?>
+								<input type="number" min="1" max="500" name="<?php echo esc_attr( $key ); ?>[screw_pack_size]" value="<?php echo esc_attr( $s['screw_pack_size'] ); ?>">
+							</label>
+							<p class="description"><?php esc_html_e( 'All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Fixing buttons', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Spacing along each sheet', NH_TC_TD ); ?>
+								<input type="number" min="100" max="1000" name="<?php echo esc_attr( $key ); ?>[fixing_button_spacing_mm]" value="<?php echo esc_attr( isset( $s['fixing_button_spacing_mm'] ) ? $s['fixing_button_spacing_mm'] : 400 ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Pack size', NH_TC_TD ); ?>
+								<input type="number" min="1" max="500" name="<?php echo esc_attr( $key ); ?>[fixing_button_pack_size]" value="<?php echo esc_attr( isset( $s['fixing_button_pack_size'] ) ? $s['fixing_button_pack_size'] : 50 ); ?>">
+							</label>
+							<p class="description"><?php esc_html_e( 'Buttons = sheets × ceil(sheet length ÷ spacing), then rounded up to packs. Map a product below; leave the product empty to hide this line from customers.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Tape, silicone and wall length', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Tape roll length', NH_TC_TD ); ?>
+								<input type="number" min="1000" max="50000" step="1000" name="<?php echo esc_attr( $key ); ?>[tape_roll_mm]" value="<?php echo esc_attr( $s['tape_roll_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Silicone metres per tube', NH_TC_TD ); ?>
+								<input type="number" min="1" max="50" step="0.5" name="<?php echo esc_attr( $key ); ?>[silicon_metres_per_tube]" value="<?php echo esc_attr( $s['silicon_metres_per_tube'] ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Wall / ridge piece', NH_TC_TD ); ?>
+								<input type="number" min="500" max="6000" step="100" name="<?php echo esc_attr( $key ); ?>[wall_profile_mm]" value="<?php echo esc_attr( $s['wall_profile_mm'] ); ?>"> mm
+							</label>
+						</td>
 					</tr>
 				</table>
 
@@ -364,13 +408,14 @@ class NH_TC_Admin {
 				<table class="form-table">
 					<?php
 					$hw = array(
-						'screws'    => __( 'Wood screws with washers', NH_TC_TD ),
-						'vent_tape' => __( 'Ventilation / anti-dust tape', NH_TC_TD ),
-						'iso_tape'  => __( 'Insulation sealing tape', NH_TC_TD ),
-						'gasket'    => __( 'EPDM rubber gasket 50 mm', NH_TC_TD ),
-						'silicon'   => __( 'Neutral silicone', NH_TC_TD ),
-						'wall'      => __( 'Wall profile 2.2 m', NH_TC_TD ),
-						'ridge'     => __( 'Ridge profile 2.2 m (gable)', NH_TC_TD ),
+						'screws'          => __( 'Wood screws with washers', NH_TC_TD ),
+						'fixing_buttons' => __( 'Fixing buttons (optional)', NH_TC_TD ),
+						'vent_tape'       => __( 'Ventilation / anti-dust tape', NH_TC_TD ),
+						'iso_tape'        => __( 'Insulation sealing tape', NH_TC_TD ),
+						'gasket'          => __( 'EPDM rubber gasket 50 mm', NH_TC_TD ),
+						'silicon'         => __( 'Neutral silicone', NH_TC_TD ),
+						'wall'            => __( 'Wall profile 2.2 m', NH_TC_TD ),
+						'ridge'           => __( 'Ridge profile 2.2 m (gable)', NH_TC_TD ),
 					);
 					foreach ( $hw as $slot => $label ) {
 						echo '<tr><th>' . esc_html( $label ) . '</th><td>';
@@ -413,13 +458,13 @@ class NH_TC_Admin {
 			</ul>
 
 			<h3><?php esc_html_e( 'Connecting profiles and screws', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening.', NH_TC_TD ); ?></p>
 
 			<h3><?php esc_html_e( 'Finish, wall and ridge', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
 
 			<h3><?php esc_html_e( 'Tapes, gasket and silicone', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube.', NH_TC_TD ); ?></p>
 			<p><?php esc_html_e( 'The rafter count in the spacing note is advice. Rafters are not a product in the kit.', NH_TC_TD ); ?></p>
 		</div>
 		<?php

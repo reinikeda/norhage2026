@@ -52,9 +52,104 @@
   var stockOos = root.querySelector('[data-stock-oos]');
   var stockState = { key: '', channel: '', width: '', length: '' };
   var stockSig = '';
+  var wizardStep = 1;
+  var mobileBar = root.querySelector('[data-mobile-bar]');
+  var mobileTotal = root.querySelector('[data-mobile-total]');
+  var mobileCta = root.querySelector('[data-mobile-cta]');
+  var wizardBack = root.querySelector('[data-wizard-back]');
+  var wizardNext = root.querySelector('[data-wizard-next]');
+  var thicknessChips = root.querySelector('[data-thickness-chips]');
 
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
+  }
+
+  function setWizardStep(step) {
+    wizardStep = Math.max(1, Math.min(3, Number(step) || 1));
+    root.setAttribute('data-wizard-step', String(wizardStep));
+    root.querySelectorAll('[data-panel]').forEach(function (panel) {
+      var n = Number(panel.getAttribute('data-panel'));
+      var on = n === wizardStep;
+      panel.hidden = !on;
+      panel.classList.toggle('is-active', on);
+    });
+    root.querySelectorAll('[data-goto]').forEach(function (btn) {
+      var n = Number(btn.getAttribute('data-goto'));
+      var on = n === wizardStep;
+      btn.classList.toggle('is-active', on);
+      btn.classList.toggle('is-done', n < wizardStep);
+      if (on) btn.setAttribute('aria-current', 'step');
+      else btn.removeAttribute('aria-current');
+    });
+    if (wizardBack) wizardBack.hidden = wizardStep <= 1;
+    if (wizardNext) {
+      wizardNext.hidden = wizardStep >= 3;
+      wizardNext.textContent = wizardStep === 2
+        ? i18n('reviewKit', 'Review kit')
+        : i18n('continue', 'Continue');
+    }
+    if (mobileCta) {
+      mobileCta.textContent = wizardStep >= 3
+        ? i18n('addKit', 'Add kit to basket')
+        : (wizardStep === 2 ? i18n('reviewKit', 'Review kit') : i18n('continue', 'Continue'));
+    }
+    if (wizardStep === 3 && root.querySelector('.nh-tc__offer')) {
+      try {
+        root.querySelector('.nh-tc__offer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  function syncThicknessChips() {
+    if (!thicknessChips || !thkSel) return;
+    var values = Array.prototype.map.call(thkSel.options, function (o) { return o.value; }).filter(Boolean);
+    var guides = [
+      { mm: '10', label: i18n('thkLight', 'Light duty') },
+      { mm: '16', label: i18n('thkTypical', 'Most terraces') },
+      { mm: '25', label: i18n('thkInsulated', 'Best insulation') }
+    ];
+    thicknessChips.innerHTML = '';
+    guides.forEach(function (g) {
+      if (values.indexOf(g.mm) === -1) return;
+      var label = document.createElement('label');
+      label.className = 'nh-tc__thk';
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'nh_tc_thk_guide';
+      input.value = g.mm;
+      if (String(thkSel.value) === g.mm) input.checked = true;
+      var title = document.createElement('span');
+      title.className = 'nh-tc__thk-mm';
+      title.textContent = i18n('mm', '%d mm').replace('%d', g.mm);
+      var sub = document.createElement('span');
+      sub.className = 'nh-tc__thk-sub';
+      sub.textContent = g.label;
+      label.appendChild(input);
+      label.appendChild(title);
+      label.appendChild(sub);
+      label.addEventListener('change', function () {
+        if (!input.checked) return;
+        thkSel.value = g.mm;
+        var evt = document.createEvent('HTMLEvents');
+        evt.initEvent('change', true, false);
+        thkSel.dispatchEvent(evt);
+      });
+      thicknessChips.appendChild(label);
+    });
+  }
+
+  function kitGroup(role) {
+    if (role === 'sheet') return 'sheets';
+    if (role === 'connecting' || role === 'finish' || role === 'wall' || role === 'ridge' || role === 'end_cap') return 'profiles';
+    if (role === 'vent_tape' || role === 'iso_tape' || role === 'gasket' || role === 'silicon') return 'sealing';
+    return 'fixings';
+  }
+
+  function groupLabel(key) {
+    if (key === 'sheets') return i18n('groupSheets', 'Sheets');
+    if (key === 'profiles') return i18n('groupProfiles', 'Profiles');
+    if (key === 'sealing') return i18n('groupSealing', 'Sealing');
+    return i18n('groupFixings', 'Fixings');
   }
 
   function labelFor(value, fallbackMap) {
@@ -93,6 +188,7 @@
     fillSelect(thkSel, thicknesses, '10');
     var colours = thkMap[thkSel.value] || [];
     fillSelect(colSel, colours, 'clear');
+    syncThicknessChips();
   }
 
   function syncProfileOptions() {
@@ -426,13 +522,16 @@
       itemsEl.innerHTML = '<li class="nh-tc__empty">' + i18n('loading', 'Enter a size to see the kit.') + '</li>';
       atc.disabled = true;
       totalsEl.hidden = true;
+      if (mobileBar) mobileBar.hidden = true;
       drawInlineThumbs([]);
       return;
     }
 
     var taxDisplay = payload.tax_display || cfg.taxDisplay || 'incl';
+    var order = ['sheets', 'profiles', 'sealing', 'fixings'];
+    var buckets = { sheets: [], profiles: [], sealing: [], fixings: [] };
 
-    function addRow(item, isMissing) {
+    function addRow(item, isMissing, list) {
       var li = document.createElement('li');
       if (isMissing) li.className = 'is-missing';
       var thumb = productThumb(item);
@@ -476,11 +575,20 @@
       li.appendChild(name);
       li.appendChild(price);
       li.appendChild(spec);
-      itemsEl.appendChild(li);
+      list.push(li);
     }
 
-    items.forEach(function (item) { addRow(item, false); });
-    missing.forEach(function (item) { addRow(item, true); });
+    items.forEach(function (item) { addRow(item, false, buckets[kitGroup(item.role)] || buckets.fixings); });
+    missing.forEach(function (item) { addRow(item, true, buckets[kitGroup(item.role)] || buckets.fixings); });
+
+    order.forEach(function (key) {
+      if (!buckets[key].length) return;
+      var header = document.createElement('li');
+      header.className = 'nh-tc__group';
+      header.textContent = groupLabel(key);
+      itemsEl.appendChild(header);
+      buckets[key].forEach(function (li) { itemsEl.appendChild(li); });
+    });
 
     if (metaEl && payload.meta) {
       metaEl.textContent = i18n('sheets', '%d sheets').replace('%d', payload.meta.sheet_count);
@@ -492,7 +600,10 @@
     if (payload.totals) {
       totalsEl.hidden = false;
       showPrice(taxEl, payload.totals.tax_formatted || fmt(payload.totals.tax));
-      showPrice(totalEl, payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc));
+      var totalText = payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
+      showPrice(totalEl, totalText);
+      if (mobileTotal) showPrice(mobileTotal, totalText);
+      if (mobileBar) mobileBar.hidden = false;
     }
 
     atc.disabled = items.length === 0;
@@ -869,6 +980,32 @@
   form.addEventListener('change', schedule);
   atc.addEventListener('click', addToCart);
 
+  root.querySelectorAll('[data-goto]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setWizardStep(btn.getAttribute('data-goto'));
+    });
+  });
+  if (wizardBack) {
+    wizardBack.addEventListener('click', function () {
+      setWizardStep(wizardStep - 1);
+    });
+  }
+  if (wizardNext) {
+    wizardNext.addEventListener('click', function () {
+      setWizardStep(wizardStep + 1);
+    });
+  }
+  if (mobileCta) {
+    mobileCta.addEventListener('click', function () {
+      if (wizardStep >= 3) addToCart();
+      else setWizardStep(wizardStep + 1);
+    });
+  }
+  if (thkSel) {
+    thkSel.addEventListener('change', syncThicknessChips);
+  }
+
+  setWizardStep(1);
   syncSheetOptions();
   syncProfileOptions();
   applySpacing(true);

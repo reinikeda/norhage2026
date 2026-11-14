@@ -34,6 +34,10 @@ class NH_TC_Defaults {
 			'standard_sheet_width_mm'=> 2100,
 			'wall_profile_mm'        => 2200,
 			'screw_spacing_mm'       => 200,
+			'finish_screw_spacing_mm'=> 400,
+			'wall_screw_spacing_mm'  => 400,
+			'fixing_button_spacing_mm' => 400,
+			'fixing_button_pack_size'  => 50,
 			'screw_pack_size'        => 50,
 			'silicon_metres_per_tube'=> 10,
 			'tape_roll_mm'           => 5000,
@@ -127,6 +131,7 @@ class NH_TC_Defaults {
 			),
 			'hardware'               => array(
 				'screws'      => '9058',
+				'fixing_buttons' => '',
 				'wall'        => '70492305',
 				'ridge'       => '70492305',
 				'vent_tape'   => '804420',

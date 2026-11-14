@@ -21,7 +21,10 @@
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
  * - Wall profiles cover the wall width in 2.2 m pieces.
- * - Screws: one every 200 mm along each connecting profile, sold in packs of 50.
+ * - Screws: every 200 mm along each connecting profile, plus finish and wall/ridge
+ *   runs (default 400 mm), sold in packs of 50.
+ * - Fixing buttons: one every 400 mm along each sheet length (mid-span fastening),
+ *   sold in packs when a pack size is set.
  *
  * @package nh-terrace-calculator
  */
@@ -167,9 +170,24 @@ class NH_TC_Engine {
 			: array( $sheet_length, $sheet_length, $width );
 
 		$connecting_stock_mm = self::smallest_stock( $sheet_length, $settings['profile_stock_mm'] );
-		$screws_raw          = $connecting_count * (int) ceil( $connecting_stock_mm / max( 1, (int) $settings['screw_spacing_mm'] ) );
+		$connect_spacing     = max( 1, (int) ( $settings['screw_spacing_mm'] ?? 200 ) );
+		$finish_spacing      = max( 1, (int) ( $settings['finish_screw_spacing_mm'] ?? 400 ) );
+		$wall_spacing        = max( 1, (int) ( $settings['wall_screw_spacing_mm'] ?? 400 ) );
+		$button_spacing      = max( 1, (int) ( $settings['fixing_button_spacing_mm'] ?? 400 ) );
+		$connect_screws      = $connecting_count * (int) ceil( $connecting_stock_mm / $connect_spacing );
+		$finish_screws       = 0;
+		foreach ( $finish_runs as $run_mm ) {
+			$finish_screws += (int) ceil( max( 1, (int) $run_mm ) / $finish_spacing );
+		}
+		$wall_qty            = (int) ceil( $width / max( 1, (int) $settings['wall_profile_mm'] ) );
+		$wall_piece_mm       = max( 1, (int) $settings['wall_profile_mm'] );
+		$wall_screws         = $wall_qty * (int) ceil( $wall_piece_mm / $wall_spacing );
+		$screws_raw          = $connect_screws + $finish_screws + $wall_screws;
 		$pack_size           = max( 1, (int) $settings['screw_pack_size'] );
 		$screw_packs         = (int) ceil( $screws_raw / $pack_size );
+		$buttons_raw         = $sheet_count * (int) ceil( max( 1, $sheet_length ) / $button_spacing );
+		$button_pack         = max( 1, (int) ( $settings['fixing_button_pack_size'] ?? 50 ) );
+		$button_packs        = (int) ceil( $buttons_raw / $button_pack );
 
 		$end_width_mm = 0;
 		foreach ( $sheets as $sheet ) {
@@ -181,7 +199,6 @@ class NH_TC_Engine {
 		$silicon_qty  = max( 1, (int) ceil( ( $perimeter_mm / 1000 ) / max( 1, (float) $settings['silicon_metres_per_tube'] ) ) );
 		$tape_width   = self::tape_width_mm( $thk );
 		$tape_rolls   = max( 1, (int) ceil( $end_width_mm / max( 1, (int) $settings['tape_roll_mm'] ) ) );
-		$wall_qty     = (int) ceil( $width / max( 1, (int) $settings['wall_profile_mm'] ) );
 
 		$finish_packed = array();
 		foreach ( $finish_runs as $run_mm ) {
@@ -226,6 +243,15 @@ class NH_TC_Engine {
 				'attrs'     => array(
 					'dimensions' => self::screw_size( $thk, $settings ),
 				),
+			);
+		}
+
+		if ( $button_packs > 0 ) {
+			$lines[] = array(
+				'role'      => 'fixing_button',
+				'qty'       => $button_packs,
+				'qty_raw'   => $buttons_raw,
+				'pack_size' => $button_pack,
 			);
 		}
 
@@ -351,6 +377,10 @@ class NH_TC_Engine {
 				'beam_count'           => $beam_count,
 				'connecting_count'     => $connecting_count,
 				'screws_raw'           => $screws_raw,
+				'connect_screws'       => $connect_screws,
+				'finish_screws'        => $finish_screws,
+				'wall_screws'          => $wall_screws,
+				'buttons_raw'          => $buttons_raw,
 				'tape_width_mm'        => $tape_width,
 				'gasket_m'             => $gasket_m,
 				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
