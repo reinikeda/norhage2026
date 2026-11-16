@@ -162,6 +162,14 @@ nh_ig_assert(
 	'shipping is rounded after the size calculator',
 	false !== strpos( $source, "add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', PHP_INT_MAX )" )
 );
+nh_ig_assert(
+	'an empty cart rate uses the shop VAT',
+	false !== strpos( $source, 'get_base_tax_rates' )
+);
+nh_ig_assert(
+	'the catalog switcher still owns product pages',
+	false !== strpos( $source, "add_filter( 'pre_option_woocommerce_tax_display_cart', 'nh_ig_frontend_cart_tax_display', 20 )" )
+);
 
 $sheet = nh_ig_adjust_net( 136.80 + 28.00, nh_ig_rate( 25 ) );
 $material = nh_ig_adjust_net( 136.80, nh_ig_rate( 25 ) );
@@ -189,7 +197,91 @@ $before_vat = $sheet['net'] + $plain['net'];
 nh_ig_assert( 'basket subtotal is the sum of the prices with VAT', abs( $basket - 330 ) < 0.001 );
 nh_ig_assert( 'basket subtotal is not the before-VAT sum', abs( $basket - $before_vat ) > 1 );
 
-nh_ig_assert( 'the basket uses the shop VAT display', nh_ig_frontend_cart_tax_display( 'excl' ) === 'incl' );
+nh_ig_assert( 'basket and checkout show prices with VAT', nh_ig_frontend_cart_tax_display( 'excl' ) === 'incl' );
+nh_ig_assert( 'cart amounts stay with VAT when Woo would show the net', nh_ig_cart_amounts_include_vat( false ) === true );
+nh_ig_assert( '206 with VAT is not printed as 164.80', abs( nh_ig_amount_with_vat( 164.80, 41.20 ) - 206 ) < 0.001 );
+
+if ( ! function_exists( 'wc_price' ) ) {
+	function wc_price( $amount ) {
+		return 'PRICE:' . number_format( (float) $amount, 2, '.', '' );
+	}
+}
+
+class NH_IG_Test_Cart {
+	public $lines;
+	public $ship;
+	public $ship_tax;
+
+	public function __construct( $lines, $ship = 0.0, $ship_tax = 0.0 ) {
+		$this->lines     = $lines;
+		$this->ship      = $ship;
+		$this->ship_tax  = $ship_tax;
+	}
+
+	public function get_cart() {
+		return $this->lines;
+	}
+
+	public function get_shipping_total() {
+		return $this->ship;
+	}
+
+	public function get_shipping_tax() {
+		return $this->ship_tax;
+	}
+
+	public function get_fee_total() {
+		return 0.0;
+	}
+
+	public function get_fee_tax() {
+		return 0.0;
+	}
+}
+
+$with_vat = new NH_IG_Test_Cart(
+	array(
+		array(
+			'line_subtotal'     => 164.80,
+			'line_subtotal_tax' => 41.20,
+			'line_total'        => 164.80,
+			'line_tax'          => 41.20,
+		),
+	),
+	80.00,
+	20.00
+);
+nh_ig_assert(
+	'subtotal HTML is the price with VAT',
+	'PRICE:206.00' === nh_ig_filter_cart_subtotal( 'PRICE:164.80', false, $with_vat )
+);
+nh_ig_assert(
+	'a line with VAT is shown with VAT',
+	'PRICE:206.00' === nh_ig_filter_visible_line_subtotal( 'PRICE:164.80', $with_vat->lines[0], 'k' )
+);
+nh_ig_assert(
+	'shipping HTML is the price with VAT',
+	'PRICE:100.00' === nh_ig_filter_visible_shipping_total( 'PRICE:80.00', $with_vat )
+);
+nh_ig_assert(
+	'order total is lines, shipping and their VAT',
+	abs( nh_ig_charged_gross( $with_vat ) - 306 ) < 0.001
+);
+
+$without_vat = new NH_IG_Test_Cart(
+	array(
+		array(
+			'line_subtotal'     => 164.80,
+			'line_subtotal_tax' => 0,
+			'line_total'        => 164.80,
+			'line_tax'          => 0,
+		),
+	)
+);
+nh_ig_assert(
+	'missing VAT is not painted onto a before-VAT line',
+	'BEFORE' === nh_ig_filter_cart_subtotal( 'BEFORE', false, $without_vat )
+);
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/custom-cutting.js' );
 nh_ig_assert(

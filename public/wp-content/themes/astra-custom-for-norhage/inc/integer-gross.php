@@ -449,7 +449,59 @@ function nh_ig_rates_for_product( $product ) {
 		return array();
 	}
 	$tax_class = method_exists( $product, 'get_tax_class' ) ? $product->get_tax_class() : '';
-	return nh_ig_normalize_rates( WC_Tax::get_rates( $tax_class ) );
+	$rates     = nh_ig_normalize_rates( WC_Tax::get_rates( $tax_class ) );
+	// No matching customer rate would leave the basket total before VAT.
+	// Use the shop's own VAT for a local customer. A foreign country with
+	// no rate, and a VAT-exempt customer, stay without this VAT.
+	if ( ! $rates && nh_ig_use_shop_vat_rates() && method_exists( 'WC_Tax', 'get_base_tax_rates' ) ) {
+		$rates = nh_ig_normalize_rates( WC_Tax::get_base_tax_rates( $tax_class ) );
+	}
+	return $rates;
+}
+
+/**
+ * Shop VAT applies when the customer is local, or has not chosen a country yet.
+ *
+ * @return bool
+ */
+function nh_ig_use_shop_vat_rates() {
+	if ( nh_ig_customer_is_vat_exempt() ) {
+		return false;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->customer ) {
+		return true;
+	}
+	$customer = WC()->customer;
+	$country  = '';
+	if ( method_exists( $customer, 'get_shipping_country' ) ) {
+		$country = (string) $customer->get_shipping_country();
+	}
+	if ( '' === $country && method_exists( $customer, 'get_billing_country' ) ) {
+		$country = (string) $customer->get_billing_country();
+	}
+	if ( '' === $country ) {
+		return true;
+	}
+	$base = '';
+	if ( function_exists( 'wc_get_base_location' ) ) {
+		$location = wc_get_base_location();
+		if ( is_array( $location ) && isset( $location['country'] ) ) {
+			$base = (string) $location['country'];
+		}
+	}
+	return '' !== $base && $country === $base;
+}
+
+/**
+ * A VAT-exempt customer is shown prices before VAT on purpose.
+ *
+ * @return bool
+ */
+function nh_ig_customer_is_vat_exempt() {
+	return function_exists( 'WC' )
+		&& WC()->customer
+		&& method_exists( WC()->customer, 'get_is_vat_exempt' )
+		&& WC()->customer->get_is_vat_exempt();
 }
 
 /**
@@ -813,6 +865,26 @@ function nh_ig_after_calculate_totals( $cart ) {
 
 		$old_sub_gross = nh_ig_round_half_up( $sub_net + $sub_tax, $decimals );
 		$old_gross     = nh_ig_round_half_up( $line_net + $line_tax, $decimals );
+		// No VAT rate must not turn a line that already has VAT into a before-VAT price.
+		if ( empty( $rates ) && ( $sub_tax > 0.00001 || $line_tax > 0.00001 ) ) {
+			$sum_subtotal += $sub_net;
+			$sum_subtax   += $sub_tax;
+			$sum_total    += $line_net;
+			$sum_tax      += $line_tax;
+			$existing = array();
+			if ( isset( $item['line_tax_data']['total'] ) && is_array( $item['line_tax_data']['total'] ) ) {
+				$existing = $item['line_tax_data']['total'];
+			} elseif ( $line_tax > 0 ) {
+				$existing = array( 'kept' => $line_tax );
+			}
+			foreach ( $existing as $rate_id => $amount ) {
+				if ( ! isset( $merged[ $rate_id ] ) ) {
+					$merged[ $rate_id ] = 0.0;
+				}
+				$merged[ $rate_id ] += (float) $amount;
+			}
+			continue;
+		}
 		$discount      = nh_ig_round_half_up( $old_sub_gross - $old_gross, $decimals );
 		$targets       = nh_ig_line_targets( $unit['gross'], $qty, $discount );
 
@@ -899,6 +971,14 @@ function nh_ig_after_calculate_totals( $cart ) {
 			$rates = array();
 			if ( ! empty( $fee->taxable ) && function_exists( 'WC_Tax' ) ) {
 				$rates = nh_ig_normalize_rates( WC_Tax::get_rates( $class ) );
+				if ( ! $rates && nh_ig_use_shop_vat_rates() && method_exists( 'WC_Tax', 'get_base_tax_rates' ) ) {
+					$rates = nh_ig_normalize_rates( WC_Tax::get_base_tax_rates( $class ) );
+				}
+			}
+			if ( ! $rates && $tax > 0.00001 ) {
+				$fee_net += $total;
+				$fee_tax += $tax;
+				continue;
 			}
 			$split = nh_ig_split_for_gross( abs( $gross ), $rates, abs( $total ), $decimals );
 			$fee->total = $sign * $split['net'];
@@ -957,12 +1037,12 @@ function nh_ig_trim_zeros( $trim ) {
 }
 
 /**
- * The basket uses the same VAT mode as the catalog.
+ * Basket and checkout always show the price with VAT.
  *
- * Prices are entered before VAT. On the storefront the customer sees prices
- * with VAT, including the basket subtotal. A visitor who switches the catalog
- * to before VAT sees that same mode in the basket. The product editor keeps
- * the saved WooCommerce option.
+ * Prices are entered and stored before VAT. The catalog switcher can still
+ * show a product page before VAT, but the basket, the side cart and checkout
+ * show the amount the customer pays. That amount includes VAT. The product
+ * editor keeps WooCommerce's saved option.
  *
  * @param mixed $value Option value coming from WordPress. False means "read the database".
  * @return mixed
@@ -971,26 +1051,224 @@ function nh_ig_frontend_cart_tax_display( $value ) {
 	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
 		return $value;
 	}
-
-	static $guard = false;
-	if ( $guard ) {
-		return $value;
+	if ( nh_ig_customer_is_vat_exempt() ) {
+		return 'excl';
 	}
-	$guard = true;
+	return 'incl';
+}
 
-	if ( class_exists( 'NHTaxSwitcher' ) && is_callable( array( 'NHTaxSwitcher', 'is_enabled' ) ) && NHTaxSwitcher::is_enabled() && is_callable( array( 'NHTaxSwitcher', 'current_mode' ) ) ) {
-		$mode  = NHTaxSwitcher::current_mode();
-		$guard = false;
-		return ( 'excl' === $mode ) ? 'excl' : 'incl';
+/**
+ * Same rule as the cart tax-display option, for code that asks the cart
+ * object instead of reading the option.
+ *
+ * @param bool $include Woo's own answer.
+ * @return bool
+ */
+function nh_ig_cart_amounts_include_vat( $include ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+		return $include;
 	}
-
-	$shop  = function_exists( 'get_option' ) ? get_option( 'woocommerce_tax_display_shop' ) : $value;
-	$guard = false;
-	if ( 'incl' === $shop || 'excl' === $shop ) {
-		return $shop;
+	if ( nh_ig_customer_is_vat_exempt() ) {
+		return false;
 	}
+	return true;
+}
 
-	return $value;
+/**
+ * Storefront basket and checkout, for a customer who pays VAT.
+ *
+ * @return bool
+ */
+function nh_ig_storefront_shows_vat() {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+		return false;
+	}
+	return ! nh_ig_customer_is_vat_exempt();
+}
+
+/**
+ * Before-VAT amount plus its VAT. This is the price with VAT.
+ *
+ * @param float $net Amount before VAT.
+ * @param float $tax VAT.
+ * @return float
+ */
+function nh_ig_amount_with_vat( $net, $tax ) {
+	$decimals = function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2;
+	return nh_ig_round_half_up( (float) $net + (float) $tax, $decimals );
+}
+
+/**
+ * Order total with VAT: discounted lines, shipping and fees.
+ *
+ * @param WC_Cart $cart Cart.
+ * @return float
+ */
+function nh_ig_charged_gross( $cart ) {
+	if ( ! is_object( $cart ) || ! method_exists( $cart, 'get_cart' ) ) {
+		return 0.0;
+	}
+	$gross = 0.0;
+	foreach ( $cart->get_cart() as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$gross += nh_ig_amount_with_vat( $item['line_total'] ?? 0, $item['line_tax'] ?? 0 );
+	}
+	if ( method_exists( $cart, 'get_shipping_total' ) ) {
+		$gross += (float) $cart->get_shipping_total();
+	}
+	if ( method_exists( $cart, 'get_shipping_tax' ) ) {
+		$gross += (float) $cart->get_shipping_tax();
+	}
+	if ( method_exists( $cart, 'get_fee_total' ) ) {
+		$gross += (float) $cart->get_fee_total();
+	}
+	if ( method_exists( $cart, 'get_fee_tax' ) ) {
+		$gross += (float) $cart->get_fee_tax();
+	}
+	if ( $gross < 0 ) {
+		$gross = 0.0;
+	}
+	$decimals = function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2;
+	return nh_ig_round_half_up( $gross, $decimals );
+}
+
+/**
+ * Line total in the basket and checkout, with VAT.
+ *
+ * @param string $html          Existing HTML.
+ * @param array  $cart_item     Cart line.
+ * @param string $cart_item_key Cart key.
+ * @return string
+ */
+function nh_ig_filter_visible_line_subtotal( $html, $cart_item, $cart_item_key ) {
+	unset( $cart_item_key );
+	if ( ! nh_ig_storefront_shows_vat() || ! is_array( $cart_item ) || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	$tax = (float) ( $cart_item['line_subtotal_tax'] ?? 0 );
+	if ( $tax <= 0.00001 ) {
+		return $html;
+	}
+	$gross = nh_ig_amount_with_vat( $cart_item['line_subtotal'] ?? 0, $tax );
+	if ( $gross <= 0 ) {
+		return $html;
+	}
+	return wc_price( $gross );
+}
+
+/**
+ * Unit price in the basket, with VAT.
+ *
+ * @param string $html          Existing HTML.
+ * @param array  $cart_item     Cart line.
+ * @param string $cart_item_key Cart key.
+ * @return string
+ */
+function nh_ig_filter_visible_line_price( $html, $cart_item, $cart_item_key ) {
+	unset( $cart_item_key );
+	if ( ! nh_ig_storefront_shows_vat() || ! is_array( $cart_item ) || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	$qty = isset( $cart_item['quantity'] ) ? (float) $cart_item['quantity'] : 1.0;
+	if ( $qty <= 0 ) {
+		return $html;
+	}
+	$tax = (float) ( $cart_item['line_subtotal_tax'] ?? 0 );
+	if ( $tax <= 0.00001 ) {
+		return $html;
+	}
+	$gross = nh_ig_amount_with_vat( $cart_item['line_subtotal'] ?? 0, $tax );
+	if ( $gross <= 0 ) {
+		return $html;
+	}
+	$unit = $gross / $qty;
+	if ( function_exists( 'get_woocommerce_currency' ) && nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+		$unit = (float) round( $unit, 0, PHP_ROUND_HALF_UP );
+	} else {
+		$unit = nh_ig_round_half_up( $unit, function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2 );
+	}
+	return wc_price( $unit );
+}
+
+/**
+ * Fee row in the basket and checkout, with VAT.
+ *
+ * @param string $html Existing HTML.
+ * @param object $fee  Fee.
+ * @return string
+ */
+function nh_ig_filter_visible_fee_html( $html, $fee ) {
+	if ( ! nh_ig_storefront_shows_vat() || ! is_object( $fee ) || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	$net = isset( $fee->total ) ? (float) $fee->total : 0.0;
+	$tax = isset( $fee->tax ) ? (float) $fee->tax : 0.0;
+	if ( $tax <= 0.00001 ) {
+		return $html;
+	}
+	return wc_price( nh_ig_amount_with_vat( $net, $tax ) );
+}
+
+/**
+ * Shipping price in the basket and checkout, with VAT.
+ *
+ * @param string  $html Existing HTML.
+ * @param WC_Cart $cart Cart.
+ * @return string
+ */
+function nh_ig_filter_visible_shipping_total( $html, $cart ) {
+	if ( ! nh_ig_storefront_shows_vat() || ! is_object( $cart ) || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	if ( ! method_exists( $cart, 'get_shipping_total' ) ) {
+		return $html;
+	}
+	$net = (float) $cart->get_shipping_total();
+	$tax = method_exists( $cart, 'get_shipping_tax' ) ? (float) $cart->get_shipping_tax() : 0.0;
+	if ( $tax <= 0.00001 ) {
+		return $html;
+	}
+	return wc_price( nh_ig_amount_with_vat( $net, $tax ) );
+}
+
+/**
+ * Formatted order total. Used by the sticky bar and the checkout header.
+ *
+ * @param string $html Existing HTML.
+ * @return string
+ */
+function nh_ig_filter_cart_total_html( $html ) {
+	if ( ! nh_ig_storefront_shows_vat() || ! function_exists( 'WC' ) || ! WC()->cart || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	$gross = nh_ig_charged_gross( WC()->cart );
+	if ( $gross <= 0 ) {
+		return $html;
+	}
+	return wc_price( $gross );
+}
+
+/**
+ * Checkout and basket total row, with VAT included in the number.
+ *
+ * @param string $html Existing HTML.
+ * @return string
+ */
+function nh_ig_filter_visible_order_total( $html ) {
+	if ( ! nh_ig_storefront_shows_vat() || ! function_exists( 'WC' ) || ! WC()->cart || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	$gross = nh_ig_charged_gross( WC()->cart );
+	if ( $gross <= 0 ) {
+		return $html;
+	}
+	$out = '<strong>' . wc_price( $gross ) . '</strong> ';
+	if ( is_string( $html ) && preg_match( '/<small class="includes_tax">.*?<\/small>/s', $html, $match ) ) {
+		$out .= $match[0];
+	}
+	return $out;
 }
 
 /**
@@ -1006,10 +1284,10 @@ function nh_ig_filter_cart_subtotal( $cart_subtotal, $compound, $cart ) {
 	if ( $compound || ! is_object( $cart ) || ! function_exists( 'wc_price' ) ) {
 		return $cart_subtotal;
 	}
-	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+	if ( nh_ig_customer_is_vat_exempt() ) {
 		return $cart_subtotal;
 	}
-	if ( ! method_exists( $cart, 'display_prices_including_tax' ) || ! $cart->display_prices_including_tax() ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
 		return $cart_subtotal;
 	}
 	if ( ! method_exists( $cart, 'get_cart' ) ) {
@@ -1025,6 +1303,16 @@ function nh_ig_filter_cart_subtotal( $cart_subtotal, $compound, $cart ) {
 		}
 	}
 	if ( ! $ready ) {
+		return $cart_subtotal;
+	}
+
+	$tax = 0.0;
+	foreach ( $lines as $line ) {
+		if ( is_array( $line ) ) {
+			$tax += isset( $line['line_subtotal_tax'] ) ? (float) $line['line_subtotal_tax'] : 0.0;
+		}
+	}
+	if ( $tax <= 0.00001 ) {
 		return $cart_subtotal;
 	}
 
@@ -1060,6 +1348,13 @@ add_action( 'woocommerce_after_calculate_totals', 'nh_ig_after_calculate_totals'
 add_filter( 'woocommerce_price_trim_zeros', 'nh_ig_trim_zeros' );
 add_filter( 'woocommerce_get_price_including_tax', 'nh_ig_filter_including_tax', 9999, 3 );
 add_filter( 'pre_option_woocommerce_tax_display_cart', 'nh_ig_frontend_cart_tax_display', 20 );
+add_filter( 'woocommerce_cart_display_prices_including_tax', 'nh_ig_cart_amounts_include_vat', PHP_INT_MAX );
 add_filter( 'woocommerce_cart_subtotal', 'nh_ig_filter_cart_subtotal', 20, 3 );
+add_filter( 'woocommerce_cart_item_subtotal', 'nh_ig_filter_visible_line_subtotal', 15, 3 );
+add_filter( 'woocommerce_cart_item_price', 'nh_ig_filter_visible_line_price', 15, 3 );
+add_filter( 'woocommerce_cart_shipping_total', 'nh_ig_filter_visible_shipping_total', 15, 2 );
+add_filter( 'woocommerce_cart_totals_fee_html', 'nh_ig_filter_visible_fee_html', 15, 2 );
+add_filter( 'woocommerce_cart_total', 'nh_ig_filter_cart_total_html', 15 );
+add_filter( 'woocommerce_cart_totals_order_total_html', 'nh_ig_filter_visible_order_total', 15 );
 add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 );
 add_filter( 'woocommerce_get_variation_prices_hash', 'nh_ig_variation_prices_hash' );
