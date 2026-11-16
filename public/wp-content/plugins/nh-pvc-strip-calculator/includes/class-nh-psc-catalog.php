@@ -191,10 +191,13 @@ class NH_PSC_Catalog {
 
 		$unit_ex  = (float) wc_get_price_excluding_tax( $sell, array( 'qty' => 1 ) );
 		$unit_inc = (float) wc_get_price_including_tax( $sell, array( 'qty' => 1 ) );
-		$display  = (float) wc_get_price_to_display( $sell, array( 'qty' => 1 ) );
+		$unit     = self::whole_line( $unit_ex, $unit_inc, $sell );
+		$unit_ex  = $unit['ex'];
+		$unit_inc = $unit['inc'];
 		$image_id = $sell->get_image_id() ? $sell->get_image_id() : $parent->get_image_id();
 
 		$cart_qty = ( 'm' === ( $line['unit'] ?? '' ) ) ? round( $qty, 2 ) : max( 1, (int) round( $qty ) );
+		$line     = self::whole_line( $unit_ex * $cart_qty, $unit_inc * $cart_qty, $sell );
 
 		return array(
 			'role'         => $line['role'],
@@ -210,9 +213,9 @@ class NH_PSC_Catalog {
 			'image'        => $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_gallery_thumbnail' ) : '',
 			'unit_ex'      => $unit_ex,
 			'unit_inc'     => $unit_inc,
-			'line_ex'      => $unit_ex * $cart_qty,
-			'line_inc'     => $unit_inc * $cart_qty,
-			'price_html'   => wc_price( $display * $cart_qty ),
+			'line_ex'      => $line['ex'],
+			'line_inc'     => $line['inc'],
+			'price_html'   => wc_price( 'incl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? $line['inc'] : $line['ex'] ),
 			'in_stock'     => $sell->is_in_stock(),
 			'purchasable'  => $sell->is_purchasable(),
 		);
@@ -286,6 +289,22 @@ class NH_PSC_Catalog {
 	/**
 	 * @param float|int|string $amount
 	 */
+	/**
+	 * On NOK, SEK and DKK, the amount including VAT is a whole krone.
+	 *
+	 * @param WC_Product|null $product
+	 * @return array{ex: float, inc: float}
+	 */
+	private static function whole_line( $ex, $inc, $product = null ) {
+		if ( function_exists( 'nh_ig_round_display_pair' ) ) {
+			return nh_ig_round_display_pair( $ex, $inc, $product );
+		}
+		return array(
+			'ex'  => (float) $ex,
+			'inc' => (float) $inc,
+		);
+	}
+
 	public static function format_money( $amount ) {
 		if ( ! function_exists( 'wc_price' ) ) {
 			return '';

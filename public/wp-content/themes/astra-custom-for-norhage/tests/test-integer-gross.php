@@ -104,6 +104,21 @@ nh_ig_assert( 'shipping net plus VAT equals the gross', abs( ( $shipping['cost']
 $untaxed = nh_ig_round_cost_with_taxes( 49.40, array(), array() );
 nh_ig_assert( 'shipping without VAT rounds to 49', abs( $untaxed['cost'] - 49 ) < 0.001 );
 
+if ( ! function_exists( 'get_woocommerce_currency' ) ) {
+	function get_woocommerce_currency() {
+		return 'NOK';
+	}
+}
+
+$pair = nh_ig_round_display_pair( 39.60, 49.50 );
+nh_ig_assert( 'a 49.50 krone line becomes 50', abs( $pair['inc'] - 50 ) < 0.001 && abs( $pair['ex'] - $pair['inc'] ) < 0.001 );
+
+$source = file_get_contents( dirname( __DIR__ ) . '/inc/integer-gross.php' );
+nh_ig_assert(
+	'variable catalog prices use the same rounding',
+	false !== strpos( $source, "nh_ig_register_price_filter( 'woocommerce_variation_prices_price' )" )
+);
+
 if ( $failures > 0 ) {
 	fwrite( STDERR, "{$failures} failed\n" );
 	exit( 1 );

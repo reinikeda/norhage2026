@@ -413,6 +413,35 @@ function nh_ig_round_display_gross( $amount ) {
 }
 
 /**
+ * Round a price that already includes VAT to a whole krone, and return the
+ * before-VAT amount that adds back up to it.
+ *
+ * @param float           $ex      Amount before VAT.
+ * @param float           $inc     Amount including VAT.
+ * @param WC_Product|null $product Product used to read the VAT rate.
+ * @return array{ex: float, inc: float}
+ */
+function nh_ig_round_display_pair( $ex, $inc, $product = null ) {
+	$ex  = (float) $ex;
+	$inc = (float) $inc;
+	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+		return array(
+			'ex'  => $ex,
+			'inc' => $inc,
+		);
+	}
+
+	$target = (float) round( $inc, 0, PHP_ROUND_HALF_UP );
+	$rates  = is_object( $product ) ? nh_ig_rates_for_product( $product ) : array();
+	$split  = nh_ig_split_for_gross( $target, $rates, $ex );
+
+	return array(
+		'ex'  => (float) $split['net'],
+		'inc' => (float) $split['gross'],
+	);
+}
+
+/**
  * @param WC_Product $product
  * @return array<int, array{rate: float, compound: bool}>
  */
@@ -798,6 +827,12 @@ nh_ig_register_price_filter( 'woocommerce_product_get_sale_price' );
 nh_ig_register_price_filter( 'woocommerce_product_variation_get_price' );
 nh_ig_register_price_filter( 'woocommerce_product_variation_get_regular_price' );
 nh_ig_register_price_filter( 'woocommerce_product_variation_get_sale_price' );
+
+// Catalog and "From" prices read the raw variation amount, then add VAT.
+// These filters adjust that raw amount first, so the price with VAT is a whole krone.
+nh_ig_register_price_filter( 'woocommerce_variation_prices_price' );
+nh_ig_register_price_filter( 'woocommerce_variation_prices_regular_price' );
+nh_ig_register_price_filter( 'woocommerce_variation_prices_sale_price' );
 
 add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', 10000 );
 add_action( 'woocommerce_after_calculate_totals', 'nh_ig_after_calculate_totals', 9999 );

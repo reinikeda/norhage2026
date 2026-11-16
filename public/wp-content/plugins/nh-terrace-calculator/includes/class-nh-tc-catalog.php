@@ -160,8 +160,9 @@ class NH_TC_Catalog {
 
 		$item['unit_ex']  = $priced['ex'];
 		$item['unit_inc'] = $priced['inc'];
-		$item['line_ex']  = $priced['ex'] * $qty;
-		$item['line_inc'] = $priced['inc'] * $qty;
+		$line             = self::whole_line( $priced['ex'] * $qty, $priced['inc'] * $qty, $product );
+		$item['line_ex']  = $line['ex'];
+		$item['line_inc'] = $line['inc'];
 		$item['price_html'] = wc_price( 'incl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? $item['line_inc'] : $item['line_ex'] );
 
 		return $item;
@@ -434,7 +435,10 @@ class NH_TC_Catalog {
 
 		$unit_ex  = (float) wc_get_price_excluding_tax( $sell, array( 'qty' => 1 ) );
 		$unit_inc = (float) wc_get_price_including_tax( $sell, array( 'qty' => 1 ) );
-		$display  = (float) wc_get_price_to_display( $sell, array( 'qty' => 1 ) );
+		$unit     = self::whole_line( $unit_ex, $unit_inc, $sell );
+		$unit_ex  = $unit['ex'];
+		$unit_inc = $unit['inc'];
+		$line     = self::whole_line( $unit_ex * $qty, $unit_inc * $qty, $sell );
 
 		$image_id = $sell->get_image_id();
 		if ( ! $image_id ) {
@@ -461,9 +465,9 @@ class NH_TC_Catalog {
 			'image'        => $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_gallery_thumbnail' ) : '',
 			'unit_ex'      => $unit_ex,
 			'unit_inc'     => $unit_inc,
-			'line_ex'      => $unit_ex * $qty,
-			'line_inc'     => $unit_inc * $qty,
-			'price_html'   => wc_price( $display * $qty ),
+			'line_ex'      => $line['ex'],
+			'line_inc'     => $line['inc'],
+			'price_html'   => wc_price( 'incl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? $line['inc'] : $line['ex'] ),
 			'in_stock'     => $sell->is_in_stock(),
 			'purchasable'  => $sell->is_purchasable(),
 		);
@@ -612,6 +616,22 @@ class NH_TC_Catalog {
 	 *
 	 * @param float|int|string $amount
 	 */
+	/**
+	 * On NOK, SEK and DKK, the amount including VAT is a whole krone.
+	 *
+	 * @param WC_Product|null $product
+	 * @return array{ex: float, inc: float}
+	 */
+	private static function whole_line( $ex, $inc, $product = null ) {
+		if ( function_exists( 'nh_ig_round_display_pair' ) ) {
+			return nh_ig_round_display_pair( $ex, $inc, $product );
+		}
+		return array(
+			'ex'  => (float) $ex,
+			'inc' => (float) $inc,
+		);
+	}
+
 	public static function format_money( $amount ) {
 		if ( ! function_exists( 'wc_price' ) ) {
 			return '';
