@@ -58,8 +58,6 @@
   var mobileCta = root.querySelector('[data-mobile-cta]');
   var wizardBack = root.querySelector('[data-wizard-back]');
   var wizardNext = root.querySelector('[data-wizard-next]');
-  var thicknessChips = root.querySelector('[data-thickness-chips]');
-
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
   }
@@ -98,44 +96,6 @@
         root.querySelector('.nh-tc__offer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } catch (e) { /* ignore */ }
     }
-  }
-
-  function syncThicknessChips() {
-    if (!thicknessChips || !thkSel) return;
-    var values = Array.prototype.map.call(thkSel.options, function (o) { return o.value; }).filter(Boolean);
-    var guides = [
-      { mm: '10', label: i18n('thkLight', 'Light duty') },
-      { mm: '16', label: i18n('thkTypical', 'Most terraces') },
-      { mm: '25', label: i18n('thkInsulated', 'Best insulation') }
-    ];
-    thicknessChips.innerHTML = '';
-    guides.forEach(function (g) {
-      if (values.indexOf(g.mm) === -1) return;
-      var label = document.createElement('label');
-      label.className = 'nh-tc__thk';
-      var input = document.createElement('input');
-      input.type = 'radio';
-      input.name = 'nh_tc_thk_guide';
-      input.value = g.mm;
-      if (String(thkSel.value) === g.mm) input.checked = true;
-      var title = document.createElement('span');
-      title.className = 'nh-tc__thk-mm';
-      title.textContent = i18n('mm', '%d mm').replace('%d', g.mm);
-      var sub = document.createElement('span');
-      sub.className = 'nh-tc__thk-sub';
-      sub.textContent = g.label;
-      label.appendChild(input);
-      label.appendChild(title);
-      label.appendChild(sub);
-      label.addEventListener('change', function () {
-        if (!input.checked) return;
-        thkSel.value = g.mm;
-        var evt = document.createEvent('HTMLEvents');
-        evt.initEvent('change', true, false);
-        thkSel.dispatchEvent(evt);
-      });
-      thicknessChips.appendChild(label);
-    });
   }
 
   function kitGroup(role) {
@@ -188,7 +148,6 @@
     fillSelect(thkSel, thicknesses, '10');
     var colours = thkMap[thkSel.value] || [];
     fillSelect(colSel, colours, 'clear');
-    syncThicknessChips();
   }
 
   function syncProfileOptions() {
@@ -1018,10 +977,6 @@
       else setWizardStep(wizardStep + 1);
     });
   }
-  if (thkSel) {
-    thkSel.addEventListener('change', syncThicknessChips);
-  }
-
   setWizardStep(1);
   syncSheetOptions();
   syncProfileOptions();

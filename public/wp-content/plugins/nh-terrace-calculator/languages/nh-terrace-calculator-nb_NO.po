@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
-"PO-Revision-Date: 2026-11-16 14:17+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
+"PO-Revision-Date: 2026-11-16 14:25+0000\n"
 "Language: nb_NO\n"
 "Language-Team: Norwegian Bokmål\n"
 "MIME-Version: 1.0\n"
@@ -66,13 +66,13 @@ msgstr "En plate ville blitt bredere enn lagerbredden på %d mm. Reduser lekteav
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "En massiv polykarbonatplate er %1$d × %2$d mm og kan snus begge veier. Dette stykket er likevel for bredt. Reduser lekteavstanden."
 
-#, php-format
 msgid "Add kit to basket"
 msgstr "Legg settet i handlekurven"
 
 msgid "Adding kit…"
 msgstr "Legger til settet…"
 
+#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle tre skrueantall legges sammen og avrundes opp til pakker. Forbindelsesprofiler trenger vanligvis tettere avstand enn kantlister."
 
@@ -98,6 +98,7 @@ msgstr "Antrasitt"
 msgid "Area"
 msgstr "Areal"
 
+#, php-format
 msgid "Attached to a wall"
 msgstr "Festet til en vegg"
 
@@ -177,6 +178,7 @@ msgstr "Forbindelsesprofiler"
 msgid "Connecting profiles and screws"
 msgstr "Forbindelsesprofiler og skruer"
 
+#, php-format
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Forbindelsesprofiler tilsvarer skjøtene på tvers: én færre enn platene i bredden. Hvert profil er den korteste lagerlengden som dekker platelengden. Skruer dekker forbindelsesprofiler (standard hver 200 mm), avslutningskanter og vegg-/mønestykker (standard hver 400 mm), deretter avrunding til pakker. Endestykker er to per forbindelsesprofil. Plast-H-profilen har ingen endestykker. Festeknapper (valgfritt produkt) er én hver 400 mm langs hver platelengde for midtfesting."
 
@@ -288,6 +290,9 @@ msgstr "Festemidler"
 msgid "Frame details (rafter spacing & beam width)"
 msgstr "Rammedetaljer (lekteavstand og bjelkebredde)"
 
+msgid "From shop"
+msgstr "Fra butikken"
+
 msgid "Gable"
 msgstr "Saltak"
 
@@ -323,6 +328,9 @@ msgstr "Skjøtene ligger midt på bjelken og gir denne åpningen til forbindelse
 
 msgid "Joints sit on the centre of a rafter."
 msgstr "Skjøtene sitter i senter av en lekte."
+
+msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
+msgstr "Behold overordnet SKU for hver tykkelse og farge. Variant-SKU-er fylles automatisk fra produktets bredde × lengde-varianter — skriv bare inn SKU når en størrelse mangler i butikken."
 
 msgid "Kit"
 msgstr "Sett"
@@ -375,6 +383,7 @@ msgstr "Kanalplast"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalplast (tilkappet)"
 
+#, php-format
 msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
 msgstr "Flerlags: hele 2100 mm plater, lengde avrundet opp til hele meter (1–7 m). Massiv: hele 2050 × 3050 mm plater, begge veier."
 
@@ -389,6 +398,9 @@ msgstr "Nøytral silikon Silirub PC"
 #, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Fant ingen produkter som passer til dette valget. Sjekk SKU-koblingen i innstillingene for terrassekalkulatoren."
+
+msgid "No matching width/length variations found for this parent SKU yet."
+msgstr "Fant ingen matchende bredde/lengde-varianter for denne overordnede SKU-en ennå."
 
 #, php-format
 msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
@@ -450,6 +462,7 @@ msgstr "Polykarbonatplater"
 msgid "Postal code (for shipping)"
 msgstr "Postnummer (til frakt)"
 
+#, php-format
 msgid "Profiles"
 msgstr "Profiler"
 
@@ -505,6 +518,9 @@ msgstr "Takstørrelse"
 msgid "Roof type"
 msgstr "Taktype"
 
+msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
+msgstr "Lagring fyller også tomme felt fra butikken. Utsolgte størrelser listes her, men skjules for kunder. Flerlags: hele 2100 mm plater, lengde avrundet til hele meter; massiv: 2050 × 3050 mm."
+
 msgid "Screw spacing (mm)"
 msgstr "Skrueavstand (mm)"
 
@@ -520,6 +536,7 @@ msgstr "Tetningsbånd legges bare til for flerveisplater. Én ventilasjonsrull o
 msgid "Sealing tapes, screws and extras"
 msgstr "Tetningsbånd, skruer og tilbehør"
 
+#, php-format
 msgid "Search products…"
 msgstr "Søk etter produkter…"
 
@@ -559,6 +576,7 @@ msgstr "Vis felt for postnummer"
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Vis postnummersteget i nettbutikken. Lagres på kunden når settet legges i handlekurven, så frakt kan beregnes i kurven."
 
+#, php-format
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Vis terrassetak-kalkulatoren på denne produktsiden (brukes når visningen er «avkrysning»)."
 
@@ -631,6 +649,7 @@ msgstr "Teiprullelengde"
 msgid "Tape, silicone and wall length"
 msgstr "Teip, silikon og vegglengde"
 
+#, php-format
 msgid "Tapes, gasket and silicone"
 msgstr "Tape, pakning og silikon"
 
@@ -708,6 +727,9 @@ msgstr "Oppdaterer priser…"
 
 msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr "Vanligvis 50 mm forbi frontbjelken, så vannet drypper fritt."
+
+msgid "Variation SKUs below were read from the parent product in the shop."
+msgstr "Variant-SKU-ene nedenfor er hentet fra overordnet produkt i butikken."
 
 msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
 msgstr "Variasjoner som allerede ligger på hovedproduktet fylles inn nedenfor og brukes i prisen. En størrelse som er utsolgt, skjules for kundene. Et måltilpasset produkt som er utsolgt, skjuler det valget også."

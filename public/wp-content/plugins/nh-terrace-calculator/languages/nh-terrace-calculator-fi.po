@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
-"PO-Revision-Date: 2026-11-16 14:17+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
+"PO-Revision-Date: 2026-11-16 14:25+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -66,13 +66,13 @@ msgstr "Levy olisi leveämpi kuin %d mm:n varastokoko. Pienennä koolausväliä,
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin päin tahansa. Tämä kappale on silti liian leveä. Pienennä koolausväliä."
 
-#, php-format
 msgid "Add kit to basket"
 msgstr "Lisää sarja ostoskoriin"
 
 msgid "Adding kit…"
 msgstr "Lisätään sarjaa…"
 
+#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Kaikki kolme ruuvimäärää lasketaan yhteen ja pyöristetään ylös pakkauksiin. Liitosprofiilit tarvitsevat yleensä tiheämmän välin kuin reunalistat."
 
@@ -98,6 +98,7 @@ msgstr "Antrasiitti"
 msgid "Area"
 msgstr "Pinta-ala"
 
+#, php-format
 msgid "Attached to a wall"
 msgstr "Kiinnitetty seinään"
 
@@ -177,6 +178,7 @@ msgstr "Liitosprofiilit"
 msgid "Connecting profiles and screws"
 msgstr "Liitosprofiilit ja ruuvit"
 
+#, php-format
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Liitosprofiilit vastaavat leveyden saumoja: yksi vähemmän kuin levyjä leveyteen. Jokainen profiili on lyhin varastopituus, joka kattaa levyn pituuden. Ruuvit kattavat liitosprofiilit (oletus 200 mm välein), reunalistat sekä seinä-/harjakappaleet (oletus 400 mm välein), sitten pyöristys pakkauksiin. Päätykappaleita kaksi per liitosprofiili. Muovi-H-profiililla ei ole päätyjä. Kiinnityspainikkeet (valinnainen): yksi 400 mm välein jokaisen levyn pituudella keskikiinnitykseen."
 
@@ -288,6 +290,9 @@ msgstr "Kiinnikkeet"
 msgid "Frame details (rafter spacing & beam width)"
 msgstr "Rungon tiedot (tukiväli ja palkin leveys)"
 
+msgid "From shop"
+msgstr "Kaupasta"
+
 msgid "Gable"
 msgstr "Harjakatto"
 
@@ -323,6 +328,9 @@ msgstr "Saumat osuvat palkin keskelle ja jättävät tämän välin liitosprofii
 
 msgid "Joints sit on the centre of a rafter."
 msgstr "Saumat osuvat koolauksen keskelle."
+
+msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
+msgstr "Säilytä emotuotteen SKU jokaiselle paksuudelle ja värille. Varianttien SKU:t täytetään automaattisesti tuotteen leveys × pituus -varianteista — syötä SKU vain, jos kokoa ei ole kaupassa."
 
 msgid "Kit"
 msgstr "Paketti"
@@ -375,6 +383,7 @@ msgstr "Kennopolykarbonaatti"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kennopolykarbonaatti (määrämittaan)"
 
+#, php-format
 msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
 msgstr "Kennolevy: kokonaiset 2100 mm levyt, pituus pyöristetään ylös täyteen metriin (1–7 m). Massiivi: kokonaiset 2050 × 3050 mm levyt, kummin päin tahansa."
 
@@ -389,6 +398,9 @@ msgstr "Neutraali silikoni Silirub PC"
 #, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Tälle valinnalle ei löytynyt tuotteita. Tarkista SKU-kytkentä terassilaskurin asetuksista."
+
+msgid "No matching width/length variations found for this parent SKU yet."
+msgstr "Tälle emotuotteen SKU:lle ei vielä löytynyt sopivia leveys/pituus-variantteja."
 
 #, php-format
 msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
@@ -450,6 +462,7 @@ msgstr "Polykarbonaattilevyt"
 msgid "Postal code (for shipping)"
 msgstr "Postinumero (toimitusta varten)"
 
+#, php-format
 msgid "Profiles"
 msgstr "Profiilit"
 
@@ -505,6 +518,9 @@ msgstr "Katon mitat"
 msgid "Roof type"
 msgstr "Kattotyyppi"
 
+msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
+msgstr "Tallennus täyttää tyhjät kentät myös kaupasta. Loppuunmyydyt koot näkyvät täällä, mutta piilotetaan asiakkailta. Kennolevy: kokonaiset 2100 mm levyt, pituus täyteen metriin; massiivi: 2050 × 3050 mm."
+
 msgid "Screw spacing (mm)"
 msgstr "Ruuviväli (mm)"
 
@@ -520,6 +536,7 @@ msgstr "Tiivistysteipit vain kennolevyille. Yksi tuuletus- ja yksi eristerulla k
 msgid "Sealing tapes, screws and extras"
 msgstr "Tiivisteteipit, ruuvit ja tarvikkeet"
 
+#, php-format
 msgid "Search products…"
 msgstr "Hae tuotteita…"
 
@@ -559,6 +576,7 @@ msgstr "Näytä postinumerokenttä"
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Näytä postinumerovaihe verkkokaupassa. Tallennetaan asiakkaalle, kun paketti lisätään, jotta toimitus voidaan hinnoitella korissa."
 
+#, php-format
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Näytä terassikattolaskuri tällä tuotesivulla (käytössä, kun näyttötila on «valintaruutu»)."
 
@@ -631,6 +649,7 @@ msgstr "Teippirullan pituus"
 msgid "Tape, silicone and wall length"
 msgstr "Teippi, silikoni ja seinäpituus"
 
+#, php-format
 msgid "Tapes, gasket and silicone"
 msgstr "Teipit, tiiviste ja silikoni"
 
@@ -708,6 +727,9 @@ msgstr "Päivitetään hintoja…"
 
 msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr "Yleensä 50 mm etupalkin ohi, jotta vesi tippuu vapaasti."
+
+msgid "Variation SKUs below were read from the parent product in the shop."
+msgstr "Alla olevat varianttien SKU:t luettiin emotuotteesta kaupassa."
 
 msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
 msgstr "Päätuotteella jo olevat variaatiot täytetään alle ja niillä lasketaan hinta. Varastosta loppunut koko piilotetaan asiakkailta. Jos mittojen mukaan leikattava tuote on loppu varastosta, se valinta piilotetaan myös."

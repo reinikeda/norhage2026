@@ -671,11 +671,26 @@ class NH_TC_Catalog {
 			$width  = 0;
 			$length = 0;
 			foreach ( $variation->get_attributes() as $key => $val ) {
+				$key_l = strtolower( (string) $key );
+				$pair  = self::size_pair_from_attribute( $val );
+				if ( $pair ) {
+					// "2050x3050" / "2100 × 6000" style attributes.
+					if ( self::attr_key_matches( $key_l, 'width' ) ) {
+						$width  = $pair[0];
+						$length = $pair[1];
+					} elseif ( self::attr_key_matches( $key_l, 'length' ) ) {
+						$width  = $pair[1];
+						$length = $pair[0];
+					} else {
+						$width  = $pair[0];
+						$length = $pair[1];
+					}
+					continue;
+				}
 				$mm = NH_TC_Defaults::millimetres_from_attribute( $val );
 				if ( $mm <= 0 ) {
 					continue;
 				}
-				$key_l = strtolower( (string) $key );
 				if ( self::attr_key_matches( $key_l, 'width' ) ) {
 					$width = $mm;
 				} elseif ( self::attr_key_matches( $key_l, 'length' ) ) {
@@ -693,6 +708,23 @@ class NH_TC_Catalog {
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * @return int[]|null Two millimetre sides when the attribute is "2100x6000".
+	 */
+	private static function size_pair_from_attribute( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		$raw = str_replace( array( '_', '–', '—', '×' ), array( '-', '-', '-', 'x' ), $raw );
+		if ( ! preg_match( '/(\d{3,5})\s*x\s*(\d{3,5})/', $raw, $match ) ) {
+			return null;
+		}
+		$a = (int) $match[1];
+		$b = (int) $match[2];
+		if ( $a < 100 || $a > 20000 || $b < 100 || $b > 20000 ) {
+			return null;
+		}
+		return array( $a, $b );
 	}
 
 	/**
