@@ -151,19 +151,13 @@ function nh_important_notes_preview_count() {
 /**
  * One important-note row.
  *
- * @param array  $note Note with title, text, and icon.
- * @param string $key  Note key.
+ * @param array $note Note with title, text, and icon.
  * @return string
  */
-function nh_important_note_item_html( $note, $key = '' ) {
-    $class = 'nh-in-item';
-    if ( nh_important_note_is_pinned( $key ) ) {
-        $class .= ' nh-in-item--emphasis';
-    }
-
+function nh_important_note_item_html( $note ) {
     ob_start();
     ?>
-    <li class="<?php echo esc_attr( $class ); ?>">
+    <li class="nh-in-item">
         <div class="nh-in-ico-wrap">
             <span class="nh-in-ico">
                 <?php echo $note['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme SVG. ?>
@@ -246,7 +240,7 @@ function nh_get_important_notes_html( $product_id = 0 ) {
         </div>
         <ul class="nh-in-list">
             <?php foreach ( $visible as $item ) : ?>
-                <?php echo nh_important_note_item_html( $item['note'], $item['key'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                <?php echo nh_important_note_item_html( $item['note'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endforeach; ?>
         </ul>
         <?php if ( ! empty( $extra ) ) : ?>
@@ -256,7 +250,7 @@ function nh_get_important_notes_html( $product_id = 0 ) {
                 </summary>
                 <ul class="nh-in-list nh-in-list--more">
                     <?php foreach ( $extra as $item ) : ?>
-                        <?php echo nh_important_note_item_html( $item['note'], $item['key'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo nh_important_note_item_html( $item['note'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     <?php endforeach; ?>
                 </ul>
             </details>
@@ -267,9 +261,9 @@ function nh_get_important_notes_html( $product_id = 0 ) {
 }
 
 /**
- * Buy-column notice for the cutting tolerance note.
+ * Quiet line for the cutting tolerance note.
  *
- * Shown under the delivery line. Empty when the product has no
+ * Printed under the Your selection box. Empty when the product has no
  * cutting_tolerance key.
  *
  * @param int $product_id Product ID.
@@ -288,15 +282,12 @@ function nh_get_cutting_tolerance_callout_html( $product_id = 0 ) {
 
     ob_start();
     ?>
-    <div class="nh-cutting-tolerance" role="note">
+    <p class="nh-cutting-tolerance" role="note">
         <span class="nh-cutting-tolerance__ico" aria-hidden="true">
             <?php echo $note['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme SVG. ?>
         </span>
-        <p class="nh-cutting-tolerance__copy">
-            <strong><?php echo esc_html( $note['title'] ); ?></strong>
-            <span><?php echo esc_html( $note['text'] ); ?></span>
-        </p>
-    </div>
+        <span class="nh-cutting-tolerance__copy"><?php echo esc_html( $note['title'] . '. ' . $note['text'] ); ?></span>
+    </p>
     <?php
     return ob_get_clean();
 }

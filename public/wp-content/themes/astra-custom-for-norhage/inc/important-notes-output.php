@@ -2,8 +2,8 @@
 /**
  * NH Important Notes - Frontend Output
  *
- * Appends notes to the product description, and prints the cutting
- * tolerance callout in the buy column under the delivery line.
+ * Appends notes to the product description, and prints a quiet cutting
+ * tolerance line under the Your selection box.
  *
  * Text domain: nh-theme
  */
@@ -33,12 +33,12 @@ function nh_append_important_notes_to_description( $content ) {
 }
 
 /**
- * Cutting tolerance, under the estimated delivery line.
+ * Cutting tolerance, directly under the Your selection box.
  *
- * The delivery script moves this node to sit directly after that line
- * once the line itself has been placed under the price.
+ * The selection box is the same hook at priority 11. Quantity and the
+ * add to cart button follow this line.
  */
-add_action( 'woocommerce_single_product_summary', 'nh_output_cutting_tolerance_callout', 32 );
+add_action( 'woocommerce_before_add_to_cart_button', 'nh_output_cutting_tolerance_callout', 12 );
 function nh_output_cutting_tolerance_callout() {
     if ( is_admin() || ! function_exists( 'is_product' ) || ! is_product() ) {
         return;

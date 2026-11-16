@@ -94,7 +94,7 @@ $pinned_open  = strstr( $pinned, '<details', true );
 nh_notes_assert( 'cutting tolerance stays above the expander', false !== strpos( $pinned_open, 'Cutting Tolerance' ) );
 nh_notes_assert( 'cutting tolerance leads the visible notes', strpos( $pinned_open, 'Cutting Tolerance' ) < strpos( $pinned_open, 'Color Variations' ) );
 nh_notes_assert( 'pinned list still shows three notes', substr_count( $pinned_open, 'class="nh-in-item' ) === 3 );
-nh_notes_assert( 'cutting tolerance row is emphasised', false !== strpos( $pinned_open, 'nh-in-item nh-in-item--emphasis' ) );
+nh_notes_assert( 'cutting tolerance row keeps the normal note style', false === strpos( $pinned_open, 'nh-in-item--emphasis' ) );
 nh_notes_assert( 'hidden count ignores the pinned note', false !== strpos( $pinned, 'Show 2 more' ) );
 
 $nh_note_keys = 'uv_protection, storage';
@@ -110,20 +110,20 @@ nh_notes_assert(
 	false !== strpos( $css, '.nh-in-more[open] > .nh-in-more__summary' ) && false !== strpos( $css, 'order: 2' )
 );
 nh_notes_assert(
-	'callout uses a quiet paper background',
-	false !== strpos( $css, '.nh-cutting-tolerance' ) && false !== strpos( $css, 'background: #f4efe6' )
+	'callout is small grey text without a box',
+	false !== strpos( $css, '.nh-cutting-tolerance' )
+		&& false !== strpos( $css, 'background: transparent' )
+		&& false !== strpos( $css, 'font-size: 12px' )
+		&& false === strpos( $css, '#f4efe6' )
 );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/delivery-time.js' );
-nh_notes_assert(
-	'delivery script keeps the callout under the delivery line',
-	false !== strpos( $js, '.nh-cutting-tolerance' ) && false !== strpos( $js, '$note.insertAfter($box)' )
-);
+nh_notes_assert( 'delivery script leaves the tolerance line where it is printed', false === strpos( $js, 'nh-cutting-tolerance' ) );
 
 $output = file_get_contents( dirname( __DIR__ ) . '/inc/important-notes-output.php' );
 nh_notes_assert(
-	'callout prints in the product summary',
-	false !== strpos( $output, "add_action( 'woocommerce_single_product_summary', 'nh_output_cutting_tolerance_callout', 32 )" )
+	'callout prints under the selection box',
+	false !== strpos( $output, "add_action( 'woocommerce_before_add_to_cart_button', 'nh_output_cutting_tolerance_callout', 12 )" )
 );
 
 if ( $failures > 0 ) {
