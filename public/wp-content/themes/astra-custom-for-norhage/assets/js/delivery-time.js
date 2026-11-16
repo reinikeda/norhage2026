@@ -7,12 +7,22 @@ jQuery(function ($) {
 		return;
 	}
 
+	function placeCuttingTolerance() {
+		const $note = $summary.find('.nh-cutting-tolerance').first();
+
+		if ($note.length && $box.length) {
+			$note.insertAfter($box);
+		}
+	}
+
 	function moveBoxAfterPrice() {
 		const $price = $summary.find('p.price').first();
 
 		if ($price.length) {
 			$box.insertAfter($price);
 		}
+
+		placeCuttingTolerance();
 	}
 
 	function setBoxText(text) {

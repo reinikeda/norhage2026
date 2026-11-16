@@ -1692,6 +1692,14 @@ h2.nh-in-title::after,
   margin: 0 0 2px;
 }
 
+.nh-in-item--emphasis {
+  margin: 2px 0;
+  padding-left: 8px;
+  border-left: 3px solid #b89a6a;
+  border-radius: 0 6px 6px 0;
+  background: rgba(184, 154, 106, 0.12);
+}
+
 .nh-in-more {
   display: flex;
   flex-direction: column;
@@ -2014,6 +2022,63 @@ h2.nh-in-title::after,
 .nh-delivery-time__value {
     font-weight: 600;
     color: var(--nh-charcoal); /* Contrast against the muted label */
+}
+
+/* Cutting tolerance sits under the delivery line. Warm paper, not a warning yellow. */
+.summary .nh-delivery-time-under:has(+ .nh-cutting-tolerance) {
+    margin-bottom: 8px;
+}
+
+.nh-cutting-tolerance {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    border: 1px solid #e3d6c4;
+    border-radius: 8px;
+    background: #f4efe6;
+    color: var(--nh-charcoal, #2C2A29);
+}
+
+.nh-cutting-tolerance__ico {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e3d6c4;
+    color: #8a6230;
+}
+
+.nh-cutting-tolerance__ico svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+}
+
+.nh-cutting-tolerance__copy {
+    margin: 0;
+    min-width: 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+}
+
+.nh-cutting-tolerance__copy strong {
+    display: block;
+    margin: 0 0 2px;
+    color: var(--nh-forest, #1E3932);
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.nh-cutting-tolerance__copy span {
+    display: block;
 }
 
 /* Responsive adjustment */

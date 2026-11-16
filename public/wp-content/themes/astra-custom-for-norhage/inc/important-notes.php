@@ -109,6 +109,37 @@ function nh_get_important_note( $key ) {
 }
 
 /**
+ * Note keys saved on a product.
+ *
+ * @param int $product_id Product ID.
+ * @return string[]
+ */
+function nh_get_product_important_note_keys( $product_id = 0 ) {
+    if ( ! $product_id ) {
+        $product_id = get_the_ID();
+    }
+
+    $raw = get_post_meta( $product_id, '_nh_important_notes', true );
+    if ( ! is_string( $raw ) || '' === trim( $raw ) ) {
+        return array();
+    }
+
+    $keys = array_map( 'trim', preg_split( '/[\r\n,]+/', $raw, -1, PREG_SPLIT_NO_EMPTY ) );
+
+    return array_values( array_filter( $keys, 'strlen' ) );
+}
+
+/**
+ * Notes that stay in the visible list and also get a buy-column callout.
+ *
+ * @param string $key Note key.
+ * @return bool
+ */
+function nh_important_note_is_pinned( $key ) {
+    return 'cutting_tolerance' === $key;
+}
+
+/**
  * How many important notes stay visible before "Show more".
  *
  * @return int
@@ -120,13 +151,19 @@ function nh_important_notes_preview_count() {
 /**
  * One important-note row.
  *
- * @param array $note Note with title, text, and icon.
+ * @param array  $note Note with title, text, and icon.
+ * @param string $key  Note key.
  * @return string
  */
-function nh_important_note_item_html( $note ) {
+function nh_important_note_item_html( $note, $key = '' ) {
+    $class = 'nh-in-item';
+    if ( nh_important_note_is_pinned( $key ) ) {
+        $class .= ' nh-in-item--emphasis';
+    }
+
     ob_start();
     ?>
-    <li class="nh-in-item">
+    <li class="<?php echo esc_attr( $class ); ?>">
         <div class="nh-in-ico-wrap">
             <span class="nh-in-ico">
                 <?php echo $note['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme SVG. ?>
@@ -152,15 +189,7 @@ function nh_get_important_notes_html( $product_id = 0 ) {
         $product_id = get_the_ID();
     }
 
-    $raw = get_post_meta( $product_id, '_nh_important_notes', true );
-    if ( empty( $raw ) ) {
-        return '';
-    }
-
-    // Support comma-separated or line-separated values.
-    $keys = array_map( 'trim', preg_split( '/[\r\n,]+/', $raw, -1, PREG_SPLIT_NO_EMPTY ) );
-    $keys = array_filter( $keys );
-
+    $keys = nh_get_product_important_note_keys( $product_id );
     if ( empty( $keys ) ) {
         return '';
     }
@@ -170,7 +199,10 @@ function nh_get_important_notes_html( $product_id = 0 ) {
 
     foreach ( $keys as $key ) {
         if ( isset( $notes[ $key ] ) ) {
-            $items[] = $notes[ $key ];
+            $items[] = array(
+                'key'  => $key,
+                'note' => $notes[ $key ],
+            );
         }
     }
 
@@ -178,9 +210,20 @@ function nh_get_important_notes_html( $product_id = 0 ) {
         return '';
     }
 
+    $pinned = array();
+    $rest   = array();
+    foreach ( $items as $item ) {
+        if ( nh_important_note_is_pinned( $item['key'] ) ) {
+            $pinned[] = $item;
+        } else {
+            $rest[] = $item;
+        }
+    }
+
     $preview = nh_important_notes_preview_count();
-    $visible = array_slice( $items, 0, $preview );
-    $extra   = array_slice( $items, $preview );
+    $room    = max( 0, $preview - count( $pinned ) );
+    $visible = array_merge( $pinned, array_slice( $rest, 0, $room ) );
+    $extra   = array_slice( $rest, $room );
     $more    = sprintf(
         /* translators: %d: number of hidden notes */
         __( 'Show %d more', 'nh-theme' ),
@@ -202,8 +245,8 @@ function nh_get_important_notes_html( $product_id = 0 ) {
             <h2 class="nh-in-title"><?php echo esc_html__( 'Important information', 'nh-theme' ); ?></h2>
         </div>
         <ul class="nh-in-list">
-            <?php foreach ( $visible as $note ) : ?>
-                <?php echo nh_important_note_item_html( $note ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php foreach ( $visible as $item ) : ?>
+                <?php echo nh_important_note_item_html( $item['note'], $item['key'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endforeach; ?>
         </ul>
         <?php if ( ! empty( $extra ) ) : ?>
@@ -212,12 +255,47 @@ function nh_get_important_notes_html( $product_id = 0 ) {
                     <span class="nh-in-more__label" data-more="<?php echo esc_attr( $more ); ?>" data-less="<?php echo esc_attr( $less ); ?>"><?php echo esc_html( $more ); ?></span>
                 </summary>
                 <ul class="nh-in-list nh-in-list--more">
-                    <?php foreach ( $extra as $note ) : ?>
-                        <?php echo nh_important_note_item_html( $note ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <?php foreach ( $extra as $item ) : ?>
+                        <?php echo nh_important_note_item_html( $item['note'], $item['key'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     <?php endforeach; ?>
                 </ul>
             </details>
         <?php endif; ?>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * Buy-column notice for the cutting tolerance note.
+ *
+ * Shown under the delivery line. Empty when the product has no
+ * cutting_tolerance key.
+ *
+ * @param int $product_id Product ID.
+ * @return string
+ */
+function nh_get_cutting_tolerance_callout_html( $product_id = 0 ) {
+    $keys = nh_get_product_important_note_keys( $product_id );
+    if ( ! in_array( 'cutting_tolerance', $keys, true ) ) {
+        return '';
+    }
+
+    $note = nh_get_important_note( 'cutting_tolerance' );
+    if ( empty( $note ) ) {
+        return '';
+    }
+
+    ob_start();
+    ?>
+    <div class="nh-cutting-tolerance" role="note">
+        <span class="nh-cutting-tolerance__ico" aria-hidden="true">
+            <?php echo $note['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme SVG. ?>
+        </span>
+        <p class="nh-cutting-tolerance__copy">
+            <strong><?php echo esc_html( $note['title'] ); ?></strong>
+            <span><?php echo esc_html( $note['text'] ); ?></span>
+        </p>
     </div>
     <?php
     return ob_get_clean();

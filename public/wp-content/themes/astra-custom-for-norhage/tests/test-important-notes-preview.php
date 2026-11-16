@@ -88,10 +88,42 @@ nh_notes_assert( 'every note stays in the html', substr_count( $long, 'class="nh
 $visible = strstr( $long, '<details', true );
 nh_notes_assert( 'only three notes sit above the expander', substr_count( $visible, 'class="nh-in-item"' ) === 3 );
 
+$nh_note_keys = 'color_variations, internal_structure, warranty_10_year, uv_protection, cutting_tolerance';
+$pinned       = nh_get_important_notes_html( 1 );
+$pinned_open  = strstr( $pinned, '<details', true );
+nh_notes_assert( 'cutting tolerance stays above the expander', false !== strpos( $pinned_open, 'Cutting Tolerance' ) );
+nh_notes_assert( 'cutting tolerance leads the visible notes', strpos( $pinned_open, 'Cutting Tolerance' ) < strpos( $pinned_open, 'Color Variations' ) );
+nh_notes_assert( 'pinned list still shows three notes', substr_count( $pinned_open, 'class="nh-in-item' ) === 3 );
+nh_notes_assert( 'cutting tolerance row is emphasised', false !== strpos( $pinned_open, 'nh-in-item nh-in-item--emphasis' ) );
+nh_notes_assert( 'hidden count ignores the pinned note', false !== strpos( $pinned, 'Show 2 more' ) );
+
+$nh_note_keys = 'uv_protection, storage';
+nh_notes_assert( 'callout is empty without the tolerance note', '' === nh_get_cutting_tolerance_callout_html( 1 ) );
+
+$nh_note_keys = 'storage, cutting_tolerance';
+$callout      = nh_get_cutting_tolerance_callout_html( 1 );
+nh_notes_assert( 'callout uses the tolerance note', false !== strpos( $callout, 'class="nh-cutting-tolerance"' ) && false !== strpos( $callout, 'maximum allowable cutting deviation' ) );
+
 $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/product-page.css' );
 nh_notes_assert(
 	'open notes move the collapse control below the list',
 	false !== strpos( $css, '.nh-in-more[open] > .nh-in-more__summary' ) && false !== strpos( $css, 'order: 2' )
+);
+nh_notes_assert(
+	'callout uses a quiet paper background',
+	false !== strpos( $css, '.nh-cutting-tolerance' ) && false !== strpos( $css, 'background: #f4efe6' )
+);
+
+$js = file_get_contents( dirname( __DIR__ ) . '/assets/js/delivery-time.js' );
+nh_notes_assert(
+	'delivery script keeps the callout under the delivery line',
+	false !== strpos( $js, '.nh-cutting-tolerance' ) && false !== strpos( $js, '$note.insertAfter($box)' )
+);
+
+$output = file_get_contents( dirname( __DIR__ ) . '/inc/important-notes-output.php' );
+nh_notes_assert(
+	'callout prints in the product summary',
+	false !== strpos( $output, "add_action( 'woocommerce_single_product_summary', 'nh_output_cutting_tolerance_callout', 32 )" )
 );
 
 if ( $failures > 0 ) {
