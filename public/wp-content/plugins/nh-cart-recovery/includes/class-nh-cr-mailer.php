@@ -241,6 +241,9 @@ class NH_CR_Mailer {
 			}
 			$qty   = isset( $item['quantity'] ) ? (float) $item['quantity'] : 1;
 			$total = isset( $item['line_total'] ) && is_numeric( $item['line_total'] ) ? (float) $item['line_total'] : 0.0;
+			if ( function_exists( 'nh_ig_visible_gross' ) ) {
+				$total = nh_ig_visible_gross( $total, 0, $qty > 0 ? $qty : null );
+			}
 			$grand += $total;
 			$img   = isset( $item['image_url'] ) ? (string) $item['image_url'] : '';
 			if ( $img === '' && ! empty( $item['product_id'] ) && function_exists( 'wc_get_product' ) && function_exists( 'wp_get_attachment_image_url' ) ) {
@@ -280,6 +283,9 @@ class NH_CR_Mailer {
 	private static function format_money( $amount ) {
 		if ( $amount <= 0 ) {
 			return '';
+		}
+		if ( function_exists( 'nh_ig_visible_gross' ) ) {
+			$amount = nh_ig_visible_gross( $amount, 0 );
 		}
 		if ( function_exists( 'wc_price' ) ) {
 			return wp_kses_post( wc_price( $amount ) );

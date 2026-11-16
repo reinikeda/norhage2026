@@ -286,12 +286,15 @@ function nh_ig_adjust_net( $net, $rates, $price_decimals = 2 ) {
  * @param float $qty
  * @return float
  */
-function nh_ig_paid_line_gross( $unit_gross, $qty ) {
+function nh_ig_paid_line_gross( $unit_gross, $qty, $currency = '' ) {
 	$qty = (float) $qty;
 	if ( $qty <= 0 ) {
 		$qty = 1.0;
 	}
-	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+	if ( '' === $currency && function_exists( 'get_woocommerce_currency' ) ) {
+		$currency = get_woocommerce_currency();
+	}
+	if ( ! nh_ig_currency_is_whole( $currency ) ) {
 		return nh_ig_round_half_up( (float) $unit_gross * $qty, 2 );
 	}
 
@@ -515,16 +518,79 @@ function nh_ig_customer_is_vat_exempt() {
  * @param float $qty    Quantity used to produce $amount.
  * @return float
  */
-function nh_ig_round_paid_amount( $amount, $qty = 1.0 ) {
+function nh_ig_round_paid_amount( $amount, $qty = 1.0, $currency = '' ) {
 	$amount = (float) $amount;
 	$qty    = (float) $qty;
 	if ( $qty <= 0 ) {
 		$qty = 1.0;
 	}
-	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+	if ( '' === $currency && function_exists( 'get_woocommerce_currency' ) ) {
+		$currency = get_woocommerce_currency();
+	}
+	if ( ! nh_ig_currency_is_whole( $currency ) ) {
 		return $amount;
 	}
-	return nh_ig_paid_line_gross( $amount / $qty, $qty );
+	return nh_ig_paid_line_gross( $amount / $qty, $qty, $currency );
+}
+
+/**
+ * Price with VAT as the customer should see it.
+ *
+ * A line uses the quantity rule: 3 × 2 713 is 8 139, and 2.4 metres are
+ * rounded once on the line. Shipping and fees are a single amount.
+ *
+ * @param float       $net      Amount before VAT.
+ * @param float       $tax      VAT.
+ * @param float|null  $qty      Quantity, or null for a shipping or fee amount.
+ * @param string      $currency Shop or order currency. Empty uses the active shop.
+ * @return float
+ */
+function nh_ig_visible_gross( $net, $tax, $qty = null, $currency = '' ) {
+	$gross = nh_ig_amount_with_vat( $net, $tax );
+	if ( '' === $currency && function_exists( 'get_woocommerce_currency' ) ) {
+		$currency = get_woocommerce_currency();
+	}
+	if ( ! nh_ig_currency_is_whole( $currency ) ) {
+		return $gross;
+	}
+	if ( null !== $qty && (float) $qty > 0 ) {
+		return nh_ig_round_paid_amount( $gross, (float) $qty, $currency );
+	}
+	return (float) round( $gross, 0, PHP_ROUND_HALF_UP );
+}
+
+/**
+ * Move a before-VAT amount and its VAT onto a chosen price with VAT.
+ *
+ * The two sides still add up to that price. Used when a cart line already
+ * has VAT but the price with VAT still has øre.
+ *
+ * @param float $net
+ * @param float $tax
+ * @param float $target
+ * @param int   $decimals
+ * @return array{net: float, tax: float, taxes: array<int|string, float>}
+ */
+function nh_ig_scale_to_gross( $net, $tax, $target, $decimals = 2 ) {
+	$decimals = (int) $decimals;
+	$target   = nh_ig_round_half_up( (float) $target, $decimals );
+	$net      = (float) $net;
+	$tax      = (float) $tax;
+	$sum      = $net + $tax;
+	if ( abs( $sum ) < 0.00001 ) {
+		return array(
+			'net'   => $target,
+			'tax'   => 0.0,
+			'taxes' => array(),
+		);
+	}
+	$new_tax = nh_ig_round_half_up( $tax * ( $target / $sum ), $decimals );
+	$new_net = nh_ig_round_half_up( $target - $new_tax, $decimals );
+	return array(
+		'net'   => $new_net,
+		'tax'   => $new_tax,
+		'taxes' => array( 'kept' => $new_tax ),
+	);
 }
 
 /**
@@ -866,18 +932,24 @@ function nh_ig_after_calculate_totals( $cart ) {
 		$old_sub_gross = nh_ig_round_half_up( $sub_net + $sub_tax, $decimals );
 		$old_gross     = nh_ig_round_half_up( $line_net + $line_tax, $decimals );
 		// No VAT rate must not turn a line that already has VAT into a before-VAT price.
+		// The price with VAT is still rounded to a whole krone, and the net and VAT
+		// are scaled so they add up to that price.
 		if ( empty( $rates ) && ( $sub_tax > 0.00001 || $line_tax > 0.00001 ) ) {
-			$sum_subtotal += $sub_net;
-			$sum_subtax   += $sub_tax;
-			$sum_total    += $line_net;
-			$sum_tax      += $line_tax;
-			$existing = array();
-			if ( isset( $item['line_tax_data']['total'] ) && is_array( $item['line_tax_data']['total'] ) ) {
-				$existing = $item['line_tax_data']['total'];
-			} elseif ( $line_tax > 0 ) {
-				$existing = array( 'kept' => $line_tax );
-			}
-			foreach ( $existing as $rate_id => $amount ) {
+			$sub_scaled  = nh_ig_scale_to_gross( $sub_net, $sub_tax, nh_ig_round_display_gross( $old_sub_gross ), $decimals );
+			$line_scaled = nh_ig_scale_to_gross( $line_net, $line_tax, nh_ig_round_display_gross( $old_gross ), $decimals );
+			$cart->cart_contents[ $key ]['line_subtotal']     = $sub_scaled['net'];
+			$cart->cart_contents[ $key ]['line_subtotal_tax'] = $sub_scaled['tax'];
+			$cart->cart_contents[ $key ]['line_total']        = $line_scaled['net'];
+			$cart->cart_contents[ $key ]['line_tax']          = $line_scaled['tax'];
+			$cart->cart_contents[ $key ]['line_tax_data']     = array(
+				'subtotal' => $sub_scaled['taxes'],
+				'total'    => $line_scaled['taxes'],
+			);
+			$sum_subtotal += $sub_scaled['net'];
+			$sum_subtax   += $sub_scaled['tax'];
+			$sum_total    += $line_scaled['net'];
+			$sum_tax      += $line_scaled['tax'];
+			foreach ( $line_scaled['taxes'] as $rate_id => $amount ) {
 				if ( ! isset( $merged[ $rate_id ] ) ) {
 					$merged[ $rate_id ] = 0.0;
 				}
@@ -976,8 +1048,15 @@ function nh_ig_after_calculate_totals( $cart ) {
 				}
 			}
 			if ( ! $rates && $tax > 0.00001 ) {
-				$fee_net += $total;
-				$fee_tax += $tax;
+				$scaled    = nh_ig_scale_to_gross( $total, $tax, nh_ig_round_display_gross( $gross ), $decimals );
+				$fee->total = $sign * $scaled['net'];
+				$fee->tax   = $sign * $scaled['tax'];
+				$fee->tax_data = array();
+				foreach ( $scaled['taxes'] as $rate_id => $amount ) {
+					$fee->tax_data[ $rate_id ] = $sign * $amount;
+				}
+				$fee_net += $fee->total;
+				$fee_tax += $fee->tax;
 				continue;
 			}
 			$split = nh_ig_split_for_gross( abs( $gross ), $rates, abs( $total ), $decimals );
@@ -1008,6 +1087,23 @@ function nh_ig_after_calculate_totals( $cart ) {
 
 	$ship_net = method_exists( $cart, 'get_shipping_total' ) ? (float) $cart->get_shipping_total() : 0.0;
 	$ship_tax = method_exists( $cart, 'get_shipping_tax' ) ? (float) $cart->get_shipping_tax() : 0.0;
+	$ship_gross = nh_ig_amount_with_vat( $ship_net, $ship_tax );
+	$ship_whole = nh_ig_round_display_gross( $ship_gross );
+	if ( abs( $ship_gross - $ship_whole ) >= 0.001 ) {
+		if ( $ship_tax > 0.00001 ) {
+			$ship_scaled = nh_ig_scale_to_gross( $ship_net, $ship_tax, $ship_whole, $decimals );
+			$ship_net    = $ship_scaled['net'];
+			$ship_tax    = $ship_scaled['tax'];
+		} else {
+			$ship_net = $ship_whole;
+		}
+		if ( method_exists( $cart, 'set_shipping_total' ) ) {
+			$cart->set_shipping_total( $ship_net );
+		}
+		if ( method_exists( $cart, 'set_shipping_tax' ) ) {
+			$cart->set_shipping_tax( $ship_tax );
+		}
+	}
 
 	$grand = nh_ig_round_half_up( $sum_total + $sum_tax + $ship_net + $ship_tax + $fee_net + $fee_tax, $decimals );
 	if ( $grand < 0 ) {
@@ -1037,6 +1133,20 @@ function nh_ig_trim_zeros( $trim ) {
 }
 
 /**
+ * Order emails and the PDF invoice. The wp-admin order screen is not included.
+ *
+ * @return bool
+ */
+function nh_ig_rendering_customer_price() {
+	if ( ! function_exists( 'did_action' ) ) {
+		return false;
+	}
+	return did_action( 'woocommerce_email_header' )
+		|| did_action( 'woocommerce_email_order_details' )
+		|| did_action( 'wpo_wcpdf_before_document' );
+}
+
+/**
  * Basket and checkout always show the price with VAT.
  *
  * Prices are entered and stored before VAT. The catalog switcher can still
@@ -1048,7 +1158,7 @@ function nh_ig_trim_zeros( $trim ) {
  * @return mixed
  */
 function nh_ig_frontend_cart_tax_display( $value ) {
-	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() && ! nh_ig_rendering_customer_price() ) {
 		return $value;
 	}
 	if ( nh_ig_customer_is_vat_exempt() ) {
@@ -1065,7 +1175,7 @@ function nh_ig_frontend_cart_tax_display( $value ) {
  * @return bool
  */
 function nh_ig_cart_amounts_include_vat( $include ) {
-	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() && ! nh_ig_rendering_customer_price() ) {
 		return $include;
 	}
 	if ( nh_ig_customer_is_vat_exempt() ) {
@@ -1080,7 +1190,7 @@ function nh_ig_cart_amounts_include_vat( $include ) {
  * @return bool
  */
 function nh_ig_storefront_shows_vat() {
-	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() && ! nh_ig_rendering_customer_price() ) {
 		return false;
 	}
 	return ! nh_ig_customer_is_vat_exempt();
@@ -1113,19 +1223,25 @@ function nh_ig_charged_gross( $cart ) {
 		if ( ! is_array( $item ) ) {
 			continue;
 		}
-		$gross += nh_ig_amount_with_vat( $item['line_total'] ?? 0, $item['line_tax'] ?? 0 );
+		$qty    = isset( $item['quantity'] ) ? (float) $item['quantity'] : 1.0;
+		$gross += nh_ig_visible_gross( $item['line_total'] ?? 0, $item['line_tax'] ?? 0, $qty );
 	}
-	if ( method_exists( $cart, 'get_shipping_total' ) ) {
-		$gross += (float) $cart->get_shipping_total();
-	}
-	if ( method_exists( $cart, 'get_shipping_tax' ) ) {
-		$gross += (float) $cart->get_shipping_tax();
-	}
-	if ( method_exists( $cart, 'get_fee_total' ) ) {
-		$gross += (float) $cart->get_fee_total();
-	}
-	if ( method_exists( $cart, 'get_fee_tax' ) ) {
-		$gross += (float) $cart->get_fee_tax();
+	$ship_net = method_exists( $cart, 'get_shipping_total' ) ? (float) $cart->get_shipping_total() : 0.0;
+	$ship_tax = method_exists( $cart, 'get_shipping_tax' ) ? (float) $cart->get_shipping_tax() : 0.0;
+	$gross   += nh_ig_visible_gross( $ship_net, $ship_tax );
+	if ( method_exists( $cart, 'get_fees' ) ) {
+		foreach ( $cart->get_fees() as $fee ) {
+			if ( ! is_object( $fee ) ) {
+				continue;
+			}
+			$fee_net = isset( $fee->total ) ? (float) $fee->total : 0.0;
+			$fee_tax = isset( $fee->tax ) ? (float) $fee->tax : 0.0;
+			$gross  += nh_ig_visible_gross( $fee_net, $fee_tax );
+		}
+	} else {
+		$fee_net = method_exists( $cart, 'get_fee_total' ) ? (float) $cart->get_fee_total() : 0.0;
+		$fee_tax = method_exists( $cart, 'get_fee_tax' ) ? (float) $cart->get_fee_tax() : 0.0;
+		$gross  += nh_ig_visible_gross( $fee_net, $fee_tax );
 	}
 	if ( $gross < 0 ) {
 		$gross = 0.0;
@@ -1151,7 +1267,8 @@ function nh_ig_filter_visible_line_subtotal( $html, $cart_item, $cart_item_key )
 	if ( $tax <= 0.00001 ) {
 		return $html;
 	}
-	$gross = nh_ig_amount_with_vat( $cart_item['line_subtotal'] ?? 0, $tax );
+	$qty   = isset( $cart_item['quantity'] ) ? (float) $cart_item['quantity'] : 1.0;
+	$gross = nh_ig_visible_gross( $cart_item['line_subtotal'] ?? 0, $tax, $qty );
 	if ( $gross <= 0 ) {
 		return $html;
 	}
@@ -1179,7 +1296,7 @@ function nh_ig_filter_visible_line_price( $html, $cart_item, $cart_item_key ) {
 	if ( $tax <= 0.00001 ) {
 		return $html;
 	}
-	$gross = nh_ig_amount_with_vat( $cart_item['line_subtotal'] ?? 0, $tax );
+	$gross = nh_ig_visible_gross( $cart_item['line_subtotal'] ?? 0, $tax, $qty );
 	if ( $gross <= 0 ) {
 		return $html;
 	}
@@ -1208,7 +1325,7 @@ function nh_ig_filter_visible_fee_html( $html, $fee ) {
 	if ( $tax <= 0.00001 ) {
 		return $html;
 	}
-	return wc_price( nh_ig_amount_with_vat( $net, $tax ) );
+	return wc_price( nh_ig_visible_gross( $net, $tax ) );
 }
 
 /**
@@ -1230,7 +1347,7 @@ function nh_ig_filter_visible_shipping_total( $html, $cart ) {
 	if ( $tax <= 0.00001 ) {
 		return $html;
 	}
-	return wc_price( nh_ig_amount_with_vat( $net, $tax ) );
+	return wc_price( nh_ig_visible_gross( $net, $tax ) );
 }
 
 /**
@@ -1316,7 +1433,255 @@ function nh_ig_filter_cart_subtotal( $cart_subtotal, $compound, $cart ) {
 		return $cart_subtotal;
 	}
 
-	return wc_price( nh_ig_inclusive_lines_gross( $lines ) );
+	$sum = 0.0;
+	foreach ( $lines as $line ) {
+		if ( ! is_array( $line ) ) {
+			continue;
+		}
+		$qty  = isset( $line['quantity'] ) ? (float) $line['quantity'] : 1.0;
+		$sum += nh_ig_visible_gross( $line['line_subtotal'] ?? 0, $line['line_subtotal_tax'] ?? 0, $qty );
+	}
+
+	return wc_price( nh_ig_round_half_up( $sum, 2 ) );
+}
+
+/**
+ * Currency for an order, or the active shop currency.
+ *
+ * @param WC_Order|null $order Order.
+ * @return string
+ */
+function nh_ig_order_currency( $order = null ) {
+	if ( is_object( $order ) && method_exists( $order, 'get_currency' ) ) {
+		return (string) $order->get_currency();
+	}
+	return function_exists( 'get_woocommerce_currency' ) ? (string) get_woocommerce_currency() : '';
+}
+
+/**
+ * Format a with-VAT amount in an order's currency.
+ *
+ * @param float         $amount Amount.
+ * @param WC_Order|null $order  Order.
+ * @return string
+ */
+function nh_ig_order_price( $amount, $order = null ) {
+	if ( ! function_exists( 'wc_price' ) ) {
+		return (string) $amount;
+	}
+	$currency = nh_ig_order_currency( $order );
+	$args     = '' !== $currency ? array( 'currency' => $currency ) : array();
+	return wc_price( $amount, $args );
+}
+
+/**
+ * A customer-facing order document for NOK, SEK or DKK.
+ *
+ * The wp-admin order screen keeps the stored before-VAT figures.
+ *
+ * @param WC_Order|null $order Order.
+ * @return bool
+ */
+function nh_ig_order_shows_rounded_vat( $order = null ) {
+	if ( ! nh_ig_currency_is_whole( nh_ig_order_currency( $order ) ) ) {
+		return false;
+	}
+	if ( nh_ig_customer_is_vat_exempt() ) {
+		return false;
+	}
+	if ( nh_ig_rendering_customer_price() ) {
+		return true;
+	}
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Line price on the thank-you page, in emails and on the PDF.
+ *
+ * @param string                $subtotal Existing HTML.
+ * @param WC_Order_Item_Product $item     Line.
+ * @param WC_Order              $order    Order.
+ * @return string
+ */
+function nh_ig_filter_order_line_subtotal( $subtotal, $item, $order ) {
+	if ( ! nh_ig_order_shows_rounded_vat( $order ) || ! is_object( $item ) || ! method_exists( $item, 'get_subtotal' ) ) {
+		return $subtotal;
+	}
+	$tax = method_exists( $item, 'get_subtotal_tax' ) ? (float) $item->get_subtotal_tax() : 0.0;
+	if ( $tax <= 0.00001 ) {
+		return $subtotal;
+	}
+	$qty   = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
+	$gross = nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, nh_ig_order_currency( $order ) );
+	if ( $gross <= 0 ) {
+		return $subtotal;
+	}
+	return nh_ig_order_price( $gross, $order );
+}
+
+/**
+ * Order total on the thank-you page, in emails and on the PDF.
+ *
+ * @param string   $formatted        Existing HTML.
+ * @param WC_Order $order            Order.
+ * @param string   $tax_display      Unused.
+ * @param bool     $display_refunded Whether Woo is also showing the refund.
+ * @return string
+ */
+function nh_ig_filter_formatted_order_total( $formatted, $order, $tax_display = '', $display_refunded = false ) {
+	unset( $tax_display );
+	if ( $display_refunded || ! nh_ig_order_shows_rounded_vat( $order ) || ! is_object( $order ) || ! method_exists( $order, 'get_total' ) ) {
+		return $formatted;
+	}
+	$gross = nh_ig_visible_gross( (float) $order->get_total(), 0, null, nh_ig_order_currency( $order ) );
+	if ( $gross <= 0 ) {
+		return $formatted;
+	}
+	return nh_ig_order_price( $gross, $order );
+}
+
+/**
+ * Subtotal, shipping, fees and total rows for emails and the PDF.
+ *
+ * @param array<string, array<string, mixed>> $rows        Totals rows.
+ * @param WC_Order                            $order       Order.
+ * @param string                              $tax_display incl or excl.
+ * @return array<string, array<string, mixed>>
+ */
+function nh_ig_filter_order_item_totals( $rows, $order, $tax_display = '' ) {
+	if ( ! is_array( $rows ) || ! nh_ig_order_shows_rounded_vat( $order ) || ! is_object( $order ) ) {
+		return $rows;
+	}
+	$currency = nh_ig_order_currency( $order );
+	$incl     = ( 'incl' === $tax_display );
+
+	if ( $incl && isset( $rows['cart_subtotal'] ) && method_exists( $order, 'get_items' ) ) {
+		$sum = 0.0;
+		foreach ( $order->get_items() as $item ) {
+			if ( ! is_object( $item ) || ! method_exists( $item, 'get_subtotal' ) ) {
+				continue;
+			}
+			$qty  = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
+			$tax  = method_exists( $item, 'get_subtotal_tax' ) ? (float) $item->get_subtotal_tax() : 0.0;
+			$sum += nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, $currency );
+		}
+		$rows['cart_subtotal']['value'] = nh_ig_order_price( $sum, $order );
+	}
+
+	if ( $incl && isset( $rows['shipping'] ) && method_exists( $order, 'get_shipping_total' ) ) {
+		$ship_tax = method_exists( $order, 'get_shipping_tax' ) ? (float) $order->get_shipping_tax() : 0.0;
+		$rows['shipping']['value'] = nh_ig_order_price(
+			nh_ig_visible_gross( $order->get_shipping_total(), $ship_tax, null, $currency ),
+			$order
+		);
+	}
+
+	if ( $incl && method_exists( $order, 'get_fees' ) ) {
+		foreach ( $order->get_fees() as $fee_id => $fee ) {
+			if ( ! is_object( $fee ) || ! method_exists( $fee, 'get_total' ) ) {
+				continue;
+			}
+			$key = 'fee_' . $fee_id;
+			if ( ! isset( $rows[ $key ] ) && method_exists( $fee, 'get_id' ) ) {
+				$key = 'fee_' . $fee->get_id();
+			}
+			if ( ! isset( $rows[ $key ] ) ) {
+				continue;
+			}
+			$fee_tax = method_exists( $fee, 'get_total_tax' ) ? (float) $fee->get_total_tax() : 0.0;
+			$rows[ $key ]['value'] = nh_ig_order_price(
+				nh_ig_visible_gross( $fee->get_total(), $fee_tax, null, $currency ),
+				$order
+			);
+		}
+	}
+
+	if ( isset( $rows['order_total'] ) && method_exists( $order, 'get_total' ) ) {
+		$note = '';
+		if ( isset( $rows['order_total']['value'] ) && is_string( $rows['order_total']['value'] ) && preg_match( '/<small class="includes_tax">.*?<\/small>/s', $rows['order_total']['value'], $match ) ) {
+			$note = ' ' . $match[0];
+		}
+		$rows['order_total']['value'] = nh_ig_order_price(
+			nh_ig_visible_gross( (float) $order->get_total(), 0, null, $currency ),
+			$order
+		) . $note;
+	}
+	if ( $incl && isset( $rows['discount'] ) && method_exists( $order, 'get_discount_total' ) ) {
+		$discount_tax = method_exists( $order, 'get_discount_tax' ) ? (float) $order->get_discount_tax() : 0.0;
+		$rows['discount']['value'] = '-' . nh_ig_order_price(
+			nh_ig_visible_gross( $order->get_discount_total(), $discount_tax, null, $currency ),
+			$order
+		);
+	}
+
+	return $rows;
+}
+
+/**
+ * Discount in the basket, rounded to a whole krone including VAT.
+ *
+ * @param string    $html   Existing HTML.
+ * @param WC_Coupon $coupon Coupon.
+ * @return string
+ */
+function nh_ig_filter_coupon_amount_html( $html, $coupon ) {
+	if ( ! nh_ig_storefront_shows_vat() || ! function_exists( 'WC' ) || ! WC()->cart || ! function_exists( 'wc_price' ) ) {
+		return $html;
+	}
+	if ( ! is_object( $coupon ) || ! method_exists( $coupon, 'get_code' ) ) {
+		return $html;
+	}
+	$code = $coupon->get_code();
+	$net  = 0.0;
+	$tax  = 0.0;
+	if ( method_exists( WC()->cart, 'get_coupon_discount_totals' ) ) {
+		$nets = WC()->cart->get_coupon_discount_totals();
+		$net  = isset( $nets[ $code ] ) ? (float) $nets[ $code ] : 0.0;
+	}
+	if ( method_exists( WC()->cart, 'get_coupon_discount_tax_totals' ) ) {
+		$taxes = WC()->cart->get_coupon_discount_tax_totals();
+		$tax   = isset( $taxes[ $code ] ) ? (float) $taxes[ $code ] : 0.0;
+	}
+	if ( $net <= 0 && $tax <= 0 ) {
+		return $html;
+	}
+	return '-' . wc_price( nh_ig_visible_gross( $net, $tax ) );
+}
+
+/**
+ * PDF line price. The invoice template prints this as text.
+ *
+ * @param array<string, mixed> $data          Item data.
+ * @param WC_Order             $order         Order.
+ * @param string               $document_type Document type.
+ * @return array<string, mixed>
+ */
+function nh_ig_filter_pdf_item( $data, $order, $document_type ) {
+	unset( $document_type );
+	if ( ! is_array( $data ) || empty( $data['item'] ) || ! is_object( $data['item'] ) ) {
+		return $data;
+	}
+	if ( ! nh_ig_order_shows_rounded_vat( $order ) ) {
+		return $data;
+	}
+	$item = $data['item'];
+	if ( ! method_exists( $item, 'get_subtotal' ) ) {
+		return $data;
+	}
+	$tax = method_exists( $item, 'get_subtotal_tax' ) ? (float) $item->get_subtotal_tax() : 0.0;
+	if ( $tax <= 0.00001 ) {
+		return $data;
+	}
+	$qty   = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
+	$gross = nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, nh_ig_order_currency( $order ) );
+	if ( $gross <= 0 ) {
+		return $data;
+	}
+	$data['order_price'] = wp_strip_all_tags( nh_ig_order_price( $gross, $order ) );
+	return $data;
 }
 
 /**
@@ -1356,5 +1721,10 @@ add_filter( 'woocommerce_cart_shipping_total', 'nh_ig_filter_visible_shipping_to
 add_filter( 'woocommerce_cart_totals_fee_html', 'nh_ig_filter_visible_fee_html', 15, 2 );
 add_filter( 'woocommerce_cart_total', 'nh_ig_filter_cart_total_html', 15 );
 add_filter( 'woocommerce_cart_totals_order_total_html', 'nh_ig_filter_visible_order_total', 15 );
+add_filter( 'woocommerce_coupon_discount_amount_html', 'nh_ig_filter_coupon_amount_html', 15, 2 );
+add_filter( 'woocommerce_order_formatted_line_subtotal', 'nh_ig_filter_order_line_subtotal', 15, 3 );
+add_filter( 'woocommerce_get_formatted_order_total', 'nh_ig_filter_formatted_order_total', 15, 4 );
+add_filter( 'woocommerce_get_order_item_totals', 'nh_ig_filter_order_item_totals', 15, 3 );
+add_filter( 'wpo_wcpdf_order_item_data', 'nh_ig_filter_pdf_item', 20, 3 );
 add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 );
 add_filter( 'woocommerce_get_variation_prices_hash', 'nh_ig_variation_prices_hash' );

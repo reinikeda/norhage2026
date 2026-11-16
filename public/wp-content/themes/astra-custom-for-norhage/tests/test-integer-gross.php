@@ -263,6 +263,32 @@ nh_ig_assert(
 	'shipping HTML is the price with VAT',
 	'PRICE:100.00' === nh_ig_filter_visible_shipping_total( 'PRICE:80.00', $with_vat )
 );
+$sale_line = array(
+	'line_subtotal'     => 2170.24,
+	'line_subtotal_tax' => 542.56,
+	'line_total'        => 2170.24,
+	'line_tax'          => 542.56,
+	'quantity'          => 1,
+);
+nh_ig_assert(
+	'a 2712.80 line is shown as 2713',
+	'PRICE:2713.00' === nh_ig_filter_visible_line_subtotal( 'PRICE:2712.80', $sale_line, 'k' )
+);
+nh_ig_assert(
+	'the basket subtotal rounds that line to 2713',
+	'PRICE:2713.00' === nh_ig_filter_cart_subtotal( 'PRICE:2712.80', false, new NH_IG_Test_Cart( array( $sale_line ) ) )
+);
+$ship_ore = new NH_IG_Test_Cart( array(), 49.60, 12.38 );
+nh_ig_assert(
+	'shipping 61.98 is shown as 62',
+	'PRICE:62.00' === nh_ig_filter_visible_shipping_total( 'PRICE:61.98', $ship_ore )
+);
+nh_ig_assert( 'euro cart amounts keep cents', abs( nh_ig_visible_gross( 10.20, 0.29, 1, 'EUR' ) - 10.49 ) < 0.001 );
+nh_ig_assert(
+	'order emails and the PDF use the same rounding',
+	false !== strpos( $source, "add_filter( 'woocommerce_order_formatted_line_subtotal', 'nh_ig_filter_order_line_subtotal', 15, 3 )" )
+	&& false !== strpos( $source, "add_filter( 'wpo_wcpdf_order_item_data', 'nh_ig_filter_pdf_item', 20, 3 )" )
+);
 nh_ig_assert(
 	'order total is lines, shipping and their VAT',
 	abs( nh_ig_charged_gross( $with_vat ) - 306 ) < 0.001

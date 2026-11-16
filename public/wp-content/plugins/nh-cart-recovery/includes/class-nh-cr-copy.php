@@ -1178,6 +1178,9 @@ function nh_cr_cart_grand_total( $cart ) {
  */
 function nh_cr_format_money( $amount ) {
 	$amount = (float) $amount;
+	if ( function_exists( 'nh_ig_visible_gross' ) ) {
+		$amount = nh_ig_visible_gross( $amount, 0 );
+	}
 	if ( function_exists( 'wc_price' ) && function_exists( 'wp_kses_post' ) ) {
 		return wp_kses_post( wc_price( $amount ) );
 	}
