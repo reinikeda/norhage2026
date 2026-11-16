@@ -199,7 +199,68 @@ class NH_TC_Admin {
 				}
 			}
 		}
-		return $out;
+		return self::fill_standard_skus_from_shop( $out );
+	}
+
+	/**
+	 * Fill empty variation SKU slots from the parent product in WooCommerce.
+	 *
+	 * @param array<string, mixed> $catalog
+	 * @return array<string, mixed>
+	 */
+	private static function fill_standard_skus_from_shop( array $catalog ) {
+		if ( ! function_exists( 'wc_get_product' ) || ! class_exists( 'NH_TC_Catalog' ) ) {
+			return $catalog;
+		}
+		foreach ( $catalog as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) || empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+							continue;
+						}
+						$parent = isset( $group['sku'] ) ? trim( (string) $group['sku'] ) : '';
+						if ( '' === $parent ) {
+							continue;
+						}
+						$live = NH_TC_Catalog::variation_sku_index( $parent );
+						if ( ! $live ) {
+							continue;
+						}
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( ! is_array( $lengths ) ) {
+								continue;
+							}
+							$width_key = (string) (int) $width;
+							foreach ( $lengths as $length => $sku ) {
+								$saved = is_scalar( $sku ) ? trim( (string) $sku ) : '';
+								if ( '' !== $saved ) {
+									continue;
+								}
+								$length_key = (string) (int) $length;
+								$found      = ( isset( $live[ $width_key ][ $length_key ] ) && is_array( $live[ $width_key ][ $length_key ] ) )
+									? $live[ $width_key ][ $length_key ]
+									: null;
+								if ( ! $found || '' === trim( (string) ( $found['sku'] ?? '' ) ) ) {
+									continue;
+								}
+								$catalog[ $material ][ $thickness ][ $colour ][ $channel ]['widths'][ $width ][ $length ] = self::sku_text( $found['sku'] );
+							}
+						}
+					}
+				}
+			}
+		}
+		return $catalog;
 	}
 
 	/**
@@ -382,10 +443,10 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Standard sizes', NH_TC_TD ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop.', NH_TC_TD ); ?>
 				</p>
 				<p class="description">
-					<?php esc_html_e( 'Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks.', NH_TC_TD ); ?>
 				</p>
 				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
 
@@ -552,6 +613,11 @@ class NH_TC_Admin {
 						echo '<input type="text" class="regular-text" name="' . esc_attr( $base . '[sku]' ) . '" value="' . esc_attr( (string) ( $group['sku'] ?? '' ) ) . '" autocomplete="off" spellcheck="false">';
 						echo '</label></p>';
 						$live = function_exists( 'wc_get_product' ) ? NH_TC_Catalog::variation_sku_index( (string) ( $group['sku'] ?? '' ) ) : array();
+						if ( $live ) {
+							echo '<p class="description">' . esc_html__( 'Variation SKUs below were read from the parent product in the shop.', NH_TC_TD ) . '</p>';
+						} elseif ( '' !== trim( (string) ( $group['sku'] ?? '' ) ) ) {
+							echo '<p class="description">' . esc_html__( 'No matching width/length variations found for this parent SKU yet.', NH_TC_TD ) . '</p>';
+						}
 						foreach ( $group['widths'] as $width => $lengths ) {
 							if ( ! is_array( $lengths ) ) {
 								continue;
@@ -563,12 +629,14 @@ class NH_TC_Admin {
 								$width_key  = (string) (int) $width;
 								$length_key = (string) (int) $length;
 								$found      = ( isset( $live[ $width_key ][ $length_key ] ) && is_array( $live[ $width_key ][ $length_key ] ) ) ? $live[ $width_key ][ $length_key ] : null;
-								$value      = $saved;
-								if ( '' === $value && $found && '' !== trim( (string) $found['sku'] ) ) {
-									$value = (string) $found['sku'];
-								}
+								$live_sku   = ( $found && '' !== trim( (string) ( $found['sku'] ?? '' ) ) ) ? trim( (string) $found['sku'] ) : '';
+								$value      = '' !== $saved ? $saved : $live_sku;
+								$from_shop  = ( '' !== $live_sku && ( '' === $saved || $saved === $live_sku ) );
 								echo '<label><span>' . esc_html( sprintf( '%d mm', (int) $length ) ) . '</span>';
-								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( $value ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( $value ) . '" autocomplete="off" spellcheck="false" maxlength="80"' . ( $from_shop ? ' class="nh-tc-from-shop"' : '' ) . '>';
+								if ( $from_shop ) {
+									echo '<em class="nh-tc-from-shop-label">' . esc_html__( 'From shop', NH_TC_TD ) . '</em>';
+								}
 								if ( $found && empty( $found['in_stock'] ) ) {
 									echo '<em class="nh-tc-oos">' . esc_html__( 'Out of stock', NH_TC_TD ) . '</em>';
 								}

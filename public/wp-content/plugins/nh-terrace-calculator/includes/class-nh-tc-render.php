@@ -218,8 +218,6 @@ class NH_TC_Render {
 
 						<fieldset class="nh-tc__card">
 							<legend><?php esc_html_e( 'Polycarbonate', NH_TC_TD ); ?></legend>
-							<p class="nh-tc__ask"><?php esc_html_e( 'Choose thickness. We prefill a safe support spacing for you.', NH_TC_TD ); ?></p>
-							<div class="nh-tc__thickness" data-thickness-chips role="group" aria-label="<?php esc_attr_e( 'Suggested thickness', NH_TC_TD ); ?>"></div>
 							<div class="nh-tc__select-row nh-tc__select-row--sheet">
 								<a class="nh-tc__inline-thumb is-empty" data-inline-thumb="sheet">
 									<img alt="" width="44" height="44" decoding="async">
@@ -505,10 +503,6 @@ class NH_TC_Render {
 					'groupProfiles' => __( 'Profiles', NH_TC_TD ),
 					'groupSealing'  => __( 'Sealing', NH_TC_TD ),
 					'groupFixings'  => __( 'Fixings', NH_TC_TD ),
-					'thkLight'      => __( 'Light duty', NH_TC_TD ),
-					'thkTypical'    => __( 'Most terraces', NH_TC_TD ),
-					'thkInsulated'  => __( 'Best insulation', NH_TC_TD ),
-					'thkOther'      => __( 'Also available', NH_TC_TD ),
 					'multiwall'     => __( 'Multiwall polycarbonate', NH_TC_TD ),
 					'solid'         => __( 'Solid polycarbonate', NH_TC_TD ),
 					'clamping'      => __( 'Clamping profile', NH_TC_TD ),

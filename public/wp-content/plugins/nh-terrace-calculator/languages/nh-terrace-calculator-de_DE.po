@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
-"PO-Revision-Date: 2026-11-16 14:17+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
+"PO-Revision-Date: 2026-11-16 14:25+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -66,13 +66,13 @@ msgstr "Eine Platte wäre breiter als die Lagerbreite von %d mm. Verringern Sie 
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedreht werden. Dieses Stück ist trotzdem zu breit. Verringern Sie den Trägerabstand."
 
-#, php-format
 msgid "Add kit to basket"
 msgstr "Set in den Warenkorb"
 
 msgid "Adding kit…"
 msgstr "Set wird hinzugefügt…"
 
+#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle drei Schraubenmengen werden addiert und auf Packungen aufgerundet. Verbindungsprofile brauchen meist einen engeren Abstand als Kantenprofile."
 
@@ -98,6 +98,7 @@ msgstr "Anthrazit"
 msgid "Area"
 msgstr "Fläche"
 
+#, php-format
 msgid "Attached to a wall"
 msgstr "An einer Wand befestigt"
 
@@ -177,6 +178,7 @@ msgstr "Verbindungsprofile"
 msgid "Connecting profiles and screws"
 msgstr "Verbindungsprofile und Schrauben"
 
+#, php-format
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Verbindungsprofile entsprechen den Stößen über die Breite: eines weniger als die Plattenanzahl. Jedes Profil ist die kürzeste Lagerlänge, die die Plattenlänge abdeckt. Schrauben decken Verbindungsprofile (Standard alle 200 mm), Abschlusskanten und Wand-/Firststücke (Standard alle 400 mm) ab und werden auf Packungen aufgerundet. Endkappen: zwei je Verbindungsprofil. Das Kunststoff-H-Profil hat keine Endkappen. Fixierknöpfe (optional): einer alle 400 mm entlang jeder Plattenlänge für die Mittelfixierung."
 
@@ -288,6 +290,9 @@ msgstr "Befestigung"
 msgid "Frame details (rafter spacing & beam width)"
 msgstr "Rahmendetails (Sparrenabstand & Trägerbreite)"
 
+msgid "From shop"
+msgstr "Aus dem Shop"
+
 msgid "Gable"
 msgstr "Satteldach"
 
@@ -323,6 +328,9 @@ msgstr "Die Stöße liegen in der Trägermitte und lassen diese Fuge für das Ve
 
 msgid "Joints sit on the centre of a rafter."
 msgstr "Die Stöße sitzen auf der Mitte eines Trägers."
+
+msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
+msgstr "Behalten Sie die Parent-SKU für jede Dicke und Farbe. Variations-SKUs werden automatisch aus den Breiten- × Längen-Variationen des Produkts übernommen — nur eingeben, wenn eine Größe im Shop keine SKU hat."
 
 msgid "Kit"
 msgstr "Set"
@@ -375,6 +383,7 @@ msgstr "Stegplatte"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Stegplatte (Zuschnitt)"
 
+#, php-format
 msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
 msgstr "Stegplatten: ganze 2100-mm-Platten, Länge auf volle Meter aufgerundet (1–7 m). Massiv: ganze 2050 × 3050 mm Platten, beliebig drehbar."
 
@@ -389,6 +398,9 @@ msgstr "Neutralvernetzendes Silikon Silirub PC"
 #, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Für diese Auswahl wurden keine Produkte gefunden. Prüfen Sie die SKU-Zuordnung in den Einstellungen des Terrassenrechners."
+
+msgid "No matching width/length variations found for this parent SKU yet."
+msgstr "Noch keine passenden Breiten-/Längen-Variationen für diese Parent-SKU gefunden."
 
 #, php-format
 msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
@@ -450,6 +462,7 @@ msgstr "Polycarbonatplatten"
 msgid "Postal code (for shipping)"
 msgstr "Postleitzahl (für den Versand)"
 
+#, php-format
 msgid "Profiles"
 msgstr "Profile"
 
@@ -505,6 +518,9 @@ msgstr "Dachmaß"
 msgid "Roof type"
 msgstr "Dachform"
 
+msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
+msgstr "Beim Speichern werden leere Felder auch aus dem Shop aktualisiert. Ausverkaufte Größen bleiben hier sichtbar, sind für Kunden aber ausgeblendet. Stegplatten: ganze 2100-mm-Platten, Länge auf volle Meter; Massiv: 2050 × 3050 mm."
+
 msgid "Screw spacing (mm)"
 msgstr "Schraubenabstand (mm)"
 
@@ -520,6 +536,7 @@ msgstr "Dichtungsbänder nur für Mehrwandplatten. Eine Lüftungs- und eine Isol
 msgid "Sealing tapes, screws and extras"
 msgstr "Dichtbänder, Schrauben und Zubehör"
 
+#, php-format
 msgid "Search products…"
 msgstr "Produkte suchen…"
 
@@ -559,6 +576,7 @@ msgstr "Feld für die Postleitzahl anzeigen"
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Postleitzahlschritt im Shop anzeigen. Wird beim Hinzufügen des Sets am Kunden gespeichert, damit Versand im Warenkorb kalkuliert werden kann."
 
+#, php-format
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Terrassendach-Rechner auf dieser Produktseite anzeigen (wenn der Anzeigemodus «Kontrollkästchen» ist)."
 
@@ -631,6 +649,7 @@ msgstr "Bandrollenlänge"
 msgid "Tape, silicone and wall length"
 msgstr "Band, Silikon und Wandlänge"
 
+#, php-format
 msgid "Tapes, gasket and silicone"
 msgstr "Bänder, Dichtung und Silikon"
 
@@ -708,6 +727,9 @@ msgstr "Preise werden aktualisiert…"
 
 msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr "Üblicherweise 50 mm über den vorderen Träger hinaus, damit Wasser frei abtropft."
+
+msgid "Variation SKUs below were read from the parent product in the shop."
+msgstr "Die Variations-SKUs unten wurden aus dem Parent-Produkt im Shop gelesen."
 
 msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
 msgstr "Varianten, die bereits am Hauptprodukt liegen, werden unten eingetragen und für den Preis verwendet. Eine Größe, die nicht auf Lager ist, wird für Kunden ausgeblendet. Ein Zuschnitt, der nicht auf Lager ist, blendet diese Auswahl ebenfalls aus."
