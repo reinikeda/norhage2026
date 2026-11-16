@@ -113,10 +113,43 @@ if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 $pair = nh_ig_round_display_pair( 39.60, 49.50 );
 nh_ig_assert( 'a 49.50 krone line becomes 50', abs( $pair['inc'] - 50 ) < 0.001 && abs( $pair['ex'] - $pair['inc'] ) < 0.001 );
 
+// 3 391 kr including VAT, then 20% off, is 2 712,80. The shop must show 2 713.
+$sale_net = nh_ig_adjust_net( 2170.24, nh_ig_rate( 25 ) );
+nh_ig_assert( '20% sale of 3391 kr is paid as 2713', abs( $sale_net['gross'] - 2713 ) < 0.001 );
+nh_ig_assert( 'that sale invoice still adds up', abs( ( $sale_net['net'] + $sale_net['tax'] ) - $sale_net['gross'] ) < 0.001 );
+
+nh_ig_assert( 'a shown price of 2712.80 becomes 2713', abs( nh_ig_filter_including_tax( 2712.80, 1 ) - 2713 ) < 0.001 );
+nh_ig_assert( 'three of those units are 8139, not 8138', abs( nh_ig_filter_including_tax( 2712.80 * 3, 3 ) - 8139 ) < 0.001 );
+
+if ( ! function_exists( 'get_option' ) ) {
+	function get_option( $key, $default = false ) {
+		if ( 'woocommerce_tax_display_shop' === $key ) {
+			return 'incl';
+		}
+		return $default;
+	}
+}
+
+$cached = array(
+	'price'         => array( 10 => '2712.80', 11 => '3391' ),
+	'regular_price' => array( 10 => '3391', 11 => '3391' ),
+	'sale_price'    => array( 10 => '2712.80', 11 => '' ),
+);
+$shown = nh_ig_filter_variation_prices( $cached, null, true );
+nh_ig_assert( 'cached sale price with VAT becomes 2713', abs( (float) $shown['price'][10] - 2713 ) < 0.001 );
+nh_ig_assert( 'cached regular price that is already whole stays 3391', abs( (float) $shown['regular_price'][10] - 3391 ) < 0.001 );
+nh_ig_assert( 'an empty cached sale price stays empty', '' === $shown['sale_price'][11] );
+
 $source = file_get_contents( dirname( __DIR__ ) . '/inc/integer-gross.php' );
 nh_ig_assert(
 	'variable catalog prices use the same rounding',
 	false !== strpos( $source, "nh_ig_register_price_filter( 'woocommerce_variation_prices_price' )" )
+	&& false !== strpos( $source, "add_filter( 'woocommerce_get_price_including_tax', 'nh_ig_filter_including_tax', 9999, 3 )" )
+	&& false !== strpos( $source, "add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 )" )
+);
+nh_ig_assert(
+	'shipping is rounded after the size calculator',
+	false !== strpos( $source, "add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', PHP_INT_MAX )" )
 );
 
 if ( $failures > 0 ) {

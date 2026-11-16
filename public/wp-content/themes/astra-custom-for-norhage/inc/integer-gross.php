@@ -9,6 +9,12 @@
  * VAT that add up to that whole amount.
  *
  * EUR is left on the normal 2-decimal tax math.
+ *
+ * The amount shown with VAT is rounded again at display time. A stored sale
+ * such as 20% off a whole krone is 2 712,80 with VAT; the shop must show
+ * 2 713, and the invoice net plus VAT must add up to that. Hiding trailing
+ * ,00 is not enough, because the øre are real until this step. Prices shown
+ * before VAT keep their øre, because that figure is the invoice net.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -396,6 +402,95 @@ function nh_ig_rates_for_product( $product ) {
 	}
 	$tax_class = method_exists( $product, 'get_tax_class' ) ? $product->get_tax_class() : '';
 	return nh_ig_normalize_rates( WC_Tax::get_rates( $tax_class ) );
+}
+
+/**
+ * Nearest whole unit the customer pays, for one unit of an including-VAT amount.
+ *
+ * Quantity is applied after the unit is rounded, so 3 × 2 713 stays 8 139
+ * rather than rounding 3 × 2 712,80 on its own.
+ *
+ * @param float $amount Including VAT, already multiplied by quantity.
+ * @param float $qty    Quantity used to produce $amount.
+ * @return float
+ */
+function nh_ig_round_paid_amount( $amount, $qty = 1.0 ) {
+	$amount = (float) $amount;
+	$qty    = (float) $qty;
+	if ( $qty <= 0 ) {
+		$qty = 1.0;
+	}
+	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+		return $amount;
+	}
+	$unit = $amount / $qty;
+	return (float) round( $unit, 0, PHP_ROUND_HALF_UP ) * $qty;
+}
+
+/**
+ * Catalog and variation JSON read a cached including-VAT price. Round that
+ * cache on every read so an old transient cannot keep showing øre.
+ *
+ * Prices cached for the excluding-VAT view are the invoice net and stay
+ * at 2 decimals.
+ *
+ * @param array<string, array<int|string, mixed>> $prices
+ * @param WC_Product                              $product
+ * @param bool                                    $for_display
+ * @return array<string, array<int|string, mixed>>
+ */
+function nh_ig_filter_variation_prices( $prices, $product, $for_display ) {
+	unset( $product );
+	if ( ! $for_display || ! is_array( $prices ) ) {
+		return $prices;
+	}
+	if ( function_exists( 'get_option' ) && 'incl' !== get_option( 'woocommerce_tax_display_shop' ) ) {
+		return $prices;
+	}
+	foreach ( $prices as $type => $values ) {
+		if ( ! is_array( $values ) ) {
+			continue;
+		}
+		foreach ( $values as $id => $amount ) {
+			if ( '' === $amount || null === $amount || ! is_numeric( $amount ) ) {
+				continue;
+			}
+			$prices[ $type ][ $id ] = nh_ig_round_paid_amount( (float) $amount, 1 );
+		}
+	}
+	return $prices;
+}
+
+/**
+ * Last step for every "price with VAT" Woo formats. Sale prices, cutting
+ * fees and variation JSON all pass through here.
+ *
+ * @param float      $price   Line amount including VAT.
+ * @param float|int  $qty     Quantity already included in $price.
+ * @param WC_Product $product Product, unused.
+ * @return float
+ */
+function nh_ig_filter_including_tax( $price, $qty = 1, $product = null ) {
+	unset( $product );
+	if ( ! is_numeric( $price ) ) {
+		return $price;
+	}
+	return nh_ig_round_paid_amount( (float) $price, (float) $qty );
+}
+
+/**
+ * Keep the variation-price transient separate from caches built before
+ * the display rounding, and from another currency on the same code.
+ *
+ * @param array<int|string, mixed> $hash
+ * @return array<int|string, mixed>
+ */
+function nh_ig_variation_prices_hash( $hash ) {
+	$hash[] = 'nh-ig-paid-unit';
+	if ( function_exists( 'get_woocommerce_currency' ) ) {
+		$hash[] = get_woocommerce_currency();
+	}
+	return $hash;
 }
 
 /**
@@ -834,6 +929,12 @@ nh_ig_register_price_filter( 'woocommerce_variation_prices_price' );
 nh_ig_register_price_filter( 'woocommerce_variation_prices_regular_price' );
 nh_ig_register_price_filter( 'woocommerce_variation_prices_sale_price' );
 
-add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', 10000 );
+// The size calculator replaces flat-rate costs at PHP_INT_MAX and then
+// recalculates VAT, which puts øre back. Registering here, from the theme,
+// runs after that plugin because the theme loads later.
+add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', PHP_INT_MAX );
 add_action( 'woocommerce_after_calculate_totals', 'nh_ig_after_calculate_totals', 9999 );
 add_filter( 'woocommerce_price_trim_zeros', 'nh_ig_trim_zeros' );
+add_filter( 'woocommerce_get_price_including_tax', 'nh_ig_filter_including_tax', 9999, 3 );
+add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 );
+add_filter( 'woocommerce_get_variation_prices_hash', 'nh_ig_variation_prices_hash' );
