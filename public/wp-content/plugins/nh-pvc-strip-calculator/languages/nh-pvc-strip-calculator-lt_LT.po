@@ -1,0 +1,424 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-pvc-strip-calculator 1.0.1\n"
+"PO-Revision-Date: 2026-11-14 19:16+0000\n"
+"Language: lt_LT\n"
+"Language-Team: Lithuanian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Norhage agent\n"
+
+#, php-format
+msgid "%1$d strips · %2$s m"
+msgstr "%1$d juostos · %2$s m"
+
+#, php-format
+msgid "%1$d × %2$d mm opening"
+msgstr "%1$d × %2$d mm anga"
+
+#, php-format
+msgid "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+msgstr "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+#, php-format
+msgid "%d mm strips"
+msgstr "%d mm juostos"
+
+#, php-format
+msgid "%d pcs"
+msgstr "%d vnt."
+
+#, php-format
+msgid "%d strips"
+msgstr "%d juostos"
+
+#, php-format
+msgid "%d%% overlap"
+msgstr "%d%% persidengimas"
+
+#, php-format
+msgid "%s each"
+msgstr "%s už vnt."
+
+#, php-format
+msgid "%s m total"
+msgstr "%s m iš viso"
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s vnt."
+
+msgid "2.5–4 m high"
+msgstr "2,5–4 m aukščio"
+
+msgid "4 m and taller"
+msgstr "Nuo 4 m ir aukščiau"
+
+msgid "Above the opening"
+msgstr "Virš angos"
+
+msgid "Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips."
+msgstr "Virš angos (sienos): skaičiuojamas aukštis = anga + 30 mm; plotis + 80 / 90 / 100 mm 200 / 300 / 400 mm juostoms."
+
+msgid "Above the opening: height + 30 mm; width gains a sealing allowance."
+msgstr "Virš angos: aukštis + 30 mm; plotis padidinamas sandarinimui."
+
+msgid "Add kit to basket"
+msgstr "Įdėti komplektą į krepšelį"
+
+msgid "Adding kit…"
+msgstr "Pridedamas komplektas…"
+
+msgid "All products (not recommended)"
+msgstr "Visi produktai (nerekomenduojama)"
+
+msgid "Antistatic"
+msgstr "Antistatinė"
+
+msgid "Back"
+msgstr "Atgal"
+
+#, php-format
+msgid "Balanced seal · most indoor openings"
+msgstr "Subalansuotas sandarumas · dauguma vidaus angų"
+
+#, php-format
+msgid "Best draught barrier · outdoor & cold rooms"
+msgstr "Geriausia apsauga nuo skersvėjo · laukas ir šaldymo patalpos"
+
+#, php-format
+msgid "Calc. %1$d × %2$d mm"
+msgstr "Skaič. %1$d × %2$d mm"
+
+msgid "Calculator steps"
+msgstr "Skaičiuoklės žingsniai"
+
+msgid "Cart is not available."
+msgstr "Krepšelis nepasiekiamas."
+
+msgid "Cold-resistant"
+msgstr "Atspari šalčiui"
+
+msgid "Cold-resistant (−30 °C to +50 °C)"
+msgstr "Atspari šalčiui (−30 °C iki +50 °C)"
+
+#, php-format
+msgid "Continue"
+msgstr "Tęsti"
+
+#, php-format
+msgid "Could not add the kit. Please try again."
+msgstr "Nepavyko pridėti komplekto. Bandykite dar kartą."
+
+#, php-format
+msgid "Covers %1$d mm · %2$d mm pieces"
+msgstr "Dengia %1$d mm · %2$d mm gabalai"
+
+msgid "Default opening"
+msgstr "Numatytoji anga"
+
+msgid "Display mode"
+msgstr "Rodymo režimas"
+
+msgid "Easier passage · indoor pedestrian traffic"
+msgstr "Lengvesnis praėjimas · pėstieji viduje"
+
+msgid "Enable the flag on the PVC strip curtains system product. Shortcode: [nh_pvc_strip_calculator]"
+msgstr "Įjunkite vėliavą ant PVC juostinių užuolaidų sistemos produkto. Shortcode: [nh_pvc_strip_calculator]"
+
+msgid "Enter an opening size to see the kit."
+msgstr "Įveskite angos matmenis, kad pamatytumėte komplektą."
+
+msgid "Face height extra"
+msgstr "Virš angos: papildomas aukštis"
+
+#, php-format
+msgid "Frosted"
+msgstr "Matinė"
+
+#, php-format
+msgid "Frosted (privacy)"
+msgstr "Matinė (privatumas)"
+
+#, php-format
+msgid "Hanger %d mm"
+msgstr "Laikiklis %d mm"
+
+msgid "Hangers and rail cover the calculated width"
+msgstr "Laikikliai ir bėgelis dengia apskaičiuotą plotį"
+
+msgid "Hanging rail / bracket"
+msgstr "Pakabinimo bėgelis / kronšteinas"
+
+msgid "Hardware"
+msgstr "Furnitūra"
+
+msgid "Hardware packing"
+msgstr "Furnitūros pakavimas"
+
+msgid "Height"
+msgstr "Aukštis"
+
+msgid "Hide default add to cart"
+msgstr "Slėpti įprastą „Į krepšelį“"
+
+msgid "Hide the normal add-to-cart form so customers use the kit calculator."
+msgstr "Slėpti įprastą įdėjimo į krepšelį formą, kad klientai naudotų komplekto skaičiuoklę."
+
+msgid "How quantities are calculated"
+msgstr "Kaip skaičiuojami kiekiai"
+
+msgid "Into the opening"
+msgstr "Į angą"
+
+msgid "Into the opening (soffit): calc height = opening − 45 mm; width unchanged."
+msgstr "Į angą (lubos): skaičiuojamas aukštis = anga − 45 mm; plotis nesikeičia."
+
+msgid "Into the opening: height − 45 mm for the rail."
+msgstr "Į angą: aukštis − 45 mm bėgeliui."
+
+msgid "Kit"
+msgstr "Komplektas"
+
+msgid "Kit total"
+msgstr "Komplekto suma"
+
+msgid "Max"
+msgstr "Maks."
+
+msgid "Maximum"
+msgstr "Didžiausias"
+
+msgid "Medium"
+msgstr "Vidutinis"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Minimum"
+msgstr "Minimalus"
+
+msgid "Mounting"
+msgstr "Tvirtinimas"
+
+msgid "Mounting adjustments"
+msgstr "Tvirtinimo priedai"
+
+msgid "No matching products were found. Map SKUs in PVC strip calculator settings."
+msgstr "Atitinkančių produktų nerasta. Susiekite SKU PVC skaičiuoklės nustatymuose."
+
+msgid "Only products with the calculator flag"
+msgstr "Tik produktai su skaičiuoklės vėliava"
+
+msgid "Opening"
+msgstr "Anga"
+
+msgid "Opening allowances match Plastena face / soffit rules"
+msgstr "Angos priedai atitinka Plastena taisykles tvirtinimui virš / į angą"
+
+msgid "Opening defaults & allowances"
+msgstr "Angos numatytosios ir priedai"
+
+msgid "Opening height"
+msgstr "Angos aukštis"
+
+msgid "Opening size"
+msgstr "Angos matmenys"
+
+msgid "Opening width"
+msgstr "Angos plotis"
+
+msgid "Overlap"
+msgstr "Persidengimas"
+
+msgid "Overlap chooses how tightly neighbouring strips cover each other"
+msgstr "Persidengimas nustato, kaip tankiai gretimos juostos dengia viena kitą"
+
+msgid "Overlap fractions"
+msgstr "Persidengimo dalys"
+
+msgid "Plastena-style opening rules with Norhage kit pricing. Map catalogue products by SKU for each strip size, type and grade."
+msgstr "Plastena tipo angos taisyklės su Norhage komplekto kainomis. Susiekite katalogo produktus pagal SKU kiekvienam juostos dydžiui, tipui ir klasei."
+
+#, php-format
+msgid "Please enter a valid opening width and height."
+msgstr "Įveskite tinkamą angos plotį ir aukštį."
+
+#, php-format
+msgid "Postal code (for shipping)"
+msgstr "Pašto kodas (pristatymui)"
+
+#, php-format
+msgid "PVC strip %1$d × %2$d mm"
+msgstr "PVC juosta %1$d × %2$d mm"
+
+msgid "PVC strip calculator"
+msgstr "PVC juostų skaičiuoklė"
+
+msgid "PVC strip curtain calculator"
+msgstr "PVC juostų užuolaidų skaičiuoklė"
+
+msgid "PVC strip kit"
+msgstr "PVC juostų komplektas"
+
+msgid "Rail fixed to the wall face"
+msgstr "Bėgelis tvirtinamas ant sienos"
+
+msgid "Rail piece length"
+msgstr "Bėgelio gabalo ilgis"
+
+#, php-format
+msgid "Rail under the lintel / soffit"
+msgstr "Bėgelis po sąrama / lubomis"
+
+#, php-format
+msgid "Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip."
+msgstr "Bėgeliai dengia skaičiuojamą plotį sandėlio gabalais (numatytai 1500 mm). Viena laikiklio plokštelė kiekvienai juostai."
+
+#, php-format
+msgid "Recommended for this height: %d mm strips."
+msgstr "Rekomenduojama šiam aukščiui: %d mm juostos."
+
+#, php-format
+msgid "Red edge strip %d mm"
+msgstr "Raudona krašto juosta %d mm"
+
+msgid "Red edge strips replace the two outermost strips when enabled."
+msgstr "Raudonos krašto juostos pakeičia dvi išorines juostas, kai įjungta."
+
+#, php-format
+msgid "Red edges & hardware"
+msgstr "Raudoni kraštai ir furnitūra"
+
+#, php-format
+msgid "Red marker strips at both edges"
+msgstr "Raudonos žymėjimo juostos abiejuose kraštuose"
+
+#, php-format
+msgid "Red strip %d mm"
+msgstr "Raudona juosta %d mm"
+
+msgid "Review kit"
+msgstr "Peržiūrėti komplektą"
+
+msgid "Review your kit"
+msgstr "Peržiūrėkite komplektą"
+
+msgid "Ribbed"
+msgstr "Rifliuota"
+
+msgid "Ribbed (heavy traffic)"
+msgstr "Rifliuota (intensyvus eismas)"
+
+msgid "Search a product for each size × type × grade. Leave blank to hide that combination."
+msgstr "Ieškokite produkto kiekvienam dydis × tipas × klasė. Palikite tuščią, kad slepiama kombinacija."
+
+msgid "Search products…"
+msgstr "Ieškoti produktų…"
+
+msgid "Search product…"
+msgstr "Ieškoti produkto…"
+
+msgid "Selected product IDs"
+msgstr "Pasirinkti produktų ID"
+
+msgid "Selected products"
+msgstr "Pasirinkti produktai"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Pristatymas skaičiuojamas krepšelyje pagal pašto kodą."
+
+msgid "Show postal code on the kit step"
+msgstr "Rodyti pašto kodą komplekto žingsnyje"
+
+msgid "Show postcode field"
+msgstr "Rodyti pašto kodo lauką"
+
+msgid "Show the PVC strip curtain calculator on this product page."
+msgstr "Rodyti PVC juostų skaičiuoklę šiame produkto puslapyje."
+
+msgid "Smooth"
+msgstr "Lygi"
+
+msgid "Soffit height deduct"
+msgstr "Į angą: aukščio atėmimas"
+
+msgid "Some items are not mapped in this shop. The rest can still be added."
+msgstr "Kai kurios prekės šioje parduotuvėje nesurištos. Likusias vis tiek galima pridėti."
+
+#, php-format
+msgid "Standard"
+msgstr "Standartinė"
+
+#, php-format
+msgid "Standard (−5 °C to +60 °C)"
+msgstr "Standartinė (−5 °C iki +60 °C)"
+
+#, php-format
+msgid "Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height."
+msgstr "Juostų skaičius = ceil(skaičiuojamas plotis × (1 + persidengimas%) ÷ juostos plotis). Bendri metrai = juostos × skaičiuojamas aukštis."
+
+#, php-format
+msgid "Strip hanger %d mm"
+msgstr "Juostos laikiklis %d mm"
+
+msgid "Strip products"
+msgstr "Juostų produktai"
+
+msgid "Strip size"
+msgstr "Juostos plotis"
+
+msgid "Strip type & grade"
+msgstr "Juostos tipas ir klasė"
+
+msgid "Strips"
+msgstr "Juostos"
+
+msgid "Surface"
+msgstr "Paviršius"
+
+msgid "Taller openings need wider, thicker strips."
+msgstr "Aukštesnėms angoms reikia platesnių ir storesnių juostų."
+
+msgid "Temperature grade"
+msgstr "Temperatūros klasė"
+
+msgid "Three short steps: measure the opening, choose strips and overlap, then add a complete kit — strips, hangers and rail."
+msgstr "Trys trumpi žingsniai: išmatuokite angą, pasirinkite juostas ir persidengimą, tada pridėkite pilną komplektą — juostas, laikiklius ir bėgelį."
+
+msgid "Total excl. VAT"
+msgstr "Suma be PVM"
+
+msgid "Total incl. VAT"
+msgstr "Suma su PVM"
+
+msgid "Type"
+msgstr "Tipas"
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Nepavyko įdėti vienos komplekto prekės į krepšelį."
+
+msgid "Up to 2.5 m high"
+msgstr "Iki 2,5 m aukščio"
+
+msgid "VAT"
+msgstr "PVM"
+
+msgid "Where the form appears"
+msgstr "Kur rodoma forma"
+
+msgid "Width"
+msgstr "Plotis"
+
+msgid "Your kit"
+msgstr "Jūsų komplektas"
+
+msgid "Your kit includes cut-to-length PVC strips, hanger plates and a hanging rail. Add everything in one go."
+msgstr "Komplekte – PVC juostos pagal ilgį, laikikliai ir bėgelis. Pridėkite viską iš karto."
+

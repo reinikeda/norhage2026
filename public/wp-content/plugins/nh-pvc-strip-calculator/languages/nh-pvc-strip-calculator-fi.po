@@ -1,0 +1,424 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-pvc-strip-calculator 1.0.1\n"
+"PO-Revision-Date: 2026-11-14 19:16+0000\n"
+"Language: fi\n"
+"Language-Team: Finnish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage agent\n"
+
+#, php-format
+msgid "%1$d strips · %2$s m"
+msgstr "%1$d nauhaa · %2$s m"
+
+#, php-format
+msgid "%1$d × %2$d mm opening"
+msgstr "%1$d × %2$d mm aukko"
+
+#, php-format
+msgid "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+msgstr "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+#, php-format
+msgid "%d mm strips"
+msgstr "%d mm nauhat"
+
+#, php-format
+msgid "%d pcs"
+msgstr "%d kpl"
+
+#, php-format
+msgid "%d strips"
+msgstr "%d nauhaa"
+
+#, php-format
+msgid "%d%% overlap"
+msgstr "%d%% peitto"
+
+#, php-format
+msgid "%s each"
+msgstr "%s / kpl"
+
+#, php-format
+msgid "%s m total"
+msgstr "%s m yhteensä"
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s kpl"
+
+msgid "2.5–4 m high"
+msgstr "2,5–4 m"
+
+msgid "4 m and taller"
+msgstr "4 m ja korkeampi"
+
+msgid "Above the opening"
+msgstr "Aukon yläpuolelle"
+
+msgid "Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips."
+msgstr "Aukon yläpuolelle (seinä): laskukorkeus = aukko + 30 mm; leveys + 80 / 90 / 100 mm 200 / 300 / 400 mm nauhoille."
+
+msgid "Above the opening: height + 30 mm; width gains a sealing allowance."
+msgstr "Aukon yläpuolelle: korkeus + 30 mm; leveyteen lisätään tiivistysvara."
+
+msgid "Add kit to basket"
+msgstr "Lisää paketti koriin"
+
+msgid "Adding kit…"
+msgstr "Lisätään pakettia…"
+
+msgid "All products (not recommended)"
+msgstr "Kaikki tuotteet (ei suositella)"
+
+msgid "Antistatic"
+msgstr "Antistaattinen"
+
+msgid "Back"
+msgstr "Takaisin"
+
+#, php-format
+msgid "Balanced seal · most indoor openings"
+msgstr "Tasapainoinen tiivistys · useimmat sisäaukot"
+
+#, php-format
+msgid "Best draught barrier · outdoor & cold rooms"
+msgstr "Paras vedoneristys · ulkoaukot ja kylmätilat"
+
+#, php-format
+msgid "Calc. %1$d × %2$d mm"
+msgstr "Lask. %1$d × %2$d mm"
+
+msgid "Calculator steps"
+msgstr "Laskurin vaiheet"
+
+msgid "Cart is not available."
+msgstr "Kori ei ole käytettävissä."
+
+msgid "Cold-resistant"
+msgstr "Kylmänkestävä"
+
+msgid "Cold-resistant (−30 °C to +50 °C)"
+msgstr "Kylmänkestävä (−30 °C…+50 °C)"
+
+#, php-format
+msgid "Continue"
+msgstr "Jatka"
+
+#, php-format
+msgid "Could not add the kit. Please try again."
+msgstr "Pakettia ei voitu lisätä. Yritä uudelleen."
+
+#, php-format
+msgid "Covers %1$d mm · %2$d mm pieces"
+msgstr "Kattaa %1$d mm · %2$d mm palat"
+
+msgid "Default opening"
+msgstr "Oletusaukko"
+
+msgid "Display mode"
+msgstr "Näyttötila"
+
+msgid "Easier passage · indoor pedestrian traffic"
+msgstr "Helpompi kulku · sisätilojen jalankulku"
+
+msgid "Enable the flag on the PVC strip curtains system product. Shortcode: [nh_pvc_strip_calculator]"
+msgstr "Ota lippu käyttöön PVC-nauhaverhojärjestelmätuotteessa. Shortcode: [nh_pvc_strip_calculator]"
+
+msgid "Enter an opening size to see the kit."
+msgstr "Anna aukon mitat nähdäksesi paketin."
+
+msgid "Face height extra"
+msgstr "Seinäkiinnitys: lisäkorkeus"
+
+#, php-format
+msgid "Frosted"
+msgstr "Himmeä"
+
+#, php-format
+msgid "Frosted (privacy)"
+msgstr "Himmeä (näkösuoja)"
+
+#, php-format
+msgid "Hanger %d mm"
+msgstr "Ripustin %d mm"
+
+msgid "Hangers and rail cover the calculated width"
+msgstr "Ripustimet ja kisko kattavat lasketun leveyden"
+
+msgid "Hanging rail / bracket"
+msgstr "Ripustuskisko / kannatin"
+
+msgid "Hardware"
+msgstr "Tarvikkeet"
+
+msgid "Hardware packing"
+msgstr "Tarvikepakkaus"
+
+msgid "Height"
+msgstr "Korkeus"
+
+msgid "Hide default add to cart"
+msgstr "Piilota tavallinen Lisää koriin"
+
+msgid "Hide the normal add-to-cart form so customers use the kit calculator."
+msgstr "Piilota tavallinen ostoskori-lomake, jotta asiakkaat käyttävät pakettolaskuria."
+
+msgid "How quantities are calculated"
+msgstr "Miten määrät lasketaan"
+
+msgid "Into the opening"
+msgstr "Aukon sisään"
+
+msgid "Into the opening (soffit): calc height = opening − 45 mm; width unchanged."
+msgstr "Aukkoon (karmi): laskukorkeus = aukko − 45 mm; leveys ennallaan."
+
+msgid "Into the opening: height − 45 mm for the rail."
+msgstr "Aukon sisään: korkeus − 45 mm kiskolle."
+
+msgid "Kit"
+msgstr "Paketti"
+
+msgid "Kit total"
+msgstr "Paketin summa"
+
+msgid "Max"
+msgstr "Maks."
+
+msgid "Maximum"
+msgstr "Maksimi"
+
+msgid "Medium"
+msgstr "Keskitaso"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Minimum"
+msgstr "Minimi"
+
+msgid "Mounting"
+msgstr "Asennus"
+
+msgid "Mounting adjustments"
+msgstr "Asennusvarat"
+
+msgid "No matching products were found. Map SKUs in PVC strip calculator settings."
+msgstr "Tuotteita ei löytynyt. Kytke SKU:t PVC-laskurin asetuksissa."
+
+msgid "Only products with the calculator flag"
+msgstr "Vain tuotteet joissa laskurilippu"
+
+msgid "Opening"
+msgstr "Aukko"
+
+msgid "Opening allowances match Plastena face / soffit rules"
+msgstr "Aukon varat noudattavat Plastenan seinä-/aukkoasennussääntöjä"
+
+msgid "Opening defaults & allowances"
+msgstr "Aukon oletukset ja varat"
+
+msgid "Opening height"
+msgstr "Aukon korkeus"
+
+msgid "Opening size"
+msgstr "Aukon mitat"
+
+msgid "Opening width"
+msgstr "Aukon leveys"
+
+msgid "Overlap"
+msgstr "Peitto"
+
+msgid "Overlap chooses how tightly neighbouring strips cover each other"
+msgstr "Peitto määrittää, kuinka tiiviisti viereiset nauhat peittävät toisensa"
+
+msgid "Overlap fractions"
+msgstr "Peittosuhteet"
+
+msgid "Plastena-style opening rules with Norhage kit pricing. Map catalogue products by SKU for each strip size, type and grade."
+msgstr "Plastena-tyyliset aukkosäännöt Norhage-pakettihinnoilla. Kartota katalogituotteet SKU:lla jokaiselle nauhaleveydelle, tyypille ja laadulle."
+
+#, php-format
+msgid "Please enter a valid opening width and height."
+msgstr "Anna kelvollinen aukon leveys ja korkeus."
+
+#, php-format
+msgid "Postal code (for shipping)"
+msgstr "Postinumero (toimitusta varten)"
+
+#, php-format
+msgid "PVC strip %1$d × %2$d mm"
+msgstr "PVC-nauha %1$d × %2$d mm"
+
+msgid "PVC strip calculator"
+msgstr "PVC-nauhalaskuri"
+
+msgid "PVC strip curtain calculator"
+msgstr "PVC-nauhaverhon laskuri"
+
+msgid "PVC strip kit"
+msgstr "PVC-nauhapaketti"
+
+msgid "Rail fixed to the wall face"
+msgstr "Kisko kiinnitetty seinään"
+
+msgid "Rail piece length"
+msgstr "Kiskokappaleen pituus"
+
+#, php-format
+msgid "Rail under the lintel / soffit"
+msgstr "Kisko aukon karmiin / kattoon"
+
+#, php-format
+msgid "Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip."
+msgstr "Kiskot kattavat laskuleveyden varastokappaleina (oletus 1500 mm). Yksi ripustinlevy per nauha."
+
+#, php-format
+msgid "Recommended for this height: %d mm strips."
+msgstr "Suositus tälle korkeudelle: %d mm nauhat."
+
+#, php-format
+msgid "Red edge strip %d mm"
+msgstr "Punainen reunnauha %d mm"
+
+msgid "Red edge strips replace the two outermost strips when enabled."
+msgstr "Punaiset reunannauhat korvaavat kaksi uloimmaista nauhaa, kun käytössä."
+
+#, php-format
+msgid "Red edges & hardware"
+msgstr "Punaiset reunat ja tarvikkeet"
+
+#, php-format
+msgid "Red marker strips at both edges"
+msgstr "Punaiset merkkausnauhat molemmissa reunoissa"
+
+#, php-format
+msgid "Red strip %d mm"
+msgstr "Punainen nauha %d mm"
+
+msgid "Review kit"
+msgstr "Tarkista paketti"
+
+msgid "Review your kit"
+msgstr "Tarkista pakettisi"
+
+msgid "Ribbed"
+msgstr "Uritettu"
+
+msgid "Ribbed (heavy traffic)"
+msgstr "Uritettu (vilkas liikenne)"
+
+msgid "Search a product for each size × type × grade. Leave blank to hide that combination."
+msgstr "Hae tuote jokaiselle koko × tyyppi × laatu -yhdistelmälle. Jätä tyhjäksi piilottaaksesi yhdistelmän."
+
+msgid "Search products…"
+msgstr "Hae tuotteita…"
+
+msgid "Search product…"
+msgstr "Hae tuotetta…"
+
+msgid "Selected product IDs"
+msgstr "Valitut tuote-ID:t"
+
+msgid "Selected products"
+msgstr "Valitut tuotteet"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Toimituskulut lasketaan korissa postinumeron mukaan."
+
+msgid "Show postal code on the kit step"
+msgstr "Näytä postinumero pakettivaiheessa"
+
+msgid "Show postcode field"
+msgstr "Näytä postinumerokenttä"
+
+msgid "Show the PVC strip curtain calculator on this product page."
+msgstr "Näytä PVC-nauhaverhon laskuri tällä tuotesivulla."
+
+msgid "Smooth"
+msgstr "Sileä"
+
+msgid "Soffit height deduct"
+msgstr "Aukkokiinnitys: korkeuden vähennys"
+
+msgid "Some items are not mapped in this shop. The rest can still be added."
+msgstr "Joitakin tuotteita ei ole kytketty tässä kaupassa. Loput voi silti lisätä."
+
+#, php-format
+msgid "Standard"
+msgstr "Standardi"
+
+#, php-format
+msgid "Standard (−5 °C to +60 °C)"
+msgstr "Standardi (−5 °C…+60 °C)"
+
+#, php-format
+msgid "Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height."
+msgstr "Nauhamäärä = ceil(laskuleveys × (1 + peitto%) ÷ nauhan leveys). Kokonaismetrit = nauhat × laskukorkeus."
+
+#, php-format
+msgid "Strip hanger %d mm"
+msgstr "Nauharipustin %d mm"
+
+msgid "Strip products"
+msgstr "Nauhatuotteet"
+
+msgid "Strip size"
+msgstr "Nauhan leveys"
+
+msgid "Strip type & grade"
+msgstr "Nauhatyyppi ja laatu"
+
+msgid "Strips"
+msgstr "Nauhat"
+
+msgid "Surface"
+msgstr "Pinta"
+
+msgid "Taller openings need wider, thicker strips."
+msgstr "Korkeammat aukot tarvitsevat leveämpiä ja paksumpia nauhoja."
+
+msgid "Temperature grade"
+msgstr "Lämpötilaluokka"
+
+msgid "Three short steps: measure the opening, choose strips and overlap, then add a complete kit — strips, hangers and rail."
+msgstr "Kolme lyhyttä vaihetta: mittaa aukko, valitse nauhat ja peitto, lisää sitten valmis paketti — nauhat, ripustimet ja kisko."
+
+msgid "Total excl. VAT"
+msgstr "Yhteensä ilman ALV"
+
+msgid "Total incl. VAT"
+msgstr "Yhteensä sis. ALV"
+
+msgid "Type"
+msgstr "Tyyppi"
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Yhtä paketin tuotetta ei voitu lisätä koriin."
+
+msgid "Up to 2.5 m high"
+msgstr "Enintään 2,5 m"
+
+msgid "VAT"
+msgstr "ALV"
+
+msgid "Where the form appears"
+msgstr "Missä lomake näytetään"
+
+msgid "Width"
+msgstr "Leveys"
+
+msgid "Your kit"
+msgstr "Pakettisi"
+
+msgid "Your kit includes cut-to-length PVC strips, hanger plates and a hanging rail. Add everything in one go."
+msgstr "Paketti sisältää mittoihin leikatut PVC-nauhat, ripustinlevyt ja ripustuskiskon. Lisää kaikki kerralla."
+
