@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
-"PO-Revision-Date: 2026-11-16 14:37+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: lt_LT\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
@@ -66,6 +66,7 @@ msgstr "Lakštas būtų platesnis už %d mm sandėlio plotį. Sumažinkite atram
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pasuktas bet kuria kryptimi. Ši dalis vis tiek per plati. Sumažinkite atramų žingsnį."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Įdėti komplektą į krepšelį"
 
@@ -93,6 +94,7 @@ msgstr "Taip pat galima"
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "Pilname tarpatramyje kraštinis lakštas yra %1$d mm platesnis už vidurinį: jis siekia %2$d mm atramos galą ir siūlėje praranda tik %3$d mm."
 
+#, php-format
 msgid "Anthracite"
 msgstr "Antracitas"
 
@@ -174,6 +176,7 @@ msgstr "Sujungimo ir krašto profiliai su galiniais dangteliais, kur reikia"
 msgid "Connecting profile"
 msgstr "Jungiamasis profilis"
 
+#, php-format
 msgid "Connecting profiles"
 msgstr "Jungiamieji profiliai"
 
@@ -383,6 +386,7 @@ msgstr "vidurinis"
 msgid "Most terraces"
 msgstr "Dauguma terasų"
 
+#, php-format
 msgid "Multiwall polycarbonate"
 msgstr "Kanalinis polikarbonatas"
 
@@ -398,10 +402,10 @@ msgstr "Daugiasluoksnės: ištisos 2100 mm plokštės, ilgis apvalinamas iki sve
 msgid "Neutral silicone"
 msgstr "Neutralus silikonas"
 
-#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralus silikonas Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Šiam pasirinkimui prekių nerasta. Patikrinkite SKU sąsają terasos skaičiuoklės nustatymuose."
 
@@ -463,6 +467,7 @@ msgstr "Polikarbonatas"
 msgid "Polycarbonate sheet"
 msgstr "Polikarbonato lakštas"
 
+#, php-format
 msgid "Polycarbonate sheets"
 msgstr "Polikarbonato lakštai"
 
@@ -541,6 +546,10 @@ msgstr "Varžtai profiliams ir kraštams bei tvirtinimo mygtukai, jei jie susiet
 msgid "Sealing"
 msgstr "Sandarinimas"
 
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
+msgstr "Sandarinimo juostos tik daugiasluoksnėms plokštėms. Viršų sandarina izoliacinė juosta, apačią – kvėpuojanti ventiliacinė. Abiejų kraštų ilgis vienodas (bendras plokščių plotis; dvišlaitis skaičiuoja abi puses). Juostos plotis pagal storį: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; tinkama variacija iš tėvinio produkto. Sraigtai (daugiasluoksnėms ir monolitinėms) pagal storį: iki 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Guminė tarpinė – perimetro metrais. Silikonas – viena tūbelė kas nustatytą perimetro metrą (numatytai 10 m), bent viena."
+
+#, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Sandarinimo juostos tik daugiasluoksnėms plokštėms. Vienas ventiliacijos ir vienas izoliacijos ritinys dengia plokščių plotį; dar po ritinį, kai plotis kartu viršija sukonfigūruotą ritinio ilgį (numatytai 5 m). Guminis tarpiklis seka perimetrą ir parduodamas sveikais metrais. Silikono – vienas tūbelis kiekvienam sukonfigūruotam to perimetro metrui (numatytai 10 m), mažiausiai vienas."
 
@@ -582,6 +591,7 @@ msgstr "Pristatymas skaičiuojamas krepšelyje pagal jūsų pašto kodą."
 msgid "Show calculator on"
 msgstr "Rodyti skaičiuoklę"
 
+#, php-format
 msgid "Show postcode field"
 msgstr "Rodyti pašto kodo lauką"
 
@@ -656,6 +666,7 @@ msgstr "Atraminės sijos plotis"
 msgid "Support spacing (centre to centre)"
 msgstr "Atramų žingsnis (nuo centro iki centro)"
 
+#, php-format
 msgid "Tape roll length"
 msgstr "Juostos ritinio ilgis"
 

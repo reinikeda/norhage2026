@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
-"PO-Revision-Date: 2026-11-16 14:37+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: sv_SE\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -66,6 +66,7 @@ msgstr "En skiva skulle bli bredare än lagerbredden på %d mm. Minska regelavst
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "En massiv polykarbonatskiva är %1$d × %2$d mm och kan vändas åt båda håll. Den här biten är ändå för bred. Minska regelavståndet."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Lägg satsen i varukorgen"
 
@@ -93,6 +94,7 @@ msgstr "Även tillgänglig"
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "På ett helt fack är en ytterskiva %1$d mm bredare än en mittskiva: den når ut till änden av den %2$d mm breda regeln och förlorar bara %3$d mm i skarven."
 
+#, php-format
 msgid "Anthracite"
 msgstr "Antracit"
 
@@ -174,6 +176,7 @@ msgstr "Fog- och kantprofiler med ändstycken där det behövs"
 msgid "Connecting profile"
 msgstr "Skarvprofil"
 
+#, php-format
 msgid "Connecting profiles"
 msgstr "Skarvprofiler"
 
@@ -383,6 +386,7 @@ msgstr "mitt"
 msgid "Most terraces"
 msgstr "De flesta terrasser"
 
+#, php-format
 msgid "Multiwall polycarbonate"
 msgstr "Kanalplast"
 
@@ -398,10 +402,10 @@ msgstr "Flervägg: hela 2100 mm skivor, längd avrundad upp till hela meter (1�
 msgid "Neutral silicone"
 msgstr "Neutral silikon"
 
-#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutral silikon Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Inga produkter matchade det här valet. Kontrollera SKU-kopplingen i inställningarna för terrasskalkylatorn."
 
@@ -463,6 +467,7 @@ msgstr "Polykarbonat"
 msgid "Polycarbonate sheet"
 msgstr "Polykarbonatskiva"
 
+#, php-format
 msgid "Polycarbonate sheets"
 msgstr "Polykarbonatskivor"
 
@@ -541,6 +546,10 @@ msgstr "Skruvar till profiler och kanter plus fästknappar när de är kopplade"
 msgid "Sealing"
 msgstr "Tätning"
 
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
+msgstr "Tätningsband bara för flervägg. Isoleringstejp på överkant; andningsbar ventilationstejp på underkant. Båda kanterna samma längd (total skivbredd; sadeltak räknar båda sidor). Bandbredd efter tjocklek: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, och rätt variant från överordnad produkt. Skruvar (flervägg och massiv) efter tjocklek: upp till 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummilisten följer omkretsen i hela meter. Silikon är en tub per konfigurerad meter omkrets (standard 10 m), minst en tub."
+
+#, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Tätningstejp läggs bara till för flerskiktsplattor. En ventilationsrulle och en isoleringsrulle täcker skivbredderna, och ytterligare en rulle av varje läggs till när bredderna tillsammans passerar den konfigurerade rullängden (standard 5 m). Gummilisten följer omkretsen och säljs i hela meter. Silikon är en tub för varje konfigurerade meter av den omkretsen (standard 10 m), och minst en tub."
 
@@ -582,6 +591,7 @@ msgstr "Frakt räknas ut i varukorgen utifrån ditt postnummer."
 msgid "Show calculator on"
 msgstr "Visa kalkylatorn på"
 
+#, php-format
 msgid "Show postcode field"
 msgstr "Visa fält för postnummer"
 
@@ -656,6 +666,7 @@ msgstr "Bredd på bärregel"
 msgid "Support spacing (centre to centre)"
 msgstr "Regelavstånd (centrum till centrum)"
 
+#, php-format
 msgid "Tape roll length"
 msgstr "Tejprullens längd"
 
