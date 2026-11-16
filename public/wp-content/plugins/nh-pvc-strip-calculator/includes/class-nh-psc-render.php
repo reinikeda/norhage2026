@@ -179,76 +179,68 @@ class NH_PSC_Render {
 						<fieldset class="nh-psc__card">
 							<legend><?php esc_html_e( 'Mounting', NH_PSC_TD ); ?></legend>
 							<div class="nh-psc__choices">
-								<label class="nh-psc__choice">
+								<label class="nh-psc__choice nh-psc__choice--photo">
 									<input type="radio" name="mounting" value="face" checked>
 									<span class="nh-psc__choice-art" aria-hidden="true">
-										<svg viewBox="0 0 96 64" width="96" height="64" focusable="false">
-											<defs>
-												<linearGradient id="nh-psc-face-strip" x1="0" y1="0" x2="0" y2="1">
-													<stop offset="0%" stop-color="currentColor" stop-opacity=".08"/>
-													<stop offset="40%" stop-color="currentColor" stop-opacity=".2"/>
-													<stop offset="100%" stop-color="currentColor" stop-opacity=".1"/>
-												</linearGradient>
-											</defs>
-											<rect x="8" y="8" width="80" height="10" rx="2" fill="currentColor"/>
-											<path d="M14 8 V4 H22 V8 M38 8 V4 H46 V8 M62 8 V4 H70 V8" fill="currentColor" opacity=".55"/>
-											<path d="M16 18 H28 V52 Q22 56 16 52 Z" fill="url(#nh-psc-face-strip)" stroke="currentColor" stroke-width="1.2"/>
-											<path d="M32 18 H44 V52 Q38 56 32 52 Z" fill="url(#nh-psc-face-strip)" stroke="currentColor" stroke-width="1.2"/>
-											<path d="M48 18 H60 V52 Q54 56 48 52 Z" fill="url(#nh-psc-face-strip)" stroke="currentColor" stroke-width="1.2"/>
-											<path d="M64 18 H76 V52 Q70 56 64 52 Z" fill="url(#nh-psc-face-strip)" stroke="currentColor" stroke-width="1.2"/>
-										</svg>
+										<img
+											class="nh-psc__choice-img"
+											src="<?php echo esc_url( NH_PSC_URL . 'assets/img/mount-face.jpg' ); ?>"
+											alt=""
+											width="720"
+											height="540"
+											loading="lazy"
+											decoding="async"
+										>
 									</span>
 									<span class="nh-psc__choice-title"><?php esc_html_e( 'Above the opening', NH_PSC_TD ); ?></span>
 									<span class="nh-psc__choice-sub"><?php esc_html_e( 'Rail fixed to the wall face', NH_PSC_TD ); ?></span>
 								</label>
-								<label class="nh-psc__choice">
+								<label class="nh-psc__choice nh-psc__choice--photo">
 									<input type="radio" name="mounting" value="soffit">
 									<span class="nh-psc__choice-art" aria-hidden="true">
-										<svg viewBox="0 0 96 64" width="96" height="64" focusable="false">
-											<defs>
-												<linearGradient id="nh-psc-soffit-strip" x1="0" y1="0" x2="0" y2="1">
-													<stop offset="0%" stop-color="currentColor" stop-opacity=".08"/>
-													<stop offset="45%" stop-color="currentColor" stop-opacity=".2"/>
-													<stop offset="100%" stop-color="currentColor" stop-opacity=".1"/>
-												</linearGradient>
-											</defs>
-											<path d="M12 10 H84 V54 H12 Z" fill="none" stroke="currentColor" stroke-width="2" opacity=".55"/>
-											<rect x="18" y="14" width="60" height="8" rx="1.5" fill="currentColor"/>
-											<path d="M24 22 H34 V46 Q29 50 24 46 Z" fill="url(#nh-psc-soffit-strip)" stroke="currentColor" stroke-width="1.1"/>
-											<path d="M38 22 H48 V46 Q43 50 38 46 Z" fill="url(#nh-psc-soffit-strip)" stroke="currentColor" stroke-width="1.1"/>
-											<path d="M52 22 H62 V46 Q57 50 52 46 Z" fill="url(#nh-psc-soffit-strip)" stroke="currentColor" stroke-width="1.1"/>
-											<path d="M66 22 H76 V46 Q71 50 66 46 Z" fill="url(#nh-psc-soffit-strip)" stroke="currentColor" stroke-width="1.1"/>
-										</svg>
+										<img
+											class="nh-psc__choice-img"
+											src="<?php echo esc_url( NH_PSC_URL . 'assets/img/mount-soffit.jpg' ); ?>"
+											alt=""
+											width="720"
+											height="540"
+											loading="lazy"
+											decoding="async"
+										>
 									</span>
 									<span class="nh-psc__choice-title"><?php esc_html_e( 'Into the opening', NH_PSC_TD ); ?></span>
 									<span class="nh-psc__choice-sub"><?php esc_html_e( 'Rail under the lintel / soffit', NH_PSC_TD ); ?></span>
 								</label>
 							</div>
-							<div class="nh-psc__measure-guide" aria-hidden="true">
-								<svg class="nh-psc__measure-svg" viewBox="0 0 340 156" width="340" height="156" focusable="false">
-									<defs>
-										<linearGradient id="nh-psc-guide-strip" x1="0" y1="0" x2="0" y2="1">
-											<stop offset="0%" stop-color="currentColor" stop-opacity=".06"/>
-											<stop offset="35%" stop-color="currentColor" stop-opacity=".2"/>
-											<stop offset="100%" stop-color="currentColor" stop-opacity=".08"/>
-										</linearGradient>
-										<marker id="nh-psc-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-											<path d="M0,0.5 L7,3.5 L0,6.5 Z" fill="currentColor"/>
-										</marker>
-									</defs>
-									<path d="M36 24 H292 V118 H36 Z" fill="currentColor" opacity=".05" stroke="currentColor" stroke-width="2"/>
-									<rect x="48" y="32" width="232" height="12" rx="2" fill="currentColor"/>
-									<path d="M58 44 H86 V108 Q72 116 58 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M92 44 H120 V108 Q106 116 92 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M126 44 H154 V108 Q140 116 126 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M160 44 H188 V108 Q174 116 160 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M194 44 H222 V108 Q208 116 194 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M228 44 H256 V108 Q242 116 228 108 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.2"/>
-									<path d="M48 138 H280" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
-									<path d="M308 28 V114" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
-									<text x="164" y="152" text-anchor="middle" class="nh-psc__measure-text"><?php esc_html_e( 'Opening width', NH_PSC_TD ); ?></text>
-									<text x="326" y="78" text-anchor="middle" class="nh-psc__measure-text" transform="rotate(90 326 78)"><?php esc_html_e( 'Height', NH_PSC_TD ); ?></text>
-								</svg>
+							<div class="nh-psc__measure-guide">
+								<figure class="nh-psc__measure-block">
+									<svg class="nh-psc__measure-svg" viewBox="0 0 340 148" width="340" height="148" focusable="false" aria-hidden="true">
+										<defs>
+											<linearGradient id="nh-psc-guide-strip" x1="0" y1="0" x2="0" y2="1">
+												<stop offset="0%" stop-color="currentColor" stop-opacity=".06"/>
+												<stop offset="35%" stop-color="currentColor" stop-opacity=".18"/>
+												<stop offset="100%" stop-color="currentColor" stop-opacity=".08"/>
+											</linearGradient>
+											<marker id="nh-psc-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+												<path d="M0,0.5 L7,3.5 L0,6.5 Z" fill="currentColor"/>
+											</marker>
+										</defs>
+										<path d="M40 22 H288 V108 H40 Z" fill="currentColor" opacity=".04" stroke="currentColor" stroke-width="2"/>
+										<rect x="52" y="30" width="224" height="11" rx="2" fill="currentColor"/>
+										<path d="M62 41 H88 V96 Q75 104 62 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M96 41 H122 V96 Q109 104 96 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M130 41 H156 V96 Q143 104 130 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M164 41 H190 V96 Q177 104 164 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M198 41 H224 V96 Q211 104 198 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M232 41 H258 V96 Q245 104 232 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
+										<path d="M52 126 H268" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
+										<path d="M304 26 V104" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
+									</svg>
+									<figcaption class="nh-psc__measure-keys">
+										<span><strong><?php esc_html_e( 'Opening width', NH_PSC_TD ); ?></strong></span>
+										<span><strong><?php esc_html_e( 'Height', NH_PSC_TD ); ?></strong></span>
+									</figcaption>
+								</figure>
 							</div>
 						</fieldset>
 
