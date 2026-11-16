@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:51+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
+"PO-Revision-Date: 2026-11-16 14:17+0000\n"
 "Language: nb_NO\n"
 "Language-Team: Norwegian Bokmål\n"
 "MIME-Version: 1.0\n"
@@ -70,13 +70,13 @@ msgstr "En massiv polykarbonatplate er %1$d × %2$d mm og kan snus begge veier. 
 msgid "Add kit to basket"
 msgstr "Legg settet i handlekurven"
 
-#, php-format
 msgid "Adding kit…"
 msgstr "Legger til settet…"
 
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle tre skrueantall legges sammen og avrundes opp til pakker. Forbindelsesprofiler trenger vanligvis tettere avstand enn kantlister."
 
+#, php-format
 msgid "along the gable"
 msgstr "langs gavlen"
 
@@ -101,6 +101,7 @@ msgstr "Areal"
 msgid "Attached to a wall"
 msgstr "Festet til en vegg"
 
+#, php-format
 msgid "Back"
 msgstr "Tilbake"
 
@@ -179,6 +180,7 @@ msgstr "Forbindelsesprofiler og skruer"
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Forbindelsesprofiler tilsvarer skjøtene på tvers: én færre enn platene i bredden. Hvert profil er den korteste lagerlengden som dekker platelengden. Skruer dekker forbindelsesprofiler (standard hver 200 mm), avslutningskanter og vegg-/mønestykker (standard hver 400 mm), deretter avrunding til pakker. Endestykker er to per forbindelsesprofil. Plast-H-profilen har ingen endestykker. Festeknapper (valgfritt produkt) er én hver 400 mm langs hver platelengde for midtfesting."
 
+#, php-format
 msgid "Continue"
 msgstr "Fortsett"
 
@@ -373,6 +375,10 @@ msgstr "Kanalplast"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalplast (tilkappet)"
 
+msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
+msgstr "Flerlags: hele 2100 mm plater, lengde avrundet opp til hele meter (1–7 m). Massiv: hele 2050 × 3050 mm plater, begge veier."
+
+#, php-format
 msgid "Neutral silicone"
 msgstr "Nøytral silikon"
 
@@ -447,6 +453,7 @@ msgstr "Postnummer (til frakt)"
 msgid "Profiles"
 msgstr "Profiler"
 
+#, php-format
 msgid "Projection"
 msgstr "Utstikk"
 
@@ -516,6 +523,7 @@ msgstr "Tetningsbånd, skruer og tilbehør"
 msgid "Search products…"
 msgstr "Søk etter produkter…"
 
+#, php-format
 msgid "Selected products"
 msgstr "Valgte produkter"
 
@@ -554,6 +562,7 @@ msgstr "Vis postnummersteget i nettbutikken. Lagres på kunden når settet legge
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Vis terrassetak-kalkulatoren på denne produktsiden (brukes når visningen er «avkrysning»)."
 
+#, php-format
 msgid "Silicone metres per tube"
 msgstr "Silikonmeter per tube"
 
@@ -625,6 +634,7 @@ msgstr "Teip, silikon og vegglengde"
 msgid "Tapes, gasket and silicone"
 msgstr "Tape, pakning og silikon"
 
+#, php-format
 msgid "Terrace calculator"
 msgstr "Terrassekalkulator"
 

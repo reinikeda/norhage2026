@@ -151,9 +151,21 @@ class NH_TC_Engine {
 		$plan   = $across;
 		$sheets = self::group_sheets( $pieces );
 
-		$stock_cover = $choice
-			? self::stock_sheet_qty( $width, $sheet_length, (int) $choice['width_mm'], (int) $choice['length_mm'] )
-			: null;
+		$stock_cover = null;
+		if ( $choice ) {
+			$stock_cover = self::stock_sheet_qty(
+				$width,
+				$sheet_length,
+				(int) $choice['width_mm'],
+				(int) $choice['length_mm'],
+				'solid' === $material
+			);
+			// Solid blanks may be turned; keep the orientation that bought fewer sheets.
+			if ( ! empty( $stock_cover['rotated'] ) ) {
+				$choice['width_mm']  = (int) $stock_cover['width_mm'];
+				$choice['length_mm'] = (int) $stock_cover['length_mm'];
+			}
+		}
 
 		$sheet_count = 0;
 		foreach ( $sheets as $sheet ) {
@@ -390,12 +402,44 @@ class NH_TC_Engine {
 	}
 
 	/**
+	 * Round a multiwall run up to a sold full-metre stock length (1–7 m).
+	 * Runs longer than 7 m stay at 7000 mm; tiling along the length covers the rest.
+	 */
+	public static function multiwall_stock_length( $need_mm ) {
+		$need = max( 1, (int) $need_mm );
+		if ( $need >= 7000 ) {
+			return 7000;
+		}
+		$rounded = (int) ( ceil( $need / 1000 ) * 1000 );
+		return max( 1000, min( 7000, $rounded ) );
+	}
+
+	/**
 	 * How many whole stock sheets cover the frame. Sheets tile across the width
 	 * and, when one stock length is shorter than the run, along the length too.
+	 * Solid blanks may be rotated (2050 × 3050 either way); the cheaper orientation wins.
 	 *
+	 * @return array{across:int,along:int,qty:int,width_mm:int,length_mm:int,rotated:int}
+	 */
+	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length, $allow_rotate = false ) {
+		$primary = self::tile_stock_qty( $frame_width, $need_length, $stock_width, $stock_length );
+		$primary['width_mm']  = (int) $stock_width;
+		$primary['length_mm'] = (int) $stock_length;
+		$primary['rotated']   = 0;
+		if ( ! $allow_rotate || (int) $stock_width === (int) $stock_length ) {
+			return $primary;
+		}
+		$rotated = self::tile_stock_qty( $frame_width, $need_length, $stock_length, $stock_width );
+		$rotated['width_mm']  = (int) $stock_length;
+		$rotated['length_mm'] = (int) $stock_width;
+		$rotated['rotated']   = 1;
+		return ( $rotated['qty'] < $primary['qty'] ) ? $rotated : $primary;
+	}
+
+	/**
 	 * @return array{across:int,along:int,qty:int}
 	 */
-	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
+	private static function tile_stock_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
 		$across = (int) ceil( max( 1, (int) $frame_width ) / max( 1, (int) $stock_width ) );
 		$along  = (int) ceil( max( 1, (int) $need_length ) / max( 1, (int) $stock_length ) );
 		return array(

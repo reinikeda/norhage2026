@@ -314,9 +314,17 @@
     }
   }
 
-  function preferredLength(lengths) {
+  function preferredLength(lengths, material) {
     var need = frameLength() + (overhangInput ? Number(overhangInput.value) : 0);
     var sorted = lengths.map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+    if (material === 'solid' && sorted.indexOf(3050) !== -1) {
+      return '3050';
+    }
+    if (material === 'multiwall') {
+      // Round up to a full metre (1–7 m), then pick the shortest sold length that covers it.
+      var metre = need >= 7000 ? 7000 : Math.max(1000, Math.min(7000, Math.ceil(need / 1000) * 1000));
+      need = metre;
+    }
     var i;
     for (i = 0; i < sorted.length; i++) {
       if (sorted[i] >= need) return String(sorted[i]);
@@ -379,12 +387,21 @@
 
     var widthMap = (groups[stockState.channel] && groups[stockState.channel].widths) || {};
     var widths = Object.keys(widthMap).sort(function (a, b) { return Number(a) - Number(b); });
+    var material = matSel ? matSel.value : 'multiwall';
+    // Standard supply uses full sheets: multiwall 2100 mm, solid 2050 mm.
+    if (material === 'multiwall' && widths.indexOf('2100') !== -1) {
+      widths = ['2100'];
+    } else if (material === 'solid' && widths.indexOf('2050') !== -1) {
+      widths = ['2050'];
+    }
     if (widths.indexOf(String(stockState.width)) === -1) {
-      stockState.width = widths.indexOf('2100') !== -1 ? '2100' : widths[widths.length - 1];
+      if (material === 'multiwall' && widths.indexOf('2100') !== -1) stockState.width = '2100';
+      else if (material === 'solid' && widths.indexOf('2050') !== -1) stockState.width = '2050';
+      else stockState.width = widths[widths.length - 1];
     }
 
     var lengths = lengthsOf(widthMap[stockState.width]);
-    stockState.length = preferredLength(lengths);
+    stockState.length = preferredLength(lengths, material);
     if (stockLengthInput) stockLengthInput.value = stockState.length;
 
     var sig = [key, stockState.channel, stockState.width].join('|');

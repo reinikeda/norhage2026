@@ -268,7 +268,7 @@ class NH_TC_Render {
 								<div data-stock-sizes>
 									<p class="nh-tc__stock-label"><?php esc_html_e( 'Width', NH_TC_TD ); ?></p>
 									<div class="nh-tc__chips" data-stock-widths></div>
-									<p class="nh-tc__hint"><?php esc_html_e( 'We pick the shortest stock length that covers the frame plus the drip overhang.', NH_TC_TD ); ?></p>
+									<p class="nh-tc__hint"><?php esc_html_e( 'Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up.', NH_TC_TD ); ?></p>
 									<input type="hidden" name="stock_length_mm" value="" data-stock-length>
 								</div>
 								<p class="nh-tc__hint" data-stock-empty hidden><?php esc_html_e( 'This thickness and colour is only available as a custom cut.', NH_TC_TD ); ?></p>

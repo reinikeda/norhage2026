@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:51+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
+"PO-Revision-Date: 2026-11-16 14:17+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -70,13 +70,13 @@ msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin
 msgid "Add kit to basket"
 msgstr "Lisää sarja ostoskoriin"
 
-#, php-format
 msgid "Adding kit…"
 msgstr "Lisätään sarjaa…"
 
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Kaikki kolme ruuvimäärää lasketaan yhteen ja pyöristetään ylös pakkauksiin. Liitosprofiilit tarvitsevat yleensä tiheämmän välin kuin reunalistat."
 
+#, php-format
 msgid "along the gable"
 msgstr "päätyä pitkin"
 
@@ -101,6 +101,7 @@ msgstr "Pinta-ala"
 msgid "Attached to a wall"
 msgstr "Kiinnitetty seinään"
 
+#, php-format
 msgid "Back"
 msgstr "Takaisin"
 
@@ -179,6 +180,7 @@ msgstr "Liitosprofiilit ja ruuvit"
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Liitosprofiilit vastaavat leveyden saumoja: yksi vähemmän kuin levyjä leveyteen. Jokainen profiili on lyhin varastopituus, joka kattaa levyn pituuden. Ruuvit kattavat liitosprofiilit (oletus 200 mm välein), reunalistat sekä seinä-/harjakappaleet (oletus 400 mm välein), sitten pyöristys pakkauksiin. Päätykappaleita kaksi per liitosprofiili. Muovi-H-profiililla ei ole päätyjä. Kiinnityspainikkeet (valinnainen): yksi 400 mm välein jokaisen levyn pituudella keskikiinnitykseen."
 
+#, php-format
 msgid "Continue"
 msgstr "Jatka"
 
@@ -373,6 +375,10 @@ msgstr "Kennopolykarbonaatti"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kennopolykarbonaatti (määrämittaan)"
 
+msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
+msgstr "Kennolevy: kokonaiset 2100 mm levyt, pituus pyöristetään ylös täyteen metriin (1–7 m). Massiivi: kokonaiset 2050 × 3050 mm levyt, kummin päin tahansa."
+
+#, php-format
 msgid "Neutral silicone"
 msgstr "Neutraali silikoni"
 
@@ -447,6 +453,7 @@ msgstr "Postinumero (toimitusta varten)"
 msgid "Profiles"
 msgstr "Profiilit"
 
+#, php-format
 msgid "Projection"
 msgstr "Ulottuma"
 
@@ -516,6 +523,7 @@ msgstr "Tiivisteteipit, ruuvit ja tarvikkeet"
 msgid "Search products…"
 msgstr "Hae tuotteita…"
 
+#, php-format
 msgid "Selected products"
 msgstr "Valitut tuotteet"
 
@@ -554,6 +562,7 @@ msgstr "Näytä postinumerovaihe verkkokaupassa. Tallennetaan asiakkaalle, kun p
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Näytä terassikattolaskuri tällä tuotesivulla (käytössä, kun näyttötila on «valintaruutu»)."
 
+#, php-format
 msgid "Silicone metres per tube"
 msgstr "Silikonimetriä per tuubi"
 
@@ -625,6 +634,7 @@ msgstr "Teippi, silikoni ja seinäpituus"
 msgid "Tapes, gasket and silicone"
 msgstr "Teipit, tiiviste ja silikoni"
 
+#, php-format
 msgid "Terrace calculator"
 msgstr "Terassilaskuri"
 
