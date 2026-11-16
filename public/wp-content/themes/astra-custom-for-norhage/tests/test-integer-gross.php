@@ -152,6 +152,21 @@ nh_ig_assert(
 	false !== strpos( $source, "add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', PHP_INT_MAX )" )
 );
 
+$sheet = nh_ig_adjust_net( 136.80 + 28.00, nh_ig_rate( 25 ) );
+$material = nh_ig_adjust_net( 136.80, nh_ig_rate( 25 ) );
+nh_ig_assert( 'a 1 m² custom cut is 206, which is 171 plus the 35 kr cutting fee', abs( $sheet['gross'] - 206 ) < 0.001 && abs( $material['gross'] - 171 ) < 0.001 );
+nh_ig_assert( 'the cutting fee is not taken off the sheet', $sheet['gross'] > $material['gross'] );
+nh_ig_assert( 'custom-cut sheet net plus VAT still balances', abs( ( $sheet['net'] + $sheet['tax'] ) - $sheet['gross'] ) < 0.001 );
+
+$two = nh_ig_adjust_net( ( 2 * 136.80 ) + 28.00, nh_ig_rate( 25 ) );
+nh_ig_assert( '2 m² is 377, not 342 and not 307', abs( $two['gross'] - 377 ) < 0.001 );
+
+$js = file_get_contents( dirname( __DIR__ ) . '/assets/js/custom-cutting.js' );
+nh_ig_assert(
+	'the selection box adds the shown cutting fee when the raw fee is missing',
+	false !== strpos( $js, 'withFee - material' ) && false !== strpos( $js, 'shownFee * 0.5' )
+);
+
 if ( $failures > 0 ) {
 	fwrite( STDERR, "{$failures} failed\n" );
 	exit( 1 );
