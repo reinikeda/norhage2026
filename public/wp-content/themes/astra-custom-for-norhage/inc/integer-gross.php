@@ -565,13 +565,14 @@ function nh_ig_visible_gross( $net, $tax, $qty = null, $currency = '' ) {
  * The two sides still add up to that price. Used when a cart line already
  * has VAT but the price with VAT still has øre.
  *
- * @param float $net
- * @param float $tax
- * @param float $target
- * @param int   $decimals
+ * @param float      $net
+ * @param float      $tax
+ * @param float      $target
+ * @param int        $decimals
+ * @param int|string $rate_id Rate the VAT already belongs to.
  * @return array{net: float, tax: float, taxes: array<int|string, float>}
  */
-function nh_ig_scale_to_gross( $net, $tax, $target, $decimals = 2 ) {
+function nh_ig_scale_to_gross( $net, $tax, $target, $decimals = 2, $rate_id = 'kept' ) {
 	$decimals = (int) $decimals;
 	$target   = nh_ig_round_half_up( (float) $target, $decimals );
 	$net      = (float) $net;
@@ -589,8 +590,363 @@ function nh_ig_scale_to_gross( $net, $tax, $target, $decimals = 2 ) {
 	return array(
 		'net'   => $new_net,
 		'tax'   => $new_tax,
-		'taxes' => array( 'kept' => $new_tax ),
+		'taxes' => array( $rate_id => $new_tax ),
 	);
+}
+
+/**
+ * Percent for a Woo tax rate, or null when the rate is not a real shop rate.
+ *
+ * @param int|string $rate_id Rate id.
+ * @return float|null
+ */
+function nh_ig_rate_percent( $rate_id ) {
+	if ( ! class_exists( 'WC_Tax' ) || ! method_exists( 'WC_Tax', 'get_rate_percent_value' ) ) {
+		return null;
+	}
+	$percent = WC_Tax::get_rate_percent_value( $rate_id );
+	if ( false === $percent || '' === $percent || null === $percent ) {
+		return null;
+	}
+	return (float) $percent;
+}
+
+/**
+ * Label plus percent. Two rates of 25% both named MVA share one key.
+ *
+ * @param int|string $rate_id Rate id.
+ * @return string|null
+ */
+function nh_ig_rate_group_key( $rate_id ) {
+	$percent = nh_ig_rate_percent( $rate_id );
+	if ( null === $percent ) {
+		return null;
+	}
+	$label = '';
+	if ( class_exists( 'WC_Tax' ) && method_exists( 'WC_Tax', 'get_rate_label' ) ) {
+		$label = (string) WC_Tax::get_rate_label( $rate_id );
+	}
+	if ( function_exists( 'wp_strip_all_tags' ) ) {
+		$label = wp_strip_all_tags( $label );
+	}
+	$label = strtolower( trim( $label ) );
+	return $label . '|' . nh_ig_round_half_up( $percent, 4 );
+}
+
+/**
+ * Map duplicate VAT rates onto one rate id. The VAT amounts are not rounded
+ * to a whole krone; only the rate they are filed under changes.
+ *
+ * @param array<int, int|string> $rate_ids Rate ids.
+ * @return array<string, int|string>
+ */
+function nh_ig_canonical_rate_map( array $rate_ids ) {
+	$groups  = array();
+	$unknown = array();
+	foreach ( $rate_ids as $rate_id ) {
+		$key = nh_ig_rate_group_key( $rate_id );
+		if ( null === $key ) {
+			$unknown[] = $rate_id;
+			continue;
+		}
+		$groups[ $key ][] = $rate_id;
+	}
+
+	$map = array();
+	$only_group = 1 === count( $groups ) ? reset( $groups ) : array();
+	foreach ( $groups as $ids ) {
+		$ids = array_values( array_unique( $ids, SORT_REGULAR ) );
+		if ( count( $ids ) < 2 ) {
+			continue;
+		}
+		usort(
+			$ids,
+			static function ( $left, $right ) {
+				return (int) $left <=> (int) $right;
+			}
+		);
+		$canonical = $ids[0];
+		foreach ( $ids as $id ) {
+			if ( (string) $id !== (string) $canonical ) {
+				$map[ (string) $id ] = $canonical;
+			}
+		}
+	}
+
+	if ( $unknown && 1 === count( $groups ) ) {
+		$ids = array_values( array_unique( $only_group, SORT_REGULAR ) );
+		usort(
+			$ids,
+			static function ( $left, $right ) {
+				return (int) $left <=> (int) $right;
+			}
+		);
+		$canonical = $ids[0];
+		foreach ( $unknown as $id ) {
+			if ( (string) $id !== (string) $canonical ) {
+				$map[ (string) $id ] = $canonical;
+			}
+		}
+	}
+
+	return $map;
+}
+
+/**
+ * Add tax amounts that belong to the same VAT rate together.
+ *
+ * @param array<int|string, float|int|string> $taxes Rate id to amount.
+ * @param array<string, int|string>           $map   Old id to canonical id.
+ * @return array<int|string, float>
+ */
+function nh_ig_remap_tax_array( array $taxes, array $map ) {
+	$out = array();
+	foreach ( $taxes as $id => $amount ) {
+		$key = isset( $map[ (string) $id ] ) ? $map[ (string) $id ] : $id;
+		if ( ! isset( $out[ $key ] ) ) {
+			$out[ $key ] = 0.0;
+		}
+		$out[ $key ] += (float) $amount;
+	}
+	foreach ( $out as $id => $amount ) {
+		$out[ $id ] = nh_ig_round_half_up( $amount, 2 );
+	}
+	return $out;
+}
+
+/**
+ * Spread a VAT total across the existing rates. The parts add up to the
+ * total. The VAT itself stays on 2 decimals.
+ *
+ * @param array<int|string, float|int|string> $taxes  Current split.
+ * @param float                               $target VAT total.
+ * @param int                                 $decimals
+ * @return array<int|string, float>
+ */
+function nh_ig_fit_tax_split( array $taxes, $target, $decimals = 2 ) {
+	$decimals = (int) $decimals;
+	$target   = nh_ig_round_half_up( (float) $target, $decimals );
+	if ( ! $taxes ) {
+		return array();
+	}
+	$sum = 0.0;
+	foreach ( $taxes as $amount ) {
+		$sum += (float) $amount;
+	}
+	$keys = array_keys( $taxes );
+	if ( abs( $sum ) < 0.00001 ) {
+		return array( $keys[0] => $target );
+	}
+	$out     = array();
+	$running = 0.0;
+	$last    = $keys[ count( $keys ) - 1 ];
+	foreach ( $keys as $id ) {
+		if ( $id === $last ) {
+			$out[ $id ] = nh_ig_round_half_up( $target - $running, $decimals );
+			continue;
+		}
+		$share      = nh_ig_round_half_up( ( (float) $taxes[ $id ] / $sum ) * $target, $decimals );
+		$out[ $id ] = $share;
+		$running   += $share;
+	}
+	return $out;
+}
+
+/**
+ * File product VAT and shipping VAT that are the same rate on one rate id.
+ *
+ * @param WC_Cart $cart Cart.
+ * @return void
+ */
+function nh_ig_consolidate_cart_taxes( $cart ) {
+	if ( ! is_object( $cart ) ) {
+		return;
+	}
+	$ids = array();
+	foreach ( array( 'get_cart_contents_taxes', 'get_shipping_taxes', 'get_fee_taxes' ) as $method ) {
+		if ( ! method_exists( $cart, $method ) ) {
+			continue;
+		}
+		foreach ( array_keys( (array) $cart->$method() ) as $id ) {
+			$ids[] = $id;
+		}
+	}
+	if ( isset( $cart->cart_contents ) && is_array( $cart->cart_contents ) ) {
+		foreach ( $cart->cart_contents as $item ) {
+			if ( ! is_array( $item ) || empty( $item['line_tax_data'] ) || ! is_array( $item['line_tax_data'] ) ) {
+				continue;
+			}
+			foreach ( array( 'total', 'subtotal' ) as $part ) {
+				if ( empty( $item['line_tax_data'][ $part ] ) || ! is_array( $item['line_tax_data'][ $part ] ) ) {
+					continue;
+				}
+				foreach ( array_keys( $item['line_tax_data'][ $part ] ) as $id ) {
+					$ids[] = $id;
+				}
+			}
+		}
+	}
+	if ( isset( $cart->shipping_methods ) && is_array( $cart->shipping_methods ) ) {
+		foreach ( $cart->shipping_methods as $method ) {
+			if ( is_object( $method ) && isset( $method->taxes ) && is_array( $method->taxes ) ) {
+				foreach ( array_keys( $method->taxes ) as $id ) {
+					$ids[] = $id;
+				}
+			}
+		}
+	}
+	if ( isset( $cart->fees_api ) && is_object( $cart->fees_api ) && method_exists( $cart->fees_api, 'get_fees' ) ) {
+		foreach ( $cart->fees_api->get_fees() as $fee ) {
+			if ( is_object( $fee ) && isset( $fee->tax_data ) && is_array( $fee->tax_data ) ) {
+				foreach ( array_keys( $fee->tax_data ) as $id ) {
+					$ids[] = $id;
+				}
+			}
+		}
+	}
+	$map = nh_ig_canonical_rate_map( $ids );
+	if ( ! $map ) {
+		return;
+	}
+
+	$pairs = array(
+		array( 'get_cart_contents_taxes', 'set_cart_contents_taxes' ),
+		array( 'get_shipping_taxes', 'set_shipping_taxes' ),
+		array( 'get_fee_taxes', 'set_fee_taxes' ),
+	);
+	foreach ( $pairs as $pair ) {
+		if ( method_exists( $cart, $pair[0] ) && method_exists( $cart, $pair[1] ) ) {
+			$cart->{$pair[1]}( nh_ig_remap_tax_array( (array) $cart->{$pair[0]}(), $map ) );
+		}
+	}
+
+	if ( isset( $cart->cart_contents ) && is_array( $cart->cart_contents ) ) {
+		foreach ( $cart->cart_contents as $key => $item ) {
+			if ( ! is_array( $item ) || empty( $item['line_tax_data'] ) || ! is_array( $item['line_tax_data'] ) ) {
+				continue;
+			}
+			foreach ( array( 'total', 'subtotal' ) as $part ) {
+				if ( empty( $item['line_tax_data'][ $part ] ) || ! is_array( $item['line_tax_data'][ $part ] ) ) {
+					continue;
+				}
+				$cart->cart_contents[ $key ]['line_tax_data'][ $part ] = nh_ig_remap_tax_array( $item['line_tax_data'][ $part ], $map );
+			}
+		}
+	}
+
+	if ( isset( $cart->shipping_methods ) && is_array( $cart->shipping_methods ) ) {
+		foreach ( $cart->shipping_methods as $method ) {
+			if ( is_object( $method ) && isset( $method->taxes ) && is_array( $method->taxes ) ) {
+				$method->taxes = nh_ig_remap_tax_array( $method->taxes, $map );
+			}
+		}
+	}
+	if ( isset( $cart->fees_api ) && is_object( $cart->fees_api ) && method_exists( $cart->fees_api, 'get_fees' ) ) {
+		foreach ( $cart->fees_api->get_fees() as $fee ) {
+			if ( is_object( $fee ) && isset( $fee->tax_data ) && is_array( $fee->tax_data ) ) {
+				$fee->tax_data = nh_ig_remap_tax_array( $fee->tax_data, $map );
+			}
+		}
+	}
+}
+
+/**
+ * One row per VAT name and percent. 94,80 kr MVA and 96 kr MVA become
+ * 190,80 kr MVA. The øre on the VAT stay.
+ *
+ * @param array<int|string, object> $tax_totals Tax rows.
+ * @param string                    $currency   Order currency. Empty uses the shop currency.
+ * @return array<int|string, object>
+ */
+function nh_ig_merge_tax_rows( array $tax_totals, $currency = '' ) {
+	if ( count( $tax_totals ) < 2 ) {
+		return $tax_totals;
+	}
+	$groups = array();
+	foreach ( $tax_totals as $code => $tax ) {
+		if ( ! is_object( $tax ) ) {
+			continue;
+		}
+		$label = isset( $tax->label ) ? (string) $tax->label : '';
+		if ( function_exists( 'wp_strip_all_tags' ) ) {
+			$label = wp_strip_all_tags( $label );
+		}
+		$label   = strtolower( trim( $label ) );
+		$percent = isset( $tax->rate_percent ) && is_numeric( $tax->rate_percent ) ? (float) $tax->rate_percent : null;
+		if ( null === $percent ) {
+			$rate_id = '';
+			if ( isset( $tax->tax_rate_id ) ) {
+				$rate_id = $tax->tax_rate_id;
+			} elseif ( isset( $tax->rate_id ) ) {
+				$rate_id = $tax->rate_id;
+			} elseif ( isset( $tax->id ) ) {
+				$rate_id = $tax->id;
+			}
+			$percent = nh_ig_rate_percent( $rate_id );
+		}
+		if ( '' === $label ) {
+			$key = 'row:' . $code;
+		} elseif ( null === $percent ) {
+			$key = 'label:' . $label;
+		} else {
+			$key = $label . '|' . nh_ig_round_half_up( $percent, 4 );
+		}
+		$groups[ $key ][] = $code;
+	}
+
+	foreach ( $groups as $codes ) {
+		if ( count( $codes ) < 2 ) {
+			continue;
+		}
+		$first = $codes[0];
+		$sum   = 0.0;
+		foreach ( $codes as $index => $code ) {
+			$sum += isset( $tax_totals[ $code ]->amount ) ? (float) $tax_totals[ $code ]->amount : 0.0;
+			if ( $index > 0 ) {
+				unset( $tax_totals[ $code ] );
+			}
+		}
+		$tax_totals[ $first ]->amount = nh_ig_round_half_up( $sum, 2 );
+		if ( function_exists( 'wc_price' ) ) {
+			if ( '' !== $currency ) {
+				$tax_totals[ $first ]->formatted_amount = wc_price( $tax_totals[ $first ]->amount, array( 'currency' => $currency ) );
+			} else {
+				$tax_totals[ $first ]->formatted_amount = wc_price( $tax_totals[ $first ]->amount );
+			}
+		}
+	}
+
+	return $tax_totals;
+}
+
+/**
+ * Basket and checkout tax rows.
+ *
+ * @param array<int|string, object> $tax_totals Tax rows.
+ * @param WC_Cart                   $cart       Cart.
+ * @return array<int|string, object>
+ */
+function nh_ig_filter_cart_tax_totals( $tax_totals, $cart ) {
+	unset( $cart );
+	if ( ! is_array( $tax_totals ) ) {
+		return $tax_totals;
+	}
+	return nh_ig_merge_tax_rows( $tax_totals );
+}
+
+/**
+ * Order confirmation, emails, PDF and the WooCommerce order screen.
+ *
+ * @param array<int|string, object> $tax_totals Tax rows.
+ * @param WC_Order                  $order      Order.
+ * @return array<int|string, object>
+ */
+function nh_ig_filter_order_tax_totals( $tax_totals, $order ) {
+	if ( ! is_array( $tax_totals ) ) {
+		return $tax_totals;
+	}
+	$currency = is_object( $order ) && method_exists( $order, 'get_currency' ) ? (string) $order->get_currency() : '';
+	return nh_ig_merge_tax_rows( $tax_totals, $currency );
 }
 
 /**
@@ -935,8 +1291,15 @@ function nh_ig_after_calculate_totals( $cart ) {
 		// The price with VAT is still rounded to a whole krone, and the net and VAT
 		// are scaled so they add up to that price.
 		if ( empty( $rates ) && ( $sub_tax > 0.00001 || $line_tax > 0.00001 ) ) {
-			$sub_scaled  = nh_ig_scale_to_gross( $sub_net, $sub_tax, nh_ig_round_display_gross( $old_sub_gross ), $decimals );
-			$line_scaled = nh_ig_scale_to_gross( $line_net, $line_tax, nh_ig_round_display_gross( $old_gross ), $decimals );
+			$rate_id = 'kept';
+			if ( isset( $item['line_tax_data']['total'] ) && is_array( $item['line_tax_data']['total'] ) ) {
+				$rate_keys = array_keys( $item['line_tax_data']['total'] );
+				if ( 1 === count( $rate_keys ) ) {
+					$rate_id = $rate_keys[0];
+				}
+			}
+			$sub_scaled  = nh_ig_scale_to_gross( $sub_net, $sub_tax, nh_ig_round_display_gross( $old_sub_gross ), $decimals, $rate_id );
+			$line_scaled = nh_ig_scale_to_gross( $line_net, $line_tax, nh_ig_round_display_gross( $old_gross ), $decimals, $rate_id );
 			$cart->cart_contents[ $key ]['line_subtotal']     = $sub_scaled['net'];
 			$cart->cart_contents[ $key ]['line_subtotal_tax'] = $sub_scaled['tax'];
 			$cart->cart_contents[ $key ]['line_total']        = $line_scaled['net'];
@@ -1048,12 +1411,23 @@ function nh_ig_after_calculate_totals( $cart ) {
 				}
 			}
 			if ( ! $rates && $tax > 0.00001 ) {
-				$scaled    = nh_ig_scale_to_gross( $total, $tax, nh_ig_round_display_gross( $gross ), $decimals );
+				$fee_rate = 'kept';
+				if ( isset( $fee->tax_data ) && is_array( $fee->tax_data ) ) {
+					$fee_keys = array_keys( $fee->tax_data );
+					if ( 1 === count( $fee_keys ) ) {
+						$fee_rate = $fee_keys[0];
+					}
+				}
+				$scaled    = nh_ig_scale_to_gross( $total, $tax, nh_ig_round_display_gross( $gross ), $decimals, $fee_rate );
 				$fee->total = $sign * $scaled['net'];
 				$fee->tax   = $sign * $scaled['tax'];
 				$fee->tax_data = array();
 				foreach ( $scaled['taxes'] as $rate_id => $amount ) {
 					$fee->tax_data[ $rate_id ] = $sign * $amount;
+					if ( ! isset( $fee_merged[ $rate_id ] ) ) {
+						$fee_merged[ $rate_id ] = 0.0;
+					}
+					$fee_merged[ $rate_id ] += $fee->tax_data[ $rate_id ];
 				}
 				$fee_net += $fee->total;
 				$fee_tax += $fee->tax;
@@ -1103,7 +1477,12 @@ function nh_ig_after_calculate_totals( $cart ) {
 		if ( method_exists( $cart, 'set_shipping_tax' ) ) {
 			$cart->set_shipping_tax( $ship_tax );
 		}
+		if ( method_exists( $cart, 'get_shipping_taxes' ) && method_exists( $cart, 'set_shipping_taxes' ) ) {
+			$cart->set_shipping_taxes( nh_ig_fit_tax_split( (array) $cart->get_shipping_taxes(), $ship_tax, $decimals ) );
+		}
 	}
+
+	nh_ig_consolidate_cart_taxes( $cart );
 
 	$grand = nh_ig_round_half_up( $sum_total + $sum_tax + $ship_net + $ship_tax + $fee_net + $fee_tax, $decimals );
 	if ( $grand < 0 ) {
@@ -1725,6 +2104,8 @@ add_filter( 'woocommerce_coupon_discount_amount_html', 'nh_ig_filter_coupon_amou
 add_filter( 'woocommerce_order_formatted_line_subtotal', 'nh_ig_filter_order_line_subtotal', 15, 3 );
 add_filter( 'woocommerce_get_formatted_order_total', 'nh_ig_filter_formatted_order_total', 15, 4 );
 add_filter( 'woocommerce_get_order_item_totals', 'nh_ig_filter_order_item_totals', 15, 3 );
+add_filter( 'woocommerce_cart_tax_totals', 'nh_ig_filter_cart_tax_totals', 20, 2 );
+add_filter( 'woocommerce_order_get_tax_totals', 'nh_ig_filter_order_tax_totals', 20, 2 );
 add_filter( 'wpo_wcpdf_order_item_data', 'nh_ig_filter_pdf_item', 20, 3 );
 add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 );
 add_filter( 'woocommerce_get_variation_prices_hash', 'nh_ig_variation_prices_hash' );

@@ -315,6 +315,47 @@ nh_ig_assert(
 	false !== strpos( $js, 'withFee - material' ) && false !== strpos( $js, 'shownFee * 0.5' )
 );
 
+function nh_ig_tax_row( $label, $amount, $percent ) {
+	$row                 = new stdClass();
+	$row->label          = $label;
+	$row->amount         = $amount;
+	$row->rate_percent   = $percent;
+	$row->formatted_amount = (string) $amount;
+	return $row;
+}
+
+$one_vat = nh_ig_merge_tax_rows(
+	array(
+		'goods'    => nh_ig_tax_row( 'MVA', 94.80, 25 ),
+		'shipping' => nh_ig_tax_row( 'MVA', 96, 25 ),
+	)
+);
+nh_ig_assert( 'two MVA rows at 25% become one row', 1 === count( $one_vat ) );
+$only = reset( $one_vat );
+nh_ig_assert( 'the single MVA is 190.80', abs( $only->amount - 190.80 ) < 0.001 );
+nh_ig_assert( 'the MVA amount is not rounded to a whole krone', abs( $only->amount - 191 ) > 0.1 );
+
+$two_rates = nh_ig_merge_tax_rows(
+	array(
+		'standard' => nh_ig_tax_row( 'MVA', 94.80, 25 ),
+		'reduced'  => nh_ig_tax_row( 'MVA', 15.00, 15 ),
+	)
+);
+nh_ig_assert( '25% MVA and 15% MVA stay separate', 2 === count( $two_rates ) );
+
+$remapped = nh_ig_remap_tax_array(
+	array(
+		5 => 94.80,
+		8 => 96.00,
+	),
+	array( '8' => 5 )
+);
+nh_ig_assert( 'shipping VAT is filed on the product VAT rate', isset( $remapped[5] ) && ! isset( $remapped[8] ) );
+nh_ig_assert( 'filed VAT is still 190.80', abs( $remapped[5] - 190.80 ) < 0.001 );
+
+$fitted = nh_ig_fit_tax_split( array( 3 => 10.00, 4 => 10.00 ), 20.01, 2 );
+nh_ig_assert( 'a VAT split still adds up to the VAT', abs( array_sum( $fitted ) - 20.01 ) < 0.001 );
+
 if ( $failures > 0 ) {
 	fwrite( STDERR, "{$failures} failed\n" );
 	exit( 1 );
