@@ -121,6 +121,17 @@ nh_ig_assert( 'that sale invoice still adds up', abs( ( $sale_net['net'] + $sale
 nh_ig_assert( 'a shown price of 2712.80 becomes 2713', abs( nh_ig_filter_including_tax( 2712.80, 1 ) - 2713 ) < 0.001 );
 nh_ig_assert( 'three of those units are 8139, not 8138', abs( nh_ig_filter_including_tax( 2712.80 * 3, 3 ) - 8139 ) < 0.001 );
 
+$metres = nh_ig_line_targets( 100, 2.4, 0 );
+nh_ig_assert( '2.4 metres of a 100 kr unit is 240, not 200', abs( $metres['subtotal_gross'] - 240 ) < 0.001 );
+$half_metre = nh_ig_line_targets( 124, 0.5, 0 );
+nh_ig_assert( 'half a metre of 124 is 62, not a full unit', abs( $half_metre['subtotal_gross'] - 62 ) < 0.001 );
+$odd_metres = nh_ig_line_targets( 2713, 2.4, 0 );
+nh_ig_assert( '2.4 metres of 2713 pays 6511', abs( $odd_metres['subtotal_gross'] - 6511 ) < 0.001 );
+nh_ig_assert(
+	'the shown line for those metres matches the subtotal',
+	abs( nh_ig_round_paid_amount( 2713 * 2.4, 2.4 ) - $odd_metres['subtotal_gross'] ) < 0.001
+);
+
 if ( ! function_exists( 'get_option' ) ) {
 	function get_option( $key, $default = false ) {
 		if ( 'woocommerce_tax_display_shop' === $key ) {
@@ -160,6 +171,25 @@ nh_ig_assert( 'custom-cut sheet net plus VAT still balances', abs( ( $sheet['net
 
 $two = nh_ig_adjust_net( ( 2 * 136.80 ) + 28.00, nh_ig_rate( 25 ) );
 nh_ig_assert( '2 m² is 377, not 342 and not 307', abs( $two['gross'] - 377 ) < 0.001 );
+
+$plain = nh_ig_adjust_net( 99.00, nh_ig_rate( 25 ) );
+$basket = nh_ig_inclusive_lines_gross(
+	array(
+		array(
+			'line_subtotal'     => $sheet['net'],
+			'line_subtotal_tax' => $sheet['tax'],
+		),
+		array(
+			'line_subtotal'     => $plain['net'],
+			'line_subtotal_tax' => $plain['tax'],
+		),
+	)
+);
+$before_vat = $sheet['net'] + $plain['net'];
+nh_ig_assert( 'basket subtotal is the sum of the prices with VAT', abs( $basket - 330 ) < 0.001 );
+nh_ig_assert( 'basket subtotal is not the before-VAT sum', abs( $basket - $before_vat ) > 1 );
+
+nh_ig_assert( 'the basket uses the shop VAT display', nh_ig_frontend_cart_tax_display( 'excl' ) === 'incl' );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/custom-cutting.js' );
 nh_ig_assert(

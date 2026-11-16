@@ -276,18 +276,66 @@ function nh_ig_adjust_net( $net, $rates, $price_decimals = 2 ) {
 }
 
 /**
+ * VAT-inclusive amount for one cart line.
+ *
+ * A whole quantity keeps the whole unit price: 3 × 2 713 is 8 139.
+ * Metres and other fractional quantities are rounded once on the line,
+ * so 2.4 × 2 713 does not leave øre on the amount the customer pays.
+ *
+ * @param float $unit_gross Unit price including VAT.
+ * @param float $qty
+ * @return float
+ */
+function nh_ig_paid_line_gross( $unit_gross, $qty ) {
+	$qty = (float) $qty;
+	if ( $qty <= 0 ) {
+		$qty = 1.0;
+	}
+	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+		return nh_ig_round_half_up( (float) $unit_gross * $qty, 2 );
+	}
+
+	$unit = (float) round( (float) $unit_gross, 0, PHP_ROUND_HALF_UP );
+	$line = $unit * $qty;
+	if ( abs( $qty - round( $qty ) ) > 0.000001 ) {
+		return (float) round( $line, 0, PHP_ROUND_HALF_UP );
+	}
+
+	return nh_ig_round_half_up( $line, 2 );
+}
+
+/**
+ * Sum of the VAT-inclusive line amounts. This is the basket subtotal
+ * the customer sees. The before-VAT amount stays on each line as the net.
+ *
+ * @param array<int|string, mixed> $lines Cart lines with line_subtotal and line_subtotal_tax.
+ * @return float
+ */
+function nh_ig_inclusive_lines_gross( array $lines ) {
+	$sum = 0.0;
+	foreach ( $lines as $line ) {
+		if ( ! is_array( $line ) ) {
+			continue;
+		}
+		$net  = isset( $line['line_subtotal'] ) ? (float) $line['line_subtotal'] : 0.0;
+		$tax  = isset( $line['line_subtotal_tax'] ) ? (float) $line['line_subtotal_tax'] : 0.0;
+		$sum += nh_ig_round_half_up( $net + $tax, 2 );
+	}
+
+	return nh_ig_round_half_up( $sum, 2 );
+}
+
+/**
  * Line grosses for Svea. The payable unit price is multiplied by quantity,
  * and the VAT-inclusive discount is rounded to a whole unit.
  *
  * @param float $unit_gross
- * @param int   $qty
+ * @param float $qty
  * @param float $discount_gross Discount including VAT, before rounding.
  * @return array{subtotal_gross: float, discount_gross: float, total_gross: float}
  */
 function nh_ig_line_targets( $unit_gross, $qty, $discount_gross ) {
-	$qty      = max( 1, (int) $qty );
-	$unit     = nh_ig_round_half_up( (float) $unit_gross, 2 );
-	$subtotal = nh_ig_round_half_up( $unit * $qty, 2 );
+	$subtotal = nh_ig_paid_line_gross( $unit_gross, $qty );
 	$discount = (float) round( (float) $discount_gross, 0, PHP_ROUND_HALF_UP );
 	if ( $discount < 0 ) {
 		$discount = 0.0;
@@ -405,10 +453,11 @@ function nh_ig_rates_for_product( $product ) {
 }
 
 /**
- * Nearest whole unit the customer pays, for one unit of an including-VAT amount.
+ * Nearest whole amount the customer pays for a line that already includes VAT.
  *
  * Quantity is applied after the unit is rounded, so 3 × 2 713 stays 8 139
- * rather than rounding 3 × 2 712,80 on its own.
+ * rather than rounding 3 × 2 712,80 on its own. A fractional quantity is
+ * then rounded once on the line.
  *
  * @param float $amount Including VAT, already multiplied by quantity.
  * @param float $qty    Quantity used to produce $amount.
@@ -423,8 +472,7 @@ function nh_ig_round_paid_amount( $amount, $qty = 1.0 ) {
 	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
 		return $amount;
 	}
-	$unit = $amount / $qty;
-	return (float) round( $unit, 0, PHP_ROUND_HALF_UP ) * $qty;
+	return nh_ig_paid_line_gross( $amount / $qty, $qty );
 }
 
 /**
@@ -749,9 +797,9 @@ function nh_ig_after_calculate_totals( $cart ) {
 			continue;
 		}
 		$product = $item['data'];
-		$qty     = isset( $item['quantity'] ) ? (int) $item['quantity'] : 1;
-		if ( $qty < 1 ) {
-			$qty = 1;
+		$qty     = isset( $item['quantity'] ) ? (float) $item['quantity'] : 1.0;
+		if ( $qty <= 0 ) {
+			$qty = 1.0;
 		}
 		$rates = nh_ig_rates_for_product( $product );
 
@@ -909,6 +957,81 @@ function nh_ig_trim_zeros( $trim ) {
 }
 
 /**
+ * The basket uses the same VAT mode as the catalog.
+ *
+ * Prices are entered before VAT. On the storefront the customer sees prices
+ * with VAT, including the basket subtotal. A visitor who switches the catalog
+ * to before VAT sees that same mode in the basket. The product editor keeps
+ * the saved WooCommerce option.
+ *
+ * @param mixed $value Option value coming from WordPress. False means "read the database".
+ * @return mixed
+ */
+function nh_ig_frontend_cart_tax_display( $value ) {
+	if ( function_exists( 'is_admin' ) && is_admin() && ! nh_ig_is_storefront_request() ) {
+		return $value;
+	}
+
+	static $guard = false;
+	if ( $guard ) {
+		return $value;
+	}
+	$guard = true;
+
+	if ( class_exists( 'NHTaxSwitcher' ) && is_callable( array( 'NHTaxSwitcher', 'is_enabled' ) ) && NHTaxSwitcher::is_enabled() && is_callable( array( 'NHTaxSwitcher', 'current_mode' ) ) ) {
+		$mode  = NHTaxSwitcher::current_mode();
+		$guard = false;
+		return ( 'excl' === $mode ) ? 'excl' : 'incl';
+	}
+
+	$shop  = function_exists( 'get_option' ) ? get_option( 'woocommerce_tax_display_shop' ) : $value;
+	$guard = false;
+	if ( 'incl' === $shop || 'excl' === $shop ) {
+		return $shop;
+	}
+
+	return $value;
+}
+
+/**
+ * Basket subtotal. The figure next to Subtotal is the sum of the VAT-inclusive
+ * line prices, not the before-VAT sum.
+ *
+ * @param string  $cart_subtotal Existing HTML.
+ * @param bool    $compound      Compound-tax display.
+ * @param WC_Cart $cart          Cart.
+ * @return string
+ */
+function nh_ig_filter_cart_subtotal( $cart_subtotal, $compound, $cart ) {
+	if ( $compound || ! is_object( $cart ) || ! function_exists( 'wc_price' ) ) {
+		return $cart_subtotal;
+	}
+	if ( ! function_exists( 'get_woocommerce_currency' ) || ! nh_ig_currency_is_whole( get_woocommerce_currency() ) ) {
+		return $cart_subtotal;
+	}
+	if ( ! method_exists( $cart, 'display_prices_including_tax' ) || ! $cart->display_prices_including_tax() ) {
+		return $cart_subtotal;
+	}
+	if ( ! method_exists( $cart, 'get_cart' ) ) {
+		return $cart_subtotal;
+	}
+
+	$lines = $cart->get_cart();
+	$ready = false;
+	foreach ( $lines as $line ) {
+		if ( is_array( $line ) && ( isset( $line['line_subtotal'] ) || isset( $line['line_subtotal_tax'] ) ) ) {
+			$ready = true;
+			break;
+		}
+	}
+	if ( ! $ready ) {
+		return $cart_subtotal;
+	}
+
+	return wc_price( nh_ig_inclusive_lines_gross( $lines ) );
+}
+
+/**
  * @param string $hook
  * @return void
  */
@@ -936,5 +1059,7 @@ add_filter( 'woocommerce_package_rates', 'nh_ig_filter_package_rates', PHP_INT_M
 add_action( 'woocommerce_after_calculate_totals', 'nh_ig_after_calculate_totals', 9999 );
 add_filter( 'woocommerce_price_trim_zeros', 'nh_ig_trim_zeros' );
 add_filter( 'woocommerce_get_price_including_tax', 'nh_ig_filter_including_tax', 9999, 3 );
+add_filter( 'pre_option_woocommerce_tax_display_cart', 'nh_ig_frontend_cart_tax_display', 20 );
+add_filter( 'woocommerce_cart_subtotal', 'nh_ig_filter_cart_subtotal', 20, 3 );
 add_filter( 'woocommerce_variation_prices', 'nh_ig_filter_variation_prices', 9999, 3 );
 add_filter( 'woocommerce_get_variation_prices_hash', 'nh_ig_variation_prices_hash' );
