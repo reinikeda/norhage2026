@@ -443,10 +443,10 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Standard sizes', NH_TC_TD ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead.', NH_TC_TD ); ?>
 				</p>
 				<p class="description">
-					<?php esc_html_e( 'Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness.', NH_TC_TD ); ?>
 				</p>
 				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
 

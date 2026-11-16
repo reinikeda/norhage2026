@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
-"PO-Revision-Date: 2026-11-16 14:25+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
+"PO-Revision-Date: 2026-11-16 14:37+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,7 @@ msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedre
 msgid "Add kit to basket"
 msgstr "Set in den Warenkorb"
 
+#, php-format
 msgid "Adding kit…"
 msgstr "Set wird hinzugefügt…"
 
@@ -95,6 +96,7 @@ msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mit
 msgid "Anthracite"
 msgstr "Anthrazit"
 
+#, php-format
 msgid "Area"
 msgstr "Fläche"
 
@@ -175,6 +177,7 @@ msgstr "Verbindungsprofil"
 msgid "Connecting profiles"
 msgstr "Verbindungsprofile"
 
+#, php-format
 msgid "Connecting profiles and screws"
 msgstr "Verbindungsprofile und Schrauben"
 
@@ -329,6 +332,9 @@ msgstr "Die Stöße liegen in der Trägermitte und lassen diese Fuge für das Ve
 msgid "Joints sit on the centre of a rafter."
 msgstr "Die Stöße sitzen auf der Mitte eines Trägers."
 
+msgid "Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead."
+msgstr "Behalten Sie die Parent-SKU für jede Dicke und Farbe. Variationsfelder werden aus Breiten- × Längen-Attributen gefüllt (inkl. Meter-Slugs wie 6-m → 6000 mm). Fehlt eine Variations-SKU, wird die Produkt-ID gespeichert."
+
 msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
 msgstr "Behalten Sie die Parent-SKU für jede Dicke und Farbe. Variations-SKUs werden automatisch aus den Breiten- × Längen-Variationen des Produkts übernommen — nur eingeben, wenn eine Größe im Shop keine SKU hat."
 
@@ -380,6 +386,7 @@ msgstr "Die meisten Terrassen"
 msgid "Multiwall polycarbonate"
 msgstr "Stegplatte"
 
+#, php-format
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Stegplatte (Zuschnitt)"
 
@@ -395,10 +402,10 @@ msgstr "Neutralvernetzendes Silikon"
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralvernetzendes Silikon Silirub PC"
 
-#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Für diese Auswahl wurden keine Produkte gefunden. Prüfen Sie die SKU-Zuordnung in den Einstellungen des Terrassenrechners."
 
+#, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
 msgstr "Noch keine passenden Breiten-/Längen-Variationen für diese Parent-SKU gefunden."
 
@@ -459,6 +466,7 @@ msgstr "Polycarbonatplatte"
 msgid "Polycarbonate sheets"
 msgstr "Polycarbonatplatten"
 
+#, php-format
 msgid "Postal code (for shipping)"
 msgstr "Postleitzahl (für den Versand)"
 
@@ -518,6 +526,9 @@ msgstr "Dachmaß"
 msgid "Roof type"
 msgstr "Dachform"
 
+msgid "Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness."
+msgstr "Speichern Sie die Seite einmal nach dem Setzen der Parent-SKUs, damit leere Felder aus dem Shop gefüllt werden. Das Frontend löst Lagerplatten auch über Parent + Größe, wenn die Variations-SKU leer ist. Schrauben und Dichtbänder wählen die Variation zur Polycarbonatdicke."
+
 msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
 msgstr "Beim Speichern werden leere Felder auch aus dem Shop aktualisiert. Ausverkaufte Größen bleiben hier sichtbar, sind für Kunden aber ausgeblendet. Stegplatten: ganze 2100-mm-Platten, Länge auf volle Meter; Massiv: 2050 × 3050 mm."
 
@@ -533,6 +544,7 @@ msgstr "Abdichtung"
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Dichtungsbänder nur für Mehrwandplatten. Eine Lüftungs- und eine Isolierrolle decken die Plattenbreiten; je eine weitere Rolle, wenn die Breiten zusammen die konfigurierte Rollenlänge überschreiten (Standard 5 m). Die Gummidichtung folgt dem Umfang und wird in ganzen Metern verkauft. Silikon: eine Tube je konfigurierte Meter dieses Umfangs (Standard 10 m), mindestens eine Tube."
 
+#, php-format
 msgid "Sealing tapes, screws and extras"
 msgstr "Dichtbänder, Schrauben und Zubehör"
 
@@ -573,6 +585,7 @@ msgstr "Rechner anzeigen auf"
 msgid "Show postcode field"
 msgstr "Feld für die Postleitzahl anzeigen"
 
+#, php-format
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Postleitzahlschritt im Shop anzeigen. Wird beim Hinzufügen des Sets am Kunden gespeichert, damit Versand im Warenkorb kalkuliert werden kann."
 
@@ -646,6 +659,7 @@ msgstr "Trägerabstand (Mitte zu Mitte)"
 msgid "Tape roll length"
 msgstr "Bandrollenlänge"
 
+#, php-format
 msgid "Tape, silicone and wall length"
 msgstr "Band, Silikon und Wandlänge"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
-"PO-Revision-Date: 2026-11-16 14:25+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
+"PO-Revision-Date: 2026-11-16 14:37+0000\n"
 "Language: lt_LT\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,7 @@ msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pas
 msgid "Add kit to basket"
 msgstr "Įdėti komplektą į krepšelį"
 
+#, php-format
 msgid "Adding kit…"
 msgstr "Dedamas komplektas…"
 
@@ -95,6 +96,7 @@ msgstr "Pilname tarpatramyje kraštinis lakštas yra %1$d mm platesnis už vidur
 msgid "Anthracite"
 msgstr "Antracitas"
 
+#, php-format
 msgid "Area"
 msgstr "Plotas"
 
@@ -175,6 +177,7 @@ msgstr "Jungiamasis profilis"
 msgid "Connecting profiles"
 msgstr "Jungiamieji profiliai"
 
+#, php-format
 msgid "Connecting profiles and screws"
 msgstr "Jungiamieji profiliai ir varžtai"
 
@@ -329,6 +332,9 @@ msgstr "Siūlės yra sijos centre ir palieka šį tarpą jungiamajam profiliui (
 msgid "Joints sit on the centre of a rafter."
 msgstr "Jungtys yra atramos centre."
 
+msgid "Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead."
+msgstr "Palikite tėvinį SKU kiekvienam storiui ir spalvai. Variacijų laukai pildomi iš pločio × ilgio atributų (įskaitant metrų slug’us, pvz. 6-m → 6000 mm). Jei variacija neturi SKU, saugomas produkto ID."
+
 msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
 msgstr "Palikite tėvinį SKU kiekvienam storiui ir spalvai. Variacijų SKU automatiškai užpildomi iš produkto pločio × ilgio variacijų — įveskite SKU tik tada, kai dydžio nėra parduotuvėje."
 
@@ -380,6 +386,7 @@ msgstr "Dauguma terasų"
 msgid "Multiwall polycarbonate"
 msgstr "Kanalinis polikarbonatas"
 
+#, php-format
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalinis polikarbonatas (pagal matmenis)"
 
@@ -395,10 +402,10 @@ msgstr "Neutralus silikonas"
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralus silikonas Silirub PC"
 
-#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Šiam pasirinkimui prekių nerasta. Patikrinkite SKU sąsają terasos skaičiuoklės nustatymuose."
 
+#, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
 msgstr "Šiam tėviniam SKU dar nerasta atitinkančių pločio/ilgio variacijų."
 
@@ -459,6 +466,7 @@ msgstr "Polikarbonato lakštas"
 msgid "Polycarbonate sheets"
 msgstr "Polikarbonato lakštai"
 
+#, php-format
 msgid "Postal code (for shipping)"
 msgstr "Pašto kodas (pristatymui)"
 
@@ -518,6 +526,9 @@ msgstr "Stogo matmenys"
 msgid "Roof type"
 msgstr "Stogo tipas"
 
+msgid "Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness."
+msgstr "Išsaugokite puslapį vieną kartą nustačius tėvinius SKU, kad tušti laukai būtų užpildyti iš parduotuvės. Vitrina taip pat randa sandėlio plokštes pagal tėvinį + dydį, jei variacijos SKU tuščias. Sraigtai ir juostos parenkami pagal polikarbonato storį."
+
 msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
 msgstr "Išsaugant puslapį tušti laukai taip pat atnaujinami iš parduotuvės. Išparduoti dydžiai čia lieka, bet slepiami klientams. Daugiasluoksnės: ištisos 2100 mm, ilgis iki metro; monolitinės: 2050 × 3050 mm."
 
@@ -533,6 +544,7 @@ msgstr "Sandarinimas"
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Sandarinimo juostos tik daugiasluoksnėms plokštėms. Vienas ventiliacijos ir vienas izoliacijos ritinys dengia plokščių plotį; dar po ritinį, kai plotis kartu viršija sukonfigūruotą ritinio ilgį (numatytai 5 m). Guminis tarpiklis seka perimetrą ir parduodamas sveikais metrais. Silikono – vienas tūbelis kiekvienam sukonfigūruotam to perimetro metrui (numatytai 10 m), mažiausiai vienas."
 
+#, php-format
 msgid "Sealing tapes, screws and extras"
 msgstr "Sandarinimo juostos, sraigtai ir priedai"
 
@@ -573,6 +585,7 @@ msgstr "Rodyti skaičiuoklę"
 msgid "Show postcode field"
 msgstr "Rodyti pašto kodo lauką"
 
+#, php-format
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Rodyti pašto kodo žingsnį parduotuvėje. Išsaugoma klientui, kai komplektas pridedamas, kad pristatymas būtų skaičiuojamas krepšelyje."
 
@@ -646,6 +659,7 @@ msgstr "Atramų žingsnis (nuo centro iki centro)"
 msgid "Tape roll length"
 msgstr "Juostos ritinio ilgis"
 
+#, php-format
 msgid "Tape, silicone and wall length"
 msgstr "Juostos, silikonas ir sienos ilgis"
 

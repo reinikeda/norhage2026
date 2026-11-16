@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
-"PO-Revision-Date: 2026-11-16 14:25+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
+"PO-Revision-Date: 2026-11-16 14:37+0000\n"
 "Language: da_DK\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,7 @@ msgstr "En massiv polykarbonatplade er %1$d × %2$d mm og kan vendes begge veje.
 msgid "Add kit to basket"
 msgstr "Læg sættet i kurven"
 
+#, php-format
 msgid "Adding kit…"
 msgstr "Lægger sættet i…"
 
@@ -95,6 +96,7 @@ msgstr "På et helt fag er en yderplade %1$d mm bredere end en midterplade: den 
 msgid "Anthracite"
 msgstr "Antracit"
 
+#, php-format
 msgid "Area"
 msgstr "Areal"
 
@@ -175,6 +177,7 @@ msgstr "Forbindelsesprofil"
 msgid "Connecting profiles"
 msgstr "Forbindelsesprofiler"
 
+#, php-format
 msgid "Connecting profiles and screws"
 msgstr "Forbindelsesprofiler og skruer"
 
@@ -329,6 +332,9 @@ msgstr "Samlingerne ligger midt på lægten og giver denne spalte til forbindels
 msgid "Joints sit on the centre of a rafter."
 msgstr "Samlingerne sidder i centrum af en lægte."
 
+msgid "Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead."
+msgstr "Behold forældre-SKU for hver tykkelse og farve. Variationsfelter udfyldes fra produktets bredde × længde-attributter (inkl. meterslug som 6-m → 6000 mm). Har en variation ingen SKU, gemmes produkt-ID i stedet."
+
 msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
 msgstr "Behold forældre-SKU for hver tykkelse og farve. Variations-SKU’er udfyldes automatisk fra produktets bredde × længde-varianter — du behøver kun indtaste en SKU, hvis en størrelse mangler i shoppen."
 
@@ -380,6 +386,7 @@ msgstr "De fleste terrasser"
 msgid "Multiwall polycarbonate"
 msgstr "Kanalplast"
 
+#, php-format
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalplast (skåret til mål)"
 
@@ -395,10 +402,10 @@ msgstr "Neutral silikone"
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutral silikone Silirub PC"
 
-#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Der blev ikke fundet produkter, der passer til dette valg. Tjek SKU-koblingen i indstillingerne for terrasseberegneren."
 
+#, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
 msgstr "Ingen matchende bredde/længde-varianter fundet for denne forældre-SKU endnu."
 
@@ -459,6 +466,7 @@ msgstr "Polykarbonatplade"
 msgid "Polycarbonate sheets"
 msgstr "Polykarbonatplader"
 
+#, php-format
 msgid "Postal code (for shipping)"
 msgstr "Postnummer (til fragt)"
 
@@ -518,6 +526,9 @@ msgstr "Tagstørrelse"
 msgid "Roof type"
 msgstr "Tagtype"
 
+msgid "Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness."
+msgstr "Gem siden én gang efter forældre-SKU’er er sat for at udfylde tomme felter fra shoppen. Butiksfronten finder også lagerplader via forælder + størrelse, hvis variations-SKU er tom. Skruer og tætningsbånd vælger variation ud fra polycarbonattykkelsen."
+
 msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
 msgstr "Når du gemmer siden, udfyldes tomme felter også fra shoppen. Udsolgte størrelser vises her, men skjules for kunder. Flerlags bruger hele 2100 mm plader med længde afrundet op til hele meter; massiv bruger 2050 × 3050 mm plader."
 
@@ -533,6 +544,7 @@ msgstr "Tætning"
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Tætningsbånd tilføjes kun til flerlagsplader. Én ventilationsrulle og én isoleringsrulle dækker pladebredderne, og endnu en rulle af hver tilføjes, når bredderne tilsammen overstiger den konfigurerede rullelængde (standard 5 m). Gummilisten følger omkredsen og sælges i hele meter. Silikone er én tube for hver konfigurerede meter af den omkreds (standard 10 m), og mindst én tube."
 
+#, php-format
 msgid "Sealing tapes, screws and extras"
 msgstr "Tætningsbånd, skruer og tilbehør"
 
@@ -573,6 +585,7 @@ msgstr "Vis beregneren på"
 msgid "Show postcode field"
 msgstr "Vis felt til postnummer"
 
+#, php-format
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Vis postnummertrinnet i webshoppen. Gemmes på kunden, når sættet lægges i kurven, så fragt kan beregnes i kurven."
 
@@ -646,6 +659,7 @@ msgstr "Lægteafstand (center til center)"
 msgid "Tape roll length"
 msgstr "Tape-rullelængde"
 
+#, php-format
 msgid "Tape, silicone and wall length"
 msgstr "Tape, silikone og væglængde"
 
