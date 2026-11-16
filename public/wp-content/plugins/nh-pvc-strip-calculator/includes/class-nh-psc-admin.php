@@ -101,7 +101,6 @@ class NH_PSC_Admin {
 					$out['overlap_pct'][ $w ][ $ov ] = max( 0.05, min( 0.99, (float) $input['overlap_pct'][ $w ][ $ov ] ) );
 				}
 			}
-			$out['red_strips'][ $w ] = self::ref_from_posted( $input['red_strips'][ $w ] ?? '' );
 			$out['hardware']['hanger'][ $w ] = self::ref_from_posted( $input['hardware']['hanger'][ $w ] ?? '' );
 
 			foreach ( array( 'smooth', 'ribbed', 'antistatic', 'frosted' ) as $type ) {
@@ -156,7 +155,6 @@ class NH_PSC_Admin {
 					<li><?php esc_html_e( 'Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips.', NH_PSC_TD ); ?></li>
 					<li><?php esc_html_e( 'Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height.', NH_PSC_TD ); ?></li>
 					<li><?php esc_html_e( 'Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip.', NH_PSC_TD ); ?></li>
-					<li><?php esc_html_e( 'Red edge strips replace the two outermost strips when enabled.', NH_PSC_TD ); ?></li>
 				</ul>
 			</div>
 
@@ -273,13 +271,9 @@ class NH_PSC_Admin {
 					</table>
 				<?php endforeach; ?>
 
-				<h2><?php esc_html_e( 'Red edges & hardware', NH_PSC_TD ); ?></h2>
+				<h2><?php esc_html_e( 'Hardware', NH_PSC_TD ); ?></h2>
 				<table class="form-table">
 					<?php foreach ( array( '200', '300', '400' ) as $w ) : ?>
-						<tr>
-							<th><?php echo esc_html( sprintf( /* translators: %d width */ __( 'Red strip %d mm', NH_PSC_TD ), (int) $w ) ); ?></th>
-							<td><?php self::product_field( $key . '[red_strips][' . $w . ']', $s['red_strips'][ $w ] ); ?></td>
-						</tr>
 						<tr>
 							<th><?php echo esc_html( sprintf( /* translators: %d width */ __( 'Hanger %d mm', NH_PSC_TD ), (int) $w ) ); ?></th>
 							<td><?php self::product_field( $key . '[hardware][hanger][' . $w . ']', $s['hardware']['hanger'][ $w ] ); ?></td>

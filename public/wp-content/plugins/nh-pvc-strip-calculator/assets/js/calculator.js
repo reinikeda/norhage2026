@@ -67,7 +67,6 @@
   }
 
   function collect() {
-    var red = form.querySelector('[name="red_edges"]');
     return {
       width_mm: Number((form.querySelector('[name="width_mm"]') || {}).value) || 0,
       height_mm: Number((form.querySelector('[name="height_mm"]') || {}).value) || 0,
@@ -76,9 +75,22 @@
       overlap: (form.querySelector('[name="overlap"]:checked') || {}).value || 'med',
       strip_type: (form.querySelector('[name="strip_type"]') || {}).value || 'smooth',
       grade: (form.querySelector('[name="grade"]') || {}).value || 'standard',
-      red_edges: !!(red && red.checked),
       postcode: (form.querySelector('[name="postcode"]') || {}).value || ''
     };
+  }
+
+  function syncOverlapLabels() {
+    var w = String(collect().strip_width_mm || 200);
+    var row = (cfg.overlapPct && (cfg.overlapPct[w] || cfg.overlapPct[Number(w)])) || {};
+    ['min', 'med', 'max'].forEach(function (level) {
+      var el = form.querySelector('[data-overlap-pct="' + level + '"]');
+      if (!el) return;
+      var frac = Number(row[level]);
+      if (!isFinite(frac) || frac <= 0) {
+        frac = level === 'min' ? 0.36 : (level === 'max' ? 0.98 : 0.77);
+      }
+      el.textContent = Math.round(frac * 100) + '%';
+    });
   }
 
   function fmt(amount) {
@@ -218,24 +230,41 @@
       planEl.innerHTML = '';
       return;
     }
+    var count = Math.max(1, Number(meta.strip_count) || 1);
+    var stripMm = Math.max(1, Number(meta.strip_width_mm) || 200);
+    var calcW = Math.max(stripMm, Number(meta.calc_width_mm) || stripMm);
+    // Geometry implied by strip count: average overlap between neighbours.
+    var overlapMm = count > 1 ? Math.max(0, (count * stripMm - calcW) / (count - 1)) : 0;
+    var pitchMm = Math.max(1, stripMm - overlapMm);
+    var spanMm = stripMm + (count - 1) * pitchMm;
     var viz = document.createElement('div');
     viz.className = 'nh-psc__strip-viz';
     viz.setAttribute('role', 'img');
-    viz.setAttribute('aria-label', i18n('strips', '%d strips').replace('%d', meta.strip_count));
-    for (var i = 0; i < meta.strip_count; i++) {
+    viz.setAttribute(
+      'aria-label',
+      i18n('strips', '%d strips').replace('%d', count) +
+        (meta.overlap_pct != null
+          ? ', ' + i18n('overlapPct', '%d%% overlap').replace('%d', meta.overlap_pct)
+          : '')
+    );
+    for (var i = 0; i < count; i++) {
       var s = document.createElement('span');
-      if (meta.red_edges && (i === 0 || i === meta.strip_count - 1)) s.className = 'is-red';
-      else if (i > 0) s.className = 'is-overlap';
+      if (i > 0) s.classList.add('is-overlap');
+      s.style.width = ((stripMm / spanMm) * 100).toFixed(3) + '%';
+      s.style.left = ((i * pitchMm / spanMm) * 100).toFixed(3) + '%';
       viz.appendChild(s);
     }
     var note = document.createElement('p');
     note.className = 'nh-psc__plan-note';
     note.textContent = i18n('planMeta', '%1$d × %2$d×%3$d mm · %4$s m · %5$s m²')
-      .replace('%1$d', meta.strip_count)
+      .replace('%1$d', count)
       .replace('%2$d', meta.strip_width_mm)
       .replace('%3$d', meta.strip_thickness_mm)
       .replace('%4$s', String(meta.total_metres))
       .replace('%5$s', String(meta.area_m2));
+    if (meta.overlap_pct != null) {
+      note.textContent += ' · ' + i18n('overlapPct', '%d%% overlap').replace('%d', meta.overlap_pct);
+    }
     planEl.innerHTML = '';
     planEl.appendChild(viz);
     planEl.appendChild(note);
@@ -333,5 +362,10 @@
   }
 
   setWizardStep(1);
+  syncOverlapLabels();
+  form.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t && t.name === 'strip_width_mm') syncOverlapLabels();
+  });
   quote();
 })();

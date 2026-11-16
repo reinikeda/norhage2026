@@ -113,6 +113,7 @@ class NH_PSC_Render {
 				'showPostcode' => ! empty( $s['show_postcode'] ),
 				'taxDisplay'   => get_option( 'woocommerce_tax_display_shop', 'incl' ),
 				'currency'     => class_exists( 'WooCommerce' ) ? NH_PSC_Catalog::currency_payload() : array(),
+				'overlapPct'   => isset( $s['overlap_pct'] ) && is_array( $s['overlap_pct'] ) ? $s['overlap_pct'] : array(),
 				'i18n'         => array(
 					'continue'   => __( 'Continue', NH_PSC_TD ),
 					'reviewKit'  => __( 'Review kit', NH_PSC_TD ),
@@ -212,36 +213,6 @@ class NH_PSC_Render {
 									<span class="nh-psc__choice-sub"><?php esc_html_e( 'Rail under the lintel / soffit', NH_PSC_TD ); ?></span>
 								</label>
 							</div>
-							<div class="nh-psc__measure-guide">
-								<figure class="nh-psc__measure-block">
-									<svg class="nh-psc__measure-svg" viewBox="0 0 340 148" width="340" height="148" focusable="false" aria-hidden="true">
-										<defs>
-											<linearGradient id="nh-psc-guide-strip" x1="0" y1="0" x2="0" y2="1">
-												<stop offset="0%" stop-color="currentColor" stop-opacity=".06"/>
-												<stop offset="35%" stop-color="currentColor" stop-opacity=".18"/>
-												<stop offset="100%" stop-color="currentColor" stop-opacity=".08"/>
-											</linearGradient>
-											<marker id="nh-psc-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-												<path d="M0,0.5 L7,3.5 L0,6.5 Z" fill="currentColor"/>
-											</marker>
-										</defs>
-										<path d="M40 22 H288 V108 H40 Z" fill="currentColor" opacity=".04" stroke="currentColor" stroke-width="2"/>
-										<rect x="52" y="30" width="224" height="11" rx="2" fill="currentColor"/>
-										<path d="M62 41 H88 V96 Q75 104 62 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M96 41 H122 V96 Q109 104 96 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M130 41 H156 V96 Q143 104 130 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M164 41 H190 V96 Q177 104 164 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M198 41 H224 V96 Q211 104 198 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M232 41 H258 V96 Q245 104 232 96 Z" fill="url(#nh-psc-guide-strip)" stroke="currentColor" stroke-width="1.15"/>
-										<path d="M52 126 H268" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
-										<path d="M304 26 V104" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-psc-arrow)" marker-end="url(#nh-psc-arrow)"/>
-									</svg>
-									<figcaption class="nh-psc__measure-keys">
-										<span><strong><?php esc_html_e( 'Opening width', NH_PSC_TD ); ?></strong></span>
-										<span><strong><?php esc_html_e( 'Height', NH_PSC_TD ); ?></strong></span>
-									</figcaption>
-								</figure>
-							</div>
 						</fieldset>
 
 						<fieldset class="nh-psc__card">
@@ -301,21 +272,31 @@ class NH_PSC_Render {
 
 						<fieldset class="nh-psc__card">
 							<legend><?php esc_html_e( 'Overlap', NH_PSC_TD ); ?></legend>
+							<?php
+							$ov_row = isset( $s['overlap_pct'][ (string) $rec ] ) && is_array( $s['overlap_pct'][ (string) $rec ] )
+								? $s['overlap_pct'][ (string) $rec ]
+								: array( 'min' => 0.36, 'med' => 0.77, 'max' => 0.98 );
+							$ov_desc = array(
+								'min' => __( 'Easier passage · indoor pedestrian traffic', NH_PSC_TD ),
+								'med' => __( 'Balanced seal · most indoor openings', NH_PSC_TD ),
+								'max' => __( 'Best draught barrier · outdoor & cold rooms', NH_PSC_TD ),
+							);
+							?>
 							<div class="nh-psc__chips nh-psc__chips--stack">
 								<label class="nh-psc__chip nh-psc__chip--wide">
 									<input type="radio" name="overlap" value="min">
-									<span class="nh-psc__chip-title"><?php esc_html_e( 'Minimum', NH_PSC_TD ); ?></span>
-									<span class="nh-psc__chip-sub"><?php esc_html_e( 'Easier passage · indoor pedestrian traffic', NH_PSC_TD ); ?></span>
+									<span class="nh-psc__chip-title"><?php esc_html_e( 'Minimum', NH_PSC_TD ); ?> · <span data-overlap-pct="min"><?php echo esc_html( (string) round( ( (float) ( $ov_row['min'] ?? 0.36 ) ) * 100 ) ); ?>%</span></span>
+									<span class="nh-psc__chip-sub" data-overlap-desc="min"><?php echo esc_html( $ov_desc['min'] ); ?></span>
 								</label>
 								<label class="nh-psc__chip nh-psc__chip--wide">
 									<input type="radio" name="overlap" value="med" checked>
-									<span class="nh-psc__chip-title"><?php esc_html_e( 'Medium', NH_PSC_TD ); ?></span>
-									<span class="nh-psc__chip-sub"><?php esc_html_e( 'Balanced seal · most indoor openings', NH_PSC_TD ); ?></span>
+									<span class="nh-psc__chip-title"><?php esc_html_e( 'Medium', NH_PSC_TD ); ?> · <span data-overlap-pct="med"><?php echo esc_html( (string) round( ( (float) ( $ov_row['med'] ?? 0.77 ) ) * 100 ) ); ?>%</span></span>
+									<span class="nh-psc__chip-sub" data-overlap-desc="med"><?php echo esc_html( $ov_desc['med'] ); ?></span>
 								</label>
 								<label class="nh-psc__chip nh-psc__chip--wide">
 									<input type="radio" name="overlap" value="max">
-									<span class="nh-psc__chip-title"><?php esc_html_e( 'Maximum', NH_PSC_TD ); ?></span>
-									<span class="nh-psc__chip-sub"><?php esc_html_e( 'Best draught barrier · outdoor & cold rooms', NH_PSC_TD ); ?></span>
+									<span class="nh-psc__chip-title"><?php esc_html_e( 'Maximum', NH_PSC_TD ); ?> · <span data-overlap-pct="max"><?php echo esc_html( (string) round( ( (float) ( $ov_row['max'] ?? 0.98 ) ) * 100 ) ); ?>%</span></span>
+									<span class="nh-psc__chip-sub" data-overlap-desc="max"><?php echo esc_html( $ov_desc['max'] ); ?></span>
 								</label>
 							</div>
 						</fieldset>
@@ -340,10 +321,6 @@ class NH_PSC_Render {
 									</select>
 								</label>
 							</div>
-							<label class="nh-psc__check">
-								<input type="checkbox" name="red_edges" value="1">
-								<span><?php esc_html_e( 'Red marker strips at both edges', NH_PSC_TD ); ?></span>
-							</label>
 						</fieldset>
 
 						<div class="nh-psc__plan" data-strip-plan></div>

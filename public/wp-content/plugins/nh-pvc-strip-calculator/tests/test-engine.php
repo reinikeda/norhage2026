@@ -82,7 +82,6 @@ $face400 = NH_PSC_Engine::calculate(
 		'height_mm'      => 4500,
 		'strip_width_mm' => 400,
 		'overlap'        => 'max',
-		'red_edges'      => true,
 	),
 	$settings
 );
@@ -90,7 +89,34 @@ nh_psc_assert( 'face 400 width +100', 4100 === (int) $face400['meta']['calc_widt
 nh_psc_assert( 'face 400 height +30', 4530 === (int) $face400['meta']['calc_height_mm'] );
 // ceil(4100 * 1.98 / 400) = ceil(20.295) = 21
 nh_psc_assert( 'face 400 max strips 21', 21 === (int) $face400['meta']['strip_count'] );
-nh_psc_assert( 'red edges take 2 strips', 2 === (int) $face400['meta']['red_count'] && 19 === (int) $face400['meta']['clear_count'] );
+
+$min = NH_PSC_Engine::calculate(
+	array(
+		'mounting'       => 'face',
+		'width_mm'       => 2000,
+		'height_mm'      => 2200,
+		'strip_width_mm' => 200,
+		'overlap'        => 'min',
+	),
+	$settings
+);
+$max = NH_PSC_Engine::calculate(
+	array(
+		'mounting'       => 'face',
+		'width_mm'       => 2000,
+		'height_mm'      => 2200,
+		'strip_width_mm' => 200,
+		'overlap'        => 'max',
+	),
+	$settings
+);
+// ceil(2080 * 1.36 / 200) = ceil(14.144) = 15
+nh_psc_assert( 'face 200 min strips 15', 15 === (int) $min['meta']['strip_count'] );
+// ceil(2080 * 1.98 / 200) = ceil(20.592) = 21
+nh_psc_assert( 'face 200 max strips 21', 21 === (int) $max['meta']['strip_count'] );
+nh_psc_assert( 'admin overlap % on min', 36 === (int) $min['meta']['overlap_pct'] );
+nh_psc_assert( 'admin overlap % on max', 98 === (int) $max['meta']['overlap_pct'] );
+nh_psc_assert( 'higher overlap needs more strips', (int) $max['meta']['strip_count'] > (int) $min['meta']['strip_count'] );
 
 nh_psc_assert( 'recommend under 2.5 m → 200', 200 === NH_PSC_Engine::recommend_strip_width( 2400 ) );
 nh_psc_assert( 'recommend 2.5–4 m → 300', 300 === NH_PSC_Engine::recommend_strip_width( 3000 ) );

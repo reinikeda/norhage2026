@@ -87,11 +87,6 @@ class NH_PSC_Defaults {
 					'frosted'    => array( 'standard' => '', 'frost' => '' ),
 				),
 			),
-			'red_strips'            => array(
-				'200' => '',
-				'300' => '',
-				'400' => '',
-			),
 			'hardware'              => array(
 				'rail'     => '',
 				'hanger'   => array(
