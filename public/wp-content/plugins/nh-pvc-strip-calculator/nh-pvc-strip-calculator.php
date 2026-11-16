@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Norhage PVC Strip Curtain Calculator
  * Description: Configure PVC strip curtains (Plastena-style rules) and add a complete kit to WooCommerce.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Requires Plugins: woocommerce
  * Text Domain: nh-pvc-strip-calculator
  * Domain Path: /languages
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NH_PSC_VERSION', '1.0.3' );
+define( 'NH_PSC_VERSION', '1.0.4' );
 define( 'NH_PSC_FILE', __FILE__ );
 define( 'NH_PSC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NH_PSC_URL', plugin_dir_url( __FILE__ ) );

@@ -451,6 +451,20 @@ class NH_TC_Defaults {
 	}
 
 	/**
+	 * Round a multiwall run up to a full sold metre (1–7 m).
+	 */
+	public static function multiwall_metre_length( $need_mm ) {
+		if ( class_exists( 'NH_TC_Engine' ) ) {
+			return NH_TC_Engine::multiwall_stock_length( $need_mm );
+		}
+		$need = max( 1, (int) $need_mm );
+		if ( $need >= 7000 ) {
+			return 7000;
+		}
+		return max( 1000, min( 7000, (int) ( ceil( $need / 1000 ) * 1000 ) ) );
+	}
+
+	/**
 	 * Channel groups for one thickness and colour. Empty when that sheet has no standard sizes.
 	 *
 	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
@@ -506,7 +520,8 @@ class NH_TC_Defaults {
 		if ( ! $groups ) {
 			return null;
 		}
-		$channel = (string) $channel;
+		$material = (string) $material;
+		$channel  = (string) $channel;
 		if ( ! isset( $groups[ $channel ] ) ) {
 			if ( isset( $groups['stock'] ) ) {
 				$channel = 'stock';
@@ -521,8 +536,36 @@ class NH_TC_Defaults {
 		if ( ! $widths ) {
 			return null;
 		}
+
+		// Multiwall standard plates: whole 2100 mm sheets. Solid: 2050 × 3050 blanks.
 		$width = (string) (int) $width_mm;
-		if ( ! isset( $widths[ $width ] ) ) {
+		if ( 'multiwall' === $material ) {
+			if ( isset( $widths['2100'] ) ) {
+				$width = '2100';
+			} elseif ( ! isset( $widths[ $width ] ) ) {
+				$keys = array_keys( $widths );
+				usort(
+					$keys,
+					static function ( $a, $b ) {
+						return (int) $a <=> (int) $b;
+					}
+				);
+				$width = (string) $keys[ count( $keys ) - 1 ];
+			}
+		} elseif ( 'solid' === $material ) {
+			if ( isset( $widths['2050'] ) ) {
+				$width = '2050';
+			} elseif ( ! isset( $widths[ $width ] ) ) {
+				$keys = array_keys( $widths );
+				usort(
+					$keys,
+					static function ( $a, $b ) {
+						return (int) $a <=> (int) $b;
+					}
+				);
+				$width = (string) $keys[ count( $keys ) - 1 ];
+			}
+		} elseif ( ! isset( $widths[ $width ] ) ) {
 			if ( isset( $widths['2100'] ) ) {
 				$width = '2100';
 			} else {
@@ -536,8 +579,18 @@ class NH_TC_Defaults {
 				$width = (string) $keys[ count( $keys ) - 1 ];
 			}
 		}
-		$map     = self::length_sku_map( $widths[ $width ] );
-		$length  = self::covering_stock_length( array_map( 'intval', array_keys( $map ) ), $need_mm );
+
+		$map      = self::length_sku_map( $widths[ $width ] );
+		$available = array_map( 'intval', array_keys( $map ) );
+		if ( 'multiwall' === $material ) {
+			// Round the run up to a full metre (1–7 m), then take the shortest sold length that covers it.
+			$length = self::covering_stock_length( $available, self::multiwall_metre_length( $need_mm ) );
+		} elseif ( 'solid' === $material && in_array( 3050, $available, true ) ) {
+			// Always buy the full 3050 mm blank (may be rotated when tiling).
+			$length = 3050;
+		} else {
+			$length = self::covering_stock_length( $available, $need_mm );
+		}
 		if ( $length <= 0 ) {
 			return null;
 		}

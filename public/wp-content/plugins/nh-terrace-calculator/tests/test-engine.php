@@ -500,11 +500,9 @@ foreach ( $narrow_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'a 1050 mm stock width needs four sheets',
-	$narrow_sheet && 4 === (int) $narrow_sheet['qty'] && 1050 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
-	&& 1050 === (int) $narrow_bom['meta']['span_mm']
-	&& 7 === count( $narrow_bom['meta']['sheet_plan'] )
-	&& 6 === (int) $narrow_bom['meta']['connecting_count']
+	'multiwall standard always buys full 2100 mm sheets even if a half width was posted',
+	$narrow_sheet && 2 === (int) $narrow_sheet['qty'] && 2100 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
+	&& 2100 === (int) $narrow_bom['meta']['stock_width_mm']
 );
 
 $opal                   = $std_input;
@@ -518,8 +516,19 @@ foreach ( $opal_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'10 mm opal 1250 mm repeats the 2 m sheet along the run',
-	$opal_sheet && 12 === (int) $opal_sheet['qty'] && 1250 === (int) $opal_sheet['cut']['width_mm'] && 2000 === (int) $opal_sheet['cut']['length_mm'] && 4 === (int) $opal_bom['meta']['stock_across'] && 3 === (int) $opal_bom['meta']['stock_along']
+	'10 mm opal standard uses the full 2100 mm sheet and a covering metre length',
+	$opal_sheet && 2 === (int) $opal_sheet['qty'] && 2100 === (int) $opal_sheet['cut']['width_mm'] && 6000 === (int) $opal_sheet['cut']['length_mm']
+	&& 2 === (int) $opal_bom['meta']['stock_across'] && 1 === (int) $opal_bom['meta']['stock_along']
+);
+
+nh_tc_assert( 'multiwall rounds 4750 mm up to 5 m', 5000 === NH_TC_Engine::multiwall_stock_length( 4750 ) );
+nh_tc_assert( 'multiwall rounds 1001 mm up to 2 m', 2000 === NH_TC_Engine::multiwall_stock_length( 1001 ) );
+nh_tc_assert( 'multiwall caps at 7 m then tiles', 7000 === NH_TC_Engine::multiwall_stock_length( 7500 ) );
+
+$rotate = NH_TC_Engine::stock_sheet_qty( 2900, 4000, 2050, 3050, true );
+nh_tc_assert(
+	'solid blanks rotate when that buys fewer sheets',
+	2 === (int) $rotate['qty'] && 1 === (int) $rotate['rotated'] && 3050 === (int) $rotate['width_mm'] && 2050 === (int) $rotate['length_mm']
 );
 
 $five                      = $std_input;
@@ -534,8 +543,8 @@ foreach ( $five_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'16 mm 5-wall 1200 mm uses the 5000 mm stock length',
-	$five_sheet && 4 === (int) $five_sheet['qty'] && 1200 === (int) $five_sheet['cut']['width_mm'] && 5000 === (int) $five_sheet['cut']['length_mm']
+	'16 mm standard prefers the full 2100 mm sheet over a narrower posted width',
+	$five_sheet && 2 === (int) $five_sheet['qty'] && 2100 === (int) $five_sheet['cut']['width_mm'] && 6000 === (int) $five_sheet['cut']['length_mm']
 );
 
 $solid_in                  = $std_input;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:51+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.4\n"
+"PO-Revision-Date: 2026-11-16 14:17+0000\n"
 "Language: lt_LT\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
@@ -70,13 +70,13 @@ msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pas
 msgid "Add kit to basket"
 msgstr "Įdėti komplektą į krepšelį"
 
-#, php-format
 msgid "Adding kit…"
 msgstr "Dedamas komplektas…"
 
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Visi trys varžtų kiekiai sudedami ir apvalinami iki pakuočių. Jungiamiesiems profiliams paprastai reikia tankesnio žingsnio nei kraštinėms juostoms."
 
+#, php-format
 msgid "along the gable"
 msgstr "išilgai frontono"
 
@@ -101,6 +101,7 @@ msgstr "Plotas"
 msgid "Attached to a wall"
 msgstr "Tvirtinama prie sienos"
 
+#, php-format
 msgid "Back"
 msgstr "Atgal"
 
@@ -179,6 +180,7 @@ msgstr "Jungiamieji profiliai ir varžtai"
 msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
 msgstr "Jungiamieji profiliai atitinka jungtis skersai: vienu mažiau nei plokščių plotyje. Kiekvienas profilis – trumpiausias sandėlio ilgis, dengiantis plokštės ilgį. Varžtai dengia jungiamuosius (numatytai kas 200 mm), kraštus ir sienos/kraigo gabalus (numatytai kas 400 mm), tada apvalinama iki pakuočių. Galiniai dangteliai – po du kiekvienam jungiamajam. Plastikinis H profilis dangtelių neturi. Tvirtinimo mygtukai (pasirenkama) – po vieną kas 400 mm išilgai kiekvienos plokštės vidurio tvirtinimui."
 
+#, php-format
 msgid "Continue"
 msgstr "Tęsti"
 
@@ -373,6 +375,10 @@ msgstr "Kanalinis polikarbonatas"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalinis polikarbonatas (pagal matmenis)"
 
+msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
+msgstr "Daugiasluoksnės: ištisos 2100 mm plokštės, ilgis apvalinamas iki sveiko metro (1–7 m). Monolitinės: ištisos 2050 × 3050 mm plokštės, bet kuria kryptimi."
+
+#, php-format
 msgid "Neutral silicone"
 msgstr "Neutralus silikonas"
 
@@ -447,6 +453,7 @@ msgstr "Pašto kodas (pristatymui)"
 msgid "Profiles"
 msgstr "Profiliai"
 
+#, php-format
 msgid "Projection"
 msgstr "Išsikišimas"
 
@@ -516,6 +523,7 @@ msgstr "Sandarinimo juostos, sraigtai ir priedai"
 msgid "Search products…"
 msgstr "Ieškoti prekių…"
 
+#, php-format
 msgid "Selected products"
 msgstr "Pasirinktos prekės"
 
@@ -554,6 +562,7 @@ msgstr "Rodyti pašto kodo žingsnį parduotuvėje. Išsaugoma klientui, kai kom
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Rodyti terasos stogo skaičiuoklę šiame prekės puslapyje (kai rodymo režimas yra «žymimasis langelis»)."
 
+#, php-format
 msgid "Silicone metres per tube"
 msgstr "Silikono metrai vienam tūbeliui"
 
@@ -625,6 +634,7 @@ msgstr "Juostos, silikonas ir sienos ilgis"
 msgid "Tapes, gasket and silicone"
 msgstr "Juostos, tarpinė ir silikonas"
 
+#, php-format
 msgid "Terrace calculator"
 msgstr "Terasos skaičiuoklė"
 
