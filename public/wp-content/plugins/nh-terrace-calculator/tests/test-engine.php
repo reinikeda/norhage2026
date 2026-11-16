@@ -33,6 +33,10 @@ $settings = array(
 	'standard_sheet_width_mm' => 2100,
 	'wall_profile_mm'         => 2200,
 	'screw_spacing_mm'        => 200,
+	'finish_screw_spacing_mm' => 400,
+	'wall_screw_spacing_mm'   => 400,
+	'fixing_button_spacing_mm' => 400,
+	'fixing_button_pack_size'  => 50,
 	'screw_pack_size'         => 50,
 	'silicon_metres_per_tube' => 10,
 	'tape_roll_mm'            => 5000,
@@ -102,7 +106,23 @@ nh_tc_assert( '7 sheets still', 7 === (int) $bom['meta']['sheet_count'] );
 nh_tc_assert( 'custom supply starts with a profile on every rafter', 'every' === $bom['meta']['profile_joints'] );
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
 nh_tc_assert( 'F-profile 3×2 m + 3×3 m', isset( $by_role['finish']['packed']['2-m'], $by_role['finish']['packed']['3-m'] ) && 3 === (int) $by_role['finish']['packed']['2-m'] && 3 === (int) $by_role['finish']['packed']['3-m'] );
-nh_tc_assert( '150 screws → 3 packs of 5x60', isset( $by_role['screw'] ) && 150 === (int) $by_role['screw']['qty_raw'] && 3 === (int) $by_role['screw']['qty'] && '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions'] );
+nh_tc_assert(
+	'197 screws (150 connect + 35 finish + 12 wall) → 4 packs of 5x60',
+	isset( $by_role['screw'] )
+	&& 197 === (int) $by_role['screw']['qty_raw']
+	&& 4 === (int) $by_role['screw']['qty']
+	&& '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions']
+	&& 150 === (int) $bom['meta']['connect_screws']
+	&& 35 === (int) $bom['meta']['finish_screws']
+	&& 12 === (int) $bom['meta']['wall_screws']
+);
+nh_tc_assert(
+	'84 fixing buttons → 2 packs',
+	isset( $by_role['fixing_button'] )
+	&& 84 === (int) $by_role['fixing_button']['qty_raw']
+	&& 2 === (int) $by_role['fixing_button']['qty']
+	&& 84 === (int) $bom['meta']['buttons_raw']
+);
 nh_tc_assert( '2 wall profiles', isset( $by_role['wall'] ) && 2 === (int) $by_role['wall']['qty'] );
 nh_tc_assert( '12 end caps', isset( $by_role['end_cap'] ) && 12 === (int) $by_role['end_cap']['qty'] );
 nh_tc_assert( '25 mm ventilation tape, 1 roll', isset( $by_role['vent_tape'] ) && 25 === (int) $by_role['vent_tape']['tape_width_mm'] && 1 === (int) $by_role['vent_tape']['qty'] );
@@ -372,7 +392,8 @@ nh_tc_assert(
 	&& 3 === count( $opt_bom['meta']['sheet_plan'] )
 	&& 2 === (int) $opt_bom['meta']['connecting_count']
 	&& 2 === $opt_connect
-	&& 50 === $opt_screws
+	&& 50 === (int) $opt_bom['meta']['connect_screws']
+	&& 97 === $opt_screws
 	&& 8 === (int) $opt_bom['meta']['rafter_count']
 );
 

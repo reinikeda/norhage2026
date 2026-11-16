@@ -76,6 +76,12 @@ class NH_TC_Catalog {
 				return array( self::resolve_sheet( $line, $meta, $settings ) );
 			case 'screw':
 				return array( self::resolve_simple_variable( $line, $settings['hardware']['screws'], $line['attrs'] ?? array(), __( 'Wood screws with washers', NH_TC_TD ) ) );
+			case 'fixing_button':
+				$sku = isset( $settings['hardware']['fixing_buttons'] ) ? $settings['hardware']['fixing_buttons'] : '';
+				if ( ! $sku ) {
+					return array();
+				}
+				return array( self::resolve_simple_variable( $line, $sku, array(), __( 'Fixing buttons', NH_TC_TD ) ) );
 			case 'connecting':
 				$sku = self::map_sku( $settings['connecting'], $meta['connecting_profile'], $meta['connecting_color'] );
 				return array( self::resolve_simple_variable( $line, $sku, $line['attrs'] ?? array(), __( 'Connecting profile', NH_TC_TD ) ) );

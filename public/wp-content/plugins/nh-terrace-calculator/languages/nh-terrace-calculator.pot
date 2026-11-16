@@ -1,492 +1,15 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Norhage Terrace Roof Calculator 1.4.10\n"
+"Project-Id-Version: Norhage Terrace Roof Calculator 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 13:00+0000\n"
+"POT-Creation-Date: 2026-11-14 19:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Norhage\n"
-
-msgid "Cart is not available."
-msgstr ""
-
-msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
-msgstr ""
-
-msgid "Unable to add one of the kit items to the basket."
-msgstr ""
-
-msgid "Terrace roof kit added to basket."
-msgstr ""
-
-#, php-format
-msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
-msgstr ""
-
-msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
-msgstr ""
-
-msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
-msgstr ""
-
-msgid "Sheet overhang must be between 0 and 300 mm."
-msgstr ""
-
-msgid "Please enter a valid width and length."
-msgstr ""
-
-msgid "Wood screws with washers"
-msgstr ""
-
-msgid "Connecting profile"
-msgstr ""
-
-msgid "Wall profile 2.2 m"
-msgstr ""
-
-msgid "Ridge profile 2.2 m"
-msgstr ""
-
-msgid "Ventilation sealing tape"
-msgstr ""
-
-msgid "Insulation sealing tape"
-msgstr ""
-
-msgid "Clamping profile end cap"
-msgstr ""
-
-msgid "EPDM rubber gasket 50 mm"
-msgstr ""
-
-msgid "Neutral silicone Silirub PC"
-msgstr ""
-
-msgid "Polycarbonate sheet"
-msgstr ""
-
-#, php-format
-msgid "%1$d × %2$d mm (%3$s m²)"
-msgstr ""
-
-msgid "Finish profile"
-msgstr ""
+"X-Generator: Norhage agent\n"
 
 #, php-format
 msgid "%1$d pcs (%2$d / pack)"
-msgstr ""
-
-#, php-format
-msgid "%s m"
-msgstr ""
-
-msgid "Terrace roof calculator"
-msgstr ""
-
-msgid "Work through the steps, check the cut list, and add a complete kit to the basket. Sheets are cut so every joint lands on the centre of a support."
-msgstr ""
-
-msgid "Roof shape"
-msgstr ""
-
-msgid "Lean-to"
-msgstr ""
-
-msgid "Gable"
-msgstr ""
-
-msgid "Polycarbonate"
-msgstr ""
-
-msgid "Material"
-msgstr ""
-
-msgid "Multiwall polycarbonate"
-msgstr ""
-
-msgid "Solid polycarbonate"
-msgstr ""
-
-msgid "Thickness"
-msgstr ""
-
-msgid "Colour"
-msgstr ""
-
-msgid "Frame size"
-msgstr ""
-
-msgid "Width along the wall"
-msgstr ""
-
-msgid "Frame length (projection)"
-msgstr ""
-
-msgid "Support spacing (centre to centre)"
-msgstr ""
-
-msgid "Support beam width"
-msgstr ""
-
-#, php-format
-msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
-msgstr ""
-
-msgid "Sheet overhang past the frame"
-msgstr ""
-
-msgid "Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual allowance — change it if your drip edge needs more or less."
-msgstr ""
-
-msgid "The cut diagram appears once the size is valid."
-msgstr ""
-
-msgid "Postal code (for shipping)"
-msgstr ""
-
-msgid "Profiles"
-msgstr ""
-
-msgid "Connecting profile on the supports"
-msgstr ""
-
-msgid "On every beam"
-msgstr ""
-
-msgid "On every rafter"
-msgstr ""
-
-msgid "Optimal"
-msgstr ""
-
-msgid "Optimal covers as much of the chosen width as it can. Each joint still sits on a rafter."
-msgstr ""
-
-msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
-msgstr ""
-
-#, php-format
-msgid "Only where sheets meet, using up to %d mm"
-msgstr ""
-
-msgid "A joint always sits on the centre of a beam. The second choice lets one sheet span several beams, cut from the standard sheet width."
-msgstr ""
-
-msgid "Clamping profile"
-msgstr ""
-
-msgid "Clamping profile with lid"
-msgstr ""
-
-msgid "Plastic H-profile"
-msgstr ""
-
-msgid "Connecting colour"
-msgstr ""
-
-msgid "Silver"
-msgstr ""
-
-msgid "Clear"
-msgstr ""
-
-msgid "Brown"
-msgstr ""
-
-msgid "F aluminium"
-msgstr ""
-
-msgid "U plastic"
-msgstr ""
-
-msgid "U aluminium"
-msgstr ""
-
-msgid "L aluminium"
-msgstr ""
-
-msgid "Finish colour"
-msgstr ""
-
-msgid "Material list"
-msgstr ""
-
-msgid "Enter a size to see the kit."
-msgstr ""
-
-msgid "VAT"
-msgstr ""
-
-msgid "Total excl. VAT"
-msgstr ""
-
-msgid "Total incl. VAT"
-msgstr ""
-
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr ""
-
-msgid "Add kit to basket"
-msgstr ""
-
-#, php-format
-msgid "Recommended centre spacing for this thickness: %s mm."
-msgstr ""
-
-#, php-format
-msgid "%d sheets"
-msgstr ""
-
-#, php-format
-msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
-msgstr ""
-
-#, php-format
-msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly. Cut length %4$d mm (frame %5$d mm + %6$d mm overhang)."
-msgstr ""
-
-#, php-format
-msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
-msgstr ""
-
-#, php-format
-msgid "Cut widths: %s."
-msgstr ""
-
-msgid "outer"
-msgstr ""
-
-msgid "middle"
-msgstr ""
-
-#, php-format
-msgid "%d mm"
-msgstr ""
-
-msgid "Some items are not in this shop (SKU not found). The rest can still be added."
-msgstr ""
-
-msgid "Adding kit…"
-msgstr ""
-
-msgid "Could not add the kit. Please try again."
-msgstr ""
-
-#, php-format
-msgid "%s pcs"
-msgstr ""
-
-#, php-format
-msgid "%s each"
-msgstr ""
-
-msgid "Updating prices…"
-msgstr ""
-
-msgid "Bronze"
-msgstr ""
-
-msgid "Opal"
-msgstr ""
-
-msgid "Anthracite"
-msgstr ""
-
-msgid "Cut width"
-msgstr ""
-
-msgid "Cut length"
-msgstr ""
-
-msgid "Area"
-msgstr ""
-
-msgid "Terrace roof kit"
-msgstr ""
-
-msgid "Terrace calculator"
-msgstr ""
-
-msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
-msgstr ""
-
-msgid "Where the form appears"
-msgstr ""
-
-msgid "Show calculator on"
-msgstr ""
-
-msgid "Every product page"
-msgstr ""
-
-msgid "Only the products selected below"
-msgstr ""
-
-msgid "Only products with the calculator checkbox enabled"
-msgstr ""
-
-msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
-msgstr ""
-
-msgid "Selected products"
-msgstr ""
-
-msgid "Search products…"
-msgstr ""
-
-msgid "Behaviour"
-msgstr ""
-
-msgid "Default size (mm)"
-msgstr ""
-
-msgid "Default frame spacing (CC)"
-msgstr ""
-
-msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
-msgstr ""
-
-msgid "Support beam and sheet overhang"
-msgstr ""
-
-msgid "Beam width"
-msgstr ""
-
-msgid "Joint gap"
-msgstr ""
-
-msgid "Drip overhang"
-msgstr ""
-
-msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
-msgstr ""
-
-msgid "Limits (mm)"
-msgstr ""
-
-msgid "Width"
-msgstr ""
-
-msgid "Length"
-msgstr ""
-
-msgid "Show postcode field"
-msgstr ""
-
-msgid "Saved to the customer when the kit is added, so shipping can be quoted in the basket."
-msgstr ""
-
-msgid "Multiwall polycarbonate (custom-cut)"
-msgstr ""
-
-msgid "Solid polycarbonate (custom-cut)"
-msgstr ""
-
-msgid "Connecting profiles"
-msgstr ""
-
-msgid "Finish profiles"
-msgstr ""
-
-msgid "Sealing tapes, screws and extras"
-msgstr ""
-
-msgid "Ventilation / anti-dust tape"
-msgstr ""
-
-msgid "Neutral silicone"
-msgstr ""
-
-msgid "Ridge profile 2.2 m (gable)"
-msgstr ""
-
-msgid "End cap – silver / grey"
-msgstr ""
-
-msgid "End cap – brown"
-msgstr ""
-
-msgid "Type"
-msgstr ""
-
-msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
-msgstr ""
-
-msgid "Hide default add to cart"
-msgstr ""
-
-msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
-msgstr ""
-
-msgid "Support spacing is only a recommendation. The structural strength must be confirmed by the architect."
-msgstr ""
-
-msgid "A connecting profile is included on every rafter. If you do not want a connection profile on each rafter, please contact our support team for a custom roof project."
-msgstr ""
-
-#, php-format
-msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
-msgstr ""
-
-#, php-format
-msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
-msgstr ""
-
-#, php-format
-msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
-msgstr ""
-
-msgid "Shipping"
-msgstr ""
-
-msgid "One sheet covers the frame from edge to edge."
-msgstr ""
-
-#, php-format
-msgid "On a full bay, an outer sheet is %1$d mm wider than a middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint. The last piece is shorter when the spacing does not divide the frame evenly."
-msgstr ""
-
-msgid "Sheets"
-msgstr ""
-
-msgid "What kind of sheets do you want?"
-msgstr ""
-
-msgid "Custom cut by us"
-msgstr ""
-
-msgid "Standard sizes that you will cut yourself"
-msgstr ""
-
-msgid "Sheet structure"
-msgstr ""
-
-msgid "This thickness and colour is only available as a custom cut."
-msgstr ""
-
-msgid "6-wall"
-msgstr ""
-
-msgid "5-wall"
-msgstr ""
-
-msgid "3-wall"
-msgstr ""
-
-msgid "The shortest stock length that covers the frame plus the drip overhang is used."
-msgstr ""
-
-msgid "Standard sizes"
-msgstr ""
-
-msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
-msgstr ""
-
-msgid "Parent SKU"
-msgstr ""
-
-msgid "Standard sheet"
 msgstr ""
 
 #, php-format
@@ -494,13 +17,87 @@ msgid "%1$d × %2$d mm"
 msgstr ""
 
 #, php-format
-msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
+msgid "%1$d × %2$d mm (%3$s m²)"
 msgstr ""
 
-msgid "Rafter"
+#, php-format
+msgid "%d mm"
 msgstr ""
 
-msgid "Joints sit on the centre of a rafter."
+#, php-format
+msgid "%d sheets"
+msgstr ""
+
+#, php-format
+msgid "%s each"
+msgstr ""
+
+#, php-format
+msgid "%s m"
+msgstr ""
+
+#, php-format
+msgid "%s pcs"
+msgstr ""
+
+msgid "3-wall"
+msgstr ""
+
+msgid "5-wall"
+msgstr ""
+
+msgid "6-wall"
+msgstr ""
+
+msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile."
+msgstr ""
+
+#, php-format
+msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
+msgstr ""
+
+#, php-format
+msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
+msgstr ""
+
+msgid "Add kit to basket"
+msgstr ""
+
+msgid "Adding kit…"
+msgstr ""
+
+msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
+msgstr ""
+
+msgid "Also available"
+msgstr ""
+
+#, php-format
+msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
+msgstr ""
+
+msgid "Anthracite"
+msgstr ""
+
+msgid "Area"
+msgstr ""
+
+msgid "Attached to a wall"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Bar on every rafter"
+msgstr ""
+
+msgid "Beam width"
+msgstr ""
+
+msgid "Behaviour"
+msgstr ""
+
+msgid "Best insulation"
 msgstr ""
 
 #, php-format
@@ -508,42 +105,64 @@ msgid "Both side sheets are %d mm."
 msgstr ""
 
 #, php-format
-msgid "The side sheets are %1$d mm and %2$d mm."
-msgstr ""
-
-#, php-format
-msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
-msgstr ""
-
-#, php-format
-msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
-msgstr ""
-
-
-msgid "Enter one side, from the ridge to the eave. Both sides are included."
-msgstr ""
-
-#, php-format
 msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
 msgstr ""
 
-
-msgid "Width along the gable"
+msgid "Bronze"
 msgstr ""
 
-msgid "Length of one side (ridge to eave)"
+msgid "Brown"
 msgstr ""
 
-msgid "Ridge"
+msgid "Buttons = sheets × ceil(sheet length ÷ spacing), then rounded up to packs. Map a product below; leave the product empty to hide this line from customers."
 msgstr ""
 
-msgid "How the calculator counts products"
+msgid "Calculator steps"
 msgstr ""
 
-msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgid "Cart is not available."
 msgstr ""
 
-msgid "Polycarbonate sheets"
+msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
+msgstr ""
+
+msgid "Choose thickness. We prefill a safe support spacing for you."
+msgstr ""
+
+msgid "Clamping profile"
+msgstr ""
+
+msgid "Clamping profile end cap"
+msgstr ""
+
+msgid "Clamping profile with lid"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Colour"
+msgstr ""
+
+msgid "Connecting and edge profiles with end caps where needed"
+msgstr ""
+
+msgid "Connecting profile"
+msgstr ""
+
+msgid "Connecting profiles"
+msgstr ""
+
+msgid "Connecting profiles and screws"
+msgstr ""
+
+msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening."
+msgstr ""
+
+msgid "Continue"
+msgstr ""
+
+msgid "Could not add the kit. Please try again."
 msgstr ""
 
 msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
@@ -552,41 +171,517 @@ msgstr ""
 msgid "Custom cut, optimal. The same rafters are drawn, but one sheet covers as many bays as the width allows. A joint and a connecting profile are added only where those sheets meet. A solid sheet never spans more than 2050 mm, so the 3050 mm side stays the length. Multiwall uses the widest stock width for that thickness and colour. 2100 mm is the usual width. 40 mm clear is 1230 mm. 16 mm clear keeps its 6-wall, 5-wall and 3-wall widths separate, and the widest of those is used."
 msgstr ""
 
-msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgid "Cut length"
 msgstr ""
 
-msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+#, php-format
+msgid "Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
 msgstr ""
 
-msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgid "Cut to size by us"
 msgstr ""
 
-msgid "Connecting profiles and screws"
+msgid "Cut width"
 msgstr ""
 
-msgid "Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps."
+#, php-format
+msgid "Cut widths: %s."
+msgstr ""
+
+msgid "Default frame spacing (CC)"
+msgstr ""
+
+msgid "Default is every product page so the form is visible without extra setup. Switch to selected/checkbox once you have chosen the terrace products. Shortcode: [nh_terrace_calculator]."
+msgstr ""
+
+msgid "Default size (mm)"
+msgstr ""
+
+msgid "Drip overhang"
+msgstr ""
+
+msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
+msgstr ""
+
+msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
+msgstr ""
+
+msgid "Edge / finish profile"
+msgstr ""
+
+msgid "End cap – brown"
+msgstr ""
+
+msgid "End cap – silver / grey"
+msgstr ""
+
+msgid "Enter a size to see the kit."
+msgstr ""
+
+msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
+msgstr ""
+
+msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
+msgstr ""
+
+msgid "Enter one side, from the ridge to the eave. Both sides are included."
+msgstr ""
+
+msgid "EPDM rubber gasket 50 mm"
+msgstr ""
+
+msgid "Every product page"
+msgstr ""
+
+msgid "F aluminium"
+msgstr ""
+
+msgid "Fewer joints"
+msgstr ""
+
+msgid "Finish profile"
+msgstr ""
+
+msgid "Finish profiles"
 msgstr ""
 
 msgid "Finish, wall and ridge"
 msgstr ""
 
-msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile."
+msgid "Fixing buttons"
+msgstr ""
+
+msgid "Fixing buttons (optional)"
+msgstr ""
+
+msgid "Fixings"
+msgstr ""
+
+msgid "Frame details (rafter spacing & beam width)"
+msgstr ""
+
+msgid "Gable"
+msgstr ""
+
+msgid "Hide default add to cart"
+msgstr ""
+
+msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
+msgstr ""
+
+msgid "How many joining bars do you want?"
+msgstr ""
+
+msgid "How should the sheets be supplied?"
+msgstr ""
+
+msgid "How the calculator counts products"
+msgstr ""
+
+msgid "Insulation sealing tape"
+msgstr ""
+
+msgid "Joining profiles"
+msgstr ""
+
+msgid "Joint gap"
+msgstr ""
+
+msgid "Joints are centred on the beam and leave this gap for the connecting profile (10 mm, so 5 mm off each sheet). Outer sheets run to the end of the frame. Sheets are cut this much longer than the frame so water drips clear of the front beam. 50 mm is the usual beam and the usual overhang; the customer can change both."
+msgstr ""
+
+msgid "Joints sit on the centre of a rafter."
+msgstr ""
+
+msgid "Kit"
+msgstr ""
+
+msgid "Kit total"
+msgstr ""
+
+msgid "L aluminium"
+msgstr ""
+
+msgid "Lean-to"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Length of one side (ridge to eave)"
+msgstr ""
+
+msgid "Light duty"
+msgstr ""
+
+msgid "Limits (mm)"
+msgstr ""
+
+msgid "Material"
+msgstr ""
+
+msgid "middle"
+msgstr ""
+
+msgid "Most terraces"
+msgstr ""
+
+msgid "Multiwall polycarbonate"
+msgstr ""
+
+msgid "Multiwall polycarbonate (custom-cut)"
+msgstr ""
+
+msgid "Neutral silicone"
+msgstr ""
+
+msgid "Neutral silicone Silirub PC"
+msgstr ""
+
+msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
+msgstr ""
+
+msgid "On a gable the entered length is one side, from the ridge to the eave, and it is counted twice before the overhang is added. That counted length chooses the stock length and the sheet cut. It does not double the number of connecting profiles."
+msgstr ""
+
+msgid "One sheet covers the frame from edge to edge."
+msgstr ""
+
+#, php-format
+msgid "One sheet covers the frame from edge to edge. Cut length %1$d mm (frame %2$d mm + %3$d mm overhang)."
+msgstr ""
+
+msgid "One side"
+msgstr ""
+
+msgid "Only products with the calculator checkbox enabled"
+msgstr ""
+
+msgid "Only the products selected below"
+msgstr ""
+
+msgid "Opal"
+msgstr ""
+
+msgid "Out of stock"
+msgstr ""
+
+msgid "outer"
+msgstr ""
+
+msgid "Pack size"
+msgstr ""
+
+msgid "Parent SKU"
+msgstr ""
+
+msgid "Pick live catalogue products for each kit slot. The calculator looks them up by SKU, so the same mapping works on every Norhage shop."
+msgstr ""
+
+msgid "Plastic H-profile"
+msgstr ""
+
+msgid "Please enter a valid width and length."
+msgstr ""
+
+msgid "Polycarbonate"
+msgstr ""
+
+msgid "Polycarbonate sheet"
+msgstr ""
+
+msgid "Polycarbonate sheets"
+msgstr ""
+
+msgid "Postal code (for shipping)"
+msgstr ""
+
+msgid "Profiles"
+msgstr ""
+
+msgid "Projection"
+msgstr ""
+
+msgid "Projection (wall to front)"
+msgstr ""
+
+msgid "Rafter"
+msgstr ""
+
+msgid "Ready to fit — joints land on supports"
+msgstr ""
+
+msgid "Recommendation only — confirm structural strength with your architect."
+msgstr ""
+
+#, php-format
+msgid "Recommended centre spacing for this thickness: %s mm."
+msgstr ""
+
+#, php-format
+msgid "Recommended spacing for this thickness is %1$d–%2$d mm. This roof uses %3$d mm centres (%4$d rafters)."
+msgstr ""
+
+msgid "Review kit"
+msgstr ""
+
+msgid "Review your kit"
+msgstr ""
+
+msgid "Ridge"
+msgstr ""
+
+msgid "Ridge profile 2.2 m"
+msgstr ""
+
+msgid "Ridge profile 2.2 m (gable)"
+msgstr ""
+
+msgid "Roof"
+msgstr ""
+
+msgid "Roof size"
+msgstr ""
+
+msgid "Roof type"
+msgstr ""
+
+msgid "Screw spacing (mm)"
+msgstr ""
+
+msgid "Screws for bars and edges, plus fixing buttons when mapped"
+msgstr ""
+
+msgid "Sealing"
+msgstr ""
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
+msgstr ""
+
+msgid "Sealing tapes, screws and extras"
+msgstr ""
+
+msgid "Search products…"
+msgstr ""
+
+msgid "Selected products"
+msgstr ""
+
+msgid "Sheet overhang must be between 0 and 300 mm."
+msgstr ""
+
+msgid "Sheet structure"
+msgstr ""
+
+msgid "Sheets"
+msgstr ""
+
+msgid "Sheets cut so every joint lands on a support centre"
+msgstr ""
+
+#, php-format
+msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
+msgstr ""
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr ""
+
+msgid "Show calculator on"
+msgstr ""
+
+msgid "Show postcode field"
+msgstr ""
+
+msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
+msgstr ""
+
+msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
+msgstr ""
+
+msgid "Silicone metres per tube"
+msgstr ""
+
+msgid "Silver"
+msgstr ""
+
+msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
+msgstr ""
+
+msgid "Solid polycarbonate"
+msgstr ""
+
+msgid "Solid polycarbonate (custom-cut)"
+msgstr ""
+
+#, php-format
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
+msgstr ""
+
+msgid "Some items are not in this shop (SKU not found). The rest can still be added."
+msgstr ""
+
+msgid "Spacing along each sheet"
+msgstr ""
+
+#, php-format
+msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
+msgstr ""
+
+msgid "Standard plates"
+msgstr ""
+
+msgid "Standard sheet"
+msgstr ""
+
+msgid "Standard sizes"
+msgstr ""
+
+msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
+msgstr ""
+
+msgid "Stiffer roof, more profiles and screws."
+msgstr ""
+
+msgid "Suggested thickness"
+msgstr ""
+
+msgid "Support beam and sheet overhang"
+msgstr ""
+
+msgid "Support beam width"
+msgstr ""
+
+msgid "Support spacing (centre to centre)"
+msgstr ""
+
+msgid "Tape roll length"
+msgstr ""
+
+msgid "Tape, silicone and wall length"
 msgstr ""
 
 msgid "Tapes, gasket and silicone"
 msgstr ""
 
-msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube."
+msgid "Terrace calculator"
+msgstr ""
+
+msgid "Terrace roof calculator"
+msgstr ""
+
+msgid "Terrace roof kit"
+msgstr ""
+
+msgid "Terrace roof kit added to basket."
+msgstr ""
+
+msgid "The cut diagram appears once the size is valid."
+msgstr ""
+
+#, php-format
+msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
+msgstr ""
+
+msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
 msgstr ""
 
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
 msgstr ""
 
+#, php-format
+msgid "The side sheets are %1$d mm and %2$d mm."
+msgstr ""
+
+msgid "Thickness"
+msgstr ""
+
+msgid "This thickness and colour is only available as a custom cut."
+msgstr ""
+
 msgid "This thickness and colour is out of stock."
+msgstr ""
+
+msgid "Three short steps: measure the roof, choose sheets and profiles, then add a complete kit — sheets, profiles, tapes, screws and sealant."
+msgstr ""
+
+msgid "Total excl. VAT"
+msgstr ""
+
+msgid "Total incl. VAT"
+msgstr ""
+
+msgid "Two slopes from a ridge"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "U aluminium"
+msgstr ""
+
+msgid "U plastic"
+msgstr ""
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr ""
+
+msgid "Updating prices…"
+msgstr ""
+
+msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr ""
 
 msgid "Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well."
 msgstr ""
 
-msgid "Out of stock"
+msgid "VAT"
 msgstr ""
+
+msgid "Ventilation / anti-dust tape"
+msgstr ""
+
+msgid "Ventilation and sealing tapes, gasket and neutral silicone"
+msgstr ""
+
+msgid "Ventilation sealing tape"
+msgstr ""
+
+msgid "Wall / ridge"
+msgstr ""
+
+msgid "Wall / ridge piece"
+msgstr ""
+
+msgid "Wall profile 2.2 m"
+msgstr ""
+
+msgid "We pick the shortest stock length that covers the frame plus the drip overhang."
+msgstr ""
+
+msgid "Where the form appears"
+msgstr ""
+
+msgid "Wider sheets, lower profile cost. Joints still sit on rafters."
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Width along the gable"
+msgstr ""
+
+msgid "Width along the wall"
+msgstr ""
+
+msgid "Wood screws with washers"
+msgstr ""
+
+msgid "You cut them yourself"
+msgstr ""
+
+msgid "Your kit"
+msgstr ""
+
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
+msgstr ""
+
