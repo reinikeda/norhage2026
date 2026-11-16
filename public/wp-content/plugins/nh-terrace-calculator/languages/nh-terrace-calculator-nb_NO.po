@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:48+0000\n"
+"PO-Revision-Date: 2026-11-16 13:51+0000\n"
 "Language: nb_NO\n"
 "Language-Team: Norwegian Bokmål\n"
 "MIME-Version: 1.0\n"
@@ -42,6 +42,7 @@ msgstr "%s m"
 msgid "%s pcs"
 msgstr "%s stk"
 
+#, php-format
 msgid "3-wall"
 msgstr "3-veggs"
 
@@ -65,6 +66,7 @@ msgstr "En plate ville blitt bredere enn lagerbredden på %d mm. Reduser lekteav
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "En massiv polykarbonatplate er %1$d × %2$d mm og kan snus begge veier. Dette stykket er likevel for bredt. Reduser lekteavstanden."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Legg settet i handlekurven"
 
@@ -72,13 +74,13 @@ msgstr "Legg settet i handlekurven"
 msgid "Adding kit…"
 msgstr "Legger til settet…"
 
-#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle tre skrueantall legges sammen og avrundes opp til pakker. Forbindelsesprofiler trenger vanligvis tettere avstand enn kantlister."
 
 msgid "along the gable"
 msgstr "langs gavlen"
 
+#, php-format
 msgid "along the wall"
 msgstr "langs veggen"
 
@@ -102,6 +104,7 @@ msgstr "Festet til en vegg"
 msgid "Back"
 msgstr "Tilbake"
 
+#, php-format
 msgid "Bar on every rafter"
 msgstr "Profil på hver taksperre"
 
@@ -179,6 +182,7 @@ msgstr "Forbindelsesprofiler tilsvarer skjøtene på tvers: én færre enn plate
 msgid "Continue"
 msgstr "Fortsett"
 
+#, php-format
 msgid "Could not add the kit. Please try again."
 msgstr "Kunne ikke legge til settet. Prøv igjen."
 
@@ -291,6 +295,9 @@ msgstr "Skjul vanlig legg i handlekurv"
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Skjul det vanlige kjøpsskjemaet. Kundene bruker tilbudet på settet i stedet."
 
+msgid "how far the roof sticks out from the wall"
+msgstr "hvor langt taket stikker ut fra veggen"
+
 msgid "How many joining bars do you want?"
 msgstr "Hvor mange sammenføyningsprofiler ønsker du?"
 
@@ -336,6 +343,9 @@ msgstr "Lengde på én side (møne til raft)"
 msgid "length of one slope"
 msgstr "lengde på den ene skråningen"
 
+msgid "length of one sloping side"
+msgstr "lengde på den ene skrå siden"
+
 msgid "Light duty"
 msgstr "Lett belastning"
 
@@ -344,6 +354,12 @@ msgstr "Grenser (mm)"
 
 msgid "Material"
 msgstr "Materiale"
+
+msgid "measure across the front of the roof"
+msgstr "mål på tvers av takets front"
+
+msgid "measure along the house wall"
+msgstr "mål langs husveggen"
 
 msgid "middle"
 msgstr "midt"
@@ -360,6 +376,7 @@ msgstr "Kanalplast (tilkappet)"
 msgid "Neutral silicone"
 msgstr "Nøytral silikon"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Nøytral silikon Silirub PC"
 
@@ -433,6 +450,7 @@ msgstr "Profiler"
 msgid "Projection"
 msgstr "Utstikk"
 
+#, php-format
 msgid "Projection (wall to front)"
 msgstr "Utstikk (vegg til front)"
 
@@ -501,6 +519,7 @@ msgstr "Søk etter produkter…"
 msgid "Selected products"
 msgstr "Valgte produkter"
 
+#, php-format
 msgid "Sheet overhang must be between 0 and 300 mm."
 msgstr "Plateoverhenget må være mellom 0 og 300 mm."
 
@@ -538,6 +557,7 @@ msgstr "Vis terrassetak-kalkulatoren på denne produktsiden (brukes når visning
 msgid "Silicone metres per tube"
 msgstr "Silikonmeter per tube"
 
+#, php-format
 msgid "Silver"
 msgstr "Sølv"
 
@@ -608,6 +628,7 @@ msgstr "Tape, pakning og silikon"
 msgid "Terrace calculator"
 msgstr "Terrassekalkulator"
 
+#, php-format
 msgid "Terrace roof calculator"
 msgstr "Terrassetak-kalkulator"
 

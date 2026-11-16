@@ -181,8 +181,8 @@ class NH_TC_Render {
 										decoding="async"
 									>
 									<figcaption class="nh-tc__measure-keys">
-										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'along the wall', NH_TC_TD ); ?></span>
-										<span><strong><?php esc_html_e( 'Projection', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'out from the wall', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'measure along the house wall', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'Projection', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'how far the roof sticks out from the wall', NH_TC_TD ); ?></span>
 									</figcaption>
 								</figure>
 								<figure class="nh-tc__measure-block" data-measure-gable hidden>
@@ -196,8 +196,8 @@ class NH_TC_Render {
 										decoding="async"
 									>
 									<figcaption class="nh-tc__measure-keys">
-										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'along the gable', NH_TC_TD ); ?></span>
-										<span><strong><?php esc_html_e( 'One side', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'length of one slope', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'measure across the front of the roof', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'One side', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'length of one sloping side', NH_TC_TD ); ?></span>
 									</figcaption>
 								</figure>
 							</div>

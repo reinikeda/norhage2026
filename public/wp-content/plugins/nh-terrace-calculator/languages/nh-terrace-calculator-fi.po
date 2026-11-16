@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:48+0000\n"
+"PO-Revision-Date: 2026-11-16 13:51+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -42,6 +42,7 @@ msgstr "%s m"
 msgid "%s pcs"
 msgstr "%s kpl"
 
+#, php-format
 msgid "3-wall"
 msgstr "3-seinäinen"
 
@@ -65,6 +66,7 @@ msgstr "Levy olisi leveämpi kuin %d mm:n varastokoko. Pienennä koolausväliä,
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin päin tahansa. Tämä kappale on silti liian leveä. Pienennä koolausväliä."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Lisää sarja ostoskoriin"
 
@@ -72,13 +74,13 @@ msgstr "Lisää sarja ostoskoriin"
 msgid "Adding kit…"
 msgstr "Lisätään sarjaa…"
 
-#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Kaikki kolme ruuvimäärää lasketaan yhteen ja pyöristetään ylös pakkauksiin. Liitosprofiilit tarvitsevat yleensä tiheämmän välin kuin reunalistat."
 
 msgid "along the gable"
 msgstr "päätyä pitkin"
 
+#, php-format
 msgid "along the wall"
 msgstr "seinää pitkin"
 
@@ -102,6 +104,7 @@ msgstr "Kiinnitetty seinään"
 msgid "Back"
 msgstr "Takaisin"
 
+#, php-format
 msgid "Bar on every rafter"
 msgstr "Profiili jokaisella tuella"
 
@@ -179,6 +182,7 @@ msgstr "Liitosprofiilit vastaavat leveyden saumoja: yksi vähemmän kuin levyjä
 msgid "Continue"
 msgstr "Jatka"
 
+#, php-format
 msgid "Could not add the kit. Please try again."
 msgstr "Sarjaa ei voitu lisätä. Yritä uudelleen."
 
@@ -291,6 +295,9 @@ msgstr "Piilota tavallinen lisää ostoskoriin"
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Piilota tavallinen ostolomake. Asiakkaat käyttävät sen sijaan sarjatarjousta."
 
+msgid "how far the roof sticks out from the wall"
+msgstr "kuinka pitkälle katto ulottuu seinästä"
+
 msgid "How many joining bars do you want?"
 msgstr "Kuinka monta liitospalkkia haluat?"
 
@@ -336,6 +343,9 @@ msgstr "Yhden lappeen pituus (harjalta räystäälle)"
 msgid "length of one slope"
 msgstr "yhden lappeen pituus"
 
+msgid "length of one sloping side"
+msgstr "yhden vinon sivun pituus"
+
 msgid "Light duty"
 msgstr "Kevyt käyttö"
 
@@ -344,6 +354,12 @@ msgstr "Rajat (mm)"
 
 msgid "Material"
 msgstr "Materiaali"
+
+msgid "measure across the front of the roof"
+msgstr "mittaa katon etureunaa pitkin"
+
+msgid "measure along the house wall"
+msgstr "mittaa talon seinää pitkin"
 
 msgid "middle"
 msgstr "keski"
@@ -360,6 +376,7 @@ msgstr "Kennopolykarbonaatti (määrämittaan)"
 msgid "Neutral silicone"
 msgstr "Neutraali silikoni"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutraali silikoni Silirub PC"
 
@@ -433,6 +450,7 @@ msgstr "Profiilit"
 msgid "Projection"
 msgstr "Ulottuma"
 
+#, php-format
 msgid "Projection (wall to front)"
 msgstr "Ulottuma (seinästä etureunaan)"
 
@@ -501,6 +519,7 @@ msgstr "Hae tuotteita…"
 msgid "Selected products"
 msgstr "Valitut tuotteet"
 
+#, php-format
 msgid "Sheet overhang must be between 0 and 300 mm."
 msgstr "Levyn ylityksen on oltava 0–300 mm."
 
@@ -538,6 +557,7 @@ msgstr "Näytä terassikattolaskuri tällä tuotesivulla (käytössä, kun näyt
 msgid "Silicone metres per tube"
 msgstr "Silikonimetriä per tuubi"
 
+#, php-format
 msgid "Silver"
 msgstr "Hopea"
 
@@ -608,6 +628,7 @@ msgstr "Teipit, tiiviste ja silikoni"
 msgid "Terrace calculator"
 msgstr "Terassilaskuri"
 
+#, php-format
 msgid "Terrace roof calculator"
 msgstr "Terassikattolaskuri"
 

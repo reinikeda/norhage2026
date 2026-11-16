@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:48+0000\n"
+"PO-Revision-Date: 2026-11-16 13:51+0000\n"
 "Language: lt_LT\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
@@ -42,6 +42,7 @@ msgstr "%s m"
 msgid "%s pcs"
 msgstr "%s vnt."
 
+#, php-format
 msgid "3-wall"
 msgstr "3 sienelių"
 
@@ -65,6 +66,7 @@ msgstr "Lakštas būtų platesnis už %d mm sandėlio plotį. Sumažinkite atram
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Monolitinio polikarbonato lakštas yra %1$d × %2$d mm ir gali būti pasuktas bet kuria kryptimi. Ši dalis vis tiek per plati. Sumažinkite atramų žingsnį."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Įdėti komplektą į krepšelį"
 
@@ -72,13 +74,13 @@ msgstr "Įdėti komplektą į krepšelį"
 msgid "Adding kit…"
 msgstr "Dedamas komplektas…"
 
-#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Visi trys varžtų kiekiai sudedami ir apvalinami iki pakuočių. Jungiamiesiems profiliams paprastai reikia tankesnio žingsnio nei kraštinėms juostoms."
 
 msgid "along the gable"
 msgstr "išilgai frontono"
 
+#, php-format
 msgid "along the wall"
 msgstr "išilgai sienos"
 
@@ -102,6 +104,7 @@ msgstr "Tvirtinama prie sienos"
 msgid "Back"
 msgstr "Atgal"
 
+#, php-format
 msgid "Bar on every rafter"
 msgstr "Profilis ant kiekvienos gegnės"
 
@@ -179,6 +182,7 @@ msgstr "Jungiamieji profiliai atitinka jungtis skersai: vienu mažiau nei plokš
 msgid "Continue"
 msgstr "Tęsti"
 
+#, php-format
 msgid "Could not add the kit. Please try again."
 msgstr "Komplekto įdėti nepavyko. Bandykite dar kartą."
 
@@ -291,6 +295,9 @@ msgstr "Slėpti įprastą įdėjimą į krepšelį"
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Slėpti įprastą pirkimo formą. Klientai naudoja komplekto pasiūlymą."
 
+msgid "how far the roof sticks out from the wall"
+msgstr "kiek toli stogas išsikiša nuo sienos"
+
 msgid "How many joining bars do you want?"
 msgstr "Kiek sujungimo profilių norite?"
 
@@ -336,6 +343,9 @@ msgstr "Vieno šlaito ilgis (nuo kraigo iki karnizo)"
 msgid "length of one slope"
 msgstr "vienos šlaito pusės ilgis"
 
+msgid "length of one sloping side"
+msgstr "vienos nuožulnios pusės ilgis"
+
 msgid "Light duty"
 msgstr "Lengva apkrova"
 
@@ -344,6 +354,12 @@ msgstr "Ribos (mm)"
 
 msgid "Material"
 msgstr "Medžiaga"
+
+msgid "measure across the front of the roof"
+msgstr "matuokite skersai stogo priekį"
+
+msgid "measure along the house wall"
+msgstr "matuokite išilgai namo sienos"
 
 msgid "middle"
 msgstr "vidurinis"
@@ -360,6 +376,7 @@ msgstr "Kanalinis polikarbonatas (pagal matmenis)"
 msgid "Neutral silicone"
 msgstr "Neutralus silikonas"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralus silikonas Silirub PC"
 
@@ -433,6 +450,7 @@ msgstr "Profiliai"
 msgid "Projection"
 msgstr "Išsikišimas"
 
+#, php-format
 msgid "Projection (wall to front)"
 msgstr "Išsikišimas (nuo sienos iki krašto)"
 
@@ -501,6 +519,7 @@ msgstr "Ieškoti prekių…"
 msgid "Selected products"
 msgstr "Pasirinktos prekės"
 
+#, php-format
 msgid "Sheet overhang must be between 0 and 300 mm."
 msgstr "Lakšto užlaida turi būti nuo 0 iki 300 mm."
 
@@ -538,6 +557,7 @@ msgstr "Rodyti terasos stogo skaičiuoklę šiame prekės puslapyje (kai rodymo 
 msgid "Silicone metres per tube"
 msgstr "Silikono metrai vienam tūbeliui"
 
+#, php-format
 msgid "Silver"
 msgstr "Sidabrinė"
 
@@ -608,6 +628,7 @@ msgstr "Juostos, tarpinė ir silikonas"
 msgid "Terrace calculator"
 msgstr "Terasos skaičiuoklė"
 
+#, php-format
 msgid "Terrace roof calculator"
 msgstr "Terasos stogo skaičiuoklė"
 

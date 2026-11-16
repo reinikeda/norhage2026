@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: nh-terrace-calculator 1.5.2\n"
-"PO-Revision-Date: 2026-11-16 13:48+0000\n"
+"PO-Revision-Date: 2026-11-16 13:51+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -42,6 +42,7 @@ msgstr "%s m"
 msgid "%s pcs"
 msgstr "%s Stk."
 
+#, php-format
 msgid "3-wall"
 msgstr "3-Steg"
 
@@ -65,6 +66,7 @@ msgstr "Eine Platte wäre breiter als die Lagerbreite von %d mm. Verringern Sie 
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedreht werden. Dieses Stück ist trotzdem zu breit. Verringern Sie den Trägerabstand."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Set in den Warenkorb"
 
@@ -72,13 +74,13 @@ msgstr "Set in den Warenkorb"
 msgid "Adding kit…"
 msgstr "Set wird hinzugefügt…"
 
-#, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle drei Schraubenmengen werden addiert und auf Packungen aufgerundet. Verbindungsprofile brauchen meist einen engeren Abstand als Kantenprofile."
 
 msgid "along the gable"
 msgstr "entlang dem Giebel"
 
+#, php-format
 msgid "along the wall"
 msgstr "entlang der Wand"
 
@@ -102,6 +104,7 @@ msgstr "An einer Wand befestigt"
 msgid "Back"
 msgstr "Zurück"
 
+#, php-format
 msgid "Bar on every rafter"
 msgstr "Profil auf jedem Sparren"
 
@@ -179,6 +182,7 @@ msgstr "Verbindungsprofile entsprechen den Stößen über die Breite: eines weni
 msgid "Continue"
 msgstr "Weiter"
 
+#, php-format
 msgid "Could not add the kit. Please try again."
 msgstr "Das Set konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut."
 
@@ -291,6 +295,9 @@ msgstr "Standard-Schaltfläche ausblenden"
 msgid "Hide the normal add-to-cart form; customers use the kit offer instead."
 msgstr "Das normale Kauf-Formular ausblenden. Kunden nutzen stattdessen das Set-Angebot."
 
+msgid "how far the roof sticks out from the wall"
+msgstr "wie weit das Dach von der Wand absteht"
+
 msgid "How many joining bars do you want?"
 msgstr "Wie viele Verbindungsprofile möchten Sie?"
 
@@ -336,6 +343,9 @@ msgstr "Länge einer Seite (First zur Traufe)"
 msgid "length of one slope"
 msgstr "Länge einer Dachseite"
 
+msgid "length of one sloping side"
+msgstr "Länge einer schrägen Seite"
+
 msgid "Light duty"
 msgstr "Leichte Beanspruchung"
 
@@ -344,6 +354,12 @@ msgstr "Grenzen (mm)"
 
 msgid "Material"
 msgstr "Material"
+
+msgid "measure across the front of the roof"
+msgstr "über die Vorderseite des Dachs messen"
+
+msgid "measure along the house wall"
+msgstr "entlang der Hauswand messen"
 
 msgid "middle"
 msgstr "Mitte"
@@ -360,6 +376,7 @@ msgstr "Stegplatte (Zuschnitt)"
 msgid "Neutral silicone"
 msgstr "Neutralvernetzendes Silikon"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralvernetzendes Silikon Silirub PC"
 
@@ -433,6 +450,7 @@ msgstr "Profile"
 msgid "Projection"
 msgstr "Ausladung"
 
+#, php-format
 msgid "Projection (wall to front)"
 msgstr "Ausladung (Wand bis Vorderkante)"
 
@@ -501,6 +519,7 @@ msgstr "Produkte suchen…"
 msgid "Selected products"
 msgstr "Ausgewählte Produkte"
 
+#, php-format
 msgid "Sheet overhang must be between 0 and 300 mm."
 msgstr "Der Plattenüberstand muss zwischen 0 und 300 mm liegen."
 
@@ -538,6 +557,7 @@ msgstr "Terrassendach-Rechner auf dieser Produktseite anzeigen (wenn der Anzeige
 msgid "Silicone metres per tube"
 msgstr "Silikonmeter pro Tube"
 
+#, php-format
 msgid "Silver"
 msgstr "Silber"
 
@@ -608,6 +628,7 @@ msgstr "Bänder, Dichtung und Silikon"
 msgid "Terrace calculator"
 msgstr "Terrassenrechner"
 
+#, php-format
 msgid "Terrace roof calculator"
 msgstr "Terrassendach-Rechner"
 
