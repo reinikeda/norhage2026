@@ -92,25 +92,6 @@ class NH_PSC_Catalog {
 				);
 				return array( $item );
 
-			case 'red_strip':
-				$sku  = isset( $settings['red_strips'][ $w ] ) ? $settings['red_strips'][ $w ] : '';
-				$item = self::resolve_product(
-					$line,
-					$sku,
-					sprintf(
-						/* translators: %d: strip width mm */
-						__( 'Red edge strip %d mm', NH_PSC_TD ),
-						(int) $w
-					)
-				);
-				$item['spec'] = sprintf(
-					/* translators: 1: strip pieces, 2: metres */
-					__( '%1$d strips · %2$s m', NH_PSC_TD ),
-					(int) ( $line['strip_count'] ?? 0 ),
-					self::fmt_m( $line['qty'] ?? 0 )
-				);
-				return array( $item );
-
 			case 'rail':
 				$sku  = isset( $settings['hardware']['rail'] ) ? $settings['hardware']['rail'] : '';
 				$item = self::resolve_product( $line, $sku, __( 'Hanging rail / bracket', NH_PSC_TD ) );

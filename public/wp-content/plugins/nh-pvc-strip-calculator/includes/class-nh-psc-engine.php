@@ -60,8 +60,6 @@ class NH_PSC_Engine {
 			$grade = 'standard';
 		}
 
-		$red_edges = ! empty( $input['red_edges'] );
-
 		$dims     = self::calc_dims( $mount, $width, $height, $strip_w, $settings );
 		$calc_w   = (int) $dims['width_mm'];
 		$calc_h   = (int) $dims['height_mm'];
@@ -81,17 +79,8 @@ class NH_PSC_Engine {
 		// Plastena / Extruflex simplified strip count: ceil(width × (1 + overlap) / strip_width).
 		$strip_count = max( 1, (int) ceil( $calc_w * ( 1 + $ot ) / $strip_w ) );
 
-		$clear_count = $strip_count;
-		$red_count   = 0;
-		if ( $red_edges ) {
-			$red_count   = min( 2, $strip_count );
-			$clear_count = max( 0, $strip_count - $red_count );
-		}
-
 		$thickness   = self::strip_thickness( $strip_w, $settings );
 		$metres_each = $calc_h / 1000;
-		$clear_m     = round( $clear_count * $metres_each, 3 );
-		$red_m       = round( $red_count * $metres_each, 3 );
 		$total_m     = round( $strip_count * $metres_each, 3 );
 		$area_m2     = round( ( $calc_w * $calc_h ) / 1000000, 3 );
 
@@ -99,14 +88,12 @@ class NH_PSC_Engine {
 		$rail_qty   = max( 1, (int) ceil( $calc_w / $rail_stock ) );
 		$hanger_qty = $strip_count * max( 1, (int) ( $settings['hanger_per_strip'] ?? 1 ) );
 
-		$lines = array();
-
-		if ( $clear_count > 0 ) {
-			$lines[] = array(
+		$lines = array(
+			array(
 				'role'            => 'strip',
-				'qty'             => $clear_m,
+				'qty'             => $total_m,
 				'unit'            => 'm',
-				'strip_count'     => $clear_count,
+				'strip_count'     => $strip_count,
 				'strip_width_mm'  => $strip_w,
 				'strip_thickness' => $thickness,
 				'length_mm'       => $calc_h,
@@ -115,60 +102,40 @@ class NH_PSC_Engine {
 					'type'  => $type,
 					'grade' => $grade,
 				),
-			);
-		}
-
-		if ( $red_count > 0 ) {
-			$lines[] = array(
-				'role'            => 'red_strip',
-				'qty'             => $red_m,
-				'unit'            => 'm',
-				'strip_count'     => $red_count,
-				'strip_width_mm'  => $strip_w,
-				'strip_thickness' => $thickness,
-				'length_mm'       => $calc_h,
-				'attrs'           => array(
-					'size' => $strip_w . 'x' . $thickness,
-				),
-			);
-		}
-
-		$lines[] = array(
-			'role'       => 'rail',
-			'qty'        => $rail_qty,
-			'cover_mm'   => $calc_w,
-			'stock_mm'   => $rail_stock,
-		);
-
-		$lines[] = array(
-			'role'           => 'hanger',
-			'qty'            => $hanger_qty,
-			'strip_width_mm' => $strip_w,
+			),
+			array(
+				'role'     => 'rail',
+				'qty'      => $rail_qty,
+				'cover_mm' => $calc_w,
+				'stock_mm' => $rail_stock,
+			),
+			array(
+				'role'           => 'hanger',
+				'qty'            => $hanger_qty,
+				'strip_width_mm' => $strip_w,
+			),
 		);
 
 		return array(
 			'ok'    => true,
 			'meta'  => array(
-				'mounting'            => $mount,
-				'width_mm'            => $width,
-				'height_mm'           => $height,
-				'calc_width_mm'       => $calc_w,
-				'calc_height_mm'      => $calc_h,
-				'strip_width_mm'      => $strip_w,
-				'strip_thickness_mm'  => $thickness,
-				'overlap'             => $overlap,
-				'overlap_pct'         => round( $ot * 100 ),
-				'strip_type'          => $type,
-				'grade'               => $grade,
-				'red_edges'           => $red_edges ? 1 : 0,
-				'strip_count'         => $strip_count,
-				'clear_count'         => $clear_count,
-				'red_count'           => $red_count,
-				'total_metres'        => $total_m,
-				'area_m2'             => $area_m2,
-				'recommended_width_mm'=> self::recommend_strip_width( $height, $settings ),
-				'rail_qty'            => $rail_qty,
-				'hanger_qty'          => $hanger_qty,
+				'mounting'             => $mount,
+				'width_mm'             => $width,
+				'height_mm'            => $height,
+				'calc_width_mm'        => $calc_w,
+				'calc_height_mm'       => $calc_h,
+				'strip_width_mm'       => $strip_w,
+				'strip_thickness_mm'   => $thickness,
+				'overlap'              => $overlap,
+				'overlap_pct'          => (int) round( $ot * 100 ),
+				'strip_type'           => $type,
+				'grade'                => $grade,
+				'strip_count'          => $strip_count,
+				'total_metres'         => $total_m,
+				'area_m2'              => $area_m2,
+				'recommended_width_mm' => self::recommend_strip_width( $height, $settings ),
+				'rail_qty'             => $rail_qty,
+				'hanger_qty'           => $hanger_qty,
 			),
 			'lines' => $lines,
 		);

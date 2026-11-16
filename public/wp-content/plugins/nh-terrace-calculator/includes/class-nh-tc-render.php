@@ -169,38 +169,6 @@ class NH_TC_Render {
 									<span class="nh-tc__choice-sub"><?php esc_html_e( 'Two slopes from a ridge', NH_TC_TD ); ?></span>
 								</label>
 							</div>
-							<div class="nh-tc__measure-guide" data-measure-guide>
-								<figure class="nh-tc__measure-block" data-measure-lean>
-									<img
-										class="nh-tc__measure-img"
-										src="<?php echo esc_url( NH_TC_URL . 'assets/img/measure-lean-to.jpg' ); ?>"
-										alt=""
-										width="960"
-										height="540"
-										loading="lazy"
-										decoding="async"
-									>
-									<figcaption class="nh-tc__measure-keys">
-										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'measure along the house wall', NH_TC_TD ); ?></span>
-										<span><strong><?php esc_html_e( 'Projection', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'how far the roof sticks out from the wall', NH_TC_TD ); ?></span>
-									</figcaption>
-								</figure>
-								<figure class="nh-tc__measure-block" data-measure-gable hidden>
-									<img
-										class="nh-tc__measure-img"
-										src="<?php echo esc_url( NH_TC_URL . 'assets/img/measure-gable.jpg' ); ?>"
-										alt=""
-										width="960"
-										height="540"
-										loading="lazy"
-										decoding="async"
-									>
-									<figcaption class="nh-tc__measure-keys">
-										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'measure across the front of the roof', NH_TC_TD ); ?></span>
-										<span><strong><?php esc_html_e( 'One side', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'length of one sloping side', NH_TC_TD ); ?></span>
-									</figcaption>
-								</figure>
-							</div>
 						</fieldset>
 
 						<fieldset class="nh-tc__card">

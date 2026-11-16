@@ -150,7 +150,6 @@ class NH_PSC_Ajax {
 			'overlap'        => self::pick( $src, 'overlap', array( 'min', 'med', 'max' ), 'med' ),
 			'strip_type'     => self::pick( $src, 'strip_type', array( 'smooth', 'ribbed', 'antistatic', 'frosted' ), 'smooth' ),
 			'grade'          => self::pick( $src, 'grade', array( 'standard', 'frost' ), 'standard' ),
-			'red_edges'      => ! empty( $src['red_edges'] ),
 			'postcode'       => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
