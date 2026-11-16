@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.1\n"
-"PO-Revision-Date: 2026-11-14 19:16+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.2\n"
+"PO-Revision-Date: 2026-11-16 13:48+0000\n"
 "Language: da_DK\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -45,6 +45,7 @@ msgstr "%s stk."
 msgid "3-wall"
 msgstr "3-lags"
 
+#, php-format
 msgid "5-wall"
 msgstr "5-lags"
 
@@ -67,12 +68,19 @@ msgstr "En massiv polykarbonatplade er %1$d × %2$d mm og kan vendes begge veje.
 msgid "Add kit to basket"
 msgstr "Læg sættet i kurven"
 
+#, php-format
 msgid "Adding kit…"
 msgstr "Lægger sættet i…"
 
 #, php-format
 msgid "All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims."
 msgstr "Alle tre skrueantal lægges sammen og afrundes op til pakker. Forbindelsesprofiler kræver normalt tættere afstand end kantlister."
+
+msgid "along the gable"
+msgstr "langs gavlen"
+
+msgid "along the wall"
+msgstr "langs væggen"
 
 #, php-format
 msgid "Also available"
@@ -97,6 +105,7 @@ msgstr "Tilbage"
 msgid "Bar on every rafter"
 msgstr "Profil på hvert spær"
 
+#, php-format
 msgid "Beam width"
 msgstr "Lægtebredde"
 
@@ -173,6 +182,7 @@ msgstr "Fortsæt"
 msgid "Could not add the kit. Please try again."
 msgstr "Kunne ikke lægge sættet i. Prøv igen."
 
+#, php-format
 msgid "Custom cut, on every rafter. The distance between the outer beam centres is the frame width minus the beam. That span is split into equal bays, and no bay is wider than the centre distance. Each bay is one sheet. The two side sheets run out to the ends of the frame. Sheets of the same width and length become one line, and the quantity is how many sheets share that size."
 msgstr "Tilpasset tilskæring, på hver lægte. Afstanden mellem centrum på de yderste lægter er rammebredden minus bjælken. Det spænd deles i lige fag, og ingen fag er bredere end centerafstanden. Hvert fag er én plade. De to sideplader går ud til rammens ender. Plader med samme bredde og længde bliver én linje, og antallet er hvor mange plader der har den størrelse."
 
@@ -323,6 +333,9 @@ msgstr "Længde"
 msgid "Length of one side (ridge to eave)"
 msgstr "Længde på én side (rygning til tagfod)"
 
+msgid "length of one slope"
+msgstr "længde af den ene skråning"
+
 msgid "Light duty"
 msgstr "Let belastning"
 
@@ -350,6 +363,7 @@ msgstr "Neutral silikone"
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutral silikone Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Der blev ikke fundet produkter, der passer til dette valg. Tjek SKU-koblingen i indstillingerne for terrasseberegneren."
 
@@ -376,6 +390,9 @@ msgstr "Kun de produkter, der er valgt nedenfor"
 
 msgid "Opal"
 msgstr "Opal"
+
+msgid "out from the wall"
+msgstr "ud fra væggen"
 
 msgid "Out of stock"
 msgstr "Udsoldt"
@@ -419,6 +436,7 @@ msgstr "Fremspring"
 msgid "Projection (wall to front)"
 msgstr "Fremspring (væg til forkant)"
 
+#, php-format
 msgid "Rafter"
 msgstr "Lægte"
 
@@ -486,6 +504,7 @@ msgstr "Valgte produkter"
 msgid "Sheet overhang must be between 0 and 300 mm."
 msgstr "Pladeudhænget skal være mellem 0 og 300 mm."
 
+#, php-format
 msgid "Sheet structure"
 msgstr "Kanalform"
 
@@ -522,6 +541,7 @@ msgstr "Silikonmeter pr. tube"
 msgid "Silver"
 msgstr "Sølv"
 
+#, php-format
 msgid "Solid length. When the run is longer than the blank, every sheet is split into equal pieces along the length. The line quantity is those pieces. The split does not add a connecting profile."
 msgstr "Massiv længde. Når løbet er længere end pladen, deles hver plade i lige stykker på langs. Linjeantallet er disse stykker. Delingen lægger ikke en forbindelsesprofil til."
 
@@ -591,6 +611,7 @@ msgstr "Terrasseberegner"
 msgid "Terrace roof calculator"
 msgstr "Terrassetag-beregner"
 
+#, php-format
 msgid "Terrace roof kit"
 msgstr "Terrassetag-sæt"
 

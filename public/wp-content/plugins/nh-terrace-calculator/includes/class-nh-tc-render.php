@@ -136,90 +136,70 @@ class NH_TC_Render {
 						<fieldset class="nh-tc__card">
 							<legend><?php esc_html_e( 'Roof type', NH_TC_TD ); ?></legend>
 							<div class="nh-tc__choices">
-								<label class="nh-tc__choice">
+								<label class="nh-tc__choice nh-tc__choice--photo">
 									<input type="radio" name="construction" value="single_slope" checked>
 									<span class="nh-tc__choice-art" aria-hidden="true">
-										<svg viewBox="0 0 96 64" width="96" height="64" focusable="false">
-											<defs>
-												<linearGradient id="nh-tc-lean-glass" x1="0" y1="0" x2="1" y2="1">
-													<stop offset="0%" stop-color="currentColor" stop-opacity=".08"/>
-													<stop offset="55%" stop-color="currentColor" stop-opacity=".22"/>
-													<stop offset="100%" stop-color="currentColor" stop-opacity=".12"/>
-												</linearGradient>
-											</defs>
-											<rect x="6" y="10" width="10" height="44" rx="1.5" fill="currentColor" opacity=".88"/>
-											<path d="M16 16 H78 L22 42 Z" fill="url(#nh-tc-lean-glass)" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-											<path d="M28 20.5 L24 35 M40 19 L32 34.5 M52 20 L40 34 M64 22.5 L48 33.5" stroke="currentColor" stroke-width="1" opacity=".28"/>
-											<path d="M18 42 H74" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".55"/>
-											<path d="M22 42 V52 M38 42 V52 M54 42 V52 M70 42 V50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".45"/>
-										</svg>
+										<img
+											class="nh-tc__choice-img"
+											src="<?php echo esc_url( NH_TC_URL . 'assets/img/roof-lean-to.jpg' ); ?>"
+											alt=""
+											width="720"
+											height="540"
+											loading="lazy"
+											decoding="async"
+										>
 									</span>
 									<span class="nh-tc__choice-title"><?php esc_html_e( 'Lean-to', NH_TC_TD ); ?></span>
 									<span class="nh-tc__choice-sub"><?php esc_html_e( 'Attached to a wall', NH_TC_TD ); ?></span>
 								</label>
-								<label class="nh-tc__choice">
+								<label class="nh-tc__choice nh-tc__choice--photo">
 									<input type="radio" name="construction" value="gable">
 									<span class="nh-tc__choice-art" aria-hidden="true">
-										<svg viewBox="0 0 96 64" width="96" height="64" focusable="false">
-											<defs>
-												<linearGradient id="nh-tc-gable-glass" x1="0" y1="0" x2="0" y2="1">
-													<stop offset="0%" stop-color="currentColor" stop-opacity=".2"/>
-													<stop offset="100%" stop-color="currentColor" stop-opacity=".08"/>
-												</linearGradient>
-											</defs>
-											<path d="M10 46 L48 12 L86 46 Z" fill="url(#nh-tc-gable-glass)" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-											<path d="M48 12 V46" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
-											<path d="M22 35.5 L48 18 M34 40.5 L48 24 M62 18 L74 35.5 M48 24 L66 40" stroke="currentColor" stroke-width="1" opacity=".28"/>
-											<path d="M14 46 H82" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/>
-											<path d="M20 46 V54 M36 46 V54 M60 46 V54 M76 46 V54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".4"/>
-										</svg>
+										<img
+											class="nh-tc__choice-img"
+											src="<?php echo esc_url( NH_TC_URL . 'assets/img/roof-gable.jpg' ); ?>"
+											alt=""
+											width="720"
+											height="540"
+											loading="lazy"
+											decoding="async"
+										>
 									</span>
 									<span class="nh-tc__choice-title"><?php esc_html_e( 'Gable', NH_TC_TD ); ?></span>
 									<span class="nh-tc__choice-sub"><?php esc_html_e( 'Two slopes from a ridge', NH_TC_TD ); ?></span>
 								</label>
 							</div>
-							<div class="nh-tc__measure-guide" data-measure-guide aria-hidden="true">
-								<svg class="nh-tc__measure-svg" data-measure-lean viewBox="0 0 340 156" width="340" height="156" focusable="false">
-									<defs>
-										<linearGradient id="nh-tc-guide-glass" x1="0" y1="0" x2="1" y2="1">
-											<stop offset="0%" stop-color="currentColor" stop-opacity=".07"/>
-											<stop offset="50%" stop-color="currentColor" stop-opacity=".2"/>
-											<stop offset="100%" stop-color="currentColor" stop-opacity=".1"/>
-										</linearGradient>
-										<marker id="nh-tc-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-											<path d="M0,0.5 L7,3.5 L0,6.5 Z" fill="currentColor"/>
-										</marker>
-									</defs>
-									<rect x="18" y="22" width="16" height="98" rx="2" fill="currentColor" opacity=".9"/>
-									<path d="M34 34 H286 L48 108 Z" fill="url(#nh-tc-guide-glass)" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-									<path d="M70 42 L58 96 M110 40 L78 96 M150 42 L100 94 M190 46 L124 92 M230 52 L150 90 M260 60 L174 86" stroke="currentColor" stroke-width="1.1" opacity=".22"/>
-									<path d="M42 108 H274" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".45"/>
-									<path d="M58 108 V124 M110 108 V124 M162 108 V124 M214 108 V124 M258 108 V120" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".35"/>
-									<path d="M42 138 H270" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-tc-arrow)" marker-end="url(#nh-tc-arrow)"/>
-									<path d="M302 40 V104" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-tc-arrow)" marker-end="url(#nh-tc-arrow)"/>
-									<text x="156" y="152" text-anchor="middle" class="nh-tc__measure-text"><?php esc_html_e( 'Width along the wall', NH_TC_TD ); ?></text>
-									<text x="322" y="78" text-anchor="middle" class="nh-tc__measure-text" transform="rotate(90 322 78)"><?php esc_html_e( 'Projection', NH_TC_TD ); ?></text>
-								</svg>
-								<svg class="nh-tc__measure-svg" data-measure-gable viewBox="0 0 340 156" width="340" height="156" focusable="false" hidden>
-									<defs>
-										<linearGradient id="nh-tc-guide-gable" x1="0" y1="0" x2="0" y2="1">
-											<stop offset="0%" stop-color="currentColor" stop-opacity=".2"/>
-											<stop offset="100%" stop-color="currentColor" stop-opacity=".07"/>
-										</linearGradient>
-										<marker id="nh-tc-arrow-g" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
-											<path d="M0,0.5 L7,3.5 L0,6.5 Z" fill="currentColor"/>
-										</marker>
-									</defs>
-									<path d="M36 112 L170 28 L304 112 Z" fill="url(#nh-tc-guide-gable)" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-									<path d="M170 28 V112" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-									<path d="M70 90 L170 42 M100 100 L170 55 M130 106 L170 72 M210 42 L270 90 M210 55 L250 100 M210 72 L230 106" stroke="currentColor" stroke-width="1.1" opacity=".22"/>
-									<path d="M48 112 H292" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".45"/>
-									<path d="M70 112 V128 M120 112 V128 M220 112 V128 M270 112 V128" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".35"/>
-									<path d="M48 140 H292" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-tc-arrow-g)" marker-end="url(#nh-tc-arrow-g)"/>
-									<path d="M318 36 V108" fill="none" stroke="currentColor" stroke-width="1.75" marker-start="url(#nh-tc-arrow-g)" marker-end="url(#nh-tc-arrow-g)"/>
-									<text x="170" y="152" text-anchor="middle" class="nh-tc__measure-text"><?php esc_html_e( 'Width along the gable', NH_TC_TD ); ?></text>
-									<text x="332" y="78" text-anchor="middle" class="nh-tc__measure-text" transform="rotate(90 332 78)"><?php esc_html_e( 'One side', NH_TC_TD ); ?></text>
-								</svg>
+							<div class="nh-tc__measure-guide" data-measure-guide>
+								<figure class="nh-tc__measure-block" data-measure-lean>
+									<img
+										class="nh-tc__measure-img"
+										src="<?php echo esc_url( NH_TC_URL . 'assets/img/measure-lean-to.jpg' ); ?>"
+										alt=""
+										width="960"
+										height="540"
+										loading="lazy"
+										decoding="async"
+									>
+									<figcaption class="nh-tc__measure-keys">
+										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'along the wall', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'Projection', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'out from the wall', NH_TC_TD ); ?></span>
+									</figcaption>
+								</figure>
+								<figure class="nh-tc__measure-block" data-measure-gable hidden>
+									<img
+										class="nh-tc__measure-img"
+										src="<?php echo esc_url( NH_TC_URL . 'assets/img/measure-gable.jpg' ); ?>"
+										alt=""
+										width="960"
+										height="540"
+										loading="lazy"
+										decoding="async"
+									>
+									<figcaption class="nh-tc__measure-keys">
+										<span><strong><?php esc_html_e( 'Width', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'along the gable', NH_TC_TD ); ?></span>
+										<span><strong><?php esc_html_e( 'One side', NH_TC_TD ); ?></strong> — <?php esc_html_e( 'length of one slope', NH_TC_TD ); ?></span>
+									</figcaption>
+								</figure>
 							</div>
 						</fieldset>
 
