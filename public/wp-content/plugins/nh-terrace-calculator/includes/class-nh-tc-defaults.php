@@ -729,7 +729,8 @@ class NH_TC_Defaults {
 
 	/**
 	 * Millimetres from a variation attribute such as "2100", "2100 mm" or "2100-mm".
-	 * A metre slug such as "6-m" is not a sheet size.
+	 * A metre slug such as "6-m" is not treated as millimetres here — use
+	 * sheet_dimension_mm() for stock sheet width/length terms.
 	 */
 	public static function millimetres_from_attribute( $value ) {
 		$raw = strtolower( trim( (string) $value ) );
@@ -751,11 +752,80 @@ class NH_TC_Defaults {
 	}
 
 	/**
+	 * Sheet width/length from a WooCommerce attribute: "2100", "2100 mm", "6-m",
+	 * "6 m", "2.1 m", or shop slugs such as "21-m" (2.1 m) and "105-m" (1.05 m).
+	 */
+	public static function sheet_dimension_mm( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		if ( '' === $raw ) {
+			return 0;
+		}
+		$slug = str_replace( array( '_', '–', '—', ' ' ), array( '-', '-', '-', '' ), $raw );
+		$slug = str_replace( ',', '.', $slug );
+
+		static $known = null;
+		if ( null === $known ) {
+			$known = array(
+				'1-m'   => 1000,
+				'1m'    => 1000,
+				'105-m' => 1050,
+				'105m'  => 1050,
+				'15-m'  => 1500,
+				'15m'   => 1500,
+				'2-m'   => 2000,
+				'2m'    => 2000,
+				'21-m'  => 2100,
+				'21m'   => 2100,
+				'22-m'  => 2200,
+				'22m'   => 2200,
+				'3-m'   => 3000,
+				'3m'    => 3000,
+				'4-m'   => 4000,
+				'4m'    => 4000,
+				'5-m'   => 5000,
+				'5m'    => 5000,
+				'6-m'   => 6000,
+				'6m'    => 6000,
+				'7-m'   => 7000,
+				'7m'    => 7000,
+			);
+		}
+		if ( isset( $known[ $slug ] ) ) {
+			return $known[ $slug ];
+		}
+
+		$literal = self::millimetres_from_attribute( $value );
+		if ( $literal >= 100 ) {
+			return $literal;
+		}
+
+		// "2.1m", "2,1-m", "6-m" (when not in the known map).
+		if ( preg_match( '/^(\d+(?:\.\d+)?)-?m$/', $slug, $match ) && false === strpos( $slug, 'mm' ) ) {
+			$n = (float) $match[1];
+			if ( $n >= 1 && $n <= 7 && abs( $n - (int) $n ) < 0.0001 ) {
+				return (int) ( $n * 1000 );
+			}
+			if ( $n >= 10 && $n <= 99 ) {
+				return (int) round( $n * 100 );
+			}
+			if ( $n >= 100 && $n <= 999 ) {
+				return (int) round( $n * 10 );
+			}
+			if ( $n > 0 && $n < 10 ) {
+				return (int) round( $n * 1000 );
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	/**
 	 * Keep the in-stock variations of one width map.
 	 *
 	 * A width that is not already in the catalog is left out. An extra in-stock
-	 * length on a known width is kept. A saved SKU is used only when the live
-	 * variation has no SKU of its own.
+	 * length on a known width is kept. Live variation SKUs (or variation IDs when
+	 * the shop left the SKU blank) replace empty saved slots.
 	 *
 	 * @param array<string, mixed> $widths
 	 * @param array<int, array<string, mixed>> $variations
@@ -793,7 +863,7 @@ class NH_TC_Defaults {
 				if ( ! isset( $live[ $width ][ $length ] ) ) {
 					continue;
 				}
-				$live_sku       = $live[ $width ][ $length ];
+				$live_sku        = $live[ $width ][ $length ];
 				$kept[ $length ] = '' !== $live_sku ? $live_sku : $saved;
 			}
 			foreach ( $live[ $width ] as $length => $live_sku ) {

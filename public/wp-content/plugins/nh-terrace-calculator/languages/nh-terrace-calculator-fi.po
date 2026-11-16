@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.5\n"
-"PO-Revision-Date: 2026-11-16 14:25+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
+"PO-Revision-Date: 2026-11-16 14:37+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -69,6 +69,7 @@ msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin
 msgid "Add kit to basket"
 msgstr "Lisää sarja ostoskoriin"
 
+#, php-format
 msgid "Adding kit…"
 msgstr "Lisätään sarjaa…"
 
@@ -95,6 +96,7 @@ msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulot
 msgid "Anthracite"
 msgstr "Antrasiitti"
 
+#, php-format
 msgid "Area"
 msgstr "Pinta-ala"
 
@@ -175,6 +177,7 @@ msgstr "Liitosprofiili"
 msgid "Connecting profiles"
 msgstr "Liitosprofiilit"
 
+#, php-format
 msgid "Connecting profiles and screws"
 msgstr "Liitosprofiilit ja ruuvit"
 
@@ -329,6 +332,9 @@ msgstr "Saumat osuvat palkin keskelle ja jättävät tämän välin liitosprofii
 msgid "Joints sit on the centre of a rafter."
 msgstr "Saumat osuvat koolauksen keskelle."
 
+msgid "Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead."
+msgstr "Säilytä emotuotteen SKU jokaiselle paksuudelle ja värille. Varianttikentät täytetään leveys × pituus -attribuuteista (myös metrimuodot kuten 6-m → 6000 mm). Jos variantilla ei ole SKU:ta, tallennetaan tuote-ID."
+
 msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
 msgstr "Säilytä emotuotteen SKU jokaiselle paksuudelle ja värille. Varianttien SKU:t täytetään automaattisesti tuotteen leveys × pituus -varianteista — syötä SKU vain, jos kokoa ei ole kaupassa."
 
@@ -380,6 +386,7 @@ msgstr "Useimmat terassit"
 msgid "Multiwall polycarbonate"
 msgstr "Kennopolykarbonaatti"
 
+#, php-format
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kennopolykarbonaatti (määrämittaan)"
 
@@ -395,10 +402,10 @@ msgstr "Neutraali silikoni"
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutraali silikoni Silirub PC"
 
-#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Tälle valinnalle ei löytynyt tuotteita. Tarkista SKU-kytkentä terassilaskurin asetuksista."
 
+#, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
 msgstr "Tälle emotuotteen SKU:lle ei vielä löytynyt sopivia leveys/pituus-variantteja."
 
@@ -459,6 +466,7 @@ msgstr "Polykarbonaattilevy"
 msgid "Polycarbonate sheets"
 msgstr "Polykarbonaattilevyt"
 
+#, php-format
 msgid "Postal code (for shipping)"
 msgstr "Postinumero (toimitusta varten)"
 
@@ -518,6 +526,9 @@ msgstr "Katon mitat"
 msgid "Roof type"
 msgstr "Kattotyyppi"
 
+msgid "Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness."
+msgstr "Tallenna sivu kerran emotuotteen SKU:iden jälkeen, jotta tyhjät kentät täyttyvät kaupasta. Kauppafrontti resolvoi varastolevyt myös emo + koko -yhdistelmällä, jos variantin SKU on tyhjä. Ruuvit ja teipit valitaan kennolevyn paksuuden mukaan."
+
 msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
 msgstr "Tallennus täyttää tyhjät kentät myös kaupasta. Loppuunmyydyt koot näkyvät täällä, mutta piilotetaan asiakkailta. Kennolevy: kokonaiset 2100 mm levyt, pituus täyteen metriin; massiivi: 2050 × 3050 mm."
 
@@ -533,6 +544,7 @@ msgstr "Tiivistys"
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Tiivistysteipit vain kennolevyille. Yksi tuuletus- ja yksi eristerulla kattavat levyjen leveydet; molempia lisätään yksi rulla, kun leveydet yhdessä ylittävät määritetyn rullan pituuden (oletus 5 m). Kumitiiviste seuraa kehää ja myydään kokonaisina metreinä. Silikonia yksi tuubi jokaista määritettyä kehämetriä kohti (oletus 10 m), vähintään yksi tuubi."
 
+#, php-format
 msgid "Sealing tapes, screws and extras"
 msgstr "Tiivisteteipit, ruuvit ja tarvikkeet"
 
@@ -573,6 +585,7 @@ msgstr "Näytä laskuri"
 msgid "Show postcode field"
 msgstr "Näytä postinumerokenttä"
 
+#, php-format
 msgid "Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket."
 msgstr "Näytä postinumerovaihe verkkokaupassa. Tallennetaan asiakkaalle, kun paketti lisätään, jotta toimitus voidaan hinnoitella korissa."
 
@@ -646,6 +659,7 @@ msgstr "Koolausväli (keskeltä keskelle)"
 msgid "Tape roll length"
 msgstr "Teippirullan pituus"
 
+#, php-format
 msgid "Tape, silicone and wall length"
 msgstr "Teippi, silikoni ja seinäpituus"
 

@@ -254,6 +254,7 @@ class NH_TC_Engine {
 				'pack_size' => $pack_size,
 				'attrs'     => array(
 					'dimensions' => self::screw_size( $thk, $settings ),
+					'thickness'  => $thk . '-mm',
 				),
 			);
 		}
@@ -303,26 +304,25 @@ class NH_TC_Engine {
 		}
 
 		if ( 'multiwall' === $material ) {
+			$tape_attrs = array(
+				'thickness' => $thk . '-mm',
+				'width'     => $tape_width . '-mm',
+				'length'    => '5-m',
+			);
 			$lines[] = array(
-				'role'         => 'vent_tape',
-				'qty'          => $tape_rolls,
-				'cover_mm'     => $end_width_mm,
-				'tape_width_mm'=> $tape_width,
-				'attrs'        => array(
-					'width'  => $tape_width . '-mm',
-					'length' => '5-m',
-				),
+				'role'          => 'vent_tape',
+				'qty'           => $tape_rolls,
+				'cover_mm'      => $end_width_mm,
+				'tape_width_mm' => $tape_width,
+				'attrs'         => $tape_attrs,
 			);
 
 			$lines[] = array(
-				'role'         => 'iso_tape',
-				'qty'          => $tape_rolls,
-				'cover_mm'     => $end_width_mm,
-				'tape_width_mm'=> $tape_width,
-				'attrs'        => array(
-					'width'  => $tape_width . '-mm',
-					'length' => '5-m',
-				),
+				'role'          => 'iso_tape',
+				'qty'           => $tape_rolls,
+				'cover_mm'      => $end_width_mm,
+				'tape_width_mm' => $tape_width,
+				'attrs'         => $tape_attrs,
 			);
 		}
 
@@ -1278,7 +1278,7 @@ class NH_TC_Engine {
 		if ( preg_match( '/^([\d.]+)mm/', $raw, $m ) ) {
 			return (int) round( (float) $m[1] );
 		}
-		if ( preg_match( '/^([\d.]+)m/', $raw, $m ) ) {
+		if ( preg_match( '/^([\d.]+)-?m$/', $raw, $m ) ) {
 			return (int) round( (float) $m[1] * 1000 );
 		}
 		return 0;

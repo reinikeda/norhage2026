@@ -175,34 +175,28 @@ class NH_TC_Catalog {
 	 * @return array<string, mixed>
 	 */
 	private static function resolve_stock_sheet( array $line ) {
-		$sku  = isset( $line['sku'] ) ? trim( (string) $line['sku'] ) : '';
-		$qty  = (int) $line['qty'];
-		$cut  = isset( $line['cut'] ) && is_array( $line['cut'] ) ? $line['cut'] : array();
-		$spec = sprintf(
+		$sku        = isset( $line['sku'] ) ? trim( (string) $line['sku'] ) : '';
+		$parent_sku = isset( $line['parent_sku'] ) ? trim( (string) $line['parent_sku'] ) : '';
+		$qty        = (int) $line['qty'];
+		$cut        = isset( $line['cut'] ) && is_array( $line['cut'] ) ? $line['cut'] : array();
+		$width_mm   = isset( $cut['width_mm'] ) ? (int) $cut['width_mm'] : 0;
+		$length_mm  = isset( $cut['length_mm'] ) ? (int) $cut['length_mm'] : 0;
+		$spec       = sprintf(
 			/* translators: 1: stock width in millimetres, 2: stock length in millimetres */
 			__( '%1$d × %2$d mm', NH_TC_TD ),
-			isset( $cut['width_mm'] ) ? (int) $cut['width_mm'] : 0,
-			isset( $cut['length_mm'] ) ? (int) $cut['length_mm'] : 0
+			$width_mm,
+			$length_mm
 		);
-		$empty         = self::empty_item( 'sheet', $sku, $qty, __( 'Polycarbonate sheet', NH_TC_TD ) );
+		$empty         = self::empty_item( 'sheet', $sku ? $sku : $parent_sku, $qty, __( 'Polycarbonate sheet', NH_TC_TD ) );
 		$empty['spec'] = $spec;
 		$empty['cut']  = $cut;
 
-		if ( ! $sku ) {
-			$empty['error'] = 'sku_missing';
-			return $empty;
+		$product = $sku ? self::product_by_sku( $sku ) : null;
+		if ( ! $product && $parent_sku ) {
+			$product = self::product_by_sku( $parent_sku );
 		}
-
-		$product = self::product_by_sku( $sku );
 		if ( ! $product ) {
-			$empty['error'] = 'not_found';
-			return $empty;
-		}
-
-		if ( ! $product->is_type( 'variable' ) && ! self::is_sellable( $product ) ) {
-			$empty['error']     = 'out_of_stock';
-			$empty['name']      = $product->get_name();
-			$empty['permalink'] = $product->get_permalink();
+			$empty['error'] = ( $sku || $parent_sku ) ? 'not_found' : 'sku_missing';
 			return $empty;
 		}
 
@@ -211,11 +205,29 @@ class NH_TC_Catalog {
 			$parent = $parent instanceof WC_Product ? $parent : $product;
 			$item   = self::build_item( $parent, $product->get_id(), $product->get_variation_attributes(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
 		} elseif ( $product->is_type( 'variable' ) ) {
-			$empty['error']     = 'variation_missing';
-			$empty['name']      = $product->get_name();
-			$empty['permalink'] = $product->get_permalink();
-			return $empty;
+			$found = ( $width_mm > 0 && $length_mm > 0 ) ? self::find_sheet_variation( $product, $width_mm, $length_mm ) : null;
+			if ( ! $found ) {
+				$empty['error']     = 'variation_missing';
+				$empty['name']      = $product->get_name();
+				$empty['permalink'] = $product->get_permalink();
+				return $empty;
+			}
+			$item = self::build_item(
+				$product,
+				(int) $found['variation_id'],
+				$found['attributes'],
+				$qty,
+				'sheet',
+				__( 'Polycarbonate sheet', NH_TC_TD ),
+				$found['product']
+			);
 		} else {
+			if ( ! self::is_sellable( $product ) ) {
+				$empty['error']     = 'out_of_stock';
+				$empty['name']      = $product->get_name();
+				$empty['permalink'] = $product->get_permalink();
+				return $empty;
+			}
 			$item = self::build_item( $product, 0, array(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
 		}
 
@@ -223,6 +235,61 @@ class NH_TC_Catalog {
 		$item['cut']        = $cut;
 		$item['custom_cut'] = 0;
 		return $item;
+	}
+
+	/**
+	 * Match a stock sheet variation by parsed width × length millimetres.
+	 *
+	 * @return array{variation_id:int,product:WC_Product,attributes:array<string,string>}|null
+	 */
+	public static function find_sheet_variation( WC_Product $product, $width_mm, $length_mm ) {
+		$width_mm  = (int) $width_mm;
+		$length_mm = (int) $length_mm;
+		if ( $width_mm < 1 || $length_mm < 1 || ! $product->is_type( 'variable' ) ) {
+			return null;
+		}
+		foreach ( $product->get_children() as $vid ) {
+			$vp = wc_get_product( $vid );
+			if ( ! $vp instanceof WC_Product || ! $vp->is_type( 'variation' ) ) {
+				continue;
+			}
+			$got_w = 0;
+			$got_l = 0;
+			foreach ( $vp->get_attributes() as $key => $val ) {
+				$key_l = strtolower( (string) $key );
+				$pair  = self::size_pair_from_attribute( $val );
+				if ( $pair ) {
+					if ( self::attr_key_matches( $key_l, 'width' ) ) {
+						$got_w = $pair[0];
+						$got_l = $pair[1];
+					} elseif ( self::attr_key_matches( $key_l, 'length' ) ) {
+						$got_w = $pair[1];
+						$got_l = $pair[0];
+					} else {
+						$got_w = $pair[0];
+						$got_l = $pair[1];
+					}
+					continue;
+				}
+				$mm = NH_TC_Defaults::sheet_dimension_mm( $val );
+				if ( $mm <= 0 ) {
+					continue;
+				}
+				if ( self::attr_key_matches( $key_l, 'width' ) ) {
+					$got_w = $mm;
+				} elseif ( self::attr_key_matches( $key_l, 'length' ) ) {
+					$got_l = $mm;
+				}
+			}
+			if ( $got_w === $width_mm && $got_l === $length_mm ) {
+				return array(
+					'variation_id' => (int) $vid,
+					'product'      => $vp,
+					'attributes'   => $vp->get_variation_attributes(),
+				);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -282,11 +349,23 @@ class NH_TC_Catalog {
 
 		if ( $product->is_type( 'variable' ) ) {
 			$found = self::find_variation( $product, $attrs );
+			// Hardware often varies by polycarbonate thickness; fall back to one key at a time.
+			if ( ! $found && count( $attrs ) > 1 ) {
+				foreach ( array( 'thickness', 'dimensions', 'width', 'length' ) as $key ) {
+					if ( empty( $attrs[ $key ] ) ) {
+						continue;
+					}
+					$found = self::find_variation( $product, array( $key => $attrs[ $key ] ) );
+					if ( $found ) {
+						break;
+					}
+				}
+			}
 			if ( ! $found ) {
-				$empty['error'] = 'variation_missing';
+				$empty['error']        = 'variation_missing';
 				$empty['wanted_attrs'] = $attrs;
-				$empty['name'] = $product->get_name();
-				$empty['permalink'] = $product->get_permalink();
+				$empty['name']         = $product->get_name();
+				$empty['permalink']    = $product->get_permalink();
 				return $empty;
 			}
 			$variation_id = (int) $found['variation_id'];
@@ -374,7 +453,7 @@ class NH_TC_Catalog {
 				foreach ( $attrs as $key => $val ) {
 					$val   = (string) $val;
 					$key_l = strtolower( $key );
-					if ( $val !== $want && $val !== str_replace( '_', '-', $want ) ) {
+					if ( ! self::attr_values_match( $want, $val ) ) {
 						continue;
 					}
 					if ( self::attr_key_matches( $key_l, (string) $logical ) ) {
@@ -385,9 +464,14 @@ class NH_TC_Catalog {
 					$hit    = true;
 					$score += 1;
 				}
-				if ( ! $hit && in_array( $want, $values, true ) ) {
-					$hit    = true;
-					$score += 1;
+				if ( ! $hit ) {
+					foreach ( $values as $val ) {
+						if ( self::attr_values_match( $want, (string) $val ) ) {
+							$hit    = true;
+							$score += 1;
+							break;
+						}
+					}
 				}
 				if ( ! $hit ) {
 					$ok = false;
@@ -414,7 +498,7 @@ class NH_TC_Catalog {
 			'length'     => array( 'lengde', 'langd', 'length', 'lange', 'pituus' ),
 			'width'      => array( 'bredde', 'bredd', 'width', 'breite', 'plotis', 'leveys' ),
 			'thickness'  => array( 'tykkelse', 'tjocklek', 'thickness', 'dicke', 'storis', 'paksuus' ),
-			'dimensions' => array( 'dimensjon', 'dimension', 'storlek', 'size' ),
+			'dimensions' => array( 'dimensjon', 'dimension', 'storlek', 'size', 'screw', 'skrue' ),
 		);
 		$needles = isset( $map[ $logical ] ) ? $map[ $logical ] : array( $logical );
 		foreach ( $needles as $n ) {
@@ -423,6 +507,68 @@ class NH_TC_Catalog {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Compare wanted and actual attribute values, allowing 25 / 25-mm / 25mm and
+	 * 5-mm-x-60-mm / 5x60mm style differences.
+	 */
+	public static function attr_values_match( $want, $have ) {
+		$want = trim( (string) $want );
+		$have = trim( (string) $have );
+		if ( '' === $want || '' === $have ) {
+			return false;
+		}
+		if ( $want === $have ) {
+			return true;
+		}
+		$norm = static function ( $v ) {
+			$v = strtolower( trim( (string) $v ) );
+			$v = str_replace( array( '_', '–', '—', '×', ' ' ), array( '-', '-', '-', 'x', '' ), $v );
+			return $v;
+		};
+		$a = $norm( $want );
+		$b = $norm( $have );
+		if ( $a === $b ) {
+			return true;
+		}
+		if ( str_replace( '-', '', $a ) === str_replace( '-', '', $b ) ) {
+			return true;
+		}
+
+		$want_mm = self::flexible_mm( $want );
+		$have_mm = self::flexible_mm( $have );
+		if ( $want_mm > 0 && $want_mm === $have_mm ) {
+			return true;
+		}
+
+		// Screw size: "5-mm-x-60-mm" vs "5x60" / "5 x 60 mm".
+		if ( preg_match( '/(\d+)\D+(\d+)/', $a, $ma ) && preg_match( '/(\d+)\D+(\d+)/', $b, $mb ) ) {
+			if ( (int) $ma[1] === (int) $mb[1] && (int) $ma[2] === (int) $mb[2] ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @return int Millimetres for thickness/width terms (25, 25-mm, 10 mm, 1-m → 1000).
+	 */
+	private static function flexible_mm( $value ) {
+		$sheet = NH_TC_Defaults::sheet_dimension_mm( $value );
+		if ( $sheet > 0 ) {
+			return $sheet;
+		}
+		$raw = strtolower( trim( (string) $value ) );
+		$raw = str_replace( array( '_', '–', '—' ), '-', $raw );
+		$raw = preg_replace( '/\s+/', '', $raw );
+		if ( preg_match( '/^(\d{1,5})(?:-?mm)?$/', (string) $raw, $match ) ) {
+			return (int) $match[1];
+		}
+		if ( class_exists( 'NH_TC_Engine' ) ) {
+			return (int) NH_TC_Engine::parse_size_to_mm( $value );
+		}
+		return 0;
 	}
 
 	/**
@@ -687,7 +833,7 @@ class NH_TC_Catalog {
 					}
 					continue;
 				}
-				$mm = NH_TC_Defaults::millimetres_from_attribute( $val );
+				$mm = NH_TC_Defaults::sheet_dimension_mm( $val );
 				if ( $mm <= 0 ) {
 					continue;
 				}
@@ -700,11 +846,16 @@ class NH_TC_Catalog {
 			if ( $width <= 0 || $length <= 0 ) {
 				continue;
 			}
+			$sku = trim( (string) $variation->get_sku() );
+			// Many shops leave variation SKUs blank — store the variation ID so admin/BOM can resolve it.
+			if ( '' === $sku ) {
+				$sku = (string) (int) $variation_id;
+			}
 			$out[] = array(
 				'width_mm'  => $width,
 				'length_mm' => $length,
-				'sku'       => (string) $variation->get_sku(),
-				'in_stock'  => self::is_sellable( $variation ),
+				'sku'       => $sku,
+				'in_stock'  => self::is_sellable( $variation ) || $variation->is_in_stock(),
 			);
 		}
 		return $out;

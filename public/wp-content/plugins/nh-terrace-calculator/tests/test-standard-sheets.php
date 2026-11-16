@@ -242,6 +242,17 @@ nh_tc_sheet_assert(
 	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '25 mm' )
 );
 
+nh_tc_sheet_assert(
+	'sheet dimensions accept metre slugs used on stock variations',
+	2100 === NH_TC_Defaults::sheet_dimension_mm( '2100' )
+	&& 2100 === NH_TC_Defaults::sheet_dimension_mm( '21-m' )
+	&& 6000 === NH_TC_Defaults::sheet_dimension_mm( '6-m' )
+	&& 6000 === NH_TC_Defaults::sheet_dimension_mm( '6 m' )
+	&& 1050 === NH_TC_Defaults::sheet_dimension_mm( '105-m' )
+	&& 2000 === NH_TC_Defaults::sheet_dimension_mm( '2-m' )
+	&& 7000 === NH_TC_Defaults::sheet_dimension_mm( '7-m' )
+);
+
 $stock_fixture = array(
 	'multiwall' => array(
 		'10' => array(
@@ -319,6 +330,17 @@ nh_tc_sheet_assert(
 	'without a loaded parent the catalog widths stay put',
 	'SAVED-6000' === $untouched['multiwall']['10']['clear']['stock']['widths']['2100']['6000']
 	&& isset( $untouched['multiwall']['16']['clear']['6w'] )
+);
+
+require_once dirname( __DIR__ ) . '/includes/class-nh-tc-catalog.php';
+nh_tc_sheet_assert(
+	'attribute value matching tolerates mm and screw-size formats',
+	NH_TC_Catalog::attr_values_match( '25-mm', '25' )
+	&& NH_TC_Catalog::attr_values_match( '25-mm', '25mm' )
+	&& NH_TC_Catalog::attr_values_match( '10-mm', '10 mm' )
+	&& NH_TC_Catalog::attr_values_match( '5-mm-x-60-mm', '5x60mm' )
+	&& NH_TC_Catalog::attr_values_match( '5-mm-x-60-mm', '5 x 60 mm' )
+	&& ! NH_TC_Catalog::attr_values_match( '25-mm', '38' )
 );
 
 if ( $failures ) {
