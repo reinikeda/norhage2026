@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
-"PO-Revision-Date: 2026-11-16 14:37+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -66,6 +66,7 @@ msgstr "Eine Platte wäre breiter als die Lagerbreite von %d mm. Verringern Sie 
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Eine Massivplatte ist %1$d × %2$d mm und kann in beide Richtungen gedreht werden. Dieses Stück ist trotzdem zu breit. Verringern Sie den Trägerabstand."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Set in den Warenkorb"
 
@@ -93,6 +94,7 @@ msgstr "Auch verfügbar"
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "Bei einem vollen Feld ist eine Außenplatte %1$d mm breiter als eine Mittelplatte: Sie reicht bis zum Ende des %2$d mm breiten Trägers und verliert am Stoß nur %3$d mm."
 
+#, php-format
 msgid "Anthracite"
 msgstr "Anthrazit"
 
@@ -174,6 +176,7 @@ msgstr "Verbindungs- und Randprofile mit Endkappen wo nötig"
 msgid "Connecting profile"
 msgstr "Verbindungsprofil"
 
+#, php-format
 msgid "Connecting profiles"
 msgstr "Verbindungsprofile"
 
@@ -383,6 +386,7 @@ msgstr "Mitte"
 msgid "Most terraces"
 msgstr "Die meisten Terrassen"
 
+#, php-format
 msgid "Multiwall polycarbonate"
 msgstr "Stegplatte"
 
@@ -398,10 +402,10 @@ msgstr "Stegplatten: ganze 2100-mm-Platten, Länge auf volle Meter aufgerundet (
 msgid "Neutral silicone"
 msgstr "Neutralvernetzendes Silikon"
 
-#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralvernetzendes Silikon Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Für diese Auswahl wurden keine Produkte gefunden. Prüfen Sie die SKU-Zuordnung in den Einstellungen des Terrassenrechners."
 
@@ -463,6 +467,7 @@ msgstr "Polycarbonat"
 msgid "Polycarbonate sheet"
 msgstr "Polycarbonatplatte"
 
+#, php-format
 msgid "Polycarbonate sheets"
 msgstr "Polycarbonatplatten"
 
@@ -541,6 +546,10 @@ msgstr "Schrauben für Profile und Kanten sowie Fixierknöpfe, wenn hinterlegt"
 msgid "Sealing"
 msgstr "Abdichtung"
 
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
+msgstr "Dichtbänder nur für Stegplatten. Isolierband oben, atmungsaktives Lüftungsband unten. Beide Kanten gleich lang (Gesamtplattenbreite; Satteldach zählt beide Seiten). Bandbreite nach Dicke: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; passende Variation vom Parent. Schrauben (Steg und Massiv) ebenfalls nach Dicke: bis 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummidichtung dem Umfang in ganzen Metern. Silikon eine Tube je konfigurierte Meter Umfang (Standard 10 m), mindestens eine."
+
+#, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Dichtungsbänder nur für Mehrwandplatten. Eine Lüftungs- und eine Isolierrolle decken die Plattenbreiten; je eine weitere Rolle, wenn die Breiten zusammen die konfigurierte Rollenlänge überschreiten (Standard 5 m). Die Gummidichtung folgt dem Umfang und wird in ganzen Metern verkauft. Silikon: eine Tube je konfigurierte Meter dieses Umfangs (Standard 10 m), mindestens eine Tube."
 
@@ -582,6 +591,7 @@ msgstr "Der Versand wird im Warenkorb anhand Ihrer Postleitzahl berechnet."
 msgid "Show calculator on"
 msgstr "Rechner anzeigen auf"
 
+#, php-format
 msgid "Show postcode field"
 msgstr "Feld für die Postleitzahl anzeigen"
 
@@ -656,6 +666,7 @@ msgstr "Breite des Trägers"
 msgid "Support spacing (centre to centre)"
 msgstr "Trägerabstand (Mitte zu Mitte)"
 
+#, php-format
 msgid "Tape roll length"
 msgstr "Bandrollenlänge"
 

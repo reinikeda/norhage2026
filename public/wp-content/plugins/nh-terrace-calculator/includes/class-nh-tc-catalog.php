@@ -349,9 +349,12 @@ class NH_TC_Catalog {
 
 		if ( $product->is_type( 'variable' ) ) {
 			$found = self::find_variation( $product, $attrs );
-			// Hardware often varies by polycarbonate thickness; fall back to one key at a time.
+			// Prefer the size that follows sheet thickness (tape width / screw length), then other keys.
 			if ( ! $found && count( $attrs ) > 1 ) {
-				foreach ( array( 'thickness', 'dimensions', 'width', 'length' ) as $key ) {
+				$order = ( 'screw' === ( $line['role'] ?? '' ) )
+					? array( 'length', 'dimensions', 'thickness' )
+					: array( 'width', 'dimensions', 'length', 'thickness' );
+				foreach ( $order as $key ) {
 					if ( empty( $attrs[ $key ] ) ) {
 						continue;
 					}

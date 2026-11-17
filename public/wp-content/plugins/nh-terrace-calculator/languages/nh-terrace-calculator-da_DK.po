@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
-"PO-Revision-Date: 2026-11-16 14:37+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: da_DK\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
@@ -66,6 +66,7 @@ msgstr "En plade ville blive bredere end lagerbredden på %d mm. Formindsk lægt
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "En massiv polykarbonatplade er %1$d × %2$d mm og kan vendes begge veje. Dette stykke er stadig for bredt. Reducer lægteafstanden."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Læg sættet i kurven"
 
@@ -93,6 +94,7 @@ msgstr "Også tilgængelig"
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "På et helt fag er en yderplade %1$d mm bredere end en midterplade: den når ud til enden af den %2$d mm brede lægte og mister kun %3$d mm i samlingen."
 
+#, php-format
 msgid "Anthracite"
 msgstr "Antracit"
 
@@ -174,6 +176,7 @@ msgstr "Sammenføjnings- og kantprofiler med endestykker hvor nødvendigt"
 msgid "Connecting profile"
 msgstr "Forbindelsesprofil"
 
+#, php-format
 msgid "Connecting profiles"
 msgstr "Forbindelsesprofiler"
 
@@ -383,6 +386,7 @@ msgstr "midt"
 msgid "Most terraces"
 msgstr "De fleste terrasser"
 
+#, php-format
 msgid "Multiwall polycarbonate"
 msgstr "Kanalplast"
 
@@ -398,10 +402,10 @@ msgstr "Flerlags: hele 2100 mm plader, længde afrundet op til hele meter (1–7
 msgid "Neutral silicone"
 msgstr "Neutral silikone"
 
-#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutral silikone Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Der blev ikke fundet produkter, der passer til dette valg. Tjek SKU-koblingen i indstillingerne for terrasseberegneren."
 
@@ -463,6 +467,7 @@ msgstr "Polykarbonat"
 msgid "Polycarbonate sheet"
 msgstr "Polykarbonatplade"
 
+#, php-format
 msgid "Polycarbonate sheets"
 msgstr "Polykarbonatplader"
 
@@ -541,6 +546,10 @@ msgstr "Skruer til profiler og kanter, plus fikseringsknapper når de er koblet"
 msgid "Sealing"
 msgstr "Tætning"
 
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
+msgstr "Tætningsbånd tilføjes kun for flerlags. Isolationsbånd forsegler overkanten; åndbart ventilationsbånd forsegler underkanten. Begge kanter har samme længde (samlet pladebredde; sadeltag tæller begge sider). Båndbredde følger tykkelse: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, og den matchende variation tages fra forældreproduktet. Skruer (flerlags og massiv) følger også tykkelse: op til 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummilisten følger omkredsen i hele meter. Silicone er ét tube pr. konfigurerede meter af omkredsen (standard 10 m), mindst ét tube."
+
+#, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Tætningsbånd tilføjes kun til flerlagsplader. Én ventilationsrulle og én isoleringsrulle dækker pladebredderne, og endnu en rulle af hver tilføjes, når bredderne tilsammen overstiger den konfigurerede rullelængde (standard 5 m). Gummilisten følger omkredsen og sælges i hele meter. Silikone er én tube for hver konfigurerede meter af den omkreds (standard 10 m), og mindst én tube."
 
@@ -582,6 +591,7 @@ msgstr "Fragt beregnes i kurven ud fra dit postnummer."
 msgid "Show calculator on"
 msgstr "Vis beregneren på"
 
+#, php-format
 msgid "Show postcode field"
 msgstr "Vis felt til postnummer"
 
@@ -656,6 +666,7 @@ msgstr "Bredde på bærelægte"
 msgid "Support spacing (centre to centre)"
 msgstr "Lægteafstand (center til center)"
 
+#, php-format
 msgid "Tape roll length"
 msgstr "Tape-rullelængde"
 

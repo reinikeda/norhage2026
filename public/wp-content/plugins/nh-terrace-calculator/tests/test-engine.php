@@ -42,7 +42,13 @@ $settings = array(
 	'tape_roll_mm'            => 5000,
 	'profile_stock_mm'        => array( 1000, 1500, 2000, 3000, 4000, 5000, 6000 ),
 	'recommended_cc'          => array( '10' => 600, '6' => 500 ),
-	'screw_size'              => array( '10' => '5-mm-x-60-mm', '6' => '5-mm-x-50-mm' ),
+	'screw_size'              => array(
+		'6'  => '5-mm-x-50-mm',
+		'10' => '5-mm-x-50-mm',
+		'16' => '5-mm-x-60-mm',
+		'25' => '6-mm-x-80-mm',
+		'32' => '6-mm-x-90-mm',
+	),
 	'default_cc_mm'           => 600,
 );
 
@@ -107,12 +113,14 @@ nh_tc_assert( 'custom supply starts with a profile on every rafter', 'every' ===
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
 nh_tc_assert( 'F-profile 3×2 m + 3×3 m', isset( $by_role['finish']['packed']['2-m'], $by_role['finish']['packed']['3-m'] ) && 3 === (int) $by_role['finish']['packed']['2-m'] && 3 === (int) $by_role['finish']['packed']['3-m'] );
 nh_tc_assert(
-	'197 screws (150 connect + 35 finish + 12 wall) → 4 packs of 5x60',
+	'197 screws (150 connect + 35 finish + 12 wall) → 4 packs of 5x50',
 	isset( $by_role['screw'] )
 	&& 197 === (int) $by_role['screw']['qty_raw']
 	&& 4 === (int) $by_role['screw']['qty']
-	&& '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions']
+	&& '5-mm-x-50-mm' === $by_role['screw']['attrs']['dimensions']
+	&& '50-mm' === $by_role['screw']['attrs']['length']
 	&& '10-mm' === $by_role['screw']['attrs']['thickness']
+	&& 50 === (int) $bom['meta']['screw_length_mm']
 	&& 150 === (int) $bom['meta']['connect_screws']
 	&& 35 === (int) $bom['meta']['finish_screws']
 	&& 12 === (int) $bom['meta']['wall_screws']
@@ -127,19 +135,30 @@ nh_tc_assert(
 nh_tc_assert( '2 wall profiles', isset( $by_role['wall'] ) && 2 === (int) $by_role['wall']['qty'] );
 nh_tc_assert( '12 end caps', isset( $by_role['end_cap'] ) && 12 === (int) $by_role['end_cap']['qty'] );
 nh_tc_assert(
-	'25 mm ventilation tape, 1 roll, keyed by sheet thickness',
+	'25 mm lower ventilation tape, 1 roll for total sheet width',
 	isset( $by_role['vent_tape'] )
 	&& 25 === (int) $by_role['vent_tape']['tape_width_mm']
 	&& 1 === (int) $by_role['vent_tape']['qty']
-	&& '10-mm' === $by_role['vent_tape']['attrs']['thickness']
+	&& 'lower' === $by_role['vent_tape']['edge']
 	&& '25-mm' === $by_role['vent_tape']['attrs']['width']
+	&& (int) $by_role['vent_tape']['cover_mm'] === (int) $bom['meta']['tape_cover_mm']
 );
 nh_tc_assert(
-	'25 mm isolation tape, 1 roll, keyed by sheet thickness',
+	'25 mm upper isolation tape, same length as ventilation tape',
 	isset( $by_role['iso_tape'] )
 	&& 1 === (int) $by_role['iso_tape']['qty']
-	&& '10-mm' === $by_role['iso_tape']['attrs']['thickness']
+	&& 'upper' === $by_role['iso_tape']['edge']
+	&& (int) $by_role['iso_tape']['cover_mm'] === (int) $by_role['vent_tape']['cover_mm']
+	&& '25-mm' === $by_role['iso_tape']['attrs']['width']
 );
+
+nh_tc_assert( 'tape width 4–10 mm → 25 mm', 25 === NH_TC_Engine::tape_width_mm( 10 ) && 25 === NH_TC_Engine::tape_width_mm( 4 ) );
+nh_tc_assert( 'tape width 16–20 mm → 38 mm', 38 === NH_TC_Engine::tape_width_mm( 16 ) && 38 === NH_TC_Engine::tape_width_mm( 20 ) );
+nh_tc_assert( 'tape width 25–40 mm → 60 mm', 60 === NH_TC_Engine::tape_width_mm( 25 ) && 60 === NH_TC_Engine::tape_width_mm( 40 ) );
+nh_tc_assert( 'screws up to 10 mm → 50 mm', 50 === NH_TC_Engine::screw_spec( 10, $settings )['length_mm'] );
+nh_tc_assert( 'screws 16–20 mm → 60 mm', 60 === NH_TC_Engine::screw_spec( 16, $settings )['length_mm'] && 60 === NH_TC_Engine::screw_spec( 20, $settings )['length_mm'] );
+nh_tc_assert( 'screws 25 mm → 80 mm', 80 === NH_TC_Engine::screw_spec( 25, $settings )['length_mm'] );
+nh_tc_assert( 'screws 32–40 mm → 90 mm', 90 === NH_TC_Engine::screw_spec( 32, $settings )['length_mm'] && 90 === NH_TC_Engine::screw_spec( 40, $settings )['length_mm'] );
 nh_tc_assert( '18 m rubber gasket', isset( $by_role['gasket'] ) && 18 === (int) $by_role['gasket']['qty'] );
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
@@ -188,6 +207,12 @@ foreach ( $gbom['lines'] as $line ) {
 }
 nh_tc_assert( 'gable uses ridge not wall', isset( $groles['ridge'] ) && ! isset( $groles['wall'] ) );
 nh_tc_assert( 'gable 9 beams', 9 === (int) $gbom['meta']['beam_count'] );
+nh_tc_assert(
+	'gable doubles tape cover for both slopes',
+	isset( $groles['vent_tape'], $groles['iso_tape'] )
+	&& (int) $groles['vent_tape']['cover_mm'] === (int) $bom['meta']['tape_cover_mm'] * 2
+	&& (int) $groles['iso_tape']['cover_mm'] === (int) $groles['vent_tape']['cover_mm']
+);
 nh_tc_assert(
 	'gable counts the entered side twice',
 	2 === (int) $gbom['meta']['slopes']

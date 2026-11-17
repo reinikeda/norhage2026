@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.6\n"
-"PO-Revision-Date: 2026-11-16 14:37+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
 "MIME-Version: 1.0\n"
@@ -66,6 +66,7 @@ msgstr "Levy olisi leveämpi kuin %d mm:n varastokoko. Pienennä koolausväliä,
 msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
 msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin päin tahansa. Tämä kappale on silti liian leveä. Pienennä koolausväliä."
 
+#, php-format
 msgid "Add kit to basket"
 msgstr "Lisää sarja ostoskoriin"
 
@@ -93,6 +94,7 @@ msgstr "Myös saatavilla"
 msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
 msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulottuu %2$d mm:n tuen päähän ja menettää saumassa vain %3$d mm."
 
+#, php-format
 msgid "Anthracite"
 msgstr "Antrasiitti"
 
@@ -174,6 +176,7 @@ msgstr "Liitos- ja reunaprofiilit päätytulpilla tarvittaessa"
 msgid "Connecting profile"
 msgstr "Liitosprofiili"
 
+#, php-format
 msgid "Connecting profiles"
 msgstr "Liitosprofiilit"
 
@@ -383,6 +386,7 @@ msgstr "keski"
 msgid "Most terraces"
 msgstr "Useimmat terassit"
 
+#, php-format
 msgid "Multiwall polycarbonate"
 msgstr "Kennopolykarbonaatti"
 
@@ -398,10 +402,10 @@ msgstr "Kennolevy: kokonaiset 2100 mm levyt, pituus pyöristetään ylös täyte
 msgid "Neutral silicone"
 msgstr "Neutraali silikoni"
 
-#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutraali silikoni Silirub PC"
 
+#, php-format
 msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
 msgstr "Tälle valinnalle ei löytynyt tuotteita. Tarkista SKU-kytkentä terassilaskurin asetuksista."
 
@@ -463,6 +467,7 @@ msgstr "Polykarbonaatti"
 msgid "Polycarbonate sheet"
 msgstr "Polykarbonaattilevy"
 
+#, php-format
 msgid "Polycarbonate sheets"
 msgstr "Polykarbonaattilevyt"
 
@@ -541,6 +546,10 @@ msgstr "Ruuvit profiileille ja reunoille sekä kiinnityspainikkeet, jos ne on ky
 msgid "Sealing"
 msgstr "Tiivistys"
 
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
+msgstr "Tiivistysteipit vain kennolevyille. Yläreunaan eristysteippi, alareunaan hengittävä tuuletusteippi. Molemmat reunat saman pituisia (levyleveyksien summa; harjakatto laskee molemmat lappeet). Teipin leveys paksuuden mukaan: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; oikea variantti emotuotteesta. Ruuvit (kenno ja massiivi) paksuuden mukaan: enintään 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Kumitiiviste kehän mukaan kokonaisina metreinä. Silikoni yksi tuubi per määritetty metri kehää (oletus 10 m), vähintään yksi."
+
+#, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
 msgstr "Tiivistysteipit vain kennolevyille. Yksi tuuletus- ja yksi eristerulla kattavat levyjen leveydet; molempia lisätään yksi rulla, kun leveydet yhdessä ylittävät määritetyn rullan pituuden (oletus 5 m). Kumitiiviste seuraa kehää ja myydään kokonaisina metreinä. Silikonia yksi tuubi jokaista määritettyä kehämetriä kohti (oletus 10 m), vähintään yksi tuubi."
 
@@ -582,6 +591,7 @@ msgstr "Toimitus lasketaan ostoskorissa postinumeron perusteella."
 msgid "Show calculator on"
 msgstr "Näytä laskuri"
 
+#, php-format
 msgid "Show postcode field"
 msgstr "Näytä postinumerokenttä"
 
@@ -656,6 +666,7 @@ msgstr "Kantopalkin leveys"
 msgid "Support spacing (centre to centre)"
 msgstr "Koolausväli (keskeltä keskelle)"
 
+#, php-format
 msgid "Tape roll length"
 msgstr "Teippirullan pituus"
 
