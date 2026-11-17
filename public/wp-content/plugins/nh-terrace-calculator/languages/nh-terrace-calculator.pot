@@ -683,3 +683,156 @@ msgstr ""
 msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
 msgstr ""
 
+
+msgid "A sheet would be wider than %d mm. Reduce the rafter spacing."
+msgstr ""
+
+msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
+msgstr ""
+
+msgid "along the gable"
+msgstr ""
+
+msgid "along the wall"
+msgstr ""
+
+msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
+msgstr ""
+
+msgid "Profile on every rafter"
+msgstr ""
+
+msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
+msgstr ""
+
+msgid "Overhang"
+msgstr ""
+
+msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
+msgstr ""
+
+msgid "Edge profile"
+msgstr ""
+
+msgid "Beam width must be 20–200 mm. 50 mm is usual."
+msgstr ""
+
+msgid "Aluminium F-profile"
+msgstr ""
+
+msgid "Frame details"
+msgstr ""
+
+msgid "From shop"
+msgstr ""
+
+msgid "how far the roof sticks out from the wall"
+msgstr ""
+
+msgid "How should the sheets be joined?"
+msgstr ""
+
+msgid "Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead."
+msgstr ""
+
+msgid "Keep the parent SKU for each thickness and colour. Variation SKUs are filled automatically from that product’s width × length variations — you only need to type a SKU when a size has none in the shop."
+msgstr ""
+
+msgid "Aluminium L-profile"
+msgstr ""
+
+msgid "length of one slope"
+msgstr ""
+
+msgid "length of one sloping side"
+msgstr ""
+
+msgid "measure across the front of the roof"
+msgstr ""
+
+msgid "measure along the house wall"
+msgstr ""
+
+msgid "You receive whole sheets. The diagram shows how to cut them."
+msgstr ""
+
+msgid "These materials are not available in this shop."
+msgstr ""
+
+msgid "No matching width/length variations found for this parent SKU yet."
+msgstr ""
+
+msgid "out from the wall"
+msgstr ""
+
+msgid "A guide only. Confirm the structure before you build."
+msgstr ""
+
+msgid "Ridge profile"
+msgstr ""
+
+msgid "Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness."
+msgstr ""
+
+msgid "Saving this page also refreshes empty slots from the shop. Out-of-stock sizes stay listed here but are hidden from customers. Multiwall uses whole 2100 mm sheets with length rounded up to a full metre; solid uses 2050 × 3050 mm blanks."
+msgstr ""
+
+msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
+msgstr ""
+
+msgid "Overhang must be 0–300 mm."
+msgstr ""
+
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm length needs %4$d pieces."
+msgstr ""
+
+msgid "Some items are not available here. You can still add the rest."
+msgstr ""
+
+msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
+msgstr ""
+
+msgid "Standard sheets"
+msgstr ""
+
+msgid "More profiles and screws."
+msgstr ""
+
+msgid "Rafter spacing (centre to centre)"
+msgstr ""
+
+msgid "Enter the roof size to see the cutting diagram."
+msgstr ""
+
+msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
+msgstr ""
+
+msgid "The last sheet would be under 100 mm. Adjust the rafter spacing."
+msgstr ""
+
+msgid "Measure the roof, choose the sheets, then add the kit."
+msgstr ""
+
+msgid "Aluminium U-profile"
+msgstr ""
+
+msgid "Plastic U-profile"
+msgstr ""
+
+msgid "Variation SKUs below were read from the parent product in the shop."
+msgstr ""
+
+msgid "Wider sheets and fewer profiles. Joints still sit on the rafters."
+msgstr ""
+
+msgid "You cut them to fit"
+msgstr ""
+
+msgid "Check the materials and prices, then add the kit to the basket."
+msgstr ""
+
+msgid "Wall profile"
+msgstr ""
+
+msgid "You can go back to change the size or materials. Shipping is calculated in the basket."
+msgstr ""

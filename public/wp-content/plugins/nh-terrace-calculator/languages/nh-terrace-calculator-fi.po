@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.11\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
@@ -59,12 +59,12 @@ msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gab
 msgstr "Viistokattoon tulee viimeistelyprofiili molemmille sivuille ja tippareunaan. Harjakattoon molemmille sivuille ja molempiin tippareunoihin. Jokainen reuna pyöristetään ylös kokonaisiin metreihin ja pakataan 3 m, sitten 2 m, 1,5 m ja 1 m kappaleista. Seinaprofiili kattaa leveyden määritetyn pituisina kappaleina (oletus 2,2 m). Harjakatto käyttää samaan määrään harjaprofiilia seinäprofiilin sijaan."
 
 #, php-format
-msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
-msgstr "Levy olisi leveämpi kuin %d mm:n varastokoko. Pienennä koolausväliä, jotta jokainen pala voidaan leikata vakiolevystä."
+msgid "A sheet would be wider than %d mm. Reduce the rafter spacing."
+msgstr "Levy olisi leveämpi kuin %d mm. Pienennä koolausväliä."
 
 #, php-format
-msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
-msgstr "Umpipolykarbonaattilevy on %1$d × %2$d mm ja sen voi kääntää kummin päin tahansa. Tämä kappale on silti liian leveä. Pienennä koolausväliä."
+msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
+msgstr "Tämä kappale on leveämpi kuin %1$d × %2$d mm umpilevy. Pienennä koolausväliä."
 
 #, php-format
 msgid "Add kit to basket"
@@ -91,8 +91,8 @@ msgid "Also available"
 msgstr "Myös saatavilla"
 
 #, php-format
-msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
-msgstr "Täydellä välillä reunalevy on %1$d mm keskilevyä leveämpi: se ulottuu %2$d mm:n tuen päähän ja menettää saumassa vain %3$d mm."
+msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
+msgstr "Reunalevyt ovat %1$d mm leveämpiä, jotta ne peittävät %2$d mm palkin. Saumaan jää %3$d mm."
 
 #, php-format
 msgid "Anthracite"
@@ -111,7 +111,7 @@ msgid "Back"
 msgstr "Takaisin"
 
 #, php-format
-msgid "Bar on every rafter"
+msgid "Profile on every rafter"
 msgstr "Profiili jokaisella tuella"
 
 #, php-format
@@ -131,8 +131,8 @@ msgid "Both side sheets are %d mm."
 msgstr "Molemmat sivulevyt ovat %d mm."
 
 #, php-format
-msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
-msgstr "Molemmat lappeet lasketaan mukaan. Syötetty %1$d mm on yksi lape harjalta räystäälle, joten rungon pituus on %2$d mm."
+msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
+msgstr "Annoit yhden lappeen (%1$d mm). Molemmat lappeet lasketaan, joten pituus on %2$d mm."
 
 msgid "Bronze"
 msgstr "Pronssi"
@@ -233,17 +233,17 @@ msgstr "Oletus on kaikki tuotesivut, joten lomake näkyy ilman lisäasetuksia. V
 msgid "Default size (mm)"
 msgstr "Oletuskoko (mm)"
 
-msgid "Drip overhang"
-msgstr "Tippylitys"
+msgid "Overhang"
+msgstr "Ylitys"
 
 msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
 msgstr "Jokainen materiaalilistan rivi on yksi tuote alla olevasta kytkennästä. Määrä lasketaan asiakkaan syöttämästä rungosta. Rivi, jonka variaation SKU on tyhjä, näytetään silti merkinnällä ei tässä kaupassa, ja muun sarjan voi lisätä koriin."
 
-msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
-msgstr "Jokainen levy peittää niin paljon valitusta leveydestä kuin mahdollista. Saumaa käytetään vain siellä, missä levyt kohtaavat, ja se osuu edelleen koolaukseen."
+msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
+msgstr "Levyt ovat niin leveitä kuin mahdollista. Sauma tulee vain sinne, missä ne kohtaavat, tuen kohdalle."
 
-msgid "Edge / finish profile"
-msgstr "Reuna-/viimeistelyprofiili"
+msgid "Edge profile"
+msgstr "Reunaprofiili"
 
 msgid "End cap – brown"
 msgstr "Päätytulppa – ruskea"
@@ -254,8 +254,8 @@ msgstr "Päätytulppa – hopea / harmaa"
 msgid "Enter a size to see the kit."
 msgstr "Anna mitat, niin näet sarjan."
 
-msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
-msgstr "Anna palkin leveys väliltä 20–200 mm. 50 mm on tavallinen mitta."
+msgid "Beam width must be 20–200 mm. 50 mm is usual."
+msgstr "Palkin leveyden on oltava 20–200 mm. 50 mm on tavallinen."
 
 msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
 msgstr "Syötä variaation SKU jokaiselle vakioleveydelle ja -pituudelle. Asiakas valitsee leveyden. Laskuri käyttää lyhintä vakiopituutta, joka kattaa rungon pituuden ja tippareunan."
@@ -267,8 +267,8 @@ msgstr "Syötä yksi lape harjalta räystäälle. Molemmat lappeet lasketaan muk
 msgid "Every product page"
 msgstr "Kaikilla tuotesivuilla"
 
-msgid "F aluminium"
-msgstr "F-alumiini"
+msgid "Aluminium F-profile"
+msgstr "Alumiininen F-profiili"
 
 msgid "Fewer joints"
 msgstr "Vähemmän saumoja"
@@ -291,8 +291,8 @@ msgstr "Kiinnityspainikkeet (valinnainen)"
 msgid "Fixings"
 msgstr "Kiinnikkeet"
 
-msgid "Frame details (rafter spacing & beam width)"
-msgstr "Rungon tiedot (tukiväli ja palkin leveys)"
+msgid "Frame details"
+msgstr "Rungon tiedot"
 
 msgid "From shop"
 msgstr "Kaupasta"
@@ -309,8 +309,8 @@ msgstr "Piilota tavallinen ostolomake. Asiakkaat käyttävät sen sijaan sarjata
 msgid "how far the roof sticks out from the wall"
 msgstr "kuinka pitkälle katto ulottuu seinästä"
 
-msgid "How many joining bars do you want?"
-msgstr "Kuinka monta liitospalkkia haluat?"
+msgid "How should the sheets be joined?"
+msgstr "Miten levyt liitetään?"
 
 msgid "How should the sheets be supplied?"
 msgstr "Miten levyt toimitetaan?"
@@ -345,8 +345,8 @@ msgstr "Paketti"
 msgid "Kit total"
 msgstr "Paketin summa"
 
-msgid "L aluminium"
-msgstr "L-alumiini"
+msgid "Aluminium L-profile"
+msgstr "Alumiininen L-profiili"
 
 msgid "Lean-to"
 msgstr "Pulpettikatto"
@@ -393,8 +393,8 @@ msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kennopolykarbonaatti (määrämittaan)"
 
 #, php-format
-msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
-msgstr "Kennolevy: kokonaiset 2100 mm levyt, pituus pyöristetään ylös täyteen metriin (1–7 m). Massiivi: kokonaiset 2050 × 3050 mm levyt, kummin päin tahansa."
+msgid "You receive whole sheets. The diagram shows how to cut them."
+msgstr "Saat kokonaiset levyt. Kuva näyttää, miten ne leikataan."
 
 #, php-format
 msgid "Neutral silicone"
@@ -404,8 +404,8 @@ msgid "Neutral silicone Silirub PC"
 msgstr "Neutraali silikoni Silirub PC"
 
 #, php-format
-msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
-msgstr "Tälle valinnalle ei löytynyt tuotteita. Tarkista SKU-kytkentä terassilaskurin asetuksista."
+msgid "These materials are not available in this shop."
+msgstr "Näitä materiaaleja ei ole tässä kaupassa."
 
 #, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
@@ -494,8 +494,8 @@ msgid "Ready to fit — joints land on supports"
 msgstr "Asennusvalmis — saumat osuvat tukien kohdalle"
 
 #, php-format
-msgid "Recommendation only — confirm structural strength with your architect."
-msgstr "Vain suositus — varmista kantavuus arkkitehdilta."
+msgid "A guide only. Confirm the structure before you build."
+msgstr "Vain ohje. Varmista rakenne ennen rakentamista."
 
 #, php-format
 msgid "Recommended centre spacing for this thickness: %s mm."
@@ -514,8 +514,8 @@ msgstr "Tarkista pakettisi"
 msgid "Ridge"
 msgstr "Harja"
 
-msgid "Ridge profile 2.2 m"
-msgstr "Harjaprofiili 2,2 m"
+msgid "Ridge profile"
+msgstr "Harjaprofiili"
 
 msgid "Ridge profile 2.2 m (gable)"
 msgstr "Harjaprofiili 2,2 m (harjakatto)"
@@ -564,8 +564,8 @@ msgid "Selected products"
 msgstr "Valitut tuotteet"
 
 #, php-format
-msgid "Sheet overhang must be between 0 and 300 mm."
-msgstr "Levyn ylityksen on oltava 0–300 mm."
+msgid "Overhang must be 0–300 mm."
+msgstr "Ylityksen on oltava 0–300 mm."
 
 #, php-format
 msgid "Sheet structure"
@@ -622,22 +622,22 @@ msgid "Solid polycarbonate (custom-cut)"
 msgstr "Umpipolykarbonaatti (määrämittaan)"
 
 #, php-format
-msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
-msgstr "Umpilevyt ovat %1$d × %2$d mm ja ne voi kääntää kummin päin tahansa. %3$d mm:n pituus leikataan %4$d osaan."
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm length needs %4$d pieces."
+msgstr "Umpilevyt ovat %1$d × %2$d mm ja ne voi kääntää kummin päin tahansa. Tähän %3$d mm pituuteen tarvitaan %4$d kappaletta."
 
 #, php-format
-msgid "Some items are not in this shop (SKU not found). The rest can still be added."
-msgstr "Joitakin tuotteita ei ole tässä kaupassa (SKU:ta ei löydy). Loput voi silti lisätä."
+msgid "Some items are not available here. You can still add the rest."
+msgstr "Joitakin tuotteita ei ole saatavilla täällä. Loput voi silti lisätä."
 
 #, php-format
 msgid "Spacing along each sheet"
 msgstr "Väli jokaisella levyllä"
 
 #, php-format
-msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
-msgstr "Vakio 50 mm. Saumat osuvat palkin keskelle ja jättävät %d mm liitosprofiilille."
+msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
+msgstr "Yleensä 50 mm. Saumat osuvat palkille ja jättävät %d mm profiilille."
 
-msgid "Standard plates"
+msgid "Standard sheets"
 msgstr "Vakiolevyt"
 
 msgid "Standard sheet"
@@ -649,8 +649,8 @@ msgstr "Vakiokoot"
 msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
 msgstr "Vakiokoot. Asiakas valitsee leveyden. Pituus on lyhin varastopituus, joka peittää rungon ja tippanokan. Määrä on levyjen määrä leveyssuunnassa kerrottuna pituussuunnan määrällä. 4200 mm:n runko ja 2100 mm:n levy on 2 kappaletta. Sama runko ja 1050 mm:n levy on 4. 4750 mm:n matka aihiolla, jonka pitkä sivu on 3050 mm, on 2 kappaletta pituussuunnassa, joten 3 leveyssuunnassa kertaa 2 pituussuunnassa on 6. Piirros on katkaisukaavio. Koriin tulee varastokoko, eikä profiilivalinta muuta tätä määrää."
 
-msgid "Stiffer roof, more profiles and screws."
-msgstr "Jäykempi katto, enemmän profiileja ja ruuveja."
+msgid "More profiles and screws."
+msgstr "Enemmän profiileja ja ruuveja."
 
 msgid "Suggested thickness"
 msgstr "Suositeltu paksuus"
@@ -661,7 +661,7 @@ msgstr "Kantopalkki ja levyn ylitys"
 msgid "Support beam width"
 msgstr "Kantopalkin leveys"
 
-msgid "Support spacing (centre to centre)"
+msgid "Rafter spacing (centre to centre)"
 msgstr "Koolausväli (keskeltä keskelle)"
 
 #, php-format
@@ -693,16 +693,16 @@ msgid "Terrace roof kit added to basket."
 msgstr "Terassikattosarja on lisätty ostoskoriin."
 
 #, php-format
-msgid "The cut diagram appears once the size is valid."
-msgstr "Katkaisukuva tulee näkyviin, kun mitat kelpaavat."
+msgid "Enter the roof size to see the cutting diagram."
+msgstr "Anna katon mitat, niin näet katkaisukuvan."
 
 #, php-format
-msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
-msgstr "Piirros on mahdollinen koolaus. Materiaaliluettelo lisää %1$d vakiolevyä koossa %2$d × %3$d mm."
+msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
+msgstr "Ostat %1$d kokonaista levyä, %2$d × %3$d mm. Kuva näyttää yhden tavan leikata ne."
 
 #, php-format
-msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
-msgstr "Viimeinen levy olisi liian kapea leikattavaksi. Säädä koolausväliä niin, että jokainen pala on vähintään 100 mm."
+msgid "The last sheet would be under 100 mm. Adjust the rafter spacing."
+msgstr "Viimeinen levy olisi alle 100 mm. Säädä koolausväliä."
 
 #, php-format
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
@@ -721,8 +721,8 @@ msgstr "Tätä paksuutta ja väriä on vain mittojen mukaan leikattuna."
 msgid "This thickness and colour is out of stock."
 msgstr "Tämä paksuus ja väri on loppu varastosta."
 
-msgid "Three short steps: measure the roof, choose sheets and profiles, then add a complete kit — sheets, profiles, tapes, screws and sealant."
-msgstr "Kolme lyhyttä vaihetta: mittaa katto, valitse levyt ja profiilit, lisää sitten valmis paketti — levyt, profiilit, teipit, ruuvit ja silikoni."
+msgid "Measure the roof, choose the sheets, then add the kit."
+msgstr "Mittaa katto, valitse levyt ja lisää paketti."
 
 msgid "Total excl. VAT"
 msgstr "Yhteensä ilman ALV:tä"
@@ -736,11 +736,11 @@ msgstr "Kaksi lappea harjalta"
 msgid "Type"
 msgstr "Tyyppi"
 
-msgid "U aluminium"
-msgstr "U-alumiini"
+msgid "Aluminium U-profile"
+msgstr "Alumiininen U-profiili"
 
-msgid "U plastic"
-msgstr "U-muovi"
+msgid "Plastic U-profile"
+msgstr "Muovinen U-profiili"
 
 msgid "Unable to add one of the kit items to the basket."
 msgstr "Yhtä sarjan tuotetta ei voitu lisätä ostoskoriin."
@@ -784,8 +784,8 @@ msgstr "Valitsemme lyhyimmän varastopituuden, joka kattaa kehyksen ja tiputusyl
 msgid "Where the form appears"
 msgstr "Missä lomake näkyy"
 
-msgid "Wider sheets, lower profile cost. Joints still sit on rafters."
-msgstr "Leveämmät levyt, pienemmät profiilikustannukset. Saumat ovat silti tukien kohdalla."
+msgid "Wider sheets and fewer profiles. Joints still sit on the rafters."
+msgstr "Leveämmät levyt ja vähemmän profiileja. Saumat osuvat yhä tukiin."
 
 msgid "Width"
 msgstr "Leveys"
@@ -799,12 +799,21 @@ msgstr "Leveys seinän suunnassa"
 msgid "Wood screws with washers"
 msgstr "Puuruuvit aluslevyillä"
 
-msgid "You cut them yourself"
-msgstr "Leikkaat itse"
+msgid "You cut them to fit"
+msgstr "Leikkaat ne itse mittaan"
 
 msgid "Your kit"
 msgstr "Pakettisi"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
-msgstr "Materiaalilista oikealla (tai alla puhelimessa) sisältää levyt, profiilit, teipit, ruuvit ja silikonin. Lisää koko paketti kerralla."
+msgid "Check the materials and prices, then add the kit to the basket."
+msgstr "Tarkista materiaalit ja hinnat, ja lisää paketti ostoskoriin."
 
+
+msgid "Wall profile"
+msgstr "Seinäprofiili"
+
+msgid "You can go back to change the size or materials. Shipping is calculated in the basket."
+msgstr "Voit palata muuttamaan mittoja tai materiaaleja. Toimitus lasketaan ostoskorissa."
+
+msgid "Drip overhang"
+msgstr "Tippylitys"

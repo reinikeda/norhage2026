@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.11\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: sv_SE\n"
 "Language-Team: Swedish\n"
@@ -59,12 +59,12 @@ msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gab
 msgstr "Ett pulpettak får ett avslutningsprofil på båda sidor och vid droppkanten. Ett sadeltak får båda sidor och båda droppkanterna. Varje kant avrundas upp till hela meter och packas från 3 m bitar, sedan 2 m, 1,5 m och 1 m. Väggprofilen täcker bredden i bitar av den konfigurerade längden (standard 2,2 m). Ett sadeltak använder nockprofilen för samma antal i stället för väggprofilen."
 
 #, php-format
-msgid "A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet."
-msgstr "En skiva skulle bli bredare än lagerbredden på %d mm. Minska regelavståndet så att varje bit kan kapas från en standardskiva."
+msgid "A sheet would be wider than %d mm. Reduce the rafter spacing."
+msgstr "En skiva skulle bli bredare än %d mm. Minska regelavståndet."
 
 #, php-format
-msgid "A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing."
-msgstr "En massiv polykarbonatskiva är %1$d × %2$d mm och kan vändas åt båda håll. Den här biten är ändå för bred. Minska regelavståndet."
+msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
+msgstr "Den här biten är bredare än en massiv skiva på %1$d × %2$d mm. Minska regelavståndet."
 
 #, php-format
 msgid "Add kit to basket"
@@ -91,8 +91,8 @@ msgid "Also available"
 msgstr "Även tillgänglig"
 
 #, php-format
-msgid "An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint."
-msgstr "På ett helt fack är en ytterskiva %1$d mm bredare än en mittskiva: den når ut till änden av den %2$d mm breda regeln och förlorar bara %3$d mm i skarven."
+msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
+msgstr "Sidskivorna är %1$d mm bredare så att de täcker den %2$d mm breda regeln. %3$d mm blir kvar vid skarven."
 
 #, php-format
 msgid "Anthracite"
@@ -111,7 +111,7 @@ msgid "Back"
 msgstr "Tillbaka"
 
 #, php-format
-msgid "Bar on every rafter"
+msgid "Profile on every rafter"
 msgstr "Profil på varje regel"
 
 #, php-format
@@ -131,8 +131,8 @@ msgid "Both side sheets are %d mm."
 msgstr "Båda sidoskivorna är %d mm."
 
 #, php-format
-msgid "Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm."
-msgstr "Båda sidorna räknas med. De angivna %1$d mm är en sida, från nocken till takfoten, så ramlängden är %2$d mm."
+msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
+msgstr "Du angav en sida (%1$d mm). Båda sidorna räknas med, så längden är %2$d mm."
 
 msgid "Bronze"
 msgstr "Brons"
@@ -233,17 +233,17 @@ msgstr "Standard är alla produktsidor, så formuläret syns utan extra inställ
 msgid "Default size (mm)"
 msgstr "Standardmått (mm)"
 
-msgid "Drip overhang"
-msgstr "Droppöverhäng"
+msgid "Overhang"
+msgstr "Överhäng"
 
 msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
 msgstr "Varje rad i materiallistan är en produkt från kopplingen nedan. Antalet räknas ut från den ram kunden har angett. En rad med tom variant-SKU visas ändå, märkt som inte i den här butiken, och resten av satsen kan läggas i korgen."
 
-msgid "Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter."
-msgstr "Varje skiva täcker så mycket av den valda bredden som möjligt. En skarv används bara där skivorna möts, och den sitter fortfarande på en regel."
+msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
+msgstr "Skivorna är så breda som möjligt. En skarv används bara där de möts, på en regel."
 
-msgid "Edge / finish profile"
-msgstr "Kant-/avslutningsprofil"
+msgid "Edge profile"
+msgstr "Kantprofil"
 
 msgid "End cap – brown"
 msgstr "Ändlock – brun"
@@ -254,8 +254,8 @@ msgstr "Ändlock – silver / grå"
 msgid "Enter a size to see the kit."
 msgstr "Ange mått för att se satsen."
 
-msgid "Enter a support beam width between 20 and 200 mm. 50 mm is the usual size."
-msgstr "Ange en regelbredd mellan 20 och 200 mm. 50 mm är det vanliga måttet."
+msgid "Beam width must be 20–200 mm. 50 mm is usual."
+msgstr "Balkbredden måste vara 20–200 mm. 50 mm är vanligt."
 
 msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
 msgstr "Ange en variant-SKU för varje standardbredd och längd. Kunden väljer bredd. Kalkylatorn använder den kortaste standardlängden som täcker ramlängden plus droppöverhänget."
@@ -267,8 +267,8 @@ msgstr "Ange en sida, från nocken till takfoten. Båda sidorna räknas med."
 msgid "Every product page"
 msgstr "Alla produktsidor"
 
-msgid "F aluminium"
-msgstr "F-aluminium"
+msgid "Aluminium F-profile"
+msgstr "F-profil i aluminium"
 
 msgid "Fewer joints"
 msgstr "Färre skarvar"
@@ -291,8 +291,8 @@ msgstr "Fästknappar (valfritt)"
 msgid "Fixings"
 msgstr "Fästdon"
 
-msgid "Frame details (rafter spacing & beam width)"
-msgstr "Ramdetaljer (reglavstånd och balkbredd)"
+msgid "Frame details"
+msgstr "Ramdetaljer"
 
 msgid "From shop"
 msgstr "Från butiken"
@@ -309,8 +309,8 @@ msgstr "Dölj det vanliga köpformuläret. Kunderna använder satserbjudandet i 
 msgid "how far the roof sticks out from the wall"
 msgstr "hur långt taket sticker ut från väggen"
 
-msgid "How many joining bars do you want?"
-msgstr "Hur många fogprofiler vill du ha?"
+msgid "How should the sheets be joined?"
+msgstr "Hur ska skivorna fogas?"
 
 msgid "How should the sheets be supplied?"
 msgstr "Hur ska skivorna levereras?"
@@ -345,8 +345,8 @@ msgstr "Sats"
 msgid "Kit total"
 msgstr "Satssumma"
 
-msgid "L aluminium"
-msgstr "L-aluminium"
+msgid "Aluminium L-profile"
+msgstr "L-profil i aluminium"
 
 msgid "Lean-to"
 msgstr "Pulpettak"
@@ -393,8 +393,8 @@ msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalplast (kapad efter mått)"
 
 #, php-format
-msgid "Multiwall: whole 2100 mm sheets, length rounded up to a full metre (1–7 m). Solid: whole 2050 × 3050 mm sheets, either way up."
-msgstr "Flervägg: hela 2100 mm skivor, längd avrundad upp till hela meter (1–7 m). Massiv: hela 2050 × 3050 mm skivor, båda hållen."
+msgid "You receive whole sheets. The diagram shows how to cut them."
+msgstr "Du får hela skivor. Skissen visar hur de kapas."
 
 #, php-format
 msgid "Neutral silicone"
@@ -404,8 +404,8 @@ msgid "Neutral silicone Silirub PC"
 msgstr "Neutral silikon Silirub PC"
 
 #, php-format
-msgid "No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings."
-msgstr "Inga produkter matchade det här valet. Kontrollera SKU-kopplingen i inställningarna för terrasskalkylatorn."
+msgid "These materials are not available in this shop."
+msgstr "De här materialen finns inte i den här butiken."
 
 #, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
@@ -494,8 +494,8 @@ msgid "Ready to fit — joints land on supports"
 msgstr "Klar att montera — skarvar hamnar på stöden"
 
 #, php-format
-msgid "Recommendation only — confirm structural strength with your architect."
-msgstr "Endast en rekommendation — bekräfta bärigheten med din arkitekt."
+msgid "A guide only. Confirm the structure before you build."
+msgstr "Endast en vägledning. Bekräfta konstruktionen innan du bygger."
 
 #, php-format
 msgid "Recommended centre spacing for this thickness: %s mm."
@@ -514,8 +514,8 @@ msgstr "Granska din sats"
 msgid "Ridge"
 msgstr "Nock"
 
-msgid "Ridge profile 2.2 m"
-msgstr "Nockprofil 2,2 m"
+msgid "Ridge profile"
+msgstr "Nockprofil"
 
 msgid "Ridge profile 2.2 m (gable)"
 msgstr "Nockprofil 2,2 m (sadeltak)"
@@ -564,8 +564,8 @@ msgid "Selected products"
 msgstr "Valda produkter"
 
 #, php-format
-msgid "Sheet overhang must be between 0 and 300 mm."
-msgstr "Skivöverhänget måste vara mellan 0 och 300 mm."
+msgid "Overhang must be 0–300 mm."
+msgstr "Överhänget måste vara 0–300 mm."
 
 #, php-format
 msgid "Sheet structure"
@@ -622,22 +622,22 @@ msgid "Solid polycarbonate (custom-cut)"
 msgstr "Massiv polykarbonat (kapad efter mått)"
 
 #, php-format
-msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length."
-msgstr "Massiva skivor är %1$d × %2$d mm och kan vändas åt båda håll. Längden på %3$d mm delas i %4$d bitar."
+msgid "Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm length needs %4$d pieces."
+msgstr "Massiva skivor är %1$d × %2$d mm och kan vändas åt båda håll. Den här längden på %3$d mm behöver %4$d bitar."
 
 #, php-format
-msgid "Some items are not in this shop (SKU not found). The rest can still be added."
-msgstr "Vissa varor finns inte i den här butiken (SKU hittades inte). Resten kan ändå läggas till."
+msgid "Some items are not available here. You can still add the rest."
+msgstr "Vissa varor finns inte här. Resten kan du ändå lägga till."
 
 #, php-format
 msgid "Spacing along each sheet"
 msgstr "Avstånd längs varje skiva"
 
 #, php-format
-msgid "Standard 50 mm. Joints sit on the beam centre and leave %d mm for the connecting profile."
-msgstr "Standard 50 mm. Skarvarna ligger mitt på regeln och lämnar %d mm till skarvprofilen."
+msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
+msgstr "Vanligtvis 50 mm. Skarvarna ligger på regeln och lämnar %d mm till profilen."
 
-msgid "Standard plates"
+msgid "Standard sheets"
 msgstr "Standardskivor"
 
 msgid "Standard sheet"
@@ -649,8 +649,8 @@ msgstr "Standardstorlekar"
 msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
 msgstr "Standardmått. Kunden väljer en bredd. Längden är den kortaste lagerlängden som täcker ramen plus droppkanten. Antalet är antalet skivor tvärs bredden, multiplicerat med antalet på längden. En ram på 4200 mm med en skiva på 2100 mm är 2 stycken. Samma ram med en skiva på 1050 mm är 4. En längd på 4750 mm på en skiva vars långsida är 3050 mm är 2 stycken på längden, så 3 på tvären gånger 2 på längden är 6. Ritningen är ett kappschema. Korgen får lagermåttet, och profilvalet ändrar inte det antalet."
 
-msgid "Stiffer roof, more profiles and screws."
-msgstr "Styvare tak, fler profiler och skruvar."
+msgid "More profiles and screws."
+msgstr "Fler profiler och skruvar."
 
 msgid "Suggested thickness"
 msgstr "Föreslagen tjocklek"
@@ -661,7 +661,7 @@ msgstr "Bärregel och skivöverhäng"
 msgid "Support beam width"
 msgstr "Bredd på bärregel"
 
-msgid "Support spacing (centre to centre)"
+msgid "Rafter spacing (centre to centre)"
 msgstr "Regelavstånd (centrum till centrum)"
 
 #, php-format
@@ -693,16 +693,16 @@ msgid "Terrace roof kit added to basket."
 msgstr "Terrasstak-satsen har lagts i varukorgen."
 
 #, php-format
-msgid "The cut diagram appears once the size is valid."
-msgstr "Kapskissen visas när måtten är giltiga."
+msgid "Enter the roof size to see the cutting diagram."
+msgstr "Ange takmåttet för att se kapskissen."
 
 #, php-format
-msgid "The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm."
-msgstr "Ritningen är ett möjligt regelupplägg. Materiallistan lägger till %1$d standardskivor på %2$d × %3$d mm."
+msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
+msgstr "Du köper %1$d hela skivor, %2$d × %3$d mm. Ritningen visar ett sätt att kapa dem."
 
 #, php-format
-msgid "The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm."
-msgstr "Den sista skivan skulle bli för smal att kapa. Justera regelavståndet så att varje bit är minst 100 mm."
+msgid "The last sheet would be under 100 mm. Adjust the rafter spacing."
+msgstr "Den sista skivan skulle bli under 100 mm. Justera regelavståndet."
 
 #, php-format
 msgid "The rafter count in the spacing note is advice. Rafters are not a product in the kit."
@@ -721,8 +721,8 @@ msgstr "Den här tjockleken och färgen finns bara som måttanpassad."
 msgid "This thickness and colour is out of stock."
 msgstr "Den här tjockleken och färgen är slut i lager."
 
-msgid "Three short steps: measure the roof, choose sheets and profiles, then add a complete kit — sheets, profiles, tapes, screws and sealant."
-msgstr "Tre korta steg: mät taket, välj skivor och profiler och lägg en komplett sats i varukorgen — skivor, profiler, tejp, skruvar och silikon."
+msgid "Measure the roof, choose the sheets, then add the kit."
+msgstr "Mät taket, välj skivorna och lägg till satsen."
 
 msgid "Total excl. VAT"
 msgstr "Totalt exkl. moms"
@@ -736,11 +736,11 @@ msgstr "Två sidor från en nock"
 msgid "Type"
 msgstr "Typ"
 
-msgid "U aluminium"
-msgstr "U-aluminium"
+msgid "Aluminium U-profile"
+msgstr "U-profil i aluminium"
 
-msgid "U plastic"
-msgstr "U-plast"
+msgid "Plastic U-profile"
+msgstr "U-profil i plast"
 
 msgid "Unable to add one of the kit items to the basket."
 msgstr "Kunde inte lägga till en av varorna i varukorgen."
@@ -784,8 +784,8 @@ msgstr "Vi väljer den kortaste lagerlängden som täcker ramen plus droppöverh
 msgid "Where the form appears"
 msgstr "Var formuläret visas"
 
-msgid "Wider sheets, lower profile cost. Joints still sit on rafters."
-msgstr "Bredare skivor, lägre profilkostnad. Skarvarna ligger ändå på reglarna."
+msgid "Wider sheets and fewer profiles. Joints still sit on the rafters."
+msgstr "Bredare skivor och färre profiler. Skarvarna ligger fortfarande på reglarna."
 
 msgid "Width"
 msgstr "Bredd"
@@ -799,12 +799,21 @@ msgstr "Bredd längs väggen"
 msgid "Wood screws with washers"
 msgstr "Träskruv med bricka"
 
-msgid "You cut them yourself"
-msgstr "Du kapar dem själv"
+msgid "You cut them to fit"
+msgstr "Du kapar dem till rätt mått"
 
 msgid "Your kit"
 msgstr "Din sats"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
-msgstr "Materiallistan till höger (eller under på telefon) inkluderar skivor, profiler, tejp, skruvar och silikon. Lägg hela satsen i varukorgen på en gång."
+msgid "Check the materials and prices, then add the kit to the basket."
+msgstr "Kontrollera material och priser, och lägg satsen i varukorgen."
 
+
+msgid "Wall profile"
+msgstr "Väggprofil"
+
+msgid "You can go back to change the size or materials. Shipping is calculated in the basket."
+msgstr "Du kan gå tillbaka och ändra mått eller material. Frakt räknas ut i varukorgen."
+
+msgid "Drip overhang"
+msgstr "Droppöverhäng"
