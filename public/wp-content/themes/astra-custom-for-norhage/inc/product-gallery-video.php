@@ -1,9 +1,9 @@
 <?php
 /**
- * One MP4 reel per product, shown under the photo gallery.
+ * One MP4 reel per product, shown as the next gallery image.
  *
- * The editor box sits after WooCommerce's Product gallery. The shop plays
- * the file muted. A clip shorter than the photo keeps the photo's height.
+ * The editor box sits after WooCommerce's Product gallery. The reel stays
+ * paused until the customer opens that slide, then plays muted.
  *
  * @package Astra Custom for Norhage
  */
@@ -86,12 +86,12 @@ function nh_gallery_video_icon( $name ) {
 }
 
 /**
- * Markup for the reel under the photos.
+ * Markup for the reel as the last product-gallery slide.
  *
- * Autoplay is started in script, and only when the visitor has not asked
- * for reduced motion. The muted attribute is what lets that autoplay run.
+ * The slide stays paused until the customer opens it. The muted attribute
+ * lets that later play start without sound.
  *
- * @param array $video url, mime, poster, label, width, height.
+ * @param array $video url, mime, poster, thumb, label, width, height.
  * @return string
  */
 function nh_gallery_video_html( array $video ) {
@@ -107,6 +107,7 @@ function nh_gallery_video_html( array $video ) {
 	}
 
 	$poster = isset( $video['poster'] ) ? (string) $video['poster'] : '';
+	$thumb  = isset( $video['thumb'] ) ? (string) $video['thumb'] : $poster;
 	$width  = isset( $video['width'] ) ? (int) $video['width'] : 0;
 	$height = isset( $video['height'] ) ? (int) $video['height'] : 0;
 
@@ -142,19 +143,32 @@ function nh_gallery_video_html( array $video ) {
 	$sound_off = __( 'Sound off', 'nh-theme' );
 	$play      = __( 'Play video', 'nh-theme' );
 
-	return '<div class="nh-gallery-video">'
+	$poster_html = '';
+	if ( '' !== $poster ) {
+		$poster_html = '<img class="nh-gallery-video__poster" src="' . esc_url( $poster ) . '" alt="" />';
+	}
+
+	$thumb_attr = '';
+	if ( '' !== $thumb ) {
+		$thumb_attr = ' data-thumb="' . esc_url( $thumb ) . '"';
+	}
+
+	return '<div class="woocommerce-product-gallery__image nh-gallery-video-slide"' . $thumb_attr . '>'
+		. '<div class="nh-gallery-video">'
+		. $poster_html
 		. '<video' . $attr_html . '>'
 		. '<source src="' . esc_url( $url ) . '" type="video/mp4" />'
 		. '</video>'
-		. '<button type="button" class="nh-gallery-video__sound" data-mode="muted" aria-pressed="false"'
+		. '<button type="button" class="nh-gallery-video__sound" data-mode="play" aria-pressed="false"'
 		. ' data-label-on="' . esc_attr( $sound_on ) . '"'
 		. ' data-label-off="' . esc_attr( $sound_off ) . '"'
 		. ' data-label-play="' . esc_attr( $play ) . '"'
-		. ' aria-label="' . esc_attr( $sound_on ) . '">'
+		. ' aria-label="' . esc_attr( $play ) . '">'
 		. nh_gallery_video_icon( 'muted' )
 		. nh_gallery_video_icon( 'sound' )
 		. nh_gallery_video_icon( 'play' )
 		. '</button>'
+		. '</div>'
 		. '</div>';
 }
 
@@ -179,9 +193,14 @@ function nh_gallery_video_for_product( $product_id ) {
 	}
 
 	$poster   = '';
+	$thumb    = '';
 	$image_id = (int) get_post_thumbnail_id( $product_id );
 	if ( $image_id ) {
 		$poster = (string) wp_get_attachment_image_url( $image_id, 'woocommerce_single' );
+		$thumb  = (string) wp_get_attachment_image_url( $image_id, 'woocommerce_gallery_thumbnail' );
+		if ( '' === $thumb ) {
+			$thumb = $poster;
+		}
 	}
 
 	$meta   = wp_get_attachment_metadata( $attachment_id );
@@ -194,6 +213,7 @@ function nh_gallery_video_for_product( $product_id ) {
 			'url'    => $url,
 			'mime'   => $mime,
 			'poster' => $poster,
+			'thumb'  => $thumb,
 			'label'  => '' !== $title ? $title : __( 'Product video', 'nh-theme' ),
 			'width'  => $width,
 			'height' => $height,
@@ -202,7 +222,7 @@ function nh_gallery_video_for_product( $product_id ) {
 }
 
 /**
- * Print the reel after the gallery markup and before the photo note.
+ * Print the reel as the last slide inside the product gallery.
  */
 function nh_gallery_video_render() {
 	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
@@ -221,7 +241,7 @@ function nh_gallery_video_render() {
 
 	echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in nh_gallery_video_html().
 }
-add_action( 'woocommerce_before_single_product_summary', 'nh_gallery_video_render', 22 );
+add_action( 'woocommerce_product_thumbnails', 'nh_gallery_video_render', 30 );
 
 /**
  * Sidebar box directly after Product gallery.
@@ -283,7 +303,7 @@ function nh_gallery_video_metabox_html( $post ) {
 			</button>
 		</p>
 		<p class="description">
-			<?php esc_html_e( 'One MP4, about 6–12 MB for a 20–30 second reel. The product page plays it automatically, without sound, under the photos.', 'nh-theme' ); ?>
+			<?php esc_html_e( 'One MP4, about 6–12 MB for a 20–30 second reel. It appears as the next image in the product gallery and stays paused until that image is opened.', 'nh-theme' ); ?>
 		</p>
 	</div>
 	<?php

@@ -85,6 +85,8 @@ $html = nh_gallery_video_html(
 	)
 );
 
+nh_vg_assert( 'markup is a gallery slide', false !== strpos( $html, 'nh-gallery-video-slide' ) );
+nh_vg_assert( 'slide carries a thumbnail', false !== strpos( $html, 'data-thumb="https://cdn.example/poster.jpg"' ) );
 nh_vg_assert( 'markup is a video block', false !== strpos( $html, 'class="nh-gallery-video"' ) );
 nh_vg_assert( 'file is an mp4 source', false !== strpos( $html, 'type="video/mp4"' ) );
 nh_vg_assert( 'query string is escaped', false !== strpos( $html, 'x=1&amp;y=2' ) );
@@ -94,7 +96,8 @@ nh_vg_assert( 'video plays inline', false !== strpos( $html, ' playsinline' ) );
 nh_vg_assert( 'autoplay is left to script', false === strpos( $html, 'autoplay' ) );
 nh_vg_assert( 'poster is the product image', false !== strpos( $html, 'poster="https://cdn.example/poster.jpg"' ) );
 nh_vg_assert( 'label is on the video', false !== strpos( $html, 'aria-label="Greenhouse reel"' ) );
-nh_vg_assert( 'sound button starts muted', false !== strpos( $html, 'data-mode="muted"' ) );
+nh_vg_assert( 'sound button waits for the slide to open', false !== strpos( $html, 'data-mode="play"' ) );
+nh_vg_assert( 'play button is the first label', false !== strpos( $html, 'aria-label="Play video"' ) );
 nh_vg_assert( 'sound on label is present', false !== strpos( $html, 'data-label-on="Sound on"' ) );
 nh_vg_assert( 'sound off label is present', false !== strpos( $html, 'data-label-off="Sound off"' ) );
 nh_vg_assert( 'play label is present', false !== strpos( $html, 'data-label-play="Play video"' ) );
@@ -114,7 +117,14 @@ $php = file_get_contents( dirname( __DIR__ ) . '/inc/product-gallery-video.php' 
 nh_vg_assert( 'box is titled Video gallery', false !== strpos( $php, "__( 'Video gallery', 'nh-theme' )" ) );
 nh_vg_assert( 'box is in the sidebar', false !== strpos( $php, "'side'" ) );
 nh_vg_assert( 'box is registered after the product gallery', false !== strpos( $php, "'nh_gallery_video_add_metabox', 40" ) );
-nh_vg_assert( 'reel prints after the gallery hook slot', false !== strpos( $php, "'nh_gallery_video_render', 22" ) );
+nh_vg_assert(
+	'reel prints as the last gallery slide',
+	false !== strpos( $php, "add_action( 'woocommerce_product_thumbnails', 'nh_gallery_video_render', 30 )" )
+);
+nh_vg_assert(
+	'reel is not a block under the gallery',
+	false === strpos( $php, 'woocommerce_before_single_product_summary' )
+);
 
 $functions = file_get_contents( dirname( __DIR__ ) . '/functions.php' );
 nh_vg_assert(
@@ -123,10 +133,12 @@ nh_vg_assert(
 );
 
 $js = file_get_contents( dirname( __DIR__ ) . '/assets/js/product-gallery-note.js' );
-nh_vg_assert( 'script places the reel with the photo note', false !== strpos( $js, 'function placeGalleryTail' ) );
-nh_vg_assert( 'script matches a short clip to the photo height', false !== strpos( $js, 'Math.max(galleryHeight' ) );
+nh_vg_assert( 'script keeps the photo note under the thumbnails', false !== strpos( $js, 'function moveProductImageNote' ) );
+nh_vg_assert( 'script does not park the reel under the gallery', false === strpos( $js, 'function placeGalleryTail' ) );
+nh_vg_assert( 'script matches the reel to the photo frame', false !== strpos( $js, 'function syncVideoFrame' ) );
+nh_vg_assert( 'script plays only after the slide is opened', false !== strpos( $js, 'data-nh-opened' ) );
 nh_vg_assert( 'script respects reduced motion', false !== strpos( $js, 'prefers-reduced-motion' ) );
-nh_vg_assert( 'script starts muted', false !== strpos( $js, 'function playMuted' ) );
+nh_vg_assert( 'opened slide can play muted', false !== strpos( $js, 'function playMuted' ) );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/product-page.css' );
 nh_vg_assert( 'short clip covers the photo frame', false !== strpos( $css, 'object-fit: cover' ) );

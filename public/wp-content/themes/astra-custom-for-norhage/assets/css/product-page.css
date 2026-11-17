@@ -1454,36 +1454,61 @@
   color: #8a9691;
 }
 
-/* Reel under the photos. Until script moves it into the gallery column,
-   keep it in the left half so it does not push the buy box down. */
-.single-product div.product > .nh-gallery-video{
-  float: left;
-  clear: left;
-  width: 50%;
-  box-sizing: border-box;
+/* Reel is the next gallery slide. It fills the photo frame, so a short
+   clip does not shrink the gallery and a tall one does not grow it. */
+.single-product .woocommerce-product-gallery .nh-gallery-video-slide{
+  position: relative;
 }
 
-.single-product .woocommerce-product-gallery .nh-gallery-video{
-  float: none;
-  clear: none;
-  width: 100%;
+.single-product .woocommerce-product-gallery .flex-viewport .nh-gallery-video-slide{
+  height: 100%;
 }
 
 .single-product .nh-gallery-video{
   position: relative;
+  height: 100%;
+  margin: 0;
   overflow: hidden;
-  width: 100%;
-  margin: 12px 0 0;
   background: #141816;
 }
 
+.single-product .nh-gallery-video__poster,
 .single-product .nh-gallery-video__media{
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   background: #141816;
+}
+
+.single-product .nh-gallery-video__poster{
+  pointer-events: none;
+}
+
+.single-product .nh-gallery-video__media{
+  z-index: 1;
   cursor: pointer;
+}
+
+.single-product .flex-control-thumbs li.nh-gallery-video-thumb{
+  position: relative;
+}
+
+.single-product .flex-control-thumbs li.nh-gallery-video-thumb::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin: -7px 0 0 -4px;
+  border-style: solid;
+  border-width: 7px 0 7px 11px;
+  border-color: transparent transparent transparent #fff;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.65));
+  pointer-events: none;
 }
 
 .single-product .nh-gallery-video__sound{
@@ -1518,14 +1543,6 @@
 .single-product .nh-gallery-video__sound[data-mode="sound"] .nh-gallery-video__icon--sound,
 .single-product .nh-gallery-video__sound[data-mode="play"] .nh-gallery-video__icon--play{
   display: block;
-}
-
-@media (max-width: 921px){
-  .single-product div.product > .nh-gallery-video{
-    float: none;
-    clear: none;
-    width: 100%;
-  }
 }
 
 /* ==========================================================================

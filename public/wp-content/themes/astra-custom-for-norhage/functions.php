@@ -198,6 +198,7 @@ function norhage_enqueue_assets() {
 			array(
 				'imagesLabel' => __( 'Product images', 'nh-theme' ),
 				'imageLabel'  => __( 'Image %1$d of %2$d', 'nh-theme' ),
+				'videoLabel'  => __( 'Product video', 'nh-theme' ),
 			)
 		);
 	}
