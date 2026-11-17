@@ -269,7 +269,7 @@
     if (lengthLabel) {
       lengthLabel.textContent = gable
         ? i18n('lengthGable', 'Length of one side (ridge to eave)')
-        : i18n('lengthLean', 'Frame length (projection)');
+        : i18n('lengthLean', 'Projection (wall to front)');
     }
   }
 
@@ -743,7 +743,7 @@
   function drawPlan(meta) {
     if (!planEl) return;
     if (!meta || !meta.sheet_plan || !meta.sheet_plan.length) {
-      planEl.innerHTML = '<p class="nh-tc__plan-note">' + i18n('planWait', 'The cut diagram appears once the size is valid.') + '</p>';
+      planEl.innerHTML = '<p class="nh-tc__plan-note">' + i18n('planWait', 'Enter the roof size to see the cutting diagram.') + '</p>';
       return;
     }
 
@@ -824,7 +824,7 @@
           [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
         );
     } else if (meta.profile_joints === 'optimal') {
-      var optimalText = i18n('planOptimal', 'Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter.');
+      var optimalText = i18n('planOptimal', 'Sheets are as wide as they can be. A joint is added only where they meet, on a rafter.');
       if (!split) {
         optimalText += ' ' + fillTemplate(
           i18n('planCut', 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
@@ -839,7 +839,7 @@
         ? i18n('planSidesEqual', 'Both side sheets are %d mm.').replace('%d', leftW)
         : fillTemplate(i18n('planSides', 'The side sheets are %1$d mm and %2$d mm.'), [leftW, rightW]);
       var text = fillTemplate(
-        i18n('planOuter', 'An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint.'),
+        i18n('planOuter', 'Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint.'),
         [meta.side_extra_mm, meta.support_mm, halfGap]
       ) + ' ' + sides;
       if (framed) text += ' ' + i18n('planJoint', 'Joints sit on the centre of a rafter.');
@@ -883,7 +883,7 @@
       var gableNote = document.createElement('p');
       gableNote.className = 'nh-tc__plan-note';
       gableNote.textContent = fillTemplate(
-        i18n('planGable', 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.'),
+        i18n('planGable', 'You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm.'),
         [meta.projection_mm, meta.length_mm]
       );
       planEl.appendChild(gableNote);
@@ -892,7 +892,7 @@
       var stockNote = document.createElement('p');
       stockNote.className = 'nh-tc__plan-note';
       stockNote.textContent = fillTemplate(
-        i18n('planStockBuy', 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.'),
+        i18n('planStockBuy', 'You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them.'),
         [meta.sheet_count, meta.stock_width_mm, meta.stock_length_mm]
       );
       planEl.appendChild(stockNote);
@@ -901,7 +901,7 @@
       var solidNote = document.createElement('p');
       solidNote.className = 'nh-tc__plan-note';
       solidNote.textContent = fillTemplate(
-        i18n('planSolid', 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length.'),
+        i18n('planSolid', 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm length needs %4$d pieces.'),
         [meta.blank_short_mm, meta.blank_long_mm, meta.sheet_length_mm, meta.length_pieces]
       );
       planEl.appendChild(solidNote);

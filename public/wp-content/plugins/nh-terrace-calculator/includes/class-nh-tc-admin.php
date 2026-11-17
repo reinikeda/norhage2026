@@ -454,10 +454,10 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Finish profiles', NH_TC_TD ); ?></h2>
 				<?php self::profile_table( $key, 'finish', $s['finish'], array(
-					'f_aluminium' => __( 'F aluminium', NH_TC_TD ),
-					'u_plastic'   => __( 'U plastic', NH_TC_TD ),
-					'u_aluminium' => __( 'U aluminium', NH_TC_TD ),
-					'l_aluminium' => __( 'L aluminium', NH_TC_TD ),
+					'f_aluminium' => __( 'Aluminium F-profile', NH_TC_TD ),
+					'u_plastic'   => __( 'Plastic U-profile', NH_TC_TD ),
+					'u_aluminium' => __( 'Aluminium U-profile', NH_TC_TD ),
+					'l_aluminium' => __( 'Aluminium L-profile', NH_TC_TD ),
 				), array( 'silver', 'brown', 'clear' ) ); ?>
 
 				<h2><?php esc_html_e( 'Sealing tapes, screws and extras', NH_TC_TD ); ?></h2>

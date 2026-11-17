@@ -88,9 +88,9 @@ class NH_TC_Catalog {
 			case 'finish':
 				return self::resolve_finish( $line, $meta, $settings );
 			case 'wall':
-				return array( self::resolve_simple_variable( $line, $settings['hardware']['wall'], array(), __( 'Wall profile 2.2 m', NH_TC_TD ) ) );
+				return array( self::resolve_simple_variable( $line, $settings['hardware']['wall'], array(), __( 'Wall profile', NH_TC_TD ) ) );
 			case 'ridge':
-				return array( self::resolve_simple_variable( $line, $settings['hardware']['ridge'], array(), __( 'Ridge profile 2.2 m', NH_TC_TD ) ) );
+				return array( self::resolve_simple_variable( $line, $settings['hardware']['ridge'], array(), __( 'Ridge profile', NH_TC_TD ) ) );
 			case 'vent_tape':
 				return array( self::resolve_simple_variable( $line, $settings['hardware']['vent_tape'], $line['attrs'] ?? array(), __( 'Ventilation sealing tape', NH_TC_TD ) ) );
 			case 'iso_tape':
@@ -102,7 +102,7 @@ class NH_TC_Catalog {
 				}
 				return array( self::resolve_simple_variable( $line, $sku, array(), __( 'Clamping profile end cap', NH_TC_TD ) ) );
 			case 'silicon':
-				return array( self::resolve_simple_variable( $line, $settings['hardware']['silicon'], array(), __( 'Neutral silicone Silirub PC', NH_TC_TD ) ) );
+				return array( self::resolve_simple_variable( $line, $settings['hardware']['silicon'], array(), __( 'Neutral silicone', NH_TC_TD ) ) );
 		}
 
 		return array();

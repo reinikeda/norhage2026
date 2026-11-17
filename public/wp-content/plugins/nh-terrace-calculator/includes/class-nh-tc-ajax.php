@@ -58,7 +58,7 @@ class NH_TC_Ajax {
 
 		if ( ! $items ) {
 			wp_send_json_error(
-				array( 'message' => __( 'No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings.', NH_TC_TD ) ),
+				array( 'message' => __( 'These materials are not available in this shop.', NH_TC_TD ) ),
 				400
 			);
 		}
@@ -231,7 +231,7 @@ class NH_TC_Ajax {
 			$blank = NH_TC_Engine::solid_blank( $settings );
 			return sprintf(
 				/* translators: 1: shorter solid-sheet side in millimetres, 2: longer side in millimetres */
-				__( 'A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing.', NH_TC_TD ),
+				__( 'This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing.', NH_TC_TD ),
 				(int) $blank['short_mm'],
 				(int) $blank['long_mm']
 			);
@@ -239,18 +239,18 @@ class NH_TC_Ajax {
 		if ( in_array( 'sheet_width', $errors, true ) ) {
 			return sprintf(
 				/* translators: %d: maximum polycarbonate sheet width in millimetres */
-				__( 'A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet.', NH_TC_TD ),
+				__( 'A sheet would be wider than %d mm. Reduce the rafter spacing.', NH_TC_TD ),
 				(int) $settings['standard_sheet_width_mm']
 			);
 		}
 		if ( in_array( 'sheet_narrow', $errors, true ) ) {
-			return __( 'The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm.', NH_TC_TD );
+			return __( 'The last sheet would be under 100 mm. Adjust the rafter spacing.', NH_TC_TD );
 		}
 		if ( in_array( 'support', $errors, true ) ) {
-			return __( 'Enter a support beam width between 20 and 200 mm. 50 mm is the usual size.', NH_TC_TD );
+			return __( 'Beam width must be 20–200 mm. 50 mm is usual.', NH_TC_TD );
 		}
 		if ( in_array( 'overhang', $errors, true ) ) {
-			return __( 'Sheet overhang must be between 0 and 300 mm.', NH_TC_TD );
+			return __( 'Overhang must be 0–300 mm.', NH_TC_TD );
 		}
 		if ( in_array( 'standard_sheet', $errors, true ) ) {
 			return __( 'This thickness and colour is only available as a custom cut.', NH_TC_TD );
