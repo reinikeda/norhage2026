@@ -473,7 +473,6 @@ class NH_TC_Admin {
 						'fixing_buttons' => __( 'Fixing buttons (optional)', NH_TC_TD ),
 						'vent_tape'       => __( 'Ventilation / anti-dust tape', NH_TC_TD ),
 						'iso_tape'        => __( 'Insulation sealing tape', NH_TC_TD ),
-						'gasket'          => __( 'EPDM rubber gasket 50 mm', NH_TC_TD ),
 						'silicon'         => __( 'Neutral silicone', NH_TC_TD ),
 						'wall'            => __( 'Wall profile 2.2 m', NH_TC_TD ),
 						'ridge'           => __( 'Ridge profile 2.2 m (gable)', NH_TC_TD ),
@@ -524,8 +523,8 @@ class NH_TC_Admin {
 			<h3><?php esc_html_e( 'Finish, wall and ridge', NH_TC_TD ); ?></h3>
 			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
 
-			<h3><?php esc_html_e( 'Tapes, gasket and silicone', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube.', NH_TC_TD ); ?></p>
+			<h3><?php esc_html_e( 'Tapes and silicone', NH_TC_TD ); ?></h3>
+			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket.', NH_TC_TD ); ?></p>
 			<p><?php esc_html_e( 'The rafter count in the spacing note is advice. Rafters are not a product in the kit.', NH_TC_TD ); ?></p>
 		</div>
 		<?php

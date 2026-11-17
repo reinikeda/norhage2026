@@ -142,7 +142,6 @@ class NH_TC_Defaults {
 					'brown'  => '704105',
 					'grey'   => '704113',
 				),
-				'gasket'      => '704615',
 				'silicon'     => '8056',
 			),
 		);

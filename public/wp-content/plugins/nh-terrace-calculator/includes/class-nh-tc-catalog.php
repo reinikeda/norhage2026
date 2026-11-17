@@ -101,8 +101,6 @@ class NH_TC_Catalog {
 					$sku = $settings['hardware']['end_cap']['silver'] ?? '';
 				}
 				return array( self::resolve_simple_variable( $line, $sku, array(), __( 'Clamping profile end cap', NH_TC_TD ) ) );
-			case 'gasket':
-				return array( self::resolve_simple_variable( $line, $settings['hardware']['gasket'], array(), __( 'EPDM rubber gasket 50 mm', NH_TC_TD ) ) );
 			case 'silicon':
 				return array( self::resolve_simple_variable( $line, $settings['hardware']['silicon'], array(), __( 'Neutral silicone Silirub PC', NH_TC_TD ) ) );
 		}
@@ -317,7 +315,7 @@ class NH_TC_Catalog {
 				$attrs,
 				__( 'Finish profile', NH_TC_TD )
 			);
-			$one['spec'] = $length_slug . ' × ' . (int) $qty;
+			$one['spec'] = (string) $length_slug;
 			$out[] = $one;
 		}
 		return $out;
@@ -379,13 +377,11 @@ class NH_TC_Catalog {
 		$sell = $variation instanceof WC_Product ? $variation : $product;
 		$item = self::build_item( $product, $variation_id, $matched_atts, $qty, $line['role'], $fallback_name, $sell );
 
-		if ( ! empty( $line['qty_raw'] ) ) {
-			$item['qty_raw'] = (int) $line['qty_raw'];
-			$item['spec']    = sprintf(
-				/* translators: 1: raw screw count, 2: pack size */
-				__( '%1$d pcs (%2$d / pack)', NH_TC_TD ),
-				(int) $line['qty_raw'],
-				isset( $line['pack_size'] ) ? (int) $line['pack_size'] : 50
+		if ( ! empty( $line['pack_size'] ) ) {
+			$item['spec'] = sprintf(
+				/* translators: pieces in one pack */
+				__( '(%d / pack)', NH_TC_TD ),
+				(int) $line['pack_size']
 			);
 		}
 
