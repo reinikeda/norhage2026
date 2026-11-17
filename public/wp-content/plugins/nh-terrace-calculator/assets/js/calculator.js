@@ -623,6 +623,7 @@
     syncGableHint();
     syncSupplyAvailability();
     syncStockCard();
+    drawInlineThumbs();
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
   }
@@ -635,13 +636,70 @@
     });
   }
 
-  var visualRoles = { sheet: 1, connecting: 1, finish: 1, wall: 1, ridge: 1 };
+  function sheetChoiceImage() {
+    var sheets = (cfg.choiceImages && cfg.choiceImages.sheet) || {};
+    var material = matSel ? matSel.value : 'multiwall';
+    var thickness = thkSel ? thkSel.value : '';
+    var colour = colSel ? colSel.value : '';
+    var byThickness = sheets[material] || {};
+    var row = byThickness[thickness] || {};
+    if (row[colour]) return row[colour];
+    var colours = Object.keys(row);
+    if (colours.length) return row[colours[0]];
+    var thicknesses = Object.keys(byThickness);
+    for (var i = 0; i < thicknesses.length; i++) {
+      var fallback = byThickness[thicknesses[i]] || {};
+      var names = Object.keys(fallback);
+      if (names.length) return fallback[names[0]];
+    }
+    return '';
+  }
+
+  function profileChoiceImage(group, typeSel, colourSel) {
+    var tree = (cfg.choiceImages && cfg.choiceImages[group]) || {};
+    var type = typeSel ? typeSel.value : '';
+    var colour = colourSel ? colourSel.value : '';
+    var row = tree[type] || {};
+    if (row[colour]) return row[colour];
+    var colours = Object.keys(row);
+    return colours.length ? row[colours[0]] : '';
+  }
+
+  function hardwareImage(slot, colour) {
+    var hw = (cfg.choiceImages && cfg.choiceImages.hardware) || {};
+    var value = hw[slot];
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (colour && value[colour]) return value[colour];
+    var colours = Object.keys(value);
+    return colours.length ? value[colours[0]] : '';
+  }
+
+  function itemImage(item) {
+    if (item && item.image) return item.image;
+    if (!item) return '';
+    if (item.role === 'sheet') return sheetChoiceImage();
+    if (item.role === 'connecting') return profileChoiceImage('connecting', connectSel, connectCol);
+    if (item.role === 'finish') return profileChoiceImage('finish', finishSel, finishCol);
+    if (item.role === 'end_cap') return hardwareImage('end_cap', connectCol ? connectCol.value : 'silver');
+    var slot = {
+      screw: 'screws',
+      fixing_button: 'fixing_buttons',
+      vent_tape: 'vent_tape',
+      iso_tape: 'iso_tape',
+      silicon: 'silicon',
+      wall: 'wall',
+      ridge: 'ridge'
+    }[item.role];
+    return slot ? hardwareImage(slot) : '';
+  }
 
   function productThumb(item) {
-    if (!item || !item.image || !visualRoles[item.role]) return null;
+    var src = itemImage(item);
+    if (!src) return null;
     var img = document.createElement('img');
     img.className = 'nh-tc__thumb';
-    img.src = item.image;
+    img.src = src;
     img.alt = '';
     img.width = 48;
     img.height = 48;
@@ -656,18 +714,12 @@
     return value;
   }
 
-  function firstWithImage(items, role) {
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].role === role && items[i].image) return items[i];
-    }
-    return null;
-  }
-
   function setInlineThumb(el, item) {
     if (!el) return;
     var img = el.querySelector('img');
+    var src = item ? itemImage(item) : '';
     var url = item ? safeUrl(item.permalink) : '';
-    if (!item || !item.image) {
+    if (!src) {
       el.classList.add('is-empty');
       el.removeAttribute('href');
       if (img) img.removeAttribute('src');
@@ -675,17 +727,17 @@
     }
     el.classList.remove('is-empty');
     if (img) {
-      img.src = item.image;
+      img.src = src;
       img.alt = item.name || item.label || '';
     }
     if (url) el.href = url;
     else el.removeAttribute('href');
   }
 
-  function drawInlineThumbs(items) {
-    setInlineThumb(inlineThumbs.sheet, firstWithImage(items, 'sheet'));
-    setInlineThumb(inlineThumbs.connecting, firstWithImage(items, 'connecting'));
-    setInlineThumb(inlineThumbs.finish, firstWithImage(items, 'finish'));
+  function drawInlineThumbs() {
+    setInlineThumb(inlineThumbs.sheet, { role: 'sheet' });
+    setInlineThumb(inlineThumbs.connecting, { role: 'connecting' });
+    setInlineThumb(inlineThumbs.finish, { role: 'finish' });
   }
 
   function drawPlan(meta) {
@@ -984,5 +1036,6 @@
   syncGableHint();
   syncSupplyAvailability();
   syncStockCard();
+  drawInlineThumbs([]);
   quote();
 })();

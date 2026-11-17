@@ -454,6 +454,7 @@ class NH_TC_Render {
 				'recCc'      => $s['recommended_cc'],
 				'supportRanges' => NH_TC_Engine::support_range_tables(),
 				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $live['standard_sheets'] ) ? $live['standard_sheets'] : array() ),
+				'choiceImages'   => NH_TC_Catalog::choice_images( $s ),
 				'customStock'    => NH_TC_Catalog::custom_stock_flags( $s ),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
 				'showPostcode' => ! empty( $s['show_postcode'] ),
