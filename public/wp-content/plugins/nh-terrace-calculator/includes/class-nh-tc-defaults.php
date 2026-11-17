@@ -41,7 +41,6 @@ class NH_TC_Defaults {
 			'screw_pack_size'        => 50,
 			'silicon_metres_per_tube'=> 10,
 			'tape_roll_mm'           => 5000,
-			'show_postcode'          => 0,
 			'default_cc_mm'          => 600,
 			'default_support_mm'     => 50,
 			'min_support_mm'         => 20,

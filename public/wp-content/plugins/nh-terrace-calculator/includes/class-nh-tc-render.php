@@ -105,11 +105,10 @@ class NH_TC_Render {
 		$max_sup   = isset( $s['max_support_mm'] ) ? (int) $s['max_support_mm'] : 200;
 		$max_oh    = isset( $s['max_overhang_mm'] ) ? (int) $s['max_overhang_mm'] : 300;
 		$gap         = isset( $s['profile_gap_mm'] ) ? (int) $s['profile_gap_mm'] : 10;
-		$show_post   = ! empty( $s['show_postcode'] );
 
 		ob_start();
 		?>
-		<section class="nh-tc" id="nh-terrace-calculator" data-step="<?php echo esc_attr( $s['step_mm'] ); ?>" data-wizard-step="1" data-show-postcode="<?php echo $show_post ? '1' : '0'; ?>">
+		<section class="nh-tc" id="nh-terrace-calculator" data-step="<?php echo esc_attr( $s['step_mm'] ); ?>" data-wizard-step="1">
 			<div class="nh-tc__intro">
 				<h2 class="nh-tc__title"><?php esc_html_e( 'Terrace roof calculator', NH_TC_TD ); ?></h2>
 				<p class="nh-tc__lead"><?php esc_html_e( 'Three short steps: measure the roof, choose sheets and profiles, then add a complete kit — sheets, profiles, tapes, screws and sealant.', NH_TC_TD ); ?></p>
@@ -374,14 +373,7 @@ class NH_TC_Render {
 								<li><?php esc_html_e( 'Screws for bars and edges, plus fixing buttons when mapped', NH_TC_TD ); ?></li>
 								<li><?php esc_html_e( 'Ventilation and sealing tapes and neutral silicone', NH_TC_TD ); ?></li>
 							</ul>
-							<?php if ( $show_post ) : ?>
-								<label class="nh-tc__postcode">
-									<span><?php esc_html_e( 'Postal code (for shipping)', NH_TC_TD ); ?></span>
-									<input type="text" name="postcode" autocomplete="postal-code" maxlength="12" inputmode="text">
-								</label>
-							<?php else : ?>
-								<input type="hidden" name="postcode" value="">
-							<?php endif; ?>
+							<p class="nh-tc__hint"><?php esc_html_e( 'Shipping is calculated in the basket.', NH_TC_TD ); ?></p>
 						</fieldset>
 					</div>
 
@@ -403,7 +395,7 @@ class NH_TC_Render {
 						<div class="nh-tc__totals" hidden>
 							<div class="nh-tc__tax"><span><?php esc_html_e( 'VAT', NH_TC_TD ); ?></span><span data-offer-tax></span></div>
 							<div class="nh-tc__sum"><span><?php echo esc_html( 'excl' === get_option( 'woocommerce_tax_display_shop', 'incl' ) ? __( 'Total excl. VAT', NH_TC_TD ) : __( 'Total incl. VAT', NH_TC_TD ) ); ?></span><span data-offer-total></span></div>
-							<p class="nh-tc__ship"><?php esc_html_e( 'Shipping is calculated in the basket from your postal code.', NH_TC_TD ); ?></p>
+							<p class="nh-tc__ship"><?php esc_html_e( 'Shipping is calculated in the basket.', NH_TC_TD ); ?></p>
 						</div>
 						<button type="button" class="nh-tc__atc button alt" data-offer-atc disabled>
 							<?php esc_html_e( 'Add kit to basket', NH_TC_TD ); ?>
@@ -454,9 +446,9 @@ class NH_TC_Render {
 				'recCc'      => $s['recommended_cc'],
 				'supportRanges' => NH_TC_Engine::support_range_tables(),
 				'standardSheets' => NH_TC_Defaults::normalize_standard_sheets( isset( $live['standard_sheets'] ) ? $live['standard_sheets'] : array() ),
+				'choiceImages'   => NH_TC_Catalog::choice_images( $s ),
 				'customStock'    => NH_TC_Catalog::custom_stock_flags( $s ),
 				'defaultCc'  => isset( $s['default_cc_mm'] ) ? (int) $s['default_cc_mm'] : 600,
-				'showPostcode' => ! empty( $s['show_postcode'] ),
 				'currency'   => class_exists( 'WooCommerce' ) ? NH_TC_Catalog::currency_payload() : array(),
 				'taxDisplay' => get_option( 'woocommerce_tax_display_shop', 'incl' ),
 				'i18n'       => array(

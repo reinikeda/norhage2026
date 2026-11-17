@@ -77,7 +77,6 @@ class NH_TC_Admin {
 		}
 
 		$out['silicon_metres_per_tube'] = isset( $input['silicon_metres_per_tube'] ) ? (float) $input['silicon_metres_per_tube'] : $defaults['silicon_metres_per_tube'];
-		$out['show_postcode']           = empty( $input['show_postcode'] ) ? 0 : 1;
 		$out['display_mode']            = in_array( $input['display_mode'] ?? '', array( 'all_products', 'selected', 'flagged' ), true )
 			? $input['display_mode']
 			: 'all_products';
@@ -384,10 +383,6 @@ class NH_TC_Admin {
 								<input type="number" name="<?php echo esc_attr( $key ); ?>[max_length_mm]" value="<?php echo esc_attr( $s['max_length_mm'] ); ?>">
 							</label>
 						</td>
-					</tr>
-					<tr>
-						<th><?php esc_html_e( 'Show postcode field', NH_TC_TD ); ?></th>
-						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_postcode]" value="1" <?php checked( ! empty( $s['show_postcode'] ) ); ?>> <?php esc_html_e( 'Show the postal-code step on the storefront. Saved to the customer when the kit is added, so shipping can be quoted in the basket.', NH_TC_TD ); ?></label></td>
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Screw spacing (mm)', NH_TC_TD ); ?></th>

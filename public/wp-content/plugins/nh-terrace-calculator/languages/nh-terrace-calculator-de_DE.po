@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
@@ -583,8 +583,8 @@ msgstr "Platten so zugeschnitten, dass jeder Stoß auf der Trägermitte liegt"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Die Platten überspannen mehrere Träger und werden aus der Lagerbreite von %1$d mm geschnitten. Ein Stoß wird nur gesetzt, wo das nächste Stück sonst breiter wäre, und er liegt weiterhin auf einem Träger. Zuschnittlänge %2$d mm (Rahmen %3$d mm + %4$d mm Überstand)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Der Versand wird im Warenkorb anhand Ihrer Postleitzahl berechnet."
+msgid "Shipping is calculated in the basket."
+msgstr "Der Versand wird im Warenkorb berechnet."
 
 msgid "Show calculator on"
 msgstr "Rechner anzeigen auf"

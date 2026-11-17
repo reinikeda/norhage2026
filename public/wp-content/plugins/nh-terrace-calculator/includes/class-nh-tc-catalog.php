@@ -134,10 +134,8 @@ class NH_TC_Catalog {
 		}
 
 		if ( ! self::is_sellable( $product ) ) {
-			$empty['error']     = 'out_of_stock';
-			$empty['name']      = $product->get_name();
-			$empty['permalink'] = $product->get_permalink();
-			return $empty;
+			$empty['error'] = 'out_of_stock';
+			return self::with_product_face( $empty, $product );
 		}
 
 		// Sheet products are priced per 1 m²; the kit line is cut to size.
@@ -205,10 +203,8 @@ class NH_TC_Catalog {
 		} elseif ( $product->is_type( 'variable' ) ) {
 			$found = ( $width_mm > 0 && $length_mm > 0 ) ? self::find_sheet_variation( $product, $width_mm, $length_mm ) : null;
 			if ( ! $found ) {
-				$empty['error']     = 'variation_missing';
-				$empty['name']      = $product->get_name();
-				$empty['permalink'] = $product->get_permalink();
-				return $empty;
+				$empty['error'] = 'variation_missing';
+				return self::with_product_face( $empty, $product );
 			}
 			$item = self::build_item(
 				$product,
@@ -221,10 +217,8 @@ class NH_TC_Catalog {
 			);
 		} else {
 			if ( ! self::is_sellable( $product ) ) {
-				$empty['error']     = 'out_of_stock';
-				$empty['name']      = $product->get_name();
-				$empty['permalink'] = $product->get_permalink();
-				return $empty;
+				$empty['error'] = 'out_of_stock';
+				return self::with_product_face( $empty, $product );
 			}
 			$item = self::build_item( $product, 0, array(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
 		}
@@ -365,9 +359,7 @@ class NH_TC_Catalog {
 			if ( ! $found ) {
 				$empty['error']        = 'variation_missing';
 				$empty['wanted_attrs'] = $attrs;
-				$empty['name']         = $product->get_name();
-				$empty['permalink']    = $product->get_permalink();
-				return $empty;
+				return self::with_product_face( $empty, $product );
 			}
 			$variation_id = (int) $found['variation_id'];
 			$variation    = $found['product'];
@@ -571,6 +563,148 @@ class NH_TC_Catalog {
 	}
 
 	/**
+	 * Catalogue photo for a product, then its parent, then the gallery.
+	 * Tries the small gallery size first and falls back when that file is missing.
+	 *
+	 * @param WC_Product      $product
+	 * @param WC_Product|null $parent
+	 */
+	private static function product_image_url( WC_Product $product, $parent = null ) {
+		$candidates = array( $product );
+		if ( $parent instanceof WC_Product && $parent->get_id() !== $product->get_id() ) {
+			$candidates[] = $parent;
+		}
+		$seen = array();
+		foreach ( $candidates as $candidate ) {
+			$image_id = (int) $candidate->get_image_id();
+			if ( ! $image_id ) {
+				$gallery  = $candidate->get_gallery_image_ids();
+				$image_id = $gallery ? (int) $gallery[0] : 0;
+			}
+			if ( ! $image_id || isset( $seen[ $image_id ] ) ) {
+				continue;
+			}
+			$seen[ $image_id ] = true;
+			foreach ( array( 'woocommerce_gallery_thumbnail', 'woocommerce_thumbnail', 'thumbnail', 'medium', 'full' ) as $size ) {
+				$url = wp_get_attachment_image_url( $image_id, $size );
+				if ( $url ) {
+					return $url;
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * @param array<string, mixed> $item
+	 * @return array<string, mixed>
+	 */
+	private static function with_product_face( array $item, WC_Product $product ) {
+		$parent = $product;
+		if ( $product->is_type( 'variation' ) ) {
+			$maybe = wc_get_product( $product->get_parent_id() );
+			if ( $maybe instanceof WC_Product ) {
+				$parent = $maybe;
+			}
+		}
+		$item['name']      = $parent->get_name();
+		$item['permalink'] = $parent->get_permalink();
+		if ( empty( $item['image'] ) ) {
+			$item['image'] = self::product_image_url( $product, $parent );
+		}
+		return $item;
+	}
+
+	/**
+	 * @param string $ref SKU or product id
+	 */
+	private static function image_for_ref( $ref ) {
+		$product = self::product_by_ref( $ref );
+		if ( ! $product ) {
+			return '';
+		}
+		$parent = $product;
+		if ( $product->is_type( 'variation' ) ) {
+			$maybe = wc_get_product( $product->get_parent_id() );
+			if ( $maybe instanceof WC_Product ) {
+				$parent = $maybe;
+			}
+		}
+		return self::product_image_url( $product, $parent );
+	}
+
+	/**
+	 * Photos for every mapped sheet, profile and hardware product.
+	 * The form uses these before a quote returns, and the kit uses them when a line has no photo of its own.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return array<string, mixed>
+	 */
+	public static function choice_images( array $settings ) {
+		$out = array(
+			'sheet'      => array(),
+			'connecting' => array(),
+			'finish'     => array(),
+			'hardware'   => array(),
+		);
+
+		$sheets = ( isset( $settings['sheets'] ) && is_array( $settings['sheets'] ) ) ? $settings['sheets'] : array();
+		foreach ( $sheets as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $ref ) {
+					$url = self::image_for_ref( $ref );
+					if ( '' === $url ) {
+						continue;
+					}
+					$out['sheet'][ (string) $material ][ (string) $thickness ][ (string) $colour ] = $url;
+				}
+			}
+		}
+
+		foreach ( array( 'connecting', 'finish' ) as $group ) {
+			$rows = ( isset( $settings[ $group ] ) && is_array( $settings[ $group ] ) ) ? $settings[ $group ] : array();
+			foreach ( $rows as $type => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $ref ) {
+					$url = self::image_for_ref( $ref );
+					if ( '' === $url ) {
+						continue;
+					}
+					$out[ $group ][ (string) $type ][ (string) $colour ] = $url;
+				}
+			}
+		}
+
+		$hardware = ( isset( $settings['hardware'] ) && is_array( $settings['hardware'] ) ) ? $settings['hardware'] : array();
+		foreach ( $hardware as $slot => $ref ) {
+			if ( is_array( $ref ) ) {
+				foreach ( $ref as $colour => $colour_ref ) {
+					$url = self::image_for_ref( $colour_ref );
+					if ( '' === $url ) {
+						continue;
+					}
+					$out['hardware'][ (string) $slot ][ (string) $colour ] = $url;
+				}
+				continue;
+			}
+			$url = self::image_for_ref( $ref );
+			if ( '' !== $url ) {
+				$out['hardware'][ (string) $slot ] = $url;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * @param array<string, mixed> $attributes
 	 * @return array<string, mixed>
 	 */
@@ -584,11 +718,6 @@ class NH_TC_Catalog {
 		$unit_ex  = $unit['ex'];
 		$unit_inc = $unit['inc'];
 		$line     = self::whole_line( $unit_ex * $qty, $unit_inc * $qty, $sell );
-
-		$image_id = $sell->get_image_id();
-		if ( ! $image_id ) {
-			$image_id = $parent->get_image_id();
-		}
 
 		$atts_for_cart = array();
 		foreach ( $attributes as $key => $value ) {
@@ -607,7 +736,7 @@ class NH_TC_Catalog {
 			'label'        => $fallback_name,
 			'spec'         => $variation_id ? wc_get_formatted_variation( $sell, true, false, true ) : '',
 			'permalink'    => $parent->get_permalink(),
-			'image'        => $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_gallery_thumbnail' ) : '',
+			'image'        => self::product_image_url( $sell, $parent ),
 			'unit_ex'      => $unit_ex,
 			'unit_inc'     => $unit_inc,
 			'line_ex'      => $line['ex'],

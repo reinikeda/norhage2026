@@ -63,13 +63,6 @@ class NH_TC_Ajax {
 			);
 		}
 
-		$postcode = isset( $input['postcode'] ) ? wc_format_postcode( wc_clean( $input['postcode'] ), WC()->customer ? WC()->customer->get_shipping_country() : '' ) : '';
-		if ( $postcode && WC()->customer ) {
-			WC()->customer->set_shipping_postcode( $postcode );
-			WC()->customer->set_billing_postcode( $postcode );
-			WC()->customer->save();
-		}
-
 		$kit_id     = wp_generate_uuid4();
 		$added_keys = array();
 
@@ -191,7 +184,6 @@ class NH_TC_Ajax {
 			'profile_joints'      => self::pick( $src, 'profile_joints', array( 'every', 'optimal' ), '' ),
 			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
 			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
-			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
 

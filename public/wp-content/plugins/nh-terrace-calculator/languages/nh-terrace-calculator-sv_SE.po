@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: sv_SE\n"
 "Language-Team: Swedish\n"
@@ -583,8 +583,8 @@ msgstr "Skivor kapade så att varje skarv hamnar mitt på ett stöd"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Skivorna täcker flera reglar och kapas från lagerbredden på %1$d mm. En skarv används bara där nästa bit annars skulle bli bredare, och den ligger fortfarande på en regel. Kaplängd %2$d mm (ram %3$d mm + %4$d mm överhäng)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Frakt räknas ut i varukorgen utifrån ditt postnummer."
+msgid "Shipping is calculated in the basket."
+msgstr "Frakt räknas ut i varukorgen."
 
 msgid "Show calculator on"
 msgstr "Visa kalkylatorn på"

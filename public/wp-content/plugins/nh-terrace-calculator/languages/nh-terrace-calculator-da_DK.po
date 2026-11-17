@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: da_DK\n"
 "Language-Team: Danish\n"
@@ -583,8 +583,8 @@ msgstr "Plader skåret, så hver samling ligger midt på en understøtning"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Pladerne dækker flere lægter og skæres fra lagerbredden på %1$d mm. En samling bruges kun dér, hvor det næste stykke ellers ville blive bredere, og den ligger stadig på en lægte. Skærelængde %2$d mm (ramme %3$d mm + %4$d mm udhæng)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Fragt beregnes i kurven ud fra dit postnummer."
+msgid "Shipping is calculated in the basket."
+msgstr "Fragt beregnes i kurven."
 
 msgid "Show calculator on"
 msgstr "Vis beregneren på"

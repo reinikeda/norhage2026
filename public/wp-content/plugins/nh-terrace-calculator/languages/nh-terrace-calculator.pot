@@ -481,7 +481,7 @@ msgstr ""
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr ""
 
-msgid "Shipping is calculated in the basket from your postal code."
+msgid "Shipping is calculated in the basket."
 msgstr ""
 
 msgid "Show calculator on"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: lt_LT\n"
 "Language-Team: Lithuanian\n"
@@ -583,8 +583,8 @@ msgstr "Plokštės pjaunamos taip, kad kiekviena sandūra būtų atramos centre"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Lakštai dengia kelias sijas ir pjaunami iš %1$d mm sandėlio pločio. Siūlė dedama tik ten, kur kita dalis būtų platesnė, ir ji vis tiek yra ant sijos. Pjovimo ilgis %2$d mm (rėmas %3$d mm + %4$d mm užlaida)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Pristatymas skaičiuojamas krepšelyje pagal jūsų pašto kodą."
+msgid "Shipping is calculated in the basket."
+msgstr "Pristatymas skaičiuojamas krepšelyje."
 
 msgid "Show calculator on"
 msgstr "Rodyti skaičiuoklę"
