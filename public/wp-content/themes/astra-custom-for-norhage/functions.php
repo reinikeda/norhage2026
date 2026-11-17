@@ -498,6 +498,7 @@ require_once get_stylesheet_directory() . '/inc/seo.php';
 require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';
 require_once get_stylesheet_directory() . '/inc/catalog-button.php';
 require_once get_stylesheet_directory() . '/inc/404.php';
+require_once get_stylesheet_directory() . '/inc/product-gallery-video.php';
 
 /* --------------------------------------------------------------------------
  * Secondary product title + optional logo

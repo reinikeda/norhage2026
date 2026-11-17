@@ -40,21 +40,169 @@
     return 0;
   }
 
-  function moveProductImageNote(root) {
+  function galleryVideo() {
+    return document.querySelector('.single-product .nh-gallery-video');
+  }
+
+  function placeAfter(anchor, node) {
+    if (!node || !anchor || !anchor.parentNode) return anchor;
+    if (node !== anchor.nextElementSibling) {
+      anchor.insertAdjacentElement('afterend', node);
+    }
+    return node;
+  }
+
+  /**
+   * Keep the reel under the thumbnails and the photo note under the reel.
+   * Both start as siblings of the gallery, which would break the floated columns.
+   */
+  function placeGalleryTail(root) {
+    var video = galleryVideo();
     var note = document.querySelector('.single-product .nh-product-image-note');
-    if (!note || !root) return;
+    if (!video && !note) return;
 
-    var nav = thumbs(root);
-    if (nav) {
-      if (note.parentNode !== root || note.previousElementSibling !== nav) {
-        nav.insertAdjacentElement('afterend', note);
+    var anchor = thumbs(root) || root.querySelector('.woocommerce-product-gallery__wrapper');
+    if (!anchor) return;
+
+    var cursor = anchor;
+    if (video) cursor = placeAfter(cursor, video);
+    if (note) placeAfter(cursor, note);
+  }
+
+  function frameHeight(root) {
+    var frame = root.querySelector('.flex-viewport');
+    var height = frame ? frame.getBoundingClientRect().height : 0;
+    if (height > 40) return height;
+
+    var image = root.querySelector('.woocommerce-product-gallery__image img');
+    height = image ? image.getBoundingClientRect().height : 0;
+    return height > 40 ? height : 0;
+  }
+
+  function naturalVideoHeight(media, box) {
+    if (!media.videoWidth || !media.videoHeight) return 0;
+    var width = box.clientWidth;
+    if (width < 1) return 0;
+    return width * (media.videoHeight / media.videoWidth);
+  }
+
+  /**
+   * A short clip fills the photo height. A taller clip keeps its own height.
+   */
+  function syncVideoFrame(root) {
+    var box = root.querySelector('.nh-gallery-video');
+    var media = box && box.querySelector('video');
+    if (!box || !media) return;
+
+    var galleryHeight = frameHeight(root);
+    if (galleryHeight < 40) return;
+
+    var target = Math.max(galleryHeight, naturalVideoHeight(media, box));
+    var px = Math.round(target) + 'px';
+    if (box.style.height !== px) {
+      box.style.height = px;
+    }
+  }
+
+  function bindVideo(root) {
+    var box = root.querySelector('.nh-gallery-video');
+    if (!box || box.getAttribute('data-nh-bound') === '1') return;
+
+    var media = box.querySelector('video');
+    var button = box.querySelector('.nh-gallery-video__sound');
+    if (!media || !button) return;
+    box.setAttribute('data-nh-bound', '1');
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function labelFor(mode) {
+      if (mode === 'play') return button.getAttribute('data-label-play') || 'Play video';
+      if (mode === 'sound') return button.getAttribute('data-label-off') || 'Sound off';
+      return button.getAttribute('data-label-on') || 'Sound on';
+    }
+
+    function setMode(mode) {
+      button.setAttribute('data-mode', mode);
+      button.setAttribute('aria-label', labelFor(mode));
+      button.setAttribute('aria-pressed', mode === 'sound' ? 'true' : 'false');
+    }
+
+    function playMuted() {
+      media.muted = true;
+      media.setAttribute('muted', '');
+      var pending = media.play();
+      setMode('muted');
+      if (pending && typeof pending.catch === 'function') {
+        pending.catch(function () {
+          setMode('play');
+        });
       }
-      return;
     }
 
-    if (root.lastElementChild !== note) {
-      root.appendChild(note);
+    media.addEventListener('loadedmetadata', function () {
+      syncVideoFrame(root);
+    });
+    if (media.readyState >= 1) {
+      syncVideoFrame(root);
     }
+
+    if (reduce) {
+      media.pause();
+      setMode('play');
+    } else {
+      playMuted();
+    }
+
+    function toggle() {
+      var mode = button.getAttribute('data-mode');
+      var wantSound = mode === 'play' || (mode === 'muted' && !media.paused);
+
+      if (media.paused || mode === 'play') {
+        media.muted = !wantSound;
+        if (media.muted) {
+          media.setAttribute('muted', '');
+        } else {
+          media.removeAttribute('muted');
+        }
+        var pending = media.play();
+        if (pending && typeof pending.then === 'function') {
+          pending.then(function () {
+            setMode(media.muted ? 'muted' : 'sound');
+          }).catch(function () {
+            media.muted = true;
+            media.setAttribute('muted', '');
+            var retry = media.play();
+            if (retry && typeof retry.catch === 'function') retry.catch(function () {});
+            setMode(media.paused ? 'play' : 'muted');
+          });
+        } else {
+          setMode(media.muted ? 'muted' : 'sound');
+        }
+        return;
+      }
+
+      if (media.muted) {
+        media.muted = false;
+        media.removeAttribute('muted');
+        var unmute = media.play();
+        if (unmute && typeof unmute.catch === 'function') unmute.catch(function () {});
+        setMode('sound');
+      } else {
+        media.muted = true;
+        media.setAttribute('muted', '');
+        setMode('muted');
+      }
+    }
+
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggle();
+    });
+
+    media.addEventListener('click', function () {
+      toggle();
+    });
   }
 
   function ensureDots(root) {
@@ -146,9 +294,11 @@
     syncBreadcrumbTab();
     if (!root) return;
 
-    moveProductImageNote(root);
+    placeGalleryTail(root);
     ensureDots(root);
     syncDots(root);
+    syncVideoFrame(root);
+    bindVideo(root);
     scrollActiveThumb(root);
   }
 
@@ -166,9 +316,11 @@
       scheduled = false;
       var current = gallery();
       if (!current) return;
-      moveProductImageNote(current);
+      placeGalleryTail(current);
       ensureDots(current);
       syncDots(current);
+      syncVideoFrame(current);
+      bindVideo(current);
       var index = currentIndex(current);
       if (index !== lastIndex) {
         lastIndex = index;
@@ -198,6 +350,16 @@
 
     refresh();
     window.addEventListener('load', refresh);
+    window.addEventListener('resize', function () {
+      syncVideoFrame(root);
+    });
+    if (window.ResizeObserver) {
+      var observerBox = new ResizeObserver(function () {
+        syncVideoFrame(gallery() || root);
+      });
+      var frame = root.querySelector('.flex-viewport') || root.querySelector('.woocommerce-product-gallery__image');
+      if (frame) observerBox.observe(frame);
+    }
     window.setTimeout(refresh, 200);
     window.setTimeout(refresh, 600);
     window.setTimeout(refresh, 1200);
