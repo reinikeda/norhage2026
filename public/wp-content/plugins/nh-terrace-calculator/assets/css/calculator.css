@@ -747,10 +747,6 @@ a.nh-tc__inline-thumb[href]:focus-visible {
   margin: 0 0 0.35rem;
 }
 
-.nh-tc__postcode {
-  margin-top: 0.5rem;
-}
-
 .nh-tc__wizard-nav {
   display: flex;
   gap: 0.65rem;

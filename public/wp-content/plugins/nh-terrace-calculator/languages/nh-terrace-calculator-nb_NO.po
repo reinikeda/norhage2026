@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: nb_NO\n"
 "Language-Team: Norwegian Bokmål\n"
@@ -583,8 +583,8 @@ msgstr "Plater kuttet slik at hver skjøt lander midt på en støtte"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Platene dekker flere bjelker og kappes fra lagerbredden på %1$d mm. Et skjøt brukes bare der neste stykke ellers ville blitt bredere, og det ligger fortsatt på en bjelke. Kappelengde %2$d mm (ramme %3$d mm + %4$d mm overheng)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Frakt beregnes i handlekurven ut fra postnummeret ditt."
+msgid "Shipping is calculated in the basket."
+msgstr "Frakt beregnes i handlekurven."
 
 msgid "Show calculator on"
 msgstr "Vis kalkulatoren på"

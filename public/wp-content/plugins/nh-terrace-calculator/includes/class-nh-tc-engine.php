@@ -402,7 +402,6 @@ class NH_TC_Engine {
 				'tape_width_mm'        => $tape_width,
 				'tape_cover_mm'        => $tape_cover_mm,
 				'screw_length_mm'      => (int) $screw_spec['length_mm'],
-				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
 			),
 			'lines' => $lines,
 		);

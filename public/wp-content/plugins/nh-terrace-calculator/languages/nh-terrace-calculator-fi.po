@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.10\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
@@ -583,8 +583,8 @@ msgstr "Levyt leikattu niin, että jokainen sauma osuu tuen keskelle"
 msgid "Sheets span several beams and are cut from the %1$d mm stock. A joint is used only where the next piece would be wider than that, and it still sits on a beam. Cut length %2$d mm (frame %3$d mm + %4$d mm overhang)."
 msgstr "Levyt kattavat useita palkkeja ja leikataan %1$d mm:n varastokoosta. Saumaa käytetään vain siellä, missä seuraava pala muuten olisi leveämpi, ja se osuu yhä palkille. Katkaisupituus %2$d mm (runko %3$d mm + %4$d mm ylitys)."
 
-msgid "Shipping is calculated in the basket from your postal code."
-msgstr "Toimitus lasketaan ostoskorissa postinumeron perusteella."
+msgid "Shipping is calculated in the basket."
+msgstr "Toimitus lasketaan ostoskorissa."
 
 msgid "Show calculator on"
 msgstr "Näytä laskuri"
