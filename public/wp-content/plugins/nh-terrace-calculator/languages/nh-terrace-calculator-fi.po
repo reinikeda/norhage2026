@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: fi\n"
 "Language-Team: Finnish\n"
@@ -11,8 +11,8 @@ msgstr ""
 "X-Generator: Norhage agent\n"
 
 #, php-format
-msgid "%1$d pcs (%2$d / pack)"
-msgstr "%1$d kpl (%2$d / pkt)"
+msgid "(%d / pack)"
+msgstr "(%d / pkt)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -263,8 +263,6 @@ msgstr "Syötä variaation SKU jokaiselle vakioleveydelle ja -pituudelle. Asiaka
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Syötä yksi lape harjalta räystäälle. Molemmat lappeet lasketaan mukaan."
 
-msgid "EPDM rubber gasket 50 mm"
-msgstr "EPDM-kumitiiviste 50 mm"
 
 msgid "Every product page"
 msgstr "Kaikilla tuotesivuilla"
@@ -546,8 +544,8 @@ msgstr "Ruuvit profiileille ja reunoille sekä kiinnityspainikkeet, jos ne on ky
 msgid "Sealing"
 msgstr "Tiivistys"
 
-msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
-msgstr "Tiivistysteipit vain kennolevyille. Yläreunaan eristysteippi, alareunaan hengittävä tuuletusteippi. Molemmat reunat saman pituisia (levyleveyksien summa; harjakatto laskee molemmat lappeet). Teipin leveys paksuuden mukaan: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; oikea variantti emotuotteesta. Ruuvit (kenno ja massiivi) paksuuden mukaan: enintään 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Kumitiiviste kehän mukaan kokonaisina metreinä. Silikoni yksi tuubi per määritetty metri kehää (oletus 10 m), vähintään yksi."
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
+msgstr "Tiivistysteipit vain kennolevyille. Yläreunaan eristysteippi, alareunaan hengittävä tuuletusteippi. Molemmat reunat saman pituisia (levyleveyksien summa; harjakatto laskee molemmat lappeet). Teipin leveys paksuuden mukaan: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; oikea variantti emotuotteesta. Ruuvit (kenno ja massiivi) paksuuden mukaan: enintään 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silikoni yksi tuubi per määritetty metri kehää (oletus 10 m), vähintään yksi. Alumiiniprofiileissa on jo tiivistekumi, joten pakettiin ei lisätä erillistä EPDM-tiivistettä."
 
 #, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
@@ -675,8 +673,8 @@ msgid "Tape, silicone and wall length"
 msgstr "Teippi, silikoni ja seinäpituus"
 
 #, php-format
-msgid "Tapes, gasket and silicone"
-msgstr "Teipit, tiiviste ja silikoni"
+msgid "Tapes and silicone"
+msgstr "Teipit ja silikoni"
 
 #, php-format
 msgid "Terrace calculator"
@@ -765,8 +763,8 @@ msgstr "ALV"
 msgid "Ventilation / anti-dust tape"
 msgstr "Tuuletus- / pölytiivisteteippi"
 
-msgid "Ventilation and sealing tapes, gasket and neutral silicone"
-msgstr "Tuuletus- ja tiivistysteipit, tiiviste ja neutraali silikoni"
+msgid "Ventilation and sealing tapes and neutral silicone"
+msgstr "Tuuletus- ja tiivistysteipit ja neutraali silikoni"
 
 msgid "Ventilation sealing tape"
 msgstr "Tuuletusteippi"
@@ -807,6 +805,6 @@ msgstr "Leikkaat itse"
 msgid "Your kit"
 msgstr "Pakettisi"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
-msgstr "Materiaalilista oikealla (tai alla puhelimessa) sisältää levyt, profiilit, teipit, ruuvit, tiivisteen ja silikonin. Lisää koko paketti kerralla."
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
+msgstr "Materiaalilista oikealla (tai alla puhelimessa) sisältää levyt, profiilit, teipit, ruuvit ja silikonin. Lisää koko paketti kerralla."
 

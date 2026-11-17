@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: sv_SE\n"
 "Language-Team: Swedish\n"
@@ -11,8 +11,8 @@ msgstr ""
 "X-Generator: Norhage agent\n"
 
 #, php-format
-msgid "%1$d pcs (%2$d / pack)"
-msgstr "%1$d st (%2$d / förp.)"
+msgid "(%d / pack)"
+msgstr "(%d / förp.)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -263,8 +263,6 @@ msgstr "Ange en variant-SKU för varje standardbredd och längd. Kunden väljer 
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Ange en sida, från nocken till takfoten. Båda sidorna räknas med."
 
-msgid "EPDM rubber gasket 50 mm"
-msgstr "EPDM-gummilist 50 mm"
 
 msgid "Every product page"
 msgstr "Alla produktsidor"
@@ -546,8 +544,8 @@ msgstr "Skruvar till profiler och kanter plus fästknappar när de är kopplade"
 msgid "Sealing"
 msgstr "Tätning"
 
-msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
-msgstr "Tätningsband bara för flervägg. Isoleringstejp på överkant; andningsbar ventilationstejp på underkant. Båda kanterna samma längd (total skivbredd; sadeltak räknar båda sidor). Bandbredd efter tjocklek: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, och rätt variant från överordnad produkt. Skruvar (flervägg och massiv) efter tjocklek: upp till 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummilisten följer omkretsen i hela meter. Silikon är en tub per konfigurerad meter omkrets (standard 10 m), minst en tub."
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
+msgstr "Tätningsband bara för flervägg. Isoleringstejp på överkant; andningsbar ventilationstejp på underkant. Båda kanterna samma längd (total skivbredd; sadeltak räknar båda sidor). Bandbredd efter tjocklek: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, och rätt variant från överordnad produkt. Skruvar (flervägg och massiv) efter tjocklek: upp till 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silikon är en tub per konfigurerad meter av omkretsen (standard 10 m), minst en tub. Aluminiumprofiler har redan tätningsgummi, så satsen lägger inte till en separat EPDM-list."
 
 #, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
@@ -675,8 +673,8 @@ msgid "Tape, silicone and wall length"
 msgstr "Tejp, silikon och vägglängd"
 
 #, php-format
-msgid "Tapes, gasket and silicone"
-msgstr "Tejp, packning och silikon"
+msgid "Tapes and silicone"
+msgstr "Tejp och silikon"
 
 #, php-format
 msgid "Terrace calculator"
@@ -765,8 +763,8 @@ msgstr "Moms"
 msgid "Ventilation / anti-dust tape"
 msgstr "Ventilations- / dammtejp"
 
-msgid "Ventilation and sealing tapes, gasket and neutral silicone"
-msgstr "Ventilations- och tätningstejp, packning och neutral silikon"
+msgid "Ventilation and sealing tapes and neutral silicone"
+msgstr "Ventilations- och tätningstejp och neutral silikon"
 
 msgid "Ventilation sealing tape"
 msgstr "Ventilationstejp"
@@ -807,6 +805,6 @@ msgstr "Du kapar dem själv"
 msgid "Your kit"
 msgstr "Din sats"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
-msgstr "Materiallistan till höger (eller under på telefon) inkluderar skivor, profiler, tejp, skruvar, packning och silikon. Lägg hela satsen i varukorgen på en gång."
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
+msgstr "Materiallistan till höger (eller under på telefon) inkluderar skivor, profiler, tejp, skruvar och silikon. Lägg hela satsen i varukorgen på en gång."
 

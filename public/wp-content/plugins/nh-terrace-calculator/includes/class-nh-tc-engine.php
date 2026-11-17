@@ -29,6 +29,8 @@
  *   25 / 38 / 60 mm for 4–10 / 16–20 / 25–40 mm sheets.
  * - Fixing buttons: one every 400 mm along each sheet length (mid-span fastening),
  *   sold in packs when a pack size is set.
+ * - Aluminium clamping and finish profiles already include sealing rubber, so
+ *   the kit does not add a separate EPDM gasket.
  *
  * @package nh-terrace-calculator
  */
@@ -214,7 +216,6 @@ class NH_TC_Engine {
 		$tape_cover_mm = $end_width_mm * $slopes;
 
 		$perimeter_mm = 2 * ( $width + $sheet_length );
-		$gasket_m     = (int) ceil( $perimeter_mm / 1000 );
 		$silicon_qty  = max( 1, (int) ceil( ( $perimeter_mm / 1000 ) / max( 1, (float) $settings['silicon_metres_per_tube'] ) ) );
 		$tape_width   = self::tape_width_mm( $thk );
 		$tape_rolls   = max( 1, (int) ceil( $tape_cover_mm / max( 1, (int) $settings['tape_roll_mm'] ) ) );
@@ -346,13 +347,6 @@ class NH_TC_Engine {
 		}
 
 		$lines[] = array(
-			'role'    => 'gasket',
-			'qty'     => $gasket_m,
-			'unit'    => 'm',
-			'metres'  => $gasket_m,
-		);
-
-		$lines[] = array(
 			'role' => 'silicon',
 			'qty'  => $silicon_qty,
 		);
@@ -408,7 +402,6 @@ class NH_TC_Engine {
 				'tape_width_mm'        => $tape_width,
 				'tape_cover_mm'        => $tape_cover_mm,
 				'screw_length_mm'      => (int) $screw_spec['length_mm'],
-				'gasket_m'             => $gasket_m,
 				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
 			),
 			'lines' => $lines,

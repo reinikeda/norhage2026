@@ -367,12 +367,12 @@ class NH_TC_Render {
 					<div class="nh-tc__panel" data-panel="3" hidden>
 						<fieldset class="nh-tc__card">
 							<legend><?php esc_html_e( 'Review your kit', NH_TC_TD ); ?></legend>
-							<p class="nh-tc__ask"><?php esc_html_e( 'Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go.', NH_TC_TD ); ?></p>
+							<p class="nh-tc__ask"><?php esc_html_e( 'Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go.', NH_TC_TD ); ?></p>
 							<ul class="nh-tc__kit-points">
 								<li><?php esc_html_e( 'Sheets cut so every joint lands on a support centre', NH_TC_TD ); ?></li>
 								<li><?php esc_html_e( 'Connecting and edge profiles with end caps where needed', NH_TC_TD ); ?></li>
 								<li><?php esc_html_e( 'Screws for bars and edges, plus fixing buttons when mapped', NH_TC_TD ); ?></li>
-								<li><?php esc_html_e( 'Ventilation and sealing tapes, gasket and neutral silicone', NH_TC_TD ); ?></li>
+								<li><?php esc_html_e( 'Ventilation and sealing tapes and neutral silicone', NH_TC_TD ); ?></li>
 							</ul>
 							<?php if ( $show_post ) : ?>
 								<label class="nh-tc__postcode">

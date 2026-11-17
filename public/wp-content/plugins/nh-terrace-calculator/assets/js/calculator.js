@@ -101,7 +101,7 @@
   function kitGroup(role) {
     if (role === 'sheet') return 'sheets';
     if (role === 'connecting' || role === 'finish' || role === 'wall' || role === 'ridge' || role === 'end_cap') return 'profiles';
-    if (role === 'vent_tape' || role === 'iso_tape' || role === 'gasket' || role === 'silicon') return 'sealing';
+    if (role === 'vent_tape' || role === 'iso_tape' || role === 'silicon') return 'sealing';
     return 'fixings';
   }
 

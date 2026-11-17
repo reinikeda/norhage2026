@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: da_DK\n"
 "Language-Team: Danish\n"
@@ -11,8 +11,8 @@ msgstr ""
 "X-Generator: Norhage agent\n"
 
 #, php-format
-msgid "%1$d pcs (%2$d / pack)"
-msgstr "%1$d stk. (%2$d / pk.)"
+msgid "(%d / pack)"
+msgstr "(%d / pk.)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -263,8 +263,6 @@ msgstr "Indtast en variant-SKU for hver standardbredde og -længde. Kunden vælg
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Indtast én side, fra rygningen til tagfoden. Begge sider tælles med."
 
-msgid "EPDM rubber gasket 50 mm"
-msgstr "EPDM-gummipakning 50 mm"
 
 msgid "Every product page"
 msgstr "Alle produktsider"
@@ -546,8 +544,8 @@ msgstr "Skruer til profiler og kanter, plus fikseringsknapper når de er koblet"
 msgid "Sealing"
 msgstr "Tætning"
 
-msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
-msgstr "Tætningsbånd tilføjes kun for flerlags. Isolationsbånd forsegler overkanten; åndbart ventilationsbånd forsegler underkanten. Begge kanter har samme længde (samlet pladebredde; sadeltag tæller begge sider). Båndbredde følger tykkelse: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, og den matchende variation tages fra forældreproduktet. Skruer (flerlags og massiv) følger også tykkelse: op til 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummilisten følger omkredsen i hele meter. Silicone er ét tube pr. konfigurerede meter af omkredsen (standard 10 m), mindst ét tube."
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
+msgstr "Tætningsbånd tilføjes kun for flerlags. Isolationsbånd forsegler overkanten; åndbart ventilationsbånd forsegler underkanten. Begge kanter har samme længde (samlet pladebredde; sadeltag tæller begge sider). Båndbredde følger tykkelse: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, og den matchende variation tages fra forældreproduktet. Skruer (flerlags og massiv) følger også tykkelse: op til 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone er ét tube pr. konfigurerede meter af omkredsen (standard 10 m), mindst ét tube. Aluminiumprofiler har allerede tætningsgummi, så sættet tilføjer ikke en separat EPDM-pakning."
 
 #, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
@@ -675,8 +673,8 @@ msgid "Tape, silicone and wall length"
 msgstr "Tape, silikone og væglængde"
 
 #, php-format
-msgid "Tapes, gasket and silicone"
-msgstr "Tape, pakning og silikone"
+msgid "Tapes and silicone"
+msgstr "Tape og silikone"
 
 #, php-format
 msgid "Terrace calculator"
@@ -765,8 +763,8 @@ msgstr "Moms"
 msgid "Ventilation / anti-dust tape"
 msgstr "Ventilations- / støvtape"
 
-msgid "Ventilation and sealing tapes, gasket and neutral silicone"
-msgstr "Ventilations- og tætningsbånd, pakning og neutralt silikone"
+msgid "Ventilation and sealing tapes and neutral silicone"
+msgstr "Ventilations- og tætningsbånd og neutralt silikone"
 
 msgid "Ventilation sealing tape"
 msgstr "Ventilationstape"
@@ -807,6 +805,6 @@ msgstr "Du skærer dem selv"
 msgid "Your kit"
 msgstr "Dit sæt"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
-msgstr "Materialelisten til højre (eller nedenfor på telefoner) indeholder plader, profiler, tape, skruer, pakning og silikone. Læg hele sættet i kurven på én gang."
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
+msgstr "Materialelisten til højre (eller nedenfor på telefoner) indeholder plader, profiler, tape, skruer og silikone. Læg hele sættet i kurven på én gang."
 

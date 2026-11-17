@@ -159,7 +159,7 @@ nh_tc_assert( 'screws up to 10 mm → 50 mm', 50 === NH_TC_Engine::screw_spec( 1
 nh_tc_assert( 'screws 16–20 mm → 60 mm', 60 === NH_TC_Engine::screw_spec( 16, $settings )['length_mm'] && 60 === NH_TC_Engine::screw_spec( 20, $settings )['length_mm'] );
 nh_tc_assert( 'screws 25 mm → 80 mm', 80 === NH_TC_Engine::screw_spec( 25, $settings )['length_mm'] );
 nh_tc_assert( 'screws 32–40 mm → 90 mm', 90 === NH_TC_Engine::screw_spec( 32, $settings )['length_mm'] && 90 === NH_TC_Engine::screw_spec( 40, $settings )['length_mm'] );
-nh_tc_assert( '18 m rubber gasket', isset( $by_role['gasket'] ) && 18 === (int) $by_role['gasket']['qty'] );
+nh_tc_assert( 'no separate EPDM gasket', ! isset( $by_role['gasket'] ) && ! isset( $bom['meta']['gasket_m'] ) );
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
 nh_tc_assert(
@@ -330,7 +330,7 @@ foreach ( $solid_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert( 'solid sheet quote calculates', ! empty( $solid_bom['ok'] ) );
-nh_tc_assert( 'solid sheets omit sealing tapes', ! isset( $solid_roles['vent_tape'] ) && ! isset( $solid_roles['iso_tape'] ) && isset( $solid_roles['gasket'] ) && isset( $solid_roles['silicon'] ) );
+nh_tc_assert( 'solid sheets omit sealing tapes and the EPDM gasket', ! isset( $solid_roles['vent_tape'] ) && ! isset( $solid_roles['iso_tape'] ) && ! isset( $solid_roles['gasket'] ) && isset( $solid_roles['silicon'] ) );
 nh_tc_assert( 'solid length split keeps six connecting profiles', 6 === (int) $solid_bom['meta']['connecting_count'] && isset( $solid_roles['connecting'] ) && 6 === (int) $solid_roles['connecting']['qty'] );
 nh_tc_assert(
 	'solid 4750 mm run is two 2375 mm pieces on the same widths',

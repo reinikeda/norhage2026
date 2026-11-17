@@ -9,7 +9,7 @@ msgstr ""
 "X-Generator: Norhage agent\n"
 
 #, php-format
-msgid "%1$d pcs (%2$d / pack)"
+msgid "(%d / pack)"
 msgstr ""
 
 #, php-format
@@ -227,8 +227,6 @@ msgstr ""
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr ""
 
-msgid "EPDM rubber gasket 50 mm"
-msgstr ""
 
 msgid "Every product page"
 msgstr ""
@@ -455,7 +453,7 @@ msgstr ""
 msgid "Sealing"
 msgstr ""
 
-msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
 msgstr ""
 
 msgid "Sealing tapes, screws and extras"
@@ -560,7 +558,7 @@ msgstr ""
 msgid "Tape, silicone and wall length"
 msgstr ""
 
-msgid "Tapes, gasket and silicone"
+msgid "Tapes and silicone"
 msgstr ""
 
 msgid "Terrace calculator"
@@ -640,7 +638,7 @@ msgstr ""
 msgid "Ventilation / anti-dust tape"
 msgstr ""
 
-msgid "Ventilation and sealing tapes, gasket and neutral silicone"
+msgid "Ventilation and sealing tapes and neutral silicone"
 msgstr ""
 
 msgid "Ventilation sealing tape"
@@ -682,6 +680,6 @@ msgstr ""
 msgid "Your kit"
 msgstr ""
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
 msgstr ""
 

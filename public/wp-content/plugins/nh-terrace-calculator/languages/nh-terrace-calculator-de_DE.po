@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.7\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.8\n"
 "PO-Revision-Date: 2026-11-16 19:22+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
@@ -11,8 +11,8 @@ msgstr ""
 "X-Generator: Norhage agent\n"
 
 #, php-format
-msgid "%1$d pcs (%2$d / pack)"
-msgstr "%1$d Stk. (%2$d / Packung)"
+msgid "(%d / pack)"
+msgstr "(%d / Packung)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -263,8 +263,6 @@ msgstr "Geben Sie eine Varianten-SKU für jede Lagerbreite und -länge ein. Der 
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Geben Sie eine Seite ein, vom First zur Traufe. Beide Seiten werden gezählt."
 
-msgid "EPDM rubber gasket 50 mm"
-msgstr "EPDM-Gummidichtung 50 mm"
 
 msgid "Every product page"
 msgstr "Jede Produktseite"
@@ -546,8 +544,8 @@ msgstr "Schrauben für Profile und Kanten sowie Fixierknöpfe, wenn hinterlegt"
 msgid "Sealing"
 msgstr "Abdichtung"
 
-msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. The rubber gasket follows the perimeter in whole metres. Silicone is one tube per configured metres of that perimeter (default 10 m), at least one tube."
-msgstr "Dichtbänder nur für Stegplatten. Isolierband oben, atmungsaktives Lüftungsband unten. Beide Kanten gleich lang (Gesamtplattenbreite; Satteldach zählt beide Seiten). Bandbreite nach Dicke: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; passende Variation vom Parent. Schrauben (Steg und Massiv) ebenfalls nach Dicke: bis 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Gummidichtung dem Umfang in ganzen Metern. Silikon eine Tube je konfigurierte Meter Umfang (Standard 10 m), mindestens eine."
+msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
+msgstr "Dichtbänder nur für Stegplatten. Isolierband oben, atmungsaktives Lüftungsband unten. Beide Kanten gleich lang (Gesamtplattenbreite; Satteldach zählt beide Seiten). Bandbreite nach Dicke: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; passende Variation vom Parent. Schrauben (Steg und Massiv) ebenfalls nach Dicke: bis 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silikon eine Tube je konfigurierte Meter Umfang (Standard 10 m), mindestens eine. Aluminiumprofile haben bereits Dichtungsgummi, daher enthält das Set keine separate EPDM-Dichtung."
 
 #, php-format
 msgid "Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass the configured roll length (default 5 m). The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every configured metres of that perimeter (default 10 m), and at least one tube."
@@ -675,8 +673,8 @@ msgid "Tape, silicone and wall length"
 msgstr "Band, Silikon und Wandlänge"
 
 #, php-format
-msgid "Tapes, gasket and silicone"
-msgstr "Bänder, Dichtung und Silikon"
+msgid "Tapes and silicone"
+msgstr "Bänder und Silikon"
 
 #, php-format
 msgid "Terrace calculator"
@@ -765,8 +763,8 @@ msgstr "MwSt."
 msgid "Ventilation / anti-dust tape"
 msgstr "Lüftungs- / Staubschutzband"
 
-msgid "Ventilation and sealing tapes, gasket and neutral silicone"
-msgstr "Lüftungs- und Dichtbänder, Dichtung und Neutralsilikon"
+msgid "Ventilation and sealing tapes and neutral silicone"
+msgstr "Lüftungs- und Dichtbänder und Neutralsilikon"
 
 msgid "Ventilation sealing tape"
 msgstr "Lüftungsband"
@@ -807,6 +805,6 @@ msgstr "Sie schneiden selbst zu"
 msgid "Your kit"
 msgstr "Ihr Set"
 
-msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws, gasket and silicone. Add the whole kit in one go."
-msgstr "Die Materialliste rechts (oder unten am Handy) enthält Platten, Profile, Bänder, Schrauben, Dichtung und Silikon. Fügen Sie das ganze Set auf einmal hinzu."
+msgid "Your material list on the right (or below on phones) includes sheets, profiles, tapes, screws and silicone. Add the whole kit in one go."
+msgstr "Die Materialliste rechts (oder unten am Handy) enthält Platten, Profile, Bänder, Schrauben und Silikon. Fügen Sie das ganze Set auf einmal hinzu."
 
