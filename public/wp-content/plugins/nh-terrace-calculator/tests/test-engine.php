@@ -159,6 +159,32 @@ nh_tc_assert( 'screws up to 10 mm → 50 mm', 50 === NH_TC_Engine::screw_spec( 1
 nh_tc_assert( 'screws 16–20 mm → 60 mm', 60 === NH_TC_Engine::screw_spec( 16, $settings )['length_mm'] && 60 === NH_TC_Engine::screw_spec( 20, $settings )['length_mm'] );
 nh_tc_assert( 'screws 25 mm → 80 mm', 80 === NH_TC_Engine::screw_spec( 25, $settings )['length_mm'] );
 nh_tc_assert( 'screws 32–40 mm → 90 mm', 90 === NH_TC_Engine::screw_spec( 32, $settings )['length_mm'] && 90 === NH_TC_Engine::screw_spec( 40, $settings )['length_mm'] );
+
+$bom20 = NH_TC_Engine::calculate(
+	array_merge(
+		$input,
+		array(
+			'thickness' => 20,
+			'cc_mm'     => 800,
+		)
+	),
+	$settings
+);
+$roles20 = array();
+foreach ( $bom20['lines'] as $line20 ) {
+	$roles20[ $line20['role'] ] = $line20;
+}
+nh_tc_assert(
+	'20 mm multiwall BOM asks for 38 mm tapes and 60 mm screws',
+	! empty( $bom20['ok'] )
+	&& 38 === (int) $bom20['meta']['tape_width_mm']
+	&& 60 === (int) $bom20['meta']['screw_length_mm']
+	&& isset( $roles20['vent_tape'], $roles20['iso_tape'], $roles20['screw'] )
+	&& '38-mm' === $roles20['vent_tape']['attrs']['width']
+	&& '38-mm' === $roles20['iso_tape']['attrs']['width']
+	&& '5-mm-x-60-mm' === $roles20['screw']['attrs']['dimensions']
+	&& '60-mm' === $roles20['screw']['attrs']['length']
+);
 nh_tc_assert( 'no separate EPDM gasket', ! isset( $by_role['gasket'] ) && ! isset( $bom['meta']['gasket_m'] ) );
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
