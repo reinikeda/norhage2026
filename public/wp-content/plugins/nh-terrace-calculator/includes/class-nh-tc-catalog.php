@@ -355,7 +355,8 @@ class NH_TC_Catalog {
 	 */
 	private static function resolve_simple_variable( array $line, $sku, array $attrs, $fallback_name ) {
 		$qty   = (int) $line['qty'];
-		$empty = self::empty_item( $line['role'], $sku, $qty, $fallback_name );
+		$role  = (string) ( $line['role'] ?? '' );
+		$empty = self::empty_item( $role, $sku, $qty, $fallback_name );
 
 		if ( ! $sku ) {
 			$empty['error'] = 'sku_missing';
@@ -368,26 +369,23 @@ class NH_TC_Catalog {
 			return $empty;
 		}
 
+		// Admin product search may store a variation. Always match from the parent
+		// so tape width / screw length follow sheet thickness instead of a fixed SKU.
+		if ( $product->is_type( 'variation' ) ) {
+			$parent = wc_get_product( $product->get_parent_id() );
+			if ( $parent instanceof WC_Product ) {
+				$product = $parent;
+			}
+		}
+
 		$variation_id = 0;
 		$variation    = null;
 		$matched_atts = array();
 
 		if ( $product->is_type( 'variable' ) ) {
 			$found = self::find_variation( $product, $attrs );
-			// Prefer the size that follows sheet thickness (tape width / screw length), then other keys.
-			if ( ! $found && count( $attrs ) > 1 ) {
-				$order = ( 'screw' === ( $line['role'] ?? '' ) )
-					? array( 'length', 'dimensions', 'thickness' )
-					: array( 'width', 'dimensions', 'length', 'thickness' );
-				foreach ( $order as $key ) {
-					if ( empty( $attrs[ $key ] ) ) {
-						continue;
-					}
-					$found = self::find_variation( $product, array( $key => $attrs[ $key ] ) );
-					if ( $found ) {
-						break;
-					}
-				}
+			if ( ! $found && $attrs ) {
+				$found = self::find_variation_relaxed( $product, $attrs, $role );
 			}
 			if ( ! $found ) {
 				$empty['error']        = 'variation_missing';
@@ -408,19 +406,8 @@ class NH_TC_Catalog {
 			$empty['error'] = 'out_of_stock';
 			return self::with_product_face( $empty, $product, $sell );
 		}
-		$item = self::build_item( $product, $variation_id, $matched_atts, $qty, $line['role'], $fallback_name, $sell );
-
-		if ( ! empty( $line['pack_size'] ) ) {
-			$item['spec'] = sprintf(
-				/* translators: pieces in one pack */
-				__( '(%d / pack)', NH_TC_TD ),
-				(int) $line['pack_size']
-			);
-		}
-
-		if ( ! empty( $line['attrs']['length'] ) && empty( $item['spec'] ) ) {
-			$item['spec'] = (string) $line['attrs']['length'];
-		}
+		$item = self::build_item( $product, $variation_id, $matched_atts, $qty, $role, $fallback_name, $sell );
+		$item = self::with_hardware_spec( $item, $line, $attrs );
 
 		if ( ! empty( $line['unit'] ) && 'm' === $line['unit'] ) {
 			$item['spec'] = sprintf(
@@ -434,29 +421,99 @@ class NH_TC_Catalog {
 	}
 
 	/**
+	 * Size-first fallback when the full attribute set did not match.
+	 * Tapes must match width (never roll length alone). Screws must match
+	 * length/dimensions (never a bare thickness fallback that can pick 25 mm stock).
+	 *
+	 * @param array<string, string> $attrs
+	 * @return array{variation_id:int,product:WC_Product,attributes:array<string,string>}|null
+	 */
+	private static function find_variation_relaxed( WC_Product $product, array $attrs, $role ) {
+		if ( in_array( $role, array( 'vent_tape', 'iso_tape' ), true ) ) {
+			$order = array( 'width' );
+		} elseif ( 'screw' === $role ) {
+			$order = array( 'length', 'dimensions' );
+		} else {
+			$order = array( 'width', 'dimensions', 'length', 'thickness' );
+		}
+		foreach ( $order as $key ) {
+			if ( empty( $attrs[ $key ] ) ) {
+				continue;
+			}
+			$found = self::find_variation( $product, array( $key => $attrs[ $key ] ) );
+			if ( $found ) {
+				return $found;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Keep tape width / screw length visible even when the parent title starts with "25mm".
+	 *
+	 * @param array<string, mixed>  $item
+	 * @param array<string, mixed>  $line
+	 * @param array<string, string> $attrs
+	 * @return array<string, mixed>
+	 */
+	private static function with_hardware_spec( array $item, array $line, array $attrs ) {
+		$role  = (string) ( $line['role'] ?? '' );
+		$parts = array();
+
+		if ( in_array( $role, array( 'vent_tape', 'iso_tape' ), true ) ) {
+			$width = ! empty( $line['tape_width_mm'] ) ? (int) $line['tape_width_mm'] : self::flexible_mm( $attrs['width'] ?? '' );
+			if ( $width > 0 ) {
+				$parts[] = sprintf(
+					/* translators: tape width in millimetres */
+					__( '%d mm wide', NH_TC_TD ),
+					$width
+				);
+			}
+			if ( ! empty( $attrs['length'] ) ) {
+				$parts[] = (string) $attrs['length'];
+			}
+		} elseif ( 'screw' === $role ) {
+			if ( ! empty( $attrs['dimensions'] ) ) {
+				$parts[] = (string) $attrs['dimensions'];
+			} elseif ( ! empty( $attrs['length'] ) ) {
+				$parts[] = (string) $attrs['length'];
+			}
+			if ( ! empty( $line['pack_size'] ) ) {
+				$parts[] = sprintf(
+					/* translators: pieces in one pack */
+					__( '(%d / pack)', NH_TC_TD ),
+					(int) $line['pack_size']
+				);
+			}
+		} elseif ( ! empty( $line['pack_size'] ) ) {
+			$parts[] = sprintf(
+				/* translators: pieces in one pack */
+				__( '(%d / pack)', NH_TC_TD ),
+				(int) $line['pack_size']
+			);
+		} elseif ( ! empty( $attrs['length'] ) && empty( $item['spec'] ) ) {
+			$parts[] = (string) $attrs['length'];
+		}
+
+		if ( $parts ) {
+			$item['spec'] = implode( ' · ', $parts );
+		}
+
+		return $item;
+	}
+
+	/**
 	 * @param array<string, string> $wanted value slugs keyed by logical name (length, thickness, width, dimensions)
 	 * @return array{variation_id:int,product:WC_Product,attributes:array<string,string>}|null
 	 */
 	public static function find_variation( WC_Product $product, array $wanted ) {
 		$wanted_values = array_filter( array_map( 'strval', $wanted ) );
 		if ( ! $wanted_values ) {
-			$children = $product->get_children();
-			if ( $children ) {
-				$vid = (int) $children[0];
-				$vp  = wc_get_product( $vid );
-				if ( $vp instanceof WC_Product ) {
-					return array(
-						'variation_id' => $vid,
-						'product'      => $vp,
-						'attributes'   => $vp->get_variation_attributes(),
-					);
-				}
-			}
 			return null;
 		}
 
-		$best = null;
-		$best_score = -1;
+		$best       = null;
+		$best_score = 0;
 
 		foreach ( $product->get_children() as $vid ) {
 			$vp = wc_get_product( $vid );
@@ -465,53 +522,8 @@ class NH_TC_Catalog {
 			}
 
 			$attrs = $vp->get_variation_attributes();
-			$values = array_map( 'strval', array_values( $attrs ) );
-			$score  = 0;
-			$ok     = true;
-
-			foreach ( $wanted_values as $logical => $want ) {
-				$logical_exists = false;
-				foreach ( $attrs as $key => $val ) {
-					if ( self::attr_key_matches( strtolower( (string) $key ), (string) $logical ) ) {
-						$logical_exists = true;
-						break;
-					}
-				}
-				if ( ! $logical_exists ) {
-					continue;
-				}
-
-				$hit = false;
-				foreach ( $attrs as $key => $val ) {
-					$val   = (string) $val;
-					$key_l = strtolower( $key );
-					if ( ! self::attr_values_match( $want, $val ) ) {
-						continue;
-					}
-					if ( self::attr_key_matches( $key_l, (string) $logical ) ) {
-						$hit    = true;
-						$score += 2;
-						break;
-					}
-					$hit    = true;
-					$score += 1;
-				}
-				if ( ! $hit ) {
-					foreach ( $values as $val ) {
-						if ( self::attr_values_match( $want, (string) $val ) ) {
-							$hit    = true;
-							$score += 1;
-							break;
-						}
-					}
-				}
-				if ( ! $hit ) {
-					$ok = false;
-					break;
-				}
-			}
-
-			if ( $ok && $score > $best_score ) {
+			$score = self::score_variation_attributes( $attrs, $wanted_values );
+			if ( $score > $best_score ) {
 				$best_score = $score;
 				$best       = array(
 					'variation_id' => (int) $vid,
@@ -524,8 +536,75 @@ class NH_TC_Catalog {
 		return $best;
 	}
 
-	private static function attr_key_matches( $key, $logical ) {
-		$logical = strtolower( $logical );
+	/**
+	 * Score how well a variation’s attributes match the wanted size keys.
+	 * Returns 0 when any present logical attribute disagrees (so 38 mm tape
+	 * never silently falls through to a 25 mm roll).
+	 *
+	 * @param array<string, string> $attrs
+	 * @param array<string, string> $wanted
+	 */
+	public static function score_variation_attributes( array $attrs, array $wanted ) {
+		$wanted_values = array_filter( array_map( 'strval', $wanted ) );
+		if ( ! $wanted_values || ! $attrs ) {
+			return 0;
+		}
+
+		$values = array_map( 'strval', array_values( $attrs ) );
+		$score  = 0;
+
+		foreach ( $wanted_values as $logical => $want ) {
+			$logical_exists = false;
+			foreach ( $attrs as $key => $val ) {
+				if ( self::attr_key_matches( strtolower( (string) $key ), (string) $logical ) ) {
+					$logical_exists = true;
+					break;
+				}
+			}
+
+			$hit      = false;
+			$key_hits = 0;
+			foreach ( $attrs as $key => $val ) {
+				$val   = (string) $val;
+				$key_l = strtolower( (string) $key );
+				if ( ! self::attr_values_match( $want, $val ) ) {
+					continue;
+				}
+				if ( self::attr_key_matches( $key_l, (string) $logical ) ) {
+					$hit       = true;
+					$key_hits += 2;
+					break;
+				}
+				$hit       = true;
+				$key_hits += 1;
+			}
+			if ( ! $hit ) {
+				foreach ( $values as $val ) {
+					if ( self::attr_values_match( $want, (string) $val ) ) {
+						$hit       = true;
+						$key_hits += 1;
+						break;
+					}
+				}
+			}
+
+			// A named attribute that does not match means this variation is wrong.
+			if ( $logical_exists && ! $hit ) {
+				return 0;
+			}
+			// No matching attribute key and no value hit: ignore soft keys like length
+			// when the shop only varies by width, but keep looking for a positive score.
+			if ( $hit ) {
+				$score += $key_hits;
+			}
+		}
+
+		return $score;
+	}
+
+	public static function attr_key_matches( $key, $logical ) {
+		$logical = strtolower( (string) $logical );
+		$key     = strtolower( (string) $key );
 		$map     = array(
 			'length'     => array( 'lengde', 'langd', 'length', 'lange', 'pituus' ),
 			'width'      => array( 'bredde', 'bredd', 'width', 'breite', 'plotis', 'leveys' ),
@@ -534,7 +613,7 @@ class NH_TC_Catalog {
 		);
 		$needles = isset( $map[ $logical ] ) ? $map[ $logical ] : array( $logical );
 		foreach ( $needles as $n ) {
-			if ( false !== strpos( $key, $n ) ) {
+			if ( '' !== $n && false !== strpos( $key, $n ) ) {
 				return true;
 			}
 		}
@@ -770,6 +849,16 @@ class NH_TC_Catalog {
 			$atts_for_cart[ $k ] = $value;
 		}
 
+		// Prefer the variation name so cart/kit lines show 38 mm instead of the
+		// parent title that often starts with "(25mm – …)".
+		$display_name = $sell->get_name();
+		if ( ! $display_name ) {
+			$display_name = $parent->get_name();
+		}
+		if ( ! $display_name ) {
+			$display_name = $fallback_name;
+		}
+
 		return array(
 			'role'         => $role,
 			'sku'          => $sell->get_sku() ? $sell->get_sku() : $parent->get_sku(),
@@ -777,7 +866,7 @@ class NH_TC_Catalog {
 			'variation_id' => (int) $variation_id,
 			'attributes'   => $atts_for_cart,
 			'qty'          => $qty,
-			'name'         => $parent->get_name(),
+			'name'         => $display_name,
 			'label'        => $fallback_name,
 			'spec'         => $variation_id ? wc_get_formatted_variation( $sell, true, false, true ) : '',
 			'permalink'    => $parent->get_permalink(),

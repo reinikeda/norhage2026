@@ -343,6 +343,40 @@ nh_tc_sheet_assert(
 	&& ! NH_TC_Catalog::attr_values_match( '25-mm', '38' )
 );
 
+$tape_25 = array(
+	'attribute_pa_bredde-mm' => '25-mm',
+	'attribute_pa_lengde'    => '5-m',
+);
+$tape_38 = array(
+	'attribute_pa_bredde-mm' => '38-mm',
+	'attribute_pa_lengde'    => '5-m',
+);
+$tape_want = array(
+	'width'  => '38-mm',
+	'length' => '5-m',
+);
+nh_tc_sheet_assert(
+	'20 mm sheets score the 38 mm tape variation, not the 25 mm roll',
+	0 === NH_TC_Catalog::score_variation_attributes( $tape_25, $tape_want )
+	&& NH_TC_Catalog::score_variation_attributes( $tape_38, $tape_want ) > 0
+	&& NH_TC_Catalog::score_variation_attributes( $tape_38, $tape_want )
+		> NH_TC_Catalog::score_variation_attributes( $tape_25, array( 'width' => '38-mm' ) )
+);
+nh_tc_sheet_assert(
+	'bredde-mm attribute keys match the width logical name',
+	NH_TC_Catalog::attr_key_matches( 'attribute_pa_bredde-mm', 'width' )
+	&& NH_TC_Catalog::attr_key_matches( 'attribute_pa_lengde', 'length' )
+	&& ! NH_TC_Catalog::attr_key_matches( 'attribute_pa_lengde', 'width' )
+);
+
+$screw_50 = array( 'attribute_pa_dimensjon' => '5x50mm' );
+$screw_60 = array( 'attribute_pa_dimensjon' => '5x60mm' );
+nh_tc_sheet_assert(
+	'20 mm sheets score 60 mm screws, not 50 mm',
+	0 === NH_TC_Catalog::score_variation_attributes( $screw_50, array( 'dimensions' => '5-mm-x-60-mm', 'length' => '60-mm' ) )
+	&& NH_TC_Catalog::score_variation_attributes( $screw_60, array( 'dimensions' => '5-mm-x-60-mm', 'length' => '60-mm' ) ) > 0
+);
+
 if ( $failures ) {
 	echo "\n{$failures} failed\n";
 	exit( 1 );
