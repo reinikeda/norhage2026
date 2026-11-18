@@ -119,7 +119,7 @@ nh_tc_assert(
 	&& 4 === (int) $by_role['screw']['qty']
 	&& '5-mm-x-50-mm' === $by_role['screw']['attrs']['dimensions']
 	&& '50-mm' === $by_role['screw']['attrs']['length']
-	&& '10-mm' === $by_role['screw']['attrs']['thickness']
+	&& empty( $by_role['screw']['attrs']['thickness'] )
 	&& 50 === (int) $bom['meta']['screw_length_mm']
 	&& 150 === (int) $bom['meta']['connect_screws']
 	&& 35 === (int) $bom['meta']['finish_screws']
