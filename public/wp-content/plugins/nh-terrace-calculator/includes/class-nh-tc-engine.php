@@ -262,9 +262,9 @@ class NH_TC_Engine {
 				'qty_raw'   => $screws_raw,
 				'pack_size' => $pack_size,
 				'attrs'     => array(
+					// "5-mm-x-60-mm" = diameter × length. Match by length for thickness rules.
 					'dimensions' => $screw_spec['dimensions'],
 					'length'     => $screw_spec['length_mm'] . '-mm',
-					'thickness'  => $thk . '-mm',
 				),
 			);
 		}

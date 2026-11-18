@@ -512,8 +512,9 @@ class NH_TC_Catalog {
 			return null;
 		}
 
-		$best       = null;
-		$best_score = 0;
+		$best          = null;
+		$best_score    = 0;
+		$best_sellable = false;
 
 		foreach ( $product->get_children() as $vid ) {
 			$vp = wc_get_product( $vid );
@@ -523,9 +524,16 @@ class NH_TC_Catalog {
 
 			$attrs = $vp->get_variation_attributes();
 			$score = self::score_variation_attributes( $attrs, $wanted_values );
-			if ( $score > $best_score ) {
-				$best_score = $score;
-				$best       = array(
+			if ( $score <= 0 ) {
+				continue;
+			}
+			$sellable = self::is_sellable( $vp );
+			// Prefer a higher score; on a tie prefer an in-stock variation so a
+			// false-friendly 50 m roll does not beat a sellable 5 m roll.
+			if ( $score > $best_score || ( $score === $best_score && $sellable && ! $best_sellable ) ) {
+				$best_score    = $score;
+				$best_sellable = $sellable;
+				$best          = array(
 					'variation_id' => (int) $vid,
 					'product'      => $vp,
 					'attributes'   => $attrs,
@@ -647,37 +655,106 @@ class NH_TC_Catalog {
 			return true;
 		}
 
-		$want_mm = self::flexible_mm( $want );
-		$have_mm = self::flexible_mm( $have );
+		// Tape / profile roll lengths: compare metres directly so "5-m" ≠ "50-m".
+		// (sheet_dimension_mm maps both to 5000 for polycarbonate stock slugs.)
+		$want_m = self::metre_quantity( $want );
+		$have_m = self::metre_quantity( $have );
+		if ( $want_m > 0 && $have_m > 0 ) {
+			return abs( $want_m - $have_m ) < 0.0001;
+		}
+
+		$want_mm = self::simple_mm( $want );
+		$have_mm = self::simple_mm( $have );
 		if ( $want_mm > 0 && $want_mm === $have_mm ) {
 			return true;
 		}
 
 		// Screw size: "5-mm-x-60-mm" vs "5x60" / "5 x 60 mm".
-		if ( preg_match( '/(\d+)\D+(\d+)/', $a, $ma ) && preg_match( '/(\d+)\D+(\d+)/', $b, $mb ) ) {
-			if ( (int) $ma[1] === (int) $mb[1] && (int) $ma[2] === (int) $mb[2] ) {
-				return true;
-			}
+		$want_pair = self::dimension_pair_mm( $want );
+		$have_pair = self::dimension_pair_mm( $have );
+		if ( $want_pair && $have_pair ) {
+			return $want_pair[0] === $have_pair[0] && $want_pair[1] === $have_pair[1];
 		}
+
+		// Screw length only ("60-mm") against a diameter×length attribute: match the LENGTH.
+		if ( $want_mm > 0 && $have_pair ) {
+			return $want_mm === $have_pair[1];
+		}
+		if ( $have_mm > 0 && $want_pair ) {
+			return $have_mm === $want_pair[1];
+		}
+
 		return false;
 	}
 
 	/**
-	 * @return int Millimetres for thickness/width terms (25, 25-mm, 10 mm, 1-m → 1000).
+	 * Metres from a roll-length attribute: "5-m", "5m", "50 m" → 5 / 50.
+	 * Returns 0 for millimetre values ("25-mm") and non-metre text.
 	 */
-	private static function flexible_mm( $value ) {
-		$sheet = NH_TC_Defaults::sheet_dimension_mm( $value );
-		if ( $sheet > 0 ) {
-			return $sheet;
-		}
+	public static function metre_quantity( $value ) {
 		$raw = strtolower( trim( (string) $value ) );
 		$raw = str_replace( array( '_', '–', '—' ), '-', $raw );
 		$raw = preg_replace( '/\s+/', '', $raw );
-		if ( preg_match( '/^(\d{1,5})(?:-?mm)?$/', (string) $raw, $match ) ) {
+		if ( ! is_string( $raw ) || '' === $raw || false !== strpos( $raw, 'mm' ) ) {
+			return 0.0;
+		}
+		if ( preg_match( '/^(\d+(?:[.,]\d+)?)-?m$/', $raw, $match ) ) {
+			return (float) str_replace( ',', '.', $match[1] );
+		}
+		return 0.0;
+	}
+
+	/**
+	 * Diameter and length in millimetres for screw-size attributes.
+	 *
+	 * @return array{0:int,1:int}|null
+	 */
+	public static function dimension_pair_mm( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		$raw = str_replace( array( '_', '–', '—', '×', ' ' ), array( '-', '-', '-', 'x', '' ), $raw );
+		if ( ! preg_match( '/(\d+)\D+(\d+)/', $raw, $match ) ) {
+			return null;
+		}
+		return array( (int) $match[1], (int) $match[2] );
+	}
+
+	/**
+	 * Plain millimetre value (25, 25-mm, 60 mm). Ignores metre slugs and DxL sizes.
+	 */
+	public static function simple_mm( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		$raw = str_replace( array( '_', '–', '—' ), '-', $raw );
+		$raw = preg_replace( '/\s+/', '', $raw );
+		if ( ! is_string( $raw ) || '' === $raw ) {
+			return 0;
+		}
+		if ( self::metre_quantity( $value ) > 0 ) {
+			return 0;
+		}
+		if ( self::dimension_pair_mm( $value ) ) {
+			return 0;
+		}
+		if ( preg_match( '/^(\d{1,5})(?:-?mm)?$/', $raw, $match ) ) {
 			return (int) $match[1];
 		}
-		if ( class_exists( 'NH_TC_Engine' ) ) {
-			return (int) NH_TC_Engine::parse_size_to_mm( $value );
+		return 0;
+	}
+
+	/**
+	 * @return int Millimetres for thickness/width terms (25, 25-mm, 10 mm).
+	 */
+	private static function flexible_mm( $value ) {
+		$simple = self::simple_mm( $value );
+		if ( $simple > 0 ) {
+			return $simple;
+		}
+		$pair = self::dimension_pair_mm( $value );
+		if ( $pair ) {
+			return $pair[1];
+		}
+		$metres = self::metre_quantity( $value );
+		if ( $metres > 0 ) {
+			return (int) round( $metres * 1000 );
 		}
 		return 0;
 	}
@@ -1058,7 +1135,14 @@ class NH_TC_Catalog {
 	 * A product can be sold: in stock (backorders count) and carrying a price.
 	 */
 	public static function is_sellable( WC_Product $product ) {
-		return $product->is_in_stock() && $product->is_purchasable() && '' !== (string) $product->get_price();
+		if ( ! $product->is_in_stock() || ! $product->is_purchasable() ) {
+			return false;
+		}
+		if ( '' !== (string) $product->get_price() ) {
+			return true;
+		}
+		// Some variations keep the amount on regular/sale price only.
+		return '' !== (string) $product->get_regular_price() || '' !== (string) $product->get_sale_price();
 	}
 
 	/**
