@@ -858,7 +858,33 @@ a.nh-tc__inline-thumb[href]:focus-visible {
 }
 
 .nh-tc__items li.is-missing {
-  opacity: 0.65;
+  border-color: #d64545;
+  background: #fff5f5;
+}
+
+.nh-tc__items li.is-missing .nh-tc__item-name,
+.nh-tc__items li.is-missing .nh-tc__item-price,
+.nh-tc__items li.is-missing .nh-tc__item-spec {
+  color: #b42318;
+}
+
+.nh-tc__item-badge {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  background: #b42318;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
+.nh-tc__missing-note {
+  margin: 0.55rem 0 0;
+  color: #b42318;
+  font-weight: 600;
 }
 
 .nh-tc__item-name {

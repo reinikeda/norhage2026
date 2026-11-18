@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.11\n"
-"PO-Revision-Date: 2026-11-16 19:22+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.12\n"
+"PO-Revision-Date: 2026-11-18 07:19+0000\n"
 "Language: de_DE\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -9,10 +9,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Norhage agent\n"
-
-#, php-format
-msgid "(%d / pack)"
-msgstr "(%d / Packung)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -43,6 +39,10 @@ msgid "%s pcs"
 msgstr "%s Stk."
 
 #, php-format
+msgid "(%d / pack)"
+msgstr "(%d / Packung)"
+
+#, php-format
 msgid "3-wall"
 msgstr "3-Steg"
 
@@ -55,16 +55,16 @@ msgid "6-wall"
 msgstr "6-Steg"
 
 #, php-format
+msgid "A guide only. Confirm the structure before you build."
+msgstr "Nur eine Orientierung. Prüfen Sie die Konstruktion, bevor Sie bauen."
+
+#, php-format
 msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile."
 msgstr "Ein Pultdach erhält ein Abschlussprofil an beiden Seiten und an der Tropfkante. Ein Satteldach erhält beide Seiten und beide Tropfkanten. Jede Kante wird auf ganze Meter aufgerundet und aus 3-m-, dann 2-m-, 1,5-m- und 1-m-Stücken gepackt. Das Wandprofil deckt die Breite in Stücken der konfigurierten Länge (Standard 2,2 m). Ein Satteldach nutzt dafür das Firstprofil statt des Wandprofils."
 
 #, php-format
 msgid "A sheet would be wider than %d mm. Reduce the rafter spacing."
 msgstr "Eine Platte wäre breiter als %d mm. Verringern Sie den Trägerabstand."
-
-#, php-format
-msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
-msgstr "Dieses Stück ist breiter als eine Massivplatte von %1$d × %2$d mm. Verringern Sie den Trägerabstand."
 
 #, php-format
 msgid "Add kit to basket"
@@ -90,9 +90,14 @@ msgstr "entlang der Wand"
 msgid "Also available"
 msgstr "Auch verfügbar"
 
-#, php-format
-msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
-msgstr "Die Seitenplatten sind %1$d mm breiter und decken den %2$d mm breiten Träger. Am Stoß bleiben %3$d mm."
+msgid "Aluminium F-profile"
+msgstr "Aluminium-F-Profil"
+
+msgid "Aluminium L-profile"
+msgstr "Aluminium-L-Profil"
+
+msgid "Aluminium U-profile"
+msgstr "Aluminium-U-Profil"
 
 #, php-format
 msgid "Anthracite"
@@ -111,12 +116,11 @@ msgid "Back"
 msgstr "Zurück"
 
 #, php-format
-msgid "Profile on every rafter"
-msgstr "Profil auf jedem Sparren"
-
-#, php-format
 msgid "Beam width"
 msgstr "Trägerbreite"
+
+msgid "Beam width must be 20–200 mm. 50 mm is usual."
+msgstr "Die Trägerbreite muss 20–200 mm sein. 50 mm ist üblich."
 
 #, php-format
 msgid "Behaviour"
@@ -129,10 +133,6 @@ msgstr "Beste Dämmung"
 #, php-format
 msgid "Both side sheets are %d mm."
 msgstr "Beide Seitenplatten sind %d mm."
-
-#, php-format
-msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
-msgstr "Sie haben eine Seite eingegeben (%1$d mm). Beide Seiten zählen, daher ist die Länge %2$d mm."
 
 msgid "Bronze"
 msgstr "Bronze"
@@ -151,6 +151,9 @@ msgstr "Der Warenkorb ist nicht verfügbar."
 
 msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
 msgstr "Achsabstand der Träger, wenn der Kunde das Feld leer lässt. Standard sind 600 mm."
+
+msgid "Check the materials and prices, then add the kit to the basket."
+msgstr "Prüfen Sie Materialien und Preise, und legen Sie das Set in den Warenkorb."
 
 msgid "Choose thickness. We prefill a safe support spacing for you."
 msgstr "Dicke wählen. Wir schlagen einen sicheren Trägerabstand vor."
@@ -173,6 +176,7 @@ msgstr "Farbe"
 msgid "Connecting and edge profiles with end caps where needed"
 msgstr "Verbindungs- und Randprofile mit Endkappen wo nötig"
 
+#, php-format
 msgid "Connecting profile"
 msgstr "Verbindungsprofil"
 
@@ -233,14 +237,11 @@ msgstr "Standard ist jede Produktseite, damit das Formular ohne weitere Einricht
 msgid "Default size (mm)"
 msgstr "Standardmaß (mm)"
 
-msgid "Overhang"
-msgstr "Überstand"
+msgid "Drip overhang"
+msgstr "Tropfüberstand"
 
 msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
 msgstr "Jede Zeile in der Materialliste ist ein Produkt aus der Zuordnung unten. Die Menge ergibt sich aus dem Rahmen, den der Kunde eingegeben hat. Eine Zeile mit leerer Variations-SKU wird trotzdem gezeigt, als nicht in diesem Shop gekennzeichnet, und der Rest des Sets kann in den Warenkorb gelegt werden."
-
-msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
-msgstr "Die Platten sind so breit wie möglich. Ein Stoß kommt nur dorthin, wo sie sich treffen, auf einen Sparren."
 
 msgid "Edge profile"
 msgstr "Randprofil"
@@ -254,21 +255,18 @@ msgstr "Endkappe – silber / grau"
 msgid "Enter a size to see the kit."
 msgstr "Geben Sie ein Maß ein, um das Set zu sehen."
 
-msgid "Beam width must be 20–200 mm. 50 mm is usual."
-msgstr "Die Trägerbreite muss 20–200 mm sein. 50 mm ist üblich."
-
 msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
 msgstr "Geben Sie eine Varianten-SKU für jede Lagerbreite und -länge ein. Der Kunde wählt die Breite. Der Rechner verwendet die kürzeste Lagerlänge, die die Rahmenlänge plus den Tropfüberstand abdeckt."
 
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Geben Sie eine Seite ein, vom First zur Traufe. Beide Seiten werden gezählt."
 
+#, php-format
+msgid "Enter the roof size to see the cutting diagram."
+msgstr "Geben Sie das Dachmaß ein, um die Zuschnittskizze zu sehen."
 
 msgid "Every product page"
 msgstr "Jede Produktseite"
-
-msgid "Aluminium F-profile"
-msgstr "Aluminium-F-Profil"
 
 msgid "Fewer joints"
 msgstr "Weniger Stöße"
@@ -342,11 +340,15 @@ msgstr "Behalten Sie die Parent-SKU für jede Dicke und Farbe. Variations-SKUs w
 msgid "Kit"
 msgstr "Set"
 
+#, php-format
+msgid "Kit added to basket. Not available and skipped: %s."
+msgstr "Kit in den Warenkorb gelegt. Nicht verfügbar und übersprungen: %s."
+
+msgid "Kit added. Unavailable items were skipped."
+msgstr "Kit hinzugefügt. Nicht verfügbare Artikel wurden übersprungen."
+
 msgid "Kit total"
 msgstr "Set gesamt"
-
-msgid "Aluminium L-profile"
-msgstr "Aluminium-L-Profil"
 
 msgid "Lean-to"
 msgstr "Pultdach"
@@ -378,9 +380,20 @@ msgstr "über die Vorderseite des Dachs messen"
 msgid "measure along the house wall"
 msgstr "entlang der Hauswand messen"
 
+msgid "Measure the roof, choose the sheets, then add the kit."
+msgstr "Messen Sie das Dach, wählen Sie die Platten und fügen Sie das Set hinzu."
+
 msgid "middle"
 msgstr "Mitte"
 
+#, php-format
+msgid "Missing from this kit (shown in red): %s. The rest can still be added to the basket."
+msgstr "Fehlt im Kit (rot markiert): %s. Der Rest kann trotzdem in den Warenkorb."
+
+msgid "More profiles and screws."
+msgstr "Mehr Profile und Schrauben."
+
+#, php-format
 msgid "Most terraces"
 msgstr "Die meisten Terrassen"
 
@@ -392,20 +405,12 @@ msgstr "Stegplatte"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Stegplatte (Zuschnitt)"
 
-#, php-format
-msgid "You receive whole sheets. The diagram shows how to cut them."
-msgstr "Sie erhalten ganze Platten. Die Skizze zeigt, wie sie zugeschnitten werden."
-
-#, php-format
 msgid "Neutral silicone"
 msgstr "Neutralvernetzendes Silikon"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Neutralvernetzendes Silikon Silirub PC"
-
-#, php-format
-msgid "These materials are not available in this shop."
-msgstr "Diese Materialien sind in diesem Shop nicht verfügbar."
 
 #, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
@@ -444,6 +449,13 @@ msgstr "Nicht auf Lager"
 msgid "outer"
 msgstr "außen"
 
+msgid "Overhang"
+msgstr "Überstand"
+
+#, php-format
+msgid "Overhang must be 0–300 mm."
+msgstr "Der Überstand muss 0–300 mm sein."
+
 msgid "Pack size"
 msgstr "Packungsgröße"
 
@@ -456,12 +468,16 @@ msgstr "Wählen Sie für jede Position im Set ein Produkt aus dem Katalog. Der R
 msgid "Plastic H-profile"
 msgstr "H-Profil aus Kunststoff"
 
+msgid "Plastic U-profile"
+msgstr "Kunststoff-U-Profil"
+
 msgid "Please enter a valid width and length."
 msgstr "Bitte geben Sie eine gültige Breite und Länge ein."
 
 msgid "Polycarbonate"
 msgstr "Polycarbonat"
 
+#, php-format
 msgid "Polycarbonate sheet"
 msgstr "Polycarbonatplatte"
 
@@ -472,6 +488,10 @@ msgstr "Polycarbonatplatten"
 #, php-format
 msgid "Postal code (for shipping)"
 msgstr "Postleitzahl (für den Versand)"
+
+#, php-format
+msgid "Profile on every rafter"
+msgstr "Profil auf jedem Sparren"
 
 #, php-format
 msgid "Profiles"
@@ -490,12 +510,12 @@ msgid "Rafter"
 msgstr "Träger"
 
 #, php-format
-msgid "Ready to fit — joints land on supports"
-msgstr "Montagefertig — Stöße liegen auf den Trägern"
+msgid "Rafter spacing (centre to centre)"
+msgstr "Trägerabstand (Mitte zu Mitte)"
 
 #, php-format
-msgid "A guide only. Confirm the structure before you build."
-msgstr "Nur eine Orientierung. Prüfen Sie die Konstruktion, bevor Sie bauen."
+msgid "Ready to fit — joints land on supports"
+msgstr "Montagefertig — Stöße liegen auf den Trägern"
 
 #, php-format
 msgid "Recommended centre spacing for this thickness: %s mm."
@@ -544,6 +564,7 @@ msgstr "Schrauben für Profile und Kanten sowie Fixierknöpfe, wenn hinterlegt"
 msgid "Sealing"
 msgstr "Abdichtung"
 
+#, php-format
 msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
 msgstr "Dichtbänder nur für Stegplatten. Isolierband oben, atmungsaktives Lüftungsband unten. Beide Kanten gleich lang (Gesamtplattenbreite; Satteldach zählt beide Seiten). Bandbreite nach Dicke: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm; passende Variation vom Parent. Schrauben (Steg und Massiv) ebenfalls nach Dicke: bis 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silikon eine Tube je konfigurierte Meter Umfang (Standard 10 m), mindestens eine. Aluminiumprofile haben bereits Dichtungsgummi, daher enthält das Set keine separate EPDM-Dichtung."
 
@@ -564,16 +585,15 @@ msgid "Selected products"
 msgstr "Ausgewählte Produkte"
 
 #, php-format
-msgid "Overhang must be 0–300 mm."
-msgstr "Der Überstand muss 0–300 mm sein."
-
-#, php-format
 msgid "Sheet structure"
 msgstr "Stegstruktur"
 
 #, php-format
 msgid "Sheets"
 msgstr "Platten"
+
+msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
+msgstr "Die Platten sind so breit wie möglich. Ein Stoß kommt nur dorthin, wo sie sich treffen, auf einen Sparren."
 
 #, php-format
 msgid "Sheets cut so every joint lands on a support centre"
@@ -586,6 +606,7 @@ msgstr "Die Platten überspannen mehrere Träger und werden aus der Lagerbreite 
 msgid "Shipping is calculated in the basket."
 msgstr "Der Versand wird im Warenkorb berechnet."
 
+#, php-format
 msgid "Show calculator on"
 msgstr "Rechner anzeigen auf"
 
@@ -600,6 +621,10 @@ msgstr "Postleitzahlschritt im Shop anzeigen. Wird beim Hinzufügen des Sets am 
 #, php-format
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Terrassendach-Rechner auf dieser Produktseite anzeigen (wenn der Anzeigemodus «Kontrollkästchen» ist)."
+
+#, php-format
+msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
+msgstr "Die Seitenplatten sind %1$d mm breiter und decken den %2$d mm breiten Träger. Am Stoß bleiben %3$d mm."
 
 #, php-format
 msgid "Silicone metres per tube"
@@ -633,24 +658,17 @@ msgstr "Einige Artikel sind hier nicht verfügbar. Den Rest können Sie trotzdem
 msgid "Spacing along each sheet"
 msgstr "Abstand entlang jeder Platte"
 
-#, php-format
-msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
-msgstr "Üblicherweise 50 mm. Die Stöße liegen auf dem Träger und lassen %d mm für das Profil."
+msgid "Standard sheet"
+msgstr "Standardplatte"
 
 msgid "Standard sheets"
 msgstr "Standardplatten"
-
-msgid "Standard sheet"
-msgstr "Standardplatte"
 
 msgid "Standard sizes"
 msgstr "Standardgrößen"
 
 msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
 msgstr "Standardmaße. Der Kunde wählt eine Breite. Die Länge ist die kürzeste Lagerlänge, die den Rahmen plus die Tropfkante deckt. Die Menge ist die Anzahl der Platten über die Breite, mal der Anzahl in der Länge. Ein Rahmen von 4200 mm mit einer Platte von 2100 mm sind 2 Stück. Derselbe Rahmen mit einer Platte von 1050 mm sind 4. Eine Bahn von 4750 mm auf einer Tafel, deren lange Seite 3050 mm ist, sind 2 Stück in der Länge, also 3 über die Breite mal 2 in der Länge sind 6. Die Zeichnung ist ein Schnittplan. Der Warenkorb erhält das Lagermaß, und die Profilwahl ändert diese Menge nicht."
-
-msgid "More profiles and screws."
-msgstr "Mehr Profile und Schrauben."
 
 msgid "Suggested thickness"
 msgstr "Empfohlene Dicke"
@@ -660,9 +678,6 @@ msgstr "Trägerbreite und Plattenüberstand"
 
 msgid "Support beam width"
 msgstr "Breite des Trägers"
-
-msgid "Rafter spacing (centre to centre)"
-msgstr "Trägerabstand (Mitte zu Mitte)"
 
 #, php-format
 msgid "Tape roll length"
@@ -693,14 +708,6 @@ msgid "Terrace roof kit added to basket."
 msgstr "Terrassendach-Set wurde in den Warenkorb gelegt."
 
 #, php-format
-msgid "Enter the roof size to see the cutting diagram."
-msgstr "Geben Sie das Dachmaß ein, um die Zuschnittskizze zu sehen."
-
-#, php-format
-msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
-msgstr "Sie kaufen %1$d ganze Platten, %2$d × %3$d mm. Die Skizze zeigt eine Art, sie zuzuschneiden."
-
-#, php-format
 msgid "The last sheet would be under 100 mm. Adjust the rafter spacing."
 msgstr "Die letzte Platte wäre schmaler als 100 mm. Passen Sie den Trägerabstand an."
 
@@ -712,17 +719,22 @@ msgstr "Die Trägerzahl im Abstandshinweis ist ein Rat. Die Träger sind kein Pr
 msgid "The side sheets are %1$d mm and %2$d mm."
 msgstr "Die Seitenplatten sind %1$d mm und %2$d mm."
 
+#, php-format
+msgid "These materials are not available in this shop."
+msgstr "Diese Materialien sind in diesem Shop nicht verfügbar."
+
 msgid "Thickness"
 msgstr "Stärke"
+
+#, php-format
+msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
+msgstr "Dieses Stück ist breiter als eine Massivplatte von %1$d × %2$d mm. Verringern Sie den Trägerabstand."
 
 msgid "This thickness and colour is only available as a custom cut."
 msgstr "Diese Stärke und Farbe gibt es nur als Zuschnitt."
 
 msgid "This thickness and colour is out of stock."
 msgstr "Diese Stärke und Farbe ist nicht auf Lager."
-
-msgid "Measure the roof, choose the sheets, then add the kit."
-msgstr "Messen Sie das Dach, wählen Sie die Platten und fügen Sie das Set hinzu."
 
 msgid "Total excl. VAT"
 msgstr "Summe exkl. MwSt."
@@ -736,20 +748,21 @@ msgstr "Zwei Dachflächen ab dem First"
 msgid "Type"
 msgstr "Typ"
 
-msgid "Aluminium U-profile"
-msgstr "Aluminium-U-Profil"
-
-msgid "Plastic U-profile"
-msgstr "Kunststoff-U-Profil"
-
 msgid "Unable to add one of the kit items to the basket."
 msgstr "Eine Position des Sets konnte nicht in den Warenkorb gelegt werden."
+
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
 
 msgid "Updating prices…"
 msgstr "Preise werden aktualisiert…"
 
 msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr "Üblicherweise 50 mm über den vorderen Träger hinaus, damit Wasser frei abtropft."
+
+#, php-format
+msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
+msgstr "Üblicherweise 50 mm. Die Stöße liegen auf dem Träger und lassen %d mm für das Profil."
 
 msgid "Variation SKUs below were read from the parent product in the shop."
 msgstr "Die Variations-SKUs unten wurden aus dem Parent-Produkt im Shop gelesen."
@@ -775,6 +788,9 @@ msgstr "Wand / First"
 msgid "Wall / ridge piece"
 msgstr "Wand-/Firststück"
 
+msgid "Wall profile"
+msgstr "Wandprofil"
+
 msgid "Wall profile 2.2 m"
 msgstr "Wandprofil 2,2 m"
 
@@ -799,21 +815,27 @@ msgstr "Breite entlang der Wand"
 msgid "Wood screws with washers"
 msgstr "Holzschrauben mit Scheiben"
 
-msgid "You cut them to fit"
-msgstr "Sie schneiden sie selbst zu"
-
-msgid "Your kit"
-msgstr "Ihr Set"
-
-msgid "Check the materials and prices, then add the kit to the basket."
-msgstr "Prüfen Sie Materialien und Preise, und legen Sie das Set in den Warenkorb."
-
-
-msgid "Wall profile"
-msgstr "Wandprofil"
+#, php-format
+msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
+msgstr "Sie kaufen %1$d ganze Platten, %2$d × %3$d mm. Die Skizze zeigt eine Art, sie zuzuschneiden."
 
 msgid "You can go back to change the size or materials. Shipping is calculated in the basket."
 msgstr "Sie können zurückgehen und Maße oder Materialien ändern. Der Versand wird im Warenkorb berechnet."
 
-msgid "Drip overhang"
-msgstr "Tropfüberstand"
+msgid "You can go back to change the size or materials. Shipping is calculated in the basket. Unavailable items stay listed in red and are skipped when you add the kit."
+msgstr "Sie können zurückgehen und Größe oder Material ändern. Versand wird im Warenkorb berechnet. Nicht verfügbare Artikel bleiben rot markiert und werden beim Hinzufügen übersprungen."
+
+msgid "You cut them to fit"
+msgstr "Sie schneiden sie selbst zu"
+
+#, php-format
+msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
+msgstr "Sie haben eine Seite eingegeben (%1$d mm). Beide Seiten zählen, daher ist die Länge %2$d mm."
+
+#, php-format
+msgid "You receive whole sheets. The diagram shows how to cut them."
+msgstr "Sie erhalten ganze Platten. Die Skizze zeigt, wie sie zugeschnitten werden."
+
+msgid "Your kit"
+msgstr "Ihr Set"
+

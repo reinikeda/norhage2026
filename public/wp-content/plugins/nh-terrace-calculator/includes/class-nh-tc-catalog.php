@@ -29,7 +29,11 @@ class NH_TC_Catalog {
 				foreach ( $resolved as $item ) {
 					$item['unit_display'] = self::format_money( 'excl' === $tax_mode ? $item['unit_ex'] : $item['unit_inc'] );
 					$item['line_display'] = self::format_money( 'excl' === $tax_mode ? $item['line_ex'] : $item['line_inc'] );
-					if ( empty( $item['product_id'] ) ) {
+					// Out of stock / inactive / unresolved lines stay visible but are not sold.
+					if ( self::item_is_unavailable( $item ) ) {
+						if ( empty( $item['error'] ) ) {
+							$item['error'] = empty( $item['in_stock'] ) ? 'out_of_stock' : 'unavailable';
+						}
 						$missing[] = $item;
 						continue;
 					}
@@ -58,6 +62,27 @@ class NH_TC_Catalog {
 				'tax_display' => $tax_mode,
 			);
 		}
+
+	/**
+	 * True when a resolved line cannot be added to the cart.
+	 *
+	 * @param array<string, mixed> $item
+	 */
+	public static function item_is_unavailable( array $item ) {
+		if ( empty( $item['product_id'] ) ) {
+			return true;
+		}
+		if ( ! empty( $item['error'] ) ) {
+			return true;
+		}
+		if ( isset( $item['in_stock'] ) && ! $item['in_stock'] ) {
+			return true;
+		}
+		if ( isset( $item['purchasable'] ) && ! $item['purchasable'] ) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * @param array<string, mixed> $line
@@ -199,12 +224,20 @@ class NH_TC_Catalog {
 		if ( $product->is_type( 'variation' ) ) {
 			$parent = wc_get_product( $product->get_parent_id() );
 			$parent = $parent instanceof WC_Product ? $parent : $product;
-			$item   = self::build_item( $parent, $product->get_id(), $product->get_variation_attributes(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
+			if ( ! self::is_sellable( $product ) ) {
+				$empty['error'] = 'out_of_stock';
+				return self::with_product_face( $empty, $parent, $product );
+			}
+			$item = self::build_item( $parent, $product->get_id(), $product->get_variation_attributes(), $qty, 'sheet', __( 'Polycarbonate sheet', NH_TC_TD ), $product );
 		} elseif ( $product->is_type( 'variable' ) ) {
 			$found = ( $width_mm > 0 && $length_mm > 0 ) ? self::find_sheet_variation( $product, $width_mm, $length_mm ) : null;
 			if ( ! $found ) {
 				$empty['error'] = 'variation_missing';
 				return self::with_product_face( $empty, $product );
+			}
+			if ( ! self::is_sellable( $found['product'] ) ) {
+				$empty['error'] = 'out_of_stock';
+				return self::with_product_face( $empty, $product, $found['product'] );
 			}
 			$item = self::build_item(
 				$product,
@@ -364,9 +397,17 @@ class NH_TC_Catalog {
 			$variation_id = (int) $found['variation_id'];
 			$variation    = $found['product'];
 			$matched_atts = $found['attributes'];
+			if ( $variation instanceof WC_Product && ! self::is_sellable( $variation ) ) {
+				$empty['error'] = 'out_of_stock';
+				return self::with_product_face( $empty, $product, $variation );
+			}
 		}
 
 		$sell = $variation instanceof WC_Product ? $variation : $product;
+		if ( ! self::is_sellable( $sell ) ) {
+			$empty['error'] = 'out_of_stock';
+			return self::with_product_face( $empty, $product, $sell );
+		}
 		$item = self::build_item( $product, $variation_id, $matched_atts, $qty, $line['role'], $fallback_name, $sell );
 
 		if ( ! empty( $line['pack_size'] ) ) {
@@ -599,7 +640,10 @@ class NH_TC_Catalog {
 	 * @param array<string, mixed> $item
 	 * @return array<string, mixed>
 	 */
-	private static function with_product_face( array $item, WC_Product $product ) {
+	/**
+	 * @param WC_Product|null $face Product used for the thumbnail (variation when known).
+	 */
+	private static function with_product_face( array $item, WC_Product $product, $face = null ) {
 		$parent = $product;
 		if ( $product->is_type( 'variation' ) ) {
 			$maybe = wc_get_product( $product->get_parent_id() );
@@ -607,10 +651,11 @@ class NH_TC_Catalog {
 				$parent = $maybe;
 			}
 		}
+		$face = $face instanceof WC_Product ? $face : $product;
 		$item['name']      = $parent->get_name();
 		$item['permalink'] = $parent->get_permalink();
 		if ( empty( $item['image'] ) ) {
-			$item['image'] = self::product_image_url( $product, $parent );
+			$item['image'] = self::product_image_url( $face, $parent );
 		}
 		return $item;
 	}

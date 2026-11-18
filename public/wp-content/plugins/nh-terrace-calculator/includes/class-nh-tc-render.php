@@ -366,8 +366,9 @@ class NH_TC_Render {
 					<div class="nh-tc__panel" data-panel="3" hidden>
 						<fieldset class="nh-tc__card">
 							<legend><?php esc_html_e( 'Review your kit', NH_TC_TD ); ?></legend>
-							<p class="nh-tc__ask"><?php esc_html_e( 'Check the materials and prices, then add the kit to the basket.', NH_TC_TD ); ?></p>
-							<p class="nh-tc__hint"><?php esc_html_e( 'You can go back to change the size or materials. Shipping is calculated in the basket.', NH_TC_TD ); ?></p>
+							<p class="nh-tc__ask" data-review-ask><?php esc_html_e( 'Check the materials and prices, then add the kit to the basket.', NH_TC_TD ); ?></p>
+							<p class="nh-tc__missing-note" data-review-missing hidden></p>
+							<p class="nh-tc__hint"><?php esc_html_e( 'You can go back to change the size or materials. Shipping is calculated in the basket. Unavailable items stay listed in red and are skipped when you add the kit.', NH_TC_TD ); ?></p>
 						</fieldset>
 					</div>
 
@@ -477,6 +478,9 @@ class NH_TC_Render {
 					'5x'            => __( '5-wall', NH_TC_TD ),
 					'3w'            => __( '3-wall', NH_TC_TD ),
 					'missing'       => __( 'Some items are not available here. You can still add the rest.', NH_TC_TD ),
+					'missingReview' => __( 'Missing from this kit (shown in red): %s. The rest can still be added to the basket.', NH_TC_TD ),
+					'unavailable'   => __( 'Unavailable', NH_TC_TD ),
+					'kitPartial'    => __( 'Kit added. Unavailable items were skipped.', NH_TC_TD ),
 					'adding'        => __( 'Adding kit…', NH_TC_TD ),
 					'error'         => __( 'Could not add the kit. Please try again.', NH_TC_TD ),
 					'pcs'           => __( '%s pcs', NH_TC_TD ),
