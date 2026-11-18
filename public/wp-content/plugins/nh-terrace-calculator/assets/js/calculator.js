@@ -52,9 +52,64 @@
   var stockOos = root.querySelector('[data-stock-oos]');
   var stockState = { key: '', channel: '', width: '', length: '' };
   var stockSig = '';
-
+  var wizardStep = 1;
+  var mobileBar = root.querySelector('[data-mobile-bar]');
+  var mobileTotal = root.querySelector('[data-mobile-total]');
+  var mobileCta = root.querySelector('[data-mobile-cta]');
+  var wizardBack = root.querySelector('[data-wizard-back]');
+  var wizardNext = root.querySelector('[data-wizard-next]');
   function i18n(key, fallback) {
     return (cfg.i18n && cfg.i18n[key]) || fallback || key;
+  }
+
+  function setWizardStep(step) {
+    wizardStep = Math.max(1, Math.min(3, Number(step) || 1));
+    root.setAttribute('data-wizard-step', String(wizardStep));
+    root.querySelectorAll('[data-panel]').forEach(function (panel) {
+      var n = Number(panel.getAttribute('data-panel'));
+      var on = n === wizardStep;
+      panel.hidden = !on;
+      panel.classList.toggle('is-active', on);
+    });
+    root.querySelectorAll('[data-goto]').forEach(function (btn) {
+      var n = Number(btn.getAttribute('data-goto'));
+      var on = n === wizardStep;
+      btn.classList.toggle('is-active', on);
+      btn.classList.toggle('is-done', n < wizardStep);
+      if (on) btn.setAttribute('aria-current', 'step');
+      else btn.removeAttribute('aria-current');
+    });
+    if (wizardBack) wizardBack.hidden = wizardStep <= 1;
+    if (wizardNext) {
+      wizardNext.hidden = wizardStep >= 3;
+      wizardNext.textContent = wizardStep === 2
+        ? i18n('reviewKit', 'Review kit')
+        : i18n('continue', 'Continue');
+    }
+    if (mobileCta) {
+      mobileCta.textContent = wizardStep >= 3
+        ? i18n('addKit', 'Add kit to basket')
+        : (wizardStep === 2 ? i18n('reviewKit', 'Review kit') : i18n('continue', 'Continue'));
+    }
+    if (wizardStep === 3 && root.querySelector('.nh-tc__offer')) {
+      try {
+        root.querySelector('.nh-tc__offer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  function kitGroup(role) {
+    if (role === 'sheet') return 'sheets';
+    if (role === 'connecting' || role === 'finish' || role === 'wall' || role === 'ridge' || role === 'end_cap') return 'profiles';
+    if (role === 'vent_tape' || role === 'iso_tape' || role === 'silicon') return 'sealing';
+    return 'fixings';
+  }
+
+  function groupLabel(key) {
+    if (key === 'sheets') return i18n('groupSheets', 'Sheets');
+    if (key === 'profiles') return i18n('groupProfiles', 'Profiles');
+    if (key === 'sealing') return i18n('groupSealing', 'Sealing');
+    return i18n('groupFixings', 'Fixings');
   }
 
   function labelFor(value, fallbackMap) {
@@ -214,13 +269,21 @@
     if (lengthLabel) {
       lengthLabel.textContent = gable
         ? i18n('lengthGable', 'Length of one side (ridge to eave)')
-        : i18n('lengthLean', 'Frame length (projection)');
+        : i18n('lengthLean', 'Projection (wall to front)');
     }
   }
 
-  function preferredLength(lengths) {
+  function preferredLength(lengths, material) {
     var need = frameLength() + (overhangInput ? Number(overhangInput.value) : 0);
     var sorted = lengths.map(Number).filter(function (n) { return n > 0; }).sort(function (a, b) { return a - b; });
+    if (material === 'solid' && sorted.indexOf(3050) !== -1) {
+      return '3050';
+    }
+    if (material === 'multiwall') {
+      // Round up to a full metre (1–7 m), then pick the shortest sold length that covers it.
+      var metre = need >= 7000 ? 7000 : Math.max(1000, Math.min(7000, Math.ceil(need / 1000) * 1000));
+      need = metre;
+    }
     var i;
     for (i = 0; i < sorted.length; i++) {
       if (sorted[i] >= need) return String(sorted[i]);
@@ -283,12 +346,21 @@
 
     var widthMap = (groups[stockState.channel] && groups[stockState.channel].widths) || {};
     var widths = Object.keys(widthMap).sort(function (a, b) { return Number(a) - Number(b); });
+    var material = matSel ? matSel.value : 'multiwall';
+    // Standard supply uses full sheets: multiwall 2100 mm, solid 2050 mm.
+    if (material === 'multiwall' && widths.indexOf('2100') !== -1) {
+      widths = ['2100'];
+    } else if (material === 'solid' && widths.indexOf('2050') !== -1) {
+      widths = ['2050'];
+    }
     if (widths.indexOf(String(stockState.width)) === -1) {
-      stockState.width = widths.indexOf('2100') !== -1 ? '2100' : widths[widths.length - 1];
+      if (material === 'multiwall' && widths.indexOf('2100') !== -1) stockState.width = '2100';
+      else if (material === 'solid' && widths.indexOf('2050') !== -1) stockState.width = '2050';
+      else stockState.width = widths[widths.length - 1];
     }
 
     var lengths = lengthsOf(widthMap[stockState.width]);
-    stockState.length = preferredLength(lengths);
+    stockState.length = preferredLength(lengths, material);
     if (stockLengthInput) stockLengthInput.value = stockState.length;
 
     var sig = [key, stockState.channel, stockState.width].join('|');
@@ -347,6 +419,23 @@
     }
   }
 
+  function raiseCents(text) {
+    var p = cfg.currency || {};
+    if (!p.superscript) return String(text);
+    var decimal = p.decimal != null ? String(p.decimal) : ',';
+    var esc = decimal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return String(text).replace(new RegExp('(<[^>]+>)|(' + esc + ')(\\d{2})(?!\\d)', 'g'), function (match, tag, sep, cents) {
+      return tag ? tag : sep + '<sup class="nh-eur-cents">' + cents + '</sup>';
+    });
+  }
+
+  function showPrice(el, text) {
+    if (!el) return;
+    var html = raiseCents(text);
+    if (html.indexOf('<sup') !== -1) el.innerHTML = html;
+    else el.textContent = text;
+  }
+
   function fmt(n) {
     var p = cfg.currency || {};
     var num = Number(n || 0);
@@ -356,7 +445,8 @@
     var thousand = p.thousand != null ? String(p.thousand) : ' ';
     var decimal = p.decimal != null ? String(p.decimal) : ',';
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousand);
-    var value = decs > 0 ? parts[0] + decimal + (parts[1] || '') : parts[0];
+    var hideZeros = p.trim && decs > 0 && parts[1] && /^0+$/.test(parts[1]);
+    var value = (decs > 0 && !hideZeros) ? parts[0] + decimal + (parts[1] || '') : parts[0];
     var symbol = p.symbol || '';
     var nbsp = '\u00A0';
     switch (p.pos) {
@@ -408,13 +498,16 @@
       itemsEl.innerHTML = '<li class="nh-tc__empty">' + i18n('loading', 'Enter a size to see the kit.') + '</li>';
       atc.disabled = true;
       totalsEl.hidden = true;
+      if (mobileBar) mobileBar.hidden = true;
       drawInlineThumbs([]);
       return;
     }
 
     var taxDisplay = payload.tax_display || cfg.taxDisplay || 'incl';
+    var order = ['sheets', 'profiles', 'sealing', 'fixings'];
+    var buckets = { sheets: [], profiles: [], sealing: [], fixings: [] };
 
-    function addRow(item, isMissing) {
+    function addRow(item, isMissing, list) {
       var li = document.createElement('li');
       if (isMissing) li.className = 'is-missing';
       var thumb = productThumb(item);
@@ -436,39 +529,91 @@
       name.className = 'nh-tc__item-name';
       if (productUrl) name.href = productUrl;
       name.textContent = item.name || item.label || '';
+      if (isMissing) {
+        var badge = document.createElement('span');
+        badge.className = 'nh-tc__item-badge';
+        badge.textContent = i18n('unavailable', 'Unavailable');
+        name.appendChild(document.createTextNode(' '));
+        name.appendChild(badge);
+      }
       var spec = document.createElement('div');
       spec.className = 'nh-tc__item-spec';
       var qtyLabel = i18n('pcs', '%s pcs').replace('%s', item.qty);
       var each = isMissing ? '' : i18n('each', '%s each').replace('%s', item.unit_display || fmt(unitAmount(item, taxDisplay)));
-      spec.textContent = [qtyLabel, each, item.spec].filter(Boolean).join(' · ');
+      spec.textContent = '';
+      [qtyLabel, each, item.spec].filter(Boolean).forEach(function (piece, index) {
+        if (index) spec.appendChild(document.createTextNode(' · '));
+        if (piece === each && raiseCents(piece).indexOf('<sup') !== -1) {
+          var eachNode = document.createElement('span');
+          eachNode.innerHTML = raiseCents(piece);
+          spec.appendChild(eachNode);
+        } else {
+          spec.appendChild(document.createTextNode(piece));
+        }
+      });
       var price = document.createElement('div');
       price.className = 'nh-tc__item-price';
-      price.textContent = isMissing ? '—' : (item.line_display || fmt(lineAmount(item, taxDisplay)));
+      if (isMissing) price.textContent = '—';
+      else showPrice(price, item.line_display || fmt(lineAmount(item, taxDisplay)));
       li.appendChild(name);
       li.appendChild(price);
       li.appendChild(spec);
-      itemsEl.appendChild(li);
+      list.push(li);
     }
 
-    items.forEach(function (item) { addRow(item, false); });
-    missing.forEach(function (item) { addRow(item, true); });
+    items.forEach(function (item) { addRow(item, false, buckets[kitGroup(item.role)] || buckets.fixings); });
+    missing.forEach(function (item) { addRow(item, true, buckets[kitGroup(item.role)] || buckets.fixings); });
+
+    order.forEach(function (key) {
+      if (!buckets[key].length) return;
+      var header = document.createElement('li');
+      header.className = 'nh-tc__group';
+      header.textContent = groupLabel(key);
+      itemsEl.appendChild(header);
+      buckets[key].forEach(function (li) { itemsEl.appendChild(li); });
+    });
 
     if (metaEl && payload.meta) {
       metaEl.textContent = i18n('sheets', '%d sheets').replace('%d', payload.meta.sheet_count);
     }
     drawPlan(payload.meta);
     drawInlineThumbs(items.concat(missing));
+    updateReviewMissing(missing);
 
     if (payload.currency) cfg.currency = payload.currency;
     if (payload.totals) {
       totalsEl.hidden = false;
-      taxEl.textContent = payload.totals.tax_formatted || fmt(payload.totals.tax);
-      totalEl.textContent = payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
+      showPrice(taxEl, payload.totals.tax_formatted || fmt(payload.totals.tax));
+      var totalText = payload.totals.total_formatted || fmt(taxDisplay === 'excl' ? payload.totals.ex : payload.totals.inc);
+      showPrice(totalEl, totalText);
+      if (mobileTotal) showPrice(mobileTotal, totalText);
+      if (mobileBar) mobileBar.hidden = false;
     }
 
     atc.disabled = items.length === 0;
     if (missing.length) setStatus(i18n('missing'), 'error');
     else setStatus('', '');
+  }
+
+  function updateReviewMissing(missing) {
+    var note = root.querySelector('[data-review-missing]');
+    if (!note) return;
+    var rows = missing || [];
+    if (!rows.length) {
+      note.hidden = true;
+      note.textContent = '';
+      return;
+    }
+    var names = [];
+    rows.forEach(function (item) {
+      var label = item.name || item.label || '';
+      if (label && names.indexOf(label) === -1) names.push(label);
+    });
+    note.hidden = false;
+    note.textContent = i18n(
+      'missingReview',
+      'Missing from this kit (shown in red): %s. The rest can still be added to the basket.'
+    ).replace('%s', names.join(', ') || i18n('unavailable', 'Unavailable'));
   }
 
   function quote() {
@@ -507,6 +652,7 @@
     syncGableHint();
     syncSupplyAvailability();
     syncStockCard();
+    drawInlineThumbs();
     clearTimeout(timer);
     timer = setTimeout(quote, 280);
   }
@@ -519,13 +665,70 @@
     });
   }
 
-  var visualRoles = { sheet: 1, connecting: 1, finish: 1, wall: 1, ridge: 1 };
+  function sheetChoiceImage() {
+    var sheets = (cfg.choiceImages && cfg.choiceImages.sheet) || {};
+    var material = matSel ? matSel.value : 'multiwall';
+    var thickness = thkSel ? thkSel.value : '';
+    var colour = colSel ? colSel.value : '';
+    var byThickness = sheets[material] || {};
+    var row = byThickness[thickness] || {};
+    if (row[colour]) return row[colour];
+    var colours = Object.keys(row);
+    if (colours.length) return row[colours[0]];
+    var thicknesses = Object.keys(byThickness);
+    for (var i = 0; i < thicknesses.length; i++) {
+      var fallback = byThickness[thicknesses[i]] || {};
+      var names = Object.keys(fallback);
+      if (names.length) return fallback[names[0]];
+    }
+    return '';
+  }
+
+  function profileChoiceImage(group, typeSel, colourSel) {
+    var tree = (cfg.choiceImages && cfg.choiceImages[group]) || {};
+    var type = typeSel ? typeSel.value : '';
+    var colour = colourSel ? colourSel.value : '';
+    var row = tree[type] || {};
+    if (row[colour]) return row[colour];
+    var colours = Object.keys(row);
+    return colours.length ? row[colours[0]] : '';
+  }
+
+  function hardwareImage(slot, colour) {
+    var hw = (cfg.choiceImages && cfg.choiceImages.hardware) || {};
+    var value = hw[slot];
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (colour && value[colour]) return value[colour];
+    var colours = Object.keys(value);
+    return colours.length ? value[colours[0]] : '';
+  }
+
+  function itemImage(item) {
+    if (item && item.image) return item.image;
+    if (!item) return '';
+    if (item.role === 'sheet') return sheetChoiceImage();
+    if (item.role === 'connecting') return profileChoiceImage('connecting', connectSel, connectCol);
+    if (item.role === 'finish') return profileChoiceImage('finish', finishSel, finishCol);
+    if (item.role === 'end_cap') return hardwareImage('end_cap', connectCol ? connectCol.value : 'silver');
+    var slot = {
+      screw: 'screws',
+      fixing_button: 'fixing_buttons',
+      vent_tape: 'vent_tape',
+      iso_tape: 'iso_tape',
+      silicon: 'silicon',
+      wall: 'wall',
+      ridge: 'ridge'
+    }[item.role];
+    return slot ? hardwareImage(slot) : '';
+  }
 
   function productThumb(item) {
-    if (!item || !item.image || !visualRoles[item.role]) return null;
+    var src = itemImage(item);
+    if (!src) return null;
     var img = document.createElement('img');
     img.className = 'nh-tc__thumb';
-    img.src = item.image;
+    img.src = src;
     img.alt = '';
     img.width = 48;
     img.height = 48;
@@ -540,18 +743,12 @@
     return value;
   }
 
-  function firstWithImage(items, role) {
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].role === role && items[i].image) return items[i];
-    }
-    return null;
-  }
-
   function setInlineThumb(el, item) {
     if (!el) return;
     var img = el.querySelector('img');
+    var src = item ? itemImage(item) : '';
     var url = item ? safeUrl(item.permalink) : '';
-    if (!item || !item.image) {
+    if (!src) {
       el.classList.add('is-empty');
       el.removeAttribute('href');
       if (img) img.removeAttribute('src');
@@ -559,23 +756,23 @@
     }
     el.classList.remove('is-empty');
     if (img) {
-      img.src = item.image;
+      img.src = src;
       img.alt = item.name || item.label || '';
     }
     if (url) el.href = url;
     else el.removeAttribute('href');
   }
 
-  function drawInlineThumbs(items) {
-    setInlineThumb(inlineThumbs.sheet, firstWithImage(items, 'sheet'));
-    setInlineThumb(inlineThumbs.connecting, firstWithImage(items, 'connecting'));
-    setInlineThumb(inlineThumbs.finish, firstWithImage(items, 'finish'));
+  function drawInlineThumbs() {
+    setInlineThumb(inlineThumbs.sheet, { role: 'sheet' });
+    setInlineThumb(inlineThumbs.connecting, { role: 'connecting' });
+    setInlineThumb(inlineThumbs.finish, { role: 'finish' });
   }
 
   function drawPlan(meta) {
     if (!planEl) return;
     if (!meta || !meta.sheet_plan || !meta.sheet_plan.length) {
-      planEl.innerHTML = '<p class="nh-tc__plan-note">' + i18n('planWait', 'The cut diagram appears once the size is valid.') + '</p>';
+      planEl.innerHTML = '<p class="nh-tc__plan-note">' + i18n('planWait', 'Enter the roof size to see the cutting diagram.') + '</p>';
       return;
     }
 
@@ -656,7 +853,7 @@
           [meta.sheet_length_mm, meta.length_mm, meta.overhang_mm]
         );
     } else if (meta.profile_joints === 'optimal') {
-      var optimalText = i18n('planOptimal', 'Each sheet covers as much of the chosen width as it can. A joint is used only where the sheets meet, and it still sits on a rafter.');
+      var optimalText = i18n('planOptimal', 'Sheets are as wide as they can be. A joint is added only where they meet, on a rafter.');
       if (!split) {
         optimalText += ' ' + fillTemplate(
           i18n('planCut', 'Cut length %1$d mm (frame %2$d mm + %3$d mm overhang).'),
@@ -671,7 +868,7 @@
         ? i18n('planSidesEqual', 'Both side sheets are %d mm.').replace('%d', leftW)
         : fillTemplate(i18n('planSides', 'The side sheets are %1$d mm and %2$d mm.'), [leftW, rightW]);
       var text = fillTemplate(
-        i18n('planOuter', 'An outer sheet is %1$d mm wider than a full middle sheet: it reaches the end of the %2$d mm support and only loses %3$d mm at the joint.'),
+        i18n('planOuter', 'Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint.'),
         [meta.side_extra_mm, meta.support_mm, halfGap]
       ) + ' ' + sides;
       if (framed) text += ' ' + i18n('planJoint', 'Joints sit on the centre of a rafter.');
@@ -715,7 +912,7 @@
       var gableNote = document.createElement('p');
       gableNote.className = 'nh-tc__plan-note';
       gableNote.textContent = fillTemplate(
-        i18n('planGable', 'Both sides are included. The entered %1$d mm is one side, from the ridge to the eave, so the frame length is %2$d mm.'),
+        i18n('planGable', 'You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm.'),
         [meta.projection_mm, meta.length_mm]
       );
       planEl.appendChild(gableNote);
@@ -724,7 +921,7 @@
       var stockNote = document.createElement('p');
       stockNote.className = 'nh-tc__plan-note';
       stockNote.textContent = fillTemplate(
-        i18n('planStockBuy', 'The drawing is a possible rafter layout. The material list adds %1$d stock sheets of %2$d × %3$d mm.'),
+        i18n('planStockBuy', 'You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them.'),
         [meta.sheet_count, meta.stock_width_mm, meta.stock_length_mm]
       );
       planEl.appendChild(stockNote);
@@ -733,7 +930,7 @@
       var solidNote = document.createElement('p');
       solidNote.className = 'nh-tc__plan-note';
       solidNote.textContent = fillTemplate(
-        i18n('planSolid', 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm run is cut into %4$d pieces along the length.'),
+        i18n('planSolid', 'Solid sheets are %1$d × %2$d mm and can be turned either way. The %3$d mm length needs %4$d pieces.'),
         [meta.blank_short_mm, meta.blank_long_mm, meta.sheet_length_mm, meta.length_pieces]
       );
       planEl.appendChild(solidNote);
@@ -764,8 +961,14 @@
           setStatus((json && json.data && json.data.message) || i18n('error'), 'error');
           return;
         }
-        setStatus('', 'ok');
         var data = json.data || {};
+        if (data.missing && data.missing.length) {
+          updateReviewMissing(data.missing);
+          setStatus(data.message || i18n('kitPartial', 'Kit added. Unavailable items were skipped.'), 'error');
+        } else {
+          updateReviewMissing([]);
+          setStatus(data.message || '', 'ok');
+        }
         if (window.jQuery) {
           var $ = window.jQuery;
           $(document.body).trigger('added_to_cart', [data.fragments || {}, data.cart_hash || '', $(atc)]);
@@ -840,11 +1043,34 @@
   form.addEventListener('change', schedule);
   atc.addEventListener('click', addToCart);
 
+  root.querySelectorAll('[data-goto]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setWizardStep(btn.getAttribute('data-goto'));
+    });
+  });
+  if (wizardBack) {
+    wizardBack.addEventListener('click', function () {
+      setWizardStep(wizardStep - 1);
+    });
+  }
+  if (wizardNext) {
+    wizardNext.addEventListener('click', function () {
+      setWizardStep(wizardStep + 1);
+    });
+  }
+  if (mobileCta) {
+    mobileCta.addEventListener('click', function () {
+      if (wizardStep >= 3) addToCart();
+      else setWizardStep(wizardStep + 1);
+    });
+  }
+  setWizardStep(1);
   syncSheetOptions();
   syncProfileOptions();
   applySpacing(true);
   syncGableHint();
   syncSupplyAvailability();
   syncStockCard();
+  drawInlineThumbs([]);
   quote();
 })();

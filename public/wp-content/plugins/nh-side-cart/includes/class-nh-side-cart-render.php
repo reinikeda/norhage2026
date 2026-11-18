@@ -89,11 +89,15 @@ final class NH_Side_Cart_Render {
 	 */
 	private static function render_item( $cart_item_key, $cart_item ) {
 		$product = isset( $cart_item['data'] ) ? $cart_item['data'] : null;
-		if ( ! $product instanceof WC_Product || ! $product->exists() || (int) $cart_item['quantity'] <= 0 ) {
+		$qty     = isset( $cart_item['quantity'] ) ? (float) $cart_item['quantity'] : 0.0;
+		if ( ! $product instanceof WC_Product || ! $product->exists() || $qty <= 0 ) {
 			return;
 		}
 
-		$qty           = (int) $cart_item['quantity'];
+		$qty_is_whole = abs( $qty - round( $qty ) ) < 0.000001;
+		$qty_label    = $qty_is_whole
+			? (string) (int) round( $qty )
+			: ( function_exists( 'wc_format_decimal' ) ? wc_format_decimal( $qty ) : (string) $qty );
 		$permalink     = $product->is_visible() ? $product->get_permalink( $cart_item ) : '';
 		$permalink     = apply_filters( 'woocommerce_cart_item_permalink', $permalink, $cart_item, $cart_item_key );
 		$thumbnail     = $product->get_image(
@@ -155,7 +159,7 @@ final class NH_Side_Cart_Render {
 				<?php endif; ?>
 				<div class="nh-sc__item-bottom">
 					<?php if ( $qty_locked ) : ?>
-						<span class="nh-sc__qty-locked"><?php echo esc_html( sprintf( /* translators: %d: quantity */ __( 'Qty: %d', NH_SC_TD ), $qty ) ); ?></span>
+						<span class="nh-sc__qty-locked"><?php echo esc_html( sprintf( /* translators: %s: quantity */ __( 'Qty: %s', NH_SC_TD ), $qty_label ) ); ?></span>
 					<?php else : ?>
 						<div class="nh-sc__qty" data-nh-sc-qty="<?php echo esc_attr( $cart_item_key ); ?>">
 							<button type="button" class="nh-sc__qty-btn" data-delta="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', NH_SC_TD ); ?>">−</button>
@@ -163,10 +167,10 @@ final class NH_Side_Cart_Render {
 								type="number"
 								class="nh-sc__qty-input"
 								name="nh_sc_qty[<?php echo esc_attr( $cart_item_key ); ?>]"
-								value="<?php echo esc_attr( (string) $qty ); ?>"
+								value="<?php echo esc_attr( $qty_label ); ?>"
 								min="<?php echo esc_attr( (string) $min ); ?>"
 								<?php echo $max_attr !== '' ? 'max="' . esc_attr( (string) $max_attr ) . '"' : ''; ?>
-								step="1"
+								step="<?php echo esc_attr( $qty_is_whole ? '1' : 'any' ); ?>"
 								inputmode="numeric"
 								aria-label="<?php esc_attr_e( 'Quantity', NH_SC_TD ); ?>"
 							/>

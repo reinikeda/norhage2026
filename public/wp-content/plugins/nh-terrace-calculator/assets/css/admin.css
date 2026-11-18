@@ -32,6 +32,12 @@
   width: 7rem;
 }
 
+.nh-tc-admin .form-table td label {
+  display: inline-block;
+  margin: 0 1rem 0.5rem 0;
+  vertical-align: top;
+}
+
 .nh-tc-sheet-table,
 .nh-tc-map {
   margin: 12px 0 24px;
@@ -98,6 +104,17 @@
 
 .nh-tc-oos {
   color: #8a4b08;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.nh-tc-var-grid input.nh-tc-from-shop {
+  border-color: #7aa87a;
+  background: #f5faf5;
+}
+
+.nh-tc-from-shop-label {
+  color: #2f6b2f;
   font-size: 11px;
   font-style: normal;
 }

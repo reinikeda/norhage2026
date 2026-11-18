@@ -46,32 +46,30 @@ class NH_TC_Ajax {
 			self::send_failure( $bom, $settings, $input );
 		}
 
-		$priced = NH_TC_Catalog::price_bom( $bom, $settings );
-		$items  = array_values(
+		$priced  = NH_TC_Catalog::price_bom( $bom, $settings );
+		$missing = isset( $priced['missing'] ) && is_array( $priced['missing'] ) ? $priced['missing'] : array();
+		$items   = array_values(
 			array_filter(
 				$priced['items'],
 				static function ( $item ) {
-					return ! empty( $item['product_id'] ) && empty( $item['error'] );
+					return ! NH_TC_Catalog::item_is_unavailable( $item );
 				}
 			)
 		);
 
 		if ( ! $items ) {
 			wp_send_json_error(
-				array( 'message' => __( 'No matching products were found for this configuration. Check the SKU mapping in Terrace calculator settings.', NH_TC_TD ) ),
+				array(
+					'message' => __( 'These materials are not available in this shop.', NH_TC_TD ),
+					'missing' => $missing,
+				),
 				400
 			);
 		}
 
-		$postcode = isset( $input['postcode'] ) ? wc_format_postcode( wc_clean( $input['postcode'] ), WC()->customer ? WC()->customer->get_shipping_country() : '' ) : '';
-		if ( $postcode && WC()->customer ) {
-			WC()->customer->set_shipping_postcode( $postcode );
-			WC()->customer->set_billing_postcode( $postcode );
-			WC()->customer->save();
-		}
-
 		$kit_id     = wp_generate_uuid4();
 		$added_keys = array();
+		$skipped    = array();
 
 		wc_clear_notices();
 
@@ -99,45 +97,65 @@ class NH_TC_Ajax {
 				(int) $item['product_id'],
 				(int) $item['qty'],
 				(int) $item['variation_id'],
-				self::variation_attributes_for_cart( $item['attributes'] ),
+				self::variation_attributes_for_cart( isset( $item['attributes'] ) && is_array( $item['attributes'] ) ? $item['attributes'] : array() ),
 				$cart_item_data
 			);
 
 			if ( ! $key ) {
-				foreach ( array_reverse( $added_keys ) as $added ) {
-					WC()->cart->remove_cart_item( $added );
-				}
-				$message = __( 'Unable to add one of the kit items to the basket.', NH_TC_TD );
-				if ( wc_notice_count( 'error' ) ) {
-					wp_send_json_error(
-						array(
-							'message'      => $message,
-							'notices_html' => wc_print_notices( true ),
-						),
-						400
-					);
-				}
-				wc_add_notice( $message, 'error' );
-				wp_send_json_error( array( 'message' => $message, 'notices_html' => wc_print_notices( true ) ), 400 );
+				// Keep the rest of the kit; mark this line as unavailable.
+				$item['error'] = empty( $item['error'] ) ? 'out_of_stock' : $item['error'];
+				$skipped[]     = $item;
+				wc_clear_notices();
+				continue;
 			}
 
 			$added_keys[] = $key;
 			wc_clear_notices();
 		}
 
+		if ( ! $added_keys ) {
+			$message = __( 'Unable to add the kit items to the basket.', NH_TC_TD );
+			wp_send_json_error(
+				array(
+					'message' => $message,
+					'missing' => array_merge( $missing, $skipped ),
+				),
+				400
+			);
+		}
+
 		if ( method_exists( WC()->cart, 'calculate_totals' ) ) {
 			WC()->cart->calculate_totals();
 		}
 
-		$fragments = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
+		$fragments     = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
+		$all_missing   = array_merge( $missing, $skipped );
+		$ok_message    = __( 'Terrace roof kit added to basket.', NH_TC_TD );
+		$partial_names = array();
+		foreach ( $all_missing as $row ) {
+			$label = isset( $row['name'] ) && $row['name'] !== '' ? (string) $row['name'] : ( isset( $row['label'] ) ? (string) $row['label'] : '' );
+			if ( $label !== '' ) {
+				$partial_names[] = $label;
+			}
+		}
+		if ( $partial_names ) {
+			$ok_message = sprintf(
+				/* translators: %s: comma-separated unavailable product names */
+				__( 'Kit added to basket. Not available and skipped: %s.', NH_TC_TD ),
+				implode( ', ', array_unique( $partial_names ) )
+			);
+		}
 
 		wp_send_json_success(
 			array(
 				'fragments'    => $fragments,
 				'cart_hash'    => WC()->cart ? WC()->cart->get_cart_hash() : '',
 				'count'        => count( $added_keys ),
+				'skipped'      => count( $skipped ),
+				'missing'      => $all_missing,
 				'cart_url'     => wc_get_cart_url(),
-				'notices_html' => '<div class="woocommerce-message" role="alert">' . esc_html__( 'Terrace roof kit added to basket.', NH_TC_TD ) . '</div>',
+				'message'      => $ok_message,
+				'notices_html' => '<div class="woocommerce-message" role="alert">' . esc_html( $ok_message ) . '</div>',
 			)
 		);
 	}
@@ -191,7 +209,6 @@ class NH_TC_Ajax {
 			'profile_joints'      => self::pick( $src, 'profile_joints', array( 'every', 'optimal' ), '' ),
 			'stock_channel'       => isset( $src['stock_channel'] ) ? sanitize_key( (string) $src['stock_channel'] ) : '',
 			'stock_width_mm'      => isset( $src['stock_width_mm'] ) ? absint( $src['stock_width_mm'] ) : 0,
-			'postcode'            => isset( $src['postcode'] ) ? sanitize_text_field( $src['postcode'] ) : '',
 		);
 	}
 
@@ -239,7 +256,7 @@ class NH_TC_Ajax {
 			$blank = NH_TC_Engine::solid_blank( $settings );
 			return sprintf(
 				/* translators: 1: shorter solid-sheet side in millimetres, 2: longer side in millimetres */
-				__( 'A solid polycarbonate sheet is %1$d × %2$d mm and can be turned either way. This piece is still too wide. Reduce the support spacing.', NH_TC_TD ),
+				__( 'This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing.', NH_TC_TD ),
 				(int) $blank['short_mm'],
 				(int) $blank['long_mm']
 			);
@@ -247,18 +264,18 @@ class NH_TC_Ajax {
 		if ( in_array( 'sheet_width', $errors, true ) ) {
 			return sprintf(
 				/* translators: %d: maximum polycarbonate sheet width in millimetres */
-				__( 'A sheet would be wider than the %d mm stock. Reduce the support spacing so every piece can be cut from a standard sheet.', NH_TC_TD ),
+				__( 'A sheet would be wider than %d mm. Reduce the rafter spacing.', NH_TC_TD ),
 				(int) $settings['standard_sheet_width_mm']
 			);
 		}
 		if ( in_array( 'sheet_narrow', $errors, true ) ) {
-			return __( 'The last sheet would be too narrow to cut. Adjust the support spacing so each piece is at least 100 mm.', NH_TC_TD );
+			return __( 'The last sheet would be under 100 mm. Adjust the rafter spacing.', NH_TC_TD );
 		}
 		if ( in_array( 'support', $errors, true ) ) {
-			return __( 'Enter a support beam width between 20 and 200 mm. 50 mm is the usual size.', NH_TC_TD );
+			return __( 'Beam width must be 20–200 mm. 50 mm is usual.', NH_TC_TD );
 		}
 		if ( in_array( 'overhang', $errors, true ) ) {
-			return __( 'Sheet overhang must be between 0 and 300 mm.', NH_TC_TD );
+			return __( 'Overhang must be 0–300 mm.', NH_TC_TD );
 		}
 		if ( in_array( 'standard_sheet', $errors, true ) ) {
 			return __( 'This thickness and colour is only available as a custom cut.', NH_TC_TD );

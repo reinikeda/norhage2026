@@ -46,7 +46,7 @@
 
     var nav = thumbs(root);
     if (nav) {
-      if (note.parentNode !== root || note.previousElementSibling !== nav) {
+      if (note !== nav.nextElementSibling) {
         nav.insertAdjacentElement('afterend', note);
       }
       return;
@@ -55,6 +55,175 @@
     if (root.lastElementChild !== note) {
       root.appendChild(note);
     }
+  }
+
+  function videoSlide(root) {
+    return root.querySelector('.nh-gallery-video-slide');
+  }
+
+  function videoIsOpen(root) {
+    var slide = videoSlide(root);
+    return !!(slide && slide.classList.contains('flex-active-slide'));
+  }
+
+  /**
+   * Keep the reel the same height as the photo currently in the gallery.
+   */
+  function syncVideoFrame(root) {
+    var slide = videoSlide(root);
+    if (!slide) return;
+
+    var frame = root.querySelector('.flex-viewport');
+    var height = frame ? frame.getBoundingClientRect().height : 0;
+    if (height < 40) {
+      var image = root.querySelector('.woocommerce-product-gallery__image:not(.nh-gallery-video-slide) img');
+      height = image ? image.getBoundingClientRect().height : 0;
+    }
+    if (height < 40) return;
+
+    var px = Math.round(height) + 'px';
+    if (slide.style.height !== px) {
+      slide.style.height = px;
+    }
+  }
+
+  function markVideoThumb(root) {
+    var nav = thumbs(root);
+    var list = slides(root);
+    if (!nav) return;
+
+    var items = nav.children;
+    for (var i = 0; i < list.length && i < items.length; i++) {
+      items[i].classList.toggle('nh-gallery-video-thumb', list[i].classList.contains('nh-gallery-video-slide'));
+    }
+  }
+
+  function syncVideoOpen(root) {
+    var slide = videoSlide(root);
+    if (slide && window.jQuery) {
+      window.jQuery(slide).trigger('zoom.destroy');
+    }
+
+    var box = root.querySelector('.nh-gallery-video');
+    if (!box || typeof box.nhSyncOpen !== 'function') return;
+    box.nhSyncOpen();
+  }
+
+  function bindVideo(root) {
+    var box = root.querySelector('.nh-gallery-video');
+    if (!box || box.getAttribute('data-nh-bound') === '1') return;
+
+    var media = box.querySelector('video');
+    var button = box.querySelector('.nh-gallery-video__sound');
+    if (!media || !button) return;
+    box.setAttribute('data-nh-bound', '1');
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function labelFor(mode) {
+      if (mode === 'play') return button.getAttribute('data-label-play') || 'Play video';
+      if (mode === 'sound') return button.getAttribute('data-label-off') || 'Sound off';
+      return button.getAttribute('data-label-on') || 'Sound on';
+    }
+
+    function setMode(mode) {
+      button.setAttribute('data-mode', mode);
+      button.setAttribute('aria-label', labelFor(mode));
+      button.setAttribute('aria-pressed', mode === 'sound' ? 'true' : 'false');
+    }
+
+    function playMuted() {
+      media.muted = true;
+      media.setAttribute('muted', '');
+      var pending = media.play();
+      setMode('muted');
+      if (pending && typeof pending.catch === 'function') {
+        pending.catch(function () {
+          setMode('play');
+        });
+      }
+    }
+
+    media.pause();
+    setMode('play');
+    button.tabIndex = -1;
+
+    if (window.jQuery) {
+      window.jQuery(box.closest('.nh-gallery-video-slide')).trigger('zoom.destroy');
+    }
+
+    box.nhSyncOpen = function () {
+      var open = videoIsOpen(root);
+      button.tabIndex = open ? 0 : -1;
+      if (!open) {
+        if (box.getAttribute('data-nh-opened') === '1' || !media.paused) {
+          media.pause();
+          box.removeAttribute('data-nh-opened');
+          setMode('play');
+        }
+        return;
+      }
+
+      if (box.getAttribute('data-nh-opened') === '1') return;
+      box.setAttribute('data-nh-opened', '1');
+      if (reduce) {
+        media.pause();
+        setMode('play');
+        return;
+      }
+      playMuted();
+    };
+
+    function toggle() {
+      var mode = button.getAttribute('data-mode');
+      var wantSound = mode === 'play' || (mode === 'muted' && !media.paused);
+
+      if (media.paused || mode === 'play') {
+        media.muted = !wantSound;
+        if (media.muted) {
+          media.setAttribute('muted', '');
+        } else {
+          media.removeAttribute('muted');
+        }
+        var pending = media.play();
+        if (pending && typeof pending.then === 'function') {
+          pending.then(function () {
+            setMode(media.muted ? 'muted' : 'sound');
+          }).catch(function () {
+            media.muted = true;
+            media.setAttribute('muted', '');
+            var retry = media.play();
+            if (retry && typeof retry.catch === 'function') retry.catch(function () {});
+            setMode(media.paused ? 'play' : 'muted');
+          });
+        } else {
+          setMode(media.muted ? 'muted' : 'sound');
+        }
+        return;
+      }
+
+      if (media.muted) {
+        media.muted = false;
+        media.removeAttribute('muted');
+        var unmute = media.play();
+        if (unmute && typeof unmute.catch === 'function') unmute.catch(function () {});
+        setMode('sound');
+      } else {
+        media.muted = true;
+        media.setAttribute('muted', '');
+        setMode('muted');
+      }
+    }
+
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggle();
+    });
+
+    media.addEventListener('click', function () {
+      toggle();
+    });
   }
 
   function ensureDots(root) {
@@ -84,7 +253,11 @@
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'nh-gallery-dots__btn';
-      btn.setAttribute('aria-label', imageLabel(i + 1, total));
+      var slide = slides(root)[i];
+      var dotLabel = slide && slide.classList.contains('nh-gallery-video-slide')
+        ? ((window.nhGallery && window.nhGallery.videoLabel) || 'Product video')
+        : imageLabel(i + 1, total);
+      btn.setAttribute('aria-label', dotLabel);
       btn.dataset.index = String(i);
       btn.addEventListener('click', function (event) {
         var index = parseInt(event.currentTarget.dataset.index, 10);
@@ -149,6 +322,10 @@
     moveProductImageNote(root);
     ensureDots(root);
     syncDots(root);
+    markVideoThumb(root);
+    syncVideoFrame(root);
+    bindVideo(root);
+    syncVideoOpen(root);
     scrollActiveThumb(root);
   }
 
@@ -169,6 +346,10 @@
       moveProductImageNote(current);
       ensureDots(current);
       syncDots(current);
+      markVideoThumb(current);
+      syncVideoFrame(current);
+      bindVideo(current);
+      syncVideoOpen(current);
       var index = currentIndex(current);
       if (index !== lastIndex) {
         lastIndex = index;
@@ -198,6 +379,16 @@
 
     refresh();
     window.addEventListener('load', refresh);
+    window.addEventListener('resize', function () {
+      syncVideoFrame(root);
+    });
+    if (window.ResizeObserver) {
+      var observerBox = new ResizeObserver(function () {
+        syncVideoFrame(gallery() || root);
+      });
+      var frame = root.querySelector('.flex-viewport') || root.querySelector('.woocommerce-product-gallery__image');
+      if (frame) observerBox.observe(frame);
+    }
     window.setTimeout(refresh, 200);
     window.setTimeout(refresh, 600);
     window.setTimeout(refresh, 1200);

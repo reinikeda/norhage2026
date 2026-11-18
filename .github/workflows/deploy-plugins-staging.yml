@@ -5,6 +5,11 @@ on:
     branches: [staging]
   workflow_dispatch:
 
+# A second push waits for this run instead of opening another set of SSH sessions.
+concurrency:
+  group: deploy-plugins-staging
+  cancel-in-progress: false
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -12,6 +17,10 @@ jobs:
   deploy-plugins:
     runs-on: ubuntu-latest
     strategy:
+      # One dropped connection must not cancel the other domains.
+      fail-fast: false
+      # The host resets SSH when every domain connects at once.
+      max-parallel: 1
       matrix:
         include:
           - domain: staging.norhage.lt
@@ -28,7 +37,7 @@ jobs:
             user: norhage-staging-eu
           - domain: staging.norhage.dk
             user: norhage-staging-dk
-            
+
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
       SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY_STAGING }}
@@ -52,37 +61,25 @@ jobs:
           echo "Matrix domain: ${{ matrix.domain }}, user: ${{ matrix.user }}"
           echo "RSYNC_DELETE=${RSYNC_DELETE}"
 
-      - name: Ensure remote plugin directory exists
+      - name: Resolve remote directory
         env:
           matrix_user: ${{ matrix.user }}
+          matrix_domain: ${{ matrix.domain }}
         run: |
           REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
-          REMOTE_DIR="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}"
-          echo "Ensuring remote dir: ${REMOTE_DIR}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+          echo "REMOTE_DIR=/home/${matrix_user}/htdocs/${matrix_domain}/${REMOTE_SUBPATH%/}" >> "$GITHUB_ENV"
 
-      - name: Rsync plugins to remote
-        env:
-          matrix_user: ${{ matrix.user }}
-          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
-        run: |
-          RSYNC_OPTS="-az -e \"ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no\" --exclude='.git' --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r"
-          if [ "${RSYNC_DELETE}" = "true" ]; then
-            RSYNC_OPTS="${RSYNC_OPTS} --delete"
-          fi
-
-          SRC="${PLUGIN_DIR%/}/"
-          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
-          DEST="${matrix_user}@${SFTP_HOST}:/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
-          echo "Running: rsync ${RSYNC_OPTS} ${SRC} ${DEST}"
-          eval rsync ${RSYNC_OPTS} "${SRC}" "${DEST}"
-
-      - name: Verify deployed plugin files (sample)
-        env:
-          matrix_user: ${{ matrix.user }}
-          SFTP_HOST: ${{ secrets.SFTP_HOST_STAGING }}
-        run: |
-          REMOTE_SUBPATH="${PLUGIN_DIR#public/}"
-          REMOTE_PATH="/home/${matrix_user}/htdocs/${{ matrix.domain }}/${REMOTE_SUBPATH%/}/"
-          echo "Listing remote path: ${REMOTE_PATH}"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ${matrix_user}@${SFTP_HOST} "ls -la '${REMOTE_PATH}' | head -n 60" || true
+      - name: Deploy plugins
+        uses: ./.github/actions/sftp-deploy
+        with:
+          ssh_user: ${{ matrix.user }}
+          ssh_host: ${{ env.SFTP_HOST }}
+          domain: ${{ matrix.domain }}
+          local_dir: ${{ env.PLUGIN_DIR }}
+          remote_dir: ${{ env.REMOTE_DIR }}
+          ssh_options: "-o StrictHostKeyChecking=no"
+          # Theme deploys pause 10s. Plugins pause longer so the two workflows,
+          # which start on the same push, do not open SSH in the same second.
+          pause_seconds: "25"
+          rsync_delete: ${{ env.RSYNC_DELETE }}
+          verify_lines: "60"

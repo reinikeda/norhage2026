@@ -1,0 +1,424 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-pvc-strip-calculator 1.0.1\n"
+"PO-Revision-Date: 2026-11-14 19:16+0000\n"
+"Language: de_DE\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage agent\n"
+
+#, php-format
+msgid "%1$d strips · %2$s m"
+msgstr "%1$d Streifen · %2$s m"
+
+#, php-format
+msgid "%1$d × %2$d mm opening"
+msgstr "%1$d × %2$d mm Öffnung"
+
+#, php-format
+msgid "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+msgstr "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+#, php-format
+msgid "%d mm strips"
+msgstr "%d mm Streifen"
+
+#, php-format
+msgid "%d pcs"
+msgstr "%d Stk."
+
+#, php-format
+msgid "%d strips"
+msgstr "%d Streifen"
+
+#, php-format
+msgid "%d%% overlap"
+msgstr "%d%% Überlappung"
+
+#, php-format
+msgid "%s each"
+msgstr "%s je Stück"
+
+#, php-format
+msgid "%s m total"
+msgstr "%s m gesamt"
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s Stk."
+
+msgid "2.5–4 m high"
+msgstr "2,5–4 m Höhe"
+
+msgid "4 m and taller"
+msgstr "4 m und höher"
+
+msgid "Above the opening"
+msgstr "Über der Öffnung"
+
+msgid "Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips."
+msgstr "Über der Öffnung (Wand): Rechenhöhe = Öffnung + 30 mm; Breite + 80 / 90 / 100 mm für 200 / 300 / 400 mm Streifen."
+
+msgid "Above the opening: height + 30 mm; width gains a sealing allowance."
+msgstr "Über der Öffnung: Höhe + 30 mm; die Breite erhält eine Dichtungszugabe."
+
+msgid "Add kit to basket"
+msgstr "Set in den Warenkorb"
+
+msgid "Adding kit…"
+msgstr "Set wird hinzugefügt…"
+
+msgid "All products (not recommended)"
+msgstr "Alle Produkte (nicht empfohlen)"
+
+msgid "Antistatic"
+msgstr "Antistatisch"
+
+msgid "Back"
+msgstr "Zurück"
+
+#, php-format
+msgid "Balanced seal · most indoor openings"
+msgstr "Ausgewogene Abdichtung · die meisten Innenöffnungen"
+
+#, php-format
+msgid "Best draught barrier · outdoor & cold rooms"
+msgstr "Bester Zugschutz · Außenbereich & Kühlräume"
+
+#, php-format
+msgid "Calc. %1$d × %2$d mm"
+msgstr "Ber. %1$d × %2$d mm"
+
+msgid "Calculator steps"
+msgstr "Rechnerschritte"
+
+msgid "Cart is not available."
+msgstr "Warenkorb ist nicht verfügbar."
+
+msgid "Cold-resistant"
+msgstr "Kältebeständig"
+
+msgid "Cold-resistant (−30 °C to +50 °C)"
+msgstr "Kältebeständig (−30 °C bis +50 °C)"
+
+#, php-format
+msgid "Continue"
+msgstr "Weiter"
+
+#, php-format
+msgid "Could not add the kit. Please try again."
+msgstr "Set konnte nicht hinzugefügt werden. Bitte erneut versuchen."
+
+#, php-format
+msgid "Covers %1$d mm · %2$d mm pieces"
+msgstr "Deckt %1$d mm · %2$d mm Stücke"
+
+msgid "Default opening"
+msgstr "Standardöffnung"
+
+msgid "Display mode"
+msgstr "Anzeigemodus"
+
+msgid "Easier passage · indoor pedestrian traffic"
+msgstr "Leichterer Durchgang · Fußgänger innen"
+
+msgid "Enable the flag on the PVC strip curtains system product. Shortcode: [nh_pvc_strip_calculator]"
+msgstr "Flag am PVC-Streifenvorhang-Systemprodukt aktivieren. Shortcode: [nh_pvc_strip_calculator]"
+
+msgid "Enter an opening size to see the kit."
+msgstr "Öffnungsmaß eingeben, um das Set zu sehen."
+
+msgid "Face height extra"
+msgstr "Wand: Höhenzugabe"
+
+#, php-format
+msgid "Frosted"
+msgstr "Matt"
+
+#, php-format
+msgid "Frosted (privacy)"
+msgstr "Matt (Privatsphäre)"
+
+#, php-format
+msgid "Hanger %d mm"
+msgstr "Aufhänger %d mm"
+
+msgid "Hangers and rail cover the calculated width"
+msgstr "Aufhänger und Schiene decken die berechnete Breite"
+
+msgid "Hanging rail / bracket"
+msgstr "Tragschiene / Konsole"
+
+msgid "Hardware"
+msgstr "Beschläge"
+
+msgid "Hardware packing"
+msgstr "Beschlagpackung"
+
+msgid "Height"
+msgstr "Höhe"
+
+msgid "Hide default add to cart"
+msgstr "Standard „In den Warenkorb“ ausblenden"
+
+msgid "Hide the normal add-to-cart form so customers use the kit calculator."
+msgstr "Standard-Warenkorbformular ausblenden, damit Kunden den Set-Rechner nutzen."
+
+msgid "How quantities are calculated"
+msgstr "So werden Mengen berechnet"
+
+msgid "Into the opening"
+msgstr "In die Öffnung"
+
+msgid "Into the opening (soffit): calc height = opening − 45 mm; width unchanged."
+msgstr "In die Öffnung (Sturz): Rechenhöhe = Öffnung − 45 mm; Breite unverändert."
+
+msgid "Into the opening: height − 45 mm for the rail."
+msgstr "In die Öffnung: Höhe − 45 mm für die Schiene."
+
+msgid "Kit"
+msgstr "Set"
+
+msgid "Kit total"
+msgstr "Set gesamt"
+
+msgid "Max"
+msgstr "Max."
+
+msgid "Maximum"
+msgstr "Maximal"
+
+msgid "Medium"
+msgstr "Mittel"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Minimum"
+msgstr "Minimal"
+
+msgid "Mounting"
+msgstr "Montage"
+
+msgid "Mounting adjustments"
+msgstr "Montagezugaben"
+
+msgid "No matching products were found. Map SKUs in PVC strip calculator settings."
+msgstr "Keine passenden Produkte gefunden. SKUs in den PVC-Rechner-Einstellungen hinterlegen."
+
+msgid "Only products with the calculator flag"
+msgstr "Nur Produkte mit Rechner-Flag"
+
+msgid "Opening"
+msgstr "Öffnung"
+
+msgid "Opening allowances match Plastena face / soffit rules"
+msgstr "Öffnungszugaben entsprechen den Plastena-Regeln für Wand-/Sturzmontage"
+
+msgid "Opening defaults & allowances"
+msgstr "Öffnungsstandards & Zugaben"
+
+msgid "Opening height"
+msgstr "Öffnungshöhe"
+
+msgid "Opening size"
+msgstr "Öffnungsmaß"
+
+msgid "Opening width"
+msgstr "Öffnungsbreite"
+
+msgid "Overlap"
+msgstr "Überlappung"
+
+msgid "Overlap chooses how tightly neighbouring strips cover each other"
+msgstr "Die Überlappung bestimmt, wie dicht benachbarte Streifen einander decken"
+
+msgid "Overlap fractions"
+msgstr "Überlappungsanteile"
+
+msgid "Plastena-style opening rules with Norhage kit pricing. Map catalogue products by SKU for each strip size, type and grade."
+msgstr "Öffnungsregeln im Plastena-Stil mit Norhage-Setpreisen. Katalogprodukte per SKU für jede Streifenbreite, Typ und Güte zuordnen."
+
+#, php-format
+msgid "Please enter a valid opening width and height."
+msgstr "Bitte gültige Öffnungsbreite und -höhe eingeben."
+
+#, php-format
+msgid "Postal code (for shipping)"
+msgstr "Postleitzahl (für Versand)"
+
+#, php-format
+msgid "PVC strip %1$d × %2$d mm"
+msgstr "PVC-Streifen %1$d × %2$d mm"
+
+msgid "PVC strip calculator"
+msgstr "PVC-Streifenrechner"
+
+msgid "PVC strip curtain calculator"
+msgstr "PVC-Streifenvorhang-Rechner"
+
+msgid "PVC strip kit"
+msgstr "PVC-Streifenset"
+
+msgid "Rail fixed to the wall face"
+msgstr "Schiene an der Wandfläche"
+
+msgid "Rail piece length"
+msgstr "Schienenstücklänge"
+
+#, php-format
+msgid "Rail under the lintel / soffit"
+msgstr "Schiene unter Sturz/Decke"
+
+#, php-format
+msgid "Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip."
+msgstr "Schienen decken die Rechenbreite in Lagerstücken (Standard 1500 mm). Eine Aufhängerplatte je Streifen."
+
+#, php-format
+msgid "Recommended for this height: %d mm strips."
+msgstr "Empfohlen für diese Höhe: %d mm Streifen."
+
+#, php-format
+msgid "Red edge strip %d mm"
+msgstr "Roter Randstreifen %d mm"
+
+msgid "Red edge strips replace the two outermost strips when enabled."
+msgstr "Rote Randstreifen ersetzen die beiden äußersten Streifen, wenn aktiviert."
+
+#, php-format
+msgid "Red edges & hardware"
+msgstr "Rote Ränder & Beschläge"
+
+#, php-format
+msgid "Red marker strips at both edges"
+msgstr "Rote Markierungsstreifen an beiden Rändern"
+
+#, php-format
+msgid "Red strip %d mm"
+msgstr "Roter Streifen %d mm"
+
+msgid "Review kit"
+msgstr "Set prüfen"
+
+msgid "Review your kit"
+msgstr "Ihr Set prüfen"
+
+msgid "Ribbed"
+msgstr "Gerippt"
+
+msgid "Ribbed (heavy traffic)"
+msgstr "Gerippt (starker Verkehr)"
+
+msgid "Search a product for each size × type × grade. Leave blank to hide that combination."
+msgstr "Produkt für jede Größe × Typ × Güte suchen. Leer lassen, um die Kombination auszublenden."
+
+msgid "Search products…"
+msgstr "Produkte suchen…"
+
+msgid "Search product…"
+msgstr "Produkt suchen…"
+
+msgid "Selected product IDs"
+msgstr "Ausgewählte Produkt-IDs"
+
+msgid "Selected products"
+msgstr "Ausgewählte Produkte"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Versand wird im Warenkorb anhand der Postleitzahl berechnet."
+
+msgid "Show postal code on the kit step"
+msgstr "Postleitzahl im Set-Schritt anzeigen"
+
+msgid "Show postcode field"
+msgstr "Postleitzahlfeld anzeigen"
+
+msgid "Show the PVC strip curtain calculator on this product page."
+msgstr "PVC-Streifenvorhang-Rechner auf dieser Produktseite anzeigen."
+
+msgid "Smooth"
+msgstr "Glatt"
+
+msgid "Soffit height deduct"
+msgstr "Sturz: Höhenabzug"
+
+msgid "Some items are not mapped in this shop. The rest can still be added."
+msgstr "Einige Artikel sind in diesem Shop nicht hinterlegt. Der Rest kann trotzdem hinzugefügt werden."
+
+#, php-format
+msgid "Standard"
+msgstr "Standard"
+
+#, php-format
+msgid "Standard (−5 °C to +60 °C)"
+msgstr "Standard (−5 °C bis +60 °C)"
+
+#, php-format
+msgid "Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height."
+msgstr "Streifenanzahl = ceil(Rechenbreite × (1 + Überlapp%) ÷ Streifenbreite). Gesamtmeter = Streifen × Rechenhöhe."
+
+#, php-format
+msgid "Strip hanger %d mm"
+msgstr "Streifenaufhänger %d mm"
+
+msgid "Strip products"
+msgstr "Streifenprodukte"
+
+msgid "Strip size"
+msgstr "Streifenbreite"
+
+msgid "Strip type & grade"
+msgstr "Streifentyp & Qualität"
+
+msgid "Strips"
+msgstr "Streifen"
+
+msgid "Surface"
+msgstr "Oberfläche"
+
+msgid "Taller openings need wider, thicker strips."
+msgstr "Höhere Öffnungen brauchen breitere, dickere Streifen."
+
+msgid "Temperature grade"
+msgstr "Temperaturklasse"
+
+msgid "Three short steps: measure the opening, choose strips and overlap, then add a complete kit — strips, hangers and rail."
+msgstr "Drei kurze Schritte: Öffnung messen, Streifen und Überlappung wählen und ein komplettes Set hinzufügen — Streifen, Aufhänger und Schiene."
+
+msgid "Total excl. VAT"
+msgstr "Summe zzgl. MwSt."
+
+msgid "Total incl. VAT"
+msgstr "Summe inkl. MwSt."
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Ein Artikel des Sets konnte nicht in den Warenkorb gelegt werden."
+
+msgid "Up to 2.5 m high"
+msgstr "Bis 2,5 m Höhe"
+
+msgid "VAT"
+msgstr "MwSt."
+
+msgid "Where the form appears"
+msgstr "Wo das Formular erscheint"
+
+msgid "Width"
+msgstr "Breite"
+
+msgid "Your kit"
+msgstr "Ihr Set"
+
+msgid "Your kit includes cut-to-length PVC strips, hanger plates and a hanging rail. Add everything in one go."
+msgstr "Ihr Set enthält PVC-Streifen in Zuschnittlänge, Aufhängerplatten und eine Tragschiene. Alles auf einmal hinzufügen."
+

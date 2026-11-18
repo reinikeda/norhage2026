@@ -34,10 +34,13 @@ class NH_TC_Defaults {
 			'standard_sheet_width_mm'=> 2100,
 			'wall_profile_mm'        => 2200,
 			'screw_spacing_mm'       => 200,
+			'finish_screw_spacing_mm'=> 400,
+			'wall_screw_spacing_mm'  => 400,
+			'fixing_button_spacing_mm' => 400,
+			'fixing_button_pack_size'  => 50,
 			'screw_pack_size'        => 50,
 			'silicon_metres_per_tube'=> 10,
 			'tape_roll_mm'           => 5000,
-			'show_postcode'          => 0,
 			'default_cc_mm'          => 600,
 			'default_support_mm'     => 50,
 			'min_support_mm'         => 20,
@@ -64,20 +67,21 @@ class NH_TC_Defaults {
 				'32' => 900,
 				'40' => 1000,
 			),
+			// Length by sheet thickness (Norhage install guide). Diameter follows common stock.
 			'screw_size'             => array(
 				'2'  => '5-mm-x-50-mm',
 				'3'  => '5-mm-x-50-mm',
 				'4'  => '5-mm-x-50-mm',
 				'5'  => '5-mm-x-50-mm',
 				'6'  => '5-mm-x-50-mm',
-				'8'  => '5-mm-x-60-mm',
-				'10' => '5-mm-x-60-mm',
+				'8'  => '5-mm-x-50-mm',
+				'10' => '5-mm-x-50-mm',
 				'12' => '5-mm-x-60-mm',
-				'16' => '6-mm-x-80-mm',
-				'20' => '6-mm-x-80-mm',
+				'16' => '5-mm-x-60-mm',
+				'20' => '5-mm-x-60-mm',
 				'25' => '6-mm-x-80-mm',
-				'32' => '6-mm-x-80-mm',
-				'40' => '6-mm-x-80-mm',
+				'32' => '6-mm-x-90-mm',
+				'40' => '6-mm-x-90-mm',
 			),
 			'sheets'                 => self::sheet_skus(),
 			'standard_sheets'        => self::standard_sheet_catalog(),
@@ -127,6 +131,7 @@ class NH_TC_Defaults {
 			),
 			'hardware'               => array(
 				'screws'      => '9058',
+				'fixing_buttons' => '',
 				'wall'        => '70492305',
 				'ridge'       => '70492305',
 				'vent_tape'   => '804420',
@@ -136,7 +141,6 @@ class NH_TC_Defaults {
 					'brown'  => '704105',
 					'grey'   => '704113',
 				),
-				'gasket'      => '704615',
 				'silicon'     => '8056',
 			),
 		);
@@ -446,6 +450,20 @@ class NH_TC_Defaults {
 	}
 
 	/**
+	 * Round a multiwall run up to a full sold metre (1–7 m).
+	 */
+	public static function multiwall_metre_length( $need_mm ) {
+		if ( class_exists( 'NH_TC_Engine' ) ) {
+			return NH_TC_Engine::multiwall_stock_length( $need_mm );
+		}
+		$need = max( 1, (int) $need_mm );
+		if ( $need >= 7000 ) {
+			return 7000;
+		}
+		return max( 1000, min( 7000, (int) ( ceil( $need / 1000 ) * 1000 ) ) );
+	}
+
+	/**
 	 * Channel groups for one thickness and colour. Empty when that sheet has no standard sizes.
 	 *
 	 * @return array<string, array{sku:string, channel:string, widths:array<string, array<string, string>>}>
@@ -501,7 +519,8 @@ class NH_TC_Defaults {
 		if ( ! $groups ) {
 			return null;
 		}
-		$channel = (string) $channel;
+		$material = (string) $material;
+		$channel  = (string) $channel;
 		if ( ! isset( $groups[ $channel ] ) ) {
 			if ( isset( $groups['stock'] ) ) {
 				$channel = 'stock';
@@ -516,8 +535,36 @@ class NH_TC_Defaults {
 		if ( ! $widths ) {
 			return null;
 		}
+
+		// Multiwall standard plates: whole 2100 mm sheets. Solid: 2050 × 3050 blanks.
 		$width = (string) (int) $width_mm;
-		if ( ! isset( $widths[ $width ] ) ) {
+		if ( 'multiwall' === $material ) {
+			if ( isset( $widths['2100'] ) ) {
+				$width = '2100';
+			} elseif ( ! isset( $widths[ $width ] ) ) {
+				$keys = array_keys( $widths );
+				usort(
+					$keys,
+					static function ( $a, $b ) {
+						return (int) $a <=> (int) $b;
+					}
+				);
+				$width = (string) $keys[ count( $keys ) - 1 ];
+			}
+		} elseif ( 'solid' === $material ) {
+			if ( isset( $widths['2050'] ) ) {
+				$width = '2050';
+			} elseif ( ! isset( $widths[ $width ] ) ) {
+				$keys = array_keys( $widths );
+				usort(
+					$keys,
+					static function ( $a, $b ) {
+						return (int) $a <=> (int) $b;
+					}
+				);
+				$width = (string) $keys[ count( $keys ) - 1 ];
+			}
+		} elseif ( ! isset( $widths[ $width ] ) ) {
 			if ( isset( $widths['2100'] ) ) {
 				$width = '2100';
 			} else {
@@ -531,8 +578,18 @@ class NH_TC_Defaults {
 				$width = (string) $keys[ count( $keys ) - 1 ];
 			}
 		}
-		$map     = self::length_sku_map( $widths[ $width ] );
-		$length  = self::covering_stock_length( array_map( 'intval', array_keys( $map ) ), $need_mm );
+
+		$map      = self::length_sku_map( $widths[ $width ] );
+		$available = array_map( 'intval', array_keys( $map ) );
+		if ( 'multiwall' === $material ) {
+			// Round the run up to a full metre (1–7 m), then take the shortest sold length that covers it.
+			$length = self::covering_stock_length( $available, self::multiwall_metre_length( $need_mm ) );
+		} elseif ( 'solid' === $material && in_array( 3050, $available, true ) ) {
+			// Always buy the full 3050 mm blank (may be rotated when tiling).
+			$length = 3050;
+		} else {
+			$length = self::covering_stock_length( $available, $need_mm );
+		}
 		if ( $length <= 0 ) {
 			return null;
 		}
@@ -671,7 +728,8 @@ class NH_TC_Defaults {
 
 	/**
 	 * Millimetres from a variation attribute such as "2100", "2100 mm" or "2100-mm".
-	 * A metre slug such as "6-m" is not a sheet size.
+	 * A metre slug such as "6-m" is not treated as millimetres here — use
+	 * sheet_dimension_mm() for stock sheet width/length terms.
 	 */
 	public static function millimetres_from_attribute( $value ) {
 		$raw = strtolower( trim( (string) $value ) );
@@ -693,11 +751,80 @@ class NH_TC_Defaults {
 	}
 
 	/**
+	 * Sheet width/length from a WooCommerce attribute: "2100", "2100 mm", "6-m",
+	 * "6 m", "2.1 m", or shop slugs such as "21-m" (2.1 m) and "105-m" (1.05 m).
+	 */
+	public static function sheet_dimension_mm( $value ) {
+		$raw = strtolower( trim( (string) $value ) );
+		if ( '' === $raw ) {
+			return 0;
+		}
+		$slug = str_replace( array( '_', '–', '—', ' ' ), array( '-', '-', '-', '' ), $raw );
+		$slug = str_replace( ',', '.', $slug );
+
+		static $known = null;
+		if ( null === $known ) {
+			$known = array(
+				'1-m'   => 1000,
+				'1m'    => 1000,
+				'105-m' => 1050,
+				'105m'  => 1050,
+				'15-m'  => 1500,
+				'15m'   => 1500,
+				'2-m'   => 2000,
+				'2m'    => 2000,
+				'21-m'  => 2100,
+				'21m'   => 2100,
+				'22-m'  => 2200,
+				'22m'   => 2200,
+				'3-m'   => 3000,
+				'3m'    => 3000,
+				'4-m'   => 4000,
+				'4m'    => 4000,
+				'5-m'   => 5000,
+				'5m'    => 5000,
+				'6-m'   => 6000,
+				'6m'    => 6000,
+				'7-m'   => 7000,
+				'7m'    => 7000,
+			);
+		}
+		if ( isset( $known[ $slug ] ) ) {
+			return $known[ $slug ];
+		}
+
+		$literal = self::millimetres_from_attribute( $value );
+		if ( $literal >= 100 ) {
+			return $literal;
+		}
+
+		// "2.1m", "2,1-m", "6-m" (when not in the known map).
+		if ( preg_match( '/^(\d+(?:\.\d+)?)-?m$/', $slug, $match ) && false === strpos( $slug, 'mm' ) ) {
+			$n = (float) $match[1];
+			if ( $n >= 1 && $n <= 7 && abs( $n - (int) $n ) < 0.0001 ) {
+				return (int) ( $n * 1000 );
+			}
+			if ( $n >= 10 && $n <= 99 ) {
+				return (int) round( $n * 100 );
+			}
+			if ( $n >= 100 && $n <= 999 ) {
+				return (int) round( $n * 10 );
+			}
+			if ( $n > 0 && $n < 10 ) {
+				return (int) round( $n * 1000 );
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	/**
 	 * Keep the in-stock variations of one width map.
 	 *
 	 * A width that is not already in the catalog is left out. An extra in-stock
-	 * length on a known width is kept. A saved SKU is used only when the live
-	 * variation has no SKU of its own.
+	 * length on a known width is kept. Live variation SKUs (or variation IDs when
+	 * the shop left the SKU blank) replace empty saved slots.
 	 *
 	 * @param array<string, mixed> $widths
 	 * @param array<int, array<string, mixed>> $variations
@@ -735,7 +862,7 @@ class NH_TC_Defaults {
 				if ( ! isset( $live[ $width ][ $length ] ) ) {
 					continue;
 				}
-				$live_sku       = $live[ $width ][ $length ];
+				$live_sku        = $live[ $width ][ $length ];
 				$kept[ $length ] = '' !== $live_sku ? $live_sku : $saved;
 			}
 			foreach ( $live[ $width ] as $length => $live_sku ) {

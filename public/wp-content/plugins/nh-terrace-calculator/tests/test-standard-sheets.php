@@ -242,6 +242,17 @@ nh_tc_sheet_assert(
 	&& 0 === NH_TC_Defaults::millimetres_from_attribute( '25 mm' )
 );
 
+nh_tc_sheet_assert(
+	'sheet dimensions accept metre slugs used on stock variations',
+	2100 === NH_TC_Defaults::sheet_dimension_mm( '2100' )
+	&& 2100 === NH_TC_Defaults::sheet_dimension_mm( '21-m' )
+	&& 6000 === NH_TC_Defaults::sheet_dimension_mm( '6-m' )
+	&& 6000 === NH_TC_Defaults::sheet_dimension_mm( '6 m' )
+	&& 1050 === NH_TC_Defaults::sheet_dimension_mm( '105-m' )
+	&& 2000 === NH_TC_Defaults::sheet_dimension_mm( '2-m' )
+	&& 7000 === NH_TC_Defaults::sheet_dimension_mm( '7-m' )
+);
+
 $stock_fixture = array(
 	'multiwall' => array(
 		'10' => array(
@@ -319,6 +330,79 @@ nh_tc_sheet_assert(
 	'without a loaded parent the catalog widths stay put',
 	'SAVED-6000' === $untouched['multiwall']['10']['clear']['stock']['widths']['2100']['6000']
 	&& isset( $untouched['multiwall']['16']['clear']['6w'] )
+);
+
+require_once dirname( __DIR__ ) . '/includes/class-nh-tc-catalog.php';
+nh_tc_sheet_assert(
+	'attribute value matching tolerates mm and screw-size formats',
+	NH_TC_Catalog::attr_values_match( '25-mm', '25' )
+	&& NH_TC_Catalog::attr_values_match( '25-mm', '25mm' )
+	&& NH_TC_Catalog::attr_values_match( '10-mm', '10 mm' )
+	&& NH_TC_Catalog::attr_values_match( '5-mm-x-60-mm', '5x60mm' )
+	&& NH_TC_Catalog::attr_values_match( '5-mm-x-60-mm', '5 x 60 mm' )
+	&& ! NH_TC_Catalog::attr_values_match( '25-mm', '38' )
+);
+
+$tape_25 = array(
+	'attribute_pa_bredde-mm' => '25-mm',
+	'attribute_pa_lengde'    => '5-m',
+);
+$tape_38 = array(
+	'attribute_pa_bredde-mm' => '38-mm',
+	'attribute_pa_lengde'    => '5-m',
+);
+$tape_want = array(
+	'width'  => '38-mm',
+	'length' => '5-m',
+);
+nh_tc_sheet_assert(
+	'20 mm sheets score the 38 mm tape variation, not the 25 mm roll',
+	0 === NH_TC_Catalog::score_variation_attributes( $tape_25, $tape_want )
+	&& NH_TC_Catalog::score_variation_attributes( $tape_38, $tape_want ) > 0
+	&& NH_TC_Catalog::score_variation_attributes( $tape_38, $tape_want )
+		> NH_TC_Catalog::score_variation_attributes( $tape_25, array( 'width' => '38-mm' ) )
+);
+nh_tc_sheet_assert(
+	'bredde-mm attribute keys match the width logical name',
+	NH_TC_Catalog::attr_key_matches( 'attribute_pa_bredde-mm', 'width' )
+	&& NH_TC_Catalog::attr_key_matches( 'attribute_pa_lengde', 'length' )
+	&& ! NH_TC_Catalog::attr_key_matches( 'attribute_pa_lengde', 'width' )
+);
+
+$screw_50 = array( 'attribute_pa_dimensjoner' => '5x50mm' );
+$screw_60 = array( 'attribute_pa_dimensjoner' => '5x60mm' );
+$screw_80 = array( 'attribute_pa_dimensjoner' => '6-mm-x-80-mm' );
+nh_tc_sheet_assert(
+	'20 mm sheets score 60 mm screws, not 50 mm or 80 mm',
+	0 === NH_TC_Catalog::score_variation_attributes( $screw_50, array( 'dimensions' => '5-mm-x-60-mm', 'length' => '60-mm' ) )
+	&& 0 === NH_TC_Catalog::score_variation_attributes( $screw_80, array( 'dimensions' => '5-mm-x-60-mm', 'length' => '60-mm' ) )
+	&& NH_TC_Catalog::score_variation_attributes( $screw_60, array( 'dimensions' => '5-mm-x-60-mm', 'length' => '60-mm' ) ) > 0
+	&& NH_TC_Catalog::score_variation_attributes( $screw_60, array( 'length' => '60-mm' ) ) > 0
+	&& 0 === NH_TC_Catalog::score_variation_attributes( $screw_80, array( 'length' => '60-mm' ) )
+);
+nh_tc_sheet_assert(
+	'5 m tape length does not equal 50 m (sheet-slug mm trap)',
+	! NH_TC_Catalog::attr_values_match( '5-m', '50-m' )
+	&& ! NH_TC_Catalog::attr_values_match( '5-m', '25-m' )
+	&& NH_TC_Catalog::attr_values_match( '5-m', '5m' )
+	&& 50.0 === NH_TC_Catalog::metre_quantity( '50-m' )
+	&& 5.0 === NH_TC_Catalog::metre_quantity( '5-m' )
+);
+$tape_38_50 = array(
+	'attribute_pa_bredde-mm' => '38-mm',
+	'attribute_pa_lengde'    => '50-m',
+);
+nh_tc_sheet_assert(
+	'38 mm × 5 m request does not score an out-of-stock 50 m roll',
+	0 === NH_TC_Catalog::score_variation_attributes( $tape_38_50, $tape_want )
+	&& NH_TC_Catalog::score_variation_attributes( $tape_38, $tape_want ) > 0
+);
+nh_tc_sheet_assert(
+	'screw dimension pair reads diameter × length',
+	array( 5, 60 ) === NH_TC_Catalog::dimension_pair_mm( '5-mm-x-60-mm' )
+	&& array( 6, 80 ) === NH_TC_Catalog::dimension_pair_mm( '6-mm-x-80-mm' )
+	&& NH_TC_Catalog::attr_values_match( '60-mm', '5-mm-x-60-mm' )
+	&& ! NH_TC_Catalog::attr_values_match( '60-mm', '6-mm-x-80-mm' )
 );
 
 if ( $failures ) {

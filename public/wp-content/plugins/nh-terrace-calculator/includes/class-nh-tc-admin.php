@@ -70,14 +70,13 @@ class NH_TC_Admin {
 		$input    = is_array( $input ) ? $input : array();
 		$out      = $defaults;
 
-		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
+		foreach ( array( 'min_width_mm', 'max_width_mm', 'min_length_mm', 'max_length_mm', 'step_mm', 'default_width_mm', 'default_length_mm', 'default_cc_mm', 'default_support_mm', 'min_support_mm', 'max_support_mm', 'profile_gap_mm', 'default_overhang_mm', 'max_overhang_mm', 'min_sheet_mm', 'overlap_mm', 'standard_sheet_width_mm', 'wall_profile_mm', 'screw_spacing_mm', 'finish_screw_spacing_mm', 'wall_screw_spacing_mm', 'fixing_button_spacing_mm', 'fixing_button_pack_size', 'screw_pack_size', 'tape_roll_mm' ) as $int_key ) {
 			if ( isset( $input[ $int_key ] ) ) {
 				$out[ $int_key ] = absint( $input[ $int_key ] );
 			}
 		}
 
 		$out['silicon_metres_per_tube'] = isset( $input['silicon_metres_per_tube'] ) ? (float) $input['silicon_metres_per_tube'] : $defaults['silicon_metres_per_tube'];
-		$out['show_postcode']           = empty( $input['show_postcode'] ) ? 0 : 1;
 		$out['display_mode']            = in_array( $input['display_mode'] ?? '', array( 'all_products', 'selected', 'flagged' ), true )
 			? $input['display_mode']
 			: 'all_products';
@@ -199,7 +198,68 @@ class NH_TC_Admin {
 				}
 			}
 		}
-		return $out;
+		return self::fill_standard_skus_from_shop( $out );
+	}
+
+	/**
+	 * Fill empty variation SKU slots from the parent product in WooCommerce.
+	 *
+	 * @param array<string, mixed> $catalog
+	 * @return array<string, mixed>
+	 */
+	private static function fill_standard_skus_from_shop( array $catalog ) {
+		if ( ! function_exists( 'wc_get_product' ) || ! class_exists( 'NH_TC_Catalog' ) ) {
+			return $catalog;
+		}
+		foreach ( $catalog as $material => $thicknesses ) {
+			if ( ! is_array( $thicknesses ) ) {
+				continue;
+			}
+			foreach ( $thicknesses as $thickness => $colours ) {
+				if ( ! is_array( $colours ) ) {
+					continue;
+				}
+				foreach ( $colours as $colour => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						continue;
+					}
+					foreach ( $groups as $channel => $group ) {
+						if ( ! is_array( $group ) || empty( $group['widths'] ) || ! is_array( $group['widths'] ) ) {
+							continue;
+						}
+						$parent = isset( $group['sku'] ) ? trim( (string) $group['sku'] ) : '';
+						if ( '' === $parent ) {
+							continue;
+						}
+						$live = NH_TC_Catalog::variation_sku_index( $parent );
+						if ( ! $live ) {
+							continue;
+						}
+						foreach ( $group['widths'] as $width => $lengths ) {
+							if ( ! is_array( $lengths ) ) {
+								continue;
+							}
+							$width_key = (string) (int) $width;
+							foreach ( $lengths as $length => $sku ) {
+								$saved = is_scalar( $sku ) ? trim( (string) $sku ) : '';
+								if ( '' !== $saved ) {
+									continue;
+								}
+								$length_key = (string) (int) $length;
+								$found      = ( isset( $live[ $width_key ][ $length_key ] ) && is_array( $live[ $width_key ][ $length_key ] ) )
+									? $live[ $width_key ][ $length_key ]
+									: null;
+								if ( ! $found || '' === trim( (string) ( $found['sku'] ?? '' ) ) ) {
+									continue;
+								}
+								$catalog[ $material ][ $thickness ][ $colour ][ $channel ]['widths'][ $width ][ $length ] = self::sku_text( $found['sku'] );
+							}
+						}
+					}
+				}
+			}
+		}
+		return $catalog;
 	}
 
 	/**
@@ -325,8 +385,48 @@ class NH_TC_Admin {
 						</td>
 					</tr>
 					<tr>
-						<th><?php esc_html_e( 'Show postcode field', NH_TC_TD ); ?></th>
-						<td><label><input type="checkbox" name="<?php echo esc_attr( $key ); ?>[show_postcode]" value="1" <?php checked( $s['show_postcode'] ); ?>> <?php esc_html_e( 'Saved to the customer when the kit is added, so shipping can be quoted in the basket.', NH_TC_TD ); ?></label></td>
+						<th><?php esc_html_e( 'Screw spacing (mm)', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Connecting profiles', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[screw_spacing_mm]" value="<?php echo esc_attr( $s['screw_spacing_mm'] ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Finish profiles', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[finish_screw_spacing_mm]" value="<?php echo esc_attr( isset( $s['finish_screw_spacing_mm'] ) ? $s['finish_screw_spacing_mm'] : 400 ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Wall / ridge', NH_TC_TD ); ?>
+								<input type="number" min="50" max="1000" name="<?php echo esc_attr( $key ); ?>[wall_screw_spacing_mm]" value="<?php echo esc_attr( isset( $s['wall_screw_spacing_mm'] ) ? $s['wall_screw_spacing_mm'] : 400 ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Pack size', NH_TC_TD ); ?>
+								<input type="number" min="1" max="500" name="<?php echo esc_attr( $key ); ?>[screw_pack_size]" value="<?php echo esc_attr( $s['screw_pack_size'] ); ?>">
+							</label>
+							<p class="description"><?php esc_html_e( 'All three screw counts are added, then rounded up to packs. Connecting bars usually need closer spacing than edge trims.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Fixing buttons', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Spacing along each sheet', NH_TC_TD ); ?>
+								<input type="number" min="100" max="1000" name="<?php echo esc_attr( $key ); ?>[fixing_button_spacing_mm]" value="<?php echo esc_attr( isset( $s['fixing_button_spacing_mm'] ) ? $s['fixing_button_spacing_mm'] : 400 ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Pack size', NH_TC_TD ); ?>
+								<input type="number" min="1" max="500" name="<?php echo esc_attr( $key ); ?>[fixing_button_pack_size]" value="<?php echo esc_attr( isset( $s['fixing_button_pack_size'] ) ? $s['fixing_button_pack_size'] : 50 ); ?>">
+							</label>
+							<p class="description"><?php esc_html_e( 'Buttons = sheets × ceil(sheet length ÷ spacing), then rounded up to packs. Map a product below; leave the product empty to hide this line from customers.', NH_TC_TD ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th><?php esc_html_e( 'Tape, silicone and wall length', NH_TC_TD ); ?></th>
+						<td>
+							<label><?php esc_html_e( 'Tape roll length', NH_TC_TD ); ?>
+								<input type="number" min="1000" max="50000" step="1000" name="<?php echo esc_attr( $key ); ?>[tape_roll_mm]" value="<?php echo esc_attr( $s['tape_roll_mm'] ); ?>"> mm
+							</label>
+							<label><?php esc_html_e( 'Silicone metres per tube', NH_TC_TD ); ?>
+								<input type="number" min="1" max="50" step="0.5" name="<?php echo esc_attr( $key ); ?>[silicon_metres_per_tube]" value="<?php echo esc_attr( $s['silicon_metres_per_tube'] ); ?>">
+							</label>
+							<label><?php esc_html_e( 'Wall / ridge piece', NH_TC_TD ); ?>
+								<input type="number" min="500" max="6000" step="100" name="<?php echo esc_attr( $key ); ?>[wall_profile_mm]" value="<?php echo esc_attr( $s['wall_profile_mm'] ); ?>"> mm
+							</label>
+						</td>
 					</tr>
 				</table>
 
@@ -338,10 +438,10 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Standard sizes', NH_TC_TD ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Keep the parent SKU for each thickness and colour. Variation fields are filled from that product’s width × length attributes (including metre slugs such as 6-m → 6000 mm). If a variation has no SKU, its product ID is stored instead.', NH_TC_TD ); ?>
 				</p>
 				<p class="description">
-					<?php esc_html_e( 'Variations already on the parent product are filled in below and used for the price. A size that is out of stock is hidden from customers. A custom-cut product that is out of stock hides that choice as well.', NH_TC_TD ); ?>
+					<?php esc_html_e( 'Save this page once after setting parent SKUs to refresh empty slots from the shop. The storefront also resolves stock sheets from the parent + size when a variation SKU is blank. Screws and sealing tapes pick the variation that matches the chosen polycarbonate thickness.', NH_TC_TD ); ?>
 				</p>
 				<?php self::standard_sheet_fields( $key, NH_TC_Defaults::normalize_standard_sheets( $s['standard_sheets'] ?? array() ) ); ?>
 
@@ -354,23 +454,23 @@ class NH_TC_Admin {
 
 				<h2><?php esc_html_e( 'Finish profiles', NH_TC_TD ); ?></h2>
 				<?php self::profile_table( $key, 'finish', $s['finish'], array(
-					'f_aluminium' => __( 'F aluminium', NH_TC_TD ),
-					'u_plastic'   => __( 'U plastic', NH_TC_TD ),
-					'u_aluminium' => __( 'U aluminium', NH_TC_TD ),
-					'l_aluminium' => __( 'L aluminium', NH_TC_TD ),
+					'f_aluminium' => __( 'Aluminium F-profile', NH_TC_TD ),
+					'u_plastic'   => __( 'Plastic U-profile', NH_TC_TD ),
+					'u_aluminium' => __( 'Aluminium U-profile', NH_TC_TD ),
+					'l_aluminium' => __( 'Aluminium L-profile', NH_TC_TD ),
 				), array( 'silver', 'brown', 'clear' ) ); ?>
 
 				<h2><?php esc_html_e( 'Sealing tapes, screws and extras', NH_TC_TD ); ?></h2>
 				<table class="form-table">
 					<?php
 					$hw = array(
-						'screws'    => __( 'Wood screws with washers', NH_TC_TD ),
-						'vent_tape' => __( 'Ventilation / anti-dust tape', NH_TC_TD ),
-						'iso_tape'  => __( 'Insulation sealing tape', NH_TC_TD ),
-						'gasket'    => __( 'EPDM rubber gasket 50 mm', NH_TC_TD ),
-						'silicon'   => __( 'Neutral silicone', NH_TC_TD ),
-						'wall'      => __( 'Wall profile 2.2 m', NH_TC_TD ),
-						'ridge'     => __( 'Ridge profile 2.2 m (gable)', NH_TC_TD ),
+						'screws'          => __( 'Wood screws with washers', NH_TC_TD ),
+						'fixing_buttons' => __( 'Fixing buttons (optional)', NH_TC_TD ),
+						'vent_tape'       => __( 'Ventilation / anti-dust tape', NH_TC_TD ),
+						'iso_tape'        => __( 'Insulation sealing tape', NH_TC_TD ),
+						'silicon'         => __( 'Neutral silicone', NH_TC_TD ),
+						'wall'            => __( 'Wall profile 2.2 m', NH_TC_TD ),
+						'ridge'           => __( 'Ridge profile 2.2 m (gable)', NH_TC_TD ),
 					);
 					foreach ( $hw as $slot => $label ) {
 						echo '<tr><th>' . esc_html( $label ) . '</th><td>';
@@ -413,13 +513,13 @@ class NH_TC_Admin {
 			</ul>
 
 			<h3><?php esc_html_e( 'Connecting profiles and screws', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws are placed every 200 mm along the stock length of each of those profiles, then rounded up to packs of 50. End caps are two for each connecting profile. The plastic H-profile has no end caps.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'Connecting profiles equal the joints across the width: one fewer than the sheets across. Each profile is the shortest stock length that covers the sheet length. Screws cover connecting bars (default every 200 mm), finish edges and wall/ridge pieces (default every 400 mm), then round up to packs. End caps are two for each connecting profile. The plastic H-profile has no end caps. Fixing buttons (optional product) are one every 400 mm along each sheet length for mid-span fastening.', NH_TC_TD ); ?></p>
 
 			<h3><?php esc_html_e( 'Finish, wall and ridge', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in 2.2 m pieces. A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
+			<p><?php esc_html_e( 'A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile.', NH_TC_TD ); ?></p>
 
-			<h3><?php esc_html_e( 'Tapes, gasket and silicone', NH_TC_TD ); ?></h3>
-			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. One ventilation roll and one insulation roll cover the sheet widths, and another roll of each is added when the widths together pass 5 m. The rubber gasket follows the perimeter and is sold in whole metres. Silicone is one tube for every 10 m of that perimeter, and at least one tube.', NH_TC_TD ); ?></p>
+			<h3><?php esc_html_e( 'Tapes and silicone', NH_TC_TD ); ?></h3>
+			<p><?php esc_html_e( 'Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket.', NH_TC_TD ); ?></p>
 			<p><?php esc_html_e( 'The rafter count in the spacing note is advice. Rafters are not a product in the kit.', NH_TC_TD ); ?></p>
 		</div>
 		<?php
@@ -507,6 +607,11 @@ class NH_TC_Admin {
 						echo '<input type="text" class="regular-text" name="' . esc_attr( $base . '[sku]' ) . '" value="' . esc_attr( (string) ( $group['sku'] ?? '' ) ) . '" autocomplete="off" spellcheck="false">';
 						echo '</label></p>';
 						$live = function_exists( 'wc_get_product' ) ? NH_TC_Catalog::variation_sku_index( (string) ( $group['sku'] ?? '' ) ) : array();
+						if ( $live ) {
+							echo '<p class="description">' . esc_html__( 'Variation SKUs below were read from the parent product in the shop.', NH_TC_TD ) . '</p>';
+						} elseif ( '' !== trim( (string) ( $group['sku'] ?? '' ) ) ) {
+							echo '<p class="description">' . esc_html__( 'No matching width/length variations found for this parent SKU yet.', NH_TC_TD ) . '</p>';
+						}
 						foreach ( $group['widths'] as $width => $lengths ) {
 							if ( ! is_array( $lengths ) ) {
 								continue;
@@ -518,12 +623,14 @@ class NH_TC_Admin {
 								$width_key  = (string) (int) $width;
 								$length_key = (string) (int) $length;
 								$found      = ( isset( $live[ $width_key ][ $length_key ] ) && is_array( $live[ $width_key ][ $length_key ] ) ) ? $live[ $width_key ][ $length_key ] : null;
-								$value      = $saved;
-								if ( '' === $value && $found && '' !== trim( (string) $found['sku'] ) ) {
-									$value = (string) $found['sku'];
-								}
+								$live_sku   = ( $found && '' !== trim( (string) ( $found['sku'] ?? '' ) ) ) ? trim( (string) $found['sku'] ) : '';
+								$value      = '' !== $saved ? $saved : $live_sku;
+								$from_shop  = ( '' !== $live_sku && ( '' === $saved || $saved === $live_sku ) );
 								echo '<label><span>' . esc_html( sprintf( '%d mm', (int) $length ) ) . '</span>';
-								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( $value ) . '" autocomplete="off" spellcheck="false" maxlength="80">';
+								echo '<input type="text" name="' . esc_attr( $base . '[widths][' . (int) $width . '][' . (int) $length . ']' ) . '" value="' . esc_attr( $value ) . '" autocomplete="off" spellcheck="false" maxlength="80"' . ( $from_shop ? ' class="nh-tc-from-shop"' : '' ) . '>';
+								if ( $from_shop ) {
+									echo '<em class="nh-tc-from-shop-label">' . esc_html__( 'From shop', NH_TC_TD ) . '</em>';
+								}
 								if ( $found && empty( $found['in_stock'] ) ) {
 									echo '<em class="nh-tc-oos">' . esc_html__( 'Out of stock', NH_TC_TD ) . '</em>';
 								}

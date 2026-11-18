@@ -1,0 +1,407 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Norhage PVC Strip Curtain Calculator 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 19:08+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Norhage agent\n"
+
+#, php-format
+msgid "%1$d strips · %2$s m"
+msgstr ""
+
+#, php-format
+msgid "%1$d × %2$d mm opening"
+msgstr ""
+
+#, php-format
+msgid "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+msgstr ""
+
+#, php-format
+msgid "%d mm"
+msgstr ""
+
+#, php-format
+msgid "%d mm strips"
+msgstr ""
+
+#, php-format
+msgid "%d pcs"
+msgstr ""
+
+#, php-format
+msgid "%d strips"
+msgstr ""
+
+#, php-format
+msgid "%d%% overlap"
+msgstr ""
+
+#, php-format
+msgid "%s each"
+msgstr ""
+
+#, php-format
+msgid "%s m total"
+msgstr ""
+
+#, php-format
+msgid "%s pcs"
+msgstr ""
+
+msgid "2.5–4 m high"
+msgstr ""
+
+msgid "4 m and taller"
+msgstr ""
+
+msgid "Above the opening"
+msgstr ""
+
+msgid "Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips."
+msgstr ""
+
+msgid "Above the opening: height + 30 mm; width gains a sealing allowance."
+msgstr ""
+
+msgid "Add kit to basket"
+msgstr ""
+
+msgid "Adding kit…"
+msgstr ""
+
+msgid "All products (not recommended)"
+msgstr ""
+
+msgid "Antistatic"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Balanced seal · most indoor openings"
+msgstr ""
+
+msgid "Best draught barrier · outdoor & cold rooms"
+msgstr ""
+
+#, php-format
+msgid "Calc. %1$d × %2$d mm"
+msgstr ""
+
+msgid "Calculator steps"
+msgstr ""
+
+msgid "Cart is not available."
+msgstr ""
+
+msgid "Cold-resistant"
+msgstr ""
+
+msgid "Cold-resistant (−30 °C to +50 °C)"
+msgstr ""
+
+msgid "Continue"
+msgstr ""
+
+msgid "Could not add the kit. Please try again."
+msgstr ""
+
+#, php-format
+msgid "Covers %1$d mm · %2$d mm pieces"
+msgstr ""
+
+msgid "Default opening"
+msgstr ""
+
+msgid "Display mode"
+msgstr ""
+
+msgid "Easier passage · indoor pedestrian traffic"
+msgstr ""
+
+msgid "Enable the flag on the PVC strip curtains system product. Shortcode: [nh_pvc_strip_calculator]"
+msgstr ""
+
+msgid "Enter an opening size to see the kit."
+msgstr ""
+
+msgid "Face height extra"
+msgstr ""
+
+msgid "Frosted"
+msgstr ""
+
+msgid "Frosted (privacy)"
+msgstr ""
+
+#, php-format
+msgid "Hanger %d mm"
+msgstr ""
+
+msgid "Hangers and rail cover the calculated width"
+msgstr ""
+
+msgid "Hanging rail / bracket"
+msgstr ""
+
+msgid "Hardware"
+msgstr ""
+
+msgid "Hardware packing"
+msgstr ""
+
+msgid "Height"
+msgstr ""
+
+msgid "Hide default add to cart"
+msgstr ""
+
+msgid "Hide the normal add-to-cart form so customers use the kit calculator."
+msgstr ""
+
+msgid "How quantities are calculated"
+msgstr ""
+
+msgid "Into the opening"
+msgstr ""
+
+msgid "Into the opening (soffit): calc height = opening − 45 mm; width unchanged."
+msgstr ""
+
+msgid "Into the opening: height − 45 mm for the rail."
+msgstr ""
+
+msgid "Kit"
+msgstr ""
+
+msgid "Kit total"
+msgstr ""
+
+msgid "Max"
+msgstr ""
+
+msgid "Maximum"
+msgstr ""
+
+msgid "Medium"
+msgstr ""
+
+msgid "Min"
+msgstr ""
+
+msgid "Minimum"
+msgstr ""
+
+msgid "Mounting"
+msgstr ""
+
+msgid "Mounting adjustments"
+msgstr ""
+
+msgid "No matching products were found. Map SKUs in PVC strip calculator settings."
+msgstr ""
+
+msgid "Only products with the calculator flag"
+msgstr ""
+
+msgid "Opening"
+msgstr ""
+
+msgid "Opening allowances match Plastena face / soffit rules"
+msgstr ""
+
+msgid "Opening defaults & allowances"
+msgstr ""
+
+msgid "Opening height"
+msgstr ""
+
+msgid "Opening size"
+msgstr ""
+
+msgid "Opening width"
+msgstr ""
+
+msgid "Overlap"
+msgstr ""
+
+msgid "Overlap chooses how tightly neighbouring strips cover each other"
+msgstr ""
+
+msgid "Overlap fractions"
+msgstr ""
+
+msgid "Plastena-style opening rules with Norhage kit pricing. Map catalogue products by SKU for each strip size, type and grade."
+msgstr ""
+
+msgid "Please enter a valid opening width and height."
+msgstr ""
+
+msgid "Postal code (for shipping)"
+msgstr ""
+
+#, php-format
+msgid "PVC strip %1$d × %2$d mm"
+msgstr ""
+
+msgid "PVC strip calculator"
+msgstr ""
+
+msgid "PVC strip curtain calculator"
+msgstr ""
+
+msgid "PVC strip kit"
+msgstr ""
+
+msgid "Rail fixed to the wall face"
+msgstr ""
+
+msgid "Rail piece length"
+msgstr ""
+
+msgid "Rail under the lintel / soffit"
+msgstr ""
+
+msgid "Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip."
+msgstr ""
+
+#, php-format
+msgid "Recommended for this height: %d mm strips."
+msgstr ""
+
+#, php-format
+msgid "Red edge strip %d mm"
+msgstr ""
+
+msgid "Red edge strips replace the two outermost strips when enabled."
+msgstr ""
+
+msgid "Red edges & hardware"
+msgstr ""
+
+msgid "Red marker strips at both edges"
+msgstr ""
+
+#, php-format
+msgid "Red strip %d mm"
+msgstr ""
+
+msgid "Review kit"
+msgstr ""
+
+msgid "Review your kit"
+msgstr ""
+
+msgid "Ribbed"
+msgstr ""
+
+msgid "Ribbed (heavy traffic)"
+msgstr ""
+
+msgid "Search a product for each size × type × grade. Leave blank to hide that combination."
+msgstr ""
+
+msgid "Search products…"
+msgstr ""
+
+msgid "Search product…"
+msgstr ""
+
+msgid "Selected product IDs"
+msgstr ""
+
+msgid "Selected products"
+msgstr ""
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr ""
+
+msgid "Show postal code on the kit step"
+msgstr ""
+
+msgid "Show postcode field"
+msgstr ""
+
+msgid "Show the PVC strip curtain calculator on this product page."
+msgstr ""
+
+msgid "Smooth"
+msgstr ""
+
+msgid "Soffit height deduct"
+msgstr ""
+
+msgid "Some items are not mapped in this shop. The rest can still be added."
+msgstr ""
+
+msgid "Standard"
+msgstr ""
+
+msgid "Standard (−5 °C to +60 °C)"
+msgstr ""
+
+msgid "Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height."
+msgstr ""
+
+#, php-format
+msgid "Strip hanger %d mm"
+msgstr ""
+
+msgid "Strip products"
+msgstr ""
+
+msgid "Strip size"
+msgstr ""
+
+msgid "Strip type & grade"
+msgstr ""
+
+msgid "Strips"
+msgstr ""
+
+msgid "Surface"
+msgstr ""
+
+msgid "Taller openings need wider, thicker strips."
+msgstr ""
+
+msgid "Temperature grade"
+msgstr ""
+
+msgid "Three short steps: measure the opening, choose strips and overlap, then add a complete kit — strips, hangers and rail."
+msgstr ""
+
+msgid "Total excl. VAT"
+msgstr ""
+
+msgid "Total incl. VAT"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr ""
+
+msgid "Up to 2.5 m high"
+msgstr ""
+
+msgid "VAT"
+msgstr ""
+
+msgid "Where the form appears"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Your kit"
+msgstr ""
+
+msgid "Your kit includes cut-to-length PVC strips, hanger plates and a hanging rail. Add everything in one go."
+msgstr ""
+

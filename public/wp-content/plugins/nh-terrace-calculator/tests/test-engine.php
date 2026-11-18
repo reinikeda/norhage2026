@@ -33,12 +33,22 @@ $settings = array(
 	'standard_sheet_width_mm' => 2100,
 	'wall_profile_mm'         => 2200,
 	'screw_spacing_mm'        => 200,
+	'finish_screw_spacing_mm' => 400,
+	'wall_screw_spacing_mm'   => 400,
+	'fixing_button_spacing_mm' => 400,
+	'fixing_button_pack_size'  => 50,
 	'screw_pack_size'         => 50,
 	'silicon_metres_per_tube' => 10,
 	'tape_roll_mm'            => 5000,
 	'profile_stock_mm'        => array( 1000, 1500, 2000, 3000, 4000, 5000, 6000 ),
 	'recommended_cc'          => array( '10' => 600, '6' => 500 ),
-	'screw_size'              => array( '10' => '5-mm-x-60-mm', '6' => '5-mm-x-50-mm' ),
+	'screw_size'              => array(
+		'6'  => '5-mm-x-50-mm',
+		'10' => '5-mm-x-50-mm',
+		'16' => '5-mm-x-60-mm',
+		'25' => '6-mm-x-80-mm',
+		'32' => '6-mm-x-90-mm',
+	),
 	'default_cc_mm'           => 600,
 );
 
@@ -102,12 +112,80 @@ nh_tc_assert( '7 sheets still', 7 === (int) $bom['meta']['sheet_count'] );
 nh_tc_assert( 'custom supply starts with a profile on every rafter', 'every' === $bom['meta']['profile_joints'] );
 nh_tc_assert( '6 connecting 5 m profiles', isset( $by_role['connecting'] ) && 6 === (int) $by_role['connecting']['qty'] && 5000 === (int) $by_role['connecting']['stock_mm'] );
 nh_tc_assert( 'F-profile 3×2 m + 3×3 m', isset( $by_role['finish']['packed']['2-m'], $by_role['finish']['packed']['3-m'] ) && 3 === (int) $by_role['finish']['packed']['2-m'] && 3 === (int) $by_role['finish']['packed']['3-m'] );
-nh_tc_assert( '150 screws → 3 packs of 5x60', isset( $by_role['screw'] ) && 150 === (int) $by_role['screw']['qty_raw'] && 3 === (int) $by_role['screw']['qty'] && '5-mm-x-60-mm' === $by_role['screw']['attrs']['dimensions'] );
+nh_tc_assert(
+	'197 screws (150 connect + 35 finish + 12 wall) → 4 packs of 5x50',
+	isset( $by_role['screw'] )
+	&& 197 === (int) $by_role['screw']['qty_raw']
+	&& 4 === (int) $by_role['screw']['qty']
+	&& '5-mm-x-50-mm' === $by_role['screw']['attrs']['dimensions']
+	&& '50-mm' === $by_role['screw']['attrs']['length']
+	&& empty( $by_role['screw']['attrs']['thickness'] )
+	&& 50 === (int) $bom['meta']['screw_length_mm']
+	&& 150 === (int) $bom['meta']['connect_screws']
+	&& 35 === (int) $bom['meta']['finish_screws']
+	&& 12 === (int) $bom['meta']['wall_screws']
+);
+nh_tc_assert(
+	'84 fixing buttons → 2 packs',
+	isset( $by_role['fixing_button'] )
+	&& 84 === (int) $by_role['fixing_button']['qty_raw']
+	&& 2 === (int) $by_role['fixing_button']['qty']
+	&& 84 === (int) $bom['meta']['buttons_raw']
+);
 nh_tc_assert( '2 wall profiles', isset( $by_role['wall'] ) && 2 === (int) $by_role['wall']['qty'] );
 nh_tc_assert( '12 end caps', isset( $by_role['end_cap'] ) && 12 === (int) $by_role['end_cap']['qty'] );
-nh_tc_assert( '25 mm ventilation tape, 1 roll', isset( $by_role['vent_tape'] ) && 25 === (int) $by_role['vent_tape']['tape_width_mm'] && 1 === (int) $by_role['vent_tape']['qty'] );
-nh_tc_assert( '25 mm isolation tape, 1 roll', isset( $by_role['iso_tape'] ) && 1 === (int) $by_role['iso_tape']['qty'] );
-nh_tc_assert( '18 m rubber gasket', isset( $by_role['gasket'] ) && 18 === (int) $by_role['gasket']['qty'] );
+nh_tc_assert(
+	'25 mm lower ventilation tape, 1 roll for total sheet width',
+	isset( $by_role['vent_tape'] )
+	&& 25 === (int) $by_role['vent_tape']['tape_width_mm']
+	&& 1 === (int) $by_role['vent_tape']['qty']
+	&& 'lower' === $by_role['vent_tape']['edge']
+	&& '25-mm' === $by_role['vent_tape']['attrs']['width']
+	&& (int) $by_role['vent_tape']['cover_mm'] === (int) $bom['meta']['tape_cover_mm']
+);
+nh_tc_assert(
+	'25 mm upper isolation tape, same length as ventilation tape',
+	isset( $by_role['iso_tape'] )
+	&& 1 === (int) $by_role['iso_tape']['qty']
+	&& 'upper' === $by_role['iso_tape']['edge']
+	&& (int) $by_role['iso_tape']['cover_mm'] === (int) $by_role['vent_tape']['cover_mm']
+	&& '25-mm' === $by_role['iso_tape']['attrs']['width']
+);
+
+nh_tc_assert( 'tape width 4–10 mm → 25 mm', 25 === NH_TC_Engine::tape_width_mm( 10 ) && 25 === NH_TC_Engine::tape_width_mm( 4 ) );
+nh_tc_assert( 'tape width 16–20 mm → 38 mm', 38 === NH_TC_Engine::tape_width_mm( 16 ) && 38 === NH_TC_Engine::tape_width_mm( 20 ) );
+nh_tc_assert( 'tape width 25–40 mm → 60 mm', 60 === NH_TC_Engine::tape_width_mm( 25 ) && 60 === NH_TC_Engine::tape_width_mm( 40 ) );
+nh_tc_assert( 'screws up to 10 mm → 50 mm', 50 === NH_TC_Engine::screw_spec( 10, $settings )['length_mm'] );
+nh_tc_assert( 'screws 16–20 mm → 60 mm', 60 === NH_TC_Engine::screw_spec( 16, $settings )['length_mm'] && 60 === NH_TC_Engine::screw_spec( 20, $settings )['length_mm'] );
+nh_tc_assert( 'screws 25 mm → 80 mm', 80 === NH_TC_Engine::screw_spec( 25, $settings )['length_mm'] );
+nh_tc_assert( 'screws 32–40 mm → 90 mm', 90 === NH_TC_Engine::screw_spec( 32, $settings )['length_mm'] && 90 === NH_TC_Engine::screw_spec( 40, $settings )['length_mm'] );
+
+$bom20 = NH_TC_Engine::calculate(
+	array_merge(
+		$input,
+		array(
+			'thickness' => 20,
+			'cc_mm'     => 800,
+		)
+	),
+	$settings
+);
+$roles20 = array();
+foreach ( $bom20['lines'] as $line20 ) {
+	$roles20[ $line20['role'] ] = $line20;
+}
+nh_tc_assert(
+	'20 mm multiwall BOM asks for 38 mm tapes and 60 mm screws',
+	! empty( $bom20['ok'] )
+	&& 38 === (int) $bom20['meta']['tape_width_mm']
+	&& 60 === (int) $bom20['meta']['screw_length_mm']
+	&& isset( $roles20['vent_tape'], $roles20['iso_tape'], $roles20['screw'] )
+	&& '38-mm' === $roles20['vent_tape']['attrs']['width']
+	&& '38-mm' === $roles20['iso_tape']['attrs']['width']
+	&& '5-mm-x-60-mm' === $roles20['screw']['attrs']['dimensions']
+	&& '60-mm' === $roles20['screw']['attrs']['length']
+);
+nh_tc_assert( 'no separate EPDM gasket', ! isset( $by_role['gasket'] ) && ! isset( $bom['meta']['gasket_m'] ) );
 nh_tc_assert( '2 silicone tubes', isset( $by_role['silicon'] ) && 2 === (int) $by_role['silicon']['qty'] );
 nh_tc_assert( '8 beams single slope', 8 === (int) $bom['meta']['beam_count'] );
 nh_tc_assert(
@@ -155,6 +233,12 @@ foreach ( $gbom['lines'] as $line ) {
 }
 nh_tc_assert( 'gable uses ridge not wall', isset( $groles['ridge'] ) && ! isset( $groles['wall'] ) );
 nh_tc_assert( 'gable 9 beams', 9 === (int) $gbom['meta']['beam_count'] );
+nh_tc_assert(
+	'gable doubles tape cover for both slopes',
+	isset( $groles['vent_tape'], $groles['iso_tape'] )
+	&& (int) $groles['vent_tape']['cover_mm'] === (int) $bom['meta']['tape_cover_mm'] * 2
+	&& (int) $groles['iso_tape']['cover_mm'] === (int) $groles['vent_tape']['cover_mm']
+);
 nh_tc_assert(
 	'gable counts the entered side twice',
 	2 === (int) $gbom['meta']['slopes']
@@ -272,7 +356,7 @@ foreach ( $solid_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert( 'solid sheet quote calculates', ! empty( $solid_bom['ok'] ) );
-nh_tc_assert( 'solid sheets omit sealing tapes', ! isset( $solid_roles['vent_tape'] ) && ! isset( $solid_roles['iso_tape'] ) && isset( $solid_roles['gasket'] ) && isset( $solid_roles['silicon'] ) );
+nh_tc_assert( 'solid sheets omit sealing tapes and the EPDM gasket', ! isset( $solid_roles['vent_tape'] ) && ! isset( $solid_roles['iso_tape'] ) && ! isset( $solid_roles['gasket'] ) && isset( $solid_roles['silicon'] ) );
 nh_tc_assert( 'solid length split keeps six connecting profiles', 6 === (int) $solid_bom['meta']['connecting_count'] && isset( $solid_roles['connecting'] ) && 6 === (int) $solid_roles['connecting']['qty'] );
 nh_tc_assert(
 	'solid 4750 mm run is two 2375 mm pieces on the same widths',
@@ -372,7 +456,8 @@ nh_tc_assert(
 	&& 3 === count( $opt_bom['meta']['sheet_plan'] )
 	&& 2 === (int) $opt_bom['meta']['connecting_count']
 	&& 2 === $opt_connect
-	&& 50 === $opt_screws
+	&& 50 === (int) $opt_bom['meta']['connect_screws']
+	&& 97 === $opt_screws
 	&& 8 === (int) $opt_bom['meta']['rafter_count']
 );
 
@@ -479,11 +564,9 @@ foreach ( $narrow_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'a 1050 mm stock width needs four sheets',
-	$narrow_sheet && 4 === (int) $narrow_sheet['qty'] && 1050 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
-	&& 1050 === (int) $narrow_bom['meta']['span_mm']
-	&& 7 === count( $narrow_bom['meta']['sheet_plan'] )
-	&& 6 === (int) $narrow_bom['meta']['connecting_count']
+	'multiwall standard always buys full 2100 mm sheets even if a half width was posted',
+	$narrow_sheet && 2 === (int) $narrow_sheet['qty'] && 2100 === (int) $narrow_sheet['cut']['width_mm'] && 6000 === (int) $narrow_sheet['cut']['length_mm']
+	&& 2100 === (int) $narrow_bom['meta']['stock_width_mm']
 );
 
 $opal                   = $std_input;
@@ -497,8 +580,19 @@ foreach ( $opal_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'10 mm opal 1250 mm repeats the 2 m sheet along the run',
-	$opal_sheet && 12 === (int) $opal_sheet['qty'] && 1250 === (int) $opal_sheet['cut']['width_mm'] && 2000 === (int) $opal_sheet['cut']['length_mm'] && 4 === (int) $opal_bom['meta']['stock_across'] && 3 === (int) $opal_bom['meta']['stock_along']
+	'10 mm opal standard uses the full 2100 mm sheet and a covering metre length',
+	$opal_sheet && 2 === (int) $opal_sheet['qty'] && 2100 === (int) $opal_sheet['cut']['width_mm'] && 6000 === (int) $opal_sheet['cut']['length_mm']
+	&& 2 === (int) $opal_bom['meta']['stock_across'] && 1 === (int) $opal_bom['meta']['stock_along']
+);
+
+nh_tc_assert( 'multiwall rounds 4750 mm up to 5 m', 5000 === NH_TC_Engine::multiwall_stock_length( 4750 ) );
+nh_tc_assert( 'multiwall rounds 1001 mm up to 2 m', 2000 === NH_TC_Engine::multiwall_stock_length( 1001 ) );
+nh_tc_assert( 'multiwall caps at 7 m then tiles', 7000 === NH_TC_Engine::multiwall_stock_length( 7500 ) );
+
+$rotate = NH_TC_Engine::stock_sheet_qty( 2900, 4000, 2050, 3050, true );
+nh_tc_assert(
+	'solid blanks rotate when that buys fewer sheets',
+	2 === (int) $rotate['qty'] && 1 === (int) $rotate['rotated'] && 3050 === (int) $rotate['width_mm'] && 2050 === (int) $rotate['length_mm']
 );
 
 $five                      = $std_input;
@@ -513,8 +607,8 @@ foreach ( $five_bom['lines'] as $line ) {
 	}
 }
 nh_tc_assert(
-	'16 mm 5-wall 1200 mm uses the 5000 mm stock length',
-	$five_sheet && 4 === (int) $five_sheet['qty'] && 1200 === (int) $five_sheet['cut']['width_mm'] && 5000 === (int) $five_sheet['cut']['length_mm']
+	'16 mm standard prefers the full 2100 mm sheet over a narrower posted width',
+	$five_sheet && 2 === (int) $five_sheet['qty'] && 2100 === (int) $five_sheet['cut']['width_mm'] && 6000 === (int) $five_sheet['cut']['length_mm']
 );
 
 $solid_in                  = $std_input;

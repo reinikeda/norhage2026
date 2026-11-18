@@ -455,6 +455,39 @@
   display: flex;
 }
 
+/* Quiet cutting note under the selection box. No card. */
+.nh-cutting-tolerance {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ui-muted, #8e8c89);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.nh-cutting-tolerance__ico {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  color: currentColor;
+}
+
+.nh-cutting-tolerance__ico svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.nh-cutting-tolerance__copy {
+  min-width: 0;
+}
+
 /* ==========================================================================
    5) Bundle block (compact)
    ========================================================================== */
@@ -1419,6 +1452,97 @@
 .single-product .woocommerce-product-gallery .nh-product-image-note p::before{
   content: "* ";
   color: #8a9691;
+}
+
+/* Reel is the next gallery slide. It fills the photo frame, so a short
+   clip does not shrink the gallery and a tall one does not grow it. */
+.single-product .woocommerce-product-gallery .nh-gallery-video-slide{
+  position: relative;
+}
+
+.single-product .woocommerce-product-gallery .flex-viewport .nh-gallery-video-slide{
+  height: 100%;
+}
+
+.single-product .nh-gallery-video{
+  position: relative;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #141816;
+}
+
+.single-product .nh-gallery-video__poster,
+.single-product .nh-gallery-video__media{
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #141816;
+}
+
+.single-product .nh-gallery-video__poster{
+  pointer-events: none;
+}
+
+.single-product .nh-gallery-video__media{
+  z-index: 1;
+  cursor: pointer;
+}
+
+.single-product .flex-control-thumbs li.nh-gallery-video-thumb{
+  position: relative;
+}
+
+.single-product .flex-control-thumbs li.nh-gallery-video-thumb::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin: -7px 0 0 -4px;
+  border-style: solid;
+  border-width: 7px 0 7px 11px;
+  border-color: transparent transparent transparent #fff;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.65));
+  pointer-events: none;
+}
+
+.single-product .nh-gallery-video__sound{
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(14, 26, 20, 0.72);
+  color: #fff;
+  cursor: pointer;
+}
+
+.single-product .nh-gallery-video__sound:focus-visible{
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.single-product .nh-gallery-video__icon{
+  display: none;
+}
+
+.single-product .nh-gallery-video__sound[data-mode="muted"] .nh-gallery-video__icon--muted,
+.single-product .nh-gallery-video__sound[data-mode="sound"] .nh-gallery-video__icon--sound,
+.single-product .nh-gallery-video__sound[data-mode="play"] .nh-gallery-video__icon--play{
+  display: block;
 }
 
 /* ==========================================================================

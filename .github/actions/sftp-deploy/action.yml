@@ -1,0 +1,145 @@
+name: SFTP rsync deploy
+description: Pause, then rsync one site over SSH, retrying when the server resets the connection.
+
+inputs:
+  ssh_user:
+    description: SSH user for this domain.
+    required: true
+  ssh_host:
+    description: SSH host.
+    required: true
+  domain:
+    description: Domain being deployed, used in log lines.
+    required: true
+  local_dir:
+    description: Local directory whose contents are synced.
+    required: true
+  remote_dir:
+    description: Absolute remote directory.
+    required: true
+  ssh_options:
+    description: Extra ssh options, separated by spaces.
+    required: false
+    default: "-o StrictHostKeyChecking=no"
+  pause_seconds:
+    description: Seconds to wait before opening SSH, so domains do not connect together.
+    required: false
+    default: "15"
+  rsync_delete:
+    description: Pass --delete to rsync when true.
+    required: false
+    default: "false"
+  verify_lines:
+    description: How many lines of the remote listing to print after deploy.
+    required: false
+    default: "40"
+
+runs:
+  using: composite
+  steps:
+    - name: Pause before SSH
+      shell: bash
+      env:
+        PAUSE_SECONDS: ${{ inputs.pause_seconds }}
+        DOMAIN: ${{ inputs.domain }}
+      run: |
+        # shellcheck shell=bash
+        set -euo pipefail
+        if ! [[ "${PAUSE_SECONDS}" =~ ^[0-9]+$ ]]; then
+          echo "pause_seconds must be a whole number, got: ${PAUSE_SECONDS}"
+          exit 1
+        fi
+        echo "Waiting ${PAUSE_SECONDS}s before SSH to ${DOMAIN}"
+        sleep "${PAUSE_SECONDS}"
+
+    - name: Rsync over SSH
+      shell: bash
+      env:
+        SSH_USER: ${{ inputs.ssh_user }}
+        SSH_HOST: ${{ inputs.ssh_host }}
+        DOMAIN: ${{ inputs.domain }}
+        LOCAL_DIR: ${{ inputs.local_dir }}
+        REMOTE_DIR: ${{ inputs.remote_dir }}
+        SSH_OPTIONS: ${{ inputs.ssh_options }}
+        RSYNC_DELETE: ${{ inputs.rsync_delete }}
+        VERIFY_LINES: ${{ inputs.verify_lines }}
+      run: |
+        # shellcheck shell=bash
+        set -euo pipefail
+
+        if ! [[ "${VERIFY_LINES}" =~ ^[0-9]+$ ]]; then
+          echo "verify_lines must be a whole number, got: ${VERIFY_LINES}"
+          exit 1
+        fi
+        if [ -z "${SSH_USER}" ] || [ -z "${SSH_HOST}" ] || [ -z "${LOCAL_DIR}" ] || [ -z "${REMOTE_DIR}" ]; then
+          echo "ssh_user, ssh_host, local_dir, and remote_dir are required"
+          exit 1
+        fi
+
+        # The hosting SSH server resets the handshake when many sessions start
+        # together (kex_exchange_identification: Connection reset by peer).
+        # A later rerun succeeds, so retry the same command after a pause.
+        retry() {
+          local attempt=1
+          local max=4
+          local wait=20
+          local status=0
+          while true; do
+            set +e
+            "$@"
+            status=$?
+            set -e
+            if [ "${status}" -eq 0 ]; then
+              return 0
+            fi
+            if [ "${attempt}" -ge "${max}" ]; then
+              echo "Command failed after ${max} attempts (exit ${status})"
+              return "${status}"
+            fi
+            echo "SSH to ${DOMAIN} failed (exit ${status}). Waiting ${wait}s before attempt $((attempt + 1)) of ${max}..."
+            sleep "${wait}"
+            attempt=$((attempt + 1))
+            wait=$((wait + 20))
+          done
+        }
+
+        ssh_cmd=(
+          ssh
+          -i "${HOME}/.ssh/deploy_key"
+          -o ConnectTimeout=25
+          -o ServerAliveInterval=15
+          -o ServerAliveCountMax=3
+          -o IdentitiesOnly=yes
+        )
+        if [ -n "${SSH_OPTIONS}" ]; then
+          # Fixed option string from this repo, such as "-o StrictHostKeyChecking=no".
+          # shellcheck disable=SC2206
+          extra=( ${SSH_OPTIONS} )
+          ssh_cmd+=("${extra[@]}")
+        fi
+
+        echo "Ensuring remote dir: ${REMOTE_DIR}"
+        retry "${ssh_cmd[@]}" "${SSH_USER}@${SSH_HOST}" \
+          "mkdir -p '${REMOTE_DIR}' && chmod u+rwX '${REMOTE_DIR}' || true"
+
+        src="${LOCAL_DIR%/}/"
+        dest="${SSH_USER}@${SSH_HOST}:${REMOTE_DIR%/}/"
+        rsync_ssh="${ssh_cmd[*]}"
+        rsync_cmd=(
+          rsync
+          -az
+          -e "${rsync_ssh}"
+          --exclude=.git
+          --chmod="Du=rwx,Dg=rx,Fu=rw,Fg=r"
+        )
+        if [ "${RSYNC_DELETE}" = "true" ]; then
+          rsync_cmd+=(--delete)
+        fi
+        rsync_cmd+=("${src}" "${dest}")
+
+        echo "Running rsync from '${src}' to '${dest}'"
+        retry "${rsync_cmd[@]}"
+
+        echo "Listing remote path: ${REMOTE_DIR%/}/"
+        retry "${ssh_cmd[@]}" "${SSH_USER}@${SSH_HOST}" \
+          "ls -la '${REMOTE_DIR%/}/' | head -n ${VERIFY_LINES}" || true

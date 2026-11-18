@@ -1,3 +1,92 @@
+/* Sheet price for custom-cut products.
+ * The customer pays: entered ex-VAT rate × measure + cutting fee, then VAT,
+ * then one whole-krone round for NOK/SEK/DKK. The fee is added, never taken off.
+ */
+(function (root) {
+  'use strict';
+
+  function halfUp(n, dp) {
+    var f = Math.pow(10, dp);
+    var x = Number(n) * f;
+    return Math.round(x + (x >= 0 ? 1e-8 : -1e-8)) / f;
+  }
+
+  function rateList(rates) {
+    if (!rates) return [];
+    if (Array.isArray(rates)) return rates;
+    if (typeof rates === 'object') {
+      return Object.keys(rates).map(function (key) {
+        return rates[key];
+      }).filter(function (row) {
+        return row && typeof row === 'object' && row.rate != null;
+      });
+    }
+    return [];
+  }
+
+  function grossFromNet(net, rates) {
+    net = halfUp(net, 2);
+    rates = rateList(rates);
+    if (!rates.length) return net;
+    var taxes = [];
+    var pre = 0;
+    var i;
+    for (i = 0; i < rates.length; i++) {
+      if (rates[i].compound) continue;
+      var regular = halfUp(net * (Number(rates[i].rate) / 100), 6);
+      taxes.push(regular);
+      pre += regular;
+    }
+    for (i = 0; i < rates.length; i++) {
+      if (!rates[i].compound) continue;
+      var compound = halfUp((net + pre) * (Number(rates[i].rate) / 100), 6);
+      taxes.push(compound);
+      pre += compound;
+    }
+    var tax = 0;
+    for (i = 0; i < taxes.length; i++) tax += halfUp(taxes[i], 2);
+    return halfUp(net + tax, 2);
+  }
+
+  function paidSheet(measure, rawPrice, shownUnitRate, ctx) {
+    ctx = ctx || {};
+    var rates = rateList(ctx.tax_rates);
+    var roundGross = !!ctx.round_gross;
+    var shownFee = Math.max(0, Number(ctx.cut_fee || 0));
+    var feeNet = Math.max(0, Number(ctx.raw_fee || 0));
+
+    function finish(gross) {
+      return roundGross ? Math.round(Number(gross)) : Number(gross);
+    }
+
+    // Shown m² / metre prices already include VAT. Use them when the page
+    // did not receive a VAT rate, and always add the shown cutting fee.
+    if (!rates.length && Number(shownUnitRate) > 0) {
+      return finish(Number(measure) * Number(shownUnitRate) + shownFee);
+    }
+
+    var materialNet = halfUp(Number(measure) * Number(rawPrice || 0), 2);
+    var material = finish(grossFromNet(materialNet, rates));
+    var withFee = finish(grossFromNet(halfUp(materialNet + feeNet, 2), rates));
+
+    // A missing raw fee leaves the sheet equal to the material. The fee row
+    // is still showing, so add that shown fee. A real fee raises the sheet
+    // by about that amount and is left on the single cart round.
+    if (shownFee > 0 && (withFee - material) < shownFee * 0.5) {
+      withFee = material + finish(shownFee);
+    }
+    return withFee;
+  }
+
+  root.NHCustomCutPrice = {
+    halfUp: halfUp,
+    rateList: rateList,
+    grossFromNet: grossFromNet,
+    paidSheet: paidSheet
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+if (typeof jQuery !== 'undefined') {
 (function ($) {
   'use strict';
 
@@ -10,14 +99,33 @@
     const fx  = Number(n || 0).toFixed(d);
     const pa  = fx.split('.');
     pa[0] = pa[0].replace(/\B(?=(\d{3})+(?!\d))/g, th);
+    if (p.trim && d && pa[1] && /^0+$/.test(pa[1])) return pa[0];
     return d ? pa[0] + dec + pa[1] : pa[0];
+  }
+
+  function cutUnits(measure) {
+    if (!CC.round_gross || !(Number(CC.raw_reg || 0) > 0)) return null;
+    var price = window.NHCustomCutPrice;
+    if (!price || typeof price.paidSheet !== 'function') return null;
+    var reg = price.paidSheet(measure, CC.raw_reg, CC.perm2_reg_disp, CC);
+    var saleRaw = Number(CC.raw_sale || 0);
+    var saleShown = Number(CC.perm2_sale_disp || 0) > 0 ? CC.perm2_sale_disp : CC.perm2_reg_disp;
+    var sale = saleRaw > 0 ? price.paidSheet(measure, saleRaw, saleShown, CC) : reg;
+    return { reg: reg, sale: sale };
   }
 
   function money(n) {
     const p   = window.NH_PRICE_FMT || {};
     const sym = p.symbol || '';
     const pos = p.pos || 'right_space';
-    const val = fmtNumber(n);
+    let val = fmtNumber(n);
+    if (p.superscript) {
+      const dec = p.decimal || ',';
+      const at = val.lastIndexOf(dec);
+      if (at !== -1) {
+        val = val.slice(0, at + dec.length) + '<sup class="nh-eur-cents">' + val.slice(at + dec.length) + '</sup>';
+      }
+    }
     const nbsp = '\u00A0';
     switch (pos) {
       case 'left':        return sym + val;
@@ -380,10 +488,11 @@
       if (valid) {
         var area = (wmm / 1000) * (lmm / 1000); // m²
 
-        // Price
+        // Price. NOK/SEK/DKK round the finished cut once, from the entered ex-VAT rate.
         if (M2_REG > 0 || M2_SALE > 0) {
-          var unit_reg   = area * M2_REG  + Math.max(0, FEE);
-          var unit_sale  = area * M2_SALE + Math.max(0, FEE);
+          var rounded = cutUnits(area);
+          var unit_reg   = rounded ? rounded.reg  : area * M2_REG  + Math.max(0, FEE);
+          var unit_sale  = rounded ? rounded.sale : area * M2_SALE + Math.max(0, FEE);
           var total_reg  = unit_reg  * q;
           var total_sale = unit_sale * q;
 
@@ -439,8 +548,9 @@
         var fee = Number(CC.cut_fee || 0);
 
         if (price_m_reg > 0 || price_m_sale > 0) {
-          var unit_reg   = lm * price_m_reg + Math.max(0, fee);
-          var unit_sale  = lm * price_m_sale + Math.max(0, fee);
+          var rounded_m = cutUnits(lm);
+          var unit_reg   = rounded_m ? rounded_m.reg  : lm * price_m_reg + Math.max(0, fee);
+          var unit_sale  = rounded_m ? rounded_m.sale : lm * price_m_sale + Math.max(0, fee);
           var total_reg  = unit_reg  * q;
           var total_sale = unit_sale * q;
 
@@ -540,6 +650,15 @@
     if (variation.nh_cc_perm2_reg_disp != null)  CC.perm2_reg_disp  = Number(variation.nh_cc_perm2_reg_disp) || 0;
     if (variation.nh_cc_perm2_sale_disp != null) CC.perm2_sale_disp = Number(variation.nh_cc_perm2_sale_disp) || 0;
     if (variation.nh_cc_cut_fee_disp != null)    CC.cut_fee         = Number(variation.nh_cc_cut_fee_disp) || 0;
+    if (variation.nh_cc_raw_reg != null)         CC.raw_reg         = Number(variation.nh_cc_raw_reg) || 0;
+    if (variation.nh_cc_raw_sale != null)        CC.raw_sale        = Number(variation.nh_cc_raw_sale) || 0;
+    // The cutting fee lives on the parent. A variation payload with no raw
+    // fee must not wipe a fee that is already shown in the selection box.
+    if (variation.nh_cc_raw_fee != null && Number(variation.nh_cc_raw_fee) > 0) {
+      CC.raw_fee = Number(variation.nh_cc_raw_fee);
+    }
+    if (variation.nh_cc_tax_rates)               CC.tax_rates       = variation.nh_cc_tax_rates;
+    if (variation.nh_cc_round_gross != null)     CC.round_gross     = !!variation.nh_cc_round_gross;
 
     if (variation.nh_cc_kg_per_m2 != null)       CC.kg_per_m2       = Number(variation.nh_cc_kg_per_m2) || 0;
 
@@ -553,6 +672,8 @@
     if (!CC.enabled) return;
     CC.perm2_reg_disp  = 0;
     CC.perm2_sale_disp = 0;
+    CC.raw_reg         = 0;
+    CC.raw_sale        = 0;
     CC.kg_per_m2       = 0;
     renderPerm2AndFee();
     recalcCustom();
@@ -627,3 +748,4 @@
   });
 
 })(jQuery);
+}

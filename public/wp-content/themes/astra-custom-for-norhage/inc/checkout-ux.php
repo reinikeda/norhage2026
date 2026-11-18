@@ -3757,7 +3757,7 @@ function nh_checkout_thankyou_received_text( $text, $order ) {
 		return sprintf(
 			/* translators: %s: customer first name */
 			__( 'Thank you, %s. Your order has been received.', 'nh-theme' ),
-			$name
+			esc_html( $name )
 		);
 	}
 	return __( 'Thank you. Your order has been received.', 'nh-theme' );

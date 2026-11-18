@@ -1,0 +1,424 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: nh-pvc-strip-calculator 1.0.1\n"
+"PO-Revision-Date: 2026-11-14 19:16+0000\n"
+"Language: da_DK\n"
+"Language-Team: Danish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Norhage agent\n"
+
+#, php-format
+msgid "%1$d strips · %2$s m"
+msgstr "%1$d lameller · %2$s m"
+
+#, php-format
+msgid "%1$d × %2$d mm opening"
+msgstr "%1$d × %2$d mm åbning"
+
+#, php-format
+msgid "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+msgstr "%1$d × %2$d×%3$d mm · %4$s m · %5$s m²"
+
+#, php-format
+msgid "%d mm"
+msgstr "%d mm"
+
+#, php-format
+msgid "%d mm strips"
+msgstr "%d mm lameller"
+
+#, php-format
+msgid "%d pcs"
+msgstr "%d stk."
+
+#, php-format
+msgid "%d strips"
+msgstr "%d lameller"
+
+#, php-format
+msgid "%d%% overlap"
+msgstr "%d%% overlap"
+
+#, php-format
+msgid "%s each"
+msgstr "%s pr. stk."
+
+#, php-format
+msgid "%s m total"
+msgstr "%s m i alt"
+
+#, php-format
+msgid "%s pcs"
+msgstr "%s stk."
+
+msgid "2.5–4 m high"
+msgstr "2,5–4 m højde"
+
+msgid "4 m and taller"
+msgstr "4 m og højere"
+
+msgid "Above the opening"
+msgstr "Over åbningen"
+
+msgid "Above the opening (face): calc height = opening + 30 mm; width + 80 / 90 / 100 mm for 200 / 300 / 400 mm strips."
+msgstr "Over åbningen (væg): beregnet højde = åbning + 30 mm; bredde + 80 / 90 / 100 mm for 200 / 300 / 400 mm lameller."
+
+msgid "Above the opening: height + 30 mm; width gains a sealing allowance."
+msgstr "Over åbningen: højde + 30 mm; bredden får et tætningstillæg."
+
+msgid "Add kit to basket"
+msgstr "Læg sæt i kurven"
+
+msgid "Adding kit…"
+msgstr "Tilføjer sæt…"
+
+msgid "All products (not recommended)"
+msgstr "Alle produkter (anbefales ikke)"
+
+msgid "Antistatic"
+msgstr "Antistatisk"
+
+msgid "Back"
+msgstr "Tilbage"
+
+#, php-format
+msgid "Balanced seal · most indoor openings"
+msgstr "Balanceret tætning · de fleste indendørs åbninger"
+
+#, php-format
+msgid "Best draught barrier · outdoor & cold rooms"
+msgstr "Bedste trækbarriere · udendørs og kølerum"
+
+#, php-format
+msgid "Calc. %1$d × %2$d mm"
+msgstr "Beregn. %1$d × %2$d mm"
+
+msgid "Calculator steps"
+msgstr "Beregnertrin"
+
+msgid "Cart is not available."
+msgstr "Kurven er ikke tilgængelig."
+
+msgid "Cold-resistant"
+msgstr "Kuldebestandig"
+
+msgid "Cold-resistant (−30 °C to +50 °C)"
+msgstr "Kuldebestandig (−30 °C til +50 °C)"
+
+#, php-format
+msgid "Continue"
+msgstr "Fortsæt"
+
+#, php-format
+msgid "Could not add the kit. Please try again."
+msgstr "Kunne ikke tilføje sættet. Prøv igen."
+
+#, php-format
+msgid "Covers %1$d mm · %2$d mm pieces"
+msgstr "Dækker %1$d mm · %2$d mm stykker"
+
+msgid "Default opening"
+msgstr "Standardåbning"
+
+msgid "Display mode"
+msgstr "Visningstilstand"
+
+msgid "Easier passage · indoor pedestrian traffic"
+msgstr "Nemmere passage · indendørs fodgængertrafik"
+
+msgid "Enable the flag on the PVC strip curtains system product. Shortcode: [nh_pvc_strip_calculator]"
+msgstr "Aktivér flaget på PVC-lamelgardin-systemproduktet. Shortcode: [nh_pvc_strip_calculator]"
+
+msgid "Enter an opening size to see the kit."
+msgstr "Indtast åbningsmål for at se sættet."
+
+msgid "Face height extra"
+msgstr "Vægmontering: ekstra højde"
+
+#, php-format
+msgid "Frosted"
+msgstr "Mat"
+
+#, php-format
+msgid "Frosted (privacy)"
+msgstr "Mat (privatliv)"
+
+#, php-format
+msgid "Hanger %d mm"
+msgstr "Ophæng %d mm"
+
+msgid "Hangers and rail cover the calculated width"
+msgstr "Ophæng og skinne dækker den beregnede bredde"
+
+msgid "Hanging rail / bracket"
+msgstr "Ophængsskinne / beslag"
+
+msgid "Hardware"
+msgstr "Beslag"
+
+msgid "Hardware packing"
+msgstr "Beslagpakning"
+
+msgid "Height"
+msgstr "Højde"
+
+msgid "Hide default add to cart"
+msgstr "Skjul standard “læg i kurv”"
+
+msgid "Hide the normal add-to-cart form so customers use the kit calculator."
+msgstr "Skjul den normale læg-i-kurv-formular, så kunder bruger sætteberegneren."
+
+msgid "How quantities are calculated"
+msgstr "Sådan beregnes mængder"
+
+msgid "Into the opening"
+msgstr "I åbningen"
+
+msgid "Into the opening (soffit): calc height = opening − 45 mm; width unchanged."
+msgstr "I åbningen (loft): beregnet højde = åbning − 45 mm; bredde uændret."
+
+msgid "Into the opening: height − 45 mm for the rail."
+msgstr "I åbningen: højde − 45 mm til skinnen."
+
+msgid "Kit"
+msgstr "Sæt"
+
+msgid "Kit total"
+msgstr "Sæt i alt"
+
+msgid "Max"
+msgstr "Maks."
+
+msgid "Maximum"
+msgstr "Maksimum"
+
+msgid "Medium"
+msgstr "Medium"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Minimum"
+msgstr "Minimum"
+
+msgid "Mounting"
+msgstr "Montering"
+
+msgid "Mounting adjustments"
+msgstr "Monteringstillæg"
+
+msgid "No matching products were found. Map SKUs in PVC strip calculator settings."
+msgstr "Ingen matchende produkter fundet. Kobl SKU’er i indstillingerne for PVC-beregneren."
+
+msgid "Only products with the calculator flag"
+msgstr "Kun produkter med beregner-flag"
+
+msgid "Opening"
+msgstr "Åbning"
+
+msgid "Opening allowances match Plastena face / soffit rules"
+msgstr "Åbningstillæg følger Plastenas regler for væg-/loftmontering"
+
+msgid "Opening defaults & allowances"
+msgstr "Standardåbning og tillæg"
+
+msgid "Opening height"
+msgstr "Åbningshøjde"
+
+msgid "Opening size"
+msgstr "Åbningsstørrelse"
+
+msgid "Opening width"
+msgstr "Åbningsbredde"
+
+msgid "Overlap"
+msgstr "Overlap"
+
+msgid "Overlap chooses how tightly neighbouring strips cover each other"
+msgstr "Overlap afgør, hvor tæt nabalameller dækker hinanden"
+
+msgid "Overlap fractions"
+msgstr "Overlapandele"
+
+msgid "Plastena-style opening rules with Norhage kit pricing. Map catalogue products by SKU for each strip size, type and grade."
+msgstr "Plastena-stil åbningsregler med Norhage sættepris. Knyt katalogprodukter via SKU for hver lamelbredde, type og kvalitet."
+
+#, php-format
+msgid "Please enter a valid opening width and height."
+msgstr "Indtast en gyldig åbningsbredde og -højde."
+
+#, php-format
+msgid "Postal code (for shipping)"
+msgstr "Postnummer (til fragt)"
+
+#, php-format
+msgid "PVC strip %1$d × %2$d mm"
+msgstr "PVC-lamel %1$d × %2$d mm"
+
+msgid "PVC strip calculator"
+msgstr "PVC-lamelberegner"
+
+msgid "PVC strip curtain calculator"
+msgstr "PVC-lamelgardin-beregner"
+
+msgid "PVC strip kit"
+msgstr "PVC-lamelsæt"
+
+msgid "Rail fixed to the wall face"
+msgstr "Skinne fastgjort på væggen"
+
+msgid "Rail piece length"
+msgstr "Skinnestykkets længde"
+
+#, php-format
+msgid "Rail under the lintel / soffit"
+msgstr "Skinne under overligger/loft"
+
+#, php-format
+msgid "Rails cover the calc width in stock pieces (default 1500 mm). One hanger plate per strip."
+msgstr "Skinner dækker den beregnede bredde i lagerstykker (standard 1500 mm). Én ophængsplade pr. lamel."
+
+#, php-format
+msgid "Recommended for this height: %d mm strips."
+msgstr "Anbefalet til denne højde: %d mm lameller."
+
+#, php-format
+msgid "Red edge strip %d mm"
+msgstr "Rød kantlamel %d mm"
+
+msgid "Red edge strips replace the two outermost strips when enabled."
+msgstr "Røde kantlameller erstatter de to yderste lameller, når de er aktiveret."
+
+#, php-format
+msgid "Red edges & hardware"
+msgstr "Røde kanter og beslag"
+
+#, php-format
+msgid "Red marker strips at both edges"
+msgstr "Røde markeringslameller i begge sider"
+
+#, php-format
+msgid "Red strip %d mm"
+msgstr "Rød lamel %d mm"
+
+msgid "Review kit"
+msgstr "Gennemgå sæt"
+
+msgid "Review your kit"
+msgstr "Gennemgå dit sæt"
+
+msgid "Ribbed"
+msgstr "Rillet"
+
+msgid "Ribbed (heavy traffic)"
+msgstr "Rillet (tung trafik)"
+
+msgid "Search a product for each size × type × grade. Leave blank to hide that combination."
+msgstr "Søg et produkt for hver størrelse × type × kvalitet. Lad stå tomt for at skjule kombinationen."
+
+msgid "Search products…"
+msgstr "Søg produkter…"
+
+msgid "Search product…"
+msgstr "Søg produkt…"
+
+msgid "Selected product IDs"
+msgstr "Valgte produkt-ID’er"
+
+msgid "Selected products"
+msgstr "Valgte produkter"
+
+msgid "Shipping is calculated in the basket from your postal code."
+msgstr "Fragt beregnes i kurven ud fra dit postnummer."
+
+msgid "Show postal code on the kit step"
+msgstr "Vis postnummer på sættetrinnet"
+
+msgid "Show postcode field"
+msgstr "Vis postnummerfelt"
+
+msgid "Show the PVC strip curtain calculator on this product page."
+msgstr "Vis PVC-lamelberegneren på denne produktside."
+
+msgid "Smooth"
+msgstr "Glat"
+
+msgid "Soffit height deduct"
+msgstr "Loftmontering: højdefradrag"
+
+msgid "Some items are not mapped in this shop. The rest can still be added."
+msgstr "Nogle varer er ikke koblet i denne butik. Resten kan stadig lægges i kurven."
+
+#, php-format
+msgid "Standard"
+msgstr "Standard"
+
+#, php-format
+msgid "Standard (−5 °C to +60 °C)"
+msgstr "Standard (−5 °C til +60 °C)"
+
+#, php-format
+msgid "Strip count = ceil(calc width × (1 + overlap%) ÷ strip width). Total metres = strips × calc height."
+msgstr "Lamelantal = ceil(beregnet bredde × (1 + overlap%) ÷ lamelbredde). Samlede meter = lameller × beregnet højde."
+
+#, php-format
+msgid "Strip hanger %d mm"
+msgstr "Lamelophæng %d mm"
+
+msgid "Strip products"
+msgstr "Lamelprodukter"
+
+msgid "Strip size"
+msgstr "Lamelbredde"
+
+msgid "Strip type & grade"
+msgstr "Lamelltype og kvalitet"
+
+msgid "Strips"
+msgstr "Lameller"
+
+msgid "Surface"
+msgstr "Overflade"
+
+msgid "Taller openings need wider, thicker strips."
+msgstr "Højere åbninger kræver bredere og tykkere lameller."
+
+msgid "Temperature grade"
+msgstr "Temperaturkvalitet"
+
+msgid "Three short steps: measure the opening, choose strips and overlap, then add a complete kit — strips, hangers and rail."
+msgstr "Tre korte trin: mål åbningen, vælg lameller og overlap, og læg et komplet sæt i kurven — lameller, ophæng og skinne."
+
+msgid "Total excl. VAT"
+msgstr "I alt ekskl. moms"
+
+msgid "Total incl. VAT"
+msgstr "I alt inkl. moms"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Unable to add one of the kit items to the basket."
+msgstr "Kunne ikke lægge en af sættets varer i kurven."
+
+msgid "Up to 2.5 m high"
+msgstr "Op til 2,5 m højde"
+
+msgid "VAT"
+msgstr "Moms"
+
+msgid "Where the form appears"
+msgstr "Hvor formularen vises"
+
+msgid "Width"
+msgstr "Bredde"
+
+msgid "Your kit"
+msgstr "Dit sæt"
+
+msgid "Your kit includes cut-to-length PVC strips, hanger plates and a hanging rail. Add everything in one go."
+msgstr "Dit sæt indeholder PVC-lameller i tilpasset længde, ophængsplader og en ophængsskinne. Læg det hele i kurven på én gang."
+

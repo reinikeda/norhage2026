@@ -21,7 +21,16 @@
  * - Clamping profiles between sheets, one stock length covering the run.
  * - F-profiles on the three free edges of a single-slope roof (2 × length + drip edge).
  * - Wall profiles cover the wall width in 2.2 m pieces.
- * - Screws: one every 200 mm along each connecting profile, sold in packs of 50.
+ * - Screws: every 200 mm along each connecting profile, plus finish and wall/ridge
+ *   runs (default 400 mm), sold in packs of 50. Length follows sheet thickness
+ *   (≤10 → 50 mm, 16–20 → 60 mm, 25 → 80 mm, 32–40 → 90 mm) for multiwall and solid.
+ * - Multiwall sealing tapes only: insulation on the upper edge, breathable vent
+ *   tape on the lower edge, equal length (total sheet width × slopes). Width is
+ *   25 / 38 / 60 mm for 4–10 / 16–20 / 25–40 mm sheets.
+ * - Fixing buttons: one every 400 mm along each sheet length (mid-span fastening),
+ *   sold in packs when a pack size is set.
+ * - Aluminium clamping and finish profiles already include sealing rubber, so
+ *   the kit does not add a separate EPDM gasket.
  *
  * @package nh-terrace-calculator
  */
@@ -148,9 +157,21 @@ class NH_TC_Engine {
 		$plan   = $across;
 		$sheets = self::group_sheets( $pieces );
 
-		$stock_cover = $choice
-			? self::stock_sheet_qty( $width, $sheet_length, (int) $choice['width_mm'], (int) $choice['length_mm'] )
-			: null;
+		$stock_cover = null;
+		if ( $choice ) {
+			$stock_cover = self::stock_sheet_qty(
+				$width,
+				$sheet_length,
+				(int) $choice['width_mm'],
+				(int) $choice['length_mm'],
+				'solid' === $material
+			);
+			// Solid blanks may be turned; keep the orientation that bought fewer sheets.
+			if ( ! empty( $stock_cover['rotated'] ) ) {
+				$choice['width_mm']  = (int) $stock_cover['width_mm'];
+				$choice['length_mm'] = (int) $stock_cover['length_mm'];
+			}
+		}
 
 		$sheet_count = 0;
 		foreach ( $sheets as $sheet ) {
@@ -167,21 +188,38 @@ class NH_TC_Engine {
 			: array( $sheet_length, $sheet_length, $width );
 
 		$connecting_stock_mm = self::smallest_stock( $sheet_length, $settings['profile_stock_mm'] );
-		$screws_raw          = $connecting_count * (int) ceil( $connecting_stock_mm / max( 1, (int) $settings['screw_spacing_mm'] ) );
+		$connect_spacing     = max( 1, (int) ( $settings['screw_spacing_mm'] ?? 200 ) );
+		$finish_spacing      = max( 1, (int) ( $settings['finish_screw_spacing_mm'] ?? 400 ) );
+		$wall_spacing        = max( 1, (int) ( $settings['wall_screw_spacing_mm'] ?? 400 ) );
+		$button_spacing      = max( 1, (int) ( $settings['fixing_button_spacing_mm'] ?? 400 ) );
+		$connect_screws      = $connecting_count * (int) ceil( $connecting_stock_mm / $connect_spacing );
+		$finish_screws       = 0;
+		foreach ( $finish_runs as $run_mm ) {
+			$finish_screws += (int) ceil( max( 1, (int) $run_mm ) / $finish_spacing );
+		}
+		$wall_qty            = (int) ceil( $width / max( 1, (int) $settings['wall_profile_mm'] ) );
+		$wall_piece_mm       = max( 1, (int) $settings['wall_profile_mm'] );
+		$wall_screws         = $wall_qty * (int) ceil( $wall_piece_mm / $wall_spacing );
+		$screws_raw          = $connect_screws + $finish_screws + $wall_screws;
 		$pack_size           = max( 1, (int) $settings['screw_pack_size'] );
 		$screw_packs         = (int) ceil( $screws_raw / $pack_size );
+		$buttons_raw         = $sheet_count * (int) ceil( max( 1, $sheet_length ) / $button_spacing );
+		$button_pack         = max( 1, (int) ( $settings['fixing_button_pack_size'] ?? 50 ) );
+		$button_packs        = (int) ceil( $buttons_raw / $button_pack );
 
+		// Total sheet width across one slope (upper/lower edges are the same length).
 		$end_width_mm = 0;
 		foreach ( $sheets as $sheet ) {
 			$end_width_mm += (int) $sheet['width_mm'] * (int) $sheet['qty'];
 		}
+		// A gable has two slopes, so both eaves and both ridge edges need tape.
+		$tape_cover_mm = $end_width_mm * $slopes;
 
 		$perimeter_mm = 2 * ( $width + $sheet_length );
-		$gasket_m     = (int) ceil( $perimeter_mm / 1000 );
 		$silicon_qty  = max( 1, (int) ceil( ( $perimeter_mm / 1000 ) / max( 1, (float) $settings['silicon_metres_per_tube'] ) ) );
 		$tape_width   = self::tape_width_mm( $thk );
-		$tape_rolls   = max( 1, (int) ceil( $end_width_mm / max( 1, (int) $settings['tape_roll_mm'] ) ) );
-		$wall_qty     = (int) ceil( $width / max( 1, (int) $settings['wall_profile_mm'] ) );
+		$tape_rolls   = max( 1, (int) ceil( $tape_cover_mm / max( 1, (int) $settings['tape_roll_mm'] ) ) );
+		$screw_spec   = self::screw_spec( $thk, $settings );
 
 		$finish_packed = array();
 		foreach ( $finish_runs as $run_mm ) {
@@ -224,8 +262,19 @@ class NH_TC_Engine {
 				'qty_raw'   => $screws_raw,
 				'pack_size' => $pack_size,
 				'attrs'     => array(
-					'dimensions' => self::screw_size( $thk, $settings ),
+					// "5-mm-x-60-mm" = diameter × length. Match by length for thickness rules.
+					'dimensions' => $screw_spec['dimensions'],
+					'length'     => $screw_spec['length_mm'] . '-mm',
 				),
+			);
+		}
+
+		if ( $button_packs > 0 ) {
+			$lines[] = array(
+				'role'      => 'fixing_button',
+				'qty'       => $button_packs,
+				'qty_raw'   => $buttons_raw,
+				'pack_size' => $button_pack,
 			);
 		}
 
@@ -264,27 +313,29 @@ class NH_TC_Engine {
 			);
 		}
 
+		// Multiwall only: insulation tape on the upper edge, breathable vent tape on the lower edge.
+		// Both edges are the same length (total sheet width × slopes).
 		if ( 'multiwall' === $material ) {
+			$tape_attrs = array(
+				'width'  => $tape_width . '-mm',
+				'length' => '5-m',
+			);
 			$lines[] = array(
-				'role'         => 'vent_tape',
-				'qty'          => $tape_rolls,
-				'cover_mm'     => $end_width_mm,
-				'tape_width_mm'=> $tape_width,
-				'attrs'        => array(
-					'width'  => $tape_width . '-mm',
-					'length' => '5-m',
-				),
+				'role'          => 'vent_tape',
+				'qty'           => $tape_rolls,
+				'cover_mm'      => $tape_cover_mm,
+				'tape_width_mm' => $tape_width,
+				'edge'          => 'lower',
+				'attrs'         => $tape_attrs,
 			);
 
 			$lines[] = array(
-				'role'         => 'iso_tape',
-				'qty'          => $tape_rolls,
-				'cover_mm'     => $end_width_mm,
-				'tape_width_mm'=> $tape_width,
-				'attrs'        => array(
-					'width'  => $tape_width . '-mm',
-					'length' => '5-m',
-				),
+				'role'          => 'iso_tape',
+				'qty'           => $tape_rolls,
+				'cover_mm'      => $tape_cover_mm,
+				'tape_width_mm' => $tape_width,
+				'edge'          => 'upper',
+				'attrs'         => $tape_attrs,
 			);
 		}
 
@@ -294,13 +345,6 @@ class NH_TC_Engine {
 				'qty'  => $connecting_count * 2,
 			);
 		}
-
-		$lines[] = array(
-			'role'    => 'gasket',
-			'qty'     => $gasket_m,
-			'unit'    => 'm',
-			'metres'  => $gasket_m,
-		);
 
 		$lines[] = array(
 			'role' => 'silicon',
@@ -351,21 +395,57 @@ class NH_TC_Engine {
 				'beam_count'           => $beam_count,
 				'connecting_count'     => $connecting_count,
 				'screws_raw'           => $screws_raw,
+				'connect_screws'       => $connect_screws,
+				'finish_screws'        => $finish_screws,
+				'wall_screws'          => $wall_screws,
+				'buttons_raw'          => $buttons_raw,
 				'tape_width_mm'        => $tape_width,
-				'gasket_m'             => $gasket_m,
-				'postcode'             => isset( $input['postcode'] ) ? (string) $input['postcode'] : '',
+				'tape_cover_mm'        => $tape_cover_mm,
+				'screw_length_mm'      => (int) $screw_spec['length_mm'],
 			),
 			'lines' => $lines,
 		);
 	}
 
 	/**
+	 * Round a multiwall run up to a sold full-metre stock length (1–7 m).
+	 * Runs longer than 7 m stay at 7000 mm; tiling along the length covers the rest.
+	 */
+	public static function multiwall_stock_length( $need_mm ) {
+		$need = max( 1, (int) $need_mm );
+		if ( $need >= 7000 ) {
+			return 7000;
+		}
+		$rounded = (int) ( ceil( $need / 1000 ) * 1000 );
+		return max( 1000, min( 7000, $rounded ) );
+	}
+
+	/**
 	 * How many whole stock sheets cover the frame. Sheets tile across the width
 	 * and, when one stock length is shorter than the run, along the length too.
+	 * Solid blanks may be rotated (2050 × 3050 either way); the cheaper orientation wins.
 	 *
+	 * @return array{across:int,along:int,qty:int,width_mm:int,length_mm:int,rotated:int}
+	 */
+	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length, $allow_rotate = false ) {
+		$primary = self::tile_stock_qty( $frame_width, $need_length, $stock_width, $stock_length );
+		$primary['width_mm']  = (int) $stock_width;
+		$primary['length_mm'] = (int) $stock_length;
+		$primary['rotated']   = 0;
+		if ( ! $allow_rotate || (int) $stock_width === (int) $stock_length ) {
+			return $primary;
+		}
+		$rotated = self::tile_stock_qty( $frame_width, $need_length, $stock_length, $stock_width );
+		$rotated['width_mm']  = (int) $stock_length;
+		$rotated['length_mm'] = (int) $stock_width;
+		$rotated['rotated']   = 1;
+		return ( $rotated['qty'] < $primary['qty'] ) ? $rotated : $primary;
+	}
+
+	/**
 	 * @return array{across:int,along:int,qty:int}
 	 */
-	public static function stock_sheet_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
+	private static function tile_stock_qty( $frame_width, $need_length, $stock_width, $stock_length ) {
 		$across = (int) ceil( max( 1, (int) $frame_width ) / max( 1, (int) $stock_width ) );
 		$along  = (int) ceil( max( 1, (int) $need_length ) / max( 1, (int) $stock_length ) );
 		return array(
@@ -726,20 +806,64 @@ class NH_TC_Engine {
 	}
 
 	/**
+	 * Screw dimension slug for the sheet thickness (both multiwall and solid).
+	 *
 	 * @param array<string, mixed> $settings
 	 */
 	public static function screw_size( $thickness, array $settings ) {
-		$key = (string) (int) $thickness;
-		$map = $settings['screw_size'];
-		return isset( $map[ $key ] ) ? (string) $map[ $key ] : '5-mm-x-60-mm';
+		return self::screw_spec( $thickness, $settings )['dimensions'];
 	}
 
+	/**
+	 * Screw variation for the polycarbonate thickness.
+	 * Up to 10 mm → 50 mm; 16–20 mm → 60 mm; 25 mm → 80 mm; 32–40 mm → 90 mm.
+	 *
+	 * @param array<string, mixed> $settings
+	 * @return array{dimensions:string,length_mm:int}
+	 */
+	public static function screw_spec( $thickness, array $settings ) {
+		$thk = (int) $thickness;
+		$key = (string) $thk;
+		$map = ( isset( $settings['screw_size'] ) && is_array( $settings['screw_size'] ) ) ? $settings['screw_size'] : array();
+		if ( isset( $map[ $key ] ) && '' !== (string) $map[ $key ] ) {
+			$dimensions = (string) $map[ $key ];
+		} elseif ( $thk <= 10 ) {
+			$dimensions = '5-mm-x-50-mm';
+		} elseif ( $thk <= 20 ) {
+			$dimensions = '5-mm-x-60-mm';
+		} elseif ( $thk <= 25 ) {
+			$dimensions = '6-mm-x-80-mm';
+		} else {
+			$dimensions = '6-mm-x-90-mm';
+		}
+		$length = 50;
+		if ( preg_match( '/(\d+)\s*-?mm\s*$/', $dimensions, $match ) ) {
+			$length = (int) $match[1];
+		} elseif ( $thk <= 10 ) {
+			$length = 50;
+		} elseif ( $thk <= 20 ) {
+			$length = 60;
+		} elseif ( $thk <= 25 ) {
+			$length = 80;
+		} else {
+			$length = 90;
+		}
+		return array(
+			'dimensions' => $dimensions,
+			'length_mm'  => $length,
+		);
+	}
+
+	/**
+	 * Sealing-tape width for multiwall sheets (Norhage install guide).
+	 * 4–10 mm → 25 mm; 16–20 mm → 38 mm; 25–40 mm → 60 mm.
+	 */
 	public static function tape_width_mm( $thickness ) {
 		$thk = (int) $thickness;
 		if ( $thk <= 10 ) {
 			return 25;
 		}
-		if ( $thk <= 25 ) {
+		if ( $thk <= 20 ) {
 			return 38;
 		}
 		return 60;
@@ -1204,7 +1328,7 @@ class NH_TC_Engine {
 		if ( preg_match( '/^([\d.]+)mm/', $raw, $m ) ) {
 			return (int) round( (float) $m[1] );
 		}
-		if ( preg_match( '/^([\d.]+)m/', $raw, $m ) ) {
+		if ( preg_match( '/^([\d.]+)-?m$/', $raw, $m ) ) {
 			return (int) round( (float) $m[1] * 1000 );
 		}
 		return 0;

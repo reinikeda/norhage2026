@@ -198,6 +198,7 @@ function norhage_enqueue_assets() {
 			array(
 				'imagesLabel' => __( 'Product images', 'nh-theme' ),
 				'imageLabel'  => __( 'Image %1$d of %2$d', 'nh-theme' ),
+				'videoLabel'  => __( 'Product video', 'nh-theme' ),
 			)
 		);
 	}
@@ -462,6 +463,8 @@ require_once get_stylesheet_directory() . '/inc/attachment-alt.php';
 require_once get_stylesheet_directory() . '/inc/search.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/downloads-csv.php';
+require_once get_stylesheet_directory() . '/inc/integer-gross.php';
+require_once get_stylesheet_directory() . '/inc/eur-superscript.php';
 require_once get_stylesheet_directory() . '/inc/product-customize.php';
 require_once get_stylesheet_directory() . '/inc/variable-price.php';
 require_once get_stylesheet_directory() . '/inc/product-brand.php';
@@ -496,6 +499,7 @@ require_once get_stylesheet_directory() . '/inc/seo.php';
 require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';
 require_once get_stylesheet_directory() . '/inc/catalog-button.php';
 require_once get_stylesheet_directory() . '/inc/404.php';
+require_once get_stylesheet_directory() . '/inc/product-gallery-video.php';
 
 /* --------------------------------------------------------------------------
  * Secondary product title + optional logo
