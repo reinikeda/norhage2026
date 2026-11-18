@@ -529,6 +529,13 @@
       name.className = 'nh-tc__item-name';
       if (productUrl) name.href = productUrl;
       name.textContent = item.name || item.label || '';
+      if (isMissing) {
+        var badge = document.createElement('span');
+        badge.className = 'nh-tc__item-badge';
+        badge.textContent = i18n('unavailable', 'Unavailable');
+        name.appendChild(document.createTextNode(' '));
+        name.appendChild(badge);
+      }
       var spec = document.createElement('div');
       spec.className = 'nh-tc__item-spec';
       var qtyLabel = i18n('pcs', '%s pcs').replace('%s', item.qty);
@@ -571,6 +578,7 @@
     }
     drawPlan(payload.meta);
     drawInlineThumbs(items.concat(missing));
+    updateReviewMissing(missing);
 
     if (payload.currency) cfg.currency = payload.currency;
     if (payload.totals) {
@@ -585,6 +593,27 @@
     atc.disabled = items.length === 0;
     if (missing.length) setStatus(i18n('missing'), 'error');
     else setStatus('', '');
+  }
+
+  function updateReviewMissing(missing) {
+    var note = root.querySelector('[data-review-missing]');
+    if (!note) return;
+    var rows = missing || [];
+    if (!rows.length) {
+      note.hidden = true;
+      note.textContent = '';
+      return;
+    }
+    var names = [];
+    rows.forEach(function (item) {
+      var label = item.name || item.label || '';
+      if (label && names.indexOf(label) === -1) names.push(label);
+    });
+    note.hidden = false;
+    note.textContent = i18n(
+      'missingReview',
+      'Missing from this kit (shown in red): %s. The rest can still be added to the basket.'
+    ).replace('%s', names.join(', ') || i18n('unavailable', 'Unavailable'));
   }
 
   function quote() {
@@ -932,8 +961,14 @@
           setStatus((json && json.data && json.data.message) || i18n('error'), 'error');
           return;
         }
-        setStatus('', 'ok');
         var data = json.data || {};
+        if (data.missing && data.missing.length) {
+          updateReviewMissing(data.missing);
+          setStatus(data.message || i18n('kitPartial', 'Kit added. Unavailable items were skipped.'), 'error');
+        } else {
+          updateReviewMissing([]);
+          setStatus(data.message || '', 'ok');
+        }
         if (window.jQuery) {
           var $ = window.jQuery;
           $(document.body).trigger('added_to_cart', [data.fragments || {}, data.cart_hash || '', $(atc)]);

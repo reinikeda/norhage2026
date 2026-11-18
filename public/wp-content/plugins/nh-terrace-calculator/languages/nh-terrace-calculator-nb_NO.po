@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: nh-terrace-calculator 1.5.11\n"
-"PO-Revision-Date: 2026-11-16 19:22+0000\n"
+"Project-Id-Version: nh-terrace-calculator 1.5.12\n"
+"PO-Revision-Date: 2026-11-18 07:19+0000\n"
 "Language: nb_NO\n"
 "Language-Team: Norwegian Bokmål\n"
 "MIME-Version: 1.0\n"
@@ -9,10 +9,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Norhage agent\n"
-
-#, php-format
-msgid "(%d / pack)"
-msgstr "(%d / pakke)"
 
 #, php-format
 msgid "%1$d × %2$d mm"
@@ -43,6 +39,10 @@ msgid "%s pcs"
 msgstr "%s stk"
 
 #, php-format
+msgid "(%d / pack)"
+msgstr "(%d / pakke)"
+
+#, php-format
 msgid "3-wall"
 msgstr "3-veggs"
 
@@ -55,16 +55,16 @@ msgid "6-wall"
 msgstr "6-veggs"
 
 #, php-format
+msgid "A guide only. Confirm the structure before you build."
+msgstr "Kun en veiledning. Bekreft konstruksjonen før du bygger."
+
+#, php-format
 msgid "A lean-to gets a finish profile on both sides and on the drip edge. A gable gets both sides and both drip edges. Each edge is rounded up to a whole metre and packed from 3 m pieces, then 2 m, 1.5 m and 1 m. The wall profile covers the width in pieces of the configured length (default 2.2 m). A gable uses the ridge profile for that same number, instead of the wall profile."
 msgstr "Et pulttak får et avslutningsprofil på begge sider og ved dryppkanten. Et saltak får begge sider og begge dryppkanter. Hver kant avrundes opp til hele meter og pakkes fra 3 m stykker, deretter 2 m, 1,5 m og 1 m. Veggprofilen dekker bredden i stykker av den konfigurerte lengden (standard 2,2 m). Et saltak bruker møneprofilen for samme antall i stedet for veggprofilen."
 
 #, php-format
 msgid "A sheet would be wider than %d mm. Reduce the rafter spacing."
 msgstr "En plate ville blitt bredere enn %d mm. Reduser lekteavstanden."
-
-#, php-format
-msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
-msgstr "Dette stykket er bredere enn en massiv plate på %1$d × %2$d mm. Reduser lekteavstanden."
 
 #, php-format
 msgid "Add kit to basket"
@@ -90,9 +90,14 @@ msgstr "langs veggen"
 msgid "Also available"
 msgstr "Også tilgjengelig"
 
-#, php-format
-msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
-msgstr "Sideplatene er %1$d mm bredere, så de dekker den %2$d mm brede bjelken. %3$d mm blir igjen ved skjøten."
+msgid "Aluminium F-profile"
+msgstr "Aluminium F-profil"
+
+msgid "Aluminium L-profile"
+msgstr "L-profil i aluminium"
+
+msgid "Aluminium U-profile"
+msgstr "U-profil i aluminium"
 
 #, php-format
 msgid "Anthracite"
@@ -111,12 +116,11 @@ msgid "Back"
 msgstr "Tilbake"
 
 #, php-format
-msgid "Profile on every rafter"
-msgstr "Profil på hver taksperre"
-
-#, php-format
 msgid "Beam width"
 msgstr "Bjelkebredde"
+
+msgid "Beam width must be 20–200 mm. 50 mm is usual."
+msgstr "Bjelkebredden må være 20–200 mm. 50 mm er vanlig."
 
 #, php-format
 msgid "Behaviour"
@@ -129,10 +133,6 @@ msgstr "Best isolasjon"
 #, php-format
 msgid "Both side sheets are %d mm."
 msgstr "Begge sideplatene er %d mm."
-
-#, php-format
-msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
-msgstr "Du har skrevet inn én side (%1$d mm). Begge sider er med, så lengden er %2$d mm."
 
 msgid "Bronze"
 msgstr "Bronse"
@@ -151,6 +151,9 @@ msgstr "Handlekurven er ikke tilgjengelig."
 
 msgid "Centre-to-centre distance between supports when the customer leaves CC empty. Standard is 600 mm."
 msgstr "Senteravstand mellom lekter når kunden lar c/c stå tom. Standard er 600 mm."
+
+msgid "Check the materials and prices, then add the kit to the basket."
+msgstr "Sjekk materialer og priser, og legg settet i handlekurven."
 
 msgid "Choose thickness. We prefill a safe support spacing for you."
 msgstr "Velg tykkelse. Vi fyller inn en trygg lekteavstand for deg."
@@ -173,6 +176,7 @@ msgstr "Farge"
 msgid "Connecting and edge profiles with end caps where needed"
 msgstr "Sammenføynings- og kantprofiler med endestykker der det trengs"
 
+#, php-format
 msgid "Connecting profile"
 msgstr "Forbindelsesprofil"
 
@@ -233,14 +237,11 @@ msgstr "Standard er alle produktsider, så skjemaet vises uten ekstra oppsett. B
 msgid "Default size (mm)"
 msgstr "Standardmål (mm)"
 
-msgid "Overhang"
-msgstr "Overheng"
+msgid "Drip overhang"
+msgstr "Dryppoverheng"
 
 msgid "Each line in the material list is one product from the mapping below. The quantity is worked out from the frame the customer entered. A row with an empty variation SKU is still shown, marked as not in this shop, and the rest of the kit can be added."
 msgstr "Hver linje i materiallisten er ett produkt fra oppsettet under. Antallet regnes ut fra rammen kunden har skrevet inn. En rad med tom variant-SKU vises likevel, merket som ikke i denne butikken, og resten av settet kan legges i kurven."
-
-msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
-msgstr "Platene er så brede som mulig. En skjøt brukes bare der de møtes, på en lekte."
 
 msgid "Edge profile"
 msgstr "Kantprofil"
@@ -254,21 +255,18 @@ msgstr "Endepropp – sølv / grå"
 msgid "Enter a size to see the kit."
 msgstr "Skriv inn mål for å se settet."
 
-msgid "Beam width must be 20–200 mm. 50 mm is usual."
-msgstr "Bjelkebredden må være 20–200 mm. 50 mm er vanlig."
-
 msgid "Enter a variation SKU for each stock width and length. The customer chooses a width. The calculator uses the shortest stock length that covers the frame length plus the drip overhang."
 msgstr "Skriv inn en variasjon-SKU for hver standardbredde og -lengde. Kunden velger bredde. Kalkulatoren bruker den korteste standardlengden som dekker rammelengden pluss dryppoverhenget."
 
 msgid "Enter one side, from the ridge to the eave. Both sides are included."
 msgstr "Skriv inn én side, fra mønet til raftet. Begge sider blir tatt med."
 
+#, php-format
+msgid "Enter the roof size to see the cutting diagram."
+msgstr "Skriv inn takmålet for å se kappeskissen."
 
 msgid "Every product page"
 msgstr "Alle produktsider"
-
-msgid "Aluminium F-profile"
-msgstr "Aluminium F-profil"
 
 msgid "Fewer joints"
 msgstr "Færre skjøter"
@@ -342,11 +340,15 @@ msgstr "Behold overordnet SKU for hver tykkelse og farge. Variant-SKU-er fylles 
 msgid "Kit"
 msgstr "Sett"
 
+#, php-format
+msgid "Kit added to basket. Not available and skipped: %s."
+msgstr "Sett lagt i handlekurven. Ikke tilgjengelig og hoppet over: %s."
+
+msgid "Kit added. Unavailable items were skipped."
+msgstr "Sett lagt til. Utilgjengelige varer ble hoppet over."
+
 msgid "Kit total"
 msgstr "Sett totalt"
-
-msgid "Aluminium L-profile"
-msgstr "L-profil i aluminium"
 
 msgid "Lean-to"
 msgstr "Pulttak"
@@ -378,9 +380,20 @@ msgstr "mål på tvers av takets front"
 msgid "measure along the house wall"
 msgstr "mål langs husveggen"
 
+msgid "Measure the roof, choose the sheets, then add the kit."
+msgstr "Mål taket, velg platene, og legg til settet."
+
 msgid "middle"
 msgstr "midt"
 
+#, php-format
+msgid "Missing from this kit (shown in red): %s. The rest can still be added to the basket."
+msgstr "Mangler i settet (vist i rødt): %s. Resten kan fortsatt legges i handlekurven."
+
+msgid "More profiles and screws."
+msgstr "Flere profiler og skruer."
+
+#, php-format
 msgid "Most terraces"
 msgstr "De fleste terrasser"
 
@@ -392,20 +405,12 @@ msgstr "Kanalplast"
 msgid "Multiwall polycarbonate (custom-cut)"
 msgstr "Kanalplast (tilkappet)"
 
-#, php-format
-msgid "You receive whole sheets. The diagram shows how to cut them."
-msgstr "Du får hele plater. Skissen viser hvordan de kappes."
-
-#, php-format
 msgid "Neutral silicone"
 msgstr "Nøytral silikon"
 
+#, php-format
 msgid "Neutral silicone Silirub PC"
 msgstr "Nøytral silikon Silirub PC"
-
-#, php-format
-msgid "These materials are not available in this shop."
-msgstr "Disse materialene er ikke tilgjengelige i denne butikken."
 
 #, php-format
 msgid "No matching width/length variations found for this parent SKU yet."
@@ -444,6 +449,13 @@ msgstr "Utsolgt"
 msgid "outer"
 msgstr "ytter"
 
+msgid "Overhang"
+msgstr "Overheng"
+
+#, php-format
+msgid "Overhang must be 0–300 mm."
+msgstr "Overhenget må være 0–300 mm."
+
 msgid "Pack size"
 msgstr "Pakningsstørrelse"
 
@@ -456,12 +468,16 @@ msgstr "Velg produkter fra katalogen for hver del av settet. Kalkulatoren slår 
 msgid "Plastic H-profile"
 msgstr "H-profil i plast"
 
+msgid "Plastic U-profile"
+msgstr "U-profil i plast"
+
 msgid "Please enter a valid width and length."
 msgstr "Skriv inn gyldig bredde og lengde."
 
 msgid "Polycarbonate"
 msgstr "Polykarbonat"
 
+#, php-format
 msgid "Polycarbonate sheet"
 msgstr "Polykarbonatplate"
 
@@ -472,6 +488,10 @@ msgstr "Polykarbonatplater"
 #, php-format
 msgid "Postal code (for shipping)"
 msgstr "Postnummer (til frakt)"
+
+#, php-format
+msgid "Profile on every rafter"
+msgstr "Profil på hver taksperre"
 
 #, php-format
 msgid "Profiles"
@@ -490,12 +510,12 @@ msgid "Rafter"
 msgstr "Lekte"
 
 #, php-format
-msgid "Ready to fit — joints land on supports"
-msgstr "Klar til montering — skjøter lander på støtter"
+msgid "Rafter spacing (centre to centre)"
+msgstr "Lekteavstand (senter til senter)"
 
 #, php-format
-msgid "A guide only. Confirm the structure before you build."
-msgstr "Kun en veiledning. Bekreft konstruksjonen før du bygger."
+msgid "Ready to fit — joints land on supports"
+msgstr "Klar til montering — skjøter lander på støtter"
 
 #, php-format
 msgid "Recommended centre spacing for this thickness: %s mm."
@@ -544,6 +564,7 @@ msgstr "Skruer til profiler og kanter, pluss feste-knapper når de er koblet"
 msgid "Sealing"
 msgstr "Tetning"
 
+#, php-format
 msgid "Sealing tapes are added only for multiwall. Insulation tape seals the upper edge; breathable ventilation tape seals the lower edge. Both edges use the same length (total sheet width; a gable counts both slopes). Tape width follows thickness: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, and the matching variation is taken from the parent product. Screws (multiwall and solid) follow thickness too: up to 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silicone is one tube per configured metres of the frame perimeter (default 10 m), at least one tube. Aluminium profiles already include sealing rubber, so the kit does not add a separate EPDM gasket."
 msgstr "Tetningsbånd bare for flerlags. Isolasjonstape på overkant; pustende ventilasjonstape på underkant. Begge kanter samme lengde (samlet platebredde; saltak teller begge sider). Båndbredde etter tykkelse: 4–10 mm → 25 mm, 16–20 mm → 38 mm, 25–40 mm → 60 mm, og riktig variant fra overordnet produkt. Skruer (flerlags og massiv) etter tykkelse: opptil 10 mm → 50 mm, 16–20 mm → 60 mm, 25 mm → 80 mm, 32–40 mm → 90 mm. Silikon er ett tube per konfigurert meter av omkretsen (standard 10 m), minst ett tube. Aluminiumprofiler har allerede tetningsgummi, så settet legger ikke til en egen EPDM-pakning."
 
@@ -564,16 +585,15 @@ msgid "Selected products"
 msgstr "Valgte produkter"
 
 #, php-format
-msgid "Overhang must be 0–300 mm."
-msgstr "Overhenget må være 0–300 mm."
-
-#, php-format
 msgid "Sheet structure"
 msgstr "Kanalform"
 
 #, php-format
 msgid "Sheets"
 msgstr "Plater"
+
+msgid "Sheets are as wide as they can be. A joint is added only where they meet, on a rafter."
+msgstr "Platene er så brede som mulig. En skjøt brukes bare der de møtes, på en lekte."
 
 #, php-format
 msgid "Sheets cut so every joint lands on a support centre"
@@ -586,6 +606,7 @@ msgstr "Platene dekker flere bjelker og kappes fra lagerbredden på %1$d mm. Et 
 msgid "Shipping is calculated in the basket."
 msgstr "Frakt beregnes i handlekurven."
 
+#, php-format
 msgid "Show calculator on"
 msgstr "Vis kalkulatoren på"
 
@@ -600,6 +621,10 @@ msgstr "Vis postnummersteget i nettbutikken. Lagres på kunden når settet legge
 #, php-format
 msgid "Show the terrace roof calculator on this product page (used when display mode is “checkbox”)."
 msgstr "Vis terrassetak-kalkulatoren på denne produktsiden (brukes når visningen er «avkrysning»)."
+
+#, php-format
+msgid "Side sheets are %1$d mm wider so they cover the %2$d mm beam. %3$d mm is left at the joint."
+msgstr "Sideplatene er %1$d mm bredere, så de dekker den %2$d mm brede bjelken. %3$d mm blir igjen ved skjøten."
 
 #, php-format
 msgid "Silicone metres per tube"
@@ -633,24 +658,17 @@ msgstr "Noen varer er ikke tilgjengelige her. Du kan likevel legge til resten."
 msgid "Spacing along each sheet"
 msgstr "Avstand langs hver plate"
 
-#, php-format
-msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
-msgstr "Vanligvis 50 mm. Skjøtene ligger på bjelken og gir %d mm til profilen."
+msgid "Standard sheet"
+msgstr "Standardplate"
 
 msgid "Standard sheets"
 msgstr "Standardplater"
-
-msgid "Standard sheet"
-msgstr "Standardplate"
 
 msgid "Standard sizes"
 msgstr "Standardstørrelser"
 
 msgid "Standard sizes. The customer chooses a width. The length is the shortest stock length that covers the frame plus the drip overhang. The quantity is the number of sheets across the width, multiplied by the number along the length. A 4200 mm frame with a 2100 mm sheet is 2 pieces. The same frame with a 1050 mm sheet is 4. A 4750 mm run on a blank whose long side is 3050 mm is 2 pieces along the length, so 3 across times 2 along is 6. The drawing is a cutting scheme. The basket receives the stock size, and the profile choice does not change that quantity."
 msgstr "Standardmål. Kunden velger en bredde. Lengden er den korteste lagerlengden som dekker rammen pluss dryppkanten. Antallet er antall plater på tvers av bredden, ganget med antallet på langs. En ramme på 4200 mm med en plate på 2100 mm er 2 stykker. Samme ramme med en plate på 1050 mm er 4. Et løp på 4750 mm på en plate der langsiden er 3050 mm er 2 stykker på langs, så 3 på tvers ganger 2 på langs er 6. Tegningen er et kappeskjema. Handlekurven får lagermålet, og profilvalget endrer ikke det antallet."
-
-msgid "More profiles and screws."
-msgstr "Flere profiler og skruer."
 
 msgid "Suggested thickness"
 msgstr "Foreslått tykkelse"
@@ -660,9 +678,6 @@ msgstr "Bærebjelke og plateoverheng"
 
 msgid "Support beam width"
 msgstr "Bredde på bærebjelke"
-
-msgid "Rafter spacing (centre to centre)"
-msgstr "Lekteavstand (senter til senter)"
 
 #, php-format
 msgid "Tape roll length"
@@ -693,14 +708,6 @@ msgid "Terrace roof kit added to basket."
 msgstr "Terrassetak-settet er lagt i handlekurven."
 
 #, php-format
-msgid "Enter the roof size to see the cutting diagram."
-msgstr "Skriv inn takmålet for å se kappeskissen."
-
-#, php-format
-msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
-msgstr "Du kjøper %1$d hele plater, %2$d × %3$d mm. Tegningen viser én måte å kappe dem på."
-
-#, php-format
 msgid "The last sheet would be under 100 mm. Adjust the rafter spacing."
 msgstr "Den siste platen ville blitt under 100 mm. Juster lekteavstanden."
 
@@ -712,17 +719,22 @@ msgstr "Lektetallet i notatet om avstand er et råd. Lektene er ikke et produkt 
 msgid "The side sheets are %1$d mm and %2$d mm."
 msgstr "Sideplatene er %1$d mm og %2$d mm."
 
+#, php-format
+msgid "These materials are not available in this shop."
+msgstr "Disse materialene er ikke tilgjengelige i denne butikken."
+
 msgid "Thickness"
 msgstr "Tykkelse"
+
+#, php-format
+msgid "This piece is wider than a %1$d × %2$d mm solid sheet. Reduce the rafter spacing."
+msgstr "Dette stykket er bredere enn en massiv plate på %1$d × %2$d mm. Reduser lekteavstanden."
 
 msgid "This thickness and colour is only available as a custom cut."
 msgstr "Denne tykkelsen og fargen finnes bare som måltilpasset."
 
 msgid "This thickness and colour is out of stock."
 msgstr "Denne tykkelsen og fargen er utsolgt."
-
-msgid "Measure the roof, choose the sheets, then add the kit."
-msgstr "Mål taket, velg platene, og legg til settet."
 
 msgid "Total excl. VAT"
 msgstr "Totalt ekskl. MVA"
@@ -736,20 +748,21 @@ msgstr "To sider fra en møne"
 msgid "Type"
 msgstr "Type"
 
-msgid "Aluminium U-profile"
-msgstr "U-profil i aluminium"
-
-msgid "Plastic U-profile"
-msgstr "U-profil i plast"
-
 msgid "Unable to add one of the kit items to the basket."
 msgstr "Kunne ikke legge til en av varene i handlekurven."
+
+msgid "Unavailable"
+msgstr "Utilgjengelig"
 
 msgid "Updating prices…"
 msgstr "Oppdaterer priser…"
 
 msgid "Usually 50 mm past the front beam so water drips clear."
 msgstr "Vanligvis 50 mm forbi frontbjelken, så vannet drypper fritt."
+
+#, php-format
+msgid "Usually 50 mm. Joints sit on the beam and leave %d mm for the profile."
+msgstr "Vanligvis 50 mm. Skjøtene ligger på bjelken og gir %d mm til profilen."
 
 msgid "Variation SKUs below were read from the parent product in the shop."
 msgstr "Variant-SKU-ene nedenfor er hentet fra overordnet produkt i butikken."
@@ -775,6 +788,9 @@ msgstr "Vegg / møne"
 msgid "Wall / ridge piece"
 msgstr "Vegg-/mønestykke"
 
+msgid "Wall profile"
+msgstr "Veggprofil"
+
 msgid "Wall profile 2.2 m"
 msgstr "Veggprofil 2,2 m"
 
@@ -799,21 +815,27 @@ msgstr "Bredde langs veggen"
 msgid "Wood screws with washers"
 msgstr "Treskruer med skiver"
 
-msgid "You cut them to fit"
-msgstr "Du kutter dem til selv"
-
-msgid "Your kit"
-msgstr "Ditt sett"
-
-msgid "Check the materials and prices, then add the kit to the basket."
-msgstr "Sjekk materialer og priser, og legg settet i handlekurven."
-
-
-msgid "Wall profile"
-msgstr "Veggprofil"
+#, php-format
+msgid "You buy %1$d whole sheets, %2$d × %3$d mm. The drawing shows one way to cut them."
+msgstr "Du kjøper %1$d hele plater, %2$d × %3$d mm. Tegningen viser én måte å kappe dem på."
 
 msgid "You can go back to change the size or materials. Shipping is calculated in the basket."
 msgstr "Du kan gå tilbake og endre mål eller materialer. Frakt beregnes i handlekurven."
 
-msgid "Drip overhang"
-msgstr "Dryppoverheng"
+msgid "You can go back to change the size or materials. Shipping is calculated in the basket. Unavailable items stay listed in red and are skipped when you add the kit."
+msgstr "Du kan gå tilbake og endre størrelse eller materialer. Frakt beregnes i handlekurven. Utilgjengelige varer står i rødt og hoppes over når du legger til settet."
+
+msgid "You cut them to fit"
+msgstr "Du kutter dem til selv"
+
+#, php-format
+msgid "You entered one side (%1$d mm). Both sides are included, so the length is %2$d mm."
+msgstr "Du har skrevet inn én side (%1$d mm). Begge sider er med, så lengden er %2$d mm."
+
+#, php-format
+msgid "You receive whole sheets. The diagram shows how to cut them."
+msgstr "Du får hele plater. Skissen viser hvordan de kappes."
+
+msgid "Your kit"
+msgstr "Ditt sett"
+

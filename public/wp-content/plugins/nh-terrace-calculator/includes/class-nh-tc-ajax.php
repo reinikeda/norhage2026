@@ -46,25 +46,30 @@ class NH_TC_Ajax {
 			self::send_failure( $bom, $settings, $input );
 		}
 
-		$priced = NH_TC_Catalog::price_bom( $bom, $settings );
-		$items  = array_values(
+		$priced  = NH_TC_Catalog::price_bom( $bom, $settings );
+		$missing = isset( $priced['missing'] ) && is_array( $priced['missing'] ) ? $priced['missing'] : array();
+		$items   = array_values(
 			array_filter(
 				$priced['items'],
 				static function ( $item ) {
-					return ! empty( $item['product_id'] ) && empty( $item['error'] );
+					return ! NH_TC_Catalog::item_is_unavailable( $item );
 				}
 			)
 		);
 
 		if ( ! $items ) {
 			wp_send_json_error(
-				array( 'message' => __( 'These materials are not available in this shop.', NH_TC_TD ) ),
+				array(
+					'message' => __( 'These materials are not available in this shop.', NH_TC_TD ),
+					'missing' => $missing,
+				),
 				400
 			);
 		}
 
 		$kit_id     = wp_generate_uuid4();
 		$added_keys = array();
+		$skipped    = array();
 
 		wc_clear_notices();
 
@@ -92,45 +97,65 @@ class NH_TC_Ajax {
 				(int) $item['product_id'],
 				(int) $item['qty'],
 				(int) $item['variation_id'],
-				self::variation_attributes_for_cart( $item['attributes'] ),
+				self::variation_attributes_for_cart( isset( $item['attributes'] ) && is_array( $item['attributes'] ) ? $item['attributes'] : array() ),
 				$cart_item_data
 			);
 
 			if ( ! $key ) {
-				foreach ( array_reverse( $added_keys ) as $added ) {
-					WC()->cart->remove_cart_item( $added );
-				}
-				$message = __( 'Unable to add one of the kit items to the basket.', NH_TC_TD );
-				if ( wc_notice_count( 'error' ) ) {
-					wp_send_json_error(
-						array(
-							'message'      => $message,
-							'notices_html' => wc_print_notices( true ),
-						),
-						400
-					);
-				}
-				wc_add_notice( $message, 'error' );
-				wp_send_json_error( array( 'message' => $message, 'notices_html' => wc_print_notices( true ) ), 400 );
+				// Keep the rest of the kit; mark this line as unavailable.
+				$item['error'] = empty( $item['error'] ) ? 'out_of_stock' : $item['error'];
+				$skipped[]     = $item;
+				wc_clear_notices();
+				continue;
 			}
 
 			$added_keys[] = $key;
 			wc_clear_notices();
 		}
 
+		if ( ! $added_keys ) {
+			$message = __( 'Unable to add the kit items to the basket.', NH_TC_TD );
+			wp_send_json_error(
+				array(
+					'message' => $message,
+					'missing' => array_merge( $missing, $skipped ),
+				),
+				400
+			);
+		}
+
 		if ( method_exists( WC()->cart, 'calculate_totals' ) ) {
 			WC()->cart->calculate_totals();
 		}
 
-		$fragments = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
+		$fragments     = apply_filters( 'woocommerce_add_to_cart_fragments', array() );
+		$all_missing   = array_merge( $missing, $skipped );
+		$ok_message    = __( 'Terrace roof kit added to basket.', NH_TC_TD );
+		$partial_names = array();
+		foreach ( $all_missing as $row ) {
+			$label = isset( $row['name'] ) && $row['name'] !== '' ? (string) $row['name'] : ( isset( $row['label'] ) ? (string) $row['label'] : '' );
+			if ( $label !== '' ) {
+				$partial_names[] = $label;
+			}
+		}
+		if ( $partial_names ) {
+			$ok_message = sprintf(
+				/* translators: %s: comma-separated unavailable product names */
+				__( 'Kit added to basket. Not available and skipped: %s.', NH_TC_TD ),
+				implode( ', ', array_unique( $partial_names ) )
+			);
+		}
 
 		wp_send_json_success(
 			array(
 				'fragments'    => $fragments,
 				'cart_hash'    => WC()->cart ? WC()->cart->get_cart_hash() : '',
 				'count'        => count( $added_keys ),
+				'skipped'      => count( $skipped ),
+				'missing'      => $all_missing,
 				'cart_url'     => wc_get_cart_url(),
-				'notices_html' => '<div class="woocommerce-message" role="alert">' . esc_html__( 'Terrace roof kit added to basket.', NH_TC_TD ) . '</div>',
+				'message'      => $ok_message,
+				'notices_html' => '<div class="woocommerce-message" role="alert">' . esc_html( $ok_message ) . '</div>',
 			)
 		);
 	}
