@@ -289,6 +289,26 @@ nh_ig_assert(
 	false !== strpos( $source, "add_filter( 'woocommerce_order_formatted_line_subtotal', 'nh_ig_filter_order_line_subtotal', 15, 3 )" )
 	&& false !== strpos( $source, "add_filter( 'wpo_wcpdf_order_item_data', 'nh_ig_filter_pdf_item', 20, 3 )" )
 );
+
+// Order documents must print the stored line, not unit × qty again.
+// 8 × 527.50 was paid as 4 220; rebuilding as 8 × 528 would wrongly show 4 224.
+nh_ig_assert(
+	'order documents keep the paid line of 4220, not 4224',
+	abs( nh_ig_order_document_line_gross( 3376, 844, 'NOK' ) - 4220 ) < 0.001
+);
+nh_ig_assert(
+	'order documents keep the paid line of 5630, not 5632',
+	abs( nh_ig_order_document_line_gross( 4504, 1126, 'NOK' ) - 5630 ) < 0.001
+);
+nh_ig_assert(
+	'basket still rounds unit × qty (8 × 527.50 becomes 4224)',
+	abs( nh_ig_visible_gross( 3376, 844, 8, 'NOK' ) - 4224 ) < 0.001
+);
+nh_ig_assert(
+	'order document helpers are used for thank-you, email and PDF lines',
+	false !== strpos( $source, 'nh_ig_order_document_line_gross( $item->get_subtotal()' )
+	&& substr_count( $source, 'nh_ig_order_document_line_gross(' ) >= 3
+);
 nh_ig_assert(
 	'order total is lines, shipping and their VAT',
 	abs( nh_ig_charged_gross( $with_vat ) - 306 ) < 0.001

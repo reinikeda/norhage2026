@@ -560,6 +560,22 @@ function nh_ig_visible_gross( $net, $tax, $qty = null, $currency = '' ) {
 }
 
 /**
+ * Line total on thank-you, emails and PDF.
+ *
+ * Round the stored line (net + VAT) as one amount. Do not rebuild from
+ * unit × quantity: that can print more than the customer paid when the
+ * order still holds the unrounded catalogue figures.
+ *
+ * @param float  $net      Amount before VAT.
+ * @param float  $tax      VAT.
+ * @param string $currency Order currency. Empty uses the active shop.
+ * @return float
+ */
+function nh_ig_order_document_line_gross( $net, $tax, $currency = '' ) {
+	return nh_ig_visible_gross( $net, $tax, null, $currency );
+}
+
+/**
  * Move a before-VAT amount and its VAT onto a chosen price with VAT.
  *
  * The two sides still add up to that price. Used when a cart line already
@@ -1893,8 +1909,7 @@ function nh_ig_filter_order_line_subtotal( $subtotal, $item, $order ) {
 	if ( $tax <= 0.00001 ) {
 		return $subtotal;
 	}
-	$qty   = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
-	$gross = nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, nh_ig_order_currency( $order ) );
+	$gross = nh_ig_order_document_line_gross( $item->get_subtotal(), $tax, nh_ig_order_currency( $order ) );
 	if ( $gross <= 0 ) {
 		return $subtotal;
 	}
@@ -1943,9 +1958,8 @@ function nh_ig_filter_order_item_totals( $rows, $order, $tax_display = '' ) {
 			if ( ! is_object( $item ) || ! method_exists( $item, 'get_subtotal' ) ) {
 				continue;
 			}
-			$qty  = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
 			$tax  = method_exists( $item, 'get_subtotal_tax' ) ? (float) $item->get_subtotal_tax() : 0.0;
-			$sum += nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, $currency );
+			$sum += nh_ig_order_document_line_gross( $item->get_subtotal(), $tax, $currency );
 		}
 		$rows['cart_subtotal']['value'] = nh_ig_order_price( $sum, $order );
 	}
@@ -2054,8 +2068,7 @@ function nh_ig_filter_pdf_item( $data, $order, $document_type ) {
 	if ( $tax <= 0.00001 ) {
 		return $data;
 	}
-	$qty   = method_exists( $item, 'get_quantity' ) ? (float) $item->get_quantity() : 1.0;
-	$gross = nh_ig_visible_gross( $item->get_subtotal(), $tax, $qty, nh_ig_order_currency( $order ) );
+	$gross = nh_ig_order_document_line_gross( $item->get_subtotal(), $tax, nh_ig_order_currency( $order ) );
 	if ( $gross <= 0 ) {
 		return $data;
 	}
