@@ -289,6 +289,47 @@ nh_ig_assert(
 	false !== strpos( $source, "add_filter( 'woocommerce_order_formatted_line_subtotal', 'nh_ig_filter_order_line_subtotal', 15, 3 )" )
 	&& false !== strpos( $source, "add_filter( 'wpo_wcpdf_order_item_data', 'nh_ig_filter_pdf_item', 20, 3 )" )
 );
+
+// Order documents must print the stored line, not unit × qty again.
+// 8 × 527.50 was paid as 4 220; rebuilding as 8 × 528 would wrongly show 4 224.
+nh_ig_assert(
+	'order documents keep the paid line of 4220, not 4224',
+	abs( nh_ig_order_document_line_gross( 3376, 844, 'NOK' ) - 4220 ) < 0.001
+);
+nh_ig_assert(
+	'order documents keep the paid line of 5630, not 5632',
+	abs( nh_ig_order_document_line_gross( 4504, 1126, 'NOK' ) - 5630 ) < 0.001
+);
+nh_ig_assert(
+	'basket still rounds unit × qty (8 × 527.50 becomes 4224)',
+	abs( nh_ig_visible_gross( 3376, 844, 8, 'NOK' ) - 4224 ) < 0.001
+);
+nh_ig_assert(
+	'order document helpers are used for thank-you, email and PDF lines',
+	false !== strpos( $source, 'nh_ig_order_document_line_gross( $item->get_subtotal()' )
+	&& substr_count( $source, 'nh_ig_order_document_line_gross(' ) >= 3
+);
+
+// WC_Tax is a class. function_exists( 'WC_Tax' ) is always false, which left
+// every cart line on the catalogue net (4 220) while the basket painted 4 224.
+nh_ig_assert(
+	'VAT rates look up WC_Tax with class_exists',
+	false !== strpos( $source, "class_exists( 'WC_Tax' )" )
+	&& false === strpos( $source, "function_exists( 'WC_Tax' )" )
+);
+nh_ig_assert(
+	'8 sheets at 527.50 become a paid line of 4224 when rates are missing',
+	abs( nh_ig_round_paid_amount( 4220, 8, 'NOK' ) - 4224 ) < 0.001
+);
+nh_ig_assert(
+	'8 sheets at 703.75 become a paid line of 5632 when rates are missing',
+	abs( nh_ig_round_paid_amount( 5630, 8, 'NOK' ) - 5632 ) < 0.001
+);
+$scaled_trap = nh_ig_scale_to_gross( 3376, 844, nh_ig_round_paid_amount( 4220, 8, 'NOK' ), 2 );
+nh_ig_assert(
+	'cart snap without rates still charges 4224 for those sheets',
+	abs( ( $scaled_trap['net'] + $scaled_trap['tax'] ) - 4224 ) < 0.001
+);
 nh_ig_assert(
 	'order total is lines, shipping and their VAT',
 	abs( nh_ig_charged_gross( $with_vat ) - 306 ) < 0.001
