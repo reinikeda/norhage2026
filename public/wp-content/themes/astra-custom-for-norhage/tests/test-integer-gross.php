@@ -309,6 +309,27 @@ nh_ig_assert(
 	false !== strpos( $source, 'nh_ig_order_document_line_gross( $item->get_subtotal()' )
 	&& substr_count( $source, 'nh_ig_order_document_line_gross(' ) >= 3
 );
+
+// WC_Tax is a class. function_exists( 'WC_Tax' ) is always false, which left
+// every cart line on the catalogue net (4 220) while the basket painted 4 224.
+nh_ig_assert(
+	'VAT rates look up WC_Tax with class_exists',
+	false !== strpos( $source, "class_exists( 'WC_Tax' )" )
+	&& false === strpos( $source, "function_exists( 'WC_Tax' )" )
+);
+nh_ig_assert(
+	'8 sheets at 527.50 become a paid line of 4224 when rates are missing',
+	abs( nh_ig_round_paid_amount( 4220, 8, 'NOK' ) - 4224 ) < 0.001
+);
+nh_ig_assert(
+	'8 sheets at 703.75 become a paid line of 5632 when rates are missing',
+	abs( nh_ig_round_paid_amount( 5630, 8, 'NOK' ) - 5632 ) < 0.001
+);
+$scaled_trap = nh_ig_scale_to_gross( 3376, 844, nh_ig_round_paid_amount( 4220, 8, 'NOK' ), 2 );
+nh_ig_assert(
+	'cart snap without rates still charges 4224 for those sheets',
+	abs( ( $scaled_trap['net'] + $scaled_trap['tax'] ) - 4224 ) < 0.001
+);
 nh_ig_assert(
 	'order total is lines, shipping and their VAT',
 	abs( nh_ig_charged_gross( $with_vat ) - 306 ) < 0.001

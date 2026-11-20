@@ -442,7 +442,7 @@ function nh_ig_is_storefront_request() {
  * @return array<int|string, array{rate: float, compound: string}>
  */
 function nh_ig_rates_for_product( $product ) {
-	if ( ! is_object( $product ) || ! function_exists( 'WC_Tax' ) ) {
+	if ( ! is_object( $product ) || ! class_exists( 'WC_Tax' ) ) {
 		return array();
 	}
 	if ( method_exists( $product, 'is_taxable' ) && ! $product->is_taxable() ) {
@@ -1160,7 +1160,7 @@ function nh_ig_round_shipping_rate( $rate ) {
 	$defs = array();
 	foreach ( $taxes as $rate_id => $amount ) {
 		unset( $amount );
-		if ( function_exists( 'WC_Tax' ) && method_exists( 'WC_Tax', 'get_rate_percent_value' ) ) {
+		if ( class_exists( 'WC_Tax' ) && method_exists( 'WC_Tax', 'get_rate_percent_value' ) ) {
 			$defs[ $rate_id ] = array(
 				'rate'     => (float) WC_Tax::get_rate_percent_value( $rate_id ),
 				'compound' => 'no',
@@ -1304,8 +1304,8 @@ function nh_ig_after_calculate_totals( $cart ) {
 		$old_sub_gross = nh_ig_round_half_up( $sub_net + $sub_tax, $decimals );
 		$old_gross     = nh_ig_round_half_up( $line_net + $line_tax, $decimals );
 		// No VAT rate must not turn a line that already has VAT into a before-VAT price.
-		// The price with VAT is still rounded to a whole krone, and the net and VAT
-		// are scaled so they add up to that price.
+		// Round with the same unit × qty rule as the basket, then scale net and VAT
+		// so they add up to that price.
 		if ( empty( $rates ) && ( $sub_tax > 0.00001 || $line_tax > 0.00001 ) ) {
 			$rate_id = 'kept';
 			if ( isset( $item['line_tax_data']['total'] ) && is_array( $item['line_tax_data']['total'] ) ) {
@@ -1314,8 +1314,8 @@ function nh_ig_after_calculate_totals( $cart ) {
 					$rate_id = $rate_keys[0];
 				}
 			}
-			$sub_scaled  = nh_ig_scale_to_gross( $sub_net, $sub_tax, nh_ig_round_display_gross( $old_sub_gross ), $decimals, $rate_id );
-			$line_scaled = nh_ig_scale_to_gross( $line_net, $line_tax, nh_ig_round_display_gross( $old_gross ), $decimals, $rate_id );
+			$sub_scaled  = nh_ig_scale_to_gross( $sub_net, $sub_tax, nh_ig_round_paid_amount( $old_sub_gross, $qty ), $decimals, $rate_id );
+			$line_scaled = nh_ig_scale_to_gross( $line_net, $line_tax, nh_ig_round_paid_amount( $old_gross, $qty ), $decimals, $rate_id );
 			$cart->cart_contents[ $key ]['line_subtotal']     = $sub_scaled['net'];
 			$cart->cart_contents[ $key ]['line_subtotal_tax'] = $sub_scaled['tax'];
 			$cart->cart_contents[ $key ]['line_total']        = $line_scaled['net'];
@@ -1420,7 +1420,7 @@ function nh_ig_after_calculate_totals( $cart ) {
 			$sign  = $gross < 0 ? -1.0 : 1.0;
 			$class = isset( $fee->tax_class ) ? (string) $fee->tax_class : '';
 			$rates = array();
-			if ( ! empty( $fee->taxable ) && function_exists( 'WC_Tax' ) ) {
+			if ( ! empty( $fee->taxable ) && class_exists( 'WC_Tax' ) ) {
 				$rates = nh_ig_normalize_rates( WC_Tax::get_rates( $class ) );
 				if ( ! $rates && nh_ig_use_shop_vat_rates() && method_exists( 'WC_Tax', 'get_base_tax_rates' ) ) {
 					$rates = nh_ig_normalize_rates( WC_Tax::get_base_tax_rates( $class ) );
