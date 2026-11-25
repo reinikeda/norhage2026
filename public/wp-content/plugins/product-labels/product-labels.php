@@ -125,7 +125,10 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Whether the product is marked Made by Norhage.
+	 * Whether the product should show Made by Norhage.
+	 *
+	 * True when the product brand is Norhage (automatic), or when the
+	 * optional Product Data checkbox is ticked.
 	 *
 	 * @param WC_Product|int $product Product or ID.
 	 * @return bool
@@ -140,7 +143,56 @@ class NHG_Product_Labels {
 		if ( ! $id ) {
 			return false;
 		}
-		return 'yes' === get_post_meta( $id, $this->made_meta_key(), true );
+		if ( 'yes' === get_post_meta( $id, $this->made_meta_key(), true ) ) {
+			return true;
+		}
+		return $this->product_has_norhage_brand( $id );
+	}
+
+	/**
+	 * True when the product is assigned the house brand (slug/name "norhage").
+	 *
+	 * @param int $product_id Product ID.
+	 * @return bool
+	 */
+	public function product_has_norhage_brand( $product_id ) : bool {
+		$product_id = absint( $product_id );
+		if ( ! $product_id || ! taxonomy_exists( 'product_brand' ) ) {
+			return false;
+		}
+
+		$terms = wp_get_post_terms( $product_id, 'product_brand' );
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return false;
+		}
+
+		foreach ( $terms as $term ) {
+			$slug = isset( $term->slug ) ? (string) $term->slug : '';
+			$name = isset( $term->name ) ? (string) $term->name : '';
+			if ( $this->brand_is_norhage( $slug, $name ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * House brand match — same rules as the theme helper when available.
+	 *
+	 * @param string $slug Term slug.
+	 * @param string $name Term name.
+	 * @return bool
+	 */
+	public function brand_is_norhage( $slug, $name ) : bool {
+		if ( function_exists( 'norhage_brand_is_house' ) ) {
+			return (bool) norhage_brand_is_house( $slug, $name );
+		}
+
+		$slug = strtolower( trim( (string) $slug ) );
+		$name = strtolower( trim( wp_strip_all_tags( (string) $name ) ) );
+
+		return 'norhage' === $slug || 'norhage' === $name;
 	}
 
 	/**
@@ -151,7 +203,7 @@ class NHG_Product_Labels {
 			[
 				'id'          => $this->made_meta_key(),
 				'label'       => __( 'Made by Norhage', $this->text_domain ),
-				'description' => __( 'Show a circular “Made by Norhage” badge on the product image (top left).', $this->text_domain ),
+				'description' => __( 'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.', $this->text_domain ),
 			]
 		);
 	}

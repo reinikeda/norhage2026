@@ -12,7 +12,8 @@ if ( ! defined( 'DAY_IN_SECONDS' ) ) {
 	define( 'DAY_IN_SECONDS', 86400 );
 }
 
-$nhg_meta = array();
+$nhg_meta  = array();
+$nhg_terms = array();
 
 if ( ! function_exists( 'add_action' ) ) {
 	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
@@ -34,6 +35,28 @@ if ( ! function_exists( 'get_post_meta' ) ) {
 		global $nhg_meta;
 		unset( $single );
 		return isset( $nhg_meta[ $post_id ][ $key ] ) ? $nhg_meta[ $post_id ][ $key ] : '';
+	}
+}
+if ( ! function_exists( 'taxonomy_exists' ) ) {
+	function taxonomy_exists( $taxonomy ) {
+		return 'product_brand' === $taxonomy;
+	}
+}
+if ( ! function_exists( 'wp_get_post_terms' ) ) {
+	function wp_get_post_terms( $post_id, $taxonomy ) {
+		global $nhg_terms;
+		unset( $taxonomy );
+		return isset( $nhg_terms[ $post_id ] ) ? $nhg_terms[ $post_id ] : array();
+	}
+}
+if ( ! function_exists( 'is_wp_error' ) ) {
+	function is_wp_error( $thing ) {
+		return is_object( $thing ) && isset( $thing->errors );
+	}
+}
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	function wp_strip_all_tags( $string ) {
+		return is_string( $string ) ? strip_tags( $string ) : '';
 	}
 }
 if ( ! function_exists( '__' ) ) {
@@ -139,22 +162,42 @@ function nhg_assert( $label, $ok ) {
 $plugin = new NHG_Product_Labels();
 
 nhg_assert( 'made meta key is stable', '_nhg_made_by_norhage' === $plugin->made_meta_key() );
+nhg_assert( 'slug norhage is house brand', true === $plugin->brand_is_norhage( 'norhage', 'Anything' ) );
+nhg_assert( 'name Norhage is house brand', true === $plugin->brand_is_norhage( 'other', 'Norhage' ) );
+nhg_assert( 'Arla is not house brand', false === $plugin->brand_is_norhage( 'arla', 'Arla' ) );
 
-global $nhg_meta;
+global $nhg_meta, $nhg_terms;
 $nhg_meta[ 20 ][ '_nhg_made_by_norhage' ] = 'yes';
 $nhg_meta[ 21 ][ '_nhg_made_by_norhage' ] = 'no';
+$nhg_meta[ 22 ][ '_nhg_made_by_norhage' ] = 'no';
+$nhg_terms[ 22 ] = array(
+	(object) array( 'slug' => 'norhage', 'name' => 'Norhage' ),
+);
+$nhg_terms[ 23 ] = array(
+	(object) array( 'slug' => 'arla', 'name' => 'Arla' ),
+);
+$nhg_terms[ 24 ] = array(
+	(object) array( 'slug' => 'norhage', 'name' => 'Norhage' ),
+	(object) array( 'slug' => 'arla', 'name' => 'Arla' ),
+);
 
 $made_product = new WC_Product( 20 );
 $plain        = new WC_Product( 21 );
-$newish       = new WC_Product( 20 );
+$branded      = new WC_Product( 22 );
+$supplier     = new WC_Product( 23 );
+$mixed        = new WC_Product( 24 );
+$newish       = new WC_Product( 22 );
 $newish->set_created_days_ago( 3 );
 
 nhg_assert( 'yes meta is made by norhage', true === $plugin->is_made_by_norhage( $made_product ) );
-nhg_assert( 'no meta is not made by norhage', false === $plugin->is_made_by_norhage( $plain ) );
-nhg_assert( 'id helper works', true === $plugin->is_made_by_norhage( 20 ) );
+nhg_assert( 'no meta and no brand is not made', false === $plugin->is_made_by_norhage( $plain ) );
+nhg_assert( 'Norhage brand auto-enables made label', true === $plugin->is_made_by_norhage( $branded ) );
+nhg_assert( 'supplier brand alone is not made', false === $plugin->is_made_by_norhage( $supplier ) );
+nhg_assert( 'mixed brands still match Norhage', true === $plugin->is_made_by_norhage( $mixed ) );
+nhg_assert( 'id helper works for branded product', true === $plugin->is_made_by_norhage( 22 ) );
 
 $labels = $plugin->collect_labels( $newish );
-nhg_assert( 'collect includes made', isset( $labels['made'] ) && 'made' === $labels['made']['key'] );
+nhg_assert( 'collect includes made from brand', isset( $labels['made'] ) && 'made' === $labels['made']['key'] );
 nhg_assert( 'collect includes new for recent product', isset( $labels['new'] ) );
 nhg_assert( 'made line1 is Made by', 'Made by' === $labels['made']['line1'] );
 nhg_assert( 'made line2 is Norhage', 'Norhage' === $labels['made']['line2'] );
