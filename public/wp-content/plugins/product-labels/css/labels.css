@@ -1,441 +1,285 @@
-/* labels.css — Norhage product labels (mobile-first)
-   Catalog photo layout:
-   - Top-left stack: Made → New
-   - Top-right stack: Sale → Custom (under wishlist heart)
-   - Bottom edge: stock as a soft scrim bar
-   Each label has its own treatment so they don’t look like identical pills.
-*/
+/**
+ * NHG Product Labels — circular Made + compact Sale chips
+ * Version 1.3.1
+ *
+ * Layout (catalog thumbnail):
+ *   LEFT  — Made (circle) → New stacked below
+ *   RIGHT — Wishlist (theme) → Sale → Custom Size
+ *   BOTTOM — Stock strip
+ *
+ * Sale text is shortened in PHP (−11%, −10–20%) so chips stay compact.
+ */
 
-/* -------------------------
-   Tokens (mobile defaults)
-   ------------------------- */
 :root {
-  --nh-green: #00704a;
-  --nh-forest: #1e3932;
-  --nh-brown: #4b2c20;
-  --nh-cream: #f1e6d6;
-  --nh-offwhite: #faf7f2;
-  --nh-charcoal: #2c2a29;
-  --nh-mint: #c3e8c6;
-  --nh-gold: #c89f63;
-
-  --nhg-sale: #b33a32;
-  --nhg-new: #1f7a52;
-  --nhg-custom: #2f5f8a;
-  --nhg-made-bg: rgba(250, 247, 242, 0.94);
-  --nhg-made-text: #1e3932;
-  --nhg-stock-bg: rgba(44, 42, 41, 0.78);
-
-  --nhg-inset: 8px;
-  --nhg-inset-top: var(--nhg-inset);
-  --nhg-inset-right: var(--nhg-inset);
-  --nhg-inset-left: var(--nhg-inset);
-  --nhg-inset-bottom: var(--nhg-inset);
-
-  --nhg-h: 20px;
-  --nhg-fs: 0.625rem; /* 10px */
-  --nhg-fw: 700;
-  --nhg-track: 0.04em;
-  --nhg-radius: 3px;
-  --nhg-gap: 4px;
-  --nhg-wishlist-clearance: 40px;
-  --nhg-control-offset-x: 8px;
-  --nhg-control-offset-y: 6px;
-  --nhg-max-left: min(58vw, 9.75rem);
-  --nhg-max-right: min(48vw, 8.75rem);
+	--nhg-label-inset: 8px;
+	--nhg-label-gap: 6px;
+	--nhg-label-radius: 4px;
+	--nhg-label-font: 11px;
+	--nhg-label-lh: 1.15;
+	--nhg-label-pad-y: 4px;
+	--nhg-label-pad-x: 8px;
+	--nhg-label-shadow: 0 1px 2px rgba(15, 23, 15, 0.12);
+	--nhg-made-size: 50px;
+	--nhg-made-font: 6.75px;
+	--nhg-wishlist-clearance: 40px;
+	--nhg-forest: #1B3A2F;
+	--nhg-cream: #F7F4EF;
+	--nhg-sale: #B42318;
+	--nhg-ink: #1A1A1A;
+	--nhg-stock-out: #5C4033;
+	--nhg-stock-back: #1B3A2F;
 }
 
-/* -------------------------
-   Positioning contexts
-   ------------------------- */
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap,
-.woocommerce ul.products li.product .product-thumbnail,
-.woocommerce ul.products li.product .woocommerce-loop-product__link,
-.astra-shop-thumbnail-wrap,
-.woocommerce ul.products li.product .woocommerce-product-gallery__image,
-.woocommerce-product-gallery,
-.woocommerce-product-gallery .woocommerce-product-gallery__wrapper,
-.woocommerce-product-gallery__image,
-.woocommerce div.product .woocommerce-product-gallery {
-  position: relative;
+/* ==========================================================================
+   Anchor
+   ========================================================================== */
+
+.nhg-labels {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 5;
+	overflow: hidden;
+	font-family: inherit;
+	-webkit-font-smoothing: antialiased;
 }
 
-/* Catalog overlay */
-.nhg-labels.nhg-labels--thumb {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
-  overflow: visible;
-}
-
-/* Single gallery: compact wrap row */
-.nhg-labels.nhg-labels--single {
-  position: absolute;
-  top: calc(var(--nhg-inset-top) + var(--nhg-control-offset-y));
-  left: calc(var(--nhg-inset-left) + var(--nhg-control-offset-x));
-  z-index: 120;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--nhg-gap);
-  max-width: calc(100% - 1.5rem);
-  pointer-events: none;
-}
-
-.woocommerce div.product .woocommerce-product-gallery .nhg-labels--single,
-.woocommerce div.product .woocommerce-product-gallery .nhg-labels--thumb {
-  z-index: 120;
-}
-
-/* -------------------------
-   Shared badge base
-   ------------------------- */
 .nhg-badge {
-  position: absolute;
-  z-index: 45;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--nhg-h);
-  padding: 0 0.55rem;
-  border: 0;
-  border-radius: var(--nhg-radius);
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  font-size: var(--nhg-fs);
-  font-weight: var(--nhg-fw);
-  letter-spacing: var(--nhg-track);
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-  -webkit-font-smoothing: antialiased;
+	position: absolute;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	margin: 0;
+	padding: var(--nhg-label-pad-y) var(--nhg-label-pad-x);
+	border: 0;
+	border-radius: var(--nhg-label-radius);
+	font-size: var(--nhg-label-font);
+	font-weight: 700;
+	line-height: var(--nhg-label-lh);
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	max-width: none;
+	overflow: visible;
+	text-overflow: clip;
+	box-shadow: var(--nhg-label-shadow);
+	pointer-events: none;
+	z-index: 2;
 }
 
-.nhg-badge > * {
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-  line-height: 1;
-}
+/* ==========================================================================
+   MADE BY NORHAGE — circle, top-left
+   ========================================================================== */
 
-.nhg-labels--thumb .nhg-badge {
-  position: absolute;
-}
-
-.nhg-labels--single .nhg-badge {
-  position: relative;
-  top: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  left: auto !important;
-  max-width: none;
-  transform: none !important;
-}
-
-/* -------------------------
-   MADE — cream chip + gold accent (brand)
-   ------------------------- */
 .nhg-badge--made {
-  top: var(--nhg-inset-top);
-  left: var(--nhg-inset-left);
-  z-index: 96;
-  max-width: var(--nhg-max-left);
-  padding: 0 0.6rem 0 0.5rem;
-  color: var(--nhg-made-text);
-  background: var(--nhg-made-bg);
-  border-left: 2px solid var(--nh-gold);
-  box-shadow: 0 1px 2px rgba(30, 57, 50, 0.12);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+	top: var(--nhg-label-inset);
+	left: var(--nhg-label-inset);
+	right: auto;
+	bottom: auto;
+	width: var(--nhg-made-size);
+	height: var(--nhg-made-size);
+	min-width: var(--nhg-made-size);
+	min-height: var(--nhg-made-size);
+	max-width: var(--nhg-made-size);
+	max-height: var(--nhg-made-size);
+	padding: 6px;
+	border-radius: 50%;
+	background: var(--nhg-cream);
+	color: var(--nhg-forest);
+	border: 1.5px solid var(--nhg-forest);
+	letter-spacing: 0.02em;
+	text-align: center;
+	z-index: 3;
 }
 
 .nhg-made-text {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 0.3em;
-  min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	width: 100%;
+	max-width: 100%;
+	line-height: 1;
+	text-align: center;
 }
 
 .nhg-made-text__line {
-  display: inline;
-  color: inherit;
-  text-transform: uppercase;
+	display: block;
+	font-size: var(--nhg-made-font);
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
 }
 
 .nhg-made-text__line:last-child {
-  font-weight: 800;
-  color: var(--nh-forest);
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	font-size: calc(var(--nhg-made-font) + 0.75px);
 }
 
-/* -------------------------
-   NEW — solid forest green
-   ------------------------- */
+/* ==========================================================================
+   NEW — under Made when both present; else top-left
+   ========================================================================== */
+
 .nhg-badge--new {
-  top: var(--nhg-inset-top);
-  left: var(--nhg-inset-left);
-  z-index: 95;
-  max-width: var(--nhg-max-left);
-  color: #fff;
-  background: var(--nhg-new);
-  box-shadow: 0 1px 2px rgba(31, 122, 82, 0.2);
+	top: var(--nhg-label-inset);
+	left: var(--nhg-label-inset);
+	right: auto;
+	bottom: auto;
+	background: var(--nhg-forest);
+	color: #fff;
+	z-index: 2;
 }
 
-.nhg-badge--new .nhg-new-text {
-  color: #fff;
+.nhg-labels:has(.nhg-badge--made) .nhg-badge--new {
+	top: calc(var(--nhg-label-inset) + var(--nhg-made-size) + var(--nhg-label-gap));
 }
 
-.nhg-labels--thumb .nhg-badge--made ~ .nhg-badge--new {
-  top: calc(var(--nhg-inset-top) + var(--nhg-h) + var(--nhg-gap));
+.nhg-new-text {
+	display: block;
 }
 
-/* -------------------------
-   SALE — warm brick, commercial
-   ------------------------- */
+/* ==========================================================================
+   SALE — compact (−11%), top-right under wishlist
+   ========================================================================== */
+
 .nhg-badge--sale {
-  top: var(--nhg-wishlist-clearance);
-  right: var(--nhg-inset-right);
-  left: auto;
-  z-index: 94;
-  max-width: var(--nhg-max-right);
-  padding: 0 0.6rem;
-  color: #fff;
-  background: var(--nhg-sale);
-  box-shadow: 0 1px 2px rgba(179, 58, 50, 0.22);
-  font-weight: 800;
+	top: calc(var(--nhg-label-inset) + var(--nhg-wishlist-clearance));
+	right: var(--nhg-label-inset);
+	left: auto;
+	bottom: auto;
+	background: var(--nhg-sale);
+	color: #fff;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.01em;
+	padding: var(--nhg-label-pad-y) 7px;
+	z-index: 2;
 }
 
-/* -------------------------
-   CUSTOM — outlined steel (distinct from solid badges)
-   ------------------------- */
+/* ==========================================================================
+   CUSTOM SIZE — under Sale when both; else under wishlist
+   ========================================================================== */
+
 .nhg-badge--custom {
-  top: var(--nhg-wishlist-clearance);
-  right: var(--nhg-inset-right);
-  left: auto;
-  z-index: 93;
-  max-width: var(--nhg-max-right);
-  color: var(--nhg-custom);
-  background: rgba(250, 247, 242, 0.94);
-  border: 1px solid color-mix(in srgb, var(--nhg-custom) 55%, #fff 45%);
-  box-shadow: 0 1px 2px rgba(47, 95, 138, 0.12);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+	top: calc(var(--nhg-label-inset) + var(--nhg-wishlist-clearance));
+	right: var(--nhg-label-inset);
+	left: auto;
+	bottom: auto;
+	background: #fff;
+	color: var(--nhg-ink);
+	border: 1px solid rgba(26, 26, 26, 0.22);
+	box-shadow: var(--nhg-label-shadow);
+	z-index: 2;
 }
 
-.nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
-  top: calc(var(--nhg-wishlist-clearance) + var(--nhg-h) + var(--nhg-gap));
+.nhg-labels:has(.nhg-badge--sale) .nhg-badge--custom {
+	top: calc(
+		var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
+	);
 }
 
-/* -------------------------
-   STOCK — bottom scrim bar (reads as status, not a sticker)
-   ------------------------- */
+/* ==========================================================================
+   STOCK — bottom strip
+   ========================================================================== */
+
 .nhg-badge--stock {
-  top: auto;
-  right: var(--nhg-inset-right);
-  bottom: var(--nhg-inset-bottom);
-  left: var(--nhg-inset-left);
-  z-index: 92;
-  width: auto;
-  max-width: none;
-  height: calc(var(--nhg-h) + 4px);
-  padding: 0 0.75rem;
-  transform: none;
-  color: #fff;
-  background: var(--nhg-stock-bg);
-  border-radius: var(--nhg-radius);
-  box-shadow: none;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  letter-spacing: 0.06em;
+	left: var(--nhg-label-inset);
+	right: var(--nhg-label-inset);
+	bottom: var(--nhg-label-inset);
+	top: auto;
+	width: auto;
+	max-width: none;
+	justify-content: center;
+	padding: 5px 8px;
+	border-radius: var(--nhg-label-radius);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	white-space: normal;
+	text-align: center;
+	line-height: 1.25;
+	z-index: 2;
 }
 
 .nhg-badge--stock[data-stock="out"] {
-  color: #fff;
-  background: rgba(44, 42, 41, 0.82);
+	background: var(--nhg-stock-out);
+	color: #fff;
 }
 
-.nhg-badge--stock[data-stock="low"] {
-  color: var(--nh-brown);
-  background: color-mix(in srgb, var(--nh-gold) 82%, #fff 18%);
+.nhg-badge--stock[data-stock="backorder"] {
+	background: var(--nhg-stock-back);
+	color: #fff;
 }
 
-/* -------------------------
-   Catalog re-anchors (badges may sit inside the product <a>)
-   ------------------------- */
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
-  position: relative;
+/* ==========================================================================
+   Single product — no wishlist clearance; Made still a circle
+   ========================================================================== */
+
+.single-product .nhg-labels {
+	--nhg-wishlist-clearance: 0px;
+	--nhg-made-size: 54px;
+	--nhg-made-font: 7.25px;
+	--nhg-label-inset: 10px;
 }
 
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--made,
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--new {
-  position: absolute !important;
-  left: var(--nhg-inset-left);
-  right: auto;
-  margin: 0;
-  transform: none;
+.single-product .nhg-badge--sale,
+.single-product .nhg-badge--custom {
+	top: var(--nhg-label-inset);
 }
 
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--made {
-  top: var(--nhg-inset-top);
-  z-index: 210;
+.single-product .nhg-labels:has(.nhg-badge--sale) .nhg-badge--custom {
+	top: calc(var(--nhg-label-inset) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
 }
 
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--new {
-  top: var(--nhg-inset-top);
-  z-index: 205;
-}
+/* ==========================================================================
+   Wider thumbnails
+   ========================================================================== */
 
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--made ~ .nhg-badge--new {
-  top: calc(var(--nhg-inset-top) + var(--nhg-h) + var(--nhg-gap));
-}
-
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--sale,
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--custom,
-body ul.products li.product .nhg-labels--thumb .nhg-badge--sale,
-body ul.products li.product .nhg-labels--thumb .nhg-badge--custom {
-  position: absolute !important;
-  top: var(--nhg-wishlist-clearance) !important;
-  right: var(--nhg-inset-right) !important;
-  left: auto !important;
-  margin: 0;
-  transform: none;
-}
-
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--sale ~ .nhg-badge--custom,
-body ul.products li.product .nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
-  top: calc(var(--nhg-wishlist-clearance) + var(--nhg-h) + var(--nhg-gap)) !important;
-}
-
-.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--stock {
-  position: absolute !important;
-  top: auto !important;
-  right: var(--nhg-inset-right) !important;
-  bottom: var(--nhg-inset-bottom) !important;
-  left: var(--nhg-inset-left) !important;
-  transform: none !important;
-}
-
-/* -------------------------
-   Hide legacy / theme duplicates
-   ------------------------- */
-.nhg-custom-below-container {
-  display: none !important;
-}
-
-.woocommerce ul.products li.product .ast-shop-product-out-of-stock,
-.woocommerce ul.products li.product .astra-shop-product-out-of-stock,
-.astra-shop-thumbnail-wrap .ast-shop-product-out-of-stock,
-.woocommerce ul.products li.product .out-of-stock,
-.woocommerce ul.products li.product .stock.out-of-stock {
-  display: none !important;
-}
-
-/* -------------------------
-   Summary ordering (scoped)
-   ------------------------- */
-.woocommerce ul.products li.product .astra-shop-summary-wrap {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0.35rem;
-}
-
-.woocommerce ul.products li.product .astra-shop-summary-wrap .ast-loop-product__link { order: 1; }
-.woocommerce ul.products li.product .astra-shop-summary-wrap .review-rating,
-.woocommerce ul.products li.product .astra-shop-summary-wrap .star-rating { order: 2; }
-.woocommerce ul.products li.product .astra-shop-summary-wrap .price { order: 3; }
-.woocommerce ul.products li.product .astra-shop-summary-wrap a.button,
-.woocommerce ul.products li.product .astra-shop-summary-wrap .button { order: 4; margin-top: 0.5rem; }
-
-.woocommerce ul.products li.product .astra-shop-summary-wrap .review-rating,
-.woocommerce ul.products li.product .astra-shop-summary-wrap .star-rating,
-.woocommerce ul.products li.product .review-rating,
-.woocommerce ul.products li.product .star-rating {
-  display: block !important;
-  float: none !important;
-  clear: both !important;
-  position: relative !important;
-  transform: none !important;
-  margin: 0.2rem 0 0.45rem !important;
-}
-
-.woocommerce ul.products li.product .astra-shop-summary-wrap .price {
-  display: block;
-  margin-top: 0 !important;
-}
-
-.woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
-.woocommerce ul.products li.product .astra-shop-summary-wrap > a.nh-btn-customize {
-  margin-top: auto !important;
-}
-
-/* -------------------------
-   Accessibility
-   ------------------------- */
-.nhg-sr,
-.nhg-badge .nhg-sr {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Prefer less motion / blur when requested */
-@media (prefers-reduced-motion: reduce) {
-  .nhg-badge--made,
-  .nhg-badge--custom,
-  .nhg-badge--stock {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-}
-
-/* -------------------------
-   Tablet+
-   ------------------------- */
 @media (min-width: 768px) {
-  :root {
-    --nhg-inset: 10px;
-    --nhg-h: 22px;
-    --nhg-fs: 0.6875rem; /* 11px */
-    --nhg-gap: 5px;
-    --nhg-wishlist-clearance: 44px;
-    --nhg-max-left: min(52%, 11rem);
-    --nhg-max-right: min(46%, 10rem);
-  }
+	:root {
+		--nhg-label-inset: 10px;
+		--nhg-label-gap: 7px;
+		--nhg-label-font: 11px;
+		--nhg-made-size: 54px;
+		--nhg-made-font: 7.25px;
+		--nhg-wishlist-clearance: 44px;
+	}
 
-  .nhg-badge {
-    padding: 0 0.65rem;
-  }
-
-  .nhg-badge--made {
-    padding: 0 0.7rem 0 0.55rem;
-  }
+	.nhg-badge--stock {
+		font-size: 11px;
+		padding: 6px 10px;
+	}
 }
 
-/* -------------------------
-   Desktop
-   ------------------------- */
 @media (min-width: 1024px) {
-  :root {
-    --nhg-inset: 12px;
-    --nhg-h: 24px;
-    --nhg-fs: 0.6875rem;
-    --nhg-gap: 6px;
-    --nhg-wishlist-clearance: 46px;
-    --nhg-radius: 4px;
-  }
+	:root {
+		--nhg-made-size: 56px;
+		--nhg-made-font: 7.5px;
+	}
+}
+
+/* ==========================================================================
+   Fallback without :has() — New under Made via sibling
+   ========================================================================== */
+
+@supports not selector(:has(*)) {
+	.nhg-badge--made + .nhg-badge--new {
+		top: calc(var(--nhg-label-inset) + var(--nhg-made-size) + var(--nhg-label-gap));
+	}
+
+	.nhg-badge--sale + .nhg-badge--custom {
+		top: calc(
+			var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
+		);
+	}
+
+	.single-product .nhg-badge--sale + .nhg-badge--custom {
+		top: calc(var(--nhg-label-inset) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
+	}
 }
