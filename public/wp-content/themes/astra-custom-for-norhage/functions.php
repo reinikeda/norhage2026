@@ -498,6 +498,7 @@ require_once get_stylesheet_directory() . '/inc/sample-order.php';
 require_once get_stylesheet_directory() . '/inc/seo.php';
 require_once get_stylesheet_directory() . '/inc/catalog-nofollow.php';
 require_once get_stylesheet_directory() . '/inc/catalog-button.php';
+require_once get_stylesheet_directory() . '/inc/catalog-highlight.php';
 require_once get_stylesheet_directory() . '/inc/404.php';
 require_once get_stylesheet_directory() . '/inc/product-gallery-video.php';
 

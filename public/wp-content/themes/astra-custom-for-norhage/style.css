@@ -19,6 +19,8 @@ Template: astra
   --nh-charcoal:   #2C2A29; /* Text */
   --nh-mint:       #C3E8C6; /* Soft border/hover */
   --nh-gold:       #C89F63; /* Premium accent (sparingly) */
+  --nh-highlight:  #E8DCB8; /* Muted straw — catalog highlight cards */
+  --nh-highlight-edge: #D2C08A; /* Soft gold edge for highlight cards */
 
   /* UI helpers */
   --ui-text:       var(--nh-charcoal);
@@ -831,6 +833,37 @@ sup.nh-eur-cents,
 li.outofstock .astra-shop-thumbnail-wrap img {
     filter: grayscale(80%);
     opacity: 0.6;
+}
+
+/* Highlighted catalog cards — whole tile, muted straw, readable text */
+.woocommerce ul.products li.product.nh-catalog-highlight {
+  background: var(--nh-highlight, #E8DCB8);
+  border: 1px solid var(--nh-highlight-edge, #D2C08A);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0.7rem 0.7rem 0.85rem;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title,
+.woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
+.woocommerce ul.products li.product.nh-catalog-highlight .price,
+.woocommerce ul.products li.product.nh-catalog-highlight .price .amount {
+  color: var(--nh-charcoal, #2C2A29);
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap img {
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .woocommerce ul.products li.product.nh-catalog-highlight {
+    padding: 0.55rem 0.55rem 0.7rem;
+  }
 }
 
 /* =========================================================
