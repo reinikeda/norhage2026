@@ -340,8 +340,12 @@ function nh_catalog_highlight_admin_css() {
 
 /**
  * Print selected attributes on highlighted catalog cards (between title and price).
+ *
+ * Astra rebuilds the shop card: title/price live in .astra-shop-summary-wrap via
+ * astra_woo_woocommerce_shop_product_content(). Woo’s after_shop_loop_item_title
+ * still fires inside the thumbnail wrap, so use Astra’s title_after hook.
  */
-add_action( 'woocommerce_after_shop_loop_item_title', 'nh_catalog_highlight_render_attrs', 6 );
+add_action( 'astra_woo_shop_title_after', 'nh_catalog_highlight_render_attrs', 10 );
 function nh_catalog_highlight_render_attrs() {
 	global $product;
 	if ( ! $product ) {

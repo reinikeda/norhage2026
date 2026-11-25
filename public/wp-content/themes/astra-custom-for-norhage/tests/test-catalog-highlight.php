@@ -234,5 +234,12 @@ nh_hl_assert( 'admin column sits after SKU', array_keys( $cols )[3] === 'nh_cata
 $admin_js = file_get_contents( dirname( __DIR__ ) . '/assets/js/catalog-highlight-admin.js' );
 nh_hl_assert( 'quick edit admin script exists', false !== strpos( $admin_js, 'nh-catalog-highlight-quick-edit' ) );
 
+$source = file_get_contents( dirname( __DIR__ ) . '/inc/catalog-highlight.php' );
+nh_hl_assert(
+	'attrs render on Astra title_after (summary wrap), not Woo after_shop_loop_item_title',
+	false !== strpos( $source, "add_action( 'astra_woo_shop_title_after'" )
+		&& false === strpos( $source, "add_action( 'woocommerce_after_shop_loop_item_title'" )
+);
+
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
