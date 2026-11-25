@@ -36,3 +36,12 @@ msgstr "Mažas likutis"
 msgctxt "sale percent up to"
 msgid "up to %s %%"
 msgstr "iki %s %%"
+
+msgid "Made by"
+msgstr "Pagaminta"
+
+msgid "Made by Norhage"
+msgstr "Pagaminta Norhage"
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
+msgstr "Rodyti apvalų „Pagaminta Norhage“ ženklelį ant produkto nuotraukos (viršuje kairėje)."

@@ -36,3 +36,12 @@ msgstr "Lågt lager"
 msgctxt "sale percent up to"
 msgid "up to %s %%"
 msgstr "upp till %s %%"
+
+msgid "Made by"
+msgstr "Tillverkad av"
+
+msgid "Made by Norhage"
+msgstr "Tillverkad av Norhage"
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
+msgstr "Visa en cirkulär ”Tillverkad av Norhage”-bricka på produktbilden (uppe till vänster)."
