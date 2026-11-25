@@ -738,9 +738,10 @@ a.ast-on-card-button.ast-select-options-trigger,
 
 /* Ensure DOM elements follow correct visual order */
 .woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Title */
-.woocommerce ul.products li.product .review-rating { order: 2; margin: 0; } /* Rating */
-.woocommerce ul.products li.product .price { order: 3; margin-top: 2px; } /* Price */
-.woocommerce ul.products li.product .button { order: 4; } /* CTA Button */
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 2; } /* Highlight attrs */
+.woocommerce ul.products li.product .review-rating { order: 3; margin: 0; } /* Rating */
+.woocommerce ul.products li.product .price { order: 4; margin-top: 2px; } /* Price */
+.woocommerce ul.products li.product .button { order: 5; } /* CTA Button */
 
 /* Force rating block visibility and alignment */
 .review-rating, .star-rating {
@@ -864,6 +865,31 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   .woocommerce ul.products li.product.nh-catalog-highlight {
     padding: 0.55rem 0.55rem 0.7rem;
   }
+}
+
+/* Highlight card attribute list (title → attrs → price) */
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs {
+  list-style: none;
+  margin: 0.15rem 0 0.1rem;
+  padding: 0;
+  color: var(--nh-charcoal, #2C2A29);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__item {
+  margin: 0;
+  padding: 0;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__label {
+  font-weight: 600;
+  color: var(--nh-forest, #1E3932);
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__value {
+  font-weight: 400;
+  color: var(--nh-charcoal, #2C2A29);
 }
 
 /* =========================================================
