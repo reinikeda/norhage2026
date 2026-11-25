@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -94,7 +94,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.2.0'
+			'1.2.1'
 		);
 	}
 

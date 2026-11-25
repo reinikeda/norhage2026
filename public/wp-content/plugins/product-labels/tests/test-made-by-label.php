@@ -217,8 +217,9 @@ nhg_assert(
 );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/css/labels.css' );
-nhg_assert( 'css defines made circle size', false !== strpos( $css, '--nhg-made-size' ) );
+nhg_assert( 'css uses compact pill height for made', false !== strpos( $css, '--nhg-badge-height' ) && false === strpos( $css, '--nhg-made-size' ) );
 nhg_assert( 'css stacks new under made', false !== strpos( $css, '.nhg-badge--made ~ .nhg-badge--new' ) );
+nhg_assert( 'css parks sale under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
 nhg_assert(
 	'css no longer pushes all trailing badges under sale/custom',
 	false === strpos( $css, '.nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge' )
