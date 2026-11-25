@@ -36,3 +36,15 @@ msgstr "Vähän varastossa"
 msgctxt "sale percent up to"
 msgid "up to %s %%"
 msgstr "jopa %s %%"
+
+msgid "Made by"
+msgstr "Valmistaja"
+
+msgid "Made by Norhage"
+msgstr "Norhage valmistaa"
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
+msgstr "Näytä pyöreä “Norhage valmistaa” -merkki tuotekuvassa (vasemmassa yläkulmassa)."
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on."
+msgstr ""

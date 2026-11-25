@@ -37,3 +37,15 @@ msgstr "Få på lager"
 msgctxt "sale percent up to"
 msgid "up to %s %%"
 msgstr "op til %s %%"
+
+msgid "Made by"
+msgstr "Lavet af"
+
+msgid "Made by Norhage"
+msgstr "Lavet af Norhage"
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
+msgstr "Vis et cirkulært “Lavet af Norhage”-mærke på produktbilledet (øverst til venstre)."
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on."
+msgstr ""

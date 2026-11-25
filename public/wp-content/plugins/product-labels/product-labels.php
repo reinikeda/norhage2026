@@ -2,12 +2,11 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.1.3
+ * Version: 1.2.0
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
  */
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -22,6 +21,13 @@ class NHG_Product_Labels {
 	 * @var string
 	 */
 	protected $text_domain = 'nhg-labels';
+
+	/**
+	 * Meta key for the Made by Norhage product flag.
+	 *
+	 * @var string
+	 */
+	const MADE_META_KEY = '_nhg_made_by_norhage';
 
 	/**
 	 * Constructor: register hooks
@@ -39,6 +45,10 @@ class NHG_Product_Labels {
 
 		// Hide core WooCommerce stock HTML on archives (we provide our own)
 		add_filter( 'woocommerce_get_stock_html', [ $this, 'filter_woocommerce_get_stock_html' ], 10, 2 );
+
+		// Product Data → General: Made by Norhage checkbox
+		add_action( 'woocommerce_product_options_general_product_data', [ $this, 'render_made_field' ] );
+		add_action( 'woocommerce_process_product_meta', [ $this, 'save_made_field' ] );
 
 		// Enqueue styles
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -84,7 +94,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.1.3'
+			'1.2.0'
 		);
 	}
 
@@ -106,12 +116,116 @@ class NHG_Product_Labels {
 	}
 
 	/**
+	 * Meta key for Made by Norhage.
+	 *
+	 * @return string
+	 */
+	public function made_meta_key() {
+		return self::MADE_META_KEY;
+	}
+
+	/**
+	 * Whether the product should show Made by Norhage.
+	 *
+	 * True when the product brand is Norhage (automatic), or when the
+	 * optional Product Data checkbox is ticked.
+	 *
+	 * @param WC_Product|int $product Product or ID.
+	 * @return bool
+	 */
+	public function is_made_by_norhage( $product ) : bool {
+		$id = 0;
+		if ( $product instanceof WC_Product ) {
+			$id = (int) $product->get_id();
+		} else {
+			$id = absint( $product );
+		}
+		if ( ! $id ) {
+			return false;
+		}
+		if ( 'yes' === get_post_meta( $id, $this->made_meta_key(), true ) ) {
+			return true;
+		}
+		return $this->product_has_norhage_brand( $id );
+	}
+
+	/**
+	 * True when the product is assigned the house brand (slug/name "norhage").
+	 *
+	 * @param int $product_id Product ID.
+	 * @return bool
+	 */
+	public function product_has_norhage_brand( $product_id ) : bool {
+		$product_id = absint( $product_id );
+		if ( ! $product_id || ! taxonomy_exists( 'product_brand' ) ) {
+			return false;
+		}
+
+		$terms = wp_get_post_terms( $product_id, 'product_brand' );
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return false;
+		}
+
+		foreach ( $terms as $term ) {
+			$slug = isset( $term->slug ) ? (string) $term->slug : '';
+			$name = isset( $term->name ) ? (string) $term->name : '';
+			if ( $this->brand_is_norhage( $slug, $name ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * House brand match — same rules as the theme helper when available.
+	 *
+	 * @param string $slug Term slug.
+	 * @param string $name Term name.
+	 * @return bool
+	 */
+	public function brand_is_norhage( $slug, $name ) : bool {
+		if ( function_exists( 'norhage_brand_is_house' ) ) {
+			return (bool) norhage_brand_is_house( $slug, $name );
+		}
+
+		$slug = strtolower( trim( (string) $slug ) );
+		$name = strtolower( trim( wp_strip_all_tags( (string) $name ) ) );
+
+		return 'norhage' === $slug || 'norhage' === $name;
+	}
+
+	/**
+	 * Product Data → General checkbox.
+	 */
+	public function render_made_field() {
+		woocommerce_wp_checkbox(
+			[
+				'id'          => $this->made_meta_key(),
+				'label'       => __( 'Made by Norhage', $this->text_domain ),
+				'description' => __( 'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.', $this->text_domain ),
+			]
+		);
+	}
+
+	/**
+	 * Persist the Made by Norhage flag.
+	 *
+	 * @param int $post_id Product ID.
+	 */
+	public function save_made_field( $post_id ) {
+		$key   = $this->made_meta_key();
+		$value = isset( $_POST[ $key ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		update_post_meta( (int) $post_id, $key, $value );
+	}
+
+	/**
 	 * Collect label data for a product
 	 *
 	 * @param WC_Product $product
 	 * @return array
 	 */
-	private function collect_labels( WC_Product $product ) : array {
+	public function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
 		// -------- SALE (with percent, range, or "up to") --------
@@ -194,6 +308,16 @@ class NHG_Product_Labels {
 			];
 		}
 
+		// -------- MADE BY NORHAGE (manual product flag) --------
+		if ( $this->is_made_by_norhage( $product ) ) {
+			$labels['made'] = [
+				'key'   => 'made',
+				'line1' => __( 'Made by', $this->text_domain ),
+				'line2' => 'Norhage',
+				'text'  => __( 'Made by Norhage', $this->text_domain ),
+			];
+		}
+
 		// -------- NEW (30 days) --------
 		$created = $product->get_date_created();
 		if ( $created && ( time() - $created->getTimestamp() < 30 * DAY_IN_SECONDS ) ) {
@@ -252,8 +376,59 @@ class NHG_Product_Labels {
 	}
 
 	/**
+	 * Print badge markup for a collected labels array.
+	 *
+	 * Order: sale → custom (right) → made → new (left) → stock (bottom).
+	 * Made is before New so CSS can stack New under the circle when both show.
+	 *
+	 * @param array $labels Labels from collect_labels().
+	 */
+	private function print_badges( array $labels ) {
+		if ( isset( $labels['sale'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--sale">%s</span>',
+				esc_html( $labels['sale']['text'] )
+			);
+		}
+
+		if ( isset( $labels['custom'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--custom">%s</span>',
+				esc_html( $labels['custom']['text'] )
+			);
+		}
+
+		if ( isset( $labels['made'] ) ) {
+			$line1 = isset( $labels['made']['line1'] ) ? $labels['made']['line1'] : __( 'Made by', $this->text_domain );
+			$line2 = isset( $labels['made']['line2'] ) ? $labels['made']['line2'] : 'Norhage';
+			$title = isset( $labels['made']['text'] ) ? $labels['made']['text'] : __( 'Made by Norhage', $this->text_domain );
+			printf(
+				'<span class="nhg-badge nhg-badge--made" title="%s"><span class="nhg-made-text"><span class="nhg-made-text__line">%s</span><span class="nhg-made-text__line">%s</span></span></span>',
+				esc_attr( $title ),
+				esc_html( $line1 ),
+				esc_html( $line2 )
+			);
+		}
+
+		if ( isset( $labels['new'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--new"><span class="nhg-new-text">%s</span></span>',
+				esc_html( $labels['new']['text'] )
+			);
+		}
+
+		if ( isset( $labels['stock'] ) ) {
+			$stock_type = isset( $labels['stock']['stock_type'] ) ? $labels['stock']['stock_type'] : 'out';
+			printf(
+				'<span class="nhg-badge nhg-badge--stock" data-stock="%s">%s</span>',
+				esc_attr( $stock_type ),
+				esc_html( $labels['stock']['text'] )
+			);
+		}
+	}
+
+	/**
 	 * Render badges inside the thumbnail area (archive loop).
-	 * Desired order: sale (if any) -> custom (if any) -> new/stock
 	 */
 	public function render_thumbnail_badges() {
 		global $product;
@@ -269,42 +444,8 @@ class NHG_Product_Labels {
 		}
 
 		// Output container; CSS will absolutely position it over the image.
-		printf( '<div class="nhg-labels nhg-labels--thumb" aria-hidden="true">' );
-
-		// 1) Sale
-		if ( isset( $labels['sale'] ) ) {
-			printf(
-				'<span class="nhg-badge nhg-badge--sale">%s</span>',
-				esc_html( $labels['sale']['text'] )
-			);
-		}
-
-		// 2) Custom
-		if ( isset( $labels['custom'] ) ) {
-			printf(
-				'<span class="nhg-badge nhg-badge--custom">%s</span>',
-				esc_html( $labels['custom']['text'] )
-			);
-		}
-
-		// 3) New
-		if ( isset( $labels['new'] ) ) {
-			printf(
-				'<span class="nhg-badge nhg-badge--new"><span class="nhg-new-text">%s</span></span>',
-				esc_html( $labels['new']['text'] )
-			);
-		}
-
-		// 4) Stock
-		if ( isset( $labels['stock'] ) ) {
-			$stock_type = isset( $labels['stock']['stock_type'] ) ? $labels['stock']['stock_type'] : 'out';
-			printf(
-				'<span class="nhg-badge nhg-badge--stock" data-stock="%s">%s</span>',
-				esc_attr( $stock_type ),
-				esc_html( $labels['stock']['text'] )
-			);
-		}
-
+		echo '<div class="nhg-labels nhg-labels--thumb" aria-hidden="true">';
+		$this->print_badges( $labels );
 		echo '</div>';
 	}
 
@@ -328,21 +469,7 @@ class NHG_Product_Labels {
 
 		// Output container that is intended to be inside the gallery wrapper
 		echo '<div class="nhg-labels nhg-labels--single" aria-hidden="true">';
-
-		if ( isset( $labels['sale'] ) ) {
-			printf( '<span class="nhg-badge nhg-badge--sale">%s</span>', esc_html( $labels['sale']['text'] ) );
-		}
-		if ( isset( $labels['custom'] ) ) {
-			printf( '<span class="nhg-badge nhg-badge--custom">%s</span>', esc_html( $labels['custom']['text'] ) );
-		}
-		if ( isset( $labels['new'] ) ) {
-			printf( '<span class="nhg-badge nhg-badge--new"><span class="nhg-new-text">%s</span></span>', esc_html( $labels['new']['text'] ) );
-		}
-		if ( isset( $labels['stock'] ) ) {
-			$stock_type = isset( $labels['stock']['stock_type'] ) ? $labels['stock']['stock_type'] : 'out';
-			printf( '<span class="nhg-badge nhg-badge--stock" data-stock="%s">%s</span>', esc_attr( $stock_type ), esc_html( $labels['stock']['text'] ) );
-		}
-
+		$this->print_badges( $labels );
 		echo '</div>';
 	}
 }

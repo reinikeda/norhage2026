@@ -1,5 +1,6 @@
 /* labels.css — Final harmonized product labels (conflict-resistant)
-   - New: pinned top-left (independent)
+   - Made by Norhage: circular top-left
+   - New: pinned top-left; stacks under Made when both present
    - Sale: pinned top-right
    - Custom: pinned top-right, stacks below Sale when present
    - Stock: bottom-center
@@ -23,6 +24,7 @@
   --nh-sale:     #C63B3B;
   --nh-new:      #2FA36A;
   --nh-custom:   #3E79B8;
+  --nh-made:     #1E3932;
 
   --nhg-inset-top: 12px;
   --nhg-inset-right: 12px;
@@ -32,6 +34,8 @@
   --nhg-badge-height: 26px;
   --nhg-badge-radius: 6px;
   --nhg-label-font-size: 10px;
+  --nhg-made-size: 58px;
+  --nhg-made-font-size: 8px;
 
   --nhg-stock-padding-x: 12px;
   --nhg-stock-min-width: 76px;
@@ -128,6 +132,7 @@
 .nhg-labels--thumb .nhg-badge { position: absolute; }
 
 /* Set default horizontal anchors */
+.nhg-badge--made,
 .nhg-badge--new { left: var(--nhg-inset-left); }
 .nhg-badge--sale,
 .nhg-badge--custom { right: var(--nhg-inset-right); }
@@ -143,7 +148,55 @@
 }
 
 /* -------------------------
+   MADE BY NORHAGE — circular top-left
+   ------------------------- */
+.nhg-badge--made {
+  top: var(--nhg-inset-top);
+  left: var(--nhg-inset-left);
+  z-index: 95;
+  width: var(--nhg-made-size);
+  height: var(--nhg-made-size);
+  min-width: var(--nhg-made-size);
+  padding: 5px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--nh-made) 88%, #00704A 12%), var(--nh-made));
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(30, 57, 50, 0.22);
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+.nhg-made-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  text-align: center;
+  max-width: 100%;
+}
+
+.nhg-made-text__line {
+  display: block;
+  font-size: var(--nhg-made-font-size);
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.nhg-labels--thumb .nhg-badge--made { margin-left: 0; }
+.nhg-labels--single .nhg-badge--made {
+  flex: 0 0 var(--nhg-made-size);
+  margin-right: 6px;
+}
+
+/* -------------------------
    NEW — always top-left (thumbnail + single)
+   Stacks under Made when both are present
    ------------------------- */
 .nhg-badge--new {
   top: var(--nhg-inset-top);
@@ -162,6 +215,12 @@
 /* Slight left/right offsets in compact single overlay so it doesn't touch gallery controls */
 .nhg-labels--thumb .nhg-badge--new { margin-left: 2px; }
 .nhg-labels--single .nhg-badge--new { margin-left: 0; margin-right: 6px; }
+
+/* Thumbnail: keep New clear of the Made circle */
+.nhg-labels--thumb .nhg-badge--made ~ .nhg-badge--new {
+  top: calc(var(--nhg-inset-top) + var(--nhg-made-size) + var(--nhg-stack-gap));
+  left: var(--nhg-inset-left);
+}
 
 /* -------------------------
    SALE — top-right (higher than custom) on thumbnails; in single it's inline left
@@ -193,11 +252,6 @@
 .nhg-labels--thumb .nhg-badge--sale + .nhg-badge--custom,
 .nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
   top: calc(var(--nhg-inset-top) + var(--nhg-badge-height) + var(--nhg-stack-gap));
-}
-
-/* Fallback stacked offsets for extra badges in thumbnails */
-.nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge {
-  top: calc(var(--nhg-inset-top) + 2 * (var(--nhg-badge-height) + var(--nhg-stack-gap)));
 }
 
 /* When rendered inside compact single overlay we want inline flow, so provide small spacing */
@@ -337,11 +391,14 @@
   :root {
     --nhg-badge-height: 24px;
     --nhg-label-font-size: 10px;
+    --nhg-made-size: 54px;
+    --nhg-made-font-size: 7.5px;
     --nhg-stock-min-width: 72px;
     --nhg-stack-gap: 6px;
     --nhg-horizontal-gap: 6px;
   }
   .nhg-badge { padding: 0 9px; }
+  .nhg-badge--made { padding: 4px; }
 }
 
 /* Small screens: condense badges, avoid collisions with gallery controls */
@@ -349,6 +406,8 @@
   :root {
     --nhg-badge-height: 22px;
     --nhg-label-font-size: 9px;
+    --nhg-made-size: 50px;
+    --nhg-made-font-size: 7px;
     --nhg-stock-min-width: 60px;
     --nhg-stack-gap: 5px;
     --nhg-horizontal-gap: 5px;
@@ -361,6 +420,11 @@
   }
 
   .nhg-badge { padding: 0 8px; height: var(--nhg-badge-height); font-size: var(--nhg-label-font-size); }
+  .nhg-badge--made {
+    padding: 4px;
+    height: var(--nhg-made-size);
+    width: var(--nhg-made-size);
+  }
 
   /* Single product overlay: allow wrapping and keep them compact */
   .nhg-labels--single {
@@ -381,6 +445,7 @@
 
   /* Allow new to remain top-left but slightly smaller */
   .nhg-badge--new { left: 10px; top: 8px; padding: 0 8px; }
+  .nhg-badge--made { left: 8px; top: 8px; }
 
   /* Stock badge smaller */
   .nhg-badge--stock { bottom: 10px; padding: 0 10px; min-width: 56px; }
@@ -423,12 +488,22 @@
 }
 
 /* -------------------------
-   Re-anchor New badge (fix when labels are output inside the <a>)
-   This ensures New is always top-left of the thumbnail wrapper
+   Re-anchor left badges (fix when labels are output inside the <a>)
+   This ensures Made / New stay top-left of the thumbnail wrapper
    ------------------------- */
 /* Ensure wrapper is a containing block */
 .woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
   position: relative;
+}
+
+/* Re-anchor Made circle to wrapper */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--made {
+  position: absolute !important;
+  top: var(--nhg-inset-top);
+  left: var(--nhg-inset-left);
+  transform: none;
+  margin: 0;
+  z-index: 210;
 }
 
 /* Re-anchor the new badge to wrapper */
@@ -439,6 +514,11 @@
   transform: none;
   margin: 0;
   z-index: 200;
+}
+
+/* Stack New under Made on catalog thumbnails */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap .nhg-badge--made ~ .nhg-badge--new {
+  top: calc(var(--nhg-inset-top) + var(--nhg-made-size) + var(--nhg-stack-gap));
 }
 
 /* Ensure sale/custom keep their thumbnail stacking at top-right */
