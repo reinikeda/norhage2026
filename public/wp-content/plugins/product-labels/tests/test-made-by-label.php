@@ -217,9 +217,12 @@ nhg_assert(
 );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/css/labels.css' );
-nhg_assert( 'css uses compact pill height for made', false !== strpos( $css, '--nhg-badge-height' ) && false === strpos( $css, '--nhg-made-size' ) );
+nhg_assert( 'css is mobile-first with base --nhg-h', false !== strpos( $css, '--nhg-h:' ) );
+nhg_assert( 'css uses cream made chip token', false !== strpos( $css, '--nhg-made-bg' ) );
 nhg_assert( 'css stacks new under made', false !== strpos( $css, '.nhg-badge--made ~ .nhg-badge--new' ) );
 nhg_assert( 'css parks sale under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
+nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-inset-bottom)' ) );
+nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@media (min-width: 768px)' ) );
 nhg_assert(
 	'css no longer pushes all trailing badges under sale/custom',
 	false === strpos( $css, '.nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge' )

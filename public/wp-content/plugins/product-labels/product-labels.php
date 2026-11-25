@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -94,7 +94,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.2.1'
+			'1.3.0'
 		);
 	}
 
@@ -379,7 +379,7 @@ class NHG_Product_Labels {
 	 * Print badge markup for a collected labels array.
 	 *
 	 * Order: sale → custom (right) → made → new (left) → stock (bottom).
-	 * Made is before New so CSS can stack New under the circle when both show.
+	 * Made is before New so CSS can stack New under Made when both show.
 	 *
 	 * @param array $labels Labels from collect_labels().
 	 */
