@@ -1,9 +1,9 @@
 /**
  * NHG Product Labels — Example A + under-image Sale/Made by
- * Version 1.5.0
+ * Version 1.5.1
  *
  * Catalog thumbnail (on image):
- *   LEFT  — Best seller flag → New stacked below
+ *   LEFT  — Best seller flag (flush top) → New circle stacked below
  *   RIGHT — Wishlist (theme) → Custom Size
  *   BOTTOM — Stock strip (Out / Low); OOS shows stock only
  *
@@ -26,10 +26,12 @@
 	--nhg-label-shadow: 0 1px 2px rgba(15, 23, 15, 0.12);
 	--nhg-made-size: 50px;
 	--nhg-made-font: 6.75px;
+	--nhg-new-size: 40px;
 	--nhg-best-flag-h: 22px;
 	--nhg-wishlist-clearance: 40px;
 	--nhg-forest: #1B3A2F;
 	--nhg-cream: #F7F4EF;
+	--nhg-gold: #C89F63;
 	--nhg-sale: #B42318;
 	--nhg-ink: #1A1A1A;
 	--nhg-stock-out: #5C4033;
@@ -77,11 +79,11 @@
 }
 
 /* ==========================================================================
-   BEST SELLER — flag, top-left (catalog highlight)
+   BEST SELLER — flag, flush top-left (catalog highlight)
    ========================================================================== */
 
 .nhg-badge--best-flag {
-	top: var(--nhg-label-inset);
+	top: 0;
 	left: 0;
 	right: auto;
 	bottom: auto;
@@ -154,7 +156,7 @@
 }
 
 /* ==========================================================================
-   NEW — under Best seller flag when both present; else top-left
+   NEW — gold circle; under Best seller flag when both present; else top-left
    ========================================================================== */
 
 .nhg-badge--new {
@@ -162,13 +164,25 @@
 	left: var(--nhg-label-inset);
 	right: auto;
 	bottom: auto;
-	background: var(--nhg-forest);
+	width: var(--nhg-new-size);
+	height: var(--nhg-new-size);
+	min-width: var(--nhg-new-size);
+	min-height: var(--nhg-new-size);
+	max-width: var(--nhg-new-size);
+	max-height: var(--nhg-new-size);
+	padding: 0;
+	border-radius: 50%;
+	background: var(--nhg-gold);
 	color: #fff;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	box-shadow: var(--nhg-label-shadow);
 	z-index: 2;
 }
 
 .nhg-labels:has(.nhg-badge--best-flag) .nhg-badge--new {
-	top: calc(var(--nhg-label-inset) + var(--nhg-best-flag-h) + var(--nhg-label-gap));
+	top: calc(var(--nhg-best-flag-h) + var(--nhg-label-gap));
 	left: var(--nhg-label-inset);
 }
 
@@ -178,6 +192,7 @@
 
 .nhg-new-text {
 	display: block;
+	line-height: 1;
 }
 
 /* ==========================================================================
@@ -390,6 +405,7 @@
 		--nhg-label-font: 11px;
 		--nhg-made-size: 54px;
 		--nhg-made-font: 7.25px;
+		--nhg-new-size: 44px;
 		--nhg-best-flag-h: 24px;
 		--nhg-wishlist-clearance: 44px;
 	}
@@ -397,6 +413,10 @@
 	.nhg-badge--best-flag {
 		font-size: 11px;
 		padding: 0 16px 0 12px;
+	}
+
+	.nhg-badge--new {
+		font-size: 11px;
 	}
 
 	.nhg-badge--stock {
@@ -420,7 +440,7 @@
 
 @supports not selector(:has(*)) {
 	.nhg-badge--best-flag + .nhg-badge--new {
-		top: calc(var(--nhg-label-inset) + var(--nhg-best-flag-h) + var(--nhg-label-gap));
+		top: calc(var(--nhg-best-flag-h) + var(--nhg-label-gap));
 	}
 
 	.nhg-badge--made + .nhg-badge--new {
