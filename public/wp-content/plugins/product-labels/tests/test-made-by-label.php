@@ -91,6 +91,20 @@ if ( ! function_exists( 'load_plugin_textdomain' ) ) {
 		return true;
 	}
 }
+$nhg_is_product = false;
+$nhg_is_admin   = false;
+if ( ! function_exists( 'is_product' ) ) {
+	function is_product() {
+		global $nhg_is_product;
+		return (bool) $nhg_is_product;
+	}
+}
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() {
+		global $nhg_is_admin;
+		return (bool) $nhg_is_admin;
+	}
+}
 if ( ! class_exists( 'WC_Product' ) ) {
 	class WC_Product {
 		protected $id;
@@ -256,6 +270,53 @@ nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@m
 nhg_assert(
 	'css no longer pushes all trailing badges under sale/custom',
 	false === strpos( $css, '.nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge' )
+);
+nhg_assert( 'css defines below-image Best sold container', false !== strpos( $css, '.nhg-labels--below' ) );
+nhg_assert( 'css defines Best sold badge', false !== strpos( $css, '.nhg-badge--best' ) );
+$plugin_src = file_get_contents( dirname( __DIR__ ) . '/product-labels.php' );
+nhg_assert(
+	'Best sold hooks shop title_after for below-image badge',
+	(bool) preg_match(
+		"/add_action\\(\\s*'astra_woo_shop_title_after'\\s*,\\s*\\[\\s*\\\$this\\s*,\\s*'render_below_image_badge'\\s*\\]\\s*,\\s*1\\s*\\)/",
+		$plugin_src
+	)
+);
+nhg_assert(
+	'Best sold is not registered on single title_after',
+	! preg_match( "/add_action\\(\\s*'astra_woo_single_title_after'/", $plugin_src )
+);
+
+$nhg_meta[ 40 ][ '_nh_catalog_highlight' ] = 'yes';
+$nhg_meta[ 41 ][ '_nh_catalog_highlight' ] = 'no';
+$highlight = new WC_Product( 40 );
+$plain_hl  = new WC_Product( 41 );
+nhg_assert( 'highlight meta enables Best sold gate', true === $plugin->is_catalog_highlight( $highlight ) );
+nhg_assert( 'non-highlight skips Best sold gate', false === $plugin->is_catalog_highlight( $plain_hl ) );
+
+global $product;
+$product = $highlight;
+ob_start();
+$plugin->render_below_image_badge();
+$best_html = ob_get_clean();
+nhg_assert( 'below-image Best sold renders for highlight', false !== strpos( $best_html, 'nhg-badge--best' ) );
+nhg_assert( 'below-image Best sold text present', false !== strpos( $best_html, 'Best sold' ) );
+
+$product = $plain_hl;
+ob_start();
+$plugin->render_below_image_badge();
+$no_best = ob_get_clean();
+nhg_assert( 'non-highlight prints no Best sold', '' === $no_best );
+
+ob_start();
+$method->invoke( $plugin, $plugin->collect_labels( $highlight ) );
+$thumb_html = ob_get_clean();
+nhg_assert( 'on-image badges never include Best sold', false === strpos( $thumb_html, 'nhg-badge--best' ) );
+
+$theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
+nhg_assert(
+	'theme flex-orders Best sold under image',
+	false !== strpos( $theme_css, '.nhg-labels--below { order: -1; }' )
+		|| false !== strpos( $theme_css, '.nhg-labels--below{ order: -1; }' )
 );
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";

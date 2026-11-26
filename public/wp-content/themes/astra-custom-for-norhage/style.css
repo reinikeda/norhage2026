@@ -736,7 +736,8 @@ a.ast-on-card-button.ast-select-options-trigger,
   gap: 4px !important; /* Control spacing between title, rating, and price */
 }
 
-/* Catalog summary stack: category → main title → secondary → attrs → rating → price → CTA */
+/* Catalog summary stack: Best sold → category → main title → secondary → attrs → rating → price → CTA */
+.woocommerce ul.products li.product .nhg-labels--below { order: -1; } /* Best sold under image */
 .woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Main title */
 .woocommerce ul.products li.product .product-secondary-title { order: 2; } /* Custom secondary title */
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 3; } /* Highlight attrs */
