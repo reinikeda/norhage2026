@@ -312,6 +312,27 @@ nh_hl_assert(
 		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
 		&& false !== strpos( $css, 'width: auto !important' )
 );
+nh_hl_assert(
+	'catalog attrs use two-column grid rows',
+	(bool) preg_match(
+		'/\.nh-catalog-highlight-attrs__item\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:/s',
+		$css
+	)
+);
+nh_hl_assert(
+	'catalog attrs hide inline colon separator',
+	(bool) preg_match(
+		'/\.nh-catalog-highlight-attrs__sep\s*\{\s*display:\s*none/s',
+		$css
+	)
+);
+nh_hl_assert(
+	'catalog attrs list has row gap for breathing room',
+	(bool) preg_match(
+		'/\.nh-catalog-highlight-attrs\s*\{[^}]*gap:\s*0\.35rem/s',
+		$css
+	)
+);
 
 $nb = "\xE2\x80\x91";
 $protected = nh_catalog_title_protect_size_range( 'Drivhus Tre 300 (12-36m²)', 10 );
