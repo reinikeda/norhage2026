@@ -736,12 +736,13 @@ a.ast-on-card-button.ast-select-options-trigger,
   gap: 4px !important; /* Control spacing between title, rating, and price */
 }
 
-/* Ensure DOM elements follow correct visual order */
-.woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Title */
-.woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 2; } /* Highlight attrs */
-.woocommerce ul.products li.product .review-rating { order: 3; margin: 0; } /* Rating */
-.woocommerce ul.products li.product .price { order: 4; margin-top: 2px; } /* Price */
-.woocommerce ul.products li.product .button { order: 5; } /* CTA Button */
+/* Catalog summary stack: category → main title → secondary → attrs → rating → price → CTA */
+.woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Main title */
+.woocommerce ul.products li.product .product-secondary-title { order: 2; } /* Custom secondary title */
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 3; } /* Highlight attrs */
+.woocommerce ul.products li.product .review-rating { order: 4; margin: 0; } /* Rating */
+.woocommerce ul.products li.product .price { order: 5; margin-top: 2px; } /* Price */
+.woocommerce ul.products li.product .button { order: 6; } /* CTA Button */
 
 /* Force rating block visibility and alignment */
 .review-rating, .star-rating {
@@ -836,33 +837,39 @@ li.outofstock .astra-shop-thumbnail-wrap img {
     opacity: 0.6;
 }
 
-/* Highlighted catalog cards — whole tile, muted straw, readable text */
+/* Highlighted catalog cards — yellow tile; image flush to edges, padding on copy only */
 .woocommerce ul.products li.product.nh-catalog-highlight {
   background: var(--nh-highlight, #F5E59A);
   border: 1px solid var(--nh-highlight-edge, #E0C85A);
   border-radius: 4px;
   box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
   padding: 0.7rem 0.7rem 0.85rem;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title,
 .woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
+.woocommerce ul.products li.product.nh-catalog-highlight .product-secondary-title,
 .woocommerce ul.products li.product.nh-catalog-highlight .price,
 .woocommerce ul.products li.product.nh-catalog-highlight .price .amount {
   color: var(--nh-charcoal, #2C2A29);
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
-  margin-left: 0;
-  margin-right: 0;
+  margin: 0;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap img {
-  border-radius: 2px;
+  border-radius: 0;
+  display: block;
 }
 
 @media (max-width: 768px) {
-  .woocommerce ul.products li.product.nh-catalog-highlight {
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
     padding: 0.55rem 0.55rem 0.7rem;
   }
 }
@@ -920,9 +927,9 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 .woocommerce ul.products .product-secondary-title,
 .archive .product .product-secondary-title {
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  line-height: 1.3;
   margin: 0;
 }
 

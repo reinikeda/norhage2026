@@ -241,5 +241,26 @@ nh_hl_assert(
 		&& false === strpos( $source, "add_action( 'woocommerce_after_shop_loop_item_title'" )
 );
 
+$css = file_get_contents( dirname( __DIR__ ) . '/style.css' );
+nh_hl_assert(
+	'catalog main title is ordered before secondary title',
+	preg_match( '/\.ast-loop-product__link\s*\{\s*order:\s*1/s', $css )
+		&& preg_match( '/\.product-secondary-title\s*\{\s*order:\s*2/s', $css )
+);
+nh_hl_assert(
+	'highlight card has no outer padding (image flush)',
+	preg_match(
+		'/\.woocommerce ul\.products li\.product\.nh-catalog-highlight\s*\{[^}]*padding:\s*0/s',
+		$css
+	)
+);
+nh_hl_assert(
+	'highlight padding lives on summary wrap only',
+	preg_match(
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\.7rem/s',
+		$css
+	)
+);
+
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
