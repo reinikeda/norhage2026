@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.3.1
+ * Version: 1.4.0
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -30,6 +30,11 @@ class NHG_Product_Labels {
 	const MADE_META_KEY = '_nhg_made_by_norhage';
 
 	/**
+	 * Theme meta key for catalog highlight products (Best sold).
+	 */
+	const HIGHLIGHT_META_KEY = '_nh_catalog_highlight';
+
+	/**
 	 * Constructor: register hooks
 	 */
 	public function __construct() {
@@ -38,6 +43,10 @@ class NHG_Product_Labels {
 
 		// Render thumbnail overlays (inside the product image/link)
 		add_action( 'woocommerce_before_shop_loop_item_title', [ $this, 'render_thumbnail_badges' ], 5 );
+
+		// Catalog-only: Best sold sits under the image inside Astra's summary wrap.
+		// Priority 1 so it can flex-order above category/title without touching PDP.
+		add_action( 'astra_woo_shop_title_after', [ $this, 'render_below_image_badge' ], 1 );
 
 		// Single product: render badges inside the gallery wrapper (preferred)
 		// woocommerce_product_thumbnails runs inside the gallery template in many themes (Astra-compatible)
@@ -94,7 +103,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.3.1'
+			'1.4.0'
 		);
 	}
 
@@ -217,6 +226,33 @@ class NHG_Product_Labels {
 		$key   = $this->made_meta_key();
 		$value = isset( $_POST[ $key ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		update_post_meta( (int) $post_id, $key, $value );
+	}
+
+	/**
+	 * Whether the product is a catalog highlight (theme meta).
+	 *
+	 * Soft-calls the theme helper when present; otherwise reads meta directly.
+	 *
+	 * @param WC_Product|int $product Product object or ID.
+	 * @return bool
+	 */
+	public function is_catalog_highlight( $product ) : bool {
+		if ( function_exists( 'nh_product_is_catalog_highlight' ) ) {
+			return (bool) nh_product_is_catalog_highlight( $product );
+		}
+
+		$id = 0;
+		if ( $product instanceof WC_Product ) {
+			$id = (int) $product->get_id();
+		} elseif ( is_numeric( $product ) ) {
+			$id = absint( $product );
+		}
+
+		if ( $id <= 0 ) {
+			return false;
+		}
+
+		return 'yes' === get_post_meta( $id, self::HIGHLIGHT_META_KEY, true );
 	}
 
 	/**
@@ -497,7 +533,41 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Render badges on single product near gallery (hooked into woocommerce_product_thumbnails)
+	 * Catalog-only Best sold bar under the product image (highlight products).
+	 *
+	 * Lives in the Astra summary wrap via astra_woo_shop_title_after, then
+	 * flex-orders above category/title. Never printed on the single product page.
+	 */
+	public function render_below_image_badge() {
+		if ( is_admin() ) {
+			return;
+		}
+
+		global $product;
+
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		if ( ! $this->is_catalog_highlight( $product ) ) {
+			return;
+		}
+
+		// Hooked only to astra_woo_shop_title_after (loop/related cards), never
+		// astra_woo_single_title_after — keeps the single gallery/custom PDP alone.
+		$text = __( 'Best sold', $this->text_domain );
+
+		printf(
+			'<div class="nhg-labels nhg-labels--below" aria-hidden="true"><span class="nhg-badge nhg-badge--best">%s</span></div>',
+			esc_html( $text )
+		);
+	}
+
+	/**
+	 * Render badges on single product near gallery (hooked into woocommerce_product_thumbnails).
+	 *
+	 * Intentionally unchanged aside from shared collect/print helpers — gallery
+	 * markup and product-page CSS are fragile; Best sold is catalog-only.
 	 */
 	public function render_single_badges() {
 		if ( ! is_product() ) {

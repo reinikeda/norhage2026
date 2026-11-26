@@ -48,3 +48,6 @@ msgstr "Zeigt ein rundes „Hergestellt von Norhage“-Badge auf dem Produktbild
 
 msgid "Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on."
 msgstr ""
+
+msgid "Best sold"
+msgstr "Bestseller"

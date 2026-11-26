@@ -1,13 +1,16 @@
 /**
- * NHG Product Labels — circular Made + compact Sale chips
- * Version 1.3.1
+ * NHG Product Labels — Example A catalog layout
+ * Version 1.4.0
  *
- * Layout (catalog thumbnail):
+ * Catalog thumbnail (on image):
  *   LEFT  — Made (circle) → New stacked below
  *   RIGHT — Wishlist (theme) → Sale → Custom Size
  *   BOTTOM — Stock strip
  *
- * Sale text is shortened in PHP (−11%, −10–20%) so chips stay compact.
+ * Catalog summary (under image, highlight only):
+ *   Best sold full-width bar (flex order -1)
+ *
+ * Single product: same on-image chips; no Best sold.
  */
 
 :root {
@@ -207,7 +210,8 @@
 	z-index: 2;
 }
 
-.nhg-badge--stock[data-stock="out"] {
+.nhg-badge--stock[data-stock="out"],
+.nhg-badge--stock[data-stock="low"] {
 	background: var(--nhg-stock-out);
 	color: #fff;
 }
@@ -218,7 +222,57 @@
 }
 
 /* ==========================================================================
+   BEST SOLD — under image, catalog highlight only (not on photo / not on PDP)
+   ========================================================================== */
+
+.nhg-labels.nhg-labels--below {
+	position: relative;
+	inset: auto;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	order: -1;
+	align-self: stretch;
+	z-index: 1;
+	margin: 0;
+	pointer-events: none;
+}
+
+/* Bleed to card edges when summary wrap has highlight padding. */
+.woocommerce ul.products li.product.nh-catalog-highlight .nhg-labels--below {
+	--nhg-best-bleed: 0.7rem;
+	margin: calc(var(--nhg-best-bleed) * -1) calc(var(--nhg-best-bleed) * -1) 0;
+	width: auto;
+}
+
+@media (max-width: 768px) {
+	.woocommerce ul.products li.product.nh-catalog-highlight .nhg-labels--below {
+		--nhg-best-bleed: 0.55rem;
+	}
+}
+
+.nhg-badge--best {
+	position: static;
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	padding: 6px 10px;
+	border-radius: 0;
+	background: var(--nhg-forest);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	box-shadow: none;
+	white-space: nowrap;
+}
+
+/* ==========================================================================
    Single product — no wishlist clearance; Made still a circle
+   Keep rules scoped; do not restyle the gallery beyond badge offsets.
+   Best sold is not hooked on single title — leave related-loop cards alone.
    ========================================================================== */
 
 .single-product .nhg-labels {
