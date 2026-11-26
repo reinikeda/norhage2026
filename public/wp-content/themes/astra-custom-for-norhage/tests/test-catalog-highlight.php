@@ -300,9 +300,10 @@ nh_hl_assert(
 		&& false !== strpos( $css, 'word-break: normal' )
 );
 nh_hl_assert(
-	'highlight ATC has wider side inset than title',
+	'highlight ATC uses side margin outside the green pill',
 	false !== strpos( $css, '.astra-shop-summary-wrap > a.button' )
-		&& false !== strpos( $css, 'padding-left: 0.7rem' )
+		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
+		&& false !== strpos( $css, 'width: auto !important' )
 );
 
 $nb = "\xE2\x80\x91";

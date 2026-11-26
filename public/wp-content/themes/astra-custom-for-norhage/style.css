@@ -926,7 +926,7 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   box-sizing: border-box;
 }
 
-.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below):not(a.button):not(a.add_to_cart_button):not(a.nh-btn-customize) {
   margin-left: 0 !important;
   margin-right: 0 !important;
   padding-left: var(--nh-highlight-inset);
@@ -935,12 +935,21 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   max-width: 100%;
 }
 
-/* ATC needs more side room than title — was too flush after the tight inset */
+/*
+ * ATC: use side MARGIN (not padding). Padding only inset the label inside
+ * a full-width green pill — the button still looked edge-flush.
+ */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.button,
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.add_to_cart_button,
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.nh-btn-customize {
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
+  margin-left: 0.7rem !important;
+  margin-right: 0.7rem !important;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  width: auto !important;
+  max-width: none;
+  align-self: stretch;
+  box-sizing: border-box;
 }
 
 /* Sale / Best seller — full bleed under the photo (same width as image) */
