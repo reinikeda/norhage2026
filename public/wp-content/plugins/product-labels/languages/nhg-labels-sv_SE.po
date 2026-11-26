@@ -51,3 +51,9 @@ msgstr ""
 
 msgid "Best sold"
 msgstr "Mest såld"
+
+msgid "Save %s"
+msgstr "Spara %s"
+
+msgid "Save up to %s"
+msgstr "Spara upp till %s"

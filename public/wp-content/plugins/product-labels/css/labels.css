@@ -1,16 +1,16 @@
 /**
- * NHG Product Labels — Example A catalog layout
- * Version 1.4.0
+ * NHG Product Labels — Example A + under-image Sale/Best sold
+ * Version 1.4.1
  *
  * Catalog thumbnail (on image):
  *   LEFT  — Made (circle) → New stacked below
- *   RIGHT — Wishlist (theme) → Sale → Custom Size
- *   BOTTOM — Stock strip
+ *   RIGHT — Wishlist (theme) → Custom Size
+ *   BOTTOM — Stock strip (Out / Low); OOS shows stock only
  *
- * Catalog summary (under image, highlight only):
- *   Best sold full-width bar (flex order -1)
+ * Catalog under image (flush to photo):
+ *   Sale ("Save … €" / "Save up to … €") then Best sold (highlight)
  *
- * Single product: same on-image chips; no Best sold.
+ * Single product: on-image chips including Sale; no under-image bars.
  */
 
 :root {
@@ -149,7 +149,7 @@
 }
 
 /* ==========================================================================
-   SALE — compact (−11%), top-right under wishlist
+   SALE — on single gallery only (catalog Sale is under-image)
    ========================================================================== */
 
 .nhg-badge--sale {
@@ -163,10 +163,15 @@
 	letter-spacing: 0.01em;
 	padding: var(--nhg-label-pad-y) 7px;
 	z-index: 2;
+	text-transform: none;
+	white-space: normal;
+	max-width: calc(100% - 2 * var(--nhg-label-inset));
+	text-align: center;
+	line-height: 1.2;
 }
 
 /* ==========================================================================
-   CUSTOM SIZE — under Sale when both; else under wishlist
+   CUSTOM SIZE — under wishlist (catalog); under Sale on single when both
    ========================================================================== */
 
 .nhg-badge--custom {
@@ -183,7 +188,7 @@
 
 .nhg-labels:has(.nhg-badge--sale) .nhg-badge--custom {
 	top: calc(
-		var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
+		var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 2.4em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
 	);
 }
 
@@ -222,57 +227,82 @@
 }
 
 /* ==========================================================================
-   BEST SOLD — under image, catalog highlight only (not on photo / not on PDP)
+   UNDER IMAGE — Sale + Best sold, flush to photo (no gap)
    ========================================================================== */
 
 .nhg-labels.nhg-labels--below {
 	position: relative;
 	inset: auto;
-	width: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0;
+	width: 100%;
 	height: auto;
 	overflow: visible;
 	order: -1;
 	align-self: stretch;
 	z-index: 1;
 	margin: 0;
+	padding: 0;
 	pointer-events: none;
 }
 
-/* Bleed to card edges when summary wrap has highlight padding. */
-.woocommerce ul.products li.product.nh-catalog-highlight .nhg-labels--below {
-	--nhg-best-bleed: 0.7rem;
-	margin: calc(var(--nhg-best-bleed) * -1) calc(var(--nhg-best-bleed) * -1) 0;
-	width: auto;
-}
-
-@media (max-width: 768px) {
-	.woocommerce ul.products li.product.nh-catalog-highlight .nhg-labels--below {
-		--nhg-best-bleed: 0.55rem;
-	}
-}
-
+.nhg-badge--sale-below,
 .nhg-badge--best {
 	position: static;
 	display: flex;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
-	padding: 6px 10px;
+	padding: 7px 10px;
 	border-radius: 0;
+	box-shadow: none;
+	letter-spacing: 0.04em;
+	line-height: 1.25;
+	white-space: normal;
+	text-align: center;
+	max-width: none;
+}
+
+.nhg-badge--sale-below {
+	background: var(--nhg-sale);
+	color: #fff;
+	text-transform: none;
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.nhg-badge--best {
 	background: var(--nhg-forest);
 	color: #fff;
+	text-transform: uppercase;
 	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	box-shadow: none;
-	white-space: nowrap;
 }
 
 /* ==========================================================================
-   Single product — no wishlist clearance; Made still a circle
-   Keep rules scoped; do not restyle the gallery beyond badge offsets.
-   Best sold is not hooked on single title — leave related-loop cards alone.
+   Hide Woo / Astra default loop stock + sale flash (we own these)
+   ========================================================================== */
+
+.nhg-custom-below-container {
+	display: none !important;
+}
+
+.woocommerce ul.products li.product .ast-shop-product-out-of-stock,
+.woocommerce ul.products li.product .astra-shop-product-out-of-stock,
+.astra-shop-thumbnail-wrap .ast-shop-product-out-of-stock,
+.woocommerce ul.products li.product .out-of-stock,
+.woocommerce ul.products li.product .stock.out-of-stock,
+.woocommerce ul.products li.product .stock,
+.woocommerce ul.products li.product span.onsale,
+.woocommerce ul.products li.product .onsale {
+	display: none !important;
+}
+
+/* ==========================================================================
+   Single product — scoped; Sale stays on gallery
    ========================================================================== */
 
 .single-product .nhg-labels {
@@ -288,7 +318,7 @@
 }
 
 .single-product .nhg-labels:has(.nhg-badge--sale) .nhg-badge--custom {
-	top: calc(var(--nhg-label-inset) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
+	top: calc(var(--nhg-label-inset) + 2.4em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
 }
 
 /* ==========================================================================
@@ -309,6 +339,12 @@
 		font-size: 11px;
 		padding: 6px 10px;
 	}
+
+	.nhg-badge--sale-below,
+	.nhg-badge--best {
+		font-size: 12px;
+		padding: 8px 12px;
+	}
 }
 
 @media (min-width: 1024px) {
@@ -318,10 +354,6 @@
 	}
 }
 
-/* ==========================================================================
-   Fallback without :has() — New under Made via sibling
-   ========================================================================== */
-
 @supports not selector(:has(*)) {
 	.nhg-badge--made + .nhg-badge--new {
 		top: calc(var(--nhg-label-inset) + var(--nhg-made-size) + var(--nhg-label-gap));
@@ -329,11 +361,11 @@
 
 	.nhg-badge--sale + .nhg-badge--custom {
 		top: calc(
-			var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
+			var(--nhg-label-inset) + var(--nhg-wishlist-clearance) + 2.4em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap)
 		);
 	}
 
 	.single-product .nhg-badge--sale + .nhg-badge--custom {
-		top: calc(var(--nhg-label-inset) + 1.6em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
+		top: calc(var(--nhg-label-inset) + 2.4em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
 	}
 }

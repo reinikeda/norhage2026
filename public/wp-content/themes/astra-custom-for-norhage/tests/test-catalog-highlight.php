@@ -255,9 +255,9 @@ nh_hl_assert(
 	)
 );
 nh_hl_assert(
-	'highlight padding lives on summary wrap only',
+	'highlight summary has no top padding so under-image bars sit flush',
 	preg_match(
-		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\.7rem/s',
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
 		$css
 	)
 );
