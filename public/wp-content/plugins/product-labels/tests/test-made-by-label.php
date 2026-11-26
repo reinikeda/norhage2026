@@ -265,6 +265,9 @@ $sale_product = new class( 30 ) extends WC_Product {
 $sale_labels = $plugin->collect_labels( $sale_product );
 nhg_assert( 'collect sale uses Save money text', isset( $sale_labels['sale'] ) && 0 === strpos( $sale_labels['sale']['text'], 'Save ' ) );
 
+$sale_labels_2 = $plugin->collect_labels( $sale_product );
+nhg_assert( 'collect_labels is cached per request', $sale_labels === $sale_labels_2 );
+
 ob_start();
 $method->invoke( $plugin, $sale_labels, true );
 $sale_html = ob_get_clean();

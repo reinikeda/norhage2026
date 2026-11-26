@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -33,6 +33,13 @@ class NHG_Product_Labels {
 	 * Theme meta key for catalog highlight products (Best sold).
 	 */
 	const HIGHLIGHT_META_KEY = '_nh_catalog_highlight';
+
+	/**
+	 * Per-request label cache (related products were collecting twice each).
+	 *
+	 * @var array<int,array>
+	 */
+	protected $label_cache = [];
 
 	/**
 	 * Constructor: register hooks
@@ -106,7 +113,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.4.1'
+			'1.4.2'
 		);
 	}
 
@@ -123,21 +130,15 @@ class NHG_Product_Labels {
 	public function filter_woocommerce_get_stock_html( $html, $product ) {
 		unset( $product );
 
-		// Any active Woo product loop → we own the label.
-		if ( function_exists( 'woocommerce_product_loop' ) && woocommerce_product_loop() ) {
-			return '';
-		}
-
-		// Shop / taxonomy archives even if loop prop is unset.
-		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
-			return '';
-		}
-
-		// Preserve stock HTML on the main single product summary only.
+		// Main single-product summary (not related/upsells/cross-sells).
 		if ( function_exists( 'is_product' ) && is_product() ) {
-			return $html;
+			$loop_name = function_exists( 'wc_get_loop_prop' ) ? wc_get_loop_prop( 'name' ) : '';
+			if ( empty( $loop_name ) ) {
+				return $html;
+			}
 		}
 
+		// Shop, archives, related, upsells, etc. — we own the badge.
 		return '';
 	}
 
@@ -340,6 +341,11 @@ class NHG_Product_Labels {
 	 * @return array
 	 */
 	public function collect_labels( WC_Product $product ) : array {
+		$id = (int) $product->get_id();
+		if ( $id && isset( $this->label_cache[ $id ] ) ) {
+			return $this->label_cache[ $id ];
+		}
+
 		$labels = [];
 
 		// Out of stock: only the stock badge — drop Sale / Made / New / Custom.
@@ -349,74 +355,18 @@ class NHG_Product_Labels {
 				'text'       => __( 'Out of stock', $this->text_domain ),
 				'stock_type' => 'out',
 			];
+			if ( $id ) {
+				$this->label_cache[ $id ] = $labels;
+			}
 			return $labels;
 		}
 
 		// -------- SALE (euro savings; catalog shows this under the image) --------
 		if ( $product->is_on_sale() ) {
-			$sale = $this->format_sale_badge( 'plain' );
-
-			if ( ! $product->is_type( 'variable' ) ) {
-				$regular = (float) $product->get_regular_price();
-				$sale_p  = (float) $product->get_sale_price();
-
-				if ( $regular > 0 && $sale_p > 0 && $sale_p < $regular ) {
-					$save = $regular - $sale_p;
-					if ( $save > 0 ) {
-						$sale = $this->format_sale_badge( 'exact', $save );
-					}
-				}
-			} else {
-				$variation_saves  = [];
-				$total_variations = 0;
-				$discounted_count = 0;
-				$variation_ids    = $product->get_children();
-
-				if ( is_array( $variation_ids ) && ! empty( $variation_ids ) ) {
-					foreach ( $variation_ids as $var_id ) {
-						$var = wc_get_product( $var_id );
-
-						if ( ! $var || ! $var->exists() ) {
-							continue;
-						}
-
-						$total_variations++;
-
-						if ( ! $var->is_on_sale() ) {
-							continue;
-						}
-
-						$reg = (float) $var->get_regular_price();
-						$sal = (float) $var->get_sale_price();
-
-						if ( $reg > 0 && $sal > 0 && $sal < $reg ) {
-							$save = $reg - $sal;
-							if ( $save > 0 ) {
-								$variation_saves[] = $save;
-								$discounted_count++;
-							}
-						}
-					}
-				}
-
-				if ( ! empty( $variation_saves ) ) {
-					$max = max( $variation_saves );
-					$min = min( $variation_saves );
-					$all = ( $total_variations > 0 && $discounted_count === $total_variations );
-
-					if ( ! $all || $min !== $max ) {
-						$sale = $this->format_sale_badge( 'upto', $max );
-					} else {
-						$sale = $this->format_sale_badge( 'exact', $min );
-					}
-				}
+			$sale = $this->build_sale_label( $product );
+			if ( $sale ) {
+				$labels['sale'] = $sale;
 			}
-
-			$labels['sale'] = [
-				'key'   => 'sale',
-				'text'  => $sale['text'],
-				'title' => $sale['title'],
-			];
 		}
 
 		// -------- MADE BY NORHAGE --------
@@ -465,7 +415,74 @@ class NHG_Product_Labels {
 			}
 		}
 
+		if ( $id ) {
+			$this->label_cache[ $id ] = $labels;
+		}
+
 		return $labels;
+	}
+
+	/**
+	 * Build sale label from euro savings without N+1 variation loads.
+	 *
+	 * Uses Woo's cached get_variation_prices() for variable products so single
+	 * product pages (main + related cards) stay fast.
+	 *
+	 * @param WC_Product $product Product.
+	 * @return array{key:string,text:string,title:string}|null
+	 */
+	public function build_sale_label( WC_Product $product ) {
+		$sale = $this->format_sale_badge( 'plain' );
+
+		if ( ! $product->is_type( 'variable' ) ) {
+			$regular = (float) $product->get_regular_price();
+			$sale_p  = (float) $product->get_sale_price();
+
+			if ( $regular > 0 && $sale_p > 0 && $sale_p < $regular ) {
+				$save = $regular - $sale_p;
+				if ( $save > 0 ) {
+					$sale = $this->format_sale_badge( 'exact', $save );
+				}
+			}
+		} elseif ( method_exists( $product, 'get_variation_prices' ) ) {
+			$prices           = $product->get_variation_prices( true );
+			$regular_prices   = isset( $prices['regular_price'] ) && is_array( $prices['regular_price'] ) ? $prices['regular_price'] : [];
+			$sale_prices      = isset( $prices['sale_price'] ) && is_array( $prices['sale_price'] ) ? $prices['sale_price'] : [];
+			$variation_saves  = [];
+			$total_variations = count( $regular_prices );
+			$discounted_count = 0;
+
+			foreach ( $regular_prices as $vid => $reg ) {
+				$reg = (float) $reg;
+				$sal = isset( $sale_prices[ $vid ] ) ? (float) $sale_prices[ $vid ] : 0.0;
+
+				if ( $reg > 0 && $sal > 0 && $sal < $reg ) {
+					$save = $reg - $sal;
+					if ( $save > 0 ) {
+						$variation_saves[] = $save;
+						$discounted_count++;
+					}
+				}
+			}
+
+			if ( ! empty( $variation_saves ) ) {
+				$max = max( $variation_saves );
+				$min = min( $variation_saves );
+				$all = ( $total_variations > 0 && $discounted_count === $total_variations );
+
+				if ( ! $all || $min !== $max ) {
+					$sale = $this->format_sale_badge( 'upto', $max );
+				} else {
+					$sale = $this->format_sale_badge( 'exact', $min );
+				}
+			}
+		}
+
+		return [
+			'key'   => 'sale',
+			'text'  => $sale['text'],
+			'title' => $sale['title'],
+		];
 	}
 
 	/**
