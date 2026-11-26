@@ -802,8 +802,13 @@ a.ast-on-card-button.ast-select-options-trigger,
   padding: 0 !important;
   text-align: left !important;
   align-self: flex-start;
-  /* Woo star font strip — do not change to auto */
-  width: 5.4em !important;
+  letter-spacing: 0;
+  /*
+   * Woo defaults to 5.4em; Astra/Windows star glyphs are a hair wider,
+   * which clipped the last empty star tip. Keep overflow:hidden for the
+   * filled-span technique — do not set width:auto (stars vanish).
+   */
+  width: 5.8em !important;
   max-width: 100%;
   overflow: hidden;
 }
@@ -812,7 +817,7 @@ a.ast-on-card-button.ast-select-options-trigger,
   margin: 0 !important;
   padding: 0 !important;
   float: none !important;
-  width: 5.4em !important;
+  width: 5.8em !important;
 }
 
 /* Match highlight card text inset explicitly (beats nested Woo float rules) */

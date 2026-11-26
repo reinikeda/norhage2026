@@ -277,8 +277,8 @@ nh_hl_assert(
 		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
 );
 nh_hl_assert(
-	'catalog star rating keeps Woo 5.4em width',
-	false !== strpos( $css, 'width: 5.4em !important' )
+	'catalog star rating uses widened 5.8em strip',
+	false !== strpos( $css, 'width: 5.8em !important' )
 );
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
