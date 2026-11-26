@@ -24,7 +24,7 @@ function nh_catalog_highlight_meta_key() {
 }
 
 /**
- * Post meta key for attribute names shown on the highlight card.
+ * Post meta key for attribute names shown on the catalog card.
  *
  * @return string
  */
@@ -80,9 +80,6 @@ function nh_catalog_highlight_selected_attr_names( $product_id ) {
  */
 function nh_catalog_highlight_attr_rows( $product ) {
 	if ( ! is_object( $product ) || ! method_exists( $product, 'get_id' ) ) {
-		return array();
-	}
-	if ( ! nh_product_is_catalog_highlight( $product ) ) {
 		return array();
 	}
 	if ( ! method_exists( $product, 'get_attribute' ) ) {
@@ -158,14 +155,14 @@ function nh_catalog_highlight_field() {
 		array(
 			'id'          => nh_catalog_highlight_meta_key(),
 			'label'       => __( 'Highlight in catalog', 'nh-theme' ),
-			'description' => __( 'Show this product with a highlighted card and place it first in category and shop grids. Tick attributes under the Attributes tab to list them on the card.', 'nh-theme' ),
+			'description' => __( 'Show this product with a highlighted card and place it first in category and shop grids. Tick attributes under the Attributes tab to list them on any catalog card.', 'nh-theme' ),
 		)
 	);
 	echo '</div>';
 }
 
 /**
- * Product Data → Attributes: per-attribute “show on highlight card” tick.
+ * Product Data → Attributes: per-attribute “show on catalog card” tick.
  *
  * @param \WC_Product_Attribute $attribute Attribute.
  * @param int                   $i         Attribute index in the admin form.
@@ -186,9 +183,9 @@ function nh_catalog_highlight_attr_setting( $attribute, $i ) {
 
 	echo '<tr class="nh-catalog-highlight-attr-row"><td colspan="2">';
 	echo '<label><input type="checkbox" class="checkbox" name="nh_catalog_highlight_attr[' . esc_attr( (string) (int) $i ) . ']" value="1" ' . checked( $checked, true, false ) . ' /> ';
-	echo esc_html__( 'Show on catalog highlight card', 'nh-theme' );
+	echo esc_html__( 'Show on catalog card', 'nh-theme' );
 	echo '</label>';
-	echo '<p class="description" style="margin:4px 0 0;">' . esc_html__( 'Only used when Highlight in catalog is enabled. Values appear under the title on category cards.', 'nh-theme' ) . '</p>';
+	echo '<p class="description" style="margin:4px 0 0;">' . esc_html__( 'Values appear under the title on category and shop cards for this product.', 'nh-theme' ) . '</p>';
 	echo '</td></tr>';
 }
 
@@ -384,8 +381,9 @@ function nh_catalog_title_protect_size_range( $title, $post_id = 0 ) {
 add_filter( 'the_title', 'nh_catalog_title_protect_size_range', 20, 2 );
 
 /**
- * Print selected attributes on highlighted catalog cards (between title and price).
+ * Print selected attributes on catalog cards (between title and price).
  *
+ * Works for every product with ticks under Attributes — not only highlights.
  * Astra rebuilds the shop card: title/price live in .astra-shop-summary-wrap via
  * astra_woo_woocommerce_shop_product_content(). Woo’s after_shop_loop_item_title
  * still fires inside the thumbnail wrap, so use Astra’s title_after hook.

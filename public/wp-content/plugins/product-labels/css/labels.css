@@ -1,17 +1,17 @@
 /**
- * NHG Product Labels — Example A + under-image Sale/Best sold
- * Version 1.4.4
+ * NHG Product Labels — Example A + under-image Sale/Made by
+ * Version 1.5.0
  *
  * Catalog thumbnail (on image):
- *   LEFT  — Made (circle) → New stacked below
+ *   LEFT  — Best seller flag → New stacked below
  *   RIGHT — Wishlist (theme) → Custom Size
  *   BOTTOM — Stock strip (Out / Low); OOS shows stock only
  *
  * Catalog under image (flush to photo):
- *   Sale ("Save … €" / "Save up to … €") then Best sold (highlight)
+ *   Sale ("Save … €" / "Save from … €") then Made by Norhage
  *
  * Single product:
- *   Gallery — Made by only (nested in main image)
+ *   Gallery — Made by circle only (nested in main image)
  *   Summary — Save € note under price (variation-aware)
  */
 
@@ -26,6 +26,7 @@
 	--nhg-label-shadow: 0 1px 2px rgba(15, 23, 15, 0.12);
 	--nhg-made-size: 50px;
 	--nhg-made-font: 6.75px;
+	--nhg-best-flag-h: 22px;
 	--nhg-wishlist-clearance: 40px;
 	--nhg-forest: #1B3A2F;
 	--nhg-cream: #F7F4EF;
@@ -76,7 +77,31 @@
 }
 
 /* ==========================================================================
-   MADE BY NORHAGE — circle, top-left
+   BEST SELLER — flag, top-left (catalog highlight)
+   ========================================================================== */
+
+.nhg-badge--best-flag {
+	top: var(--nhg-label-inset);
+	left: 0;
+	right: auto;
+	bottom: auto;
+	height: var(--nhg-best-flag-h);
+	min-height: var(--nhg-best-flag-h);
+	padding: 0 14px 0 10px;
+	border-radius: 0;
+	background: var(--nhg-forest);
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+	box-shadow: none;
+	z-index: 3;
+}
+
+/* ==========================================================================
+   MADE BY NORHAGE — circle, top-left (single gallery only)
    ========================================================================== */
 
 .nhg-badge--made {
@@ -129,7 +154,7 @@
 }
 
 /* ==========================================================================
-   NEW — under Made when both present; else top-left
+   NEW — under Best seller flag when both present; else top-left
    ========================================================================== */
 
 .nhg-badge--new {
@@ -140,6 +165,11 @@
 	background: var(--nhg-forest);
 	color: #fff;
 	z-index: 2;
+}
+
+.nhg-labels:has(.nhg-badge--best-flag) .nhg-badge--new {
+	top: calc(var(--nhg-label-inset) + var(--nhg-best-flag-h) + var(--nhg-label-gap));
+	left: var(--nhg-label-inset);
 }
 
 .nhg-labels:has(.nhg-badge--made) .nhg-badge--new {
@@ -229,7 +259,7 @@
 }
 
 /* ==========================================================================
-   UNDER IMAGE — Sale + Best sold, flush to photo (no gap)
+   UNDER IMAGE — Sale + Made by, flush to photo (no gap)
    ========================================================================== */
 
 .nhg-labels.nhg-labels--below {
@@ -254,7 +284,7 @@
 }
 
 .nhg-badge--sale-below,
-.nhg-badge--best {
+.nhg-badge--made-below {
 	position: static;
 	display: flex;
 	width: 100%;
@@ -278,7 +308,7 @@
 	font-weight: 700;
 }
 
-.nhg-badge--best {
+.nhg-badge--made-below {
 	background: var(--nhg-forest);
 	color: #fff;
 	text-transform: uppercase;
@@ -360,7 +390,13 @@
 		--nhg-label-font: 11px;
 		--nhg-made-size: 54px;
 		--nhg-made-font: 7.25px;
+		--nhg-best-flag-h: 24px;
 		--nhg-wishlist-clearance: 44px;
+	}
+
+	.nhg-badge--best-flag {
+		font-size: 11px;
+		padding: 0 16px 0 12px;
 	}
 
 	.nhg-badge--stock {
@@ -369,7 +405,7 @@
 	}
 
 	.nhg-badge--sale-below,
-	.nhg-badge--best {
+	.nhg-badge--made-below {
 		font-size: 12px;
 		padding: 8px 12px;
 	}
@@ -383,6 +419,10 @@
 }
 
 @supports not selector(:has(*)) {
+	.nhg-badge--best-flag + .nhg-badge--new {
+		top: calc(var(--nhg-label-inset) + var(--nhg-best-flag-h) + var(--nhg-label-gap));
+	}
+
 	.nhg-badge--made + .nhg-badge--new {
 		top: calc(var(--nhg-label-inset) + var(--nhg-made-size) + var(--nhg-label-gap));
 	}

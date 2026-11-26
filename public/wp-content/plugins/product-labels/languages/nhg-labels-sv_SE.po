@@ -46,14 +46,14 @@ msgstr "Tillverkad av Norhage"
 msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
 msgstr "Visa en cirkulär ”Tillverkad av Norhage”-bricka på produktbilden (uppe till vänster)."
 
-msgid "Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on."
-msgstr "Visa en cirkulär ”Tillverkad av Norhage”-bricka på produktbilden (uppe till vänster). Produkter med varumärket Norhage får detta automatiskt; kryssa i här för att tvinga fram det."
+msgid "Show “Made by Norhage” under the catalog photo and as a circular badge on the product page. Products with brand Norhage get this automatically; tick here to force it on."
+msgstr "Visa ”Tillverkad av Norhage” under katalogbilden och som en cirkulär bricka på produktsidan. Produkter med varumärket Norhage får detta automatiskt; kryssa i här för att tvinga fram det."
 
-msgid "Our best seller"
-msgstr "Vår storsäljare"
+msgid "Best seller"
+msgstr "Storsäljare"
 
 msgid "Save %s"
 msgstr "Spara %s"
 
-msgid "Save up to %s"
-msgstr "Spara upp till %s"
+msgid "Save from %s"
+msgstr "Spara från %s"

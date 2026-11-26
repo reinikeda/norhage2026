@@ -236,7 +236,7 @@ ob_start();
 $ref = new ReflectionClass( $plugin );
 $method = $ref->getMethod( 'print_badges' );
 $method->setAccessible( true );
-$method->invoke( $plugin, $labels );
+$method->invoke( $plugin, $labels, false, true );
 $html = ob_get_clean();
 
 nhg_assert( 'badge html has made class', false !== strpos( $html, 'nhg-badge--made' ) );
@@ -247,11 +247,19 @@ nhg_assert(
 	strpos( $html, 'nhg-badge--made' ) < strpos( $html, 'nhg-badge--new' )
 );
 
+ob_start();
+$method->invoke( $plugin, $labels, false, false );
+$catalog_thumb = ob_get_clean();
+nhg_assert( 'catalog on-image print omits Made by circle', false === strpos( $catalog_thumb, 'nhg-badge--made' ) );
+nhg_assert( 'catalog on-image print still has New', false !== strpos( $catalog_thumb, 'nhg-badge--new' ) );
+
 $exact = $plugin->format_sale_badge( 'exact', 11 );
 nhg_assert( 'exact sale badge uses Save + money', 0 === strpos( $exact['text'], 'Save ' ) && false !== strpos( $exact['text'], '11,00' ) );
 
+$from = $plugin->format_sale_badge( 'from', 50.5 );
+nhg_assert( 'from sale badge uses Save from', 0 === strpos( $from['text'], 'Save from ' ) );
 $upto = $plugin->format_sale_badge( 'upto', 50.5 );
-nhg_assert( 'upto sale badge uses Save up to', 0 === strpos( $upto['text'], 'Save up to ' ) );
+nhg_assert( 'upto alias still maps to Save from', 0 === strpos( $upto['text'], 'Save from ' ) );
 
 $sale_product = new class( 30 ) extends WC_Product {
 	protected $on_sale = true;
@@ -295,7 +303,8 @@ nhg_assert( 'oos stock type is out', 'out' === $oos_labels['stock']['stock_type'
 $css = file_get_contents( dirname( __DIR__ ) . '/css/labels.css' );
 nhg_assert( 'css defines circular made size', false !== strpos( $css, '--nhg-made-size:' ) );
 nhg_assert( 'css made badge is a circle', false !== strpos( $css, 'border-radius: 50%' ) );
-nhg_assert( 'css stacks new under made circle', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
+nhg_assert( 'css stacks new under made circle on single', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
+nhg_assert( 'css stacks new under Best seller flag', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--best-flag) .nhg-badge--new' ) );
 nhg_assert( 'css parks custom under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
 nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-label-inset)' ) );
 nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@media (min-width: 768px)' ) );
@@ -304,7 +313,8 @@ nhg_assert(
 	false === strpos( $css, '.nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge' )
 );
 nhg_assert( 'css defines below-image container', false !== strpos( $css, '.nhg-labels--below' ) );
-nhg_assert( 'css defines Best sold badge', false !== strpos( $css, '.nhg-badge--best' ) );
+nhg_assert( 'css defines Best seller flag', false !== strpos( $css, '.nhg-badge--best-flag' ) );
+nhg_assert( 'css defines under-image Made by badge', false !== strpos( $css, '.nhg-badge--made-below' ) );
 nhg_assert( 'css defines under-image sale badge', false !== strpos( $css, '.nhg-badge--sale-below' ) );
 nhg_assert( 'css hides Astra default OOS nodes', false !== strpos( $css, '.ast-shop-product-out-of-stock' ) );
 nhg_assert( 'css hides Woo stock.out-of-stock in loop', false !== strpos( $css, '.stock.out-of-stock' ) );
@@ -344,10 +354,10 @@ $required_msgids = array(
 	'Low stock',
 	'Made by',
 	'Made by Norhage',
-	'Our best seller',
+	'Best seller',
 	'Save %s',
-	'Save up to %s',
-	'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.',
+	'Save from %s',
+	'Show “Made by Norhage” under the catalog photo and as a circular badge on the product page. Products with brand Norhage get this automatically; tick here to force it on.',
 );
 foreach ( $locales as $locale ) {
 	$po = $lang_dir . '/nhg-labels-' . $locale . '.po';
@@ -369,24 +379,36 @@ nhg_assert( 'delivery script yields to Save note', false !== strpos( $delivery_j
 
 $nhg_meta[ 40 ][ '_nh_catalog_highlight' ] = 'yes';
 $nhg_meta[ 41 ][ '_nh_catalog_highlight' ] = 'no';
+$nhg_meta[ 42 ][ '_nhg_made_by_norhage' ] = 'yes';
 $highlight = new WC_Product( 40 );
 $plain_hl  = new WC_Product( 41 );
-nhg_assert( 'highlight meta enables Best sold gate', true === $plugin->is_catalog_highlight( $highlight ) );
-nhg_assert( 'non-highlight skips Best sold gate', false === $plugin->is_catalog_highlight( $plain_hl ) );
+$made_only = new WC_Product( 42 );
+nhg_assert( 'highlight meta enables Best seller gate', true === $plugin->is_catalog_highlight( $highlight ) );
+nhg_assert( 'non-highlight skips Best seller gate', false === $plugin->is_catalog_highlight( $plain_hl ) );
+
+$hl_labels = $plugin->collect_labels( $highlight );
+nhg_assert( 'highlight collect includes Best seller', isset( $hl_labels['best'] ) );
+nhg_assert( 'Best seller text ends with pipe', 'Best seller |' === $hl_labels['best']['text'] );
 
 global $product;
 $product = $highlight;
 ob_start();
 $plugin->render_below_image_badge();
-$best_html = ob_get_clean();
-nhg_assert( 'below-image Best sold renders for highlight', false !== strpos( $best_html, 'nhg-badge--best' ) );
-nhg_assert( 'below-image Best sold text present', false !== strpos( $best_html, 'Our best seller' ) );
+$best_below = ob_get_clean();
+nhg_assert( 'below-image omits Best seller for highlight-only', '' === $best_below );
+
+$product = $made_only;
+ob_start();
+$plugin->render_below_image_badge();
+$made_html = ob_get_clean();
+nhg_assert( 'below-image Made by renders as text bar', false !== strpos( $made_html, 'nhg-badge--made-below' ) );
+nhg_assert( 'below-image Made by text present', false !== strpos( $made_html, 'Made by Norhage' ) );
 
 $product = $plain_hl;
 ob_start();
 $plugin->render_below_image_badge();
-$no_best = ob_get_clean();
-nhg_assert( 'non-highlight without sale prints nothing below', '' === $no_best );
+$no_below = ob_get_clean();
+nhg_assert( 'non-highlight without sale/made prints nothing below', '' === $no_below );
 
 $product = $sale_product;
 ob_start();
@@ -402,9 +424,11 @@ $oos_below = ob_get_clean();
 nhg_assert( 'oos prints nothing under image', '' === $oos_below );
 
 ob_start();
-$method->invoke( $plugin, $plugin->collect_labels( $highlight ), false );
+$method->invoke( $plugin, $plugin->collect_labels( $highlight ), false, false );
 $thumb_html = ob_get_clean();
-nhg_assert( 'on-image badges never include Best sold', false === strpos( $thumb_html, 'nhg-badge--best' ) );
+nhg_assert( 'on-image badges include Best seller flag', false !== strpos( $thumb_html, 'nhg-badge--best-flag' ) );
+nhg_assert( 'on-image Best seller shows flag text', false !== strpos( $thumb_html, 'Best seller |' ) );
+nhg_assert( 'on-image badges omit Made by circle for highlight', false === strpos( $thumb_html, 'nhg-badge--made' ) );
 
 $theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
 nhg_assert( 'theme flex-orders under-image bars first', false !== strpos( $theme_css, '.nhg-labels--below' ) && false !== strpos( $theme_css, 'order: -1' ) );

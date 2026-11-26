@@ -46,14 +46,14 @@ msgstr "Pagaminta Norhage"
 msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
 msgstr "Rodyti apvalų „Pagaminta Norhage“ ženklelį ant produkto nuotraukos (viršuje kairėje)."
 
-msgid "Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on."
-msgstr "Rodyti apvalų „Pagaminta Norhage“ ženklelį ant produkto nuotraukos (viršuje kairėje). Produktai su Norhage prekės ženklu gauna jį automatiškai; pažymėkite čia, kad priverstumėte rodyti."
+msgid "Show “Made by Norhage” under the catalog photo and as a circular badge on the product page. Products with brand Norhage get this automatically; tick here to force it on."
+msgstr "Rodyti „Pagaminta Norhage“ po katalogo nuotrauka ir kaip apvalų ženklelį produkto puslapyje. Produktai su Norhage prekės ženklu gauna jį automatiškai; pažymėkite čia, kad priverstumėte rodyti."
 
-msgid "Our best seller"
+msgid "Best seller"
 msgstr "Perkamiausias"
 
 msgid "Save %s"
 msgstr "Sutaupykite %s"
 
-msgid "Save up to %s"
-msgstr "Sutaupykite iki %s"
+msgid "Save from %s"
+msgstr "Sutaupykite nuo %s"
