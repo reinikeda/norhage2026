@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.4.2
+ * Version: 1.4.3
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -42,6 +42,13 @@ class NHG_Product_Labels {
 	protected $label_cache = [];
 
 	/**
+	 * Whether Made by was already injected into the main gallery image HTML.
+	 *
+	 * @var bool
+	 */
+	protected $single_made_injected = false;
+
+	/**
 	 * Constructor: register hooks
 	 */
 	public function __construct() {
@@ -55,9 +62,12 @@ class NHG_Product_Labels {
 		// Priority 1 so it can flex-order above category/title without touching PDP.
 		add_action( 'astra_woo_shop_title_after', [ $this, 'render_below_image_badge' ], 1 );
 
-		// Single product: render badges inside the gallery wrapper (preferred)
-		// woocommerce_product_thumbnails runs inside the gallery template in many themes (Astra-compatible)
-		add_action( 'woocommerce_product_thumbnails', [ $this, 'render_single_badges' ], 5 );
+		// Single: Made by on the main gallery image (survives Flexslider/gallery JS).
+		add_filter( 'woocommerce_single_product_image_thumbnail_html', [ $this, 'inject_single_made_badge' ], 20, 2 );
+
+		// Single: Save € note under the summary price (updates with variation).
+		add_action( 'woocommerce_single_product_summary', [ $this, 'render_single_save_note' ], 11 );
+		add_filter( 'woocommerce_available_variation', [ $this, 'add_variation_save_html' ], 10, 3 );
 
 		// Hide core WooCommerce stock HTML in loops (we provide our own badge)
 		add_filter( 'woocommerce_get_stock_html', [ $this, 'filter_woocommerce_get_stock_html' ], 10, 2 );
@@ -69,7 +79,7 @@ class NHG_Product_Labels {
 		add_action( 'woocommerce_product_options_general_product_data', [ $this, 'render_made_field' ] );
 		add_action( 'woocommerce_process_product_meta', [ $this, 'save_made_field' ] );
 
-		// Enqueue styles
+		// Enqueue styles (+ PDP save JS)
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 	}
 
@@ -93,7 +103,7 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Enqueue CSS file
+	 * Enqueue CSS (+ PDP Save note script).
 	 */
 	public function enqueue_assets() {
 		if ( is_admin() ) {
@@ -113,8 +123,23 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.4.2'
+			'1.4.3'
 		);
+
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			$js_path = plugins_url( 'js/single-save-note.js', __FILE__ );
+			$deps    = [ 'jquery' ];
+			if ( wp_script_is( 'wc-add-to-cart-variation', 'registered' ) ) {
+				$deps[] = 'wc-add-to-cart-variation';
+			}
+			wp_enqueue_script(
+				'nhg-single-save-note',
+				$js_path,
+				$deps,
+				'1.4.3',
+				true
+			);
+		}
 	}
 
 	/**
@@ -629,30 +654,116 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Render badges on single product near gallery (hooked into woocommerce_product_thumbnails).
+	 * Inject Made by into the main single-product gallery image HTML.
 	 *
-	 * Intentionally unchanged aside from shared collect/print helpers — gallery
-	 * markup and product-page CSS are fragile; Best sold is catalog-only.
+	 * Gallery JS (Flexslider) often drops loose siblings from
+	 * woocommerce_product_thumbnails; nesting inside the first image figure
+	 * keeps the badge visible. PDP shows Made by only — no New / Custom /
+	 * Sale / Stock on the photo (stock + Save live elsewhere).
+	 *
+	 * @param string $html          Image HTML.
+	 * @param int    $attachment_id Attachment ID.
+	 * @return string
 	 */
-	public function render_single_badges() {
-		if ( ! is_product() ) {
-			return;
+	public function inject_single_made_badge( $html, $attachment_id ) {
+		unset( $attachment_id );
+
+		if ( $this->single_made_injected || ! function_exists( 'is_product' ) || ! is_product() ) {
+			return $html;
 		}
+
 		global $product;
-
-		if ( ! $product instanceof WC_Product ) {
-			return;
+		if ( ! $product instanceof WC_Product || ! $this->is_made_by_norhage( $product ) ) {
+			return $html;
 		}
 
-		$labels = $this->collect_labels( $product );
-		if ( empty( $labels ) ) {
-			return;
-		}
+		$this->single_made_injected = true;
 
-		// Output container that is intended to be inside the gallery wrapper
+		$labels = [
+			'made' => [
+				'key'   => 'made',
+				'line1' => __( 'Made by', $this->text_domain ),
+				'line2' => 'Norhage',
+				'text'  => __( 'Made by Norhage', $this->text_domain ),
+			],
+		];
+
+		ob_start();
 		echo '<div class="nhg-labels nhg-labels--single" aria-hidden="true">';
-		$this->print_badges( $labels, true );
+		$this->print_badges( $labels, false );
 		echo '</div>';
+		$badge = ob_get_clean();
+
+		if ( ! is_string( $html ) || '' === $html ) {
+			return $badge;
+		}
+
+		// Prefer nesting inside the first wrapper element so absolute positioning works.
+		$injected = preg_replace( '/^(<\s*[a-zA-Z0-9]+\b[^>]*>)/', '$1' . $badge, $html, 1 );
+		return is_string( $injected ) ? $injected : ( $badge . $html );
+	}
+
+	/**
+	 * Print Save € note under the single-product summary price.
+	 *
+	 * Variable products start with "Save up to …" (or exact if all equal),
+	 * then single-save-note.js swaps in the selected variation amount.
+	 */
+	public function render_single_save_note() {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return;
+		}
+
+		global $product;
+		if ( ! $product instanceof WC_Product || ! $product->is_on_sale() || ! $product->is_in_stock() ) {
+			return;
+		}
+
+		$sale = $this->build_sale_label( $product );
+		if ( empty( $sale['text'] ) ) {
+			return;
+		}
+
+		printf(
+			'<p class="nhg-save-note" data-nhg-save-default="%s">%s</p>',
+			esc_attr( $sale['text'] ),
+			esc_html( $sale['text'] )
+		);
+	}
+
+	/**
+	 * Attach preformatted Save HTML to each variation for the PDP note.
+	 *
+	 * @param array                $data      Variation data for JS.
+	 * @param WC_Product           $product   Parent variable product.
+	 * @param WC_Product_Variation $variation Variation.
+	 * @return array
+	 */
+	public function add_variation_save_html( $data, $product, $variation ) {
+		unset( $product );
+
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
+		$data['nhg_save_html'] = '';
+
+		if ( ! $variation instanceof WC_Product ) {
+			return $data;
+		}
+
+		$reg  = isset( $data['display_regular_price'] ) ? (float) $data['display_regular_price'] : 0.0;
+		$sale = isset( $data['display_price'] ) ? (float) $data['display_price'] : 0.0;
+
+		if ( $reg > 0 && $sale > 0 && $sale < $reg ) {
+			$save = $reg - $sale;
+			if ( $save > 0 ) {
+				$badge                 = $this->format_sale_badge( 'exact', $save );
+				$data['nhg_save_html'] = $badge['text'];
+			}
+		}
+
+		return $data;
 	}
 }
 

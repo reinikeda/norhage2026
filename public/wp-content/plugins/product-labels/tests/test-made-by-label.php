@@ -320,6 +320,20 @@ nhg_assert(
 	'Best sold is not registered on single title_after',
 	! preg_match( "/add_action\\(\\s*'astra_woo_single_title_after'/", $plugin_src )
 );
+nhg_assert(
+	'single Made by injects into gallery image HTML',
+	false !== strpos( $plugin_src, 'inject_single_made_badge' )
+		&& false !== strpos( $plugin_src, 'woocommerce_single_product_image_thumbnail_html' )
+);
+nhg_assert(
+	'single Save note hooks summary after price',
+	(bool) preg_match(
+		"/add_action\\(\\s*'woocommerce_single_product_summary'\\s*,\\s*\\[\\s*\\\$this\\s*,\\s*'render_single_save_note'\\s*\\]\\s*,\\s*11\\s*\\)/",
+		$plugin_src
+	)
+);
+nhg_assert( 'css defines single Save note', false !== strpos( $css, '.nhg-save-note' ) );
+nhg_assert( 'save note script exists', is_readable( dirname( __DIR__ ) . '/js/single-save-note.js' ) );
 
 $nhg_meta[ 40 ][ '_nh_catalog_highlight' ] = 'yes';
 $nhg_meta[ 41 ][ '_nh_catalog_highlight' ] = 'no';
@@ -369,6 +383,52 @@ nhg_assert(
 		$theme_css
 	)
 );
+nhg_assert(
+	'highlight star ratings keep summary inset',
+	false !== strpos( $theme_css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
+		&& false !== strpos( $theme_css, 'margin-left: 0.7rem !important' )
+);
+
+global $nhg_is_product, $product;
+$nhg_is_product = true;
+$product        = $made_product;
+$gallery_html   = '<div class="woocommerce-product-gallery__image"><img alt="" /></div>';
+$injected       = $plugin->inject_single_made_badge( $gallery_html, 99 );
+nhg_assert( 'PDP injects Made by into main image HTML', false !== strpos( $injected, 'nhg-badge--made' ) );
+nhg_assert( 'PDP Made by nests inside image wrapper', 0 === strpos( $injected, '<div class="woocommerce-product-gallery__image">' ) );
+nhg_assert( 'PDP Made by inject skips New badge', false === strpos( $injected, 'nhg-badge--new' ) );
+nhg_assert( 'PDP Made by inject skips Sale badge', false === strpos( $injected, 'nhg-badge--sale' ) );
+$second = $plugin->inject_single_made_badge( $gallery_html, 100 );
+nhg_assert( 'PDP Made by injects only once per request', false === strpos( $second, 'nhg-badge--made' ) );
+
+$product = $sale_product;
+ob_start();
+$plugin->render_single_save_note();
+$save_note = ob_get_clean();
+nhg_assert( 'PDP Save note renders under-price markup', false !== strpos( $save_note, 'nhg-save-note' ) );
+nhg_assert( 'PDP Save note shows Save text', false !== strpos( $save_note, 'Save ' ) );
+
+$var_data = $plugin->add_variation_save_html(
+	[
+		'display_regular_price' => 100,
+		'display_price'         => 80,
+	],
+	$sale_product,
+	$sale_product
+);
+nhg_assert( 'variation carries Save html', isset( $var_data['nhg_save_html'] ) && 0 === strpos( $var_data['nhg_save_html'], 'Save ' ) );
+
+$var_plain = $plugin->add_variation_save_html(
+	[
+		'display_regular_price' => 50,
+		'display_price'         => 50,
+	],
+	$sale_product,
+	$sale_product
+);
+nhg_assert( 'non-sale variation clears Save html', isset( $var_plain['nhg_save_html'] ) && '' === $var_plain['nhg_save_html'] );
+
+$nhg_is_product = false;
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );

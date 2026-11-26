@@ -1,6 +1,6 @@
 /**
  * NHG Product Labels — Example A + under-image Sale/Best sold
- * Version 1.4.1
+ * Version 1.4.3
  *
  * Catalog thumbnail (on image):
  *   LEFT  — Made (circle) → New stacked below
@@ -10,7 +10,9 @@
  * Catalog under image (flush to photo):
  *   Sale ("Save … €" / "Save up to … €") then Best sold (highlight)
  *
- * Single product: on-image chips including Sale; no under-image bars.
+ * Single product:
+ *   Gallery — Made by only (nested in main image)
+ *   Summary — Save € note under price (variation-aware)
  */
 
 :root {
@@ -305,23 +307,46 @@
 }
 
 /* ==========================================================================
-   Single product — scoped; Sale stays on gallery
+   Single product — Made by on gallery image; Save under price
    ========================================================================== */
+
+.single-product .woocommerce-product-gallery,
+.single-product .woocommerce-product-gallery__image {
+	position: relative;
+}
 
 .single-product .nhg-labels {
 	--nhg-wishlist-clearance: 0px;
 	--nhg-made-size: 54px;
 	--nhg-made-font: 7.25px;
 	--nhg-label-inset: 10px;
+	z-index: 20;
 }
 
-.single-product .nhg-badge--sale,
-.single-product .nhg-badge--custom {
-	top: var(--nhg-label-inset);
+.single-product .nhg-labels--single {
+	border-radius: inherit;
 }
 
-.single-product .nhg-labels:has(.nhg-badge--sale) .nhg-badge--custom {
-	top: calc(var(--nhg-label-inset) + 2.4em + var(--nhg-label-pad-y) * 2 + var(--nhg-label-gap));
+/* Save note under summary price (not a catalog bar) */
+.single-product .summary .nhg-save-note,
+.single-product .entry-summary .nhg-save-note {
+	display: block;
+	margin: 0.35rem 0 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	color: var(--nhg-sale);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1.3;
+	letter-spacing: 0.01em;
+	text-transform: none;
+}
+
+.single-product .summary .nhg-save-note[hidden],
+.single-product .entry-summary .nhg-save-note[hidden] {
+	display: none !important;
 }
 
 /* ==========================================================================
