@@ -646,7 +646,7 @@ class NHG_Product_Labels {
 		if ( $has_best ) {
 			printf(
 				'<span class="nhg-badge nhg-badge--best">%s</span>',
-				esc_html( __( 'Best sold', $this->text_domain ) )
+				esc_html( __( 'Our best seller', $this->text_domain ) )
 			);
 		}
 
