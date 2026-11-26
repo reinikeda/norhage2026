@@ -305,6 +305,9 @@ nhg_assert( 'css defines circular made size', false !== strpos( $css, '--nhg-mad
 nhg_assert( 'css made badge is a circle', false !== strpos( $css, 'border-radius: 50%' ) );
 nhg_assert( 'css stacks new under made circle on single', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
 nhg_assert( 'css stacks new under Best seller flag', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--best-flag) .nhg-badge--new' ) );
+nhg_assert( 'css New badge is a circle', false !== strpos( $css, '.nhg-badge--new' ) && false !== strpos( $css, '--nhg-new-size:' ) && (bool) preg_match( '/\.nhg-badge--new\s*\{[^}]*border-radius:\s*50%/s', $css ) );
+nhg_assert( 'css New uses gold accent', false !== strpos( $css, '--nhg-gold:' ) && (bool) preg_match( '/\.nhg-badge--new\s*\{[^}]*background:\s*var\(--nhg-gold\)/s', $css ) );
+nhg_assert( 'css Best seller flag is flush to top', (bool) preg_match( '/\.nhg-badge--best-flag\s*\{[^}]*top:\s*0;/s', $css ) );
 nhg_assert( 'css parks custom under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
 nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-label-inset)' ) );
 nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@media (min-width: 768px)' ) );
@@ -388,7 +391,7 @@ nhg_assert( 'non-highlight skips Best seller gate', false === $plugin->is_catalo
 
 $hl_labels = $plugin->collect_labels( $highlight );
 nhg_assert( 'highlight collect includes Best seller', isset( $hl_labels['best'] ) );
-nhg_assert( 'Best seller text ends with pipe', 'Best seller |' === $hl_labels['best']['text'] );
+nhg_assert( 'Best seller text has no pipe', 'Best seller' === $hl_labels['best']['text'] );
 
 global $product;
 $product = $highlight;
@@ -427,7 +430,8 @@ ob_start();
 $method->invoke( $plugin, $plugin->collect_labels( $highlight ), false, false );
 $thumb_html = ob_get_clean();
 nhg_assert( 'on-image badges include Best seller flag', false !== strpos( $thumb_html, 'nhg-badge--best-flag' ) );
-nhg_assert( 'on-image Best seller shows flag text', false !== strpos( $thumb_html, 'Best seller |' ) );
+nhg_assert( 'on-image Best seller shows flag text', false !== strpos( $thumb_html, 'Best seller' ) );
+nhg_assert( 'on-image Best seller has no pipe', false === strpos( $thumb_html, 'Best seller |' ) );
 nhg_assert( 'on-image badges omit Made by circle for highlight', false === strpos( $thumb_html, 'nhg-badge--made' ) );
 
 $theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
