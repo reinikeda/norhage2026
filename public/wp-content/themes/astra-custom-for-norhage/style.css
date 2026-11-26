@@ -1010,29 +1010,44 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   }
 }
 
-/* Highlight card attribute list (title → attrs → price) */
+/* Catalog card attribute list — two-column rows (label | value) */
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs {
   list-style: none;
-  margin: 0.15rem 0 0.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0.3rem;
   padding: 0;
   color: var(--nh-charcoal, #2C2A29);
   font-size: 0.8125rem;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs__item {
+  display: grid;
+  grid-template-columns: minmax(4.75rem, 36%) minmax(0, 1fr);
+  column-gap: 0.55rem;
+  align-items: start;
   margin: 0;
   padding: 0;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__sep {
+  display: none;
 }
 
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs__label {
   font-weight: 600;
   color: var(--nh-forest, #1E3932);
+  line-height: 1.4;
 }
 
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs__value {
   font-weight: 400;
   color: var(--nh-charcoal, #2C2A29);
+  line-height: 1.4;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 /* =========================================================
