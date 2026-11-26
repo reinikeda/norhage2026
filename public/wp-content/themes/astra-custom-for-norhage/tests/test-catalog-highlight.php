@@ -333,6 +333,18 @@ nh_hl_assert(
 		$css
 	)
 );
+nh_hl_assert(
+	'catalog attr values are bold, labels are regular',
+	(bool) preg_match( '/\.nh-catalog-highlight-attrs__label\s*\{[^}]*font-weight:\s*400/s', $css )
+		&& (bool) preg_match( '/\.nh-catalog-highlight-attrs__value\s*\{[^}]*font-weight:\s*600/s', $css )
+);
+nh_hl_assert(
+	'catalog secondary title is smaller and not bold',
+	(bool) preg_match(
+		'/\.woocommerce ul\.products \.product-secondary-title[^\{]*\{[^}]*font-size:\s*0\.78em[^}]*font-weight:\s*400/s',
+		$css
+	)
+);
 
 $nb = "\xE2\x80\x91";
 $protected = nh_catalog_title_protect_size_range( 'Drivhus Tre 300 (12-36m²)', 10 );
