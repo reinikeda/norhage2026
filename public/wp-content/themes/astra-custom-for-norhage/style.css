@@ -935,6 +935,14 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   max-width: 100%;
 }
 
+/* ATC needs more side room than title — was too flush after the tight inset */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.button,
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.add_to_cart_button,
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.nh-btn-customize {
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+
 /* Sale / Best seller — full bleed under the photo (same width as image) */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
   margin: 0 !important;
@@ -953,14 +961,22 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   color: var(--nh-charcoal, #2C2A29);
 }
 
+/*
+ * Wrap on spaces only — do not break mid-token (overflow-wrap:anywhere
+ * was splitting "(12-36m²)" after the hyphen). Size ranges also use a
+ * non-breaking hyphen via nh_catalog_title_protect_size_range().
+ */
+.woocommerce ul.products li.product .ast-loop-product__link,
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
 .woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
 .woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title {
   display: block;
   max-width: 100%;
   box-sizing: border-box;
-  overflow-wrap: anywhere;
-  word-wrap: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   white-space: normal;
+  hyphens: manual;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {

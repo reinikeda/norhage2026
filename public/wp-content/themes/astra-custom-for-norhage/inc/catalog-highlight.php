@@ -346,6 +346,44 @@ function nh_catalog_highlight_admin_css() {
 }
 
 /**
+ * Keep size ranges like "(12-36m²)" from wrapping at the hyphen.
+ *
+ * Replaces ASCII/en/em dashes inside parentheses with a non-breaking hyphen
+ * so the catalog wraps as "Drivhus Tre 300" / "(12-36m²)" instead of
+ * "(12-" / "36m²)".
+ *
+ * @param string $title   Product title.
+ * @param int    $post_id Post ID when provided by the_title.
+ * @return string
+ */
+function nh_catalog_title_protect_size_range( $title, $post_id = 0 ) {
+	if ( ! is_string( $title ) || '' === $title ) {
+		return $title;
+	}
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $title;
+	}
+	if ( $post_id && function_exists( 'get_post_type' ) && 'product' !== get_post_type( $post_id ) ) {
+		return $title;
+	}
+	if ( false === strpos( $title, '(' ) ) {
+		return $title;
+	}
+
+	$nb_hyphen = "\xE2\x80\x91"; // U+2011 NON-BREAKING HYPHEN
+
+	return (string) preg_replace_callback(
+		'/\(([^)]*)\)/u',
+		static function ( $match ) use ( $nb_hyphen ) {
+			$inner = str_replace( array( '-', '–', '—' ), $nb_hyphen, $match[1] );
+			return '(' . $inner . ')';
+		},
+		$title
+	);
+}
+add_filter( 'the_title', 'nh_catalog_title_protect_size_range', 20, 2 );
+
+/**
  * Print selected attributes on highlighted catalog cards (between title and price).
  *
  * Astra rebuilds the shop card: title/price live in .astra-shop-summary-wrap via

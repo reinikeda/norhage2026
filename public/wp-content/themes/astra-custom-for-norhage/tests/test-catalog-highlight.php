@@ -82,6 +82,22 @@ if ( ! function_exists( 'wc_attribute_label' ) ) {
 		return isset( $map[ $name ] ) ? $map[ $name ] : $name;
 	}
 }
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() {
+		return false;
+	}
+}
+if ( ! function_exists( 'wp_doing_ajax' ) ) {
+	function wp_doing_ajax() {
+		return false;
+	}
+}
+if ( ! function_exists( 'get_post_type' ) ) {
+	function get_post_type( $post = null ) {
+		unset( $post );
+		return 'product';
+	}
+}
 
 require_once dirname( __DIR__ ) . '/inc/catalog-highlight.php';
 
@@ -279,9 +295,29 @@ nh_hl_assert(
 		&& false !== strpos( $css, 'width: 100% !important' )
 );
 nh_hl_assert(
-	'highlight title wraps inside the card',
-	false !== strpos( $css, 'overflow-wrap: anywhere' )
-		&& false !== strpos( $css, 'white-space: normal' )
+	'catalog titles wrap on spaces (not mid-token)',
+	false !== strpos( $css, 'overflow-wrap: normal' )
+		&& false !== strpos( $css, 'word-break: normal' )
+);
+nh_hl_assert(
+	'highlight ATC has wider side inset than title',
+	false !== strpos( $css, '.astra-shop-summary-wrap > a.button' )
+		&& false !== strpos( $css, 'padding-left: 0.7rem' )
+);
+
+$nb = "\xE2\x80\x91";
+$protected = nh_catalog_title_protect_size_range( 'Drivhus Tre 300 (12-36m²)', 10 );
+nh_hl_assert(
+	'size range hyphen becomes non-breaking',
+	$protected === 'Drivhus Tre 300 (12' . $nb . '36m²)'
+);
+nh_hl_assert(
+	'title without parentheses is unchanged',
+	'Polycarbonate 10 mm' === nh_catalog_title_protect_size_range( 'Polycarbonate 10 mm', 10 )
+);
+nh_hl_assert(
+	'en-dash inside parentheses is protected',
+	'Drivhus Tre 500 (40' . $nb . '100m²)' === nh_catalog_title_protect_size_range( 'Drivhus Tre 500 (40–100m²)', 10 )
 );
 nh_hl_assert(
 	'catalog product images are display:block to kill img descender gap',
