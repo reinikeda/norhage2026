@@ -19,6 +19,8 @@ Template: astra
   --nh-charcoal:   #2C2A29; /* Text */
   --nh-mint:       #C3E8C6; /* Soft border/hover */
   --nh-gold:       #C89F63; /* Premium accent (sparingly) */
+  --nh-highlight:  #F5E59A; /* Warm sunny butter — catalog highlight cards */
+  --nh-highlight-edge: #E0C85A; /* Soft golden edge for highlight cards */
 
   /* UI helpers */
   --ui-text:       var(--nh-charcoal);
@@ -720,10 +722,11 @@ a.ast-on-card-button.ast-select-options-trigger,
   display: none !important;
 }
 
-/* Make each product tile a flex column */
+/* Make each product tile a flex column — no gap between thumb and summary */
 .woocommerce ul.products li.product {
   display: flex !important;
   flex-direction: column !important;
+  gap: 0 !important;
 }
 
 /* Astra Summary Wrapper: Fix for Rating Placement */
@@ -734,24 +737,90 @@ a.ast-on-card-button.ast-select-options-trigger,
   gap: 4px !important; /* Control spacing between title, rating, and price */
 }
 
-/* Ensure DOM elements follow correct visual order */
-.woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Title */
-.woocommerce ul.products li.product .review-rating { order: 2; margin: 0; } /* Rating */
-.woocommerce ul.products li.product .price { order: 3; margin-top: 2px; } /* Price */
-.woocommerce ul.products li.product .button { order: 4; } /* CTA Button */
+/* Catalog summary stack: under-image bars → category → main title → secondary → attrs → rating → price → CTA */
+.woocommerce ul.products li.product .nhg-labels--below { order: -1; margin: 0 !important; padding: 0 !important; } /* Sale + Best sold flush under image */
+.woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Main title */
+.woocommerce ul.products li.product .product-secondary-title { order: 2; } /* Custom secondary title */
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 3; } /* Highlight attrs */
+.woocommerce ul.products li.product .review-rating { order: 4; margin: 0; } /* Rating */
+.woocommerce ul.products li.product .price { order: 5; margin-top: 2px; } /* Price */
+.woocommerce ul.products li.product .button { order: 6; } /* CTA Button */
 
-/* Force rating block visibility and alignment */
-.review-rating, .star-rating {
+/*
+ * Kill the inline-image descender gap under catalog photos.
+ * That whitespace is what sat between the image and Sale / Best sold.
+ */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0;
+}
+
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap > a {
+  display: block;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap img {
+  display: block !important;
+  width: 100%;
+  height: auto;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: top;
+}
+
+/*
+ * Rating: same left edge as title / attrs / price.
+ * Woo .star-rating MUST keep width: 5.4em — width:auto collapses the
+ * glyph strip and the stars disappear. Horizontal margin is left soft
+ * so highlight cards can keep their 0.7rem text inset.
+ */
+.woocommerce ul.products li.product .review-rating {
   display: block !important;
   float: none !important;
   clear: both !important;
-  margin: 2px 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: flex-start;
 }
 
-.review-rating .star-rating {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+.woocommerce ul.products li.product .star-rating {
+  display: block !important;
+  float: none !important;
+  clear: both !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: flex-start;
+  letter-spacing: 0;
+  /*
+   * Woo defaults to 5.4em; Astra/Windows star glyphs are a hair wider,
+   * which clipped the last empty star tip. Keep overflow:hidden for the
+   * filled-span technique — do not set width:auto (stars vanish).
+   */
+  width: 5.8em !important;
+  max-width: 100%;
+  overflow: hidden;
 }
+
+.woocommerce ul.products li.product .review-rating .star-rating {
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  width: 5.8em !important;
+}
+
+/* Stars inherit summary horizontal padding — no extra side margin */
 
 /* Push CTA buttons to the bottom */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
@@ -833,6 +902,154 @@ li.outofstock .astra-shop-thumbnail-wrap img {
     opacity: 0.6;
 }
 
+/* Highlighted catalog cards — yellow tile; image + bars flush; tight copy inset */
+.woocommerce ul.products li.product.nh-catalog-highlight {
+  --nh-highlight-inset: 0.35rem; /* closer to non-highlight cards (was 0.7rem) */
+  background: var(--nh-highlight, #F5E59A);
+  border: 1px solid var(--nh-highlight-edge, #E0C85A);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/*
+ * No horizontal padding on the summary — Sale / Best seller bars stay
+ * edge-to-edge like non-highlight cards. Only title/attrs/price/CTA
+ * get a small inset so text clears the 1px border.
+ */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
+  padding: 0 0 0.85rem;
+  gap: 4px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below):not(a.button):not(a.add_to_cart_button):not(a.nh-btn-customize) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: var(--nh-highlight-inset);
+  padding-right: var(--nh-highlight-inset);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/*
+ * ATC: use side MARGIN (not padding). Padding only inset the label inside
+ * a full-width green pill — the button still looked edge-flush.
+ */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.button,
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.add_to_cart_button,
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > a.nh-btn-customize {
+  margin-left: 0.7rem !important;
+  margin-right: 0.7rem !important;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  width: auto !important;
+  max-width: none;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+/* Sale / Best seller — full bleed under the photo (same width as image) */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title,
+.woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
+.woocommerce ul.products li.product.nh-catalog-highlight .product-secondary-title,
+.woocommerce ul.products li.product.nh-catalog-highlight .price,
+.woocommerce ul.products li.product.nh-catalog-highlight .price .amount {
+  color: var(--nh-charcoal, #2C2A29);
+}
+
+/*
+ * Wrap on spaces only — do not break mid-token (overflow-wrap:anywhere
+ * was splitting "(12-36m²)" after the hyphen). Size ranges also use a
+ * non-breaking hyphen via nh_catalog_title_protect_size_range().
+ */
+.woocommerce ul.products li.product .ast-loop-product__link,
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
+.woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
+.woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title {
+  display: block;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: normal;
+  hyphens: manual;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap img {
+  border-radius: 0;
+  display: block !important;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .woocommerce ul.products li.product.nh-catalog-highlight {
+    --nh-highlight-inset: 0.25rem;
+  }
+
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
+    padding: 0 0 0.7rem;
+  }
+}
+
+/* Catalog card attribute list — two-column rows (label | value) */
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0.3rem;
+  padding: 0;
+  color: var(--nh-charcoal, #2C2A29);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__item {
+  display: grid;
+  grid-template-columns: minmax(4.75rem, 36%) minmax(0, 1fr);
+  column-gap: 0.55rem;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__sep {
+  display: none;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__label {
+  font-weight: 400;
+  color: var(--nh-forest, #1E3932);
+  line-height: 1.4;
+}
+
+.woocommerce ul.products li.product .nh-catalog-highlight-attrs__value {
+  font-weight: 600;
+  color: var(--nh-charcoal, #2C2A29);
+  line-height: 1.4;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
 /* =========================================================
    6) PRODUCT PAGE TWEAKS
    ========================================================= */
@@ -861,9 +1078,9 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 .woocommerce ul.products .product-secondary-title,
 .archive .product .product-secondary-title {
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
+  font-size: 0.78em;
+  font-weight: 400;
+  line-height: 1.3;
   margin: 0;
 }
 

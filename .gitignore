@@ -91,4 +91,7 @@ local-xdebuginfo.php
 robots.txt
 llms.txt
 
+.envrc
+public/local-phpinfo.php
+
 # End of https://www.toptal.com/developers/gitignore/api/wordpress

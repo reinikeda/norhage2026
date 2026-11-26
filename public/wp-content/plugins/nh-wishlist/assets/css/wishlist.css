@@ -66,15 +66,8 @@ ul.products li.product,
   border-radius: 999px;
 }
 
-/* Sale and custom labels share the top-right corner. Keep the heart there and stack the labels under it. */
-body ul.products li.product .nhg-labels--thumb .nhg-badge--sale,
-body ul.products li.product .nhg-labels--thumb .nhg-badge--custom {
-  top: 48px !important;
-}
-
-body ul.products li.product .nhg-labels--thumb .nhg-badge--sale ~ .nhg-badge--custom {
-  top: 82px !important;
-}
+/* Sale/custom top-right clearance under the heart is owned by product-labels
+   (--nhg-wishlist-clearance). Keep this file from fighting that stack. */
 
 .nh-wl-single {
   margin: 10px 0 0;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: NHG Product Labels (harmonized) 1.1.0\n"
 "POT-Creation-Date: 2026-07-13 00:00+0000\n"
-"PO-Revision-Date: 2026-08-25 10:49+0300\n"
+"PO-Revision-Date: 2026-11-26 10:48+0200\n"
 "Last-Translator: Daiva Reinike <norhageseo@gmail.com>\n"
 "Language-Team: Lithuanian\n"
 "Language: lt_LT\n"
@@ -36,3 +36,24 @@ msgstr "Mažas likutis"
 msgctxt "sale percent up to"
 msgid "up to %s %%"
 msgstr "iki %s %%"
+
+msgid "Made by"
+msgstr "Pagaminta"
+
+msgid "Made by Norhage"
+msgstr "Pagaminta Norhage"
+
+msgid "Show a circular “Made by Norhage” badge on the product image (top left)."
+msgstr "Rodyti apvalų „Pagaminta Norhage“ ženklelį ant produkto nuotraukos (viršuje kairėje)."
+
+msgid "Show “Made by Norhage” under the catalog photo and as a circular badge on the product page. Products with brand Norhage get this automatically; tick here to force it on."
+msgstr "Rodyti „Pagaminta Norhage“ po katalogo nuotrauka ir kaip apvalų ženklelį produkto puslapyje. Produktai su Norhage prekės ženklu gauna jį automatiškai; pažymėkite čia, kad priverstumėte rodyti."
+
+msgid "Best seller"
+msgstr "Perkamiausias"
+
+msgid "Save %s"
+msgstr "Sutaupykite %s"
+
+msgid "Save from %s"
+msgstr "Sutaupykite nuo %s"

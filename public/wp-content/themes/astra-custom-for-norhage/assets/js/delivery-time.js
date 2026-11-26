@@ -9,8 +9,12 @@ jQuery(function ($) {
 
 	function moveBoxAfterPrice() {
 		const $price = $summary.find('p.price').first();
+		// Keep delivery under the Save € note when present (price → save → delivery).
+		const $save = $summary.find('.nhg-save-note').first();
 
-		if ($price.length) {
+		if ($save.length && !$save.is('[hidden]')) {
+			$box.insertAfter($save);
+		} else if ($price.length) {
 			$box.insertAfter($price);
 		}
 	}
