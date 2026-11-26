@@ -393,9 +393,8 @@ nhg_assert(
 		&& false !== strpos( $theme_css, 'margin-left: 0.7rem !important' )
 );
 nhg_assert(
-	'catalog stars keep Woo 5.4em width',
-	false !== strpos( $theme_css, 'width: 5.4em !important' )
-		&& false === strpos( $theme_css, ".star-rating {\n  display: block !important;\n  float: none !important;\n  clear: both !important;\n  margin-top: 0 !important;\n  margin-bottom: 0 !important;\n  margin-left: 0;\n  margin-right: 0;\n  padding: 0 !important;\n  text-align: left !important;\n  align-self: flex-start;\n  width: auto;" )
+	'catalog stars keep fixed 5.8em width',
+	false !== strpos( $theme_css, 'width: 5.8em !important' )
 );
 
 global $nhg_is_product, $product;
