@@ -157,7 +157,14 @@ $plain = new class {
 		return '8 mm';
 	}
 };
-nh_hl_assert( 'non-highlight product has no attr rows', array() === nh_catalog_highlight_attr_rows( $plain ) );
+nh_hl_assert( 'non-highlight without selected attrs has no rows', array() === nh_catalog_highlight_attr_rows( $plain ) );
+
+$nh_highlight_meta[ 11 ][ '_nh_catalog_highlight_attrs' ] = array( 'pa_thickness' );
+$plain_rows = nh_catalog_highlight_attr_rows( $plain );
+nh_hl_assert(
+	'non-highlight product can show selected attr rows',
+	isset( $plain_rows[0] ) && 'Thickness' === $plain_rows[0]['label'] && '8 mm' === $plain_rows[0]['value']
+);
 
 $classes = nh_catalog_highlight_post_class( array( 'product' ), $product );
 nh_hl_assert( 'post class adds nh-catalog-highlight', in_array( 'nh-catalog-highlight', $classes, true ) );

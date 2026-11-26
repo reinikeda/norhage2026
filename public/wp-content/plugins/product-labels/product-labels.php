@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.4.4
+ * Version: 1.5.0
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -58,7 +58,7 @@ class NHG_Product_Labels {
 		// Render thumbnail overlays (inside the product image/link)
 		add_action( 'woocommerce_before_shop_loop_item_title', [ $this, 'render_thumbnail_badges' ], 5 );
 
-		// Catalog-only: Sale + Best sold under the image (Astra summary wrap).
+		// Catalog-only: Sale + Made by under the image (Astra summary wrap).
 		// Priority 1 so it can flex-order above category/title without touching PDP.
 		add_action( 'astra_woo_shop_title_after', [ $this, 'render_below_image_badge' ], 1 );
 
@@ -123,7 +123,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.4.4'
+			'1.5.0'
 		);
 
 		if ( function_exists( 'is_product' ) && is_product() ) {
@@ -136,7 +136,7 @@ class NHG_Product_Labels {
 				'nhg-single-save-note',
 				$js_path,
 				$deps,
-				'1.4.4',
+				'1.5.0',
 				true
 			);
 		}
@@ -262,7 +262,7 @@ class NHG_Product_Labels {
 			[
 				'id'          => $this->made_meta_key(),
 				'label'       => __( 'Made by Norhage', $this->text_domain ),
-				'description' => __( 'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.', $this->text_domain ),
+				'description' => __( 'Show “Made by Norhage” under the catalog photo and as a circular badge on the product page. Products with brand Norhage get this automatically; tick here to force it on.', $this->text_domain ),
 			]
 		);
 	}
@@ -322,7 +322,7 @@ class NHG_Product_Labels {
 	/**
 	 * Sale badge copy as euro savings (shown under the catalog image).
 	 *
-	 * @param string $mode   exact|upto|plain
+	 * @param string $mode   exact|from|plain (from = variable max savings)
 	 * @param float  $amount Savings amount.
 	 * @return array{text:string,title:string}
 	 */
@@ -341,10 +341,11 @@ class NHG_Product_Labels {
 					'text'  => $text,
 					'title' => $text,
 				];
-			case 'upto':
+			case 'from':
+			case 'upto': // legacy alias
 				$text = sprintf(
-					/* translators: %s: formatted max money amount saved */
-					__( 'Save up to %s', $this->text_domain ),
+					/* translators: %s: formatted money amount saved (variable products) */
+					__( 'Save from %s', $this->text_domain ),
 					$money
 				);
 				return [
@@ -394,7 +395,15 @@ class NHG_Product_Labels {
 			}
 		}
 
-		// -------- MADE BY NORHAGE --------
+		// -------- BEST SELLER (highlight → on-image flag) --------
+		if ( $this->is_catalog_highlight( $product ) ) {
+			$labels['best'] = [
+				'key'  => 'best',
+				'text' => __( 'Best seller', $this->text_domain ) . ' |',
+			];
+		}
+
+		// -------- MADE BY NORHAGE (catalog: under image; single: on gallery) --------
 		if ( $this->is_made_by_norhage( $product ) ) {
 			$labels['made'] = [
 				'key'   => 'made',
@@ -496,7 +505,7 @@ class NHG_Product_Labels {
 				$all = ( $total_variations > 0 && $discounted_count === $total_variations );
 
 				if ( ! $all || $min !== $max ) {
-					$sale = $this->format_sale_badge( 'upto', $max );
+					$sale = $this->format_sale_badge( 'from', $max );
 				} else {
 					$sale = $this->format_sale_badge( 'exact', $min );
 				}
@@ -527,14 +536,15 @@ class NHG_Product_Labels {
 	/**
 	 * Print on-image badge markup.
 	 *
-	 * Catalog: custom (right) → made → new (left) → stock (bottom).
-	 * Sale is printed under the image via render_below_image_badge().
-	 * Single: may also include sale on the gallery.
+	 * Catalog: Best seller flag (left) → New → custom (right) → stock (bottom).
+	 * Made by + Sale print under the image via render_below_image_badge().
+	 * Single: Made by circle on the gallery.
 	 *
 	 * @param array $labels Labels from collect_labels().
 	 * @param bool  $include_sale Whether to print sale on the image.
+	 * @param bool  $include_made Whether to print Made by circle (single gallery).
 	 */
-	private function print_badges( array $labels, $include_sale = false ) {
+	private function print_badges( array $labels, $include_sale = false, $include_made = false ) {
 		if ( $include_sale && isset( $labels['sale'] ) ) {
 			$title = isset( $labels['sale']['title'] ) ? $labels['sale']['title'] : $labels['sale']['text'];
 			printf(
@@ -551,7 +561,15 @@ class NHG_Product_Labels {
 			);
 		}
 
-		if ( isset( $labels['made'] ) ) {
+		if ( isset( $labels['best'] ) ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--best-flag" title="%s">%s</span>',
+				esc_attr( __( 'Best seller', $this->text_domain ) ),
+				esc_html( $labels['best']['text'] )
+			);
+		}
+
+		if ( $include_made && isset( $labels['made'] ) ) {
 			$line1 = isset( $labels['made']['line1'] ) ? $labels['made']['line1'] : __( 'Made by', $this->text_domain );
 			$line2 = isset( $labels['made']['line2'] ) ? $labels['made']['line2'] : 'Norhage';
 			$title = isset( $labels['made']['text'] ) ? $labels['made']['text'] : __( 'Made by Norhage', $this->text_domain );
@@ -582,7 +600,7 @@ class NHG_Product_Labels {
 
 	/**
 	 * Render badges inside the thumbnail area (archive loop).
-	 * Sale is omitted here — it renders under the image.
+	 * Sale + Made by render under the image; Best seller is the on-image flag.
 	 */
 	public function render_thumbnail_badges() {
 		global $product;
@@ -592,19 +610,19 @@ class NHG_Product_Labels {
 		}
 
 		$labels = $this->collect_labels( $product );
-		unset( $labels['sale'] );
+		unset( $labels['sale'], $labels['made'] );
 
 		if ( empty( $labels ) ) {
 			return;
 		}
 
 		echo '<div class="nhg-labels nhg-labels--thumb" aria-hidden="true">';
-		$this->print_badges( $labels, false );
+		$this->print_badges( $labels, false, false );
 		echo '</div>';
 	}
 
 	/**
-	 * Catalog under-image bars: Sale (euro savings) + Best sold (highlight).
+	 * Catalog under-image bars: Sale (euro savings) + Made by Norhage.
 	 *
 	 * Hooked only to astra_woo_shop_title_after (loop/related cards).
 	 * Skipped entirely for out-of-stock products (stock badge is on-image only).
@@ -624,11 +642,11 @@ class NHG_Product_Labels {
 			return;
 		}
 
-		$labels  = $this->collect_labels( $product );
+		$labels   = $this->collect_labels( $product );
 		$has_sale = isset( $labels['sale'] );
-		$has_best = $this->is_catalog_highlight( $product );
+		$has_made = isset( $labels['made'] );
 
-		if ( ! $has_sale && ! $has_best ) {
+		if ( ! $has_sale && ! $has_made ) {
 			return;
 		}
 
@@ -643,10 +661,11 @@ class NHG_Product_Labels {
 			);
 		}
 
-		if ( $has_best ) {
+		if ( $has_made ) {
+			$text = isset( $labels['made']['text'] ) ? $labels['made']['text'] : __( 'Made by Norhage', $this->text_domain );
 			printf(
-				'<span class="nhg-badge nhg-badge--best">%s</span>',
-				esc_html( __( 'Our best seller', $this->text_domain ) )
+				'<span class="nhg-badge nhg-badge--made-below">%s</span>',
+				esc_html( $text )
 			);
 		}
 
@@ -690,7 +709,7 @@ class NHG_Product_Labels {
 
 		ob_start();
 		echo '<div class="nhg-labels nhg-labels--single" aria-hidden="true">';
-		$this->print_badges( $labels, false );
+		$this->print_badges( $labels, false, true );
 		echo '</div>';
 		$badge = ob_get_clean();
 
@@ -706,7 +725,7 @@ class NHG_Product_Labels {
 	/**
 	 * Print Save € note under the single-product summary price.
 	 *
-	 * Variable products start with "Save up to …" (or exact if all equal),
+	 * Variable products start with "Save from …" (or exact if all equal),
 	 * then single-save-note.js swaps in the selected variation amount.
 	 */
 	public function render_single_save_note() {
