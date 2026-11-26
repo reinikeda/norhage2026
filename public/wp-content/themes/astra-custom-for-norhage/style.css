@@ -774,10 +774,23 @@ a.ast-on-card-button.ast-select-options-trigger,
 
 /*
  * Rating: same left edge as title / attrs / price.
- * Do not !important-zero horizontal margin — highlight cards inset
- * summary children 0.7rem, and margin:0 !important was pulling stars left.
+ * Woo .star-rating MUST keep width: 5.4em — width:auto collapses the
+ * glyph strip and the stars disappear. Horizontal margin is left soft
+ * so highlight cards can keep their 0.7rem text inset.
  */
-.woocommerce ul.products li.product .review-rating,
+.woocommerce ul.products li.product .review-rating {
+  display: block !important;
+  float: none !important;
+  clear: both !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: flex-start;
+}
+
 .woocommerce ul.products li.product .star-rating {
   display: block !important;
   float: none !important;
@@ -789,14 +802,17 @@ a.ast-on-card-button.ast-select-options-trigger,
   padding: 0 !important;
   text-align: left !important;
   align-self: flex-start;
-  width: auto;
+  /* Woo star font strip — do not change to auto */
+  width: 5.4em !important;
   max-width: 100%;
+  overflow: hidden;
 }
 
 .woocommerce ul.products li.product .review-rating .star-rating {
   margin: 0 !important;
   padding: 0 !important;
   float: none !important;
+  width: 5.4em !important;
 }
 
 /* Match highlight card text inset explicitly (beats nested Woo float rules) */

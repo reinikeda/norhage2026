@@ -334,6 +334,10 @@ nhg_assert(
 );
 nhg_assert( 'css defines single Save note', false !== strpos( $css, '.nhg-save-note' ) );
 nhg_assert( 'save note script exists', is_readable( dirname( __DIR__ ) . '/js/single-save-note.js' ) );
+$save_js = file_get_contents( dirname( __DIR__ ) . '/js/single-save-note.js' );
+nhg_assert( 'save note script places under price', false !== strpos( $save_js, 'insertAfter' ) );
+$delivery_js = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/assets/js/delivery-time.js' );
+nhg_assert( 'delivery script yields to Save note', false !== strpos( $delivery_js, 'nhg-save-note' ) );
 
 $nhg_meta[ 40 ][ '_nh_catalog_highlight' ] = 'yes';
 $nhg_meta[ 41 ][ '_nh_catalog_highlight' ] = 'no';
@@ -387,6 +391,11 @@ nhg_assert(
 	'highlight star ratings keep summary inset',
 	false !== strpos( $theme_css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
 		&& false !== strpos( $theme_css, 'margin-left: 0.7rem !important' )
+);
+nhg_assert(
+	'catalog stars keep Woo 5.4em width',
+	false !== strpos( $theme_css, 'width: 5.4em !important' )
+		&& false === strpos( $theme_css, ".star-rating {\n  display: block !important;\n  float: none !important;\n  clear: both !important;\n  margin-top: 0 !important;\n  margin-bottom: 0 !important;\n  margin-left: 0;\n  margin-right: 0;\n  padding: 0 !important;\n  text-align: left !important;\n  align-self: flex-start;\n  width: auto;" )
 );
 
 global $nhg_is_product, $product;

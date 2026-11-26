@@ -276,6 +276,10 @@ nh_hl_assert(
 	false !== strpos( $css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
 		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
 );
+nh_hl_assert(
+	'catalog star rating keeps Woo 5.4em width',
+	false !== strpos( $css, 'width: 5.4em !important' )
+);
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
