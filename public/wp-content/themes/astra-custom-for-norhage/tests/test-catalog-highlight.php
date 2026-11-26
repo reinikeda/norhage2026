@@ -271,6 +271,11 @@ nh_hl_assert(
 	false !== strpos( $css, 'li.product .star-rating' )
 		|| false !== strpos( $css, 'li.product .review-rating' )
 );
+nh_hl_assert(
+	'highlight star ratings match summary inset',
+	false !== strpos( $css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
+		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
+);
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );
