@@ -344,7 +344,7 @@ $required_msgids = array(
 	'Low stock',
 	'Made by',
 	'Made by Norhage',
-	'Best sold',
+	'Our best seller',
 	'Save %s',
 	'Save up to %s',
 	'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.',
@@ -380,7 +380,7 @@ ob_start();
 $plugin->render_below_image_badge();
 $best_html = ob_get_clean();
 nhg_assert( 'below-image Best sold renders for highlight', false !== strpos( $best_html, 'nhg-badge--best' ) );
-nhg_assert( 'below-image Best sold text present', false !== strpos( $best_html, 'Best sold' ) );
+nhg_assert( 'below-image Best sold text present', false !== strpos( $best_html, 'Our best seller' ) );
 
 $product = $plain_hl;
 ob_start();
@@ -409,16 +409,11 @@ nhg_assert( 'on-image badges never include Best sold', false === strpos( $thumb_
 $theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
 nhg_assert( 'theme flex-orders under-image bars first', false !== strpos( $theme_css, '.nhg-labels--below' ) && false !== strpos( $theme_css, 'order: -1' ) );
 nhg_assert(
-	'highlight summary has no top padding (flush bars)',
+	'highlight summary uses horizontal padding for title room',
 	(bool) preg_match(
-		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\.7rem\s+/s',
 		$theme_css
 	)
-);
-nhg_assert(
-	'highlight star ratings keep summary inset',
-	false !== strpos( $theme_css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
-		&& false !== strpos( $theme_css, 'margin-left: 0.7rem !important' )
 );
 nhg_assert(
 	'catalog stars keep fixed 5.8em width',

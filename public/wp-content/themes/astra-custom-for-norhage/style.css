@@ -820,20 +820,7 @@ a.ast-on-card-button.ast-select-options-trigger,
   width: 5.8em !important;
 }
 
-/* Match highlight card text inset explicitly (beats nested Woo float rules) */
-.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .review-rating,
-.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .star-rating {
-  margin-left: 0.7rem !important;
-  margin-right: 0.7rem !important;
-}
-
-@media (max-width: 768px) {
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .review-rating,
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .star-rating {
-    margin-left: 0.55rem !important;
-    margin-right: 0.55rem !important;
-  }
-}
+/* Stars inherit summary horizontal padding — no extra side margin */
 
 /* Push CTA buttons to the bottom */
 .woocommerce ul.products li.product .astra-shop-summary-wrap > a.button,
@@ -923,17 +910,28 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   box-sizing: border-box;
   padding: 0;
   overflow: hidden;
+  min-width: 0;
 }
 
-/* No top padding — under-image bars must sit flush against the photo */
+/*
+ * Horizontal inset via padding (not child margins). Margin on width:100%
+ * title links made the block wider than the card, so overflow:hidden
+ * clipped “m²)” off the right edge.
+ */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-  padding: 0 0 0.85rem;
+  padding: 0 0.7rem 0.85rem;
   gap: 4px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
-  margin-left: 0.7rem;
-  margin-right: 0.7rem;
+/* Sale / Best sold bars stay edge-to-edge under the photo */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
+  margin-left: -0.7rem;
+  margin-right: -0.7rem;
+  width: calc(100% + 1.4rem);
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title,
@@ -942,6 +940,16 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 .woocommerce ul.products li.product.nh-catalog-highlight .price,
 .woocommerce ul.products li.product.nh-catalog-highlight .price .amount {
   color: var(--nh-charcoal, #2C2A29);
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .ast-loop-product__link,
+.woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title {
+  display: block;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
@@ -955,12 +963,13 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 @media (max-width: 768px) {
   .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-    padding: 0 0 0.7rem;
+    padding: 0 0.55rem 0.7rem;
   }
 
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
-    margin-left: 0.55rem;
-    margin-right: 0.55rem;
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
+    margin-left: -0.55rem;
+    margin-right: -0.55rem;
+    width: calc(100% + 1.1rem);
   }
 }
 

@@ -233,12 +233,18 @@ nh_hl_assert( 'admin column sits after SKU', array_keys( $cols )[3] === 'nh_cata
 
 $admin_js = file_get_contents( dirname( __DIR__ ) . '/assets/js/catalog-highlight-admin.js' );
 nh_hl_assert( 'quick edit admin script exists', false !== strpos( $admin_js, 'nh-catalog-highlight-quick-edit' ) );
+nh_hl_assert( 'quick edit hooks inlineEditPost.edit', false !== strpos( $admin_js, 'inlineEditPost.edit' ) );
 
 $source = file_get_contents( dirname( __DIR__ ) . '/inc/catalog-highlight.php' );
 nh_hl_assert(
 	'attrs render on Astra title_after (summary wrap), not Woo after_shop_loop_item_title',
 	false !== strpos( $source, "add_action( 'astra_woo_shop_title_after'" )
 		&& false === strpos( $source, "add_action( 'woocommerce_after_shop_loop_item_title'" )
+);
+nh_hl_assert(
+	'quick edit save persists with update_post_meta',
+	false !== strpos( $source, 'function nh_catalog_highlight_quick_edit_save' )
+		&& false !== strpos( $source, 'update_post_meta' )
 );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/style.css' );
@@ -255,11 +261,21 @@ nh_hl_assert(
 	)
 );
 nh_hl_assert(
-	'highlight summary has no top padding so under-image bars sit flush',
+	'highlight summary uses horizontal padding (not child margins)',
 	preg_match(
-		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\.7rem\s+/s',
 		$css
 	)
+);
+nh_hl_assert(
+	'highlight under-image bars bleed full width',
+	false !== strpos( $css, '.astra-shop-summary-wrap > .nhg-labels--below' )
+		&& false !== strpos( $css, 'width: calc(100% + 1.4rem)' )
+);
+nh_hl_assert(
+	'highlight title wraps inside the card',
+	false !== strpos( $css, 'overflow-wrap: anywhere' )
+		&& false !== strpos( $css, 'white-space: normal' )
 );
 nh_hl_assert(
 	'catalog product images are display:block to kill img descender gap',
@@ -272,14 +288,42 @@ nh_hl_assert(
 		|| false !== strpos( $css, 'li.product .review-rating' )
 );
 nh_hl_assert(
-	'highlight star ratings match summary inset',
-	false !== strpos( $css, 'nh-catalog-highlight .astra-shop-summary-wrap > .review-rating' )
-		&& false !== strpos( $css, 'margin-left: 0.7rem !important' )
-);
-nh_hl_assert(
 	'catalog star rating uses widened 5.8em strip',
 	false !== strpos( $css, 'width: 5.8em !important' )
 );
+
+// Simulate Quick Edit save request.
+if ( ! function_exists( 'update_post_meta' ) ) {
+	function update_post_meta( $post_id, $key, $value ) {
+		global $nh_highlight_meta;
+		$nh_highlight_meta[ (int) $post_id ][ $key ] = $value;
+		return true;
+	}
+}
+$qe_product = new class( 77 ) {
+	public $id;
+	public $meta = array();
+	public $saved = false;
+	public function __construct( $id ) {
+		$this->id = (int) $id;
+	}
+	public function get_id() {
+		return $this->id;
+	}
+	public function update_meta_data( $key, $value ) {
+		$this->meta[ $key ] = $value;
+	}
+	public function save() {
+		$this->saved = true;
+	}
+};
+$_REQUEST[ '_nh_catalog_highlight' ] = 'yes';
+nh_catalog_highlight_quick_edit_save( $qe_product );
+nh_hl_assert( 'quick edit save writes yes meta', 'yes' === $nh_highlight_meta[ 77 ][ '_nh_catalog_highlight' ] );
+nh_hl_assert( 'quick edit save calls product->save()', true === $qe_product->saved );
+unset( $_REQUEST[ '_nh_catalog_highlight' ] );
+nh_catalog_highlight_quick_edit_save( $qe_product );
+nh_hl_assert( 'quick edit unchecked clears to no', 'no' === $nh_highlight_meta[ 77 ][ '_nh_catalog_highlight' ] );
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );

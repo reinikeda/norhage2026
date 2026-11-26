@@ -227,6 +227,9 @@ function nh_catalog_highlight_quick_edit_field() {
 /**
  * Save highlight from Quick Edit (attributes are not in this form).
  *
+ * WooCommerce runs this action AFTER $product->save(), so update_meta_data()
+ * alone would be discarded — persist with update_post_meta (and save again).
+ *
  * @param \WC_Product $product Product being saved.
  */
 add_action( 'woocommerce_product_quick_edit_save', 'nh_catalog_highlight_quick_edit_save' );
@@ -237,6 +240,10 @@ function nh_catalog_highlight_quick_edit_save( $product ) {
 	$key   = nh_catalog_highlight_meta_key();
 	$value = isset( $_REQUEST[ $key ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$product->update_meta_data( $key, $value );
+	update_post_meta( (int) $product->get_id(), $key, $value );
+	if ( method_exists( $product, 'save' ) ) {
+		$product->save();
+	}
 }
 
 /**
