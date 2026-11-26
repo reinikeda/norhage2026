@@ -261,6 +261,16 @@ nh_hl_assert(
 		$css
 	)
 );
+nh_hl_assert(
+	'catalog product images are display:block to kill img descender gap',
+	false !== strpos( $css, '.astra-shop-thumbnail-wrap img' )
+		&& false !== strpos( $css, 'display: block !important' )
+);
+nh_hl_assert(
+	'catalog star ratings reset left margin',
+	false !== strpos( $css, 'li.product .star-rating' )
+		|| false !== strpos( $css, 'li.product .review-rating' )
+);
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";
 exit( $failures ? 1 : 0 );

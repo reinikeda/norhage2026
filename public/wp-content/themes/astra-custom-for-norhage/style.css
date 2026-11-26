@@ -722,10 +722,11 @@ a.ast-on-card-button.ast-select-options-trigger,
   display: none !important;
 }
 
-/* Make each product tile a flex column */
+/* Make each product tile a flex column — no gap between thumb and summary */
 .woocommerce ul.products li.product {
   display: flex !important;
   flex-direction: column !important;
+  gap: 0 !important;
 }
 
 /* Astra Summary Wrapper: Fix for Rating Placement */
@@ -737,7 +738,7 @@ a.ast-on-card-button.ast-select-options-trigger,
 }
 
 /* Catalog summary stack: under-image bars → category → main title → secondary → attrs → rating → price → CTA */
-.woocommerce ul.products li.product .nhg-labels--below { order: -1; margin: 0 !important; } /* Sale + Best sold flush under image */
+.woocommerce ul.products li.product .nhg-labels--below { order: -1; margin: 0 !important; padding: 0 !important; } /* Sale + Best sold flush under image */
 .woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Main title */
 .woocommerce ul.products li.product .product-secondary-title { order: 2; } /* Custom secondary title */
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 3; } /* Highlight attrs */
@@ -745,22 +746,48 @@ a.ast-on-card-button.ast-select-options-trigger,
 .woocommerce ul.products li.product .price { order: 5; margin-top: 2px; } /* Price */
 .woocommerce ul.products li.product .button { order: 6; } /* CTA Button */
 
-/* No gap between thumbnail and under-image bars */
+/*
+ * Kill the inline-image descender gap under catalog photos.
+ * That whitespace is what sat between the image and Sale / Best sold.
+ */
 .woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
-  margin-bottom: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0;
 }
 
-/* Force rating block visibility and alignment */
-.review-rating, .star-rating {
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap > a {
+  display: block;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap img {
+  display: block !important;
+  width: 100%;
+  height: auto;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: top;
+}
+
+/* Rating: same left edge as title / attrs / price (Woo often indents .star-rating) */
+.woocommerce ul.products li.product .review-rating,
+.woocommerce ul.products li.product .star-rating {
   display: block !important;
   float: none !important;
   clear: both !important;
-  margin: 2px 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  align-self: flex-start;
 }
 
-.review-rating .star-rating {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+.woocommerce ul.products li.product .review-rating .star-rating {
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
 }
 
 /* Push CTA buttons to the bottom */
@@ -873,12 +900,12 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
-  margin: 0;
+  margin: 0 !important;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap img {
   border-radius: 0;
-  display: block;
+  display: block !important;
 }
 
 @media (max-width: 768px) {

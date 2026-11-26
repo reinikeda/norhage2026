@@ -243,9 +243,12 @@
 	order: -1;
 	align-self: stretch;
 	z-index: 1;
-	margin: 0;
-	padding: 0;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0;
 	pointer-events: none;
+	line-height: normal;
+	font-size: inherit;
 }
 
 .nhg-badge--sale-below,
