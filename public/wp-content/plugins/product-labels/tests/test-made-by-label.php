@@ -333,6 +333,34 @@ nhg_assert(
 	)
 );
 nhg_assert( 'css defines single Save note', false !== strpos( $css, '.nhg-save-note' ) );
+
+$lang_dir = dirname( __DIR__ ) . '/languages';
+$locales  = array( 'nb_NO', 'sv_SE', 'da_DK', 'de_DE', 'fi', 'lt_LT' );
+$required_msgids = array(
+	'Sale',
+	'New',
+	'Custom size',
+	'Out of stock',
+	'Low stock',
+	'Made by',
+	'Made by Norhage',
+	'Best sold',
+	'Save %s',
+	'Save up to %s',
+	'Show a circular “Made by Norhage” badge on the product image (top left). Products with brand Norhage get this automatically; tick here to force it on.',
+);
+foreach ( $locales as $locale ) {
+	$po = $lang_dir . '/nhg-labels-' . $locale . '.po';
+	$mo = $lang_dir . '/nhg-labels-' . $locale . '.mo';
+	nhg_assert( "po exists for {$locale}", is_readable( $po ) );
+	nhg_assert( "mo exists for {$locale}", is_readable( $mo ) );
+	$po_text = file_get_contents( $po );
+	foreach ( $required_msgids as $msgid ) {
+		$pattern = '/msgid "' . preg_quote( $msgid, '/' ) . '"\s*\nmsgstr "(.+)"/';
+		nhg_assert( "{$locale} translates {$msgid}", (bool) preg_match( $pattern, $po_text ) );
+	}
+}
+nhg_assert( 'German Sale is Angebot', (bool) preg_match( '/msgid "Sale"\s*\nmsgstr "Angebot"/', file_get_contents( $lang_dir . '/nhg-labels-de_DE.po' ) ) );
 nhg_assert( 'save note script exists', is_readable( dirname( __DIR__ ) . '/js/single-save-note.js' ) );
 $save_js = file_get_contents( dirname( __DIR__ ) . '/js/single-save-note.js' );
 nhg_assert( 'save note script places under price', false !== strpos( $save_js, 'insertAfter' ) );
