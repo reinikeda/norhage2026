@@ -588,20 +588,79 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 }
 
 /* =========================================================
-   SUBCATEGORY SECTION – PRO VERSION
+   SUBCATEGORY SECTION — one-line horizontal strip (all breakpoints)
    ========================================================= */
 
 .subcategory-grid{
-  text-align:center;
-  margin:48px 0;
+  text-align:left;
+  margin:36px 0 28px;
+  max-width:100%;
+  min-width:0;
+}
+
+.subcategory-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 18px;
+  padding:0 16px;
+  min-width:0;
 }
 
 .subcategory-title{
-  font-size:clamp(20px, 3vw, 26px);
-  margin:0 0 32px;
+  font-size:clamp(18px, 2.4vw, 24px);
+  margin:0;
   color:var(--nh-forest, #1E3932);
   font-weight:600;
   letter-spacing:.2px;
+  min-width:0;
+}
+
+.subcategory-arrows{
+  display:flex;
+  gap:8px;
+  flex-shrink:0;
+}
+
+.subcategory-arrows.is-idle{
+  display:none;
+}
+
+.subcategory-prev,
+.subcategory-next{
+  width:40px;
+  height:40px;
+  min-width:40px;
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:0;
+  border-radius:999px;
+  border:1px solid rgba(30, 57, 50, 0.14);
+  background:#fff;
+  color:var(--nh-forest, #1E3932);
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(30, 57, 50, 0.08);
+  transition:background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.subcategory-prev:hover,
+.subcategory-next:hover{
+  background:var(--nh-forest, #1E3932);
+  color:#fff;
+  border-color:var(--nh-forest, #1E3932);
+}
+
+.subcategory-prev[aria-disabled="true"],
+.subcategory-next[aria-disabled="true"]{
+  opacity:.38;
+  cursor:default;
+  pointer-events:none;
 }
 
 /* LINKS */
@@ -615,6 +674,9 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 .subcategory-item{
   text-align:center;
   transition:transform .2s ease;
+  flex:0 0 auto;
+  width:132px;
+  scroll-snap-align:start;
 }
 
 .subcategory-item:hover{
@@ -624,7 +686,7 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 /* IMAGE */
 .subcategory-item img{
   width:100%;
-  max-width:140px;
+  max-width:132px;
   margin:0 auto;
   display:block;
 
@@ -635,7 +697,7 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
   background:#f7f7f5;
   border:1px solid #eee;
 
-  padding:18px;
+  padding:16px;
   transition:all .25s ease;
 }
 
@@ -648,60 +710,57 @@ hr.nh-sep--accent { border-top-color: var(--nh-green,#00704A) !important; border
 /* LABEL */
 .subcategory-item span{
   display:block;
-  margin-top:12px;
-  font-size:14px;
+  margin-top:10px;
+  font-size:13px;
   color:#2C2A29;
   font-weight:500;
-  line-height:1.4;
+  line-height:1.35;
 }
 
-/* =========================
-   MOBILE (scroll row)
-   ========================= */
+/* One-line scroll row (mobile + desktop) */
 .subcategory-items{
   display:flex;
   gap:14px;
   overflow-x:auto;
-  padding:0 16px 10px;
+  padding:0 16px 8px;
   scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
+  max-width:100%;
+  min-width:0;
 }
 
 .subcategory-items::-webkit-scrollbar{
   display:none;
 }
 
-.subcategory-item{
-  flex:0 0 auto;
-  width:140px;
-  scroll-snap-align:start;
-}
-
-/* =========================
-   DESKTOP (AUTO GRID )
-   ========================= */
 @media (min-width:768px){
+  .subcategory-grid{
+    margin:40px 0 32px;
+  }
+
+  .subcategory-head{
+    padding:0;
+    margin:0 0 20px;
+  }
 
   .subcategory-items{
-    display:grid;
-
-    /* THIS IS THE KEY */
-    grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
-
-    gap:32px;
-    max-width:1200px;
-    margin:0 auto;
-
-    padding:0;
-    overflow:visible;
-
-    justify-items:center;
+    gap:20px;
+    padding:0 0 8px;
   }
 
   .subcategory-item{
-    width:100%;
-    max-width:160px;
+    width:148px;
+  }
+
+  .subcategory-item img{
+    max-width:148px;
+    padding:18px;
+  }
+
+  .subcategory-item span{
+    font-size:14px;
   }
 }
 
