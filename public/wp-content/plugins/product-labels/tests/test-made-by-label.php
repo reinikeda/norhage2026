@@ -105,6 +105,19 @@ if ( ! function_exists( 'is_admin' ) ) {
 		return (bool) $nhg_is_admin;
 	}
 }
+if ( ! function_exists( 'get_option' ) ) {
+	function get_option( $key, $default = false ) {
+		if ( 'woocommerce_notify_low_stock_amount' === $key ) {
+			return 2;
+		}
+		return $default;
+	}
+}
+if ( ! function_exists( 'wc_price' ) ) {
+	function wc_price( $amount ) {
+		return number_format( (float) $amount, 2, ',', ' ' ) . '&nbsp;&euro;';
+	}
+}
 if ( ! class_exists( 'WC_Product' ) ) {
 	class WC_Product {
 		protected $id;
@@ -145,6 +158,9 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		}
 		public function get_stock_quantity() {
 			return null;
+		}
+		public function managing_stock() {
+			return false;
 		}
 		public function set_created_days_ago( $days ) {
 			$this->created = new class( $days ) {
@@ -231,16 +247,11 @@ nhg_assert(
 	strpos( $html, 'nhg-badge--made' ) < strpos( $html, 'nhg-badge--new' )
 );
 
-$exact = $plugin->format_sale_badge( 'exact', 11, 11 );
-nhg_assert( 'exact sale badge is compact percent', '−11%' === $exact['text'] );
-nhg_assert( 'exact sale title keeps full phrase', 'Sale 11%' === $exact['title'] );
+$exact = $plugin->format_sale_badge( 'exact', 11 );
+nhg_assert( 'exact sale badge uses Save + money', 0 === strpos( $exact['text'], 'Save ' ) && false !== strpos( $exact['text'], '11,00' ) );
 
-$upto = $plugin->format_sale_badge( 'upto', 11, 11 );
-nhg_assert( 'upto sale badge shows max percent only', '−11%' === $upto['text'] );
-nhg_assert( 'upto sale title explains up to', 'Sale up to 11%' === $upto['title'] );
-
-$range = $plugin->format_sale_badge( 'range', 10, 20 );
-nhg_assert( 'range sale badge is compact', '−10–20%' === $range['text'] );
+$upto = $plugin->format_sale_badge( 'upto', 50.5 );
+nhg_assert( 'upto sale badge uses Save up to', 0 === strpos( $upto['text'], 'Save up to ' ) );
 
 $sale_product = new class( 30 ) extends WC_Product {
 	protected $on_sale = true;
@@ -252,27 +263,48 @@ $sale_product = new class( 30 ) extends WC_Product {
 	}
 };
 $sale_labels = $plugin->collect_labels( $sale_product );
-nhg_assert( 'collect sale uses compact text', isset( $sale_labels['sale'] ) && '−11%' === $sale_labels['sale']['text'] );
+nhg_assert( 'collect sale uses Save money text', isset( $sale_labels['sale'] ) && 0 === strpos( $sale_labels['sale']['text'], 'Save ' ) );
 
 ob_start();
-$method->invoke( $plugin, $sale_labels );
+$method->invoke( $plugin, $sale_labels, true );
 $sale_html = ob_get_clean();
-nhg_assert( 'sale badge html includes title attr', false !== strpos( $sale_html, 'title="Sale 11%"' ) );
-nhg_assert( 'sale badge html shows compact text', false !== strpos( $sale_html, '>−11%<' ) );
+nhg_assert( 'sale badge html includes Save text when included', false !== strpos( $sale_html, 'Save ' ) );
+
+ob_start();
+$method->invoke( $plugin, $sale_labels, false );
+$no_sale_on_image = ob_get_clean();
+nhg_assert( 'sale omitted from on-image print by default', false === strpos( $no_sale_on_image, 'nhg-badge--sale' ) );
+
+$oos = new class( 31 ) extends WC_Product {
+	protected $in_stock = false;
+	protected $on_sale = true;
+	public function get_regular_price() {
+		return 100;
+	}
+	public function get_sale_price() {
+		return 80;
+	}
+};
+$oos_labels = $plugin->collect_labels( $oos );
+nhg_assert( 'oos collect has only stock', array_keys( $oos_labels ) === array( 'stock' ) );
+nhg_assert( 'oos stock type is out', 'out' === $oos_labels['stock']['stock_type'] );
 
 $css = file_get_contents( dirname( __DIR__ ) . '/css/labels.css' );
 nhg_assert( 'css defines circular made size', false !== strpos( $css, '--nhg-made-size:' ) );
 nhg_assert( 'css made badge is a circle', false !== strpos( $css, 'border-radius: 50%' ) );
 nhg_assert( 'css stacks new under made circle', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
-nhg_assert( 'css parks sale under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
+nhg_assert( 'css parks custom under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
 nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-label-inset)' ) );
 nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@media (min-width: 768px)' ) );
 nhg_assert(
 	'css no longer pushes all trailing badges under sale/custom',
 	false === strpos( $css, '.nhg-badge--sale ~ .nhg-badge--custom ~ .nhg-badge' )
 );
-nhg_assert( 'css defines below-image Best sold container', false !== strpos( $css, '.nhg-labels--below' ) );
+nhg_assert( 'css defines below-image container', false !== strpos( $css, '.nhg-labels--below' ) );
 nhg_assert( 'css defines Best sold badge', false !== strpos( $css, '.nhg-badge--best' ) );
+nhg_assert( 'css defines under-image sale badge', false !== strpos( $css, '.nhg-badge--sale-below' ) );
+nhg_assert( 'css hides Astra default OOS nodes', false !== strpos( $css, '.ast-shop-product-out-of-stock' ) );
+nhg_assert( 'css hides Woo stock.out-of-stock in loop', false !== strpos( $css, '.stock.out-of-stock' ) );
 $plugin_src = file_get_contents( dirname( __DIR__ ) . '/product-labels.php' );
 nhg_assert(
 	'Best sold hooks shop title_after for below-image badge',
@@ -305,18 +337,34 @@ $product = $plain_hl;
 ob_start();
 $plugin->render_below_image_badge();
 $no_best = ob_get_clean();
-nhg_assert( 'non-highlight prints no Best sold', '' === $no_best );
+nhg_assert( 'non-highlight without sale prints nothing below', '' === $no_best );
+
+$product = $sale_product;
+ob_start();
+$plugin->render_below_image_badge();
+$sale_below = ob_get_clean();
+nhg_assert( 'below-image Sale renders for on-sale product', false !== strpos( $sale_below, 'nhg-badge--sale-below' ) );
+nhg_assert( 'below-image Sale shows Save text', false !== strpos( $sale_below, 'Save ' ) );
+
+$product = $oos;
+ob_start();
+$plugin->render_below_image_badge();
+$oos_below = ob_get_clean();
+nhg_assert( 'oos prints nothing under image', '' === $oos_below );
 
 ob_start();
-$method->invoke( $plugin, $plugin->collect_labels( $highlight ) );
+$method->invoke( $plugin, $plugin->collect_labels( $highlight ), false );
 $thumb_html = ob_get_clean();
 nhg_assert( 'on-image badges never include Best sold', false === strpos( $thumb_html, 'nhg-badge--best' ) );
 
 $theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
+nhg_assert( 'theme flex-orders under-image bars first', false !== strpos( $theme_css, '.nhg-labels--below' ) && false !== strpos( $theme_css, 'order: -1' ) );
 nhg_assert(
-	'theme flex-orders Best sold under image',
-	false !== strpos( $theme_css, '.nhg-labels--below { order: -1; }' )
-		|| false !== strpos( $theme_css, '.nhg-labels--below{ order: -1; }' )
+	'highlight summary has no top padding (flush bars)',
+	(bool) preg_match(
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
+		$theme_css
+	)
 );
 
 echo $failures ? "\n{$failures} failure(s)\n" : "\nAll tests passed\n";

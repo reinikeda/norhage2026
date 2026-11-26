@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -44,7 +44,7 @@ class NHG_Product_Labels {
 		// Render thumbnail overlays (inside the product image/link)
 		add_action( 'woocommerce_before_shop_loop_item_title', [ $this, 'render_thumbnail_badges' ], 5 );
 
-		// Catalog-only: Best sold sits under the image inside Astra's summary wrap.
+		// Catalog-only: Sale + Best sold under the image (Astra summary wrap).
 		// Priority 1 so it can flex-order above category/title without touching PDP.
 		add_action( 'astra_woo_shop_title_after', [ $this, 'render_below_image_badge' ], 1 );
 
@@ -52,8 +52,11 @@ class NHG_Product_Labels {
 		// woocommerce_product_thumbnails runs inside the gallery template in many themes (Astra-compatible)
 		add_action( 'woocommerce_product_thumbnails', [ $this, 'render_single_badges' ], 5 );
 
-		// Hide core WooCommerce stock HTML on archives (we provide our own)
+		// Hide core WooCommerce stock HTML in loops (we provide our own badge)
 		add_filter( 'woocommerce_get_stock_html', [ $this, 'filter_woocommerce_get_stock_html' ], 10, 2 );
+
+		// Hide Woo's default loop sale flash (we own Sale below the image)
+		add_action( 'init', [ $this, 'remove_default_loop_sale_flash' ] );
 
 		// Product Data → General: Made by Norhage checkbox
 		add_action( 'woocommerce_product_options_general_product_data', [ $this, 'render_made_field' ] );
@@ -103,25 +106,46 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.4.0'
+			'1.4.1'
 		);
 	}
 
 	/**
-	 * Hide Woo core stock HTML on non-single pages so our badges control UI
+	 * Hide Woo core stock HTML in product loops so our badges control UI.
+	 *
+	 * Keeps stock on the main single-product buy box; blanks it in shop,
+	 * category, related, and upsell loops (including on the product page).
 	 *
 	 * @param string     $html    Existing stock HTML
 	 * @param WC_Product $product Product object
 	 * @return string
 	 */
 	public function filter_woocommerce_get_stock_html( $html, $product ) {
-		// Preserve stock on single product page (for accessibility / product page details)
-		if ( is_product() ) {
+		unset( $product );
+
+		// Any active Woo product loop → we own the label.
+		if ( function_exists( 'woocommerce_product_loop' ) && woocommerce_product_loop() ) {
+			return '';
+		}
+
+		// Shop / taxonomy archives even if loop prop is unset.
+		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+			return '';
+		}
+
+		// Preserve stock HTML on the main single product summary only.
+		if ( function_exists( 'is_product' ) && is_product() ) {
 			return $html;
 		}
 
-		// On archives / loops, return empty to avoid duplicate stock markup
 		return '';
+	}
+
+	/**
+	 * Remove WooCommerce default "Sale!" flash on catalog cards.
+	 */
+	public function remove_default_loop_sale_flash() {
+		remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
 	}
 
 	/**
@@ -256,46 +280,50 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Compact sale badge copy that fits on a catalog thumbnail.
+	 * Format a money amount for badge text (plain, no HTML).
 	 *
-	 * @param string     $mode exact|upto|range|plain
-	 * @param int        $min  Lower percent.
-	 * @param int        $max  Upper percent.
+	 * @param float $amount Amount in store currency.
+	 * @return string
+	 */
+	public function format_money_plain( $amount ) : string {
+		$amount = (float) $amount;
+		if ( function_exists( 'wc_price' ) ) {
+			return html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' );
+		}
+		return number_format( $amount, 2, ',', ' ' ) . ' €';
+	}
+
+	/**
+	 * Sale badge copy as euro savings (shown under the catalog image).
+	 *
+	 * @param string $mode   exact|upto|plain
+	 * @param float  $amount Savings amount.
 	 * @return array{text:string,title:string}
 	 */
-	public function format_sale_badge( $mode, $min = 0, $max = 0 ) : array {
+	public function format_sale_badge( $mode, $amount = 0 ) : array {
 		$sale_word = __( 'Sale', $this->text_domain );
-		$min       = (int) $min;
-		$max       = (int) $max;
+		$money     = $this->format_money_plain( $amount );
 
 		switch ( $mode ) {
 			case 'exact':
+				$text = sprintf(
+					/* translators: %s: formatted money amount saved */
+					__( 'Save %s', $this->text_domain ),
+					$money
+				);
 				return [
-					'text'  => '−' . $min . '%',
-					'title' => sprintf(
-						/* translators: %s: discount percent */
-						__( 'Sale %s%%', $this->text_domain ),
-						$min
-					),
+					'text'  => $text,
+					'title' => $text,
 				];
 			case 'upto':
+				$text = sprintf(
+					/* translators: %s: formatted max money amount saved */
+					__( 'Save up to %s', $this->text_domain ),
+					$money
+				);
 				return [
-					'text'  => '−' . $max . '%',
-					'title' => sprintf(
-						/* translators: %s: max discount percent */
-						__( 'Sale up to %s%%', $this->text_domain ),
-						$max
-					),
-				];
-			case 'range':
-				return [
-					'text'  => '−' . $min . '–' . $max . '%',
-					'title' => sprintf(
-						/* translators: 1: min percent 2: max percent */
-						__( 'Sale %1$s–%2$s%%', $this->text_domain ),
-						$min,
-						$max
-					),
+					'text'  => $text,
+					'title' => $text,
 				];
 			default:
 				return [
@@ -314,25 +342,32 @@ class NHG_Product_Labels {
 	public function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
-		// -------- SALE (compact percent on the badge; full phrase in title) --------
+		// Out of stock: only the stock badge — drop Sale / Made / New / Custom.
+		if ( ! $product->is_in_stock() ) {
+			$labels['stock'] = [
+				'key'        => 'stock',
+				'text'       => __( 'Out of stock', $this->text_domain ),
+				'stock_type' => 'out',
+			];
+			return $labels;
+		}
+
+		// -------- SALE (euro savings; catalog shows this under the image) --------
 		if ( $product->is_on_sale() ) {
 			$sale = $this->format_sale_badge( 'plain' );
 
-			// Simple product (non-variable)
 			if ( ! $product->is_type( 'variable' ) ) {
 				$regular = (float) $product->get_regular_price();
 				$sale_p  = (float) $product->get_sale_price();
 
 				if ( $regular > 0 && $sale_p > 0 && $sale_p < $regular ) {
-					$pct = (int) round( ( ( $regular - $sale_p ) / $regular ) * 100 );
-					if ( $pct > 0 && $pct < 100 ) {
-						$sale = $this->format_sale_badge( 'exact', $pct, $pct );
+					$save = $regular - $sale_p;
+					if ( $save > 0 ) {
+						$sale = $this->format_sale_badge( 'exact', $save );
 					}
 				}
 			} else {
-				// Variable: compute percent range across variations, and detect
-				// whether ALL variations have a discount or only SOME of them.
-				$variation_pcts   = [];
+				$variation_saves  = [];
 				$total_variations = 0;
 				$discounted_count = 0;
 				$variation_ids    = $product->get_children();
@@ -341,7 +376,6 @@ class NHG_Product_Labels {
 					foreach ( $variation_ids as $var_id ) {
 						$var = wc_get_product( $var_id );
 
-						// Skip variations that don't exist / aren't valid products
 						if ( ! $var || ! $var->exists() ) {
 							continue;
 						}
@@ -356,28 +390,24 @@ class NHG_Product_Labels {
 						$sal = (float) $var->get_sale_price();
 
 						if ( $reg > 0 && $sal > 0 && $sal < $reg ) {
-							$p = (int) round( ( ( $reg - $sal ) / $reg ) * 100 );
-							if ( $p > 0 && $p < 100 ) {
-								$variation_pcts[] = $p;
+							$save = $reg - $sal;
+							if ( $save > 0 ) {
+								$variation_saves[] = $save;
 								$discounted_count++;
 							}
 						}
 					}
 				}
 
-				if ( ! empty( $variation_pcts ) ) {
-					$variation_pcts = array_unique( $variation_pcts );
-					$min = min( $variation_pcts );
-					$max = max( $variation_pcts );
+				if ( ! empty( $variation_saves ) ) {
+					$max = max( $variation_saves );
+					$min = min( $variation_saves );
+					$all = ( $total_variations > 0 && $discounted_count === $total_variations );
 
-					$all_discounted = ( $total_variations > 0 && $discounted_count === $total_variations );
-
-					if ( ! $all_discounted ) {
-						$sale = $this->format_sale_badge( 'upto', $max, $max );
-					} elseif ( $min === $max ) {
-						$sale = $this->format_sale_badge( 'exact', $min, $min );
+					if ( ! $all || $min !== $max ) {
+						$sale = $this->format_sale_badge( 'upto', $max );
 					} else {
-						$sale = $this->format_sale_badge( 'range', $min, $max );
+						$sale = $this->format_sale_badge( 'exact', $min );
 					}
 				}
 			}
@@ -389,7 +419,7 @@ class NHG_Product_Labels {
 			];
 		}
 
-		// -------- MADE BY NORHAGE (manual product flag) --------
+		// -------- MADE BY NORHAGE --------
 		if ( $this->is_made_by_norhage( $product ) ) {
 			$labels['made'] = [
 				'key'   => 'made',
@@ -408,7 +438,7 @@ class NHG_Product_Labels {
 			];
 		}
 
-		// -------- CUSTOM cut / Custom size (integration point) --------
+		// -------- CUSTOM size --------
 		if ( $this->is_custom_cut_product( $product ) ) {
 			$labels['custom'] = [
 				'key'  => 'custom',
@@ -416,26 +446,22 @@ class NHG_Product_Labels {
 			];
 		}
 
-		// -------- STOCK: out / low --------
-		if ( ! $product->is_in_stock() ) {
-			$labels['stock'] = [
-				'key'        => 'stock',
-				'text'       => __( 'Out of stock', $this->text_domain ),
-				'stock_type' => 'out',
-			];
-		} else {
-			// Low stock if applicable
-			if ( method_exists( $product, 'get_low_stock_amount' ) ) {
-				$low_stock_amount = $product->get_low_stock_amount();
-				$stock_qty       = $product->get_stock_quantity();
+		// -------- LOW STOCK (in-stock only; OOS returned early above) --------
+		if ( $product->managing_stock() ) {
+			$stock_qty = $product->get_stock_quantity();
+			$low       = method_exists( $product, 'get_low_stock_amount' ) ? $product->get_low_stock_amount() : '';
+			if ( $low === '' || $low === null ) {
+				$low = absint( get_option( 'woocommerce_notify_low_stock_amount', 2 ) );
+			} else {
+				$low = absint( $low );
+			}
 
-				if ( $stock_qty !== null && $low_stock_amount !== null && $stock_qty > 0 && $stock_qty <= $low_stock_amount ) {
-					$labels['stock'] = [
-						'key'        => 'stock',
-						'text'       => __( 'Low stock', $this->text_domain ),
-						'stock_type' => 'low',
-					];
-				}
+			if ( $stock_qty !== null && $low > 0 && $stock_qty > 0 && $stock_qty <= $low ) {
+				$labels['stock'] = [
+					'key'        => 'stock',
+					'text'       => __( 'Low stock', $this->text_domain ),
+					'stock_type' => 'low',
+				];
 			}
 		}
 
@@ -457,15 +483,17 @@ class NHG_Product_Labels {
 	}
 
 	/**
-	 * Print badge markup for a collected labels array.
+	 * Print on-image badge markup.
 	 *
-	 * Order: sale → custom (right) → made → new (left) → stock (bottom).
-	 * Made is before New so CSS can stack New under Made when both show.
+	 * Catalog: custom (right) → made → new (left) → stock (bottom).
+	 * Sale is printed under the image via render_below_image_badge().
+	 * Single: may also include sale on the gallery.
 	 *
 	 * @param array $labels Labels from collect_labels().
+	 * @param bool  $include_sale Whether to print sale on the image.
 	 */
-	private function print_badges( array $labels ) {
-		if ( isset( $labels['sale'] ) ) {
+	private function print_badges( array $labels, $include_sale = false ) {
+		if ( $include_sale && isset( $labels['sale'] ) ) {
 			$title = isset( $labels['sale']['title'] ) ? $labels['sale']['title'] : $labels['sale']['text'];
 			printf(
 				'<span class="nhg-badge nhg-badge--sale" title="%s">%s</span>',
@@ -512,6 +540,7 @@ class NHG_Product_Labels {
 
 	/**
 	 * Render badges inside the thumbnail area (archive loop).
+	 * Sale is omitted here — it renders under the image.
 	 */
 	public function render_thumbnail_badges() {
 		global $product;
@@ -521,22 +550,22 @@ class NHG_Product_Labels {
 		}
 
 		$labels = $this->collect_labels( $product );
+		unset( $labels['sale'] );
 
 		if ( empty( $labels ) ) {
 			return;
 		}
 
-		// Output container; CSS will absolutely position it over the image.
 		echo '<div class="nhg-labels nhg-labels--thumb" aria-hidden="true">';
-		$this->print_badges( $labels );
+		$this->print_badges( $labels, false );
 		echo '</div>';
 	}
 
 	/**
-	 * Catalog-only Best sold bar under the product image (highlight products).
+	 * Catalog under-image bars: Sale (euro savings) + Best sold (highlight).
 	 *
-	 * Lives in the Astra summary wrap via astra_woo_shop_title_after, then
-	 * flex-orders above category/title. Never printed on the single product page.
+	 * Hooked only to astra_woo_shop_title_after (loop/related cards).
+	 * Skipped entirely for out-of-stock products (stock badge is on-image only).
 	 */
 	public function render_below_image_badge() {
 		if ( is_admin() ) {
@@ -549,18 +578,37 @@ class NHG_Product_Labels {
 			return;
 		}
 
-		if ( ! $this->is_catalog_highlight( $product ) ) {
+		if ( ! $product->is_in_stock() ) {
 			return;
 		}
 
-		// Hooked only to astra_woo_shop_title_after (loop/related cards), never
-		// astra_woo_single_title_after — keeps the single gallery/custom PDP alone.
-		$text = __( 'Best sold', $this->text_domain );
+		$labels  = $this->collect_labels( $product );
+		$has_sale = isset( $labels['sale'] );
+		$has_best = $this->is_catalog_highlight( $product );
 
-		printf(
-			'<div class="nhg-labels nhg-labels--below" aria-hidden="true"><span class="nhg-badge nhg-badge--best">%s</span></div>',
-			esc_html( $text )
-		);
+		if ( ! $has_sale && ! $has_best ) {
+			return;
+		}
+
+		echo '<div class="nhg-labels nhg-labels--below" aria-hidden="true">';
+
+		if ( $has_sale ) {
+			$title = isset( $labels['sale']['title'] ) ? $labels['sale']['title'] : $labels['sale']['text'];
+			printf(
+				'<span class="nhg-badge nhg-badge--sale nhg-badge--sale-below" title="%s">%s</span>',
+				esc_attr( $title ),
+				esc_html( $labels['sale']['text'] )
+			);
+		}
+
+		if ( $has_best ) {
+			printf(
+				'<span class="nhg-badge nhg-badge--best">%s</span>',
+				esc_html( __( 'Best sold', $this->text_domain ) )
+			);
+		}
+
+		echo '</div>';
 	}
 
 	/**
@@ -586,7 +634,7 @@ class NHG_Product_Labels {
 
 		// Output container that is intended to be inside the gallery wrapper
 		echo '<div class="nhg-labels nhg-labels--single" aria-hidden="true">';
-		$this->print_badges( $labels );
+		$this->print_badges( $labels, true );
 		echo '</div>';
 	}
 }

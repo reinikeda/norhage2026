@@ -736,14 +736,19 @@ a.ast-on-card-button.ast-select-options-trigger,
   gap: 4px !important; /* Control spacing between title, rating, and price */
 }
 
-/* Catalog summary stack: Best sold → category → main title → secondary → attrs → rating → price → CTA */
-.woocommerce ul.products li.product .nhg-labels--below { order: -1; } /* Best sold under image */
+/* Catalog summary stack: under-image bars → category → main title → secondary → attrs → rating → price → CTA */
+.woocommerce ul.products li.product .nhg-labels--below { order: -1; margin: 0 !important; } /* Sale + Best sold flush under image */
 .woocommerce ul.products li.product .ast-loop-product__link { order: 1; } /* Main title */
 .woocommerce ul.products li.product .product-secondary-title { order: 2; } /* Custom secondary title */
 .woocommerce ul.products li.product .nh-catalog-highlight-attrs { order: 3; } /* Highlight attrs */
 .woocommerce ul.products li.product .review-rating { order: 4; margin: 0; } /* Rating */
 .woocommerce ul.products li.product .price { order: 5; margin-top: 2px; } /* Price */
 .woocommerce ul.products li.product .button { order: 6; } /* CTA Button */
+
+/* No gap between thumbnail and under-image bars */
+.woocommerce ul.products li.product .astra-shop-thumbnail-wrap {
+  margin-bottom: 0 !important;
+}
 
 /* Force rating block visibility and alignment */
 .review-rating, .star-rating {
@@ -848,8 +853,15 @@ li.outofstock .astra-shop-thumbnail-wrap img {
   overflow: hidden;
 }
 
+/* No top padding — under-image bars must sit flush against the photo */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-  padding: 0.7rem 0.7rem 0.85rem;
+  padding: 0 0 0.85rem;
+  gap: 4px;
+}
+
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
+  margin-left: 0.7rem;
+  margin-right: 0.7rem;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .woocommerce-loop-product__title,
@@ -871,7 +883,12 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 @media (max-width: 768px) {
   .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-    padding: 0.55rem 0.55rem 0.7rem;
+    padding: 0 0 0.7rem;
+  }
+
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
+    margin-left: 0.55rem;
+    margin-right: 0.55rem;
   }
 }
 
