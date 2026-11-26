@@ -12,6 +12,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Hard cap — pathological trails (or a near-OOM request) must not build
+ * unbounded HTML. Normal product crumbs are Home + cats + product (≤ ~8).
+ */
+define( 'NH_PRODUCT_BREADCRUMB_MAX_CRUMBS', 12 );
+
+/**
+ * Normalize one Woo crumb to a short scalar pair.
+ *
+ * @param mixed $crumb Raw crumb.
+ * @return array{0: string, 1: string}
+ */
+function nh_product_breadcrumb_normalize_crumb( $crumb ) {
+	$label = '';
+	$url   = '';
+
+	if ( is_array( $crumb ) ) {
+		if ( isset( $crumb[0] ) && is_scalar( $crumb[0] ) ) {
+			$label = (string) $crumb[0];
+		}
+		if ( isset( $crumb[1] ) && is_scalar( $crumb[1] ) ) {
+			$url = (string) $crumb[1];
+		}
+	}
+
+	// Guard against a single enormous title blowing memory during concat.
+	if ( strlen( $label ) > 200 ) {
+		$label = substr( $label, 0, 200 );
+	}
+	if ( strlen( $url ) > 2048 ) {
+		$url = substr( $url, 0, 2048 );
+	}
+
+	return array( $label, $url );
+}
+
+/**
  * Decide which crumbs stay visible on small screens.
  *
  * Four or more crumbs collapse to: first category / … / current page.
@@ -21,11 +57,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array{count: int, truncate: bool, segments: array<int, array<string, mixed>>}
  */
 function nh_product_breadcrumb_plan( array $breadcrumb ) {
+	if ( count( $breadcrumb ) > NH_PRODUCT_BREADCRUMB_MAX_CRUMBS ) {
+		$breadcrumb = array_slice( $breadcrumb, 0, NH_PRODUCT_BREADCRUMB_MAX_CRUMBS );
+	}
+
 	$count    = count( $breadcrumb );
 	$truncate = $count >= 4;
 	$segments = array();
 
 	foreach ( $breadcrumb as $key => $crumb ) {
+		$crumb   = nh_product_breadcrumb_normalize_crumb( $crumb );
 		$is_last = ( $key === $count - 1 );
 		$keep    = ! $truncate || 1 === $key || $is_last;
 
@@ -33,8 +74,8 @@ function nh_product_breadcrumb_plan( array $breadcrumb ) {
 			'type'      => 'item',
 			'collapsed' => ! $keep,
 			'current'   => $is_last,
-			'label'     => isset( $crumb[0] ) ? (string) $crumb[0] : '',
-			'url'       => isset( $crumb[1] ) ? (string) $crumb[1] : '',
+			'label'     => $crumb[0],
+			'url'       => $crumb[1],
 		);
 
 		if ( $is_last ) {

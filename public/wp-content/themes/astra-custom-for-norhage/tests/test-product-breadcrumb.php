@@ -115,6 +115,18 @@ $three = nh_product_breadcrumb_html(
 nh_bc_assert( 'three crumbs are not truncated', strpos( $three, 'data-nh-truncate' ) === false );
 nh_bc_assert( 'empty trail renders nothing', nh_product_breadcrumb_html( array() ) === '' );
 
+$huge = array();
+for ( $i = 0; $i < 40; $i++ ) {
+	$huge[] = array( 'Crumb ' . $i, 'https://example.test/' . $i );
+}
+$capped = nh_product_breadcrumb_plan( $huge );
+nh_bc_assert( 'pathological trails are capped', $capped['count'] === NH_PRODUCT_BREADCRUMB_MAX_CRUMBS );
+
+$normalized = nh_product_breadcrumb_normalize_crumb( array( str_repeat( 'A', 500 ), str_repeat( 'u', 3000 ) ) );
+nh_bc_assert( 'labels are length-capped', strlen( $normalized[0] ) === 200 );
+nh_bc_assert( 'urls are length-capped', strlen( $normalized[1] ) === 2048 );
+nh_bc_assert( 'non-array crumbs normalize empty', nh_product_breadcrumb_normalize_crumb( null ) === array( '', '' ) );
+
 if ( $failures > 0 ) {
 	echo "{$failures} failed\n";
 	exit( 1 );

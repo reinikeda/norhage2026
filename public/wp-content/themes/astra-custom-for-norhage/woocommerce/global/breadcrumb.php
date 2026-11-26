@@ -26,7 +26,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! empty( $breadcrumb ) ) {
 
-	if ( function_exists( 'is_product' ) && is_product() && function_exists( 'nh_product_breadcrumb_html' ) ) {
+	// Custom trail only for sane product crumbs. If the request is already
+	// near the memory ceiling (e.g. heavy related-product work), fall back
+	// to Woo's simple loop instead of building a second string buffer.
+	$use_nh_trail = function_exists( 'is_product' )
+		&& is_product()
+		&& function_exists( 'nh_product_breadcrumb_html' )
+		&& is_array( $breadcrumb )
+		&& count( $breadcrumb ) > 0
+		&& count( $breadcrumb ) <= 20;
+
+	if ( $use_nh_trail && function_exists( 'memory_get_usage' ) && function_exists( 'ini_get' ) ) {
+		$limit = ini_get( 'memory_limit' );
+		if ( is_string( $limit ) && $limit !== '' && $limit !== '-1' ) {
+			$unit  = strtolower( substr( $limit, -1 ) );
+			$bytes = (int) $limit;
+			if ( 'g' === $unit ) {
+				$bytes = (int) $limit * 1024 * 1024 * 1024;
+			} elseif ( 'm' === $unit ) {
+				$bytes = (int) $limit * 1024 * 1024;
+			} elseif ( 'k' === $unit ) {
+				$bytes = (int) $limit * 1024;
+			}
+			// Leave headroom; OOM was previously reported on this echo.
+			if ( $bytes > 0 && memory_get_usage( true ) > (int) ( $bytes * 0.85 ) ) {
+				$use_nh_trail = false;
+			}
+		}
+	}
+
+	if ( $use_nh_trail ) {
 		echo nh_product_breadcrumb_html( $breadcrumb ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return;
 	}
