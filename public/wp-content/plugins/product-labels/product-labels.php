@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NHG Product Labels (harmonized)
  * Description: Compact, robust product labels for WooCommerce thumbnails and single products.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Your team
  * Text Domain: nhg-labels
  * Domain Path: /languages
@@ -94,7 +94,7 @@ class NHG_Product_Labels {
 			'nhg-labels',
 			$css_path,
 			[],
-			'1.3.0'
+			'1.3.1'
 		);
 	}
 
@@ -220,6 +220,56 @@ class NHG_Product_Labels {
 	}
 
 	/**
+	 * Compact sale badge copy that fits on a catalog thumbnail.
+	 *
+	 * @param string     $mode exact|upto|range|plain
+	 * @param int        $min  Lower percent.
+	 * @param int        $max  Upper percent.
+	 * @return array{text:string,title:string}
+	 */
+	public function format_sale_badge( $mode, $min = 0, $max = 0 ) : array {
+		$sale_word = __( 'Sale', $this->text_domain );
+		$min       = (int) $min;
+		$max       = (int) $max;
+
+		switch ( $mode ) {
+			case 'exact':
+				return [
+					'text'  => '−' . $min . '%',
+					'title' => sprintf(
+						/* translators: %s: discount percent */
+						__( 'Sale %s%%', $this->text_domain ),
+						$min
+					),
+				];
+			case 'upto':
+				return [
+					'text'  => '−' . $max . '%',
+					'title' => sprintf(
+						/* translators: %s: max discount percent */
+						__( 'Sale up to %s%%', $this->text_domain ),
+						$max
+					),
+				];
+			case 'range':
+				return [
+					'text'  => '−' . $min . '–' . $max . '%',
+					'title' => sprintf(
+						/* translators: 1: min percent 2: max percent */
+						__( 'Sale %1$s–%2$s%%', $this->text_domain ),
+						$min,
+						$max
+					),
+				];
+			default:
+				return [
+					'text'  => $sale_word,
+					'title' => $sale_word,
+				];
+		}
+	}
+
+	/**
 	 * Collect label data for a product
 	 *
 	 * @param WC_Product $product
@@ -228,21 +278,19 @@ class NHG_Product_Labels {
 	public function collect_labels( WC_Product $product ) : array {
 		$labels = [];
 
-		// -------- SALE (with percent, range, or "up to") --------
+		// -------- SALE (compact percent on the badge; full phrase in title) --------
 		if ( $product->is_on_sale() ) {
-			$sale_text  = __( 'Sale', $this->text_domain );
-			$sale_label = $sale_text;
+			$sale = $this->format_sale_badge( 'plain' );
 
 			// Simple product (non-variable)
 			if ( ! $product->is_type( 'variable' ) ) {
 				$regular = (float) $product->get_regular_price();
-				$sale    = (float) $product->get_sale_price();
+				$sale_p  = (float) $product->get_sale_price();
 
-				if ( $regular > 0 && $sale > 0 && $sale < $regular ) {
-					$pct = (int) round( ( ( $regular - $sale ) / $regular ) * 100 );
+				if ( $regular > 0 && $sale_p > 0 && $sale_p < $regular ) {
+					$pct = (int) round( ( ( $regular - $sale_p ) / $regular ) * 100 );
 					if ( $pct > 0 && $pct < 100 ) {
-						$pct_label  = sprintf( _x( '%s %%', 'sale percent', $this->text_domain ), $pct );
-						$sale_label = $sale_text . ' ' . $pct_label;
+						$sale = $this->format_sale_badge( 'exact', $pct, $pct );
 					}
 				}
 			} else {
@@ -289,22 +337,19 @@ class NHG_Product_Labels {
 					$all_discounted = ( $total_variations > 0 && $discounted_count === $total_variations );
 
 					if ( ! $all_discounted ) {
-						// Not every variation has a discount -> show "Sale up to X%"
-						$pct_label = sprintf( _x( 'up to %s %%', 'sale percent up to', $this->text_domain ), $max );
+						$sale = $this->format_sale_badge( 'upto', $max, $max );
 					} elseif ( $min === $max ) {
-						// All variations discounted by the same amount
-						$pct_label = sprintf( _x( '%s %%', 'sale percent', $this->text_domain ), $min );
+						$sale = $this->format_sale_badge( 'exact', $min, $min );
 					} else {
-						// All variations discounted, but by different amounts
-						$pct_label = sprintf( _x( '%s-%s %%', 'sale percent range', $this->text_domain ), $min, $max );
+						$sale = $this->format_sale_badge( 'range', $min, $max );
 					}
-					$sale_label = $sale_text . ' ' . $pct_label;
 				}
 			}
 
 			$labels['sale'] = [
-				'key'  => 'sale',
-				'text' => $sale_label,
+				'key'   => 'sale',
+				'text'  => $sale['text'],
+				'title' => $sale['title'],
 			];
 		}
 
@@ -385,8 +430,10 @@ class NHG_Product_Labels {
 	 */
 	private function print_badges( array $labels ) {
 		if ( isset( $labels['sale'] ) ) {
+			$title = isset( $labels['sale']['title'] ) ? $labels['sale']['title'] : $labels['sale']['text'];
 			printf(
-				'<span class="nhg-badge nhg-badge--sale">%s</span>',
+				'<span class="nhg-badge nhg-badge--sale" title="%s">%s</span>',
+				esc_attr( $title ),
 				esc_html( $labels['sale']['text'] )
 			);
 		}

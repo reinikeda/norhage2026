@@ -211,17 +211,47 @@ $html = ob_get_clean();
 
 nhg_assert( 'badge html has made class', false !== strpos( $html, 'nhg-badge--made' ) );
 nhg_assert( 'badge html has new class', false !== strpos( $html, 'nhg-badge--new' ) );
+nhg_assert( 'made badge uses stacked lines', false !== strpos( $html, 'nhg-made-text__line' ) );
 nhg_assert(
 	'made badge is printed before new badge',
 	strpos( $html, 'nhg-badge--made' ) < strpos( $html, 'nhg-badge--new' )
 );
 
+$exact = $plugin->format_sale_badge( 'exact', 11, 11 );
+nhg_assert( 'exact sale badge is compact percent', '−11%' === $exact['text'] );
+nhg_assert( 'exact sale title keeps full phrase', 'Sale 11%' === $exact['title'] );
+
+$upto = $plugin->format_sale_badge( 'upto', 11, 11 );
+nhg_assert( 'upto sale badge shows max percent only', '−11%' === $upto['text'] );
+nhg_assert( 'upto sale title explains up to', 'Sale up to 11%' === $upto['title'] );
+
+$range = $plugin->format_sale_badge( 'range', 10, 20 );
+nhg_assert( 'range sale badge is compact', '−10–20%' === $range['text'] );
+
+$sale_product = new class( 30 ) extends WC_Product {
+	protected $on_sale = true;
+	public function get_regular_price() {
+		return 100;
+	}
+	public function get_sale_price() {
+		return 89;
+	}
+};
+$sale_labels = $plugin->collect_labels( $sale_product );
+nhg_assert( 'collect sale uses compact text', isset( $sale_labels['sale'] ) && '−11%' === $sale_labels['sale']['text'] );
+
+ob_start();
+$method->invoke( $plugin, $sale_labels );
+$sale_html = ob_get_clean();
+nhg_assert( 'sale badge html includes title attr', false !== strpos( $sale_html, 'title="Sale 11%"' ) );
+nhg_assert( 'sale badge html shows compact text', false !== strpos( $sale_html, '>−11%<' ) );
+
 $css = file_get_contents( dirname( __DIR__ ) . '/css/labels.css' );
-nhg_assert( 'css is mobile-first with base --nhg-h', false !== strpos( $css, '--nhg-h:' ) );
-nhg_assert( 'css uses cream made chip token', false !== strpos( $css, '--nhg-made-bg' ) );
-nhg_assert( 'css stacks new under made', false !== strpos( $css, '.nhg-badge--made ~ .nhg-badge--new' ) );
+nhg_assert( 'css defines circular made size', false !== strpos( $css, '--nhg-made-size:' ) );
+nhg_assert( 'css made badge is a circle', false !== strpos( $css, 'border-radius: 50%' ) );
+nhg_assert( 'css stacks new under made circle', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
 nhg_assert( 'css parks sale under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
-nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-inset-bottom)' ) );
+nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-label-inset)' ) );
 nhg_assert( 'css has tablet enhancement breakpoint', false !== strpos( $css, '@media (min-width: 768px)' ) );
 nhg_assert(
 	'css no longer pushes all trailing badges under sale/custom',
