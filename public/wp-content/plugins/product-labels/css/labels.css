@@ -1,6 +1,6 @@
 /**
  * NHG Product Labels — Example A + under-image Sale/Made by
- * Version 1.5.1
+ * Version 1.5.2
  *
  * Catalog thumbnail (on image):
  *   LEFT  — Best seller flag (flush top) → New circle stacked below
@@ -30,8 +30,8 @@
 	--nhg-best-flag-h: 22px;
 	--nhg-wishlist-clearance: 40px;
 	--nhg-forest: #1B3A2F;
+	--nhg-green: #00704A;
 	--nhg-cream: #F7F4EF;
-	--nhg-gold: #C89F63;
 	--nhg-sale: #B42318;
 	--nhg-ink: #1A1A1A;
 	--nhg-stock-out: #5C4033;
@@ -156,7 +156,7 @@
 }
 
 /* ==========================================================================
-   NEW — gold circle; under Best seller flag when both present; else top-left
+   NEW — primary green circle (matches ATC); under Best seller when both present
    ========================================================================== */
 
 .nhg-badge--new {
@@ -172,7 +172,7 @@
 	max-height: var(--nhg-new-size);
 	padding: 0;
 	border-radius: 50%;
-	background: var(--nhg-gold);
+	background: var(--nhg-green);
 	color: #fff;
 	font-size: 10px;
 	font-weight: 800;

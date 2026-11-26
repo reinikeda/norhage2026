@@ -306,7 +306,7 @@ nhg_assert( 'css made badge is a circle', false !== strpos( $css, 'border-radius
 nhg_assert( 'css stacks new under made circle on single', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--made) .nhg-badge--new' ) );
 nhg_assert( 'css stacks new under Best seller flag', false !== strpos( $css, '.nhg-labels:has(.nhg-badge--best-flag) .nhg-badge--new' ) );
 nhg_assert( 'css New badge is a circle', false !== strpos( $css, '.nhg-badge--new' ) && false !== strpos( $css, '--nhg-new-size:' ) && (bool) preg_match( '/\.nhg-badge--new\s*\{[^}]*border-radius:\s*50%/s', $css ) );
-nhg_assert( 'css New uses gold accent', false !== strpos( $css, '--nhg-gold:' ) && (bool) preg_match( '/\.nhg-badge--new\s*\{[^}]*background:\s*var\(--nhg-gold\)/s', $css ) );
+nhg_assert( 'css New uses primary green', false !== strpos( $css, '--nhg-green:' ) && (bool) preg_match( '/\.nhg-badge--new\s*\{[^}]*background:\s*var\(--nhg-green\)/s', $css ) );
 nhg_assert( 'css Best seller flag is flush to top', (bool) preg_match( '/\.nhg-badge--best-flag\s*\{[^}]*top:\s*0;/s', $css ) );
 nhg_assert( 'css parks custom under wishlist clearance', false !== strpos( $css, '--nhg-wishlist-clearance' ) );
 nhg_assert( 'css treats stock as a bottom bar', false !== strpos( $css, '.nhg-badge--stock' ) && false !== strpos( $css, 'bottom: var(--nhg-label-inset)' ) );
