@@ -349,8 +349,15 @@ function show_subcategories_grid() {
 	$subcategories = get_terms( $args );
 
 	if ( ! empty( $subcategories ) ) {
-		echo '<div class="subcategory-grid">';
+		echo '<div class="subcategory-grid" data-nh-subcats>';
+		echo '<div class="subcategory-head">';
 		echo '<h2 class="subcategory-title">' . esc_html__( 'Shop by Category', 'nh-theme' ) . '</h2>';
+		echo '<div class="subcategory-arrows is-idle" role="group" aria-label="' . esc_attr__( 'Scroll categories', 'nh-theme' ) . '">';
+		echo '<button type="button" class="subcategory-prev" aria-label="' . esc_attr__( 'Previous categories', 'nh-theme' ) . '" aria-disabled="true">';
+		echo '<span aria-hidden="true">&#8249;</span></button>';
+		echo '<button type="button" class="subcategory-next" aria-label="' . esc_attr__( 'Next categories', 'nh-theme' ) . '" aria-disabled="true">';
+		echo '<span aria-hidden="true">&#8250;</span></button>';
+		echo '</div></div>';
 		echo '<div class="subcategory-items">';
 
 		foreach ( $subcategories as $subcategory ) {
@@ -367,7 +374,7 @@ function show_subcategories_grid() {
 						'alt'      => $subcategory->name,
 						'loading'  => 'lazy',
 						'decoding' => 'async',
-						'sizes'    => '(max-width: 768px) 42vw, 180px',
+						'sizes'    => '(max-width: 768px) 42vw, 160px',
 					)
 				);
 			} else {
@@ -649,6 +656,16 @@ function astra_child_enqueue_scripts() {
 		norhage_asset_version( '/assets/js/category-toggle.js' ),
 		norhage_script_args()
 	);
+
+	if ( is_product_category() ) {
+		wp_enqueue_script(
+			'nh-subcategory-scroll',
+			get_stylesheet_directory_uri() . '/assets/js/subcategory-scroll.js',
+			array(),
+			norhage_asset_version( '/assets/js/subcategory-scroll.js' ),
+			norhage_script_args()
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'astra_child_enqueue_scripts' );
 
