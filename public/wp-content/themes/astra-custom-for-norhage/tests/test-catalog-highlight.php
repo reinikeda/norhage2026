@@ -268,9 +268,10 @@ nh_hl_assert(
 	)
 );
 nh_hl_assert(
-	'highlight copy uses child padding inset',
+	'highlight copy uses tight child padding inset',
 	false !== strpos( $css, '.astra-shop-summary-wrap > :not(.nhg-labels--below)' )
-		&& false !== strpos( $css, 'padding-left: 0.7rem' )
+		&& false !== strpos( $css, '--nh-highlight-inset: 0.35rem' )
+		&& false !== strpos( $css, 'padding-left: var(--nh-highlight-inset)' )
 );
 nh_hl_assert(
 	'highlight under-image bars are full width',

@@ -902,8 +902,9 @@ li.outofstock .astra-shop-thumbnail-wrap img {
     opacity: 0.6;
 }
 
-/* Highlighted catalog cards — yellow tile; image flush to edges, padding on copy only */
+/* Highlighted catalog cards — yellow tile; image + bars flush; tight copy inset */
 .woocommerce ul.products li.product.nh-catalog-highlight {
+  --nh-highlight-inset: 0.35rem; /* closer to non-highlight cards (was 0.7rem) */
   background: var(--nh-highlight, #F5E59A);
   border: 1px solid var(--nh-highlight-edge, #E0C85A);
   border-radius: 4px;
@@ -914,9 +915,9 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 }
 
 /*
- * No horizontal padding on the summary — Sale / Best seller bars must
- * stay edge-to-edge. Inset title/attrs/price/CTA with child padding
- * (box-sizing) so long titles wrap inside the card without overflow.
+ * No horizontal padding on the summary — Sale / Best seller bars stay
+ * edge-to-edge like non-highlight cards. Only title/attrs/price/CTA
+ * get a small inset so text clears the 1px border.
  */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
   padding: 0 0 0.85rem;
@@ -928,13 +929,13 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
   margin-left: 0 !important;
   margin-right: 0 !important;
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
+  padding-left: var(--nh-highlight-inset);
+  padding-right: var(--nh-highlight-inset);
   box-sizing: border-box;
   max-width: 100%;
 }
 
-/* Sale / Best seller — full bleed under the photo */
+/* Sale / Best seller — full bleed under the photo (same width as image) */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
   margin: 0 !important;
   padding: 0 !important;
@@ -964,21 +965,23 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap {
   margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
 }
 
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-thumbnail-wrap img {
   border-radius: 0;
   display: block !important;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-    padding: 0 0 0.7rem;
+  .woocommerce ul.products li.product.nh-catalog-highlight {
+    --nh-highlight-inset: 0.25rem;
   }
 
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
-    padding-left: 0.55rem;
-    padding-right: 0.55rem;
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
+    padding: 0 0 0.7rem;
   }
 }
 
