@@ -261,16 +261,21 @@ nh_hl_assert(
 	)
 );
 nh_hl_assert(
-	'highlight summary uses horizontal padding (not child margins)',
+	'highlight summary has no side padding (bars stay flush)',
 	preg_match(
-		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\.7rem\s+/s',
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
 		$css
 	)
 );
 nh_hl_assert(
-	'highlight under-image bars bleed full width',
+	'highlight copy uses child padding inset',
+	false !== strpos( $css, '.astra-shop-summary-wrap > :not(.nhg-labels--below)' )
+		&& false !== strpos( $css, 'padding-left: 0.7rem' )
+);
+nh_hl_assert(
+	'highlight under-image bars are full width',
 	false !== strpos( $css, '.astra-shop-summary-wrap > .nhg-labels--below' )
-		&& false !== strpos( $css, 'width: calc(100% + 1.4rem)' )
+		&& false !== strpos( $css, 'width: 100% !important' )
 );
 nh_hl_assert(
 	'highlight title wraps inside the card',

@@ -409,9 +409,9 @@ nhg_assert( 'on-image badges never include Best sold', false === strpos( $thumb_
 $theme_css = file_get_contents( dirname( __DIR__, 3 ) . '/themes/astra-custom-for-norhage/style.css' );
 nhg_assert( 'theme flex-orders under-image bars first', false !== strpos( $theme_css, '.nhg-labels--below' ) && false !== strpos( $theme_css, 'order: -1' ) );
 nhg_assert(
-	'highlight summary uses horizontal padding for title room',
+	'highlight summary has no side padding so bars stay flush',
 	(bool) preg_match(
-		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\.7rem\s+/s',
+		'/\.nh-catalog-highlight \.astra-shop-summary-wrap\s*\{[^}]*padding:\s*0\s+0\s+/s',
 		$theme_css
 	)
 );

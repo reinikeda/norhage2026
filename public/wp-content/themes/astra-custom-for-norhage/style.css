@@ -914,23 +914,33 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 }
 
 /*
- * Horizontal inset via padding (not child margins). Margin on width:100%
- * title links made the block wider than the card, so overflow:hidden
- * clipped “m²)” off the right edge.
+ * No horizontal padding on the summary — Sale / Best seller bars must
+ * stay edge-to-edge. Inset title/attrs/price/CTA with child padding
+ * (box-sizing) so long titles wrap inside the card without overflow.
  */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-  padding: 0 0.7rem 0.85rem;
+  padding: 0 0 0.85rem;
   gap: 4px;
   min-width: 0;
   box-sizing: border-box;
 }
 
-/* Sale / Best sold bars stay edge-to-edge under the photo */
+.woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Sale / Best seller — full bleed under the photo */
 .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
-  margin-left: -0.7rem;
-  margin-right: -0.7rem;
-  width: calc(100% + 1.4rem);
-  max-width: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  align-self: stretch;
   box-sizing: border-box;
 }
 
@@ -963,13 +973,12 @@ li.outofstock .astra-shop-thumbnail-wrap img {
 
 @media (max-width: 768px) {
   .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap {
-    padding: 0 0.55rem 0.7rem;
+    padding: 0 0 0.7rem;
   }
 
-  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > .nhg-labels--below {
-    margin-left: -0.55rem;
-    margin-right: -0.55rem;
-    width: calc(100% + 1.1rem);
+  .woocommerce ul.products li.product.nh-catalog-highlight .astra-shop-summary-wrap > :not(.nhg-labels--below) {
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
   }
 }
 
