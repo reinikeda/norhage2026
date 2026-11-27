@@ -2325,8 +2325,6 @@ msgstr "Pasirinkti"
 msgid "Yes, email me offers and gardening tips"
 msgstr "Taip, siųskite man pasiūlymus ir sodo patarimus el. paštu"
 
-msgid "Optional. Uses the email from your order. Unsubscribe anytime."
-msgstr "Neprivaloma. Naudojamas užsakymo el. paštas. Galite atsisakyti bet kada."
 
 msgid "Newsletter subscribe failed: %s"
 msgstr "Naujienlaiškio prenumerata nepavyko: %s"
@@ -2334,3 +2332,8 @@ msgstr "Naujienlaiškio prenumerata nepavyko: %s"
 msgid "Customer opted in to the newsletter (Sender.net)."
 msgstr "Klientas užsiprenumeravo naujienlaiškį (Sender.net)."
 
+msgid "Newsletter"
+msgstr "Naujienlaiškis"
+
+msgid "Optional. Uses your order email — unsubscribe anytime."
+msgstr "Neprivaloma. Naudojamas užsakymo el. paštas — galite atsisakyti bet kada."

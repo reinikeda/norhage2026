@@ -175,8 +175,7 @@ body.woocommerce-checkout.nh-checkout-form #customer_details .col-2 {
 body.woocommerce-checkout.nh-checkout-form .woocommerce-billing-fields,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-delivery,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-summary,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-card,
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-newsletter-block {
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-card {
   background: #fff;
   border: 1px solid var(--nh-mint, #c3e8c6);
   border-radius: var(--nh-checkout-radius);
@@ -264,7 +263,6 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment-card #payment > 
   border-radius: 0 0 var(--nh-checkout-radius, 14px) var(--nh-checkout-radius, 14px);
 }
 
-body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment-card #payment > .nh-checkout-newsletter-block,
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment-card #payment > .form-row.place-order {
   margin: 0;
   width: 100%;
@@ -274,6 +272,12 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment-card #payment > 
   background: #fff;
   border: 1px solid var(--nh-mint, #c3e8c6);
   border-radius: var(--nh-checkout-radius, 14px);
+}
+
+body.woocommerce-checkout.nh-checkout-form .nh-checkout-payment-card #payment > .nh-checkout-newsletter-block {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 body.woocommerce-checkout.nh-checkout-form .woocommerce-shipping-fields:not(:has(#ship-to-different-address)) {
@@ -1318,7 +1322,7 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-place-note {
   line-height: 1.4;
 }
 
-/* Newsletter — separate card (matches Delivery / Payment cards) */
+/* Newsletter — compact two-line card */
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-newsletter-block,
 body.woocommerce-checkout .nh-checkout-newsletter-block {
   display: block;
@@ -1327,27 +1331,11 @@ body.woocommerce-checkout .nh-checkout-newsletter-block {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  margin: 1rem 0;
-  padding: var(--nh-checkout-pad, 1.15rem);
+  margin: 0.75rem 0;
+  padding: 0.7rem 0.85rem;
   background: #fff;
   border: 1px solid var(--nh-mint, #c3e8c6);
-  border-radius: var(--nh-checkout-radius, 14px);
-}
-
-body.woocommerce-checkout.nh-checkout-form #payment > .nh-checkout-newsletter-block {
-  margin: 1rem 0;
-}
-
-body.woocommerce-checkout .nh-checkout-newsletter-block .nh-checkout-section__title {
-  margin: 0 0 0.35rem;
-}
-
-body.woocommerce-checkout .nh-checkout-newsletter__intro {
-  margin: 0 0 0.85rem;
-  color: var(--ui-muted, #8e8c89);
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.4;
+  border-radius: 12px;
 }
 
 body.woocommerce-checkout .nh-checkout-newsletter__label {
@@ -1362,39 +1350,61 @@ body.woocommerce-checkout .nh-checkout-newsletter__label {
   width: 100%;
   max-width: 100%;
   cursor: pointer;
-  font-weight: 700;
   color: var(--nh-forest, #1e3932);
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 body.woocommerce-checkout .nh-checkout-newsletter__input {
-  flex: 0 0 20px;
-  width: 20px !important;
-  height: 20px !important;
-  min-width: 20px !important;
+  flex: 0 0 18px;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
   margin: 2px 0 0 !important;
   float: none !important;
   position: static !important;
   accent-color: var(--nh-green, #00704a);
 }
 
-body.woocommerce-checkout .nh-checkout-newsletter__text {
-  display: block;
+body.woocommerce-checkout .nh-checkout-newsletter__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.95rem;
+}
+
+body.woocommerce-checkout .nh-checkout-newsletter__text {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 body.woocommerce-checkout .nh-checkout-newsletter__hint {
-  margin: 0.45rem 0 0 30px;
+  display: block;
+  margin: 0;
   color: var(--ui-muted, #8e8c89);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 body.woocommerce-checkout.nh-checkout-form .nh-checkout-terms-block + .nh-checkout-newsletter-block {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  body.woocommerce-checkout .nh-checkout-newsletter-block {
+    padding: 0.65rem 0.75rem;
+  }
+
+  body.woocommerce-checkout .nh-checkout-newsletter__text {
+    font-size: 0.875rem;
+  }
+
+  body.woocommerce-checkout .nh-checkout-newsletter__hint {
+    font-size: 0.72rem;
+  }
 }
 
 body.woocommerce-checkout.nh-checkout-form #payment .form-row.place-order {

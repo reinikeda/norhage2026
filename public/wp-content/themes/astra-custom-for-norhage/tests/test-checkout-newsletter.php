@@ -67,7 +67,20 @@ nh_nl_assert(
 $locales = array( 'nb_NO', 'sv_SE', 'da_DK', 'de_DE', 'fi', 'lt_LT' );
 $required = array(
 	'Yes, email me offers and gardening tips',
-	'Optional. Uses the email from your order. Unsubscribe anytime.',
+	'Optional. Uses your order email — unsubscribe anytime.',
+	'Newsletter',
+);
+nh_nl_assert(
+	'hidden 0 + checkbox 1 pair for default-on',
+	false !== strpos( $inc, 'value="0"' ) && false !== strpos( $inc, 'value="1"' )
+);
+nh_nl_assert(
+	'terms place-order note skipped when Woo terms checkbox enabled',
+	false !== strpos( file_get_contents( $theme . '/inc/checkout-ux.php' ), 'wc_terms_and_conditions_checkbox_enabled' )
+		&& (bool) preg_match(
+			'/function nh_checkout_terms_place_order_note\(\) \{\s*if \( function_exists\( \'wc_terms_and_conditions_checkbox_enabled\' \) && wc_terms_and_conditions_checkbox_enabled\(\) \) \{\s*return;/s',
+			file_get_contents( $theme . '/inc/checkout-ux.php' )
+		)
 );
 foreach ( $locales as $locale ) {
 	$po = $theme . '/languages/nh-theme-' . $locale . '.po';
