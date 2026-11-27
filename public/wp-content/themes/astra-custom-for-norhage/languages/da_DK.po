@@ -2270,8 +2270,6 @@ msgstr "Vælg"
 msgid "Yes, email me offers and gardening tips"
 msgstr "Ja, send mig tilbud og havetips på e-mail"
 
-msgid "Optional. Uses the email from your order. Unsubscribe anytime."
-msgstr "Valgfrit. Bruger e-mailen fra din ordre. Afmeld når som helst."
 
 msgid "Newsletter subscribe failed: %s"
 msgstr "Nyhedsbrevsabonnement mislykkedes: %s"
@@ -2279,3 +2277,8 @@ msgstr "Nyhedsbrevsabonnement mislykkedes: %s"
 msgid "Customer opted in to the newsletter (Sender.net)."
 msgstr "Kunden tilmeldte sig nyhedsbrevet (Sender.net)."
 
+msgid "Newsletter"
+msgstr "Nyhedsbrev"
+
+msgid "Optional. Uses your order email — unsubscribe anytime."
+msgstr "Valgfrit. Bruger e-mailen fra din ordre — afmeld når som helst."

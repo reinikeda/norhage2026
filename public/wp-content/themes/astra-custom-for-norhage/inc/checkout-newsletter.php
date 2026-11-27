@@ -24,6 +24,20 @@ function nh_checkout_newsletter_session_key() {
 }
 
 /**
+ * Normalize posted/session values to bool.
+ *
+ * @param mixed $value Raw value.
+ * @return bool
+ */
+function nh_checkout_newsletter_value_is_on( $value ) {
+	if ( is_bool( $value ) ) {
+		return $value;
+	}
+	$value = is_string( $value ) ? strtolower( trim( $value ) ) : $value;
+	return in_array( $value, array( '1', 1, 'yes', 'true', 'on' ), true );
+}
+
+/**
  * Whether the shopper opted in (POST or WC session).
  * Defaults to checked until the shopper explicitly turns it off.
  *
@@ -33,7 +47,7 @@ function nh_checkout_newsletter_is_checked() {
 	$name = nh_checkout_newsletter_field_name();
 
 	if ( isset( $_POST[ $name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		return ! empty( $_POST[ $name ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return nh_checkout_newsletter_value_is_on( wp_unslash( $_POST[ $name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	if ( function_exists( 'WC' ) && WC()->session ) {
@@ -52,6 +66,9 @@ function nh_checkout_newsletter_is_checked() {
 /**
  * Persist opt-in during update_order_review (keeps state across payment AJAX).
  *
+ * A hidden 0 + checkbox 1 pair is always posted so “unchecked” is distinguishable
+ * from “field not on the form yet”.
+ *
  * @param string $post_data Serialized checkout form from Woo.
  */
 function nh_checkout_newsletter_capture_from_review( $post_data ) {
@@ -64,14 +81,19 @@ function nh_checkout_newsletter_capture_from_review( $post_data ) {
 		parse_str( $post_data, $data );
 	}
 
-	$name  = nh_checkout_newsletter_field_name();
-	$on    = ! empty( $data[ $name ] );
+	$name = nh_checkout_newsletter_field_name();
+	if ( ! array_key_exists( $name, $data ) ) {
+		// Newsletter markup not in this request — keep default / existing session.
+		return;
+	}
+
+	$on = nh_checkout_newsletter_value_is_on( $data[ $name ] );
 	WC()->session->set( nh_checkout_newsletter_session_key(), $on ? 'yes' : 'no' );
 }
 add_action( 'woocommerce_checkout_update_order_review', 'nh_checkout_newsletter_capture_from_review', 20 );
 
 /**
- * Render the opt-in checkbox markup.
+ * Render the compact opt-in markup (two lines).
  */
 function nh_checkout_render_newsletter_optin() {
 	if ( ! function_exists( 'nh_checkout_is_order_review_context' ) || ! nh_checkout_is_order_review_context() ) {
@@ -87,9 +109,8 @@ function nh_checkout_render_newsletter_optin() {
 	$checked = nh_checkout_newsletter_is_checked();
 	$id      = 'nh-checkout-newsletter-optin';
 	?>
-	<section class="nh-checkout-newsletter-block" id="nh-checkout-newsletter" aria-labelledby="nh-checkout-newsletter-title">
-		<h3 class="nh-checkout-section__title" id="nh-checkout-newsletter-title"><?php esc_html_e( 'Stay in the Loop', 'nh-theme' ); ?></h3>
-		<p class="nh-checkout-newsletter__intro"><?php esc_html_e( 'Get trends, offers and how-tos straight to your inbox.', 'nh-theme' ); ?></p>
+	<section class="nh-checkout-newsletter-block" id="nh-checkout-newsletter" aria-label="<?php echo esc_attr__( 'Newsletter', 'nh-theme' ); ?>">
+		<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="0" />
 		<label class="nh-checkout-newsletter__label" for="<?php echo esc_attr( $id ); ?>">
 			<input
 				type="checkbox"
@@ -99,13 +120,11 @@ function nh_checkout_render_newsletter_optin() {
 				value="1"
 				<?php checked( $checked, true ); ?>
 			/>
-			<span class="nh-checkout-newsletter__text">
-				<?php esc_html_e( 'Yes, email me offers and gardening tips', 'nh-theme' ); ?>
+			<span class="nh-checkout-newsletter__copy">
+				<span class="nh-checkout-newsletter__text"><?php esc_html_e( 'Yes, email me offers and gardening tips', 'nh-theme' ); ?></span>
+				<span class="nh-checkout-newsletter__hint"><?php esc_html_e( 'Optional. Uses your order email — unsubscribe anytime.', 'nh-theme' ); ?></span>
 			</span>
 		</label>
-		<p class="nh-checkout-newsletter__hint">
-			<?php esc_html_e( 'Optional. Uses the email from your order. Unsubscribe anytime.', 'nh-theme' ); ?>
-		</p>
 	</section>
 	<?php
 }
@@ -155,12 +174,19 @@ function nh_checkout_newsletter_maybe_subscribe( $order_id ) {
 		return;
 	}
 
-	$opted_in = false;
 	$name     = nh_checkout_newsletter_field_name();
+	$opted_in = false;
 	if ( isset( $_POST[ $name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$opted_in = ! empty( $_POST[ $name ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$opted_in = nh_checkout_newsletter_value_is_on( wp_unslash( $_POST[ $name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	} elseif ( function_exists( 'WC' ) && WC()->session ) {
-		$opted_in = 'yes' === WC()->session->get( nh_checkout_newsletter_session_key() );
+		$session = WC()->session->get( nh_checkout_newsletter_session_key() );
+		if ( null === $session || '' === $session ) {
+			$opted_in = true; // default on
+		} else {
+			$opted_in = ( 'yes' === $session );
+		}
+	} else {
+		$opted_in = true;
 	}
 
 	$order->update_meta_data( '_nh_newsletter_optin', $opted_in ? 'yes' : 'no' );
