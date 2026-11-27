@@ -1242,6 +1242,49 @@ body.woocommerce-checkout.nh-checkout-form .nh-checkout-place-note {
   line-height: 1.4;
 }
 
+/* Newsletter opt-in — above Place order / above snippet iframe */
+body.woocommerce-checkout .nh-checkout-newsletter {
+  margin: 0 0 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(30, 57, 50, 0.14);
+  border-radius: 12px;
+  background: linear-gradient(160deg, #f4faf6 0%, var(--nh-cream, #f1e6d6) 100%);
+  box-sizing: border-box;
+}
+
+body.woocommerce-checkout .nh-checkout-newsletter__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--nh-forest, #1e3932);
+  line-height: 1.35;
+}
+
+body.woocommerce-checkout .nh-checkout-newsletter__label input {
+  margin: 0.2rem 0 0;
+  flex-shrink: 0;
+}
+
+body.woocommerce-checkout .nh-checkout-newsletter__text {
+  display: block;
+  font-size: 0.95rem;
+}
+
+body.woocommerce-checkout .nh-checkout-newsletter__hint {
+  margin: 0.4rem 0 0 1.55rem;
+  color: var(--ui-muted, #8e8c89);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+body.woocommerce-checkout .nh-checkout-terms-block .nh-checkout-newsletter {
+  margin-top: 0.85rem;
+}
+
 body.woocommerce-checkout.nh-checkout-form #payment .form-row.place-order {
   display: flex;
   flex-direction: column;

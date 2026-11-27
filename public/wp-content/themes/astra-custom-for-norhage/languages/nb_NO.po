@@ -2266,3 +2266,16 @@ msgstr "Fra:"
 #: inc/catalog-button.php
 msgid "Select"
 msgstr "Velg"
+
+msgid "Yes, email me offers and gardening tips"
+msgstr "Ja, send meg tilbud og hagetips på e-post"
+
+msgid "Optional. Uses the email from your order. Unsubscribe anytime."
+msgstr "Valgfritt. Bruker e-posten fra bestillingen. Avmeld når som helst."
+
+msgid "Newsletter subscribe failed: %s"
+msgstr "Nyhetsbrev-abonnement feilet: %s"
+
+msgid "Customer opted in to the newsletter (Sender.net)."
+msgstr "Kunden valgte å abonnere på nyhetsbrevet (Sender.net)."
+

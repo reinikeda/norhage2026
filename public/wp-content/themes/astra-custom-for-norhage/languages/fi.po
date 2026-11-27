@@ -2295,3 +2295,16 @@ msgstr "Alkaen:"
 #: inc/catalog-button.php
 msgid "Select"
 msgstr "Valitse"
+
+msgid "Yes, email me offers and gardening tips"
+msgstr "Kyllä, lähetä minulle tarjouksia ja puutarhavinkkejä sähköpostitse"
+
+msgid "Optional. Uses the email from your order. Unsubscribe anytime."
+msgstr "Valinnainen. Käyttää tilauksen sähköpostia. Voit peruuttaa milloin tahansa."
+
+msgid "Newsletter subscribe failed: %s"
+msgstr "Uutiskirjeen tilaus epäonnistui: %s"
+
+msgid "Customer opted in to the newsletter (Sender.net)."
+msgstr "Asiakas tilasi uutiskirjeen (Sender.net)."
+

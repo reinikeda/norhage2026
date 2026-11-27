@@ -93,6 +93,9 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 					} elseif ( function_exists( 'wc_get_template' ) ) {
 						wc_get_template( 'checkout/terms.php' );
 					}
+					if ( function_exists( 'nh_checkout_render_newsletter_optin_for_snippet' ) ) {
+						nh_checkout_render_newsletter_optin_for_snippet();
+					}
 					echo '</div>';
 					if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
 						nh_checkout_render_gateway_iframe();

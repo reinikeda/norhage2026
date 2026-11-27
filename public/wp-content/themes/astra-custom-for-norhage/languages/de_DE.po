@@ -2260,3 +2260,16 @@ msgstr "Ab:"
 #: inc/catalog-button.php
 msgid "Select"
 msgstr "Auswählen"
+
+msgid "Yes, email me offers and gardening tips"
+msgstr "Ja, bitte senden Sie mir Angebote und Gartentipps per E-Mail"
+
+msgid "Optional. Uses the email from your order. Unsubscribe anytime."
+msgstr "Optional. Verwendet die E-Mail aus Ihrer Bestellung. Jederzeit abmeldbar."
+
+msgid "Newsletter subscribe failed: %s"
+msgstr "Newsletter-Anmeldung fehlgeschlagen: %s"
+
+msgid "Customer opted in to the newsletter (Sender.net)."
+msgstr "Kunde hat den Newsletter abonniert (Sender.net)."
+
