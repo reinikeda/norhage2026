@@ -482,6 +482,7 @@ require_once get_stylesheet_directory() . '/inc/sale-category-sync.php';
 require_once get_stylesheet_directory() . '/inc/basket-customize.php';
 require_once get_stylesheet_directory() . '/inc/cart-ux.php';
 require_once get_stylesheet_directory() . '/inc/checkout-ux.php';
+require_once get_stylesheet_directory() . '/inc/checkout-newsletter.php';
 require_once get_stylesheet_directory() . '/inc/order-attributes.php';
 require_once get_stylesheet_directory() . '/inc/hero.php';
 require_once get_stylesheet_directory() . '/inc/blog.php';
@@ -820,7 +821,7 @@ add_filter( 'woocommerce_formatted_address_force_country_display', '__return_tru
  * Newsletters connection to sender.net
  * ----------------------------------------------------------------------- */
 
-// === 1) Register JS (enqueued only when a newsletter form is rendered) ===
+// === 1) Register + enqueue JS (footer form is site-wide; home section also uses it) ===
 add_action( 'wp_enqueue_scripts', function () {
 	wp_register_script(
 		'nh-sender-newsletter',
@@ -838,44 +839,42 @@ add_action( 'wp_enqueue_scripts', function () {
 			'nonce'    => wp_create_nonce( 'nh_sender_subscribe' ),
 		]
 	);
+
+	if ( ! is_admin() ) {
+		wp_enqueue_script( 'nh-sender-newsletter' );
+	}
 } );
 
 // === 2) AJAX endpoint: called by BOTH forms =========================
 add_action( 'wp_ajax_nopriv_nh_sender_subscribe', 'nh_sender_subscribe' );
 add_action( 'wp_ajax_nh_sender_subscribe',        'nh_sender_subscribe' );
 
-function nh_sender_subscribe() {
-	check_ajax_referer( 'nh_sender_subscribe', 'nonce' );
-
-	$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-
+/**
+ * Subscribe an email via Sender.net (shared by forms + checkout).
+ *
+ * @param string $email Email address.
+ * @return true|\WP_Error True on success / already subscribed, WP_Error otherwise.
+ */
+function nh_sender_subscribe_email( $email ) {
+	$email = sanitize_email( (string) $email );
 	if ( ! is_email( $email ) ) {
-		wp_send_json_error( [
-			'message' => __( 'Please enter a valid email address.', 'nh-theme' ),
-		] );
+		return new WP_Error( 'nh_sender_invalid_email', __( 'Please enter a valid email address.', 'nh-theme' ) );
 	}
 
-	// Simple honeypot support for the homepage newsletter form
-	if ( ! empty( $_POST['nhhb_hp'] ) ) {
-		// Pretend success for bots
-		wp_send_json_success( [
-			'message' => __( 'Thank you!', 'nh-theme' ),
-		] );
-	}
-
-	$api_key  = defined('NH_SENDER_API_KEY')  ? NH_SENDER_API_KEY  : '';
-	$group_id = defined('NH_SENDER_GROUP_ID') ? NH_SENDER_GROUP_ID : '';
+	$api_key  = defined( 'NH_SENDER_API_KEY' ) ? NH_SENDER_API_KEY : '';
+	$group_id = defined( 'NH_SENDER_GROUP_ID' ) ? NH_SENDER_GROUP_ID : '';
 
 	if ( ! $api_key || ! $group_id ) {
-		wp_send_json_error( [
-			'message' => __( 'Subscription is temporarily unavailable. Please contact site administrator.', 'nh-theme' ),
-		] );
+		return new WP_Error(
+			'nh_sender_missing_config',
+			__( 'Subscription is temporarily unavailable. Please contact site administrator.', 'nh-theme' )
+		);
 	}
 
 	$body = [
 		'email'              => $email,
-		'groups'             => [ $group_id ],  // can be multiple
-		'trigger_automation' => true,          // run welcome flows etc.
+		'groups'             => [ $group_id ],
+		'trigger_automation' => true,
 	];
 
 	$response = wp_remote_post(
@@ -892,33 +891,30 @@ function nh_sender_subscribe() {
 	);
 
 	if ( is_wp_error( $response ) ) {
-		wp_send_json_error( [
-			'message' => __( 'Could not connect to email service. Please try again.', 'nh-theme' ),
-		] );
+		return new WP_Error(
+			'nh_sender_http',
+			__( 'Could not connect to email service. Please try again.', 'nh-theme' )
+		);
 	}
 
-	$status = wp_remote_retrieve_response_code( $response );
+	$status    = wp_remote_retrieve_response_code( $response );
 	$resp_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-	// 200/201 – OK; 409 is typically "already subscribed"
-	if ( in_array( $status, [ 200, 201, 409 ], true ) ) {
-		wp_send_json_success( [
-			'message' => __( 'Thank you! You are subscribed.', 'nh-theme' ),
-			'raw'     => $resp_body,
-		] );
+	// 200/201 – OK; 409 is typically "already subscribed".
+	if ( in_array( (int) $status, [ 200, 201, 409 ], true ) ) {
+		return true;
 	}
 
-	// Build a readable error message from Sender
 	$public_error = '';
 	if ( is_array( $resp_body ) ) {
 		if ( ! empty( $resp_body['message'] ) ) {
-			$public_error = $resp_body['message'];
+			$public_error = (string) $resp_body['message'];
 		} elseif ( ! empty( $resp_body['errors'] ) ) {
 			$error_list = [];
 			foreach ( $resp_body['errors'] as $field => $msg ) {
-				$error_list[] = $field . ': ' . implode(', ', (array) $msg);
+				$error_list[] = $field . ': ' . implode( ', ', (array) $msg );
 			}
-			$public_error = implode(' | ', $error_list);
+			$public_error = implode( ' | ', $error_list );
 		}
 	}
 
@@ -926,10 +922,31 @@ function nh_sender_subscribe() {
 		$public_error = 'Unknown error.';
 	}
 
-	wp_send_json_error( [
-		'message' => 'Subscription failed: ' . $public_error,
-	] );
+	return new WP_Error( 'nh_sender_api', 'Subscription failed: ' . $public_error );
+}
 
+function nh_sender_subscribe() {
+	check_ajax_referer( 'nh_sender_subscribe', 'nonce' );
+
+	$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
+	// Simple honeypot support for the homepage newsletter form
+	if ( ! empty( $_POST['nhhb_hp'] ) ) {
+		wp_send_json_success( [
+			'message' => __( 'Thank you!', 'nh-theme' ),
+		] );
+	}
+
+	$result = nh_sender_subscribe_email( $email );
+	if ( is_wp_error( $result ) ) {
+		wp_send_json_error( [
+			'message' => $result->get_error_message(),
+		] );
+	}
+
+	wp_send_json_success( [
+		'message' => __( 'Thank you! You are subscribed.', 'nh-theme' ),
+	] );
 }
 
 // no index order received pages
