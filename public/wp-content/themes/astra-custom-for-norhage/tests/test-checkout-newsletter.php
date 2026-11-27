@@ -41,6 +41,14 @@ nh_nl_assert(
 	(bool) preg_match( '/function nh_checkout_newsletter_is_checked[\s\S]*return true;/s', $inc )
 );
 nh_nl_assert(
+	'newsletter session key bumped past sticky no',
+	false !== strpos( $inc, 'nh_newsletter_optin_v2' )
+);
+nh_nl_assert(
+	'checkbox markup forces checked attribute when on',
+	false !== strpos( $inc, 'checked="checked"' )
+);
+nh_nl_assert(
 	'session capture on update_order_review',
 	false !== strpos( $inc, "add_action( 'woocommerce_checkout_update_order_review'" )
 );

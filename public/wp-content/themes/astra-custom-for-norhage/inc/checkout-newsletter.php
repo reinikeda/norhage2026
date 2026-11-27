@@ -18,9 +18,10 @@ function nh_checkout_newsletter_field_name() {
 
 /**
  * Session key for snippet gateways that never hit Place order.
+ * Bumped to v2 so an older AJAX “missing field → no” stickiness is ignored.
  */
 function nh_checkout_newsletter_session_key() {
-	return 'nh_newsletter_optin';
+	return 'nh_newsletter_optin_v2';
 }
 
 /**
@@ -108,6 +109,12 @@ function nh_checkout_render_newsletter_optin() {
 	$name    = nh_checkout_newsletter_field_name();
 	$checked = nh_checkout_newsletter_is_checked();
 	$id      = 'nh-checkout-newsletter-optin';
+
+	// Keep Woo session aligned with the rendered default so the next update_order_review
+	// does not inherit a stale “no” from before the opt-in field existed.
+	if ( function_exists( 'WC' ) && WC()->session && null === WC()->session->get( nh_checkout_newsletter_session_key() ) ) {
+		WC()->session->set( nh_checkout_newsletter_session_key(), $checked ? 'yes' : 'no' );
+	}
 	?>
 	<section class="nh-checkout-newsletter-block" id="nh-checkout-newsletter" aria-label="<?php echo esc_attr__( 'Newsletter', 'nh-theme' ); ?>">
 		<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="0" />
@@ -118,7 +125,7 @@ function nh_checkout_render_newsletter_optin() {
 				name="<?php echo esc_attr( $name ); ?>"
 				id="<?php echo esc_attr( $id ); ?>"
 				value="1"
-				<?php checked( $checked, true ); ?>
+				<?php echo $checked ? 'checked="checked"' : ''; ?>
 			/>
 			<span class="nh-checkout-newsletter__copy">
 				<span class="nh-checkout-newsletter__text"><?php esc_html_e( 'Yes, email me offers and gardening tips', 'nh-theme' ); ?></span>
