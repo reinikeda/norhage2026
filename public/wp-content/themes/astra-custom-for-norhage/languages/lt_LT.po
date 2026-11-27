@@ -2321,3 +2321,19 @@ msgstr "Nuo:"
 #: inc/catalog-button.php
 msgid "Select"
 msgstr "Pasirinkti"
+
+msgid "Yes, email me offers and gardening tips"
+msgstr "Taip, siųskite man pasiūlymus ir sodo patarimus el. paštu"
+
+
+msgid "Newsletter subscribe failed: %s"
+msgstr "Naujienlaiškio prenumerata nepavyko: %s"
+
+msgid "Customer opted in to the newsletter (Sender.net)."
+msgstr "Klientas užsiprenumeravo naujienlaiškį (Sender.net)."
+
+msgid "Newsletter"
+msgstr "Naujienlaiškis"
+
+msgid "Optional. Uses your order email — unsubscribe anytime."
+msgstr "Neprivaloma. Naudojamas užsakymo el. paštas — galite atsisakyti bet kada."

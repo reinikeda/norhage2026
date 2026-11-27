@@ -2260,3 +2260,19 @@ msgstr "Från:"
 #: inc/catalog-button.php
 msgid "Select"
 msgstr "Välj"
+
+msgid "Yes, email me offers and gardening tips"
+msgstr "Ja, skicka mig erbjudanden och trädgårdstips via e-post"
+
+
+msgid "Newsletter subscribe failed: %s"
+msgstr "Nyhetsbrevsprenumeration misslyckades: %s"
+
+msgid "Customer opted in to the newsletter (Sender.net)."
+msgstr "Kunden valde att prenumerera på nyhetsbrevet (Sender.net)."
+
+msgid "Newsletter"
+msgstr "Nyhetsbrev"
+
+msgid "Optional. Uses your order email — unsubscribe anytime."
+msgstr "Valfritt. Använder e-posten från din order — avsluta prenumerationen när som helst."

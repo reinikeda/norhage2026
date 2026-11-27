@@ -3469,9 +3469,13 @@ function nh_checkout_terms_required_hint() {
 }
 
 /**
- * One consent note for every payment method, directly above the final action.
+ * Extra purchase-terms note under the T&C checkbox.
+ * Skipped when Woo’s terms checkbox is already enabled — that line is enough.
  */
 function nh_checkout_terms_place_order_note() {
+	if ( function_exists( 'wc_terms_and_conditions_checkbox_enabled' ) && wc_terms_and_conditions_checkbox_enabled() ) {
+		return;
+	}
 	echo '<p class="nh-checkout-place-note">' . esc_html__( 'By placing this order, you agree to the applicable purchase terms.', 'nh-theme' ) . '</p>';
 }
 

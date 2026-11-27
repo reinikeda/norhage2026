@@ -94,6 +94,9 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 						wc_get_template( 'checkout/terms.php' );
 					}
 					echo '</div>';
+					if ( function_exists( 'nh_checkout_render_newsletter_optin_for_snippet' ) ) {
+						nh_checkout_render_newsletter_optin_for_snippet();
+					}
 					if ( function_exists( 'nh_checkout_render_gateway_iframe' ) ) {
 						nh_checkout_render_gateway_iframe();
 					}
@@ -105,9 +108,11 @@ $item_count     = function_exists( 'nh_checkout_cart_item_count' ) ? nh_checkout
 					do_action( 'nh_checkout_payment' );
 				else :
 					?>
-				<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment method', 'nh-theme' ); ?></h3>
-				<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay. You can complete your details above first.', 'nh-theme' ); ?></p>
+				<div class="nh-checkout-card nh-checkout-payment-card">
+					<h3 class="nh-checkout-section__title"><?php esc_html_e( 'Payment method', 'nh-theme' ); ?></h3>
+					<p class="nh-checkout-pay-hint"><?php esc_html_e( 'Choose how you want to pay. You can complete your details above first.', 'nh-theme' ); ?></p>
 					<?php do_action( 'nh_checkout_payment' ); ?>
+				</div>
 				<?php endif; ?>
 			</section>
 		</div>
