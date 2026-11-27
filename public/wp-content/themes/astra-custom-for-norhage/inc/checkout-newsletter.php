@@ -25,6 +25,7 @@ function nh_checkout_newsletter_session_key() {
 
 /**
  * Whether the shopper opted in (POST or WC session).
+ * Defaults to checked until the shopper explicitly turns it off.
  *
  * @return bool
  */
@@ -36,10 +37,16 @@ function nh_checkout_newsletter_is_checked() {
 	}
 
 	if ( function_exists( 'WC' ) && WC()->session ) {
-		return 'yes' === WC()->session->get( nh_checkout_newsletter_session_key() );
+		$session = WC()->session->get( nh_checkout_newsletter_session_key() );
+		if ( 'yes' === $session ) {
+			return true;
+		}
+		if ( 'no' === $session ) {
+			return false;
+		}
 	}
 
-	return false;
+	return true;
 }
 
 /**
@@ -80,11 +87,13 @@ function nh_checkout_render_newsletter_optin() {
 	$checked = nh_checkout_newsletter_is_checked();
 	$id      = 'nh-checkout-newsletter-optin';
 	?>
-	<div class="nh-checkout-newsletter form-row" id="nh-checkout-newsletter">
-		<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox nh-checkout-newsletter__label" for="<?php echo esc_attr( $id ); ?>">
+	<section class="nh-checkout-newsletter-block" id="nh-checkout-newsletter" aria-labelledby="nh-checkout-newsletter-title">
+		<h3 class="nh-checkout-section__title" id="nh-checkout-newsletter-title"><?php esc_html_e( 'Stay in the Loop', 'nh-theme' ); ?></h3>
+		<p class="nh-checkout-newsletter__intro"><?php esc_html_e( 'Get trends, offers and how-tos straight to your inbox.', 'nh-theme' ); ?></p>
+		<label class="nh-checkout-newsletter__label" for="<?php echo esc_attr( $id ); ?>">
 			<input
 				type="checkbox"
-				class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox"
+				class="nh-checkout-newsletter__input"
 				name="<?php echo esc_attr( $name ); ?>"
 				id="<?php echo esc_attr( $id ); ?>"
 				value="1"
@@ -97,17 +106,22 @@ function nh_checkout_render_newsletter_optin() {
 		<p class="nh-checkout-newsletter__hint">
 			<?php esc_html_e( 'Optional. Uses the email from your order. Unsubscribe anytime.', 'nh-theme' ); ?>
 		</p>
-	</div>
+	</section>
 	<?php
 }
 
 /**
- * Classic Place order path — directly above the pay button.
+ * Classic checkout: own card above Place order (inside #payment fragment).
  */
-add_action( 'woocommerce_review_order_before_submit', 'nh_checkout_render_newsletter_optin', 8 );
+function nh_checkout_render_newsletter_before_place_order() {
+	if ( function_exists( 'nh_checkout_should_load_iframe' ) && nh_checkout_should_load_iframe() ) {
+		return;
+	}
+	nh_checkout_render_newsletter_optin();
+}
 
 /**
- * Snippet (Svea/Kustom) path — Place order is hidden; show above the iframe.
+ * Snippet (Svea/Kustom): Place order is hidden; show above the iframe.
  */
 function nh_checkout_render_newsletter_optin_for_snippet() {
 	if ( ! function_exists( 'nh_checkout_should_load_iframe' ) || ! nh_checkout_should_load_iframe() ) {

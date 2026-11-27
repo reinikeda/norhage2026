@@ -42,6 +42,11 @@ if ( ! wp_doing_ajax() ) {
 			wc_get_template( 'checkout/terms.php' );
 		}
 	}
+
+	// Own newsletter card above Place order (classic gateways only).
+	if ( function_exists( 'nh_checkout_render_newsletter_before_place_order' ) ) {
+		nh_checkout_render_newsletter_before_place_order();
+	}
 	?>
 
 	<div class="form-row place-order">

@@ -28,8 +28,17 @@ nh_nl_assert( 'shared Sender helper exists', false !== strpos( $fn, 'function nh
 nh_nl_assert( 'AJAX handler uses shared helper', false !== strpos( $fn, 'nh_sender_subscribe_email( $email )' ) );
 
 nh_nl_assert(
-	'opt-in hooks above Place order',
-	false !== strpos( $inc, "add_action( 'woocommerce_review_order_before_submit'" )
+	'classic opt-in renders before Place order',
+	false !== strpos( $inc, 'function nh_checkout_render_newsletter_before_place_order' )
+);
+$payment = file_get_contents( $theme . '/woocommerce/checkout/payment.php' );
+nh_nl_assert(
+	'payment template calls newsletter before place-order',
+	false !== strpos( $payment, 'nh_checkout_render_newsletter_before_place_order' )
+);
+nh_nl_assert(
+	'newsletter defaults to checked',
+	(bool) preg_match( '/function nh_checkout_newsletter_is_checked[\s\S]*return true;/s', $inc )
 );
 nh_nl_assert(
 	'session capture on update_order_review',
@@ -44,9 +53,15 @@ nh_nl_assert(
 	false !== strpos( $form, 'nh_checkout_render_newsletter_optin_for_snippet' )
 );
 nh_nl_assert(
-	'checkout CSS styles newsletter opt-in',
-	false !== strpos( $css, '.nh-checkout-newsletter' )
+	'checkout CSS styles newsletter as its own card',
+	false !== strpos( $css, '.nh-checkout-newsletter-block' )
 		&& false !== strpos( $css, '.nh-checkout-newsletter__label' )
+);
+nh_nl_assert(
+	'delivery radios kill Astra label pseudo bullets',
+	false !== strpos( $css, '.nh-checkout-delivery__methods' )
+		&& false !== strpos( $css, 'label::before' )
+		&& false !== strpos( $css, 'content: none !important' )
 );
 
 $locales = array( 'nb_NO', 'sv_SE', 'da_DK', 'de_DE', 'fi', 'lt_LT' );
